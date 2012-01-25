@@ -1,0 +1,576 @@
+/* Style sheet for myUFDC */
+
+.tree { text-align: justify; }
+.tree td div {   /*height: 40px !important */  }
+.TreeNode { /*padding-top:0px !important;padding-bottom:0px !important;*/ }
+.Selected_TreeNode_Text { background-color: #7d90d5; padding: 4px 4px 4px 4px; }
+
+
+.SobekFolderActionLink
+{
+	color:Gray; 
+}
+.SobekFolderActionLink A:link { COLOR: #00a; TEXT-DECORATION: none; }
+.SobekFolderActionLink A:visited { COLOR: #00a; TEXT-DECORATION: none; }
+.SobekFolderActionLink A:hover  { COLOR: #00a; TEXT-DECORATION: underline; }
+
+.metadata_section
+{
+	background-color: #fbf7b4;
+}
+
+
+.metadata_label
+{
+	padding-top: 17px; font-weight: bold;
+}
+
+
+.metadata_label A:link
+{
+	padding-top: 17px; color:Black; font-weight: bold;
+}
+
+.metadata_label A:visited
+{
+	padding-top: 17px; color:Black; font-weight: bold;
+}
+
+.metadata_label A:hover 
+{
+	padding-top: 17px; color:Black; text-decoration:underline; font-weight: bold;
+}
+
+.metadata_label2
+{
+	padding-top: 23px;
+}
+
+
+.metadata_label2 A:link
+{
+	padding-top: 23px; color:Black;
+}
+
+.metadata_label2 A:visited
+{
+	padding-top: 23px; color:Black;
+}
+
+.metadata_label2 A:hover 
+{
+	padding-top: 23px; color:Black; text-decoration:underline;
+}
+
+.metadata_sublabel
+{
+	padding-left: 15px; font-size: 0.9em; padding-right: 5px; 
+}
+
+.metadata_sublabel2
+{
+	font-size: 0.9em; padding-right: 5px; 
+}
+
+#larger_body_label
+{
+	font-weight:bold;
+}
+
+.repeat_button
+{
+	 padding-bottom: 0px; 
+	 cursor: pointer;
+	 cursor: hand;
+}
+
+.help_button
+{
+	 padding-left: 3px; padding-bottom: 0px; cursor: pointer; cursor: hand;
+}
+
+.help_button_rightsmgmt
+{
+	 padding-left: 3px; padding-bottom: 18px; cursor: pointer; cursor: hand;
+}
+
+.repeat_button_form
+{
+	 padding-top: 4px;  
+}
+
+.ShowOptionsRow
+{
+	position: relative; margin-left: auto; margin-right: auto; WIDTH: 425px; height:15px; text-align:right; 
+}
+
+.add_new_link { color: Black; font-size: 0.9em; vertical-align:baseline;  }
+.add_new_link a:link { color: Black; text-decoration:none; vertical-align: baseline; }
+.add_new_link a:visited { color: Black; text-decoration:none; }
+.add_new_link a:hover { color: Blue; text-decoration:underline; }
+
+input.related_url_input {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.related_url_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.edition_input  {  color:Blue;  width: 350px; margin-left: 3px; margin-top: 9px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.edition_input_focused {  color:#0000a8;  width: 350px; margin-left: 3px; margin-top: 9px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.creator_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.creator_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.contributor_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.contributor_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.complex_creator_input  {  color:Blue;  width: 340px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_creator_input_focused  {  color:#0000a8;  width: 340px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.complex_creator_select { color:Blue; width: 150px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.complex_creator_select_focused { color:#0000a8; width: 150px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.complex_creator_select_init { color:Gray; width: 150px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.donor_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.donor_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.physical_description_input  {  color:Blue;  width: 300px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.physical_description_input_focused {  color:#0000a8;  width: 300px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.language_input  {  color:Blue;  width: 150px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.language_input_focused {  color:#0000a8;  width: 150px; margin-top: 6px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.tickler_input  {  color:Blue;  width: 125px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.tickler_input_focused {  color:#0000a8;  width: 125px; margin-top: 6px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.trackingBox_input   {  color:Blue;  width: 125px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.trackingBox_input_focused {  color:#0000a8;  width: 125px; margin-top: 6px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+input.title_main_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.title_main_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.title_group_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.title_group_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.othertitle_input  {  color:Blue;  width: 360px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.othertitle_input_focused  {  color:#0000a8;  width: 360px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.othertitle_select { color:Blue; width: 130px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.othertitle_select_focused { color:#0000a8; width: 130px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.othertitle_select_init { color:Gray; width: 130px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.spatial_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.spatial_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.visibility_select { color:Blue; width: 160px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.type_select { color:Blue; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.type_select_focused { color:#0000a8; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.type_select_init { color:Gray; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.ir_type_input { color:Blue; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.ir_type_input_focused { color:#0000a8; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.ir_type_input_init { color:Gray; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.irtype_other_input  {  color:Blue;  width: 180px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.irtype_other_input_focused  {  color:#0000a8;  width: 180px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.larger_body_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.larger_body_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.pub_status_select { color:Blue; width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.pub_status_select_focused { color:#0000a8; width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.pub_status_select_init { color:Gray; width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.publisher_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.publisher_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.manufacturer_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.manufacturer_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.pubplace_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.pubplace_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.pub_date_input  {  color:Blue;  width: 150px; margin-top: 9px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.pub_date_input_focused  {  color:#0000a8;  width: 150px; margin-top: 9px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.scale_input  {  color:Blue;  width: 150px; margin-top: 9px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.scale_input_focused  {  color:#0000a8;  width: 150px;margin-top: 9px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.copyright_date_input  {  color:Blue;  width: 150px; margin-left: 3px; margin-top: 9px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.copyright_date_input_focused  {  color:#0000a8;  width: 150px; margin-left: 3px; margin-top: 9px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+textarea.abstract_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
+textarea.abstract_input_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small;}
+
+textarea.note_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+textarea.note_input_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+
+input.UfdcInputBox_Small  {  color:Blue;  width: 100px; margin-top: 6px; border-style:solid; border-width: 1px;  border-color: #7f9db9; }
+input.UfdcInputBox_Medium  {  color:Blue;  width: 340px; margin-top: 6px; border-style:solid; border-width: 1px;  border-color: #7f9db9;}
+input.UfdcInputBox_Large  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.UfdcInputBox_Large_Focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.subject_input  {  margin-top: 6px; color:Blue;  width: 350px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.subject_input_focused  {  margin-top: 6px; color:#0000a8;  width: 350px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.subject_scheme_first_input  {  margin-top: 6px; color:Blue;  width: 320px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.subject_scheme_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 320px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.subject_scheme_second_input  {  margin-top: 6px; color:Blue;  width: 100px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.subject_scheme_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 100px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.genre_first_input  {  margin-top: 6px; color:Blue;  width: 220px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.genre_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 220px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.genre_second_input  {  margin-top: 6px; color:Blue;  width: 100px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.genre_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 100px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.identifier_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.identifier_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.identifier_first_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.identifier_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.identifier_second_input  {  margin-top: 6px; color:Blue;  width: 100px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.identifier_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 100px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.primid_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.primid_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.primid_first_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.primid_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.primid_second_input  {  margin-top: 6px; color:Blue;  width: 100px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.primid_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 100px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.catalognum_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.catalognum_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.oclcnum_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.oclcnum_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+input.classification_input  {  color:Blue;  width: 180px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.classification_input_focused  {  color:#0000a8;  width: 180px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.classification_select { color:Blue; width: 100px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.classification_select_focused { color:#0000a8; width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.classification_select_init { color:Gray; width: 100px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+input.temporal_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.temporal_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.complex_temporal_year_input  {  color:Blue;  width: 50px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_temporal_year_input_focused  {  color:#0000a8;  width: 50px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_temporal_period_input  {  color:Blue;  width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_temporal_period_input_focused  {  color:#0000a8;  width: 200px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+input.bibid_input  {  color:Blue;  width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.bibid_input_focused  {  color:#0000a8;  width: 100px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vid_input  {  color:Blue;  width: 60px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vid_input_focused  {  color:#0000a8;  width: 60px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+textarea.rights_mgmt_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+textarea.rights_mgmt_input_focused  {  color:#0000a8;   margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+
+input.holding_input  {  color:Blue;  width: 370px; margin-left: 10px;  margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.holding_input_focused  {  color:#0000a8;  width: 370px; margin-left: 10px;  margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.holding_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.holding_select_focused { color:#0000a8; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.container_input  {  color:Blue;  width: 310px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.container_input_focused  {  color:#0000a8;  width: 310px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.container_select { color:Blue; width: 80px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+input.source_input  {  color:Blue;  width: 370px; margin-left: 10px;  margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.source_input_focused  {  color:#0000a8;  width: 370px; margin-left: 10px;  margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.source_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.source_select_focused { color:#0000a8; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.frequency_input  {  color:Blue;  width: 140px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.frequency_input_focused  {  color:#0000a8;  width: 140px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.acquisition_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.acquisition_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.attribution_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.attribution_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.creator_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.creator_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+select.collection_input  {  color:Blue;  width: 110px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.collection_input_focused  {  color:#0000a8;  width: 110px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.subcollection_input  {  color:Blue;  width: 110px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.subcollection_input_focused  {  color:#0000a8;  width: 110px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.interface_input  {  color:Blue;  width: 60px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.interface_input_focused  {  color:#0000a8;  width: 60px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.wordmark_input  {  color:Blue;  width: 60px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.wordmark_input_focused  {  color:#0000a8;  width: 60px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.record_status_select { color:Blue; width: 160px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.record_status_select_focused { color:#0000a8; width: 160px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.record_status_select_init { color:Gray; width: 160px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.encoding_level_select { color:Blue; width: 65px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.encoding_level_select_focused { color:#0000a8; width: 65px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.encoding_level_select_init { color:Gray; width: 65px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.record_origin_input  {  color:Blue;  width: 300px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.record_origin_input_focused  {  color:#0000a8;  width: 300px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.creation_note_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.creation_note_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.target_audience_input  {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.target_audience_input_focused  {  color:#0000a8;  width: 150px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.complex_publisher_name_input  {  color:Blue;  width: 455px; margin-right: 10px; margin-top: 14px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_publisher_name_input_focused  {  color:#0000a8;  width: 455px; margin-right: 10px; margin-top: 14px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.complex_publisher_location_input  {  color:Blue;  width: 133px; margin-right: 4px; margin-left: 4px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_publisher_location_input_focused  {  color:#0000a8;  width: 133px; margin-right: 4px; margin-left: 4px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.complex_manufacturer_name_input  {  color:Blue;  width: 455px; margin-right: 10px; margin-top: 14px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_manufacturer_name_input_focused  {  color:#0000a8;  width: 455px; margin-right: 10px; margin-top: 14px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.complex_manufacturer_location_input  {  color:Blue;  width: 133px; margin-right: 4px; margin-left: 4px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_manufacturer_location_input_focused  {  color:#0000a8;  width: 133px; margin-right: 4px; margin-left: 4px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.preferences_small_input  {  color:Blue;  width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.preferences_small_input_focused  {  color:#0000a8;  width: 130px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.preferences_medium_input  {  color:Blue;  width: 225px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.preferences_medium_input_focused  {  color:#0000a8;  width: 225px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.preferences_large_input  {  color:Blue;  width: 400px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.preferences_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.preferences_language_select { color:Blue; width: 125px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.preferences_language_select_focused { color:#0000a8; width: 125px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.preferences_language_select_init { color:Gray; width: 125px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+textarea.preference_rights_input  {  color:Blue;  width: 450px; margin-bottom: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif;}
+textarea.preference_rights_input_focused  {  color:#0000a8;  width: 450px; margin-bottom: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif;}
+
+input.upload_label_input {  color:Blue;  width: 400px; margin-bottom: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.upload_label_input_focused {  color:#0000a8;  width: 400px; margin-bottom: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;  }
+
+input.upload_url_input {  color:Blue;  width: 600px; margin-bottom: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.upload_url_input_focused {  color:#0000a8;  width: 600px; margin-bottom: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;  }
+
+
+input.coordinate_point_first_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.coordinate_point_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.coordinate_point_second_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.coordinate_point_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.material_recd_first_input  {  margin-top: 6px; color:Blue;  width: 110px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.material_recd_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 110px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.material_recd_second_input  {  margin-top: 6px; color:Blue;  width: 320px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.material_recd_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 320px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+select.complex_abstract_type { color:Blue; width: 165px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.complex_abstract_type_focused { color:#0000a8; width: 165px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_abstract_language  {  color:Blue;  width: 150px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complex_abstract_language_focused  {  color:#0000a8;  width: 150px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+textarea.complex_abstract_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+textarea.complex_abstract_input_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small; }
+
+select.complex_note_type { color:Blue; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.complex_note_type_focused { color:#0000a8; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+textarea.complex_note_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
+textarea.complex_note_input_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+input.complexnote_input  {  color:Blue;  width: 150px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.complexnote_input_focused {  color:#0000a8;  width: 150px; margin-top: 6px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.fastsubject_input  {  color:Blue;  width: 220px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.fastsubject_input_focused  {  color:#0000a8;  width: 220px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.fastsubject_select { color:Blue; width: 110px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.fastsubject_select_focused { color:#0000a8; width: 110px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.fastsubject_select_input { color:Gray; width: 110px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.disposition_advice_input  {  color:Blue;  width: 338px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.disposition_advice_input_focused  {  color:#0000a8;  width: 338px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.disposition_advice_select { color:Blue; width: 130px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.disposition_advice_select_focused { color:#0000a8; width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+#bornDigital { margin-top: 8px; }
+#darkFlag { margin-top: 8px; }
+
+/* Generic styles used by all the pop-up forms and pop-up form element */
+.form_linkline  { color: Blue; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_empty  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_focused  { color: #0000a8; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_empty_focused  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
+.popup_title a { color: White; text-decoration: none; font-weight: bold; }
+.popup_table { padding-left: 20px; margin-left: 20px; }
+
+
+.form_subject_line { width: 500px;  }
+.subject_popup_div { position:absolute; background-color:#eeeeee; width:600px; height:360px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px; } 
+#form_subject_div { padding-top: 10px; } 
+select.formsubject_type { color:Blue; width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formsubject_type_focused { color:Blue; width: 100px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formsubject_map { color:Blue; width: 170px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formsubject_map_focused { color:#0000a8; width: 170px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formsubject_small_input  {  color:Blue;  width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formsubject_small_input_focused  {  color:#0000a8;  width: 120px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formsubject_medium_input  {  color:Blue;  width: 170px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formsubject_medium_input_focused  {  color:#0000a8;  width: 170px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formsubject_large_input  {  color:Blue;  width: 360px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formsubject_large_input_focused  {  color:#0000a8;  width: 360px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.form_spatial_line { width: 500px; }
+.spatial_popup_div { position:absolute; background-color:#eeeeee; width:550px; height:520px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px; }  
+#form_spatial_div { padding-top: 10px; } 
+input.formspatial_input  {  color:Blue;  width: 360px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formspatial_input_focused  {  color:#0000a8;  width: 360px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formspatial_small_input  {  color:Blue;  width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formspatial_small_input_focused  {  color:#0000a8;  width: 120px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.form_title_main_line { width: 500px; }
+.title_main_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:315px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.title_other_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:295px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px; } 
+.form_title_div { padding-top: 10px; } 
+input.formtitle_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtitle_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtitle_medium_input  {  color:Blue;  width: 374px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtitle_medium_input_focused  {  color:#0000a8;  width: 374px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtitle_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtitle_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtitle_type_select { color:Blue; width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtitle_type_select_init { color:Gray; width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtitle_display_select { color:Blue; width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtitle_display_select_init { color:Gray; width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.form_typeformat_line { width: 250px;  }
+select.type_format_form_select { color:Blue; width: 110px; margin-left: 3px; margin-top: 9px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.type_format_form_select_init { color:Gray; width: 110px; margin-left: 3px; margin-top: 9px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.typeformat_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:270px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.typeformat_book_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:515px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px; } 
+.typeformat_visual_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:390px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.typeformat_serial_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:515px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.typeformat_map_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:430px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.type_format_form_div { padding-top: 10px; } 
+input.formtype_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtype_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtype_medium_input  {  color:Blue;  width: 374px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtype_medium_input_focused  {  color:#0000a8;  width: 374px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtype_large_input  {  color:Blue;  width: 443px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formtype_large_input_focused  {  color:#0000a8;  width: 443px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtype_small_select  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtype_medium_select  {  color:Blue;  width: 210px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.formtype_large_select  {  color:Blue;  width: 435px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+.form_name_line { width: 500px; }
+.name_popup_div_personal { position:absolute; background-color:#eeeeee; width:700px; height:360px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.name_popup_div { position:absolute; background-color:#eeeeee; width:700px; height:305px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.form_name_div { padding-top: 10px; } 
+input.form_name_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_name_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_name_medium_input  {  color:Blue;  width: 200px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_name_medium_input_focused  {  color:#0000a8;  width: 200px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_name_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_name_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.form_name_select { color:Blue; width: 110px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.form_name_select_focused { color:#0000a8; width: 110px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+.form_ead_line { width: 500px; }
+.ead_popup_div { position:absolute; background-color:#eeeeee; width:620px; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+#form_ead_div { padding-top: 12px; } 
+input.formead_input {  color:Blue;  width: 450px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.formead_input_focused  {  color:#0000a8;  width: 450px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+.form_related_url_line { width: 500px;  }
+.related_url_popup_div { position:absolute; background-color:#eeeeee; width:620px; height:210px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px; } 
+#form_related_url_div { padding-top: 12px; } 
+input.form_relatedurl_input {  color:Blue;  width: 450px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_relatedurl_input_focused  {  color:#0000a8;  width: 450px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+.form_related_item_line { width: 500px; }
+.related_item_popup_div { position:absolute; background-color:#eeeeee; width:620px; height:275px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+#form_related_item_div { padding-top: 10px; } 
+input.form_relateditem_medium_input  {  color:Blue;  width: 120px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_relateditem_medium_input_focused  {  color:#0000a8;  width: 120px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_relateditem_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_relateditem_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.form_relateditem_select { color:Blue; width: 110px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.bibid_div { padding-top: 8px; line-height: 1.5; color:Blue; } 
+.vid_div { padding-top: 8px; line-height: 1.5; color:Blue; } 
+
+.logon_popup_div { position:absolute; background-color:#eeeeee; width:400px; height:280px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+#form_related_url_div { padding-top: 12px; } 
+input.logon_username_input  {  color:Blue;  width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.logon_username_input_focused  {  color:#0000a8;  width: 180px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.logon_password_input  {  color:Blue;  width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.logon_password_input_focused  {  color:#0000a8;  width: 180px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+.form_serial_hierarchy_line { width: 500px; }
+.serial_hierarchy_popup_div { position:absolute; background-color:#eeeeee; width:565px; height:395px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+#form_serial_hierarchy_div { padding-top: 12px; } 
+input.form_serialhierarchy_text_input {  color:Blue;  width: 180px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_serialhierarchy_text_input_focused {  color:#0000a8;  width: 180px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_serialhierarchy_order_input {  color:Blue;  width: 90px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.form_serialhierarchy_order_input_focused {  color:#0000a8;  width: 90px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.download_input {  color:Blue;  width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9;  }
+input.download_input_focused {  color:#0000a8;  width: 180px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;  }
+select.download_select { color:Blue; width: 260px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.download_select_init { color:Gray; width: 260px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.main_thumbnail_select { color:Blue; width: 200px; margin-left: 2px; margin-top: 8px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.main_thumbnail_select_init { color:Gray; width: 200px; margin-left: 2px; margin-top: 8px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.viewer_type { color:Blue; width: 115px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.viewer_file { color:Blue; width: 150px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.viewer_label_input {  color:Blue;  width: 160px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9;  }
+input.viewer_label_input_focused {  color:#0000a8;  width: 160px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;  }
+
+select.addvolume_base_volume  {  color:Blue;  width: 80px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+#blanket_outer {
+	position: absolute;
+	margin: auto;
+	top: 0;	left: 0;
+	width: 100%; height: 100%;
+	z-index: 9998;
+	background-color: #000!important;
+	
+	background-color:#111;
+	opacity: 0.65;
+	filter:alpha(opacity=65);
+}
+
+
+
+
+.hidden_progress 
+{ 
+	padding: 0px;
+	width: 32px;
+	height: 32px;
+}
+
+
+.shown_progress
+{ 
+	background-image: url( http://128.227.223.117/UFDC/default/images/spinner.gif );
+	cursor: wait;
+	padding: 0px;
+	width: 32px;
+	height: 32px;
+}

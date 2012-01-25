@@ -1,0 +1,135 @@
+BODY {
+	BACKGROUND-IMAGE: url(newBG.gif); BACKGROUND-COLOR: #fff0bd; MARGIN: 0px; BACKGROUND-REPEAT: repeat-x
+}
+BODY {
+	LINE-HEIGHT: 18px; FONT-FAMILY: Helvetica, sans-serif; COLOR: black; FONT-SIZE: 12px
+}
+TABLE {
+	LINE-HEIGHT: 18px; FONT-FAMILY: Helvetica, sans-serif; COLOR: black; FONT-SIZE: 12px
+}
+A {
+	COLOR: #b71800; FONT-WEIGHT: normal; TEXT-DECORATION: underline
+}
+A IMG {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; BORDER-TOP: 0px; BORDER-RIGHT: 0px
+}
+.topbarTile {
+	BACKGROUND-IMAGE: url(topbarTile.gif); BACKGROUND-REPEAT: repeat-x
+}
+.topbarMid {
+	BACKGROUND-IMAGE: url(topBar3.gif); BACKGROUND-REPEAT: no-repeat
+}
+H1 {
+	LINE-HEIGHT: 18px; MARGIN: 0px; COLOR: #b71800; FONT-SIZE: 14px; FONT-WEIGHT: bold; PADDING-TOP: 0px
+}
+H2 {
+	FONT-SIZE: 12px; FONT-WEIGHT: bold
+}
+.errorHighlight {
+	BACKGROUND: #ff8888
+}
+.homepageRed {
+	COLOR: #b71800; FONT-SIZE: 11px
+}
+.footer {
+	LINE-HEIGHT: 16px; COLOR: #b71800; FONT-SIZE: 10px
+}
+.footerFront {
+	LINE-HEIGHT: 16px; COLOR: #b71800; FONT-SIZE: 10px
+}
+.footer {
+	PADDING-BOTTOM: 20px; PADDING-TOP: 10px
+}
+.footerFront {
+	PADDING-BOTTOM: 3px; PADDING-TOP: 5px
+}
+.footer A {
+	FONT-WEIGHT: bold
+}
+.footerFront A {
+	FONT-WEIGHT: bold
+}
+.mainMenu {
+	FONT-SIZE: 11px; FONT-WEIGHT: bold
+}
+.mainMenuRed {
+	COLOR: #b71800; FONT-SIZE: 11px; FONT-WEIGHT: bold
+}
+A.mainMenuRed {
+	COLOR: #b71800; FONT-SIZE: 11px; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+A.mainMenuRed:hover {
+	TEXT-DECORATION: underline
+}
+A.mainMenu {
+	TEXT-DECORATION: none
+}
+A.mainMenu:hover {
+	TEXT-DECORATION: underline
+}
+.menuItem {
+	BACKGROUND-IMAGE: url(navBullet-wide.gif); TEXT-ALIGN: left; PADDING-LEFT: 40px; WIDTH: 220px; BACKGROUND-REPEAT: no-repeat; BACKGROUND-POSITION: left center; HEIGHT: 20px
+}
+.menuItemOn {
+	BACKGROUND-IMAGE: url(navBulletOn-wide.gif); TEXT-ALIGN: left; PADDING-LEFT: 40px; WIDTH: 220px; BACKGROUND-REPEAT: no-repeat; BACKGROUND-POSITION: left center; HEIGHT: 20px; COLOR: #000000; FONT-SIZE: 11px; FONT-WEIGHT: bold
+}
+.subMenuItem {
+	TEXT-ALIGN: left; PADDING-LEFT: 55px; WIDTH: 220px; HEIGHT: 20px
+}
+.subMenuItemOn {
+	TEXT-ALIGN: left; PADDING-LEFT: 55px; WIDTH: 220px; HEIGHT: 20px; FONT-SIZE: 11px; FONT-WEIGHT: bold
+}
+.servedSmall {
+	COLOR: #eaa55b; FONT-SIZE: 10px; FONT-WEIGHT: bold
+}
+.servedBig {
+	COLOR: #eaa55b; FONT-SIZE: 18px; FONT-WEIGHT: bold
+}
+.menuBullet {
+	FONT-SIZE: 10px; FONT-WEIGHT: bold
+}
+A.menuBullet {
+	TEXT-DECORATION: none
+}
+A.menuBullet:hover {
+	TEXT-DECORATION: underline
+}
+.menuBulletItem {
+	BACKGROUND-IMAGE: url(navBullet.gif); TEXT-ALIGN: left; PADDING-LEFT: 20px; BACKGROUND-REPEAT: no-repeat; BACKGROUND-POSITION: left center; HEIGHT: 20px
+}
+HR {
+	BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; HEIGHT: 1px; MARGIN-LEFT: 1em; BORDER-TOP: #d3d7cf 1px dotted; MARGIN-RIGHT: 1em; BORDER-RIGHT: medium none
+}
+.popupheader {
+	BACKGROUND-IMAGE: url(popup-top-stretcher.gif); WIDTH: 100%; BACKGROUND-REPEAT: repeat-x; HEIGHT: 56px
+}
+.popupheader .logo {
+	PADDING-LEFT: 15px; FLOAT: left
+}
+.popupheader .closewindow {
+	PADDING-RIGHT: 15px; FLOAT: right
+}
+PRE.codeex {
+	BORDER-BOTTOM: #cba83f 1px solid; BORDER-LEFT: #cba83f 1px solid; PADDING-BOTTOM: 7px; BACKGROUND-COLOR: #ffffff; PADDING-LEFT: 40px; PADDING-RIGHT: 10px; BORDER-TOP: #cba83f 1px solid; BORDER-RIGHT: #cba83f 1px solid; PADDING-TOP: 7px
+}
+.tranEx {
+	BORDER-BOTTOM: #cba83f 1px solid; BORDER-LEFT: #cba83f 1px solid; PADDING-BOTTOM: 15px; BACKGROUND-COLOR: #ffffff; PADDING-LEFT: 20px; PADDING-RIGHT: 20px; BORDER-TOP: #cba83f 1px solid; BORDER-RIGHT: #cba83f 1px solid; PADDING-TOP: 15px
+}
+TABLE.funcdoc {
+	BORDER-BOTTOM: #cba83f 1px solid; BORDER-LEFT: #cba83f 1px solid; WIDTH: 100%; BORDER-COLLAPSE: collapse; BACKGROUND: #fff; COLOR: #000; BORDER-TOP: #cba83f 1px solid; BORDER-RIGHT: #cba83f 1px solid
+}
+TABLE.funcdoc TD {
+	BORDER-BOTTOM: #cba83f 1px solid; BORDER-LEFT: #cba83f 1px solid; PADDING-BOTTOM: 0.5em; PADDING-LEFT: 0.5em; PADDING-RIGHT: 0.5em; BORDER-TOP: #cba83f 1px solid; BORDER-RIGHT: #cba83f 1px solid; PADDING-TOP: 0.5em
+}
+TABLE.funcdoc TH {
+	BORDER-BOTTOM: #cba83f 1px solid; BORDER-LEFT: #cba83f 1px solid; PADDING-BOTTOM: 0.5em; PADDING-LEFT: 0.5em; PADDING-RIGHT: 0.5em; BORDER-TOP: #cba83f 1px solid; BORDER-RIGHT: #cba83f 1px solid; PADDING-TOP: 0.5em
+}
+TABLE.funcdoc TD.funcdoc-param {
+	WIDTH: 40%
+}
+TABLE.funcdoc TD.funcdoc-name {
+	FONT-WEIGHT: bold
+}
+TABLE.funcdoc TD.funcdoc-header {
+	FONT-STYLE: italic
+}

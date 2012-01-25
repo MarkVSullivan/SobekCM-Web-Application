@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Begin the XML for this input template -->
+<input_template
+  xmlns="http://digital.uflib.ufl.edu/metadata/sobekcm_template/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://digital.uflib.ufl.edu/metadata/sobekcm_template/
+		http://digital.uflib.ufl.edu/metadata/sobekcm_template/sobekcm_template.xsd">
+	
+	<!-- Define the information about this input template -->
+	<name>Internal Template</name>
+	<notes>Template used for submitting new item groups by internal users</notes>
+	<dateCreated>August 20, 2009</dateCreated>
+	<lastModified>January 24, 2011</lastModified>
+	<creator>Mark V Sullivan</creator>
+	<includeUserAsAuthor>false</includeUserAsAuthor>
+	<uploads>NONE</uploads>
+	<bibidRoot>AA</bibidRoot>
+	<defaultVisibility>-1</defaultVisibility>
+
+	<!-- This defines the inputs which are available for the user -->
+	<inputs>
+		<page>
+			<name language="eng">Metadata</name>
+			<panel>
+				<name language="eng">Title Information</name>
+				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
+				<element type="OtherTitle" subtype="simple" mandatory="false" acronym="Enter the any additional titles for your material here."/>
+			</panel>
+			<panel>
+				<name language="eng">Physical Description</name>
+				<element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material.">
+					<element_data>
+						<value>Book</value>
+						<options>Aerial, Archival, Artifact, Audio, Book, Map, Newspaper, Photograph, Serial, Video</options>
+					</element_data>
+				</element>
+				<element type="Format" acronym="Enter any additional data (such as extent or subtype) which describes the material."/>
+				<element type="Language" repeatable="true" acronym="Enter the language(s) of the material."/>
+				<element type="CatalogRecordNum">
+					<element_data>
+						<label>ALEPH Number</label>
+					</element_data>
+				</element>
+				<element type="OclcRecordNum" />
+				<element type="Holding" subtype="complex" />
+				<element type="Source" subtype="complex" />
+			</panel>
+			<panel>
+				<name language="eng">Name Authorities</name>
+				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
+				<element type="Publisher" subtype="simple" repeatable="true"
+				         acronym="Enter the name(s) of the publisher(s) of the larger body of work.  If your work is currently unpublished, you may enter your name as the publisher or leave the field blank.  If you are adding administrative material (newsletters, handbooks, etc.) on behalf of a department within the university, enter the name of your department as the publisher."/>
+				<element type="PublicationPlace" acronym="Enter the location the material was published."/>
+				<element type="Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
+			</panel>
+			<panel>
+				<name language="eng">Notes</name>
+				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
+				<element type="Note" repeatable="true" subtype="simple"
+				         acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
+			</panel>
+		</page>
+		<page>
+			<name language="eng">Behaviors</name>
+			<panel>
+				<name>UFDC Membership and Appearance Values</name>
+				<element type="Visibility" />
+				<element type="Dark_Flag" />
+				<element type="Aggregations" />
+				<element type="WebSkin" repeatable="true" />
+			</panel>
+			<panel>
+				<name language="eng">Wordmarks for web page</name>
+				<element type="Wordmark" repeatable="true"/>
+			</panel>
+			<panel>
+				<name>Viewers for this resource in UFDC</name>
+				<element type="Viewer" repeatable="true"/>
+			</panel>
+			<panel>
+				<name>Physical Material Tracking</name>
+				<element type="Born_Digital" />
+				<element type="Material_Received_Date" />
+				<element type="Disposition_Advice" />
+				<element type="Tracking_Box" />
+			</panel>
+		</page>
+	</inputs>
+</input_template>
+<!-- End of input template XML -->

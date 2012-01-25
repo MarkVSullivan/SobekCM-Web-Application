@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+   <ShortName>SobekCM Digital Repository</ShortName>
+   <Description>SobekCM Digital Repository</Description>
+   <Tags>SobekCM</Tags>
+   <Contact>Mark.V.Sullivan@gmail.com</Contact>
+   <Url type="text/html" template="http://yoururl/search/{searchTerms}"/>
+   <LongName>yoururl</LongName>
+   <Query role="example" searchTerms="cat" />
+   <Developer>Mark Sullivan, Laurie N. Taylor</Developer>
+   <Attribution>Contributing institution.</Attribution>
+   <SyndicationRight>open</SyndicationRight>
+   <AdultContent>false</AdultContent>
+   <Language>en-us</Language>
+   <OutputEncoding>UTF-8</OutputEncoding>
+   <InputEncoding>UTF-8</InputEncoding>
+ </OpenSearchDescription>

@@ -1,0 +1,3 @@
+These XML files can be used in lieau of connecting to the database.
+
+These are used when reading the MARC XML files into a bib package.

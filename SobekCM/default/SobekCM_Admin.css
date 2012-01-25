@@ -1,0 +1,139 @@
+/* Style sheet for administrative functions of SobekCM */
+
+
+.SobekAdminTitle
+{
+	color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; 
+}
+
+.SobekAdminActionLink
+{
+	color:Gray; 
+}
+
+.add_new_link { color: Black; font-size: 0.9em; vertical-align:baseline;  }
+.add_new_link a:link { color: Black; text-decoration:none; vertical-align: baseline; }
+.add_new_link a:visited { color: Black; text-decoration:none; }
+.add_new_link a:hover { color: Blue; text-decoration:underline; }
+
+
+/* Generic styles used by all the pop-up forms and pop-up form element */
+.form_linkline  { color: Blue; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_empty  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_focused  { color: #0000a8; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_empty_focused  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; }
+.popup_title a { color: White; text-decoration: none; font-weight: bold; }
+.popup_table { padding-left: 20px; margin-left: 20px; }
+.admin_existing_code_line { width: 220px;  }
+
+
+.admin_interface_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_interface_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:215px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_interface_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_interface_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_interface_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_interface_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_interface_checkbox { padding-top: 10px; }
+
+
+
+.admin_forwarding_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_forwarding_popup_div { position:absolute; background-color:#eeeeee; width:400px; height:160px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_forwarding_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_forwarding_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.admin_heading_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_heading_popup_div { position:absolute; background-color:#eeeeee; width:550px; height:140px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_heading_input  {  color:Blue;  width: 360px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_heading_input_focused  {  color:#0000a8;  width: 360px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.admin_portal_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_portal_popup_div { position:absolute; background-color:#eeeeee; width:590px; height:300px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_portal_input  {  color:Blue; width: 300px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_portal_input_focused  {  color:#0000a8; width: 300px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+.admin_wordmark_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_wordmark_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:215px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_wordmark_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_wordmark_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_wordmark_medium_input  {  color:Blue;  width: 250px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_wordmark_medium_input_focused  {  color:#0000a8;  width: 250px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_wordmark_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_wordmark_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.admin_user_checkbox { margin-top: 10px; margin-left: 43px; }
+select.admin_user_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+.admin_project_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_project_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:165px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_project_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_project_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_project_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_project_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.admin_project_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+.admin_aggr_label2 { padding-top: 8px;}
+.admin_aggr_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_aggr_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:260px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+input.admin_aggr_small_input  {  color:Blue;  width: 120px; margin-right: 40px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_aggr_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 40px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_aggr_medium_input  {  color:Blue;  width: 300px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_aggr_medium_input_focused  {  color:#0000a8;  width: 300px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_aggr_large_input  {  color:Blue;  width: 466px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_aggr_large_input_focused  {  color:#0000a8;  width: 466px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.admin_aggr_select { color:Blue; width: 155px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 38px; }
+select.admin_aggr_select2 { color:Blue; width: 140px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 8px; }
+select.admin_aggr_select_large { color:Blue; width: 470px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 16px; }
+textarea.admin_aggr_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
+textarea.admin_aggr_focused  {  color:Blue;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small;}
+
+
+input.admin_ip_small_input  {  color:Blue;  width: 110px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_ip_small_input_focused  {  color:#0000a8;  width: 110px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_ip_medium_input  {  color:Blue;  width: 230px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_ip_medium_input_focused  {  color:#0000a8;  width: 230px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_ip_large_input  {  color:Blue;  width: 466px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_ip_large_input_focused  {  color:#0000a8;  width: 466px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+textarea.admin_ip_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
+textarea.admin_ip_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small;}
+
+input.admin_small_input  {  color:Blue;  width: 170px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_small_input_focused  {  color:#0000a8;  width: 170px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_large_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_large_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+select.admin_builder_select { color:Blue; width: 210px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 20px; }
+
+input.users_code_input  {  color:Blue;  width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.users_code_input_focused  {  color:#0000a8;  width: 130px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.users_large_input  {  color:Blue;  width: 400px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.users_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.admin_settings_input  {  color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.admin_settings_input_focused  {  color:#0000a8; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.admin_settings_select { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+.hidden_progress 
+{ 
+	padding: 0px;
+	width: 32px;
+	height: 32px;
+}
+
+
+.shown_progress
+{ 
+	background-image: url( http://128.227.223.117/UFDC/default/images/spinner.gif );
+	cursor: wait;
+	padding: 0px;
+	width: 32px;
+	height: 32px;
+}

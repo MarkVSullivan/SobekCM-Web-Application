@@ -1,0 +1,52 @@
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\obj\Debug\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\obj\Debug\SobekCM.Tools.Properties.Resources.resources
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\obj\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\obj\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\obj\Debug\GenerateResource.read.1.tlog
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\SobekCM_Tools.XML
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\SobekCM_Tools.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\SobekCM_Tools.pdb
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package.pdb
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package.xml
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\obj\Debug\SobekCM.Tools.Properties.Resources.resources
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\obj\Debug\SobekCM_Tools.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Tools\obj\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\SobekCM_Tools.XML
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package.dll
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package.pdb
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package.xml
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\obj\Debug\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\obj\Debug\SobekCM.Tools.Properties.Resources.resources
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\obj\Debug\GenerateResource.read.1.tlog
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\obj\Debug\GenerateResource.write.1.tlog
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\obj\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\sobekcm\SobekCM_Tools\obj\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Tools\bin\Debug\SobekCM_Tools.XML
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\SobekCM_Tools.XML
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\obj\Debug\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\obj\Debug\SobekCM.Tools.Properties.Resources.resources
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\obj\Debug\GenerateResource.read.1.tlog
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\obj\Debug\GenerateResource.write.1.tlog
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\obj\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Tools\obj\Debug\SobekCM_Tools.pdb

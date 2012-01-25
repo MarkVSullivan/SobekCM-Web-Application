@@ -1,0 +1,207 @@
+body 
+{
+	background-color: #121212;
+	background-image: none;
+}
+
+#GnuBook {
+ border:1px solid #262626;
+ font-family: helvetica, verdana, sans-serif;
+ font-size: 10px;
+ color: #adadad;
+}
+
+a {
+	color: #fff;
+}
+
+#GBheader {
+    height: 27px;
+    width: 100%;
+	vertical-align:middle;
+	text-align: center;
+}
+
+.GBtitle 
+{
+	margin-top: 3px;
+    vertical-align: baseline;
+    font-size: 11px;
+	color: #fff;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+    text-align: center;
+    line-height: 1.8em;
+}
+
+#GBtoolbarLink {
+    clear: both;
+    height:25px;
+    background-color: #1d1d1d;
+    /* padding: 0px 6px 6px; */
+		float:right;
+		width:135px;
+		text-align:right;
+		overflow:hidden;
+		margin-top:2px;
+}
+#GBtoolbarLink2 {
+		float:left;
+		text-align:left;
+		width:145px;
+		margin-top:2px;
+}
+
+#GBtoolbar {
+    height:25px;
+    background-color: #1d1d1d;
+    padding: 5px 6px 2px 6px ;
+		overflow:hidden;
+}
+
+#GBtoolbarbuttons {
+    height:25px;
+		margin-left: 120px;
+		margin-right: 120px;
+		padding:0;
+		text-align:center;
+}
+*html #GBtoolbarbuttons {height:1%;}
+/*#GBtoolbarLink, #GBtoolbarLink2, #GBtoolbarbuttons {padding-bottom:32767px; margin-bottom:-32767px;vertical-align:middle;}*/
+
+#GBtoolbar .label {
+    font-size: 0.9em;
+}
+
+#GBcontainer {
+    /* height:95%; */
+    top:66px;
+	left: 10px;
+    bottom:0px;
+    width:99%;
+    overflow-x:auto;
+    overflow-y:scroll;    
+    /* text-align: center; */
+    position:absolute;
+}
+/* ie6 fix for image container */
+*html #GBcontainer {
+	top:95px;
+	left:0;
+	overflow-y: hidden !important; 
+}
+#GBpageview {
+    background-color: #121212;
+}
+
+.GBpagediv1up {
+    background-color: #121212;
+    overflow:hidden;
+    border-right: 2px solid #121212;
+    border-bottom: 2px solid #121212;
+    border-left: 1px solid #121212;
+    border-top: 1px solid #121212;
+    cursor: move;
+}
+/* ie6 fix for drag cursor */
+*html .GBpagediv1up {
+    cursor: auto;
+}
+
+.GBpagediv2up {
+    background-color: rgb(0, 0, 0);
+    overflow:hidden;
+}
+
+.GBpageform {
+    display: inline;
+    margin-left:20px;
+		vertical-align:middle;
+		float:none;
+}
+.GBpageform * {
+vertical-align:middle;
+}
+
+
+#GBpagenum {
+    height: 20px;
+    width: 34px;
+    padding: 3px 3px 4px 3px;
+    margin: 0 0 0 5px;
+    font-size: 10px;
+    background: transparent url(images/bookturner/pageNumBg.gif) no-repeat;
+    border: none;
+}
+
+.GBicon {
+    width: 19px;
+    height: 19px;
+    padding: 0px;
+    vertical-align: middle;
+    border: none;
+}
+
+.GBicon.two_page_mode, .GBicon.one_page_mode, .GBicon.cover_mode {
+    width: 42px;
+    height: 21px;
+    padding: 0px;
+    vertical-align: middle;
+    border: none;
+}
+
+.GBicon.book_link {
+    width: 125px;
+    height: 19px;
+    padding: 0px;
+    vertical-align: middle;
+    border: none;
+}
+
+.GBicon.logo { float: left; width: 206px; height: 27px; background: url(images/bookturner/ufgas.png) no-repeat; margin-right:15px; }
+.GBicon.ufdc { float: right; width: 239px; height: 27px; background: url(images/bookturner/ufdc.png) no-repeat; margin-right:10px; }
+
+.GBicon.zoom_out { width: 23px; background: url(images/bookturner/zoomout.png) no-repeat; margin-left:5px; }
+.GBicon.zoom_in { width: 23px; background: url(images/bookturner/zoomin.png) no-repeat; margin-left:1px; margin-right:7px; }
+
+.GBicon.book_link { background: url(images/bookturner/return.png) no-repeat; margin-right:5px; float:right;}
+.GBicon.cover_mode { background: url(images/bookturner/cover_mode_icon.png) no-repeat;}
+.GBicon.two_page_mode { background: url(images/bookturner/two_page_mode_icon.png) no-repeat; }
+.GBicon.one_page_mode { background: url(images/bookturner/one_page_mode_icon.png) no-repeat; margin-right:10px; }
+
+.GBicon.book_left {  width: 68px; background: url(images/bookturner/previous2.png) no-repeat; }
+.GBicon.book_right { width: 68px; background: url(images/bookturner/next2.png) no-repeat; margin-left:1px; }
+.GBicon.book_leftmost { width: 68px; background: url(images/bookturner/first2.png) no-repeat; margin-right:6px; }
+.GBicon.book_rightmost { width: 68px; background: url(images/bookturner/last2.png) no-repeat; margin-left:6px; }
+
+.GBicon.rollover:hover { background-position: 0 -19px; }
+/* fixed to work in ie6 */
+#GBtoolbarLink a.GBicon.rollover.book_link:hover { background-position: 0 -19px; }
+
+
+/* Special logic for the logo, which is an actual link */
+a.GBicon {
+    display:inline-block;
+    text-decoration: none;
+    border: none;
+}
+
+/* thumnbail view, from Rebecca's demo */
+.GBpdstatus-footer {
+    position:absolute;
+    height: 65px;
+    bottom: 25px;
+    width: 100%;
+    background-color: #f8f8f8;
+    border-top: 1px solid #ccc; 
+    text-align: right; 
+    padding: 0px 0px 0px 0px; 
+}
+
+.GBwidgetlabel { 
+    color: #919070; 
+    padding: 8px 8px 4px 8px; 
+    font-family: verdana, arial, helvetica, sans-serif; 
+    font-size: 10px; 
+    float: left; 
+}

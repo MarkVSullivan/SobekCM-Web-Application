@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SobekCM_URL_Rewriter</name>
+    </assembly>
+    <members>
+        <member name="T:SobekCM.URL_Rewriter.Rewriter">
+            <summary> Rewrites the URL to remove the ugly query string context in many cases  </summary>
+            <remarks> This extends the IHttpModule class.  This allows for the query string to be constructed
+            from the longer URL, providing cleaner URLs with less visible query strings.  This class would take an incoming URL 
+            like http://ufdc.ufl.edu/UF00012345/00002/2j and do an internal rewrite so that within the application the URL is
+            actually http://ufdc.ufl.edu/sobekcm.aspx?urlquery=UF00012345/00002/2j&amp;portal=ufdc.ufl.edu.</remarks>
+        </member>
+        <member name="M:SobekCM.URL_Rewriter.Rewriter.Dispose">
+            <summary> Dispose of this class  </summary>
+        </member>
+        <member name="M:SobekCM.URL_Rewriter.Rewriter.Init(System.Web.HttpApplication)">
+            <summary> Initialize this class </summary>
+            <param name="context"></param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- Begin the XML for this input template -->
+<input_template
+  xmlns="http://digital.uflib.ufl.edu/metadata/sobekcm_template/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://digital.uflib.ufl.edu/metadata/sobekcm_template/
+		http://digital.uflib.ufl.edu/metadata/sobekcm_template/sobekcm_template.xsd">
+
+	<!-- Define the information about this input template -->
+	<name>Behaviors Template</name>
+	<notes>Template contains only the behaviors for an item, and will not result in a change in the metadatqa for an item</notes>
+	<dateCreated>December 12, 2010</dateCreated>
+	<lastModified>December 12, 2010</lastModified>
+	<creator>Mark V Sullivan</creator>
+
+	<!-- This defines the inputs which are available for the user -->
+	<inputs>
+		<page>
+			<name language="eng">Behaviors</name>
+			<panel>
+				<name>Basic Information</name>
+				<element type="Tickler" />
+				<element type="Bib" mandatory="true" readonly="true" />
+				<element type="VID" mandatory="true" readonly="true" />
+				<element type="Thumbnail" repeatable="false" />
+				<element type="SerialHierarchy" subtype="panel" />
+				<element type="Dark_Flag" />
+			</panel>
+			<panel>
+				<name>Physical Material</name>
+				<element type="Born_Digital" />
+				<element type="Tracking_Box" />
+				<element type="Disposition_Advice" />
+			</panel>
+			<panel>
+				<name>Membership</name>
+				<element type="Aggregations" />
+				<element type="Source" subtype="complex" />
+				<element type="Holding" subtype="complex" />
+			</panel>
+			<panel>
+				<name language="eng">Wordmarks for web page</name>
+				<element type="Icon" repeatable="true" />
+			</panel>
+			<panel>
+				<name>Viewers for this resource</name>
+				<element type="Viewer"  repeatable="true" />
+			</panel>
+		</page>
+	</inputs>
+</input_template>
+<!-- End of input template XML -->

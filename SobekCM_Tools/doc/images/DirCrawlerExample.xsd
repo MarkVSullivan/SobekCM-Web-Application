@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DirectoryIterator" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="DirectoryIterator" msdata:IsDataSet="true">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Directories">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Key" msdata:DataType="System.Number, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" type="xs:string" minOccurs="0" />
+              <xs:element name="Reference" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Files">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Extension" type="xs:string" minOccurs="0" />
+              <xs:element name="DirKey" msdata:DataType="System.Number, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" type="xs:string" minOccurs="0" />
+              <xs:element name="Size" msdata:DataType="System.Number, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" type="xs:string" minOccurs="0" />
+              <xs:element name="Created" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Modified" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="UserDefined" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1">
+      <xs:selector xpath=".//Directories" />
+      <xs:field xpath="Key" />
+    </xs:unique>
+    <xs:keyref name="DirFileRelation" refer="Constraint1">
+      <xs:selector xpath=".//Files" />
+      <xs:field xpath="DirKey" />
+    </xs:keyref>
+  </xs:element>
+</xs:schema>
