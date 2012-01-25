@@ -1,0 +1,14 @@
+﻿.upHiddenDynamic
+{
+	display: none;
+}
+
+.upShowDynamic
+{
+	display: inline;
+}
+
+.upFileNormal
+{
+	width: 230px;
+}

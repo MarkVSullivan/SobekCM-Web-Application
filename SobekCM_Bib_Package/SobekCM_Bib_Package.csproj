@@ -1,0 +1,403 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{395C2621-CE19-41E0-AA1A-ABDB37F6E815}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>SobekCM_Bib_Package_3_0_3</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SobekCM.Bib_Package</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\SobekCM_Bib_Package_3_0_3.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\SobekCM_Bib_Package_3_0_3.xml</DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\UFDC_Bib_Package.XML</DocumentationFile>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>UFDC_Bib_Package.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="SolrNet, Version=0.3.0.0, Culture=neutral, PublicKeyToken=bc21753e8aa334cb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Builder\Bib_Package_Builder.cs" />
+    <Compile Include="Database\DataSets\UFDC_All_Items.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Event_Delegates.cs" />
+    <Compile Include="Image_Derivative_Creation_Processor.cs" />
+    <Compile Include="MARC\MARC21_Exchange_Format_Parser.cs" />
+    <Compile Include="MARC\MARC_Subfield.cs" />
+    <Compile Include="OAI\OAI_Repository_DublinCore_Record.cs" />
+    <Compile Include="OAI\OAI_Repository_Information.cs" />
+    <Compile Include="OAI\OAI_Repository_Records_List.cs" />
+    <Compile Include="OAI\OAI_Repository_Stream_Reader.cs" />
+    <Compile Include="Package\Bib_Info\Coordinate_Line.cs" />
+    <Compile Include="Package\Bib_Info\Coordinate_Point.cs" />
+    <Compile Include="Package\Bib_Info\Coordinate_Polygon.cs" />
+    <Compile Include="Package\Bib_Info\Publisher_Info.cs" />
+    <Compile Include="Package\Divisions\FileSHA1.cs" />
+    <Compile Include="Package\EAD\Component_Info.cs" />
+    <Compile Include="Package\EAD\Descriptive_Identification.cs" />
+    <Compile Include="Package\EAD\Description_of_Subordinate_Components.cs" />
+    <Compile Include="Package\EAD\EAD_Info.cs" />
+    <Compile Include="Package\EAD\EAD_TOC_Included_Section.cs" />
+    <Compile Include="Package\EAD\Parent_Container_Info.cs" />
+    <Compile Include="Package\MODS_Info\Classification_Info.cs" />
+    <Compile Include="Package\MODS_Info\Genre_Info.cs" />
+    <Compile Include="Package\MODS_Info\Origin_Info_Issuance_Enum.cs" />
+    <Compile Include="Package\MODS_Info\PhysicalDescription_Form_Info.cs" />
+    <Compile Include="Package\MODS_Info\Record_Info.cs" />
+    <Compile Include="Package\MODS_Info\Related_Item_Info.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Standard_Base.cs" />
+    <Compile Include="Package\Bib_Info\Finding_Guide_Container.cs" />
+    <Compile Include="Package\SobekCM_Info\Aggregation_Info.cs" />
+    <Compile Include="Package\SobekCM_Info\Wordmark_Info.cs" />
+    <Compile Include="Package\SobekCM_Info\Main_Page_Info.cs" />
+    <Compile Include="Package\SobekCM_Info\Descriptive_Tag.cs" />
+    <Compile Include="Package\SobekCM_Info\Related_Titles.cs" />
+    <Compile Include="Package\Thesis_Dissertation_Info.cs" />
+    <Compile Include="Package\Tracking\Tracking_ArchiveMedia.cs" />
+    <Compile Include="Package\Tracking\Tracking_Progress.cs" />
+    <Compile Include="Package\Unanalyzed_METS_Section.cs" />
+    <Compile Include="Package\VRACore\VRACore_Info.cs" />
+    <Compile Include="Package\VRACore\VRACore_Materials_Info.cs" />
+    <Compile Include="Package\VRACore\VRACore_Measurement_Info.cs" />
+    <Compile Include="Package\Zoological_Taxonomy_Info.cs" />
+    <Compile Include="Package\Tracking\Tracking_Info.cs" />
+    <Compile Include="Package\SobekCM_Info\SobekCM_Web_Info.cs" />
+    <Compile Include="Package\XML_Node_Base_Type.cs" />
+    <Compile Include="Readers\Download_Info_DEPRECATED.cs" />
+    <Compile Include="Readers\EAD_Reader.cs" />
+    <Compile Include="Readers\Generic_Reader.cs" />
+    <Compile Include="Readers\MARC_XML_Reader.cs" />
+    <Compile Include="Readers\SubReaders\DAITSS_SubReader.cs" />
+    <Compile Include="Readers\SubReaders\DarwinCore_SubReader.cs" />
+    <Compile Include="Readers\SubReaders\Dublin_Core_SubReader.cs" />
+    <Compile Include="Readers\SubReaders\MarcXML_SubReader.cs" />
+    <Compile Include="Readers\SubReaders\MODS_SubReader.cs" />
+    <Compile Include="Readers\SubReaders\SobekCM_SubReader.cs" />
+    <Compile Include="Readers\SubReaders\Thesis_Dissertation_Reader.cs" />
+    <Compile Include="Solr\SolrDocument.cs" />
+    <Compile Include="Solr\SolrPage.cs" />
+    <Compile Include="Testing\Test_Bib_Package.cs" />
+    <Compile Include="Tools\Archive_Info_FileBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\SobekCM_Info\View_Enum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\SobekCM_Info\View_Object.cs" />
+    <Compile Include="Package\Bibliographic_Mapping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\MODS_Info\Part_Info.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Info.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Info_Cartographics.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Info_HierarchicalGeographic.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Info_Name.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Info_Standard.cs" />
+    <Compile Include="Package\MODS_Info\Subject_Info_TitleInfo.cs" />
+    <Compile Include="Package\MODS_Info\Location_Info.cs" />
+    <Compile Include="Package\MODS_Info\TargetAudience_Info.cs" />
+    <Compile Include="Package\MODS_Info\Title_Info.cs" />
+    <Compile Include="Package\MODS_Info\Abstract_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\MODS_Info\AccessCondition_Info.cs" />
+    <Compile Include="Package\Bib_Info\Affiliation_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Bib_Info\Bibliographic_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Bib_Info\Coordinates.cs" />
+    <Compile Include="Package\MODS_Info\Identifier_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\MODS_Info\Language_Info.cs" />
+    <Compile Include="Package\MODS_Info\MODS_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\MODS_Info\Name_Info.cs" />
+    <Compile Include="Package\MODS_Info\Note_Info.cs" />
+    <Compile Include="Package\MODS_Info\Origin_Info.cs" />
+    <Compile Include="Package\MODS_Info\PhysicalDescription_Info.cs" />
+    <Compile Include="Package\Bib_Info\Source_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Bib_Info\Temporal_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\MODS_Info\TypeOfResource_Info.cs" />
+    <Compile Include="Readers\METS_Reader.cs" />
+    <Compile Include="Package\XML_Writing_Base_Type.cs" />
+    <Compile Include="Builder\Builder_General_Convert_Mill.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Builder\Builder_Page_File.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Builder\Builder_Page_File_Collection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Builder\Builder_SplitFileName.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\abstract_TreeNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\Division_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\Division_Tree.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\Division_TreeNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\FileMD5.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\SobekCM_File_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Divisions\Page_TreeNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tools\GSA_to_Text.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Maps\Map_Corporation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Maps\Map_Index.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Maps\Map_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Maps\Map_Info_Tables.cs">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Package\Maps\Map_Person.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Maps\Map_Sheet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MARC\MARC_Field.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MARC\MARC_Record.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\METS_Validator_Object.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\SobekCM_Item.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\DAITSS_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\METS_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Oral_Interview_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\PALMM_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Performing_Arts_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\Serial_Info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Readers\INFO_Reader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Readers\MXF_Reader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Readers\SGML_Reader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Package\SobekCM_METS_Validator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SobekCM_Item_Validator.cs" />
+    <Compile Include="UFDC_METS_Finder.cs" />
+    <Compile Include="Writers\Dublin_Core_Writer.cs" />
+    <Compile Include="Writers\MODS_Writer.cs" />
+    <Compile Include="Writers\SubWriters\DAITSS_SubWriter.cs" />
+    <Compile Include="Writers\SubWriters\DarwinCore_SubWriter.cs" />
+    <Compile Include="Writers\SubWriters\Dublin_Core_SubWriter.cs" />
+    <Compile Include="Writers\GSA_Writer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Writers\MARC_Writer.cs" />
+    <Compile Include="Writers\METS_Writer.cs" />
+    <Compile Include="Database\SobekCM_Database.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Writers\SubWriters\MarcXML_SubWriter.cs" />
+    <Compile Include="Writers\SubWriters\MODS_SubWriter.cs" />
+    <Compile Include="Writers\OAI_Writer.cs" />
+    <Compile Include="Writers\SubWriters\SobekCM_Behaviors_SubWriter.cs" />
+    <Compile Include="Writers\SubWriters\SobekCM_Map_SubWriter.cs" />
+    <Compile Include="Writers\SubWriters\SobekCM_Metadata_SubWriter.cs" />
+    <Compile Include="Writers\SubWriters\Thesis_Dissertation_SubWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

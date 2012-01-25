@@ -1,0 +1,12 @@
+C:\inetpub\wwwroot\UFDC Web\SobekCM_URL_Rewriter\bin\Release\SobekCM_URL_Rewriter.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_URL_Rewriter\bin\Release\SobekCM_URL_Rewriter.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_URL_Rewriter\obj\Release\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC Web\SobekCM_URL_Rewriter\obj\Release\SobekCM_URL_Rewriter.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_URL_Rewriter\obj\Release\SobekCM_URL_Rewriter.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_URL_Rewriter\bin\Release\SobekCM_URL_Rewriter.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_URL_Rewriter\bin\Release\SobekCM_URL_Rewriter.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_URL_Rewriter\bin\Release\SobekCM_URL_Rewriter.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_URL_Rewriter\bin\Release\SobekCM_URL_Rewriter.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_URL_Rewriter\obj\Release\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC\SobekCM_URL_Rewriter\obj\Release\SobekCM_URL_Rewriter.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_URL_Rewriter\obj\Release\SobekCM_URL_Rewriter.pdb

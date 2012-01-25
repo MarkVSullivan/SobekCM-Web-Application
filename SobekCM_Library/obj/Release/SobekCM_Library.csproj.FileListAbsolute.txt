@@ -1,0 +1,45 @@
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Library.XML
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Library.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\FileUploadLibrary.xml
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Tools.xml
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Release\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Release\SobekCM_Library.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Release\SobekCM_Library.pdb
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Library.XML
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Library.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Library.pdb
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\FileUploadLibrary.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\Microsoft.ApplicationBlocks.Data.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Bib_Package.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Tools.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\FileUploadLibrary.pdb
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\FileUploadLibrary.xml
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Bib_Package.xml
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Release\SobekCM_Tools.xml
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\obj\Release\ResolveAssemblyReference.cache
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\obj\Release\SobekCM_Library.dll
+C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\obj\Release\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Bib_Package_3_0_3.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Release\SobekCM_Bib_Package_3_0_3.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Library.XML
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Library.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\Microsoft.ApplicationServer.Caching.Client.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\Microsoft.ApplicationServer.Caching.Core.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\Microsoft.Practices.ServiceLocation.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Bib_Package_3_0_3.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\FileUploadLibrary.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Bib_Package_3_0_3.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Release\SobekCM_Tools.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Release\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Release\SobekCM_Library.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Release\SobekCM_Library.pdb

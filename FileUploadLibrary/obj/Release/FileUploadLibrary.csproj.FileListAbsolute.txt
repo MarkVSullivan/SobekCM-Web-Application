@@ -1,0 +1,36 @@
+C:\Version 2.9.9\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.XML
+C:\Version 2.9.9\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.dll
+C:\Version 2.9.9\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.pdb
+C:\Version 2.9.9\Code\FileUploadLibrary\obj\Release\ResolveAssemblyReference.cache
+C:\Version 2.9.9\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.dll
+C:\Version 2.9.9\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.pdb
+C:\Version 2.9.10\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.XML
+C:\Version 2.9.10\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.dll
+C:\Version 2.9.10\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.pdb
+C:\Version 2.9.10\Code\FileUploadLibrary\obj\Release\ResolveAssemblyReference.cache
+C:\Version 2.9.10\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.dll
+C:\Version 2.9.10\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.pdb
+C:\Version 2.9.11\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.XML
+C:\Version 2.9.11\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.dll
+C:\Version 2.9.11\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.pdb
+C:\Version 2.9.11\Code\FileUploadLibrary\obj\Release\ResolveAssemblyReference.cache
+C:\Version 2.9.11\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.dll
+C:\Version 2.9.11\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.pdb
+C:\Version 3.0.0\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.XML
+C:\Version 3.0.0\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.dll
+C:\Version 3.0.0\Code\FileUploadLibrary\bin\Release\FileUploadLibrary.pdb
+C:\Version 3.0.0\Code\FileUploadLibrary\obj\Release\ResolveAssemblyReference.cache
+C:\Version 3.0.0\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.dll
+C:\Version 3.0.0\Code\FileUploadLibrary\obj\Release\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\Release\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\Release\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Release\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Release\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Release\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\Release\FileUploadLibrary.XML
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Release\FileUploadLibrary.XML
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Release\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Release\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Release\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Release\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Release\FileUploadLibrary.pdb

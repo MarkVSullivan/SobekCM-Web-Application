@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LastOpenVersion>7.10.3077</LastOpenVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ReferencePath>C:\Documents and Settings\MarSull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.0.0\DLLs\;C:\Program Files\Microsoft Application Blocks for .NET\Data Access v2\Code\CS\Microsoft.ApplicationBlocks.Data\bin\Release\;C:\Documents and Settings\Mark\Desktop\THIS WEEKEND\DLC Quality Control Suite\QC Application\Version 3.2.1\DLLs\;C:\Documents and Settings\Mark\Desktop\DLC Quality Control Suite\Version 3.3\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\NEW\DLC Quality Control Suite\Version 3.3\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC Quality Control Suite\Version 3.3.5\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC Quality Control Suite\Version 3.3.6\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\Version 3.3.6\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\Version 3.3.7\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC Quality Control Suite\Version 3.3.7\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC Quality Control Suite\Version 3.3.8\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC Quality Control Suite\Version 3.3.9\Class Libraries\DLC_GeneralTools\DLLs\;C:\Documents and Settings\Mark\Desktop\LANSING\DLC MetaTemplate\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC MetaTemplate\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLC MetaTemplate\Base\Version 0.0.9\DLC_GeneralTools\DLLs\;C:\Documents and Settings\Mark Sullivan\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.0.0\DLC_GeneralTools\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.0.0\DLC_GeneralTools\DLLs\;C:\Documents and Settings\Mark\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.0.0\DLLs\;C:\Documents and Settings\MarSull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.0\DLLs\;C:\Documents and Settings\Mark\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.0\DLLs\;C:\Documents and Settings\marsull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.2\DLLs\;C:\Documents and Settings\marsull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.31\DLLs\;C:\Documents and Settings\marsull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.40\DLLs\;C:\Documents and Settings\marsull\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.48\DLLs\;C:\Documents and Settings\Mark\Desktop\DLOC TOOLKIT STUFF\dLOC Toolkit\Version 0.9.48\DLLs\;C:\Documents and Settings\marsull\Desktop\DLOC TOOLKIT STUFF\DLC dLOC Toolkit\Version 0.9.65\Code\DLLs\;C:\Documents and Settings\Mark\Desktop\Code\DLLs\;C:\Documents and Settings\marsull\Desktop\DLOC TOOLKIT STUFF\DLC dLOC Toolkit\Version 1.0.0\Code\DLLs\;C:\Documents and Settings\marsull\Desktop\Code\DLLs\;C:\Documents and Settings\marsull\Desktop\DLC dLOC Toolkit\Version 1.0.1\Code\DLLs\;C:\Documents and Settings\marsull\Desktop\DLC METS Viewer\DLLs\;C:\Documents and Settings\marsull\Desktop\DLC METS Viewer\Version 1.0.3\DLLs\;C:\Documents and Settings\marsull\Desktop\DLC METS Viewer\Version 1.0.4\DLLs\</ReferencePath>
+    <CopyProjectDestinationFolder>
+    </CopyProjectDestinationFolder>
+    <CopyProjectUncPath>
+    </CopyProjectUncPath>
+    <CopyProjectOption>0</CopyProjectOption>
+    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectTrust>0</ProjectTrust>
+    <PublishUrlHistory />
+    <InstallUrlHistory />
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <EnableASPDebugging>false</EnableASPDebugging>
+    <EnableASPXDebugging>false</EnableASPXDebugging>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
+    <RemoteDebugMachine>
+    </RemoteDebugMachine>
+    <StartAction>Project</StartAction>
+    <StartArguments>
+    </StartArguments>
+    <StartPage>
+    </StartPage>
+    <StartProgram>
+    </StartProgram>
+    <StartURL>
+    </StartURL>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
+    <StartWithIE>false</StartWithIE>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <EnableASPDebugging>false</EnableASPDebugging>
+    <EnableASPXDebugging>false</EnableASPXDebugging>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
+    <RemoteDebugMachine>
+    </RemoteDebugMachine>
+    <StartAction>Project</StartAction>
+    <StartArguments>
+    </StartArguments>
+    <StartPage>
+    </StartPage>
+    <StartProgram>
+    </StartProgram>
+    <StartURL>
+    </StartURL>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
+    <StartWithIE>true</StartWithIE>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <StartWithIE>true</StartWithIE>
+  </PropertyGroup>
+</Project>

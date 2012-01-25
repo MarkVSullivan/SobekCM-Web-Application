@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>SobekCM Error Echo Page</title>
+</head>
+<body>
+SobekCM Error Echo Page:
+<span id="errorspan" style="font-size:larger; color:Red">&nbsp;</span>
+
+<script type="text/javascript" language="javascript">
+
+    q = location.search;
+
+    getParam = function(arg) {
+        if (q.indexOf(arg) >= 0) {
+            var pntr = q.indexOf(arg) + arg.length + 1;
+            if (q.indexOf("&", pntr) >= 0) {
+                return q.substring(pntr, q.indexOf("&", pntr));
+            } else {
+                return q.substring(pntr, q.length);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    var val = getParam("text");
+    var span = document.getElementById("errorspan");
+    if (val != null ) {
+        span.innerHTML = val;
+    }
+    else {
+        span.innerHTML = 'No specific error code passed in.';
+    }
+ 
+ 
+
+</script>
+
+
+</body>
+</html>
