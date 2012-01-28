@@ -246,7 +246,8 @@ public partial class UFDC : System.Web.UI.Page
 
     protected override void OnUnload(EventArgs e)
     {
-        SobekCM.Library.Database.SobekCM_Database.Verify_Item_Lookup_Object(true, ref Global.Item_List, null);
+        if ( HttpContext.Current.Session["Last_Exception"] == null )
+            SobekCM.Library.Database.SobekCM_Database.Verify_Item_Lookup_Object(true, ref Global.Item_List, null);
 
         base.OnUnload(e);
     }

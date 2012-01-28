@@ -17,7 +17,8 @@ namespace SobekCM.Bib_Package.Readers.SubReaders
         /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
         /// <param name="r"> XmlTextReader from which to read the marc data </param>
         /// <param name="package"> Digital resource object to save the data to </param>
-        public static void Read_MarcXML_Info(XmlTextReader r, SobekCM_Item package)
+        /// <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
+        public static void Read_MarcXML_Info(XmlTextReader r, SobekCM_Item package, bool Importing_Record )
         {
             // Create the MARC_XML_Reader to load everything into first
             MARC_Record record = new MARC_Record();
@@ -419,34 +420,35 @@ namespace SobekCM.Bib_Package.Readers.SubReaders
                 if (idValue.Length > 0)
                 {
                     package.Bib_Info.Record.Main_Record_Identifier.Identifier = idValue;
-
-
-                    if (Char.IsNumber(idValue[0]))
+                    if (Importing_Record)
                     {
-                        // Add this ALEPH number
-                        if (package.Bib_Info.ALEPH_Record != idValue)
+                        if (Char.IsNumber(idValue[0]))
                         {
-                            package.Bib_Info.Add_Identifier(idValue, "ALEPH");
-                        }
-                        package.Bib_Info.Record.Record_Origin = "Imported from (ALEPH)" + idValue;
-                    }
-                    else
-                    {
-                        if (idValue.Length >= 7)
-                        {
-                            if ((idValue.IndexOf("ocm") == 0) || (idValue.IndexOf("ocn") == 0))
+                            // Add this ALEPH number
+                            if (package.Bib_Info.ALEPH_Record != idValue)
                             {
-                                oclc = idValue.Replace("ocn", "").Replace("ocm", "");
-                                if (package.Bib_Info.OCLC_Record != oclc)
-                                {
-                                    package.Bib_Info.Add_Identifier(oclc, "OCLC");
-                                }
-                                package.Bib_Info.Record.Record_Origin = "Imported from (OCLC)" + oclc;
+                                package.Bib_Info.Add_Identifier(idValue, "ALEPH");
                             }
-                            else
+                            package.Bib_Info.Record.Record_Origin = "Imported from (ALEPH)" + idValue;
+                        }
+                        else
+                        {
+                            if (idValue.Length >= 7)
                             {
-                                package.Bib_Info.Add_Identifier(idValue.Substring(0, 7), "NOTIS");
-                                package.Bib_Info.Record.Record_Origin = "Imported from (NOTIS)" + idValue.Substring(0, 7);
+                                if ((idValue.IndexOf("ocm") == 0) || (idValue.IndexOf("ocn") == 0))
+                                {
+                                    oclc = idValue.Replace("ocn", "").Replace("ocm", "");
+                                    if (package.Bib_Info.OCLC_Record != oclc)
+                                    {
+                                        package.Bib_Info.Add_Identifier(oclc, "OCLC");
+                                    }
+                                    package.Bib_Info.Record.Record_Origin = "Imported from (OCLC)" + oclc;
+                                }
+                                else
+                                {
+                                    package.Bib_Info.Add_Identifier(idValue.Substring(0, 7), "NOTIS");
+                                    package.Bib_Info.Record.Record_Origin = "Imported from (NOTIS)" + idValue.Substring(0, 7);
+                                }
                             }
                         }
                     }

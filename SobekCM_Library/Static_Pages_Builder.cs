@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -106,8 +105,7 @@ namespace SobekCM.Library
             marcWriter = new MARC_Writer();
 
             // Get the list of all items
-            string connection_string = "data source=" + ConfigurationManager.AppSettings["Database_Source"] + ";initial catalog=" + ConfigurationManager.AppSettings["Database_Name"] + ";integrated security=Yes;";
-            SobekCM_Database.Connection_String = connection_string;
+            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String; ;
 
             // Build all the objects needed by the UFDC Library
             iconList = new Dictionary<string, Wordmark_Icon>();
@@ -142,9 +140,9 @@ namespace SobekCM.Library
             ufdcInterface = new SobekCM_Skin_Object("ufdc", String.Empty, currentMode.Base_Design_URL + "skins/ufdc/ufdc.css")
                                 {
                                     Header_Item_HTML =GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/header_item.html").Replace("<%BREADCRUMBS%>","<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>","<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_Item_HTML =GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/footer_item.html").Replace("<%VERSION%>", SobekCM_Library_Settings.VERSION).Replace("src=\"" + currentMode.Base_URL + "design/","src=\"" + primaryWebServerUrl + "/design/"),
+                                    Footer_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/footer_item.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
                                     Header_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/header.html").Replace("<%BREADCRUMBS%>", "<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>","<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_HTML =GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/footer.html").Replace("<%VERSION%>", SobekCM_Library_Settings.VERSION).Replace("src=\"" + currentMode.Base_URL + "design/","src=\"" + primaryWebServerUrl + "/design/"),
+                                    Footer_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/footer.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
                                     Language_Code = "",
                                     Override_Banner = false
                                 };
@@ -153,9 +151,9 @@ namespace SobekCM.Library
             dlocInterface = new SobekCM_Skin_Object("dloc", String.Empty, currentMode.Base_Design_URL + "skins/dloc/dloc.css", "<img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "design/skins/dloc/banner.jpg\" alt=\"MISSING BANNER\" />")
                                 {
                                     Header_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/header_item.html").Replace("<%BREADCRUMBS%>", "<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>", "<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/footer_item.html").Replace("<%VERSION%>", SobekCM_Library_Settings.VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
+                                    Footer_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/footer_item.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
                                     Header_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/header.html").Replace("<%BREADCRUMBS%>", "<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>", "<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/footer.html").Replace("<%VERSION%>", SobekCM_Library_Settings.VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
+                                    Footer_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/footer.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
                                     Language_Code = "",
                                     Override_Banner = false
                                 };

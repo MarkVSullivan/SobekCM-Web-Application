@@ -18,7 +18,10 @@ namespace SobekCM.Library
     public class SobekCM_Library_Settings
     {
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        public const string VERSION = "3.0.3b";
+        public const string CURRENT_WEB_VERSION = "3.04";
+
+        /// <summary> Current version number associated with this SobekCM builder application </summary>
+        public const string CURRENT_BUILDER_VERSION = "3.04";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -51,6 +54,8 @@ namespace SobekCM.Library
         private static string oaiRepositoryIdentifier;
         private static string oaiRepositoryName;
         private static string ocrCommandPrompt;
+        private static string imageMagickExecutable;
+        private static string ghostscriptExecutable;
         private static bool statisticsCachingEnabled;
         private static bool allowPageImageFileManagement;
         private static bool includeTreeviewOnSystemHome;
@@ -81,12 +86,16 @@ namespace SobekCM.Library
         private static List<string> searchStopWords;
         private static readonly Object thisLock = new Object();
 
+        public static readonly bool Verify_CheckSum = true;
+        private static SobekCM_Database_Type_Enum sobekDatabaseType;
+
         /// <summary> Static constructor sets all the values to default empty strings </summary>
         static SobekCM_Library_Settings()
         {
             try
             {
                 // Set some default values
+                sobekDatabaseType = SobekCM_Database_Type_Enum.MSSQL;
                 Base_SobekCM_Location_Relative = String.Empty;
                 jpeg2000Server = String.Empty;
                 base_url = String.Empty;
@@ -119,6 +128,7 @@ namespace SobekCM.Library
                 {
                     Read_Configuration_File();
                 }
+                SobekCM_Database.Connection_String = Database_Connection_String;
                 Refresh(SobekCM_Database.Get_Settings_Complete(null));
             }
             catch (Exception)
@@ -127,10 +137,16 @@ namespace SobekCM.Library
             }
         }
 
-        public static void Read_Configuration_File(  )
+        public static void Read_Configuration_File()
         {
             baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            System.IO.StreamReader reader = new System.IO.StreamReader(baseDirectory + "\\config\\sobekcm.config");
+            Read_Configuration_File(baseDirectory + "\\config\\sobekcm.config");
+        }
+
+        public static void Read_Configuration_File( string config_file )
+        {
+
+            System.IO.StreamReader reader = new System.IO.StreamReader(config_file);
             System.Xml.XmlTextReader xmlReader = new System.Xml.XmlTextReader(reader);
             while (xmlReader.Read())
             {
@@ -140,6 +156,12 @@ namespace SobekCM.Library
                     switch (node_name)
                     {
                         case "connection_string":
+                            if (xmlReader.MoveToAttribute("type"))
+                            {
+                                if (xmlReader.Value.ToString().ToLower() == "postgresql")
+                                    sobekDatabaseType = SobekCM_Database_Type_Enum.PostgreSQL;
+
+                            }
                             xmlReader.Read();
                             Database_Connection_String = xmlReader.Value;
                             break;
@@ -153,9 +175,22 @@ namespace SobekCM.Library
                             xmlReader.Read();
                             System_Error_URL = xmlReader.Value;
                             break;
+
+                        case "ghostscript_executable":
+                            xmlReader.Read();
+                            ghostscriptExecutable = xmlReader.Value;
+                            break;
+
+                        case "imagemagick_executable":
+                            xmlReader.Read();
+                            imageMagickExecutable = xmlReader.Value;
+                            break;
                     }
                 }
             }
+
+            xmlReader.Close();
+            reader.Close();
         }
 
         #region Methods to load data from the dataset
@@ -978,6 +1013,14 @@ namespace SobekCM.Library
         /// <summary> Database connection string is built from the application config file </summary>
         public static string Database_Connection_String { get; set; }
 
+        /// <summary> Database type </summary>
+        public static SobekCM_Database_Type_Enum Database_Type
+        {
+            get { return sobekDatabaseType; }
+        }
+            
+
+
         /// <summary> Base directory where the ASP.net application is running on the application server </summary>
         public static string Base_Directory
         {
@@ -1014,6 +1057,21 @@ namespace SobekCM.Library
         {
             get { return webOutputCachingMinutes; }
         }
+
+        /// <summary> ImageMagick executable file </summary>
+        public static string ImageMagick_Executable
+        {
+            get { return imageMagickExecutable; }
+            set { imageMagickExecutable = value; }
+        }
+
+        /// <summary> Ghostscript executable file </summary>
+        public static string Ghostscript_Executable
+        {
+            get { return ghostscriptExecutable; }
+            set { ghostscriptExecutable = value; }
+        }
+
 
         #region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
         

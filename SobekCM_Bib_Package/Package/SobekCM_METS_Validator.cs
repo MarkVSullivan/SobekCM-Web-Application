@@ -79,18 +79,17 @@ namespace SobekCM.Bib_Package
                 return true;
         }
 
-        /// <summary> Check the Bibliographic package agaist the UFDC METS standard</summary>
+        /// <summary> Check the Bibliographic package agaist the SobekCM METS standard</summary>
         /// <param name="bibPackagetoCheck">Package to validate</param>
-        /// <param name="validateCheckSums">Flag indicates whether to check the checksums</param>
         /// <param name="packageDir">Directory for the package</param>
-        /// <param name="Aggregation_Codes"> Aggregation codes to check against </param>
         /// <returns>TRUE is succesful, otherwise FALSE</returns>
-        public bool UFDC_Standard_Check(SobekCM_Item bibPackagetoCheck, bool validateCheckSums, string packageDir, DataTable Aggregation_Codes)
+        public bool SobekCM_Standard_Check(SobekCM_Item bibPackagetoCheck,  string packageDir )
         {
             bool returnVal = true;
             this.validationErrors = new StringBuilder();
             this.thisBibPackage = bibPackagetoCheck;
             this.packageDirName = packageDir;
+
             // check the BibID is in the right format
             if (SobekCM_Database.is_bibid_format(thisBibPackage.Bib_Info.BibID) == false)
             {
@@ -111,51 +110,12 @@ namespace SobekCM.Bib_Package
                 returnVal = false;
             }
 
-            //if (Aggregation_Codes != null)
-            //{
-            //    // check if the colleciton code is already in the SobekCM database
-            //    foreach (string thisCollection in thisBibPackage.SobekCM_Web.Aggregations)
-            //    {
-            //        DataRow[] selected2 = Aggregation_Codes.Select("collectioncode = '" + thisCollection + "'");
-            //        if (selected2.Length == 0)
-            //        {
-            //            this.validationErrors.Append("Invalid alternative collection code - " + thisCollection + "\n");
-            //            returnVal = false;
-            //        }
-            //    }
-            //}
-
             // check if the objid is the combination of BibID_VID
             if (thisBibPackage.METS.ObjectID != thisBibPackage.Bib_Info.BibID + "_" + thisBibPackage.Bib_Info.VID)
             {
                 this.validationErrors.Append(" The METS OBJID does not match its BibID and VID" + "\n");
                 returnVal = false;
             }
-
-
-            ////			// check if subcollections are valid SobekCM collections
-            ////			foreach( string thisCollection in thisBibPackage.Processing_Parameters.SubCollections)
-            ////			{
-            ////				if (SobekCM_Database.is_valid_collection(thisCollection) == false)
-            ////				{
-            ////					this.validationErrors.Append("Invalid sub-collection code - "+ thisCollection+ "\n");
-            ////					returnVal = false;
-            ////				}
-            ////			}
-
-            // check if record status is consistent with the SobekCM record
-            //bool recordExist = true;
-            //if (thisBibPackage.METS.RecordStatus == METS_Record_Status.NEW)
-            //    recordExist = false;
-            //if (recordExist != SobekCM_Database.does_item_exist(thisBibPackage.Bib_Info.BibID, thisBibPackage.Bib_Info.VID))
-            //{
-            //    this.validationErrors.Append("Record Status is not consistent with the record in SobekCM database!" + "\n");
-            //    returnVal = false;
-            //}
-
-            // check if all files exist in the package and the MD5 checksum if the checksum flag is true		
-            returnVal = returnVal && Check_Files(packageDir, validateCheckSums);
-
 
             // check if file sizes and MD5 checksums match with what indicate in the mets file 
             return returnVal;
@@ -250,10 +210,12 @@ namespace SobekCM.Bib_Package
         public bool Check_Files(string dirName, bool matchCheckSums)
         {
             bool returnVal = true;
+            this.validationErrors = new StringBuilder();
             StringCollection fileToCheck = new StringCollection();
             fileToCheck.Add("jpg");
             fileToCheck.Add("txt");
             fileToCheck.Add("jp2");
+
 
             List<SobekCM_File_Info> packageFiles = thisBibPackage.Divisions.Files;
             foreach (SobekCM_File_Info thisFile in packageFiles)

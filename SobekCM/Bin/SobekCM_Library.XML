@@ -14,6 +14,9 @@
             <param name="Inner_Exception"> The exception which is the cause of the current exception </param>
             <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         </member>
+        <member name="P:SobekCM.Library.SobekCM_Traced_Exception.Trace_Route_HTML">
+            <summary> Returns the trace route (from the stored tracer object) as html </summary>
+        </member>
         <member name="P:SobekCM.Library.SobekCM_Traced_Exception.Trace_Route">
             <summary> Returns the trace route (from the stored tracer object) as text </summary>
         </member>
@@ -2785,8 +2788,11 @@
         <member name="T:SobekCM.Library.SobekCM_Library_Settings">
             <summary> Class provides static context to constant settings based on the basic information about this instance of the application and server information </summary>
         </member>
-        <member name="F:SobekCM.Library.SobekCM_Library_Settings.VERSION">
+        <member name="F:SobekCM.Library.SobekCM_Library_Settings.CURRENT_WEB_VERSION">
             <summary> Current version number associated with this SobekCM digital repository web application </summary>
+        </member>
+        <member name="F:SobekCM.Library.SobekCM_Library_Settings.CURRENT_BUILDER_VERSION">
+            <summary> Current version number associated with this SobekCM builder application </summary>
         </member>
         <member name="F:SobekCM.Library.SobekCM_Library_Settings.Complete_Package_Required_Aging">
             <summary> Number of ticks that a complete package must age before being processed </summary>
@@ -3055,6 +3061,9 @@
         <member name="P:SobekCM.Library.SobekCM_Library_Settings.Database_Connection_String">
             <summary> Database connection string is built from the application config file </summary>
         </member>
+        <member name="P:SobekCM.Library.SobekCM_Library_Settings.Database_Type">
+            <summary> Database type </summary>
+        </member>
         <member name="P:SobekCM.Library.SobekCM_Library_Settings.Base_Directory">
             <summary> Base directory where the ASP.net application is running on the application server </summary>
         </member>
@@ -3072,6 +3081,12 @@
         </member>
         <member name="P:SobekCM.Library.SobekCM_Library_Settings.Web_Output_Caching_Minutes">
             <summary> Number of minutes clients are suggested to cache the web output </summary>
+        </member>
+        <member name="P:SobekCM.Library.SobekCM_Library_Settings.ImageMagick_Executable">
+            <summary> ImageMagick executable file </summary>
+        </member>
+        <member name="P:SobekCM.Library.SobekCM_Library_Settings.Ghostscript_Executable">
+            <summary> Ghostscript executable file </summary>
         </member>
         <member name="P:SobekCM.Library.SobekCM_Library_Settings.Base_MySobek_Directory">
             <summary> Directory for this application's myUFDC folder, where the template and project files reside for online submittal and editing</summary>
@@ -4600,6 +4615,9 @@
             <summary> Get a folder obejct by folder name </summary>
             <param name="Folder_Name"> Name of the folder object to retrieve</param>
             <returns> Folder object by name </returns>
+        </member>
+        <member name="M:SobekCM.Library.Users.User_Object.Clear_UserGroup_Membership">
+            <summary> Clear all the user groups associated with this user  </summary>
         </member>
         <member name="M:SobekCM.Library.Users.User_Object.Add_User_Group(System.String)">
             <summary> Adds a user group to the list of user groups this user belongs to </summary>
@@ -8251,6 +8269,15 @@
             <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
             <value> This property always returns the <see cref="F:SobekCM.Library.AggregationViewer.Viewers.Selection_Panel_Display_Enum.Selectable"/> enumerational value </value>
         </member>
+        <member name="T:SobekCM.Library.Database.SobekCM_Database_Type_Enum">
+            <summary> Enumeration tells the type of underlying database connection to create </summary>
+        </member>
+        <member name="F:SobekCM.Library.Database.SobekCM_Database_Type_Enum.MSSQL">
+            <summary> Microsoft SQL Server </summary>
+        </member>
+        <member name="F:SobekCM.Library.Database.SobekCM_Database_Type_Enum.PostgreSQL">
+            <summary> PostgreSQL Server </summary>
+        </member>
         <member name="T:SobekCM.Library.Citation.Elements.Tickler_Element">
             <summary> Element allows simple entry of the ticklers for an item </summary>
             <remarks> This class extends the <see cref="T:SobekCM.Library.Citation.Elements.multipleTextBox_Element"/> class. </remarks>
@@ -9182,10 +9209,11 @@
             <param name="Language"> Language of the static HTML source file to retrieve </param>
             <returns> Language-specific static HTML source file </returns>
         </member>
-        <member name="M:SobekCM.Library.Aggregations.Item_Aggregation_Browse_Info.Get_Static_Content(SobekCM.Library.Application_State.Language_Enum,System.String,SobekCM.Library.Custom_Tracer)">
+        <member name="M:SobekCM.Library.Aggregations.Item_Aggregation_Browse_Info.Get_Static_Content(SobekCM.Library.Application_State.Language_Enum,System.String,System.String,SobekCM.Library.Custom_Tracer)">
             <summary> Gets the static HTML_based content  associated with this browse/info file (if it is TEXT type )</summary>
             <param name="Language"> Language of the static-html request, used to find the appropriate source file </param>
             <param name="Base_URL"> Currently used Base URL to reach this system </param>
+            <param name="Base_Network"> Base network location from which this static content would be located from </param>
             <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
             <returns> Static HTML-based content to read from a  html source file </returns>
             <remarks> This actually reads the HTML file each time this is requested </remarks>
@@ -12548,6 +12576,10 @@
         <member name="T:SobekCM.Library.Database.SobekCM_Database">
             <summary> Gateway to the databases used by SobekCM </summary>
         </member>
+        <member name="M:SobekCM.Library.Database.SobekCM_Database.Test_Connection">
+            <summary> Test connectivity to the database </summary>
+            <returns> TRUE if connection can be made, otherwise FALSE </returns>
+        </member>
         <member name="M:SobekCM.Library.Database.SobekCM_Database.Set_Item_Main_Thumbnail(System.String,System.String,System.String)">
             <summary> Sets the main thumbnail for a given digital resource </summary>
             <param name="BibID"> Bibliographic identifier for the item </param>
@@ -12953,6 +12985,11 @@
             <param name="aggrInfo">Partially built item aggregation object</param>
             <param name="childInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
         </member>
+        <member name="M:SobekCM.Library.Database.SobekCM_Database.add_parents(SobekCM.Library.Aggregations.Item_Aggregation,System.Data.DataTable)">
+            <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
+            <param name="aggrInfo">Partially built item aggregation object</param>
+            <param name="parentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
+        </member>
         <member name="M:SobekCM.Library.Database.SobekCM_Database.add_advanced_terms(SobekCM.Library.Aggregations.Item_Aggregation,System.Data.DataTable)">
             <summary> Adds the search terms to display under advanced search from the datatable extracted from the database </summary>
             <param name="aggrInfo">Partially built item aggregation object</param>
@@ -13149,6 +13186,13 @@
             <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
             <returns> TRUE if successful, otherwise FALSE</returns>
             <remarks> This calls the 'mySobek_Save_User2' stored procedure</remarks> 
+        </member>
+        <member name="M:SobekCM.Library.Database.SobekCM_Database.Link_User_To_User_Group(System.Int32,System.Int32)">
+            <summary> Links a single user to a user group  </summary>
+            <param name="UserID"> Primary key for the user </param>
+            <param name="UserGroupID"> Primary key for the user group </param>
+            <returns> TRUE if successful, otherwise FALSE </returns>
+            <remarks> This calls the 'mySobek_Link_User_To_User_Group' stored procedure</remarks> 
         </member>
         <member name="M:SobekCM.Library.Database.SobekCM_Database.Change_Password(System.String,System.String,System.String,System.Boolean,SobekCM.Library.Custom_Tracer)">
             <summary> Change an existing user's password </summary>
@@ -13647,7 +13691,7 @@
             <returns> TRUE if successful, otherwise FALSE </returns>
             <remarks> This calls the 'SobekCM_Add_User_Aggregations_Link' stored procedure</remarks> 
         </member>
-        <member name="M:SobekCM.Library.Database.SobekCM_Database.Save_User_Group(System.Int32,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,SobekCM.Library.Custom_Tracer)">
+        <member name="M:SobekCM.Library.Database.SobekCM_Database.Save_User_Group(System.Int32,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,SobekCM.Library.Custom_Tracer)">
             <summary> Sets some of the basic information and global permissions values for a single user group </summary>
             <param name="UserGroupID"> Primary key for this user group from the database, or -1 for a new user group </param>
             <param name="GroupName"> Name of this user group </param>
@@ -13656,6 +13700,7 @@
             <param name="Is_Internal"> Flag indicates if this user group is considered an 'internal user'</param>
             <param name="Can_Edit_All"> Flag indicates if this user group is authorized to edit all items in the library</param>
             <param name="Is_System_Admin"> Flag indicates if this user group is a system Administrator</param>
+            <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
             <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user group </param>
             <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user group </param>
             <param name="Clear_Editable_Links"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
@@ -15395,17 +15440,12 @@
               If there is no record of this, the date of 1/1/2000 is returned
             </remarks>
         </member>
-        <member name="F:SobekCM.Library.Aggregations.Item_Aggregation.Can_Browse_Items">
-            <summary>
-              Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs
-            </summary>
-        </member>
         <member name="M:SobekCM.Library.Aggregations.Item_Aggregation.#ctor">
             <summary>
               Constructor for a new instance of the Item_Aggregation class
             </summary>
         </member>
-        <member name="M:SobekCM.Library.Aggregations.Item_Aggregation.#ctor(System.String,System.String,System.Int32,System.String,System.DateTime,System.Boolean)">
+        <member name="M:SobekCM.Library.Aggregations.Item_Aggregation.#ctor(System.String,System.String,System.Int32,System.String,System.DateTime)">
             <summary>
               Constructor for a new instance of the Item_Aggregation class
             </summary>
@@ -15414,7 +15454,6 @@
             <param name = "Aggregation_ID"> ID for this aggregation object from the database </param>
             <param name = "Display_Options"> Display options used to determine the views and searches for this item</param>
             <param name = "Last_Item_Added"> Date the last item was added ( or 1/1/2000 by default )</param>
-            <param name = "Can_Browse_Items"> Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS browses </param>
         </member>
         <member name="M:SobekCM.Library.Aggregations.Item_Aggregation.Clear_Facets">
             <summary>
@@ -15584,6 +15623,11 @@
             <summary> Saves the information about this item aggregation to the database </summary>
             <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
             <returns>TRUE if successful, otherwise FALSE </returns>
+        </member>
+        <member name="P:SobekCM.Library.Aggregations.Item_Aggregation.Can_Browse_Items">
+            <summary>
+              Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs
+            </summary>
         </member>
         <member name="P:SobekCM.Library.Aggregations.Item_Aggregation.Advanced_Search_Fields">
             <summary>
