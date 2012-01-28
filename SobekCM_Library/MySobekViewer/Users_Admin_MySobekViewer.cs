@@ -562,8 +562,12 @@ namespace SobekCM.Library.MySobekViewer
 
                         foreach (DataRow thisRow in userGroup.Rows)
                         {
-                            Output.WriteLine("  <tr align=\"left\" >");
-                            Output.WriteLine("    <td width=\"50px\" ><input type=\"checkbox\" name=\"group_" + thisRow["UserGroupID"] + "\" id=\"group_" + thisRow["UserGroupID"] + "\" /></td>");
+                            Output.WriteLine("  <tr align=\"left\" >");                         
+
+                            Output.Write("    <td width=\"50px\" ><input type=\"checkbox\" name=\"group_" + thisRow["UserGroupID"] + "\" id=\"group_" + thisRow["UserGroupID"] + "\" ");
+                            if ( editUser.User_Groups.Contains( thisRow["GroupName"] ))
+                                Output.Write(" checked=\"checked\"");
+                            Output.WriteLine("/></td>");
                             Output.WriteLine("    <td width=\"150px\" >" + thisRow["GroupName"] + "</td>");
                             Output.WriteLine("    <td width=\"400px\">" + thisRow["GroupDescription"] + "</td>");
                             Output.WriteLine("  </tr>");
@@ -1060,9 +1064,6 @@ namespace SobekCM.Library.MySobekViewer
                                 }
                             }
 
-                            // Check the user groups for update
-                            bool update_user_groups = false;
-
                             // Update the templates and projects, if requested
                             if (update_templates_projects)
                             {
@@ -1090,6 +1091,32 @@ namespace SobekCM.Library.MySobekViewer
                                 // the old defaults aren't in the new list
                                 editUser.Set_Default_Project(default_project);
                                 editUser.Set_Default_Template(default_template);
+                            }
+                            break;
+
+                        case 2:
+                            // Check the user groups for update
+                            bool update_user_groups = false;
+                            DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+                            List<string> newGroups = new List<string>();
+                            foreach (DataRow thisRow in userGroup.Rows)
+                            {
+                                if ( form["group_" + thisRow["UserGroupID"]] != null )
+                                {
+                                    newGroups.Add( thisRow["GroupName"].ToString());
+                                }
+                            }
+
+                            // Should we add the new user groups?  Did it change?
+                            if ( newGroups.Count != editUser.User_Groups.Count )
+                            {
+                                update_user_groups = true;
+                            }
+                            if (update_user_groups)
+                            {
+                                editUser.Clear_UserGroup_Membership();
+                                foreach( string thisUserGroup in newGroups )
+                                    editUser.Add_User_Group( thisUserGroup );
                             }
                             break;
 
@@ -1201,7 +1228,7 @@ namespace SobekCM.Library.MySobekViewer
                         SobekCM_Database.Save_User(editUser, String.Empty, Tracer);
 
                         // Update the basic user information
-                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, false, Tracer);
+                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);
 
                         // Update projects, if necessary
                         if (editUser.Projects.Count > 0)
@@ -1225,6 +1252,18 @@ namespace SobekCM.Library.MySobekViewer
                         if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.Aggregations, Tracer))
                         {
                             successful_save = false;
+                        }
+
+                        // Save the user group links
+                        DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+                        Dictionary<string, int> groupnames_to_id = new Dictionary<string,int>();
+                        foreach (DataRow thisRow in userGroup.Rows)
+                        {
+                            groupnames_to_id[ thisRow["GroupName"].ToString()] = Convert.ToInt32( thisRow["UserGroupID"]);
+                         }
+                        foreach( string userGroupName in editUser.User_Groups )
+                        {
+                            SobekCM_Database.Link_User_To_User_Group( editUser.UserID, groupnames_to_id[userGroupName]);
                         }
 
                         // Forward back to the list of users, if this was successful

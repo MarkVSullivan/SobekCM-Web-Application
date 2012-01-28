@@ -187,8 +187,13 @@ namespace SobekCM.Library.Builder
                         thisIdentifier.Type = "accession number";
                 }
 
+                // Save the BibID and VID.  If a VID already existed here, and not in the METS,
+                // assign that to the METS.  (For example, when '00001' can be assumed
                 bibid = bibPackage.BibID;
-                vid = bibPackage.VID;
+                if (bibPackage.VID.Length > 0)
+                    vid = bibPackage.VID;
+                else if ( !String.IsNullOrEmpty(vid))
+                    bibPackage.VID = vid;
 
                 switch (bibPackage.METS.RecordStatus_Enum)
                 {
@@ -696,6 +701,9 @@ namespace SobekCM.Library.Builder
         {
             get
             {
+                if (bibPackage == null)
+                    return "NULL";
+
                 switch (bibPackage.METS.RecordStatus_Enum)
                 {
                     case METS_Record_Status.BIB_LEVEL:

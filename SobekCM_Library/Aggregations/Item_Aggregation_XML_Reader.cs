@@ -595,8 +595,6 @@ namespace SobekCM.Library.Aggregations
                             // read and save the title
                             nodeReader.Read();
                             string bodySource = nodeReader.Value;
-                            if ((bodySource.IndexOf("http://") < 0) && (bodySource.IndexOf("<%BASEURL%>") < 0))
-                                bodySource = SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory + bodySource;
                             newBrowse.Add_Static_HTML_Source(bodySource, Language_Enum_Converter.Code_To_Language_Enum(bodyLanguage));
                             break;
                     }

@@ -726,7 +726,7 @@ namespace SobekCM.Bib_Package.Readers
                 switch (readerType)
                 {
                     case METS_DMDSEC_Type_Enum.MarcXML:
-                        SubReaders.MarcXML_SubReader.Read_MarcXML_Info(r, package);
+                        SubReaders.MarcXML_SubReader.Read_MarcXML_Info(r, package, false );
                         break;
 
                     case METS_DMDSEC_Type_Enum.MODS:

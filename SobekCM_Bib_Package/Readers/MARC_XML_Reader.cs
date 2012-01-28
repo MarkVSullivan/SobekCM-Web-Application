@@ -36,7 +36,7 @@ namespace SobekCM.Bib_Package.Readers
                 // create the node reader
                 nodeReader = new XmlTextReader(reader);
 
-                SubReaders.MarcXML_SubReader.Read_MarcXML_Info(nodeReader, thisPackage);
+                SubReaders.MarcXML_SubReader.Read_MarcXML_Info(nodeReader, thisPackage, true );
             }
             catch ( Exception ee )
             {
