@@ -5474,12 +5474,10 @@
             <param name="dirName">Directory name</param>
             <returns>TRUE if METS exists, otherwise FALSE</returns>
         </member>
-        <member name="M:SobekCM.Bib_Package.SobekCM_METS_Validator.UFDC_Standard_Check(SobekCM.Bib_Package.SobekCM_Item,System.Boolean,System.String,System.Data.DataTable)">
-            <summary> Check the Bibliographic package agaist the UFDC METS standard</summary>
+        <member name="M:SobekCM.Bib_Package.SobekCM_METS_Validator.SobekCM_Standard_Check(SobekCM.Bib_Package.SobekCM_Item,System.String)">
+            <summary> Check the Bibliographic package agaist the SobekCM METS standard</summary>
             <param name="bibPackagetoCheck">Package to validate</param>
-            <param name="validateCheckSums">Flag indicates whether to check the checksums</param>
             <param name="packageDir">Directory for the package</param>
-            <param name="Aggregation_Codes"> Aggregation codes to check against </param>
             <returns>TRUE is succesful, otherwise FALSE</returns>
         </member>
         <member name="M:SobekCM.Bib_Package.SobekCM_METS_Validator.METS_Update_Only_Check(System.String,System.String)">
@@ -8036,10 +8034,11 @@
         <member name="T:SobekCM.Bib_Package.Readers.SubReaders.MarcXML_SubReader">
             <summary> Subreader reads a MARC-compliant section of XML and stores the data in the provided digital resource object </summary>
         </member>
-        <member name="M:SobekCM.Bib_Package.Readers.SubReaders.MarcXML_SubReader.Read_MarcXML_Info(System.Xml.XmlTextReader,SobekCM.Bib_Package.SobekCM_Item)">
+        <member name="M:SobekCM.Bib_Package.Readers.SubReaders.MarcXML_SubReader.Read_MarcXML_Info(System.Xml.XmlTextReader,SobekCM.Bib_Package.SobekCM_Item,System.Boolean)">
             <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
             <param name="r"> XmlTextReader from which to read the marc data </param>
             <param name="package"> Digital resource object to save the data to </param>
+            <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
         </member>
         <member name="T:SobekCM.Bib_Package.Unanalyzed_METS_Section">
             <summary> Class holds the information for a secion from the METS file ( specifically, 

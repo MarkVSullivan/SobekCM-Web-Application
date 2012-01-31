@@ -629,7 +629,8 @@ namespace SobekCM.Library.HTML
                         {
                             Output.WriteLine("  <span class=\"SobekSelectCheckBox\">");
                             Output.Write("    <input type=\"checkbox\" value=\"" + t.Code + "\" name=\"checkgroup\"");
-                            Output.WriteLine(currentMode.SubAggregation.IndexOf(t.Code) < 0 ? " />" : " checked />");
+                            Output.WriteLine("< checked=\"checked\" />");
+                        //    Output.WriteLine(currentMode.SubAggregation.IndexOf(t.Code) < 0 ? " />" : " checked />");
                             currentMode.Aggregation = t.Code;
                             Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\">" + t.Name + "</a>");
                             Output.WriteLine("  </span>");
@@ -1294,7 +1295,22 @@ namespace SobekCM.Library.HTML
 
                 if (currentMode.Home_Type != Home_Type_Enum.Personalized)
                 {
-                    if (( thematicHeadings.Count > 0 ) || ( SobekCM_Library_Settings.Include_TreeView_On_System_Home ))
+                    // See if there are actually aggregations linked to the  thematic headings
+                    bool aggrsLinkedToThemes = false;
+                    if ((!SobekCM_Library_Settings.Include_TreeView_On_System_Home) && ( thematicHeadings.Count > 0 ))
+                    {
+                        foreach (Thematic_Heading thisTheme in thematicHeadings)
+                        {
+                            if (codeManager.Aggregations_By_ThemeID(thisTheme.ThematicHeadingID).Count > 0)
+                            {
+                                aggrsLinkedToThemes = true;
+                                break;
+                            }
+                        } 
+                    }
+
+                    // If aggregations are linked to themes, or if the tree view should always be displayed on home
+                    if ((aggrsLinkedToThemes) || (SobekCM_Library_Settings.Include_TreeView_On_System_Home))
                     {
                         string listText = "LIST VIEW";
                         string descriptionText = "BRIEF VIEW";

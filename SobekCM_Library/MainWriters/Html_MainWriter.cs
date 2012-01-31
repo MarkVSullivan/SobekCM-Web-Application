@@ -1677,20 +1677,24 @@ namespace SobekCM.Library.MainWriters
                 }
                 else
                 {
-
-                    if ((hierarchyObject != null) && (hierarchyObject.Code != "all"))
+                    if (hierarchyObject != null)
                     {
-                        banner = "<center><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + hierarchyObject.Banner_Image(currentMode.Language, htmlSkin) + "\" alt=\"\" /></a></center>";
-                    }
-                    else
-                    {
-                        if ((hierarchyObject != null) && (hierarchyObject.Banner_Image(currentMode.Language, htmlSkin).Length > 0))
-                        {
-                            banner = "<center><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + hierarchyObject.Banner_Image( currentMode.Language, htmlSkin)+ "\" alt=\"\" /></a></center>";
+                        string banner_image = hierarchyObject.Banner_Image(currentMode.Language, htmlSkin);
+                        if  (hierarchyObject.Code != "all")
+                        {                            
+                            if (banner_image.Length > 0)
+                                banner = "<center><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></center>";
                         }
                         else
                         {
-                            banner = "<center><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></center>";
+                            if (banner_image.Length > 0)
+                            {
+                                banner = "<center><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></center>";
+                            }
+                            else
+                            {
+                                banner = "<center><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></center>";
+                            }
                         }
                     }
                 }
@@ -1772,7 +1776,7 @@ namespace SobekCM.Library.MainWriters
             // Get the skin url
             string skin_url = currentMode.Base_Design_URL + "skins/" + currentMode.Skin + "/";
 
-            const string version = SobekCM_Library_Settings.VERSION;
+            const string version = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
             switch (currentMode.Mode)
             {
                 case Display_Mode_Enum.Item_Display:

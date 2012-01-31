@@ -54,7 +54,11 @@ public class Global : HttpApplication
     void Application_Error(object sender, EventArgs e)
     {
         // Get the exception
-        Exception objErr = Server.GetLastError().GetBaseException();
+        Exception objErr = Server.GetLastError();
+        if (objErr == null)
+            return;
+        if ((objErr != null) && (objErr.GetBaseException() != null))
+            objErr = objErr.GetBaseException();
 
         try
         {
@@ -100,7 +104,8 @@ public class Global : HttpApplication
                 {
                     // Nothing else to do here.. no other known way to log this error
                 }
-                   
+
+                  
 
                 //try
                 //{
@@ -149,6 +154,9 @@ public class Global : HttpApplication
         }
         finally
         {
+            // Clear the error
+            Server.ClearError();
+
             string error_message = objErr.Message;
             if (objErr is SobekCM_Traced_Exception)
             {
@@ -157,13 +165,26 @@ public class Global : HttpApplication
 
             }
 
-            // Clear the error
-            Server.ClearError();
-
             try
             {
+                if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || ( HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"] ) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
+                {
+                    Response.Redirect("error_echo.html?text=" + error_message.Replace(" ", "_").Replace("&", "and").Replace("?", ""), true);
+                }
+                else
+                {
+                    // Forward if there is a place to forward to.
+                    if ( !String.IsNullOrEmpty(SobekCM_Library_Settings.System_Error_URL))
+                    {
+                        Response.Redirect(SobekCM_Library_Settings.System_Error_URL, true);
+                    }
+                    else
+                    {
+                        Response.Redirect("http://ufdc.ufl.edu/sobekcm/missing_config", true);
+                    }
+                }
+                
 
-                   Response.Redirect("http://ufdc.ufl.edu/error_echo.html?text=" + error_message.Replace(" ", "_").Replace("&", "and").Replace("?", ""), true);
                 // Forward to our error message
                // Response.Redirect(System.Configuration.ConfigurationSettings.AppSettings["Error_HTML_Page"]);
             }

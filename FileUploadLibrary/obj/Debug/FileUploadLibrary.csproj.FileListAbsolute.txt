@@ -1,30 +1,5 @@
-C:\Version 2.9.9\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
-C:\Version 2.9.9\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
-C:\Version 2.9.9\Code\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
-C:\Version 2.9.9\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
-C:\Version 2.9.9\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
-C:\Version 2.9.10\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
-C:\Version 2.9.10\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
-C:\Version 2.9.10\Code\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
-C:\Version 2.9.10\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
-C:\Version 2.9.10\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
-C:\Version 2.9.11\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
-C:\Version 2.9.11\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
-C:\Version 2.9.11\Code\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
-C:\Version 2.9.11\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
-C:\Version 2.9.11\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
-C:\Version 3.0.0\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
-C:\Version 3.0.0\Code\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
-C:\Version 3.0.0\Code\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
-C:\Version 3.0.0\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
-C:\Version 3.0.0\Code\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
-C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
-C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
-C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
-C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
-C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb

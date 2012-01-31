@@ -133,26 +133,50 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ( action == "next_phase")
                 {
-                    if (!complete_item_submission(item, null))
+                    int phase = Convert.ToInt32(HttpContext.Current.Request.Form["phase"]);
+                    switch( phase )
                     {
-                        // Clear all the file keys in the session state
-                        List<string> keys = new List<string>();
-                        foreach ( string thisKey in HttpContext.Current.Session.Keys )
-                        {
-                            if (thisKey.IndexOf("file_" + item.SobekCM_Web.ItemID + "_") == 0)
-                                keys.Add(thisKey);
-                        }
-                        foreach (string thisKey in keys)
-                        {                            
+                        case 2:
+                            // Clear all the file keys in the session state
+                            List<string> keys = new List<string>();
+                            foreach (string thisKey in HttpContext.Current.Session.Keys)
+                            {
+                                if (thisKey.IndexOf("file_" + item.SobekCM_Web.ItemID + "_") == 0)
+                                    keys.Add(thisKey);
+                            }
+                            foreach (string thisKey in keys)
+                            {
                                 HttpContext.Current.Session.Remove(thisKey);
-                        }
+                            }
 
-                        // Also clear the item from the cache
-                        MemoryMgmt.Cached_Data_Manager.Remove_Digital_Resource_Object(item.BibID, item.VID, null);
+                            // Redirect to the item
+                            currentMode.Mode = Display_Mode_Enum.Item_Display;
+                            HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                            break;
 
-                        // Redirect to the item
-                        currentMode.Mode = Display_Mode_Enum.Item_Display;
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                        case 9:
+                            if (!complete_item_submission(item, null))
+                            {
+                                // Clear all the file keys in the session state
+                                List<string> keys2 = new List<string>();
+                                foreach (string thisKey in HttpContext.Current.Session.Keys)
+                                {
+                                    if (thisKey.IndexOf("file_" + item.SobekCM_Web.ItemID + "_") == 0)
+                                        keys2.Add(thisKey);
+                                }
+                                foreach (string thisKey in keys2)
+                                {
+                                    HttpContext.Current.Session.Remove(thisKey);
+                                }
+
+                                // Also clear the item from the cache
+                                MemoryMgmt.Cached_Data_Manager.Remove_Digital_Resource_Object(item.BibID, item.VID, null);
+
+                                // Redirect to the item
+                                currentMode.Mode = Display_Mode_Enum.Item_Display;
+                                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                            }
+                            break;                         
                     }
                 }
             }
@@ -691,7 +715,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <td height=\"40px\" align=\"right\">");
             Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(2);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/back_button_22.gif\" alt=\"BACK\" /></a>");
             Output.WriteLine("      &nbsp; ");
-            Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(9);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/submit_button_22.gif\" alt=\"NEXT\" /></a> &nbsp; ");
+            Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(9);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/submit_button_22.gif\" alt=\"SUBMIT\" /></a> &nbsp; ");
             Output.WriteLine("    </td>");
             Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("  </tr>");

@@ -407,6 +407,12 @@ namespace SobekCM.Library.Users
 
         #region Internal methods for modifying the collections of editable objects ( bibid, templates, projects, aggregations, etc..)
 
+        /// <summary> Clear all the user groups associated with this user  </summary>
+        internal void Clear_UserGroup_Membership()
+        {
+            userGroups.Clear();
+        }
+
         /// <summary> Adds a user group to the list of user groups this user belongs to </summary>
         /// <param name="GroupName"> Name of the user group</param>
         internal void Add_User_Group(string GroupName)
@@ -542,6 +548,9 @@ namespace SobekCM.Library.Users
         }
 
         #endregion
+
+
+
 
         /// <summary> Determines if this user can edit this item, based on several different criteria </summary>
         /// <param name="Item">SobekCM Item to check</param>

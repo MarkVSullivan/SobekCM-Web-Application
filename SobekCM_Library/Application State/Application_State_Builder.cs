@@ -86,24 +86,30 @@ namespace SobekCM.Library.Application_State
                 SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(null));
             }
 
+            // If there is no database connection string, there is a problem
+            if (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connection_String))
+            {
+                throw new ApplicationException("Missing database connection string!");
+            }
+
             // Set the database connection strings
             Bib_Package.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
             SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
 
             // Set the workflow and disposition types
-            if (SobekCM_Library_Settings.Need_Workflow_And_Disposition_Types)
+            if ((SobekCM_Library_Settings.Need_Workflow_And_Disposition_Types) || ( Reload_All ))
             {
                 SobekCM_Library_Settings.Set_Workflow_And_Disposition_Types(SobekCM_Database.All_WorkFlow_Types, SobekCM_Database.All_Possible_Disposition_Types);
             }
 
             // Set the metadata types
-            if (SobekCM_Library_Settings.Need_Metadata_Types)
+            if ((SobekCM_Library_Settings.Need_Metadata_Types) || ( Reload_All ))
             {
                 SobekCM_Library_Settings.Set_Metadata_Types(SobekCM_Database.Get_Metadata_Fields(null) );
             }
 
             // Set the search stop words
-            if (SobekCM_Library_Settings.Need_Search_Stop_Words)
+            if ((SobekCM_Library_Settings.Need_Search_Stop_Words) || (Reload_All))
             {
                 SobekCM_Library_Settings.Search_Stop_Words = SobekCM_Database.Search_Stop_Words(Tracer);
             }
@@ -115,13 +121,21 @@ namespace SobekCM.Library.Application_State
                 {
                     lock (Thematic_Headings)
                     {
-                        SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
+                        if (!SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer))
+                        {
+                            Thematic_Headings = null;
+                            throw SobekCM_Database.Last_Exception;
+                        }
                     }
                 }
                 else
                 {
                     Thematic_Headings = new List<Thematic_Heading>();
-                    SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
+                    if (!SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer))
+                    {
+                        Thematic_Headings = null;
+                        throw SobekCM_Database.Last_Exception;
+                    }
                 }
             }
 

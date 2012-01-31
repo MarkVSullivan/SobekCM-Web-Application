@@ -1,66 +1,15 @@
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.XML
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Debug\ResolveAssemblyReference.cache
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Debug\SobekCM_Library.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Debug\SobekCM_Library.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.XML
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Library.XML
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Library.dll
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Bib_Package.dll
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Bib_Package.pdb
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Bib_Package.xml
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\obj\Debug\SobekCM_Library.dll
-C:\Users\msulliva\Desktop\Version 3.0.3\Code\SobekCM_Library\obj\Debug\SobekCM_Library.pdb
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Library.XML
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Library.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Client.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Core.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\Microsoft.Practices.ServiceLocation.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Bib_Package.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Bib_Package.pdb
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Bib_Package.xml
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\obj\Debug\ResolveAssemblyReference.cache
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\obj\Debug\SobekCM_Library.dll
-C:\inetpub\wwwroot\sobekcm\SobekCM_Library\obj\Debug\SobekCM_Library.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Debug\ResolveAssemblyReference.cache
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Debug\SobekCM_Library.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Library.XML
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Library.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Client.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Core.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.Practices.ServiceLocation.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
-C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Debug\SobekCM_Library.pdb

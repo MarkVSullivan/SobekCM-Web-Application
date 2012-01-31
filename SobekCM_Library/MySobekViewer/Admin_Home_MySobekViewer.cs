@@ -128,7 +128,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</td></tr></table>");
             Output.WriteLine(" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; For clarification on any of these options, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.<br /><br />");
-            Output.WriteLine(" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; You are currently running version " + SobekCM_Library_Settings.VERSION + ". ( <a href=\"http://ufdc.ufl.edu/sobekcm/development/history\">see release notes</a> )<br /><br />");
+            Output.WriteLine(" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; You are currently running version " + SobekCM_Library_Settings.CURRENT_WEB_VERSION + ". ( <a href=\"http://ufdc.ufl.edu/sobekcm/development/history\">see release notes</a> )<br /><br />");
             Output.WriteLine("</div>");
         }
     }

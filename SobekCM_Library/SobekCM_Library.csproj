@@ -145,6 +145,7 @@
     <Compile Include="Citation\Elements\implemented elements\Tracking_Box_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Visibility_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
+    <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
     <Compile Include="MySobekViewer\Aggregation_Single_Admin_MySobekViewer.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />

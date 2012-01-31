@@ -433,41 +433,48 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("        <table class=\"popup_table\">");
 
             // Add line for aggregation code and aggregation type
-            Output.WriteLine("          <tr><td width=\"120px\">Code:</td>");
-            Output.WriteLine("            <td><input class=\"admin_aggr_small_input\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" readonly=\"readonly\" value=\"" + itemAggregation.Code + "\"  onfocus=\"javascript:textbox_enter('admin_aggr_code', 'admin_aggr_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_code', 'admin_aggr_small_input')\" /></td>");
-            Output.WriteLine("            <td width=\"300px\" align=\"right\"><label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
-            Output.Write("<select class=\"admin_aggr_select\" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
-            if (itemAggregation.Aggregation_Type == String.Empty)
-                Output.Write("<option value=\"\" selected=\"selected\" ></option>");
+            Output.WriteLine("          <tr valign=\"middle\" height=\"25px\"><td width=\"120px\">Code:</td>");
+            Output.WriteLine("            <td>" + itemAggregation.Code + "</td>");
 
-            Output.Write(itemAggregation.Aggregation_Type == "coll"
-                             ? "<option value=\"coll\" selected=\"selected\" >Collection</option>"
-                             : "<option value=\"coll\">Collection</option>");
+            // TEMPORARY
+            Output.WriteLine("<td></td></tr>");
+            Output.WriteLine("          <tr valign=\"middle\" height=\"25px\"><td width=\"120px\">Type:</td>");
+            Output.WriteLine("            <td colspan=\"2\">" + itemAggregation.Aggregation_Type + "</td></tr>");
 
-            Output.Write(itemAggregation.Aggregation_Type == "group"
-                             ? "<option value=\"group\" selected=\"selected\" >Collection Group</option>"
-                             : "<option value=\"group\">Collection Group</option>");
+            //Output.WriteLine("            <td width=\"300px\" align=\"right\"><label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
+            //Output.Write("<select class=\"admin_aggr_select\" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
+            //if (itemAggregation.Aggregation_Type == String.Empty)
+            //    Output.Write("<option value=\"\" selected=\"selected\" ></option>");
 
-            Output.Write(itemAggregation.Aggregation_Type == "exhibit"
-                             ? "<option value=\"exhibit\" selected=\"selected\" >Exhibit</option>"
-                             : "<option value=\"exhibit\">Exhibit</option>");
+            //Output.Write(itemAggregation.Aggregation_Type == "coll"
+            //                 ? "<option value=\"coll\" selected=\"selected\" >Collection</option>"
+            //                 : "<option value=\"coll\">Collection</option>");
 
-            Output.Write(itemAggregation.Aggregation_Type == "inst"
-                             ? "<option value=\"inst\" selected=\"selected\" >Institution</option>"
-                             : "<option value=\"inst\">Institution</option>");
+            //Output.Write(itemAggregation.Aggregation_Type == "group"
+            //                 ? "<option value=\"group\" selected=\"selected\" >Collection Group</option>"
+            //                 : "<option value=\"group\">Collection Group</option>");
 
-            Output.Write(itemAggregation.Aggregation_Type == "subinst"
-                             ? "<option value=\"subinst\" selected=\"selected\" >Institutional Division</option>"
-                             : "<option value=\"subinst\">Institutional Division</option>");
+            //Output.Write(itemAggregation.Aggregation_Type == "exhibit"
+            //                 ? "<option value=\"exhibit\" selected=\"selected\" >Exhibit</option>"
+            //                 : "<option value=\"exhibit\">Exhibit</option>");
 
-            Output.Write(itemAggregation.Aggregation_Type == "subcoll"
-                             ? "<option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
-                             : "<option value=\"subcoll\">SubCollection</option>");
+            //Output.Write(itemAggregation.Aggregation_Type == "inst"
+            //                 ? "<option value=\"inst\" selected=\"selected\" >Institution</option>"
+            //                 : "<option value=\"inst\">Institution</option>");
 
-            Output.WriteLine("</select></td></tr>");
+            //Output.Write(itemAggregation.Aggregation_Type == "subinst"
+            //                 ? "<option value=\"subinst\" selected=\"selected\" >Institutional Division</option>"
+            //                 : "<option value=\"subinst\">Institutional Division</option>");
+
+            //Output.Write(itemAggregation.Aggregation_Type == "subcoll"
+            //                 ? "<option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
+            //                 : "<option value=\"subcoll\">SubCollection</option>");
+
+            //Output.WriteLine("</select></td></tr>");
 
             //// Add the parent code(s)
             //Output.WriteLine("          <tr><td>Parent Code(s):</td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_parents\" id=\"admin_aggr_parents\" type=\"text\" readonly=\"readonly\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Parent_Codes) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_parents', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_parents', 'admin_aggr_large_input')\" /></td></tr>");
+            Output.WriteLine("          <tr valign=\"middle\" height=\"25px\"><td>Parent Code(s):</td><td colspan=\"2\">" + HttpUtility.HtmlEncode(itemAggregation.Parent_Codes) + "</td></tr>");
 
             // Add the full name line
             Output.WriteLine("          <tr><td><label for=\"admin_aggr_name\">Name (full):</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Name) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_name', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_name', 'admin_aggr_large_input')\" /></td></tr>");
@@ -485,7 +492,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("          <tr valign=\"top\"><td valign=\"top\"><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"admin_aggr_input\" onfocus=\"javascript:textbox_enter('admin_aggr_desc','admin_aggr_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_desc','admin_aggr_input')\">" + HttpUtility.HtmlEncode(itemAggregation.Description) + "</textarea></td></tr>");
 
             // Add the aggregation email address
-            Output.WriteLine("          <tr><td><label for=\"admin_aggr_email\">Contact Email:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_email\" id=\"admin_aggr_email\" type=\"text\" readonly=\"readonly\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Contact_Email) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_email', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_email', 'admin_aggr_large_input')\" /></td></tr>");
+            Output.WriteLine("          <tr><td><label for=\"admin_aggr_email\">Contact Email:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_email\" id=\"admin_aggr_email\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Contact_Email) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_email', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_email', 'admin_aggr_large_input')\" /></td></tr>");
 
 
             // Add checkboxes for is active and is hidden
