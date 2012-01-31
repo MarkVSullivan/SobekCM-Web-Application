@@ -110,6 +110,7 @@ namespace SobekCM.Library.MySobekViewer
                     bool can_submit = false;
                     bool is_internal = false;
                     bool is_admin = false;
+                    bool is_portal = false;
                     string name = editGroup.Name;
                     string description = editGroup.Description;
 
@@ -145,6 +146,10 @@ namespace SobekCM.Library.MySobekViewer
 
                             case "admin_user_admin":
                                 is_admin = true;
+                                break;
+
+                            case "admin_user_portaladmin":
+                                is_portal = true;
                                 break;
 
                             default:
@@ -266,7 +271,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (name.Length > 0)
                     {
                         // Update the basic user information
-                        int newid = SobekCM_Database.Save_User_Group(editGroup.UserGroupID, name, description, can_submit, is_internal, can_editall, is_admin, update_templates_projects, update_aggregations, false, Tracer);
+                        int newid = SobekCM_Database.Save_User_Group(editGroup.UserGroupID, name, description, can_submit, is_internal, can_editall, is_admin, is_portal, false, update_templates_projects, update_aggregations, false, Tracer);
                         if (editGroup.UserGroupID < 0)
                         {
                             editGroup.UserGroupID = newid;

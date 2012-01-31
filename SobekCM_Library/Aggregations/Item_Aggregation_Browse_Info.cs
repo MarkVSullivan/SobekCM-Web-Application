@@ -226,7 +226,7 @@ namespace SobekCM.Library.Aggregations
 			}
 			else
 			{
-				Writer.WriteLine("  <hi:browse>");
+                Writer.WriteLine("  <hi:" + type + ">");
 			}
 
 			// Is this a database option, (usually browse by)?
@@ -277,10 +277,11 @@ namespace SobekCM.Library.Aggregations
 		/// <summary> Gets the static HTML_based content  associated with this browse/info file (if it is TEXT type )</summary>
 		/// <param name="Language"> Language of the static-html request, used to find the appropriate source file </param>
 		/// <param name="Base_URL"> Currently used Base URL to reach this system </param>
+        /// <param name="Base_Network"> Base network location from which this static content would be located from </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> Static HTML-based content to read from a  html source file </returns>
 		/// <remarks> This actually reads the HTML file each time this is requested </remarks>
-		public HTML_Based_Content Get_Static_Content(Language_Enum Language, string Base_URL, Custom_Tracer Tracer)
+		public HTML_Based_Content Get_Static_Content(Language_Enum Language, string Base_URL, string Base_Network, Custom_Tracer Tracer)
 		{
 			if ((Data_Type != Result_Data_Type.Text) || (Source != Source_Type.Static_HTML) || (staticHtmlSourceByLanguage.Count == 0))
 				return null;
@@ -296,6 +297,8 @@ namespace SobekCM.Library.Aggregations
 				{
 					Tracer.Add_Trace("Item_Aggregation_Browse_Info.Get_Static_Text", "Reading browse/info source file from a local directory");
 				}
+
+                sourceFile = Base_Network + sourceFile;
 
 				try
 				{

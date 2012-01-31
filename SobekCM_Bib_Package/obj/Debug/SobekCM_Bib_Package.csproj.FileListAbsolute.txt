@@ -1,15 +1,7 @@
+C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\obj\Debug\ResolveAssemblyReference.cache
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\obj\Debug\SobekCM_Bib_Package_3_0_3.dll
 C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\obj\Debug\SobekCM_Bib_Package_3_0_3.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Microsoft.Practices.ServiceLocation.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\obj\Debug\ResolveAssemblyReference.cache
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\obj\Debug\SobekCM_Bib_Package_3_0_3.dll
-C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\obj\Debug\SobekCM_Bib_Package_3_0_3.pdb

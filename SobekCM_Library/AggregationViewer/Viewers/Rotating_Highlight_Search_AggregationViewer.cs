@@ -61,6 +61,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
             currentMode.Info_Browse_Mode = "all";
             browse_url = currentMode.Redirect_URL();
+            currentMode.Info_Browse_Mode = String.Empty;
+            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
             if ((!currentMode.Show_Selection_Panel) || (Current_Aggregation.Children_Count == 0))
             {
                 scriptActionName = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "')";

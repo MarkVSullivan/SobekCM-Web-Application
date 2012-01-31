@@ -79,10 +79,11 @@ namespace SobekCM.Library.Aggregations
 						    }
                             Add_Browse_Files(hierarchyObject, tracer);
 						}
-					}
 
-					// TEMPORARILY, re-save the XML file
-				   // hierarchyObject.Write_Configuration_File(SobekCM.Library.SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory);
+                        // Since there was no configuration file, save one
+                        hierarchyObject.Write_Configuration_File(SobekCM.Library.SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory);
+
+					}
 
 					// Now, save this to the cache
 					if (!isRobot)

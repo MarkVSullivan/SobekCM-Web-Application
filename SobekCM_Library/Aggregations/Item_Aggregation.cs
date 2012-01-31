@@ -173,7 +173,13 @@ namespace SobekCM.Library.Aggregations
         /// <summary>
         ///   Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs
         /// </summary>
-        public bool Can_Browse_Items;
+        public bool Can_Browse_Items
+        {
+            get
+            {
+                return (Display_Options.IndexOf("I") >= 0);
+            }
+        }
 
         #endregion
 
@@ -189,7 +195,6 @@ namespace SobekCM.Library.Aggregations
             Name = String.Empty;
             ShortName = String.Empty;
             Description = String.Empty;
-            Can_Browse_Items = false;
             Is_Active = true;
             Hidden = false;
             Map_Search = 0;
@@ -238,9 +243,7 @@ namespace SobekCM.Library.Aggregations
         /// <param name = "Aggregation_ID"> ID for this aggregation object from the database </param>
         /// <param name = "Display_Options"> Display options used to determine the views and searches for this item</param>
         /// <param name = "Last_Item_Added"> Date the last item was added ( or 1/1/2000 by default )</param>
-        /// <param name = "Can_Browse_Items"> Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS browses </param>
-        public Item_Aggregation(string Code, string Aggregation_Type, int Aggregation_ID, string Display_Options,
-                                DateTime Last_Item_Added, bool Can_Browse_Items)
+        public Item_Aggregation(string Code, string Aggregation_Type, int Aggregation_ID, string Display_Options, DateTime Last_Item_Added)
         {
             // Save these parameters
             this.Code = Code;
@@ -248,7 +251,6 @@ namespace SobekCM.Library.Aggregations
             this.Aggregation_ID = Aggregation_ID;
             this.Last_Item_Added = Last_Item_Added;
             this.Display_Options = Display_Options;
-            this.Can_Browse_Items = Can_Browse_Items;
 
             // Set some defaults
             Metadata_Code = Code;
@@ -290,6 +292,7 @@ namespace SobekCM.Library.Aggregations
             if (Display_Options.Length == 0)
                 options = "BAFI";
             this.Display_Options = options;
+            bool home_search_found = false;
             foreach (char thisViewSearch in options)
             {
                 switch (thisViewSearch)
@@ -297,6 +300,7 @@ namespace SobekCM.Library.Aggregations
                     case 'B':
                     case 'D':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Basic_Search);
+                        home_search_found = true;
                         break;
 
                     case 'A':
@@ -305,10 +309,12 @@ namespace SobekCM.Library.Aggregations
 
                     case 'F':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.FullText_Search);
+                        home_search_found = true;
                         break;
 
                     case 'N':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Newspaper_Search);
+                        home_search_found = true;
                         break;
 
                     case 'M':
@@ -317,6 +323,7 @@ namespace SobekCM.Library.Aggregations
 
                     case '0':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.No_Home_Search);
+                        home_search_found = true;
                         break;
 
                     case 'I':
@@ -325,12 +332,19 @@ namespace SobekCM.Library.Aggregations
 
                     case 'C':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.dLOC_FullText_Search);
+                        home_search_found = true;
                         break;
 
                     case 'G':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Browse);
                         break;
                 }
+            }
+
+            // If no home search found, add the no home search view
+            if (!home_search_found)
+            {
+                viewsAndSearches.Insert(0, CollectionViewsAndSearchesEnum.No_Home_Search);
             }
 
             // Add the default result views

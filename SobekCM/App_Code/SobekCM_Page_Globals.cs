@@ -53,34 +53,85 @@ public class SobekCM_Page_Globals
 
     public SobekCM_Page_Globals(bool isPostBack, string page_name)
     {
-        tracer = new Custom_Tracer();
-        tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
-
-        // Don't really need to *build* these, so just define them as a new ones if null
-        if (Global.Checked_List == null)
-            Global.Checked_List = new Checked_Out_Items_List();
-        if (Global.Search_History == null)
-            Global.Search_History = new Recent_Searches();
-
-        // Make sure all the needed data is loaded into the Application State
-        Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
-                                                          ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
-                                                          ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                          ref Global.URL_Portals );
-
-        tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
-
         // Pull out the http request
         HttpRequest request = HttpContext.Current.Request;
-
-        // Check that something is saved for the original requested URL (may not exist if not forwarded)
-        if (!HttpContext.Current.Items.Contains("Original_URL"))
-            HttpContext.Current.Items["Original_URL"] = request.Url.ToString();
 
         // Get the base url
         string base_url = request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
         if (base_url.IndexOf("?") > 0)
             base_url = base_url.Substring(0, base_url.IndexOf("?"));
+
+        try
+        {
+            tracer = new Custom_Tracer();
+            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
+
+            // Don't really need to *build* these, so just define them as a new ones if null
+            if (Global.Checked_List == null)
+                Global.Checked_List = new Checked_Out_Items_List();
+            if (Global.Search_History == null)
+                Global.Search_History = new Recent_Searches();
+
+            // Make sure all the needed data is loaded into the Application State
+            Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
+                                                              ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
+                                                              ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
+                                                              ref Global.URL_Portals);
+
+            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
+
+            // Check that something is saved for the original requested URL (may not exist if not forwarded)
+            if (!HttpContext.Current.Items.Contains("Original_URL"))
+                HttpContext.Current.Items["Original_URL"] = request.Url.ToString();
+        }
+        catch ( Exception ee )
+        {
+            // Send to the dashboard
+            if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1")  || ( HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"] ) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
+            {
+                // Create an error message 
+                string errorMessage = "Error caught while validating application state";
+                if ( String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connection_String ))
+                {
+                    errorMessage = "No database connection string found!";
+                    string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
+                    try
+                    {
+                        if (!File.Exists(configFileLocation))
+                        {
+                            errorMessage = "Missing config/sobekcm.xml configuration file on the web server.<br />Ensure the configuration file 'sobekcm.xml' exists in a 'config' subfolder directly under the web application.<br />Example configuration is:" +
+                           "<div style=\"background-color: #bbbbbb; margin-left: 30px; margin-top:10px; padding: 3px;\">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;  ?&gt;<br /> &lt;configuration&gt;<br /> &nbsp; &nbsp &lt;connection_string type=&quot;MSSQL&quot;&gt;data source=localhost\\instance;initial catalog=SobekCM;integrated security=Yes;&lt;/connection_string&gt;<br /> &nbsp; &nbsp &lt;error_emails&gt;marsull@uflib.ufl.edu&lt;/error_emails&gt;<br /> &nbsp; &nbsp &lt;error_page&gt;http://ufdc.ufl.edu/error.html&lt;/error_page&gt;<br />&lt;/configuration&gt;</div>";
+                        }
+                    }
+                    catch
+                    {
+                        errorMessage = "No database connection string found.<br />Likely an error reading the configuration file due to permissions on the web server.<br />Ensure the configuration file 'sobekcm.xml' exists in a 'config' subfolder directly under the web application.<br />Example configuration is:" +
+                            "<div style=\"background-color: #bbbbbb; margin-left: 30px; margin-top:10px; padding: 3px;\">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;  ?&gt;<br /> &lt;configuration&gt;<br /> &nbsp; &nbsp &lt;connection_string type=&quot;MSSQL&quot;&gt;data source=localhost\\instance;initial catalog=SobekCM;integrated security=Yes;&lt;/connection_string&gt;<br /> &nbsp; &nbsp &lt;error_emails&gt;marsull@uflib.ufl.edu&lt;/error_emails&gt;<br /> &nbsp; &nbsp &lt;error_page&gt;http://ufdc.ufl.edu/error.html&lt;/error_page&gt;<br />&lt;/configuration&gt;</div>";
+                    }
+                }
+                else
+                {
+                    if (ee.Message.IndexOf("The EXECUTE permission") >= 0)
+                    {
+                        errorMessage = "Permissions error while connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+                    }
+                    else
+                    {
+                        errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + SobekCM_Library_Settings.Database_Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+                    }
+                }
+                // Wrap this into the SobekCM Exception
+                SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception(errorMessage, ee, tracer);
+
+                // Save this to the session state, and then forward to the dashboard
+                HttpContext.Current.Session["Last_Exception"] = newException;
+                HttpContext.Current.Response.Redirect("dashboard.aspx", true);
+            }
+            else
+            {
+                throw ee;
+            }
+        }
 
         // Analyze the response and get the mode
         try

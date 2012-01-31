@@ -50,6 +50,25 @@ namespace SobekCM.Library.Database
 			get	{	return connectionString;	}
 		}
 
+        /// <summary> Test connectivity to the database </summary>
+        /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
+        public static bool Test_Connection()
+        {
+
+            try
+            {
+                SqlConnection newConnection = new SqlConnection(connectionString);
+                newConnection.Open();
+
+                newConnection.Close();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 		/// <summary> Gets the datatable containging all possible disposition types </summary>
 		/// <remarks> This calls the 'Tracking_Get_All_Possible_Disposition_Types' stored procedure. </remarks>
 		public static DataTable All_Possible_Disposition_Types
@@ -2660,8 +2679,14 @@ namespace SobekCM.Library.Database
 				// Add the counts for this item aggregation
 				if (Include_Counts)
 				{
-					add_counts(aggrInfo, tempSet.Tables[ tempSet.Tables.Count - 1 ]);
+					add_counts(aggrInfo, tempSet.Tables[ tempSet.Tables.Count - 2 ]);
 				}
+
+                // If this is not a robot, add the parents
+                if (!Is_Robot)
+                {
+                    add_parents(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 1]);
+                }
 
 				// Return the built argument set
 				return aggrInfo;
@@ -2704,9 +2729,6 @@ namespace SobekCM.Library.Database
 
 				// Build the collection group object
 				Item_Aggregation aggrInfo = create_basic_aggregation_from_datatable(tempSet.Tables[0]);
-				aggrInfo.Show_New_Item_Browse = true;
-				if (aggrInfo.Display_Options.IndexOf("I") < 0)
-					aggrInfo.Display_Options = aggrInfo.Display_Options + "I";
 
 				// Add the advanced search values
 				add_advanced_terms(aggrInfo, tempSet.Tables[1]);
@@ -2756,8 +2778,7 @@ namespace SobekCM.Library.Database
 
 			// Build the collection group object
 			Item_Aggregation aggrInfo = new Item_Aggregation(thisRow[1].ToString().ToLower(), thisRow[4].ToString(),
-															 Convert.ToInt32(thisRow[0]), displayOptions, lastAdded,
-															 Convert.ToBoolean(thisRow[17]))
+															 Convert.ToInt32(thisRow[0]), displayOptions, lastAdded)
 											{
 												Name = thisRow[2].ToString(),
 												ShortName = thisRow[3].ToString(),
@@ -2825,6 +2846,18 @@ namespace SobekCM.Library.Database
 				}
 			}
 		}
+
+        /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
+		/// <param name="aggrInfo">Partially built item aggregation object</param>
+        /// <param name="parentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
+        private static void add_parents(Item_Aggregation aggrInfo, DataTable parentInfo)
+        {
+            foreach (DataRow parentRow in parentInfo.Rows)
+            {
+                Item_Aggregation_Related_Aggregations parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
+                aggrInfo.Add_Parent_Aggregation(parentObject);
+            }
+        }
 
 		/// <summary> Adds the search terms to display under advanced search from the datatable extracted from the database </summary>
 		/// <param name="aggrInfo">Partially built item aggregation object</param>
@@ -2954,10 +2987,11 @@ namespace SobekCM.Library.Database
 				// Return the built collection as readonly
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return false;
+            }
 		}
 
 		/// <summary> Populates the lookup tables for aliases which point to live aggregations </summary>
@@ -3447,6 +3481,10 @@ namespace SobekCM.Library.Database
 				tracer.Add_Trace("SobekCM_Database.Verify_Item_Lookup_Object", String.Empty);
 			}
 
+            // If no database string, don't try to connect
+            if (String.IsNullOrEmpty(connectionString))
+                return false;
+
 			lock (itemListPopulationLock)
 			{
 				bool updateList = true;
@@ -3920,6 +3958,30 @@ namespace SobekCM.Library.Database
 
 
 		}
+
+        /// <summary> Links a single user to a user group  </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="UserGroupID"> Primary key for the user group </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'mySobek_Link_User_To_User_Group' stored procedure</remarks> 
+        public static bool Link_User_To_User_Group( int UserID, int UserGroupID )
+        {
+            try
+            {
+                // Execute this non-query stored procedure
+                SqlParameter[] paramList = new SqlParameter[2];
+                paramList[0] = new SqlParameter("@userid", UserID);
+                paramList[1] = new SqlParameter("@usergroupip", UserGroupID);
+
+                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_User_Group", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return false;
+            }
+        }
 
 		/// <summary> Change an existing user's password </summary>
 		/// <param name="username"> Username for the user </param>
@@ -6441,13 +6503,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Is_Internal"> Flag indicates if this user group is considered an 'internal user'</param>
 		/// <param name="Can_Edit_All"> Flag indicates if this user group is authorized to edit all items in the library</param>
 		/// <param name="Is_System_Admin"> Flag indicates if this user group is a system Administrator</param>
+        /// <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
 		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user group </param>
 		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user group </param>
 		/// <param name="Clear_Editable_Links"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
 		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, Custom_Tracer tracer)
+		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, Custom_Tracer tracer)
 		{
 			if (tracer != null)
 			{
@@ -6457,7 +6520,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[12];
+				SqlParameter[] paramList = new SqlParameter[14];
 				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
 				paramList[1] = new SqlParameter("@groupname", GroupName);
 				paramList[2] = new SqlParameter("@groupdescription", GroupDescription);
@@ -6465,16 +6528,18 @@ namespace SobekCM.Library.Database
 				paramList[4] = new SqlParameter("@is_internal", Is_Internal);
 				paramList[6] = new SqlParameter("@can_edit_all", Can_Edit_All);
 				paramList[7] = new SqlParameter("@is_system_admin", Is_System_Admin);
-				paramList[8] = new SqlParameter("@clear_projects_templates", Clear_Projects_Templates);
-				paramList[9] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
-				paramList[10] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
-				paramList[11] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
+                paramList[8] = new SqlParameter("@is_portal_admin", Is_Portal_Admin);
+                paramList[9] = new SqlParameter("@include_tracking_standard_forms", Include_Tracking_Standard_Forms );
+				paramList[10] = new SqlParameter("@clear_projects_templates", Clear_Projects_Templates);
+				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
+				paramList[12] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
+				paramList[13] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
 				// Succesful, so return new id, if there was one
-				return Convert.ToInt32(paramList[11].Value);
+				return Convert.ToInt32(paramList[13].Value);
 			}
 			catch (Exception ee)
 			{

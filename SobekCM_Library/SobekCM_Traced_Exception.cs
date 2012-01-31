@@ -26,6 +26,15 @@ namespace SobekCM.Library
             }
         }
 
+        /// <summary> Returns the trace route (from the stored tracer object) as html </summary>
+        public string Trace_Route_HTML
+        {
+            get
+            {
+                return tracer != null ? tracer.Complete_Trace : String.Empty;
+            }
+        }
+
         /// <summary> Returns the trace route (from the stored tracer object) as text </summary>
         public string Trace_Route
         {
