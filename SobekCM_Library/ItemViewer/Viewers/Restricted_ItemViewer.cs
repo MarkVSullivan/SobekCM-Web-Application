@@ -49,12 +49,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 

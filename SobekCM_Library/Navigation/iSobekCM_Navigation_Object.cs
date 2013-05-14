@@ -73,6 +73,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary>An error was encountered during processing</summary>
 		Error,
 
+        /// <summary> System and portal administrator tasks </summary>
+        Administrative,
+
 		/// <summary> Admin view of the aggregation information </summary>
 		Aggregation_Admin_View,
 
@@ -318,51 +321,6 @@ namespace SobekCM.Library.Navigation
 	/// <summary> Type of mySobek display or action requested by the user </summary>
 	public enum My_Sobek_Type_Enum : byte
 	{
-		/// <summary> Allows all the information and behaviors for a single aggregation to be viewed / edited </summary>
-		Admin_Aggregation_Single = 1,
-
-		/// <summary> Provides list of all existing aggregations and allows admin to enter a new aggregation </summary>
-		Admin_Aggregations_Mgmt,
-
-		/// <summary> Gives the current SobekCM status and allows an authenticated system admin to temporarily halt the builder remotely via a database flag </summary>
-		Admin_Builder_Status,
-
-		/// <summary> Provides list of all forwards (or collection aliases) and allows admin to perform some very basic tasks </summary>
-		Admin_Forwarding,
-
-		/// <summary> Administrative home page with links to all the Admin tasks </summary>
-		Admin_Home,
-
-		/// <summary> Provides list of all existing interfaces and allows admin to enter a new interface or edit an existing interface </summary>
-		Admin_Interfaces,
-
-		/// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
-		Admin_IP_Restrictions,
-
-		/// <summary> Provides list of all existing projects and allows admin to enter a new project or edit an existing project </summary>
-		Admin_Projects,
-
-		/// <summary> Allows admin to perform some limited cache reset functions </summary>
-		Admin_Reset,
-
-		/// <summary> Allows admins to view and edit system-wide settings from the database </summary>
-		Admin_Settings,
-
-		/// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
-		Admin_Thematic_Headings,
-
-		/// <summary> Allows admin to perform some limited actions against the URL Portals data </summary>
-		Admin_URL_Portals,
-
-		/// <summary> Provides list of all users and allows admin to perform some very basic tasks </summary>
-		Admin_Users,
-
-		/// <summary> Allows for editing and viewing of user groups </summary>
-		Admin_User_Groups,
-
-		/// <summary> Provides list of all existing wordmarks/icons and allows admin to enter a new wordmark or edit an existing wordmark </summary>
-		Admin_Wordmarks,
-
 		/// <summary> Allows system administrators the ability to delete an item online </summary>
 		Delete_Item,
 	
@@ -423,6 +381,55 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Provides a list of all items linked to a user along with usage statistics for a given month/year </summary>
 		User_Usage_Stats
 	};
+
+    /// <summary> Type of admin display or action requested by the system or portal administrator </summary>
+    public enum Admin_Type_Enum : byte
+    {
+        /// <summary> Allows all the information and behaviors for a single aggregation to be viewed / edited </summary>
+        Aggregation_Single = 1,
+
+        /// <summary> Provides list of all existing aggregations and allows admin to enter a new aggregation </summary>
+        Aggregations_Mgmt,
+
+        /// <summary> Gives the current SobekCM status and allows an authenticated system admin to temporarily halt the builder remotely via a database flag </summary>
+        Builder_Status,
+
+        /// <summary> Provides list of all forwards (or collection aliases) and allows admin to perform some very basic tasks </summary>
+        Forwarding,
+
+        /// <summary> Administrative home page with links to all the Admin tasks </summary>
+        Home,
+
+        /// <summary> Provides list of all existing interfaces and allows admin to enter a new interface or edit an existing interface </summary>
+        Interfaces,
+
+        /// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
+        IP_Restrictions,
+
+        /// <summary> Provides list of all existing projects and allows admin to enter a new project or edit an existing project </summary>
+        Projects,
+
+        /// <summary> Allows admin to perform some limited cache reset functions </summary>
+        Reset,
+
+        /// <summary> Allows admins to view and edit system-wide settings from the database </summary>
+        Settings,
+
+        /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
+        Thematic_Headings,
+
+        /// <summary> Allows admin to perform some limited actions against the URL Portals data </summary>
+        URL_Portals,
+
+        /// <summary> Provides list of all users and allows admin to perform some very basic tasks </summary>
+        Users,
+
+        /// <summary> Allows for editing and viewing of user groups </summary>
+        User_Groups,
+
+        /// <summary> Provides list of all existing wordmarks/icons and allows admin to enter a new wordmark or edit an existing wordmark </summary>
+        Wordmarks
+    };
 
 
 	/// <summary> Flag is used to determine whether the table of contents should be displayed in the item viewer </summary>

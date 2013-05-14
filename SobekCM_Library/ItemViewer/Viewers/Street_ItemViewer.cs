@@ -43,12 +43,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -64,7 +64,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Build the value
             StringBuilder builder = new StringBuilder(5000);
-            Map_Streets_DataSet streets = SobekCM_Database.Get_All_Streets_By_Item(CurrentItem.SobekCM_Web.ItemID, Tracer);
+            Map_Streets_DataSet streets = SobekCM_Database.Get_All_Streets_By_Item(CurrentItem.Web.ItemID, Tracer);
 
             if (streets == null)
             {

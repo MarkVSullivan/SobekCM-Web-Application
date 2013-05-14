@@ -121,7 +121,7 @@ namespace SobekCM.Library.MySobekViewer
                 saveSearchBuilder.AppendLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 saveSearchBuilder.AppendLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
                 saveSearchBuilder.AppendLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-                saveSearchBuilder.AppendLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SEARCH</span></th>");
+                saveSearchBuilder.AppendLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
                 saveSearchBuilder.AppendLine("     </tr>");
                 saveSearchBuilder.AppendLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
@@ -150,7 +150,7 @@ namespace SobekCM.Library.MySobekViewer
             }
             else
             {
-                saveSearchBuilder.AppendLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the <img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/add_rect_button.gif\" alt=\"ADD\" /> button while viewing the results of your search or browse.</blockquote><br />");
+                saveSearchBuilder.AppendLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
             }
             saveSearchBuilder.AppendLine("</div>");
 

@@ -62,7 +62,7 @@ namespace SobekCM.Library.Citation.Template
                 if ( nodeReader.NodeType == XmlNodeType.Element )
                 {
                     // switch the rest based on the tag name
-                    switch( nodeName )
+                    switch (nodeName)
                     {
                         case "BANNER":
                             thisTemplate.Banner = read_text_node(nodeReader);
@@ -112,12 +112,12 @@ namespace SobekCM.Library.Citation.Template
                             break;
 
                         case "NOTES":
-                            thisTemplate.Notes = (thisTemplate.Notes + "  " + read_text_node( nodeReader )).Trim();
+                            thisTemplate.Notes = (thisTemplate.Notes + "  " + read_text_node(nodeReader)).Trim();
                             break;
 
                         case "DATECREATED":
                             DateTime dateCreated;
-                            if ( DateTime.TryParse(read_text_node(nodeReader), out dateCreated))
+                            if (DateTime.TryParse(read_text_node(nodeReader), out dateCreated))
                                 thisTemplate.DateCreated = dateCreated;
                             break;
 
@@ -128,7 +128,7 @@ namespace SobekCM.Library.Citation.Template
                             break;
 
                         case "CREATOR":
-                            thisTemplate.Creator = read_text_node( nodeReader );
+                            thisTemplate.Creator = read_text_node(nodeReader);
                             break;
 
                         case "BIBIDROOT":
@@ -136,9 +136,17 @@ namespace SobekCM.Library.Citation.Template
                             break;
 
                         case "DEFAULTVISIBILITY":
-                            short defaultVisibility;
-                            if (Int16.TryParse(read_text_node(nodeReader), out defaultVisibility))
-                                thisTemplate.Default_Visibility = defaultVisibility;
+                            string visibilityValue = read_text_node(nodeReader);
+                            switch (visibilityValue)
+                            {
+                                case "PRIVATE":
+                                    thisTemplate.Default_Visibility = -1;
+                                    break;
+                                    
+                                case "PUBLIC":
+                                    thisTemplate.Default_Visibility = 0;
+                                    break;
+                            }
                             break;
 
                         case "EMAILUPONSUBMIT":

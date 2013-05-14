@@ -1,7 +1,7 @@
 #region Using directives
 
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Navigation;
 
 #endregion
@@ -12,6 +12,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// an immediate redirect of the user's browser. </summary>
     /// <param name="new_url"> URL to forward the user to </param>
 	public delegate void Redirect_Requested( string new_url );
+
+    /// <summary> Page selector type enumeration </summary>
+    public enum ItemViewer_PageSelector_Type_Enum : byte
+    {
+        /// <summary> No page selector </summary>
+        NONE,
+
+        /// <summary> Drop down selection list to choose a particular page </summary>
+        DropDownList,
+
+        /// <summary> Links for pages of results </summary>
+        PageLinks
+    }
 
     /// <summary> Enumeration of the different item viewer types for displaying an item in HTML </summary>
     public enum ItemViewer_Type_Enum : byte
@@ -35,11 +48,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Displays the description for an archival EAD/Finding Guide type of item </summary>
         EAD_Description,
 
+        /// <summary> Embedded video viewer </summary>
+        Embedded_Video,
+
         /// <summary> List of features associated with this resource, from the authority portion of the database</summary>
         Features,
 
         /// <summary> Displays a flash file within the SobekCM window </summary>
         Flash,
+
+        /// <summary> Fragment renders the add/remove form for adding/removing items from a bookshelf to be included on demand in an item view </summary>
+        Fragment_AddForm,
+
+        /// <summary> Fragment renders the describe form for adding/removing items from a bookshelf to be included on demand in an item view </summary>
+        Fragment_DescribeForm,
+
+        /// <summary> Fragment renders the print form to be included on demand in an item view </summary>
+        Fragment_PrintForm,
+
+        /// <summary> Fragment renders the send/email form to be included on demand in an item view </summary>
+        Fragment_SendForm,
+
+        /// <summary> Fragment renders the share (social media) form to be included on demand in an item view </summary>
+        Fragment_ShareForm,
+
+
+
+
 
         /// <summary> Displays the item in a full-screen implementation of GnuBooks page turner </summary>
         GnuBooks_PageTurner,
@@ -64,6 +99,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Embeds the PDF viewer into the SobekCM window for viewing a PDF related to this digital resource </summary>
         PDF,
+
+        /// <summary> Quality control online </summary>
+        Quality_Control,
 
         /// <summary> Shows thumbnails of all the images related to this digital resource  </summary>
         Related_Images,
@@ -135,8 +173,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the current page for paging purposes </summary>
         int Current_Page { get; }
 
+        /// <summary> Flag indicates if the item viewer should add the standard item menu, or
+        /// if this item viewer overrides that menu and will write its own menu </summary>
+        /// <remarks> For example, the QC and the spatial editing itemviewers create their own custom menus
+        /// due to the complexity of the work being done in those viewers. </remarks>
+        bool Include_Standard_Item_Menu { get;  }
+
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        bool Show_Page_Selector { get; }
+        ItemViewer_PageSelector_Type_Enum Page_Selector { get; }
 
         /// <summary> Gets the type of item viewer </summary>
         ItemViewer_Type_Enum ItemViewer_Type { get; }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 
 #endregion
@@ -53,7 +54,7 @@ namespace SobekCM.Library.Application_State
 		/// <summary> Returns the list of recent searches as a HTML table for display online </summary>
 		/// <param name="language"> Current language of the user's interface </param>
 		/// <returns> HTML for a table of the recent searches ( collection, type, terms, time )</returns>
-		public string ToHTML( Language_Enum language)
+		public string ToHTML( Web_Language_Enum language)
 		{
 			if (searches.Count == 0)
 			{
@@ -69,14 +70,14 @@ namespace SobekCM.Library.Application_State
 
 			switch ( language )
 			{
-				case Language_Enum.French:
+                case Web_Language_Enum.French:
 					builder.Append("    <th><span style=\"color: White\">COLLECTION</span></th>" + Environment.NewLine );
 					builder.Append("    <th><span style=\"color: White\">TYPE</span></th>" + Environment.NewLine );
 					builder.Append("    <th><span style=\"color: White\">TERMES</span></th>" + Environment.NewLine );
 					builder.Append("    <th><span style=\"color: White\">HEURE</span></th>" + Environment.NewLine );
 					break;
 
-				case Language_Enum.Spanish:
+                case Web_Language_Enum.Spanish:
 					builder.Append("    <th><span style=\"color: White\">COLECCION</span></th>" + Environment.NewLine );
 					builder.Append("    <th><span style=\"color: White\">TIPO</span></th>" + Environment.NewLine );
 					builder.Append("    <th><span style=\"color: White\">TERMINOS</span></th>" + Environment.NewLine );

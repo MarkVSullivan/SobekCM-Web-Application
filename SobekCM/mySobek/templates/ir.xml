@@ -15,7 +15,7 @@
 	<creator>Mark V Sullivan</creator>
 	<includeUserAsAuthor>true</includeUserAsAuthor>
 	<uploads>FILE</uploads>
-	<uploadMandatory>true</uploadMandatory>
+	<uploadMandatory>false</uploadMandatory>
 	<bibidRoot>IR</bibidRoot>
 	<emailUponSubmit>ufdc@uflib.ufl.edu</emailUponSubmit>
 

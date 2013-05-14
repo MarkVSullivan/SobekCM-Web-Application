@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.EAD;
 
 #endregion
 
@@ -32,12 +34,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -77,6 +79,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("EAD_Description_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
             }
 
+            // Get the metadata module for EADs
+            EAD_Info eadInfo = (EAD_Info)CurrentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+
             // Build the value
             StringBuilder builder = new StringBuilder(15000);
             builder.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\">Archival Description</span></td>");
@@ -97,11 +102,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
                 }
 
-                builder.Append(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(CurrentItem.EAD.Description, terms));
+                builder.Append(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(eadInfo.Full_Description, terms));
             }
             else
             {
-                builder.Append(CurrentItem.EAD.Description);
+                builder.Append(eadInfo.Full_Description);
             }
             
             builder.AppendLine("              </blockquote>" );

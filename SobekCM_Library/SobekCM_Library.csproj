@@ -79,16 +79,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationServer.Caching.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Microsoft.ApplicationServer.Caching.Client">
       <HintPath>..\DLLs\AppFabric\Microsoft.ApplicationServer.Caching.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationServer.Caching.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Microsoft.ApplicationServer.Caching.Core">
       <HintPath>..\DLLs\AppFabric\Microsoft.ApplicationServer.Caching.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet, Version=0.3.0.0, Culture=neutral, PublicKeyToken=bc21753e8aa334cb, processorArchitecture=MSIL">
@@ -108,6 +105,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
+    <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Custom_Directive.cs" />
     <Compile Include="Application State\Application_State_Builder.cs" />
     <Compile Include="Application State\Checked_Out_Item.cs" />
@@ -116,7 +115,6 @@
     <Compile Include="Application State\Single_Item.cs" />
     <Compile Include="Application State\IP_Restriction_Ranges.cs" />
     <Compile Include="Application State\Item_Lookup_Object.cs" />
-    <Compile Include="Application State\Language_Enum.cs" />
     <Compile Include="Application State\Language_Support_Info.cs" />
     <Compile Include="Application State\Multiple_Volume_Item.cs" />
     <Compile Include="Application State\Portal.cs" />
@@ -127,6 +125,7 @@
     <Compile Include="Builder\Builder_Source_Folder.cs" />
     <Compile Include="Builder\Incoming_Digital_Resource.cs" />
     <Compile Include="Citation\Elements\base types\checkBox_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Catalog_Record_Number_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Classification_Element.cs" />
@@ -134,9 +133,20 @@
     <Compile Include="Citation\Elements\implemented elements\Dark_Flag_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Description_Standard_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Disposition_Advice_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\EmbeddedVideo_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\FAST_Subject_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Frequency_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Group_Title_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Language_Select_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_AggregationLevel_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_Context_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_DifficultyLevel_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_IntendedUser_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_InteractivityLevel_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_InteractivityType_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_ResourceType_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_Status_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LOM_TypicalAgeRange_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Material_Received_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\OCLC_Record_Number_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Primary_Alt_Identifier_Element.cs" />
@@ -144,10 +154,35 @@
     <Compile Include="Citation\Elements\implemented elements\Tickler_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Tracking_Box_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Visibility_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_CulturalContext_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_Inscription_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_Material_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_Measurement_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_StateEdition_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_StylePeriod_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\VRA_Technique_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
+    <Compile Include="Configuration\Web_Language_Enum.cs" />
+    <Compile Include="Configuration\QualityControl_Configuration.cs" />
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
-    <Compile Include="MySobekViewer\Aggregation_Single_Admin_MySobekViewer.cs" />
+    <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
+    <Compile Include="ItemViewer\Fragments\AddRemove_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\baseFragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\Describe_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\PrintForm_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\Send_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs" />
+    <Compile Include="AdminViewer\Aggregation_Single_AdminViewer.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
+    <Compile Include="Resource_Web_Config_Writer.cs" />
+    <Compile Include="Settings\Mime_Type_Info.cs" />
+    <Compile Include="Statistics\SobekCM_Hit.cs" />
+    <Compile Include="Statistics\SobekCM_Log_Reader.cs" />
+    <Compile Include="Statistics\SobekCM_Session.cs" />
+    <Compile Include="Statistics\SobekCM_Stats_DataSet.cs" />
+    <Compile Include="Statistics\SobekCM_Stats_Reader_Processor.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
     <Compile Include="AggregationViewer\Viewers\Item_Count_AggregationViewer.cs" />
@@ -160,8 +195,8 @@
     <Compile Include="AggregationViewer\Viewers\Usage_Statistics_AggregationViewer.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="MySobekViewer\File_Management_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Settings_Admin_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Thematic_Headings_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Settings_AdminViewer.cs" />
+    <Compile Include="AdminViewer\Thematic_Headings_AdminViewer.cs" />
     <Compile Include="MySobekViewer\User_Usage_Stats_MySobekViewer.cs" />
     <Compile Include="Results\Multiple_Paged_Results_Args.cs" />
     <Compile Include="Results\Private_Items_List.cs" />
@@ -274,26 +309,26 @@
     <Compile Include="Results\iSearch_Title_Result.cs" />
     <Compile Include="Results\Search_Results_Statistics.cs" />
     <Compile Include="Search\Metadata_Search_Field.cs" />
-    <Compile Include="MySobekViewer\Admin_Home_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Aggregations_Mgmt_Admin_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Builder_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Home_AdminViewer.cs" />
+    <Compile Include="AdminViewer\Aggregations_Mgmt_AdminViewer.cs" />
+    <Compile Include="AdminViewer\Builder_Admin_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Delete_Item_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Group_Behaviors_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Behaviors_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Serial_Hierarchy_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Aliases_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Aliases_AdminViewer.cs" />
     <Compile Include="MySobekViewer\Group_Add_Volume_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Group_AutoFill_Volume_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\IP_Restrictions_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\IP_Restrictions_AdminViewer.cs" />
     <Compile Include="MySobekViewer\Mass_Update_Items_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Portals_Admin_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Skins_Admin_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Projects_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Portals_AdminViewer.cs" />
+    <Compile Include="AdminViewer\Skins_AdminViewer.cs" />
+    <Compile Include="AdminViewer\Projects_AdminViewer.cs" />
     <Compile Include="MySobekViewer\Saved_Searches_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Users_Admin_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\User_Group_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Users_AdminViewer.cs" />
+    <Compile Include="AdminViewer\User_Group_AdminViewer.cs" />
     <Compile Include="MySobekViewer\User_Tags_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Wordmarks_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Wordmarks_AdminViewer.cs" />
     <Compile Include="Navigation\SobekCM_Navigation_Object.cs" />
     <Compile Include="Navigation\SobekCM_QueryString_Analyzer_Legacy.cs" />
     <Compile Include="ResultsViewer\Bookshelf_View_ResultsViewer.cs" />
@@ -360,7 +395,7 @@
     <Compile Include="ItemViewer\Viewers\HTML_Map_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\HTML_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\iItemViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\JP2_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Aware_JP2_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\JPEG_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Related_Images_ItemViewer.cs" />
@@ -420,9 +455,9 @@
       <Project>{7886866E-6B81-4001-8B50-069E8E7B3CB8}</Project>
       <Name>FileUploadLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Bib_Package\SobekCM_Bib_Package.csproj">
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395C2621-CE19-41E0-AA1A-ABDB37F6E815}</Project>
-      <Name>SobekCM_Bib_Package</Name>
+      <Name>SobekCM_Resource_Object</Name>
     </ProjectReference>
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
       <Project>{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}</Project>
@@ -446,7 +481,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Localization\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

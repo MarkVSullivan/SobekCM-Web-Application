@@ -402,21 +402,6 @@ function delete_search( id )
     return false;
 }
 
-function remove_item_itemviewer( )
-{
-    input_box=confirm("Do you really want to remove this item from all bookshelves?");
-    if (input_box==true) 
-    { 
-        // Set the hidden value this data
-        var hiddenfield = document.getElementById('item_action');
-        hiddenfield.value = 'remove';
- 
-        document.itemNavForm.submit(); 
-    }
-    
-    // Return false to prevent another return trip to the server
-    return false;
-}
 
 // Remove an item from a bookshelf
 function remove_item( id )
@@ -452,31 +437,7 @@ function delete_tag( id ) {
     return false;
 }
 
-// Add this document and title to the browser's favorites
-function add_to_favorites()
-{
-    var href = location.href;
-    var title = document.title;
- 
-	if (window.sidebar) 
-	{
-        window.sidebar.addPanel(title, href, ''); // Mozilla Firefox Bookmark
-    } 
-    else if (window.external) 
-    {
-        window.external.AddFavorite(href, title); // IE Favorite
-    } 
-    else if (window.opera && window.print) 
-    { //Opera Hotlist
-        var elem = document.createElement('a');elem.setAttribute('href',href);elem.setAttribute('title',title);elem.setAttribute('rel','sidebar');elem.click();
-    } 
-    else 
-    {
-        alert("We are sorry, your browser does not support 'bookmarking' in this manner. You may bookmark using the browsers bookmark button.");
-    }
-    
-    return false;
-}
+
 
 
 function preferences( root )
@@ -540,12 +501,7 @@ function item_search_keytrap(event, root) {
     }
 }
 
-function item_jump_sobekcm( root )
-{
-	var page_val = document.itemNavForm.page_select.value;
-	var url = root.replace("XX1234567890XX", page_val);  
-	window.location.href = url;
-}
+
 
 function sort_results( root )
 {

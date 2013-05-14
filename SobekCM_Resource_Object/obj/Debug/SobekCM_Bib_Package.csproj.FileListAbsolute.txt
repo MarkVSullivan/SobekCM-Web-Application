@@ -1,0 +1,12 @@
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\SobekCM_Bib_Package.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Zoom.Net.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Zoom.Net.YazSharp.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Zoom.Net.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Zoom.Net.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\bin\Debug\Zoom.Net.YazSharp.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\obj\Debug\SobekCM_Bib_Package.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Bib_Package\obj\Debug\SobekCM_Bib_Package.pdb

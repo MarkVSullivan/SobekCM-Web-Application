@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -235,7 +236,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string address_text = "Address";
             const string locateText = "Locate";
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 search_button_text = "Buscar";
                 find_button_text = "Localizar";
@@ -257,7 +258,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             switch( currentMode.Language )
             {
 
-                case Language_Enum.Spanish:
+                case Web_Language_Enum.Spanish:
                     if (currentCollection.Map_Search >= 100)
                     {
                         Output.WriteLine("          <table cellspacing=\"2px\">");

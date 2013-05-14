@@ -1,0 +1,65 @@
+﻿<RecentFiles>
+  <RecentFiles>
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:base types/f:comboBox_TextBox_Element.cs" caret="12143" fromTop="25" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:Container_Element.cs" caret="6111" fromTop="43" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_Context_Element.cs" caret="1132" fromTop="14" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_TypicalAgeRange_Element.cs" caret="5769" fromTop="28" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_ResourceType_Element.cs" caret="5767" fromTop="24" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_DifficultyLevel_Element.cs" caret="1341" fromTop="35" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_InteractivityLevel_Element.cs" caret="1357" fromTop="35" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_InteractivityType_Element.cs" caret="1245" fromTop="33" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_Status_Element.cs" caret="1168" fromTop="34" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/d:implemented elements/f:LOM_AggregationLevel_Element.cs" caret="1004" fromTop="24" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Metadata_Modules/d:LearningObjects/f:LearningObjectMetadata.cs" caret="17297" fromTop="12" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Skins/f:SobekCM_Skin_Object.cs" caret="8572" fromTop="138" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:mySobek/d:templates/f:edit.xml" caret="0" fromTop="0" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:mySobek/d:templates/f:internal.xml" caret="4450" fromTop="24" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:mySobek/d:templates/f:editmarc.xml" caret="1053" fromTop="12" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/f:Element_Factory.cs" caret="3751" fromTop="0" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:MainWriters/f:Html_MainWriter.cs" caret="99382" fromTop="33" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/f:Element_Type.cs" caret="27223" fromTop="21" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Bib_Info/d:MODS_Info/f:MODS_Origin_Info.cs" caret="22723" fromTop="16" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Bib_Info/d:MODS_Info/f:MODS_Info.cs" caret="76277" fromTop="19" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:METS_Sec_ReaderWriters/f:MODS_METS_dmdSec_ReaderWriter.cs" caret="22472" fromTop="0" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Database/f:SobekCM_Database.cs" caret="41761" fromTop="18" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:App_Code/f:SobekCM_Page_Globals.cs" caret="17661" fromTop="22" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/f:Web.config" caret="1795" fromTop="14" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Item.css" caret="0" fromTop="0" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="39658" fromTop="22" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="61156" fromTop="32" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:METS_Sec_ReaderWriters/f:VRACore_METS_dmdSec_ReaderWriter.cs" caret="10642" fromTop="15" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Metadata_Modules/d:VRACore/f:VRACore_Info.cs" caret="3215" fromTop="37" />
+  </RecentFiles>
+  <RecentEdits>
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="72105" fromTop="14" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="75177" fromTop="26" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="73953" fromTop="37" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="74787" fromTop="37" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="75018" fromTop="41" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="74479" fromTop="37" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:ItemViewer/d:Viewers/f:Citation_ItemViewer.cs" caret="74294" fromTop="33" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Skins/f:SobekCM_Skin_Object.cs" caret="7095" fromTop="29" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Skins/f:SobekCM_Skin_Object.cs" caret="6024" fromTop="14" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Skins/f:SobekCM_Skin_Object.cs" caret="8572" fromTop="9" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:MainWriters/f:Html_MainWriter.cs" caret="99536" fromTop="36" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:mySobek/d:templates/f:internal.xml" caret="827" fromTop="17" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/f:Web.config" caret="2080" fromTop="19" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/f:Element_Type.cs" caret="27438" fromTop="25" />
+    <File id="4426FF50-74C7-4B88-878B-EFB9BC2317BD/d:Citation/d:Elements/f:Element_Type.cs" caret="27223" fromTop="21" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:METS_Sec_ReaderWriters/f:MODS_METS_dmdSec_ReaderWriter.cs" caret="22466" fromTop="13" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Bib_Info/d:MODS_Info/f:MODS_Origin_Info.cs" caret="16370" fromTop="32" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Bib_Info/d:MODS_Info/f:MODS_Origin_Info.cs" caret="22156" fromTop="0" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:METS_Sec_ReaderWriters/f:VRACore_METS_dmdSec_ReaderWriter.cs" caret="7802" fromTop="27" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:METS_Sec_ReaderWriters/f:VRACore_METS_dmdSec_ReaderWriter.cs" caret="10206" fromTop="39" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:METS_Sec_ReaderWriters/f:VRACore_METS_dmdSec_ReaderWriter.cs" caret="10642" fromTop="33" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="42291" fromTop="50" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="42104" fromTop="43" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="42289" fromTop="40" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="42162" fromTop="43" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="41128" fromTop="34" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="40191" fromTop="27" />
+    <File id="6CC18931-A1FC-4C38-8378-BA2348BBCD0C/d:default/f:SobekCM_Metadata.css" caret="39658" fromTop="22" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Metadata_Modules/d:VRACore/f:VRACore_Info.cs" caret="3213" fromTop="36" />
+    <File id="395C2621-CE19-41E0-AA1A-ABDB37F6E815/d:Metadata_Modules/d:VRACore/f:VRACore_Info.cs" caret="3168" fromTop="34" />
+  </RecentEdits>
+</RecentFiles>

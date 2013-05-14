@@ -4,8 +4,8 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Database;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -96,10 +96,10 @@ namespace SobekCM.Library.MySobekViewer
                template.Save_To_Bib(item, user, 1);
 
                // Save the group title
-               SobekCM_Database.Update_Item_Group(item.BibID, item.SobekCM_Web.GroupTitle, item.Bib_Info.sortSafeTitle(item.SobekCM_Web.GroupTitle, true), String.Empty, item.SobekCM_Web.Primary_Identifier.Type, item.SobekCM_Web.Primary_Identifier.Identifier );
+               SobekCM_Database.Update_Item_Group(item.BibID, item.Behaviors.GroupTitle, item.Bib_Info.sortSafeTitle(item.Behaviors.GroupTitle, true), String.Empty, item.Behaviors.Primary_Identifier.Type, item.Behaviors.Primary_Identifier.Identifier );
 
                // Save the interfaces to the group item as well
-               SobekCM_Database.Save_Item_Group_Web_Skins(item.SobekCM_Web.GroupID, item );
+               SobekCM_Database.Save_Item_Group_Web_Skins(item.Web.GroupID, item );
 
                // Store on the caches (to replace the other)
                Cached_Data_Manager.Remove_Digital_Resource_Objects(item.BibID, Tracer);

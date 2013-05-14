@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.Users;
@@ -105,12 +106,12 @@ namespace SobekCM.Library.HTML
             const string publicFolderText = "PUBLIC BOOKSHELF";
             string homeText = "HOME";
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 homeText = "PAGE D'ACCUEIL";
             }
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 homeText = "INICIO";
             }

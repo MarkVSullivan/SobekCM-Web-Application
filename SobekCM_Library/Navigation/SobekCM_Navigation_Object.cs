@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 
 #endregion
 
@@ -130,8 +131,8 @@ namespace SobekCM.Library.Navigation
 			Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
 			Internal_Type = Internal_Type_Enum.Aggregations_List;
 			My_Sobek_Type = My_Sobek_Type_Enum.Home;
-			Language = Language_Enum.English;
-			Default_Language = Language_Enum.English;
+			Language = Web_Language_Enum.English;
+			Default_Language = Web_Language_Enum.English;
 			Writer_Type = Writer_Type_Enum.HTML;
 			TOC_Display = TOC_Display_Type_Enum.Undetermined;
 			Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
@@ -150,6 +151,8 @@ namespace SobekCM.Library.Navigation
 			FolderID = 0;
 			Sort = 0;
 			ItemID_DEPRECATED = -1;
+		    Thumbnails_Per_Page = -100;
+		    Size_Of_Thumbnails = -1;
 
 			Invalid_Item = false;
 			Skin_in_URL = false;
@@ -171,42 +174,42 @@ namespace SobekCM.Library.Navigation
 		/// <param name="IP">IP address from the HTTP request</param>
 		/// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
 		public bool Set_Robot_Flag(string UserAgent, string IP)
-		{
-			if (UserAgent != null)
-			{
-				string useragent_upper = UserAgent.ToUpper();
+        {
+            if (UserAgent != null)
+            {
+                string useragent_upper = UserAgent.ToUpper();
 
-				if (useragent_upper.IndexOf("BOT") >= 0)
-				{
-					if ((useragent_upper.IndexOf("MSNBOT") >= 0) || (useragent_upper.IndexOf("GIGABOT") >= 0) || (useragent_upper.IndexOf("GOOGLEBOT") >= 0) || (useragent_upper.IndexOf("AISEARCHBOT") >= 0) || (useragent_upper.IndexOf("CCBOT") >= 0) || (useragent_upper.IndexOf("PLONEBOT") >= 0) || (useragent_upper.IndexOf("CAZOODLEBOT") >= 0) || (useragent_upper.IndexOf("DISCOBOT") >= 0) || (useragent_upper.IndexOf("BINGBOT") >= 0) || (useragent_upper.IndexOf("YANDEXBOT") >= 0) || (useragent_upper.IndexOf("ATRAXBOT") >= 0) || (useragent_upper.IndexOf("MJ12BOT") >= 0) || (useragent_upper.IndexOf("SITEBOT") >= 0) || (useragent_upper.IndexOf("LINGUEE+BOT") >= 0) || (useragent_upper.IndexOf("MLBOT") >= 0) || (useragent_upper.IndexOf("NEXTGENSEARCHBOT") >= 0))
-					{
-						Is_Robot = true;
-						return true;
-					}
-				}
+                if (useragent_upper.IndexOf("BOT") >= 0)
+                {
+                    if ((useragent_upper.IndexOf("MSNBOT") >= 0) || (useragent_upper.IndexOf("GIGABOT") >= 0) || (useragent_upper.IndexOf("GOOGLEBOT") >= 0) || (useragent_upper.IndexOf("AISEARCHBOT") >= 0) || (useragent_upper.IndexOf("CCBOT") >= 0) || (useragent_upper.IndexOf("PLONEBOT") >= 0) || (useragent_upper.IndexOf("CAZOODLEBOT") >= 0) || (useragent_upper.IndexOf("DISCOBOT") >= 0) || (useragent_upper.IndexOf("BINGBOT") >= 0) || (useragent_upper.IndexOf("YANDEXBOT") >= 0) || (useragent_upper.IndexOf("ATRAXBOT") >= 0) || (useragent_upper.IndexOf("MJ12BOT") >= 0) || (useragent_upper.IndexOf("SITEBOT") >= 0) || (useragent_upper.IndexOf("LINGUEE+BOT") >= 0) || (useragent_upper.IndexOf("MLBOT") >= 0) || (useragent_upper.IndexOf("NEXTGENSEARCHBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEWEBROBOT") >= 0) || (useragent_upper.IndexOf("EZOOMS.BOT") >= 0) || (useragent_upper.IndexOf("LSSBOT") == 0) || (useragent_upper.IndexOf("DISCOVERYBOT") >= 0))
+                    {
+                        Is_Robot = true;
+                        return true;
+                    }
+                }
 
-				if ((useragent_upper.IndexOf("CRAWLER") >= 0) || (useragent_upper.IndexOf("SLURP") >= 0) || (useragent_upper.IndexOf("WEBVAC") >= 0) || (useragent_upper.IndexOf("ABOUT.ASK.COM") >= 0) || (useragent_upper.IndexOf("SCOUTJET") >= 0) || (useragent_upper.IndexOf("SITESUCKER") >= 0) || (useragent_upper.IndexOf("SEARCHME.COM") >= 0) || (useragent_upper.IndexOf("PICSEARCH.COM") >= 0) || (useragent_upper.IndexOf("XENU+LINK+SLEUTH") >= 0) || (useragent_upper.IndexOf("YANDEX") >= 0) || (useragent_upper.IndexOf("JAVA/") == 0) || (useragent_upper.IndexOf("SOGOU+WEB+SPIDER") >= 0) || (useragent_upper.IndexOf("CAMONTSPIDER") >= 0))
-				{
-					Is_Robot = true;
-					return true;
-				}
+                if ((useragent_upper.IndexOf("CRAWLER") >= 0) || (useragent_upper.IndexOf("SLURP") >= 0) || (useragent_upper.IndexOf("WEBVAC") >= 0) || (useragent_upper.IndexOf("ABOUT.ASK.COM") >= 0) || (useragent_upper.IndexOf("SCOUTJET") >= 0) || (useragent_upper.IndexOf("SITESUCKER") >= 0) || (useragent_upper.IndexOf("SEARCHME.COM") >= 0) || (useragent_upper.IndexOf("PICSEARCH.COM") >= 0) || (useragent_upper.IndexOf("XENU+LINK+SLEUTH") >= 0) || (useragent_upper.IndexOf("YANDEX") >= 0) || (useragent_upper.IndexOf("JAVA/") == 0) || (useragent_upper.IndexOf("SOGOU+WEB+SPIDER") >= 0) || (useragent_upper.IndexOf("CAMONTSPIDER") >= 0))
+                {
+                    Is_Robot = true;
+                    return true;
+                }
 
-				if ((useragent_upper.IndexOf("BAIDUSPIDER") >= 0) || (useragent_upper.IndexOf("ICOPYRIGHT+CONDUCTOR") >= 0) || (useragent_upper.IndexOf("HTTP://AHREFS.COM/ROBOT") >= 0) || (useragent_upper.IndexOf("HTTP://BENDERTHEROBOT.TUMBLR.COM") >= 0))
-				{
-					Is_Robot = true;
-					return true;
-				}
-			}
+                if ((useragent_upper.IndexOf("BAIDUSPIDER") >= 0) || (useragent_upper.IndexOf("ICOPYRIGHT+CONDUCTOR") >= 0) || (useragent_upper.IndexOf("HTTP://AHREFS.COM/ROBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEROBOT.TUMBLR.COM") >= 0) || (useragent_upper.IndexOf("SHOULU.JIKE.COM/SPIDER") >= 0))
+                {
+                    Is_Robot = true;
+                    return true;
+                }
+            }
 
-			// First IP address is for test purposes only
-			if ((IP == "128.227.223.160") || (IP == "216.118.117.45") || (IP.IndexOf("65.55.230.") == 0) || (IP == "92.82.225.56") || (IP.IndexOf("220.181.51.") == 0)  || ( IP == "193.105.210.170"))
-			{
-				Is_Robot = true;
-				return true;
-			}
+            // First IP address is for test purposes only
+            if ((IP == "128.227.223.160") || (IP == "216.118.117.45") || (IP.IndexOf("65.55.230.") == 0) || (IP == "92.82.225.56") || (IP.IndexOf("220.181.51.") == 0) || (IP == "193.105.210.170") || (IP == "192.162.19.21"))
+            {
+                Is_Robot = true;
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
 		#endregion
 
@@ -277,8 +280,11 @@ namespace SobekCM.Library.Navigation
 		/// <summary> mySobek type of display for the current request.</summary>
 		public My_Sobek_Type_Enum My_Sobek_Type { get; set; }
 
+        /// <summary> Admin type of display for the current request.</summary>
+        public Admin_Type_Enum Admin_Type { get; set; }
+
 		/// <summary> mySobek submode for the current request.</summary>
-		/// <remarks>The value returned is always lower case</remarks>
+		/// <remarks>The value returned is always lower case, and is also used for the admin pages</remarks>
 		public string My_Sobek_SubMode
 		{
 			get { return mysobekSubmode ?? String.Empty; }
@@ -366,15 +372,15 @@ namespace SobekCM.Library.Navigation
 		public Home_Type_Enum Home_Type { get; set; }
 
 		/// <summary> Language for the interface </summary>
-		public Language_Enum Language { get; set; }
+        public Web_Language_Enum Language { get; set; }
 
 		/// <summary> Default language for this user, from their browser settings </summary>
-		public Language_Enum Default_Language { get; set; }
+        public Web_Language_Enum Default_Language { get; set; }
 
 		/// <summary> Language code for the current skin language  </summary>
 		public string Language_Code
 		{
-			get { return Language_Enum_Converter.Language_Enum_To_Code(Language); }
+			get { return Web_Language_Enum_Converter.Enum_To_Code(Language); }
 		}
 
 		/// <summary> Browse or info mode to display </summary>
@@ -504,7 +510,16 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Viewport rotation for the zoomable image display </summary>
 		public ushort Viewport_Rotation { get; set; }
 
-		/// <summary> Writer type to be employed for rendering </summary>
+        /// <summary> Thumbnails per page to appear in the related images item viewer  </summary>
+        public short Thumbnails_Per_Page { get; set;  }
+
+        /// <summary> Size of Thumbnails to appear in the related items viewer </summary>
+        public short Size_Of_Thumbnails { get; set; }
+
+        /// <summary> Fragment utilized when only a portion of a page needs to be rendered </summary>
+        public string Fragment { get; set; }
+
+	    /// <summary> Writer type to be employed for rendering </summary>
 		public Writer_Type_Enum Writer_Type { get; set; }
 
 		/// <summary> Browser type </summary>
@@ -676,59 +691,6 @@ namespace SobekCM.Library.Navigation
 				case Display_Mode_Enum.My_Sobek:
 					switch (My_Sobek_Type)
 					{
-						case My_Sobek_Type_Enum.Admin_Home:
-							return this_base_url + "my/admin" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Aggregation_Single:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/editaggr/" + aggregation + "/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/editaggr/" + aggregation + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Aggregations_Mgmt:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/aggregations/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/aggregations" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Builder_Status:
-							return this_base_url + "my/builder" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Forwarding:
-							return this_base_url + "my/aliases" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Interfaces:
-							return this_base_url + "my/webskins" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Projects:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/projects/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/projects" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_IP_Restrictions:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/restrictions/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/restrictions" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_URL_Portals:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/portals/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/portals" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Users:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/users/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/users" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_User_Groups:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/groups/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/groups" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Wordmarks:
-							return this_base_url + "my/wordmarks" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Reset:
-							return this_base_url + "my/reset" + urlOptions1;
-
 						case My_Sobek_Type_Enum.Logon:
 							if (!String.IsNullOrEmpty(returnUrl))
 								return this_base_url + "my/logon?return=" + HttpUtility.UrlEncode(returnUrl).Replace("%2c", ",")  + urlOptions2;
@@ -905,18 +867,79 @@ namespace SobekCM.Library.Navigation
 							if (!String.IsNullOrEmpty(mysobekSubmode))
 								return this_base_url + "my/stats/" + mysobekSubmode + urlOptions1;
 							return this_base_url + "my/stats" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Thematic_Headings:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/headings/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/headings" + urlOptions1;
-
-						case My_Sobek_Type_Enum.Admin_Settings:
-							if (!String.IsNullOrEmpty(mysobekSubmode))
-								return this_base_url + "my/settings/" + mysobekSubmode + urlOptions1;
-							return this_base_url + "my/settings" + urlOptions1;
 					}
 					break;
+
+                case Display_Mode_Enum.Administrative:
+                    switch (Admin_Type)
+                    {
+                        case Admin_Type_Enum.Home:
+                            return this_base_url + "admin" + urlOptions1;
+
+                        case Admin_Type_Enum.Aggregation_Single:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/editaggr/" + aggregation + "/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/editaggr/" + aggregation + urlOptions1;
+
+                        case Admin_Type_Enum.Aggregations_Mgmt:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/aggregations/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/aggregations" + urlOptions1;
+
+                        case Admin_Type_Enum.Builder_Status:
+                            return this_base_url + "admin/builder" + urlOptions1;
+
+                        case Admin_Type_Enum.Forwarding:
+                            return this_base_url + "admin/aliases" + urlOptions1;
+
+                        case Admin_Type_Enum.Interfaces:
+                            return this_base_url + "admin/webskins" + urlOptions1;
+
+                        case Admin_Type_Enum.Projects:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/projects/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/projects" + urlOptions1;
+
+                        case Admin_Type_Enum.IP_Restrictions:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/restrictions/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/restrictions" + urlOptions1;
+
+                        case Admin_Type_Enum.URL_Portals:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/portals/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/portals" + urlOptions1;
+
+                        case Admin_Type_Enum.Users:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/users/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/users" + urlOptions1;
+
+                        case Admin_Type_Enum.User_Groups:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/groups/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/groups" + urlOptions1;
+
+                        case Admin_Type_Enum.Wordmarks:
+                            return this_base_url + "admin/wordmarks" + urlOptions1;
+
+                        case Admin_Type_Enum.Reset:
+                            return this_base_url + "admin/reset" + urlOptions1;
+
+                        case Admin_Type_Enum.Thematic_Headings:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/headings/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/headings" + urlOptions1;
+
+                        case Admin_Type_Enum.Settings:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/settings/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/settings" + urlOptions1;
+
+                        default:
+                            return this_base_url + "admin" + urlOptions1;
+                    }
+                    break;
 
 				case Display_Mode_Enum.Preferences:
 					return this_base_url + "preferences" + urlOptions1;
@@ -986,127 +1009,183 @@ namespace SobekCM.Library.Navigation
 
 				case Display_Mode_Enum.Item_Display:
 				case Display_Mode_Enum.Item_Print:
-					if (!String.IsNullOrEmpty(bibid))
-					{
-						// Build the url for this item
-						StringBuilder itemDisplayBuilder = new StringBuilder(this_base_url + bibid.ToUpper(), 100);
-						if (!String.IsNullOrEmpty(vid))
-							itemDisplayBuilder.Append("/" + vid);
-						if (Mode == Display_Mode_Enum.Item_Print)
-							itemDisplayBuilder.Append("/print");
-						if (!String.IsNullOrEmpty(Item_View_Code))
-							itemDisplayBuilder.Append("/" + Item_View_Code);
-						if (SubPage > 1)
-							itemDisplayBuilder.Append("/" + SubPage.ToString());
+                    if (!String.IsNullOrEmpty(bibid))
+                    {
+                        // Build the url for this item
+                        StringBuilder itemDisplayBuilder = new StringBuilder(this_base_url + bibid.ToUpper(), 100);
+                        if (!String.IsNullOrEmpty(vid))
+                            itemDisplayBuilder.Append("/" + vid);
+                        if (Mode == Display_Mode_Enum.Item_Print)
+                            itemDisplayBuilder.Append("/print");
+                        if (!String.IsNullOrEmpty(Item_View_Code))
+                            itemDisplayBuilder.Append("/" + Item_View_Code);
+                        if (SubPage > 1)
+                            itemDisplayBuilder.Append("/" + SubPage.ToString());
 
-						// Check for any query string to be included 
-						if (((String.IsNullOrEmpty(Item_View_Code)) && (!String.IsNullOrEmpty(pageByFilename))) || (!String.IsNullOrEmpty(textSearch)) || (!String.IsNullOrEmpty(coordinates)) ||
-							((ViewerCode.IndexOf("x") >= 0) && ((Viewport_Point_X > 0) || (Viewport_Point_Y > 0) || (Viewport_Size != 1) || ((Viewport_Zoom - 1) > 0) || (Viewport_Rotation > 0))))
-						{
-							bool query_string_started = false;
-							itemDisplayBuilder.Append("?");
+                        bool query_string_started = false;
 
-							// Add either the text search or text display, if they exist
-							if (!String.IsNullOrEmpty(textSearch))
-							{
-								itemDisplayBuilder.Append("search=" + HttpUtility.UrlEncode(textSearch));
-								query_string_started = true;
-							}
+                        // Check for any query string to be included 
+                        if (((String.IsNullOrEmpty(Item_View_Code)) && (!String.IsNullOrEmpty(pageByFilename))) || (!String.IsNullOrEmpty(textSearch)) || (!String.IsNullOrEmpty(coordinates)) ||
+                            ((ViewerCode.IndexOf("x") >= 0) && ((Viewport_Point_X > 0) || (Viewport_Point_Y > 0) || (Viewport_Size != 1) || ((Viewport_Zoom - 1) > 0) || (Viewport_Rotation > 0))))
+                        {
+                            // Add either the text search or text display, if they exist
+                            if (!String.IsNullOrEmpty(textSearch))
+                            {
+                                itemDisplayBuilder.Append("?search=" + HttpUtility.UrlEncode(textSearch));
+                                query_string_started = true;
+                            }
 
-							// Add the coordinates if they exist
-							if (!String.IsNullOrEmpty(coordinates))
-							{
-								if (!query_string_started)
-								{
-									itemDisplayBuilder.Append("coord=" + coordinates);
-									query_string_started = true;
-								}
-								else
-								{
-									itemDisplayBuilder.Append("&coord=" + coordinates);
-								}
-							}
+                            // Add the coordinates if they exist
+                            if (!String.IsNullOrEmpty(coordinates))
+                            {
+                                if (!query_string_started)
+                                {
+                                    itemDisplayBuilder.Append("?coord=" + coordinates);
+                                    query_string_started = true;
+                                }
+                                else
+                                {
+                                    itemDisplayBuilder.Append("&coord=" + coordinates);
+                                }
+                            }
 
-							// Add any viewport option information if this is a ZOOMABLE view
-							if (ViewerCode.IndexOf("x") >= 0)
-							{
-								int adjustedZoom = Viewport_Zoom - 1;
-								if ((Viewport_Size != 1) || (adjustedZoom > 0) || (Viewport_Rotation > 0))
-								{
-									if (Viewport_Rotation > 0)
-									{
-										if (!query_string_started)
-										{
-											itemDisplayBuilder.Append("vo=" + Viewport_Size + adjustedZoom + Viewport_Rotation);
-											query_string_started = true;
-										}
-										else
-										{
-											itemDisplayBuilder.Append("&vo=" + Viewport_Size + adjustedZoom + Viewport_Rotation);
-										}
-									}
-									else
-									{
-										if (adjustedZoom > 0)
-										{
-											if (!query_string_started)
-											{
-												itemDisplayBuilder.Append("vo=" + Viewport_Size + adjustedZoom);
-												query_string_started = true;
-											}
-											else
-											{
-												itemDisplayBuilder.Append("&vo=" + Viewport_Size + adjustedZoom);
-											}
-										}
-										else
-										{
-											if (!query_string_started)
-											{
-												itemDisplayBuilder.Append("vo=" + Viewport_Size);
-												query_string_started = true;
-											}
-											else
-											{
-												itemDisplayBuilder.Append("&vo=" + Viewport_Size);
-											}
-										}
-									}
-								}
 
-								// Only add the point if it is not 0,0
-								if ((Viewport_Point_X > 0) || (Viewport_Point_Y > 0))
-								{
-									if (!query_string_started)
-									{
-										itemDisplayBuilder.Append("vp=" + Viewport_Point_X + "," + Viewport_Point_Y);
-										query_string_started = true;
-									}
-									else
-									{
-										itemDisplayBuilder.Append("&vp=" + Viewport_Point_X + "," + Viewport_Point_Y);
-									}
-								}
-							}
+                            // Add any viewport option information if this is a ZOOMABLE view
+                            if (ViewerCode.IndexOf("x") >= 0)
+                            {
+                                int adjustedZoom = Viewport_Zoom - 1;
+                                if ((Viewport_Size != 1) || (adjustedZoom > 0) || (Viewport_Rotation > 0))
+                                {
+                                    if (Viewport_Rotation > 0)
+                                    {
+                                        if (!query_string_started)
+                                        {
+                                            itemDisplayBuilder.Append("?vo=" + Viewport_Size + adjustedZoom + Viewport_Rotation);
+                                            query_string_started = true;
+                                        }
+                                        else
+                                        {
+                                            itemDisplayBuilder.Append("&vo=" + Viewport_Size + adjustedZoom + Viewport_Rotation);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (adjustedZoom > 0)
+                                        {
+                                            if (!query_string_started)
+                                            {
+                                                itemDisplayBuilder.Append("?vo=" + Viewport_Size + adjustedZoom);
+                                                query_string_started = true;
+                                            }
+                                            else
+                                            {
+                                                itemDisplayBuilder.Append("&vo=" + Viewport_Size + adjustedZoom);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (!query_string_started)
+                                            {
+                                                itemDisplayBuilder.Append("?vo=" + Viewport_Size);
+                                                query_string_started = true;
+                                            }
+                                            else
+                                            {
+                                                itemDisplayBuilder.Append("&vo=" + Viewport_Size);
+                                            }
+                                        }
+                                    }
+                                }
 
-							// Add the page by file information, if there is no viewer code
-							if ((String.IsNullOrEmpty(Item_View_Code)) && (!String.IsNullOrEmpty(pageByFilename)))
-							{
-								if (!query_string_started)
-								{
-									itemDisplayBuilder.Append("file=" + pageByFilename);
-								}
-								else
-								{
-									itemDisplayBuilder.Append("&file=" + pageByFilename);
-								}
-							}
-						}
+                                // Only add the point if it is not 0,0
+                                if ((Viewport_Point_X > 0) || (Viewport_Point_Y > 0))
+                                {
+                                    if (!query_string_started)
+                                    {
+                                        itemDisplayBuilder.Append("?vp=" + Viewport_Point_X + "," + Viewport_Point_Y);
+                                        query_string_started = true;
+                                    }
+                                    else
+                                    {
+                                        itemDisplayBuilder.Append("&vp=" + Viewport_Point_X + "," + Viewport_Point_Y);
+                                    }
+                                }
+                            }
+                        }
 
-						string returnValue = itemDisplayBuilder.ToString();
-						return ( returnValue.IndexOf("?") > 0 ) ? returnValue + urlOptions2 : returnValue + urlOptions1;
-					}
-					break;
+                        //Add the number and size of thumbnails if this is the THUMBNAILS (Related Images) View
+                        if (( ViewerCode.IndexOf("thumbs") >= 0) && ( Thumbnails_Per_Page >= -1 ))
+                        {
+                            if (!query_string_started)
+                            {
+                                itemDisplayBuilder.Append("?nt=" + Thumbnails_Per_Page);
+                                query_string_started = true;
+                            }
+                            else
+                            {
+                                itemDisplayBuilder.Append("&nt=" + Thumbnails_Per_Page);
+                            }
+                        }
+
+                        if ((ViewerCode.IndexOf("thumbs") >= 0) && (Size_Of_Thumbnails > 0))
+                        {
+                            if (!query_string_started)
+                            {
+                                itemDisplayBuilder.Append("?ts=" + Size_Of_Thumbnails);
+                                query_string_started = true;
+                            }
+                            else
+                            {
+                                itemDisplayBuilder.Append("&ts=" + Size_Of_Thumbnails);
+                            }
+                        }
+
+                        //Add the number and size of thumbnails if this is the QUALITY CONTROL (QC) View
+                        if ((ViewerCode.IndexOf("qc") >= 0) && (Thumbnails_Per_Page >= -1))
+                        {
+                            if (!query_string_started)
+                            {
+                                itemDisplayBuilder.Append("?nt=" + Thumbnails_Per_Page);
+                                query_string_started = true;
+                            }
+                            else
+                            {
+                                itemDisplayBuilder.Append("&nt=" + Thumbnails_Per_Page);
+                            }
+                        }
+
+                        if ((ViewerCode.IndexOf("qc") >= 0) && (Size_Of_Thumbnails > 0))
+                        {
+                            if (!query_string_started)
+                            {
+                                itemDisplayBuilder.Append("?ts=" + Size_Of_Thumbnails);
+                                query_string_started = true;
+                            }
+                            else
+                            {
+                                itemDisplayBuilder.Append("&ts=" + Size_Of_Thumbnails);
+                            }
+                        }
+
+                        // Add the page by file information, if there is no viewer code
+                        if ((String.IsNullOrEmpty(Item_View_Code)) && (!String.IsNullOrEmpty(pageByFilename)))
+                        {
+                            if (!query_string_started)
+                            {
+                                itemDisplayBuilder.Append("?file=" + pageByFilename);
+                                query_string_started = true;
+                            }
+                            else
+                            {
+                                itemDisplayBuilder.Append("&file=" + pageByFilename);
+                            }
+                        }
+
+
+                        string returnValue = itemDisplayBuilder.ToString();
+                        return (returnValue.IndexOf("?") > 0) ? returnValue + urlOptions2 : returnValue + urlOptions1;
+                    }
+			        break;
 
 				case Display_Mode_Enum.Search:
 					if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ( adjusted_aggregation != defaultAggregation ))
@@ -1469,25 +1548,25 @@ namespace SobekCM.Library.Navigation
 			{
 				switch (Language)
 				{
-					case Language_Enum.English:
+					case Web_Language_Enum.English:
 						if (redirect.Length > 0)
 							redirect.Append("&");
 						redirect.Append("l=en");
 						break;
 
-					case Language_Enum.French:
+					case Web_Language_Enum.French:
 						if (redirect.Length > 0)
 							redirect.Append("&");
 						redirect.Append("l=fr");
 						break;
 
-					case Language_Enum.Spanish:
+					case Web_Language_Enum.Spanish:
 						if (redirect.Length > 0)
 							redirect.Append("&");
 						redirect.Append("l=sp");
 						break;
 
-					case Language_Enum.Template:
+					case Web_Language_Enum.TEMPLATE:
 						if (redirect.Length > 0)
 							redirect.Append("&");
 						redirect.Append("l=XXXXX");

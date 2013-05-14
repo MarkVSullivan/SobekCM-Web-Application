@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.WebContent;
 
 #endregion
@@ -64,9 +65,9 @@ namespace SobekCM.Library.Aggregations
 		private Browse_Info_Type browseType;
 		private string code;
 		private Result_Data_Type dataType;
-		private readonly Dictionary< Language_Enum, string> labelsByLanguage;
+        private readonly Dictionary<Web_Language_Enum, string> labelsByLanguage;
 		private Source_Type source;
-		private readonly Dictionary<Language_Enum, string> staticHtmlSourceByLanguage;
+		private readonly Dictionary<Web_Language_Enum, string> staticHtmlSourceByLanguage;
 
 		/// <summary> Constructor for a new instance of the Item_Aggregation_Browse_Info class </summary>
 		/// <param name="Browse_Type">Flag indicates if this is a browse by, browse, or info page</param>
@@ -77,12 +78,12 @@ namespace SobekCM.Library.Aggregations
 		public Item_Aggregation_Browse_Info(Browse_Info_Type Browse_Type, Source_Type Source, string Code, string Static_HTML_Source, string Label) 
 		{
 			// Create the collections for the labels and static html source
-			labelsByLanguage = new Dictionary<Language_Enum, string>();
-			staticHtmlSourceByLanguage = new Dictionary<Language_Enum, string>();
+			labelsByLanguage = new Dictionary<Web_Language_Enum, string>();
+			staticHtmlSourceByLanguage = new Dictionary<Web_Language_Enum, string>();
 
 			// Add the parameter information as the default labels and source
-			labelsByLanguage[Language_Enum.DEFAULT] = Label;
-			staticHtmlSourceByLanguage[Language_Enum.DEFAULT] = Static_HTML_Source;
+			labelsByLanguage[Web_Language_Enum.DEFAULT] = Label;
+			staticHtmlSourceByLanguage[Web_Language_Enum.DEFAULT] = Static_HTML_Source;
 
 			// Save all of these parameters
 			code = Code;
@@ -104,8 +105,8 @@ namespace SobekCM.Library.Aggregations
 		public Item_Aggregation_Browse_Info() 
 		{
 			// Create the collections for the labels and static html source
-			labelsByLanguage = new Dictionary<Language_Enum, string>();
-			staticHtmlSourceByLanguage = new Dictionary<Language_Enum, string>();
+			labelsByLanguage = new Dictionary<Web_Language_Enum, string>();
+			staticHtmlSourceByLanguage = new Dictionary<Web_Language_Enum, string>();
 
 			// Set code to empty initially
 			code = String.Empty;
@@ -116,7 +117,7 @@ namespace SobekCM.Library.Aggregations
 		/// <summary> Add the label for this browse/info object, by language </summary>
 		/// <param name="Label"> Label for this browse/info object </param>
 		/// <param name="Language"> Language code </param>
-		internal void Add_Label(string Label, Language_Enum Language)
+		internal void Add_Label(string Label, Web_Language_Enum Language)
 		{
 			// Save this under the normalized language 
 			labelsByLanguage[Language] = Label;
@@ -125,7 +126,7 @@ namespace SobekCM.Library.Aggregations
 		/// <summary> Add the label for this browse/info object, by language </summary>
 		/// <param name="HTML_Source"> Label for this browse/info object </param>
 		/// <param name="Language"> Language code </param>
-		internal void Add_Static_HTML_Source(string HTML_Source, Language_Enum Language)
+        internal void Add_Static_HTML_Source(string HTML_Source, Web_Language_Enum Language)
 		{
 			// Save this under the normalized language 
 			staticHtmlSourceByLanguage[Language] = HTML_Source;
@@ -163,7 +164,7 @@ namespace SobekCM.Library.Aggregations
 		}
 
         /// <summary> Gets the complete dictionary of labels and languages </summary>
-        public Dictionary<Language_Enum, string> Label_Dictionary
+        public Dictionary<Web_Language_Enum, string> Label_Dictionary
         {
             get { return labelsByLanguage; }
         }        
@@ -171,16 +172,16 @@ namespace SobekCM.Library.Aggregations
 		/// <summary> Gets the language-specific label, if one exists </summary>
 		/// <param name="Language"> Language of the label to retrieve </param>
 		/// <returns> Language-specific label </returns>
-		public string Get_Label(Language_Enum Language)
+		public string Get_Label(Web_Language_Enum Language)
 		{
 			if ( labelsByLanguage.ContainsKey(Language))
 				return labelsByLanguage[Language];
 
-			if (labelsByLanguage.ContainsKey(Language_Enum.DEFAULT))
-				return labelsByLanguage[Language_Enum.DEFAULT];
+			if (labelsByLanguage.ContainsKey(Web_Language_Enum.DEFAULT))
+				return labelsByLanguage[Web_Language_Enum.DEFAULT];
 
-			if (labelsByLanguage.ContainsKey(Language_Enum.English))
-				return labelsByLanguage[Language_Enum.English];
+			if (labelsByLanguage.ContainsKey(Web_Language_Enum.English))
+				return labelsByLanguage[Web_Language_Enum.English];
 
 			if (labelsByLanguage.Count > 0)
 				return labelsByLanguage.ElementAt(0).Value;
@@ -189,7 +190,7 @@ namespace SobekCM.Library.Aggregations
 		}
 
         /// <summary> Gets the complete dictionary of static HTML sources and languages </summary>
-        public Dictionary<Language_Enum, string> Source_Dictionary
+        public Dictionary<Web_Language_Enum, string> Source_Dictionary
         {
             get { return staticHtmlSourceByLanguage; }
         }        
@@ -197,16 +198,16 @@ namespace SobekCM.Library.Aggregations
 		/// <summary> Gets the language-specific static HTML source file, if one exists </summary>
 		/// <param name="Language"> Language of the static HTML source file to retrieve </param>
 		/// <returns> Language-specific static HTML source file </returns>
-		public string Get_Static_HTML_Source(Language_Enum Language)
+		public string Get_Static_HTML_Source( Web_Language_Enum Language)
 		{
 			if (staticHtmlSourceByLanguage.ContainsKey(Language))
 				return staticHtmlSourceByLanguage[Language];
 
-			if (staticHtmlSourceByLanguage.ContainsKey(Language_Enum.DEFAULT))
-				return staticHtmlSourceByLanguage[Language_Enum.DEFAULT];
+			if (staticHtmlSourceByLanguage.ContainsKey(Web_Language_Enum.DEFAULT))
+				return staticHtmlSourceByLanguage[Web_Language_Enum.DEFAULT];
 
-			if (staticHtmlSourceByLanguage.ContainsKey(Language_Enum.English))
-				return staticHtmlSourceByLanguage[Language_Enum.English];
+			if (staticHtmlSourceByLanguage.ContainsKey(Web_Language_Enum.English))
+				return staticHtmlSourceByLanguage[Web_Language_Enum.English];
 
 			if (staticHtmlSourceByLanguage.Count > 0)
 				return staticHtmlSourceByLanguage.ElementAt(0).Value;
@@ -243,12 +244,12 @@ namespace SobekCM.Library.Aggregations
 				Writer.WriteLine("    <hi:titles>");
 				if (labelsByLanguage.Count > 0)
 				{
-					foreach (KeyValuePair<Language_Enum, string> thisLabel in labelsByLanguage)
+					foreach (KeyValuePair<Web_Language_Enum, string> thisLabel in labelsByLanguage)
 					{
-						if (thisLabel.Key == Language_Enum.DEFAULT)
+						if (thisLabel.Key == Web_Language_Enum.DEFAULT)
 							Writer.WriteLine("    <hi:title>" + thisLabel.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:title>");
 						else
-							Writer.WriteLine("    <hi:title lang=\"" + Language_Enum_Converter.Language_Enum_To_Code(thisLabel.Key) + "\">" + thisLabel.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:title>");
+							Writer.WriteLine("    <hi:title lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisLabel.Key) + "\">" + thisLabel.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:title>");
 					}
 				}
 				else
@@ -259,12 +260,12 @@ namespace SobekCM.Library.Aggregations
 
 				// Include the sources as well
 				Writer.WriteLine("    <hi:content>");
-				foreach (KeyValuePair<Language_Enum, string> thisSource in staticHtmlSourceByLanguage )
+				foreach (KeyValuePair<Web_Language_Enum, string> thisSource in staticHtmlSourceByLanguage )
 				{
-					if (thisSource.Key == Language_Enum.DEFAULT)
+					if (thisSource.Key == Web_Language_Enum.DEFAULT)
 						Writer.WriteLine("    <hi:body>" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
 					else
-						Writer.WriteLine("    <hi:body lang=\"" + Language_Enum_Converter.Language_Enum_To_Code(thisSource.Key) + "\">" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
+						Writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisSource.Key) + "\">" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
 				}
 				Writer.WriteLine("    </hi:content>");
 			}
@@ -281,7 +282,7 @@ namespace SobekCM.Library.Aggregations
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> Static HTML-based content to read from a  html source file </returns>
 		/// <remarks> This actually reads the HTML file each time this is requested </remarks>
-		public HTML_Based_Content Get_Static_Content(Language_Enum Language, string Base_URL, string Base_Network, Custom_Tracer Tracer)
+		public HTML_Based_Content Get_Static_Content( Web_Language_Enum Language, string Base_URL, string Base_Network, Custom_Tracer Tracer)
 		{
 			if ((Data_Type != Result_Data_Type.Text) || (Source != Source_Type.Static_HTML) || (staticHtmlSourceByLanguage.Count == 0))
 				return null;

@@ -3,8 +3,9 @@
 using System.IO;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -35,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -43,15 +44,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Enter the group title here.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -64,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
             if (label_from_template_file.Length > 0)
                 Title = label_from_template_file;
 
-            render_helper(Output, Bib.SobekCM_Web.GroupTitle, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, Bib.Behaviors.GroupTitle, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -88,7 +89,7 @@ namespace SobekCM.Library.Citation.Elements
                     string possible_group_title = HttpContext.Current.Request.Form[thisKey].Trim();
                     if ( possible_group_title.Length > 0 )
                     {
-                        Bib.SobekCM_Web.GroupTitle = possible_group_title;
+                        Bib.Behaviors.GroupTitle = possible_group_title;
                     }
                     return;
                 }

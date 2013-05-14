@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -33,12 +33,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -93,6 +93,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             List<int> width = new List<int>();
             List<int> height = new List<int>();
             List<string> files = new List<string>();
+            List<string> pagename = new List<string>();
             List<abstract_TreeNode> allpages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
             foreach (Page_TreeNode thisPage in allpages)
             {
@@ -103,6 +104,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (!files.Contains(thisFile.System_Name))
                         {
+                            pagename.Add(thisPage.Label);
                             files.Add(thisFile.System_Name);
                             width.Add(thisFile.Width);
                             height.Add(thisFile.Height);
@@ -158,12 +160,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("        if (index == " + (i + 2) + ") imgStr = '" + files[i] + "';");
             }
             builder.AppendLine("        if (index > " + (files.Count + 1) + ") return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
-            string source_url = CurrentItem.SobekCM_Web.Source_URL.Replace("\\", "/");
+            string source_url = CurrentItem.Web.Source_URL.Replace("\\", "/");
             if (source_url[source_url.Length - 1] != '/')
                 source_url = source_url + "/";
             builder.AppendLine("        return '" + source_url + "' + imgStr;");
             builder.AppendLine("    }");
             builder.AppendLine();
+
+            builder.AppendLine("    // Return the page label for a page, by index");
+            builder.AppendLine("    gb.getPageName = function(index) {");
+            builder.AppendLine("        var imgStr = '" + translator.Get_Translation("Page", CurrentMode.Language ) + "' + this.getPageNum(index);");
+            for (int i = 0; i < files.Count; i++)
+            {
+                builder.AppendLine("        if (index == " + (i + 2) + ") imgStr = '" + pagename[i] + "';");
+            }
+
+            builder.AppendLine("        return imgStr;");
+            builder.AppendLine("    }");
+            builder.AppendLine();
+
             builder.AppendLine("    // Return which side, left or right, that a given page should be displayed on");
             builder.AppendLine("    gb.getPageSide = function(index) {");
             builder.AppendLine("        if (0 == (index & 0x1)) {");

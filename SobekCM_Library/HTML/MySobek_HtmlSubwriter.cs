@@ -8,8 +8,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -125,23 +125,9 @@ namespace SobekCM.Library.HTML
             if (Current_Mode.Logon_Required)
                 Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 
-            // If the user is not an admin, and admin was selected, reroute this
-            if ((Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Aggregations_Mgmt) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Forwarding) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Interfaces) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Projects) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Users) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_User_Groups) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Wordmarks) || (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_IP_Restrictions) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Builder_Status ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Settings ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Thematic_Headings))
-            {
-                if ((!Current_User.Is_System_Admin) && ( !Current_User.Is_Portal_Admin ))
-                {
-                    Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    Current_Mode.My_Sobek_SubMode = String.Empty;
-                }
-            }
-
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
             switch (Current_Mode.My_Sobek_Type)
             {
-                case My_Sobek_Type_Enum.Admin_Aggregation_Single:
-                    mySobekViewer = new Aggregation_Single_Admin_MySobekViewer(user, Current_Mode, codeManager, Thematic_Headings, Web_Skin_Collection, Tracer);
-                    break;
-
                 case My_Sobek_Type_Enum.Home:
                     mySobekViewer = new Home_MySobekViewer(user, Tracer);
                     break;
@@ -217,101 +203,12 @@ namespace SobekCM.Library.HTML
                     mySobekViewer = new Mass_Update_Items_MySobekViewer(user, Current_Mode, currentItem, codeManager, Tracer);
                     break;
 
-                case My_Sobek_Type_Enum.Admin_Home:
-                    mySobekViewer = new Admin_Home_MySobekViewer(user, Current_Mode, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Builder_Status:
-                    mySobekViewer = new Builder_Admin_MySobekViewer(user, Current_Mode);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Interfaces:
-                    mySobekViewer = new Skins_Admin_MySobekViewer(user, Current_Mode, Web_Skin_Collection, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Forwarding:
-                    mySobekViewer = new Aliases_Admin_MySobekViewer(user, Current_Mode, Aggregation_Aliases, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Wordmarks:
-                    mySobekViewer = new Wordmarks_Admin_MySobekViewer(user, Current_Mode, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_URL_Portals:
-                    mySobekViewer = new Portals_Admin_MySobekViewer(user, Current_Mode, URL_Portals, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Users:
-                    mySobekViewer = new Users_Admin_MySobekViewer(user, Current_Mode, codeManager, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_User_Groups:
-                    mySobekViewer = new User_Group_Admin_MySobekViewer(user, Current_Mode, codeManager, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Aggregations_Mgmt:
-                    mySobekViewer = new Aggregations_Mgmt_Admin_MySobekViewer(user, Current_Mode, codeManager, Tracer);
-                    break;
-
                 case My_Sobek_Type_Enum.User_Tags:
                     mySobekViewer = new User_Tags_MySobekViewer(user, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.User_Usage_Stats:
                     mySobekViewer = new User_Usage_Stats_MySobekViewer(user, Current_Mode, statsDates, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_IP_Restrictions:
-                    mySobekViewer = new IP_Restrictions_Admin_MySobekViewer(user, Current_Mode, ipRestrictions, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Thematic_Headings:
-                    mySobekViewer = new Thematic_Headings_Admin_MySobekViewer(user, Current_Mode, Thematic_Headings, Tracer);
-                    break;
-
-                case My_Sobek_Type_Enum.Admin_Settings:
-                    mySobekViewer = new Settings_Admin_MySobekViewer(user, Current_Mode, Tracer);
-                    break;
-
-
-                case My_Sobek_Type_Enum.Admin_Projects:
-                    if (Current_Mode.My_Sobek_SubMode.Length > 1)
-                    {
-                        string project_code = Current_Mode.My_Sobek_SubMode.Substring(1);
-                        Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Checking cache for valid project file");
-                        if (user != null)
-                        {
-                            SobekCM_Item projectObject = Cached_Data_Manager.Retrieve_Project(user.UserID, project_code, Tracer);
-                            if (projectObject != null)
-                            {
-                                Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid project file found in cache");
-                                mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, htmlSkin, Tracer);
-                            }
-                            else
-                            {
-                                if (SobekCM_Database.Get_All_Projects_Templates(Tracer).Tables[0].Select("ProjectCode='" + project_code + "'").Length > 0)
-                                {
-                                    Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building project file from (possible) PMETS");
-                                    string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
-                                    SobekCM_Item pmets_item = File.Exists(pmets_file) ? SobekCM_Item.Read_METS(pmets_file) : new SobekCM_Item();
-                                    pmets_item.Bib_Info.Main_Title.Title = "Project level metadata for '" + project_code + "'";
-                                    pmets_item.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Project;
-                                    pmets_item.BibID = project_code.ToUpper();
-                                    pmets_item.VID = "00001";
-                                    pmets_item.Source_Directory = SobekCM_Library_Settings.Base_MySobek_Directory +  "projects\\";
-
-                                    Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Adding project file to cache");
-
-                                    Cached_Data_Manager.Store_Project(user.UserID, project_code, pmets_item, Tracer);
-
-                                    mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, pmets_item, codeManager, iconTable,  htmlSkin, Tracer);
-                                }
-                            }
-                        }
-                    }
-                    
-                    if ( mySobekViewer == null )
-                        mySobekViewer = new Projects_Admin_MySobekViewer(user, Current_Mode, Tracer);
                     break;
             }
 
@@ -329,9 +226,6 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                // When editing the aggregation details, the banner should be included here
-                if (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Aggregation_Single)
-                    return true;
                 return false;
             }
         }
@@ -388,7 +282,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("<img id=\"mainBanner\" src=\"" + template_banner + "\" alt=\"MISSING BANNER\" />");
                     }
                 }
-                if ((!template_banner_override) && ( currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Group_Add_Volume ) && ( currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Admin_Aggregation_Single ))
+                if ((!template_banner_override) && ( currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Group_Add_Volume ))
                     Add_Banner(Output);
 
                 // A few cases skip the view selectors at the top entirely
@@ -396,13 +290,6 @@ namespace SobekCM.Library.HTML
                 {
                     // Write the general view type selector stuff
                     Write_General_View_Type_Selectors(Output);
-
-                    // Write the admin tabs at the bottom?
-                    if ( mySobekViewer.Standard_Navigation_Type == MySobek_Included_Navigation_Enum.System_Admin )
-                    {
-                        // Write the bottom tabs
-                        Write_Admin_View_Type_Selectors(Output);
-                    }
                 }
             }
 
@@ -477,164 +364,6 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
         }
 
-        #region Writes the HTML for the admin view tabs 
-
-        private void Write_Admin_View_Type_Selectors(TextWriter Output)
-        {
-            const string aggregations = "AGGREGATIONS";
-            const string interfaces = "WEB SKINS";
-            const string wordmarks = "WORDMARKS";
-            const string forwarding = "ALIASES";
-            const string users = "USERS";
-            const string projects = "PROJECTS";
-            const string restrictions = "RESTRICTIONS";
-            const string portals = "PORTALS";
-            const string builder = "BUILDER";
-            const string thematicHeadings = "THEMATIC HEADINGS";
-
-            My_Sobek_Type_Enum mySobekType = currentMode.My_Sobek_Type;
-            string submode = currentMode.My_Sobek_SubMode;
-            currentMode.My_Sobek_SubMode = String.Empty;
-
-            Output.WriteLine("<div class=\"ShowSelectRow\">");
-            Output.WriteLine("");
-
-            // Write the aggregations tab
-            if (mySobekType == My_Sobek_Type_Enum.Admin_Aggregations_Mgmt)
-            {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + aggregations + Down_Selected_Tab_End);
-            }
-            else
-            {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Aggregations_Mgmt;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + aggregations + Down_Tab_End + "</a>");
-            }
-
-            // Write the interfaces tab
-            if (mySobekType == My_Sobek_Type_Enum.Admin_Interfaces)
-            {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + interfaces + Down_Selected_Tab_End);
-            }
-            else
-            {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Interfaces;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + interfaces + Down_Tab_End + "</a>");
-            }
-
-            // Write the wordmarks / icon tab
-            if (mySobekType == My_Sobek_Type_Enum.Admin_Wordmarks)
-            {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + wordmarks + Down_Selected_Tab_End);
-            }
-            else
-            {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Wordmarks;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + wordmarks + Down_Tab_End + "</a>");
-            }
-
-            // Write the forwarding tab
-            if (mySobekType == My_Sobek_Type_Enum.Admin_Forwarding)
-            {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + forwarding + Down_Selected_Tab_End);
-            }
-            else
-            {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Forwarding;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + forwarding + Down_Tab_End + "</a>");
-            }
-
-            // Write the projects tab
-            if (mySobekType == My_Sobek_Type_Enum.Admin_Projects)
-            {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + projects + Down_Selected_Tab_End);
-            }
-            else
-            {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Projects;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + projects + Down_Tab_End + "</a>");
-            }
-
-            if (!user.Is_System_Admin)
-            {
-                // Write the thematic headings tab
-                if (mySobekType == My_Sobek_Type_Enum.Admin_Thematic_Headings)
-                {
-                    Output.WriteLine("  " + Down_Selected_Tab_Start + thematicHeadings + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Thematic_Headings;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + thematicHeadings + Down_Tab_End + "</a>");
-                }
-            }
-            else
-            {
-                // Write the users tab
-                if ((mySobekType == My_Sobek_Type_Enum.Admin_Users) || (mySobekType == My_Sobek_Type_Enum.Admin_User_Groups))
-                {
-                    if (submode.Length > 0)
-                    {
-                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_User_Groups;
-                        currentMode.My_Sobek_SubMode = String.Empty;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Selected_Tab_Start + users + Down_Selected_Tab_End + "</a>");
-
-                    }
-                    else
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + users + Down_Selected_Tab_End);
-                    }
-                }
-                else
-                {
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Users;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + users + Down_Tab_End + "</a>");
-                }
-
-                // Write the restrictions tab
-                if (mySobekType == My_Sobek_Type_Enum.Admin_IP_Restrictions)
-                {
-                    Output.WriteLine("  " + Down_Selected_Tab_Start + restrictions + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_IP_Restrictions;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + restrictions + Down_Tab_End + "</a>");
-                }
-
-                // Write the url portals tab
-                if (mySobekType == My_Sobek_Type_Enum.Admin_URL_Portals)
-                {
-                    Output.WriteLine("  " + Down_Selected_Tab_Start + portals + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_URL_Portals;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + portals + Down_Tab_End + "</a>");
-                }
-
-                // Write the builder tab
-                if (mySobekType == My_Sobek_Type_Enum.Admin_Builder_Status)
-                {
-                    Output.WriteLine("  " + Down_Selected_Tab_Start + builder + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Builder_Status;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + builder + Down_Tab_End + "</a>");
-                }
-            }
-            
-            currentMode.My_Sobek_Type = mySobekType;
-            currentMode.My_Sobek_SubMode = submode;
-
-            Output.WriteLine("");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
-
-        }
-
-        #endregion
-
         #region Writes the HTML for the standard my Sobek view tabs
 
         private void Write_General_View_Type_Selectors(TextWriter Output)
@@ -708,18 +437,10 @@ namespace SobekCM.Library.HTML
                 // Write the sobek admin tab
                 if ((user.Is_System_Admin) || ( user.Is_Portal_Admin ))
                 {
-                    if (mySobekType == My_Sobek_Type_Enum.Admin_Home)
-                    {
-                        Output.WriteLine("  " + Selected_Tab_Start + sobek_admin + Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Home;
-                        if ((mySobekType == My_Sobek_Type_Enum.Admin_Aggregations_Mgmt) || (mySobekType == My_Sobek_Type_Enum.Admin_Forwarding) || (mySobekType == My_Sobek_Type_Enum.Admin_Interfaces) || (mySobekType == My_Sobek_Type_Enum.Admin_Projects) || (mySobekType == My_Sobek_Type_Enum.Admin_Users) || (mySobekType == My_Sobek_Type_Enum.Admin_Wordmarks) || (mySobekType == My_Sobek_Type_Enum.Admin_IP_Restrictions) || (mySobekType == My_Sobek_Type_Enum.Admin_URL_Portals) || (mySobekType == My_Sobek_Type_Enum.Admin_Settings) || (mySobekType == My_Sobek_Type_Enum.Admin_Thematic_Headings) || (mySobekType == My_Sobek_Type_Enum.Admin_Builder_Status))
-                            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Selected_Tab_Start + sobek_admin + Selected_Tab_End + "</a>");
-                        else
-                            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_admin + Unselected_Tab_End + "</a>");
-                    }
+                    currentMode.Mode = Display_Mode_Enum.Administrative;
+                    currentMode.Admin_Type = Admin_Type_Enum.Home;
+                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_admin + Unselected_Tab_End + "</a>");
+                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
                 }
             }
 

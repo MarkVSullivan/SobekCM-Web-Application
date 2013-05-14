@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -20,10 +21,7 @@ namespace SobekCM.Library.MySobekViewer
         NONE = 1,
 
         /// <summary> Standard mySobek navigation tabs/type </summary>
-        Standard,
-
-        /// <summary> System administration navigation tabs/type </summary>
-        System_Admin
+        Standard
     }
 
     /// <summary> Abstract class which all mySobek viewer classes extend </summary>
@@ -37,7 +35,7 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>The HTML writer will create the necessary subwriter.  If the action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>To allow the requested action, the mySobek subwriter will create one of the myUFDC viewers( implementing this class )</li>
     /// </ul></remarks>
-    public abstract class abstract_MySobekViewer
+    public abstract class abstract_MySobekViewer : iMySobek_Admin_Viewer
     {
         private const string SELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cL_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\"> ";
         private const string SELECTED_TAB_END_ORIG = " </span><img src=\"{0}design/skins/{1}/tabs/cR_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
@@ -78,7 +76,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Protected field contains the authenticated user information </summary>
         protected User_Object user;
 
-        /// <summary> Constructor for a new instance of the abstractCollectionViewer class </summary>
+        /// <summary> Constructor for a new instance of the abstract_MySobekViewer class </summary>
         /// <param name="User"> Authenticated user information </param>
         protected abstract_MySobekViewer(User_Object User)
         {
@@ -89,7 +87,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Sets the mode / navigation information for the current request </summary>
         /// <remarks> This also sets all of the protected tab HTML fields, from the base interface in the navigation object </remarks>
-        internal SobekCM_Navigation_Object CurrentMode
+        public SobekCM_Navigation_Object CurrentMode
         {
             set
             {
@@ -108,7 +106,7 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         /// <summary> Sets the translation / language support object for writing the user interface in multiple languages </summary>
-        protected internal Language_Support_Info Translator { protected get; set; }
+        public Language_Support_Info Translator { get; set; }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>

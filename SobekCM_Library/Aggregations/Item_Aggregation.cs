@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
 
@@ -131,12 +132,12 @@ namespace SobekCM.Library.Aggregations
 
         #region Private variables
 
-        private readonly Dictionary<Language_Enum, string> bannerImagesByLanguage;
+        private readonly Dictionary<Web_Language_Enum, string> bannerImagesByLanguage;
         private readonly Dictionary<string, Item_Aggregation_Browse_Info> browseInfoHash;
         private List<Item_Aggregation_Related_Aggregations> children;
         private string defaultBrowseBy;
-        private readonly Dictionary<Language_Enum, string> frontBannerImageByLanguage;
-        private readonly Dictionary<Language_Enum, string> homeFilesByLanguage;
+        private readonly Dictionary<Web_Language_Enum, string> frontBannerImageByLanguage;
+        private readonly Dictionary<Web_Language_Enum, string> homeFilesByLanguage;
         private List<Item_Aggregation_Related_Aggregations> parents;
         private readonly List<CollectionViewsAndSearchesEnum> viewsAndSearches;
 
@@ -209,9 +210,9 @@ namespace SobekCM.Library.Aggregations
             browseInfoHash = new Dictionary<string, Item_Aggregation_Browse_Info>();
             Highlights = new List<Item_Aggregation_Highlights>();
             Rotating_Highlights = false;
-            homeFilesByLanguage = new Dictionary<Language_Enum, string>();
-            bannerImagesByLanguage = new Dictionary<Language_Enum, string>();
-            frontBannerImageByLanguage = new Dictionary<Language_Enum, string>();
+            homeFilesByLanguage = new Dictionary<Web_Language_Enum, string>();
+            bannerImagesByLanguage = new Dictionary<Web_Language_Enum, string>();
+            frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, string>();
             Front_Banner_Left_Side = true;
             Front_Banner_Width = 550;
             Front_Banner_Height = 230;
@@ -221,6 +222,7 @@ namespace SobekCM.Library.Aggregations
             Item_Count = -1;
             Web_Skins = new List<string>();
             Advanced_Search_Fields = new List<short>();
+            Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
             Thematic_Heading_ID = -1;
 
@@ -271,9 +273,9 @@ namespace SobekCM.Library.Aggregations
             browseInfoHash = new Dictionary<string, Item_Aggregation_Browse_Info>();
             Highlights = new List<Item_Aggregation_Highlights>();
             Rotating_Highlights = false;
-            homeFilesByLanguage = new Dictionary<Language_Enum, string>();
-            bannerImagesByLanguage = new Dictionary<Language_Enum, string>();
-            frontBannerImageByLanguage = new Dictionary<Language_Enum, string>();
+            homeFilesByLanguage = new Dictionary<Web_Language_Enum, string>();
+            bannerImagesByLanguage = new Dictionary<Web_Language_Enum, string>();
+            frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, string>();
             Front_Banner_Left_Side = true;
             Front_Banner_Width = 550;
             Front_Banner_Height = 230;
@@ -283,6 +285,7 @@ namespace SobekCM.Library.Aggregations
             Item_Count = -1;
             Web_Skins = new List<string>();
             Advanced_Search_Fields = new List<short>();
+            Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
             Thematic_Heading_ID = -1;
 
@@ -373,6 +376,11 @@ namespace SobekCM.Library.Aggregations
         ///   Returns the list of the primary identifiers for all metadata fields which have data and thus should appear in the advanced search drop downs
         /// </summary>
         public List<short> Advanced_Search_Fields { get; private set; }
+
+        /// <summary>
+        ///   Returns the list of the primary identifiers for all metadata fields which have data and thus could appear in the metadata browse
+        /// </summary>
+        public List<short> Browseable_Fields { get; private set; }
 
         /// <summary>
         ///   Returns the list of all facets to display during searches and browses within this aggregation
@@ -778,7 +786,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks>
         ///   These are returned in alphabetical order of the LABEL portion of each browse, according to the provided language
         /// </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_Home_Pages(Language_Enum Current_Language)
+        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_Home_Pages(Web_Language_Enum Current_Language)
         {
             SortedList<string, Item_Aggregation_Browse_Info> otherBrowses =
                 new SortedList<string, Item_Aggregation_Browse_Info>();
@@ -796,7 +804,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks>
         ///   These are returned in alphabetical order of the CODE portion of each browse, according to the provided language
         /// </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_By_Pages(Language_Enum Current_Language)
+        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_By_Pages(Web_Language_Enum Current_Language)
         {
             SortedList<string, Item_Aggregation_Browse_Info> otherBrowses =new SortedList<string, Item_Aggregation_Browse_Info>();
             foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(thisBrowse => thisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By))
@@ -886,10 +894,10 @@ namespace SobekCM.Library.Aggregations
         /// </summary>
         /// <param name = "Home_Page_File"> Home page text source file </param>
         /// <param name = "Language"> Language code </param>
-        internal void Add_Home_Page_File(string Home_Page_File, Language_Enum Language)
+        internal void Add_Home_Page_File(string Home_Page_File, Web_Language_Enum Language)
         {
             // If no language code, then always use this as the default
-            if (Language == Language_Enum.DEFAULT)
+            if (Language == Web_Language_Enum.DEFAULT)
             {
                 homeFilesByLanguage[SobekCM_Library_Settings.Default_UI_Language] = Home_Page_File;
             }
@@ -905,10 +913,10 @@ namespace SobekCM.Library.Aggregations
         /// </summary>
         /// <param name = "Banner_Image"> Main banner image source file for this aggregation </param>
         /// <param name = "Language"> Language code </param>
-        internal void Add_Banner_Image(string Banner_Image, Language_Enum Language)
+        internal void Add_Banner_Image(string Banner_Image, Web_Language_Enum Language)
         {
             // If no language code, then always use this as the default
-            if (Language == Language_Enum.DEFAULT)
+            if (Language == Web_Language_Enum.DEFAULT)
             {
                 bannerImagesByLanguage[SobekCM_Library_Settings.Default_UI_Language] = Banner_Image;
             }
@@ -924,10 +932,10 @@ namespace SobekCM.Library.Aggregations
         /// </summary>
         /// <param name = "Banner_Image"> special front banner image source file for this aggregation </param>
         /// <param name = "Language"> Language code </param>
-        internal void Add_Front_Banner_Image(string Banner_Image, Language_Enum Language)
+        internal void Add_Front_Banner_Image(string Banner_Image, Web_Language_Enum Language)
         {
             // If no language code, then always use this as the default
-            if (Language == Language_Enum.DEFAULT)
+            if (Language == Web_Language_Enum.DEFAULT)
             {
                 frontBannerImageByLanguage[SobekCM_Library_Settings.Default_UI_Language] = Banner_Image;
             }
@@ -967,7 +975,7 @@ namespace SobekCM.Library.Aggregations
         public bool Front_Banner_Left_Side { get; set; }
 
         /// <summary> Get the standard banner dictionary, by language </summary>
-        public Dictionary<Language_Enum, string> Banner_Dictionary
+        public Dictionary<Web_Language_Enum, string> Banner_Dictionary
         {
             get
             {
@@ -985,7 +993,7 @@ namespace SobekCM.Library.Aggregations
         ///   If NO banner images were included in the aggregation XML, then this could be the empty string.<br /><br />
         ///   If the provided web skin overrides the banner, then use that web skin's banner.
         /// </remarks>
-        public string Banner_Image(Language_Enum Language, SobekCM_Skin_Object thisWebSkin)
+        public string Banner_Image(Web_Language_Enum Language, SobekCM_Skin_Object thisWebSkin)
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations
             // use the web skin banner HTML instead of the aggregation's banner
@@ -1012,7 +1020,7 @@ namespace SobekCM.Library.Aggregations
         }
 
         /// <summary> Get the front banner dictionary, by language </summary>
-        public Dictionary<Language_Enum, string> Front_Banner_Dictionary
+        public Dictionary<Web_Language_Enum, string> Front_Banner_Dictionary
         {
             get
             {
@@ -1030,7 +1038,7 @@ namespace SobekCM.Library.Aggregations
         ///   This is a special front banner image used for aggregations that show the highlighted
         ///   item and the search box in the main banner at the top on the front page
         /// </remarks>
-        public string Front_Banner_Image(Language_Enum Language)
+        public string Front_Banner_Image(Web_Language_Enum Language)
         {
             // Does this language exist in the banner image lookup dictionary?
             if (frontBannerImageByLanguage.ContainsKey(Language))
@@ -1053,7 +1061,7 @@ namespace SobekCM.Library.Aggregations
         #region Method to return appropriate home page source file, or the home page HTML
 
         /// <summary> Gets the raw home page source file </summary>
-        public Dictionary<Language_Enum, string> Home_Page_File_Dictionary
+        public Dictionary<Web_Language_Enum, string> Home_Page_File_Dictionary
         {
             get
             {
@@ -1069,7 +1077,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks>
         ///   If NO home page files were included in the aggregation XML, then this could be the empty string.
         /// </remarks>
-        public string Home_Page_File(Language_Enum Language)
+        public string Home_Page_File(Web_Language_Enum Language)
         {
             // Does this language exist in the home page file lookup dictionary?
             if (homeFilesByLanguage.ContainsKey(Language))
@@ -1093,7 +1101,7 @@ namespace SobekCM.Library.Aggregations
         /// <param name = "Language"> Current language of the user interface </param>
         /// <param name = "tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns>Home page HTML</returns>
-        public string Get_Home_HTML(Language_Enum Language, Custom_Tracer tracer)
+        public string Get_Home_HTML(Web_Language_Enum Language, Custom_Tracer tracer)
         {
             if (tracer != null)
             {
@@ -1338,9 +1346,9 @@ namespace SobekCM.Library.Aggregations
                 // Add the home page information
                 writer.WriteLine("<!-- Source files for the home page, by language -->");
                 writer.WriteLine("<hi:home>");
-                foreach (KeyValuePair<Language_Enum, string> homePair in homeFilesByLanguage)
+                foreach (KeyValuePair<Web_Language_Enum, string> homePair in homeFilesByLanguage)
                 {
-                    writer.WriteLine("    <hi:body lang=\"" +Language_Enum_Converter.Language_Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:body>");
+                    writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:body>");
                 }
                 writer.WriteLine("</hi:home>");
                 writer.WriteLine();
@@ -1352,13 +1360,13 @@ namespace SobekCM.Library.Aggregations
                 writer.WriteLine("<!-- If a highlight banner is indicated, the width, height, and side for the       -->");
                 writer.WriteLine("<!-- highlights must be included in the hi:highlights section.                     -->");
                 writer.WriteLine("<hi:banner>");
-                foreach (KeyValuePair<Language_Enum, string> homePair in bannerImagesByLanguage)
+                foreach (KeyValuePair<Web_Language_Enum, string> homePair in bannerImagesByLanguage)
                 {
-                    writer.WriteLine("    <hi:source lang=\"" +Language_Enum_Converter.Language_Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
+                    writer.WriteLine("    <hi:source lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
                 }
-                foreach (KeyValuePair<Language_Enum, string> homePair in frontBannerImageByLanguage)
+                foreach (KeyValuePair<Web_Language_Enum, string> homePair in frontBannerImageByLanguage)
                 {
-                    writer.WriteLine("    <hi:source type=\"HIGHLIGHT\" lang=\"" +Language_Enum_Converter.Language_Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
+                    writer.WriteLine("    <hi:source type=\"HIGHLIGHT\" lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
                 }
                 writer.WriteLine("</hi:banner>");
                 writer.WriteLine();

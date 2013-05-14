@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
-using SobekCM.Bib_Package.SobekCM_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.ItemViewer.Viewers;
 
 #endregion
@@ -16,9 +17,10 @@ namespace SobekCM.Library.ItemViewer
         /// class for rendering the item to the web via HTML.</summary>
         /// <param name="viewObject"> View object from the digital resource object </param>
         /// <param name="Resource_Type">Resource type often impacts how an item viewer renders</param>
+        /// <param name="Current_Object">Current resource object </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
         /// via HTML. </returns>
-        public static abstractItemViewer Get_Viewer(View_Object viewObject, string Resource_Type )
+        public static abstractItemViewer Get_Viewer(View_Object viewObject, string Resource_Type, SobekCM_Item Current_Object)
         {
             switch (viewObject.View_Type)
             {
@@ -57,7 +59,7 @@ namespace SobekCM.Library.ItemViewer
                     return jpegViewer;
 
                 case View_Enum.JPEG2000:
-                    abstractItemViewer jpeg2000Viewer = new JP2_ItemViewer(Resource_Type, viewObject.Attributes);
+                    abstractItemViewer jpeg2000Viewer = new Aware_JP2_ItemViewer(Resource_Type, viewObject.Attributes);
                     jpeg2000Viewer.FileName = viewObject.FileName;
                     return jpeg2000Viewer;
 
@@ -93,8 +95,14 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.YOUTUBE_VIDEO:
                     return new YouTube_Embedded_Video_ItemViewer();
 
+                case View_Enum.EMBEDDED_VIDEO:
+                    return new EmbeddedVideo_ItemViewer();
+
                 case View_Enum.TRACKING:
                     return new Tracking_ItemViewer();
+
+                case View_Enum.QUALITY_CONTROL:
+                    return new QC_ItemViewer(Current_Object);
             }
 
             return null;

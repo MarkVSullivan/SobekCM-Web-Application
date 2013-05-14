@@ -42,6 +42,9 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Acquisition:
                     return new Acquisition_Note_Element();
 
+                case Element_Type.Additional_Work_Needed:
+                    return new Additional_Work_Needed_Element();
+
                 case Element_Type.Aggregations:
                     return new Aggregations_Element();
 
@@ -112,6 +115,9 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Edition:
                     return new Edition_Element();
 
+                case Element_Type.EmbeddedVideo:
+                    return new EmbeddedVideo_Element();
+
                 case Element_Type.EncodingLevel:
                     return new Encoding_Level_Element();
 
@@ -139,7 +145,36 @@ namespace SobekCM.Library.Citation.Elements
                     return new Identifier_Element();
 
                 case Element_Type.Language:
+                    if (SubType == "select")
+                        return new Language_Select_Element();
                     return new Language_Element();
+
+                case Element_Type.LOM_Aggregation_Level:
+                    return new LOM_AggregationLevel_Element();
+
+                case Element_Type.LOM_Context:
+                    return new LOM_Context_Element();
+
+                case Element_Type.LOM_Difficulty_Level:
+                    return new LOM_DifficultyLevel_Element();
+
+                case Element_Type.LOM_Intended_End_User_Role:
+                    return new LOM_IntendedUser_Element();
+
+                case Element_Type.LOM_Interactivity_Level:
+                    return new LOM_InteractivityLevel_Element();
+
+                case Element_Type.LOM_Interactivity_Type:
+                    return new LOM_InteractivityType_Element();
+
+                case Element_Type.LOM_Learning_Resource_Type:
+                    return new LOM_ResourceType_Element();
+
+                case Element_Type.LOM_Status:
+                    return new LOM_Status_Element();
+
+                case Element_Type.LOM_Typical_Age_Range:
+                    return new LOM_TypicalAgeRange_Element();
 
                 case Element_Type.MainThumbnail:
                     return new Main_Thumbnail_Element();
@@ -276,6 +311,27 @@ namespace SobekCM.Library.Citation.Elements
 
                 case Element_Type.Visibility:
                     return new Visibility_Element();
+
+                case Element_Type.VRA_CulturalContext:
+                    return new VRA_CulturalContext_Element();
+
+                case Element_Type.VRA_Inscription:
+                    return new VRA_Inscription_Element();
+
+                case Element_Type.VRA_Material:
+                    return new VRA_Material_Element();
+
+                case Element_Type.VRA_Measurement:
+                    return new VRA_Measurement_Element();
+
+                case Element_Type.VRA_StateEdition:
+                    return new VRA_StateEdition_Element();
+
+                case Element_Type.VRA_StylePeriod:
+                    return new VRA_StylePeriod_Element();
+
+                case Element_Type.VRA_Technique:
+                    return new VRA_Technique_Element();
 
                 case Element_Type.Web_Skin:
                     return new Web_Skin_Element();

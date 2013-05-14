@@ -1,0 +1,640 @@
+﻿/**************************************************************************
+**     SOBEKCM_Item.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for displaying a single item within the system.                                          
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
+
+img.SobekItemWordmark 
+{
+	padding: 10px 30px 10px 30px; border:0px;
+}
+
+.itemtitle { font-size:1.4em; font-weight:bold; text-align:center; color:#7c8fd4; }
+
+.itemlink { font-size:1.2em; text-align:center; color:#7c8fd4; }
+
+.itemsubtitle { font-size:1.2em; font-weight:bold; text-align:center; color:#7c8fd4; }
+
+.texthighlight { background:yellow; font-weight:bold;	}
+
+  .tableRowNormal { background-color: White; }
+  .tableRowHighlight { background-color: #eeeeee }
+  .privateTableBibTitle { font-size:1.2em; text-decoration: none; font-weight: bold; }
+  .privateTableItemTitle { font-size:1.1em; text-decoration: none; font-weight: bold; }
+  .privateTableBibDaysNumber { font-size:1.4em; font-weight: bold; }
+  .privateTableItemDaysNumber { font-size:1.25em; font-weight: bold; }
+  
+  
+  .briefResultsTitle { font-size: 1.15em; font-weight: bold;  }
+  .briefResultsTitle a:link { color: #00a; }
+  
+  .thumbnailNormal { background-color: #eeeeee; }
+  .thumbnailHighlight { background-color: #cccccc; }
+
+
+ a.thumbnailPageNumber:link	{ color: #00a;font-size: 1em; }
+ a.thumbnailPageNumber:visited	{ color: #00a; font-size: 1em;}
+ a.thumbnailPageNumber:active	{ color: #00a; font-size: 1em; }
+ a.thumbnailPageNumber:hover	{ color: #FF0000; font-size: 1em; }
+
+  a.thumbnailPageNumberCurrent:link { color: #C35817; font-size: 1.2em;}
+  a.thumbnailPageNumberCurrent:visited { color: #C35817; font-size: 1.2em;}
+  a.thumbnailPageNumberCurrent:active { color: #C35817; font-size: 1.2em;}
+  a.thumbnailPageNumberCurrent:hover { color: #C35817; font-size: 1.2em;text-decoration: none;}
+
+  .fadeEffect { background-color: #FFFF00; }
+  
+  
+  .qcpage { background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;}
+  .qcfilename { color: #3c3c3c;font-size: 1.15em;font-weight: bold;}
+  .qcthumbnails { border: 1px solid  #a9a9a9; }
+  .paginationtext { color: #3c3c3c; }
+  .divisiontext { color: #3c3c3c; }
+  .namedDivisionText{ color: #3c3c3c; }
+
+  .divisionbox_small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
+  .divisionbox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
+  .divisionbox_large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  .divisionbox_full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  
+  .pagebox_small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
+  .pagebox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
+  .pagebox_large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  .pagebox_full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+
+  .qcPageOptionsSpan{ float: right;  visibility: hidden;}
+  .qcPageOptionsSpanHover{float:right; visibility: visible;}
+
+.errorIconSpan{float:right; visibility: hidden;}
+.errorIconSpanHover{float:right; visibility: visible;}
+
+.pickMainThumbnailIcon{visibility: hidden; float:right;}
+.pickMainThumbnailIconSelected{visibility: visible; float:right;}
+
+.spanQCIconsTopNavRow{float:right;}
+
+.qcPickMainThumbnailCursor{cursor:url(../default/images/thumbnail_cursor.cur),default;}
+
+.qcResetMouseCursorToDefault{cursor:default;}
+
+.txtNamedDivHidden{ visibility: hidden;}
+.txtNamedDivVisibile{ visibility: visible;}
+
+  /* Current in test */
+  
+        #itemviewersbar
+      {
+       width: 100%; background-color: #7d90d5;  height: 23px;  
+       font-size: 0.70em; color:#FFFFFF; vertical-align: top; 
+       
+      }
+      
+      #qcmenubar
+      {
+       width: 100%; background-color: #7d90d5;  height: 23px;  
+       font-size: 1.0em; color:#FFFFFF; vertical-align: top; text-align: center
+       
+      }
+
+
+.selectedcitationitem {
+    background-color: #0121a8;
+}
+
+
+
+#itemtitlebar
+{
+    width: 100%; background-color: White;
+    padding: 4px 0px 0px 0px;
+    font-weight:bold; text-align:center; color:#7c8fd4;
+}
+
+#itemtitlebar h1
+{
+    font-size: 1.25em; padding: 0px 0px 4px 0px; margin: 0px; line-height: 1.25em;font-weight: bold;
+}
+
+#itemviewleftnavbar {
+	 border: solid 1px #cccccc; MARGIN-RIGHT: 5px; background-color: #eeeeee; text-align: left; width: 185px;
+	 margin-top: 2px; float:left;font-size: 0.80em;
+}
+
+#itemviewleftnavbar_hack {
+	 border: solid 1px #cccccc; MARGIN-RIGHT: 5px; background-color: #eeeeee; text-align: left; width: 210px;
+	 margin-top: 2px; float:left;
+}
+
+
+#jpegimage 
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+#itemviewbox
+{
+    BORDER: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee; 
+   margin-top: 2px; margin-bottom: 2px;
+    padding: 2px; text-align: center;  margin-left:auto; margin-right:auto; 
+}
+
+/** END IN TEST **/
+
+	
+.ShowTocRow
+{
+	position: relative; margin-left: auto; margin-right: auto; height:15px; text-align:right; 
+}
+
+.HideTocRow
+{
+	position: relative; margin-left: auto; margin-right: auto; height:15px; text-align:right; background-color: #eeeeee; width:185px;
+}
+
+.SobekDocumentHeader {
+	 margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;  WIDTH: 100%; COLOR: black; BACKGROUND-COLOR: #ffffff; text-align: left;
+}
+
+.SobekViewSelectRow{
+	 margin: 0px 0px 0px 0px; padding: 5px 0px 0px 0px;  WIDTH: 100%; COLOR: black; background-image: url( ../design/skins/sobek/spacer.gif); text-align: left;
+}
+
+.SobekPageNavBar
+{
+	margin: 6px 20px 3px 20px;  HEIGHT: 25px; TEXT-ALIGN: center; color:#222; font-weight: bold;
+}
+
+.SobekPageNavBar2
+{
+	margin: 3px 20px 0px 20px;  HEIGHT: 20px; TEXT-ALIGN: center; color:#222; font-weight: bold;
+}
+
+#SobekDocumentDisplay {
+	BORDER: #cccccc 1px solid;BACKGROUND-COLOR: #eeeeee;
+	margin-bottom: 2px; margin-left:auto; margin-right:auto; margin-top: 2px;
+    font-size: 0.8em;
+}
+
+#SobekDocumentDisplay2 {
+	BORDER: #cccccc 1px solid;BACKGROUND-COLOR: #eeeeee;
+	margin-bottom: 2px; margin-left:10px; margin-right:10px; margin-top: 2px;
+    font-size: 0.8em;
+}
+
+#SobekDocumentDisplay h1 {
+	PADDING-RIGHT: 450px; PADDING-LEFT: 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;
+}
+
+#SobekDocumentDisplay h2 {
+	PADDING-RIGHT: 450px; PADDING-LEFT: 35px; FONT-SIZE: 1.3em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;
+}
+
+#itemrestrictedrow 
+{
+    text-align: center;background-color: #333333;height: 50px;vertical-align: middle;color: white;
+}
+
+
+/** Styles used for the item viewer portion of SobekCM **/
+.SobekColumnOne {
+	 border: solid 1px #cccccc; MARGIN-RIGHT: 5px; background-color: #eeeeee; height: 100%; text-align: left;
+}
+
+.SobekColumnOne_Fixed {
+	 width: 195px; border: solid 1px #cccccc; MARGIN-RIGHT: 5px; background-color: #eeeeee; height: 100%; text-align: left;
+}
+
+
+.SobekSearch { margin: 0; margin-top:1px; padding: 8px 0 8px 0; width: 100%;
+		font-size:0.85em; font-family:Arial, Helvetica, sans-serif;
+		font-weight: bold; 	color: #666; background-color: #FFFFFF; text-indent: 15px; 		}
+		
+.SobekSearch_ie { margin: 0; margin-top:1px; padding: 8px 0 0px 0; width: 100%; font-size:0.85em;
+		font-family:Arial, Helvetica, sans-serif; font-weight: bold; color: #666;
+		background-color: #FFFFFF; 	text-indent: 6px;  	}
+
+form.SobekSearch { margin:0; padding-top:5px; padding-bottom:4px; color: #0021a5;}
+
+input.SobekSearchBox  {  color: Blue;  width: 220px;  background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.SobekSearchBox_focused  {  color: #0000a8;  width: 220px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+.SobekNavBarHeader {
+ background-color: #eeeeee; 
+ padding: 5px 10px 5px 5px; 
+ FONT-WEIGHT: bold; 
+ FONT-SIZE: 0.9em; 
+ COLOR: #222; 
+ FONT-FAMILY: Arial, Helvetica, sans-serif; 
+ WHITE-SPACE: nowrap; 
+ LETTER-SPACING: 1px; 
+}
+
+.SobekNavBarHeader A:link { display:inline; background: #eeeeee;  }
+.SobekNavBarHeader A:hover { display:inline; background: #eeeeee; }
+.SobekNavBarHeader A:visited { display:inline; background: #eeeeee;  }
+
+.SobekNavBarMenuNonLink 
+{
+	FONT-SIZE: 0.7em; text-align: center; 
+	PADDING-BOTTOM: 0px; WIDTH: 100%; 
+	COLOR: #444; FONT-FAMILY: Arial, Helvetica, sans-serif; 
+	BACKGROUND-COLOR: #ffffff; TEXT-DECORATION: none
+}
+
+.SobekNavBarMenuNonLink_ie
+{
+	FONT-SIZE: 0.7em; text-align: center; PADDING-BOTTOM: 0px; WIDTH: 100%; COLOR: #444; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; TEXT-DECORATION: none
+}
+
+UL.SobekNavBarMenu {
+	PADDING: 0px 0px 0px 0px; 
+	MARGIN: 0px 0px 0px 0px; 
+	WIDTH: 100%; WHITE-SPACE: nowrap; LIST-STYLE-TYPE: none;
+}
+
+UL.SobekNavBarMenu LI A {
+	MARGIN-TOP: 1px; 
+	PADDING-BOTTOM: 2px; 
+	PADDING-TOP: 4px; 
+	DISPLAY: block; 
+	FONT-WEIGHT: bold;
+	 FONT-SIZE: 0.85em;  
+	 WIDTH: 100%; 
+	 COLOR: #666;
+	  TEXT-INDENT: 15px; 
+	  FONT-FAMILY: Arial, Helvetica, sans-serif; 
+	  WHITE-SPACE: nowrap; BACKGROUND-COLOR: #ffffff; TEXT-DECORATION: none
+}
+
+UL.SobekNavBarMenu LI A:hover {
+	BACKGROUND-COLOR: #eeeeee; color:Black; }
+	
+	
+	
+hr {
+  color: #ccc;
+  background-color: #cccccc;
+}
+
+
+.intheader_button
+{
+	height: 39px;
+    padding: 0px;
+    vertical-align: middle;
+    border: none;
+    width: 119px; 
+    cursor: pointer;
+	cursor: hand; 
+	margin-left: 5px;
+}
+
+.manage_files_button {
+    background: url(images/file_management.png) no-repeat;   
+}
+
+.manage_files_button:hover { background-position: 0 -39px; }
+
+.view_worklog_button {
+    background: url(images/view_work_log.png) no-repeat;   
+}
+
+.view_worklog_button:hover { background-position: 0 -39px; }
+
+.public_resource_button 
+{
+	width:102px;
+    background: url(images/public_resource.png) no-repeat;   
+}
+
+.public_resource_button:hover { background-position: 0 -39px; }
+
+.public_resource_button_fixed
+{
+	width:102px;
+    background: url(images/public_resource.png) no-repeat;   
+}
+
+.private_resource_button 
+{
+	width:102px;
+    background: url(images/private_resource.png) no-repeat;   
+}
+
+.private_resource_button:hover { background-position: 0 -39px; }
+
+.private_resource_button_fixed
+{
+	width:102px;
+    background: url(images/private_resource.png) no-repeat;   
+}
+
+.restricted_resource_button 
+{
+    background: url(images/restricted_resource.png) no-repeat;   
+}
+
+.restricted_resource_button:hover { background-position: 0 -39px; }
+
+.restricted_resource_button_fixed
+{
+    background: url(images/restricted_resource.png) no-repeat;   
+}
+
+.dark_resource_button_fixed
+{
+    background: url(images/dark_resource.png) no-repeat;   
+}
+
+.delete_button 
+{
+	width: 97px;
+    background: url(images/delete_item.png) no-repeat;   
+}
+
+.delete_button:hover { background-position: 0 -39px; }
+
+
+
+.edit_metadata_button {
+    width: 127px; 
+    background: url(images/edit_metadata.png) no-repeat;   
+}
+
+.edit_metadata_button:hover { background-position: 0 -39px; }
+
+.edit_behaviors_button {
+    background: url(images/edit_behaviors.png) no-repeat;   
+}
+
+.edit_behaviors_button:hover { background-position: 0 -39px; }
+
+.add_comment_button {
+    background: url(images/add_comment.png) no-repeat;   
+}
+
+.add_comment_button:hover { background-position: 0 -39px; }
+
+.view_comment_button {
+    background: url(images/view_comment.png) no-repeat;   
+}
+
+.view_comment_button:hover { background-position: 0 -39px; }
+
+.add_volume_button {
+    background: url(images/add_volume.png) no-repeat;   
+}
+
+.add_volume_button:hover { background-position: 0 -39px; }
+
+.autofill_volumes_button {
+    background: url(images/autofill_volumes.png) no-repeat;   
+}
+
+.autofill_volumes_button:hover { background-position: 0 -39px; }
+
+.serial_hierarchy_button 
+{
+	width: 126px;
+    background: url(images/edit_hierarchy.png) no-repeat;   
+}
+
+.serial_hierarchy_button:hover { background-position: 0 -39px; }
+
+.mass_update_button 
+{
+	width: 141px;
+    background: url(images/mass_update.png) no-repeat;   
+}
+
+.mass_update_button:hover { background-position: 0 -39px; }
+
+.hide_intheader_button2 
+{
+	width: 81px;
+	height: 25px;
+    background: url(images/hide_internal_header2.png) no-repeat;   
+}
+
+.hide_intheader_button2:hover { background-position: 0 -25px; }
+
+.intheader_save_button
+{
+	width: 75px;
+	height: 21px;
+    background: url(images/save_gray.png) no-repeat;   
+    margin-left: 5px;
+    margin-right: 20px;
+}
+
+.intheader_save_button:hover { background-position: 0 -21px; }
+
+.show_intheader_button
+{
+	width: 202px;
+	height: 18px;
+    background: url(images/show_internal_header.png) no-repeat;   
+}
+
+.show_intheader_button:hover { background-position: 0 -18px; }
+
+#printedimage { text-align: center; }
+
+#itemwordmarks { margin-top: 30px;margin-bottom: 100px; }
+
+
+#itemviewerbottompadding {
+    background:#a4a4a4;height: 0px;
+}
+
+
+/* Code for the QC main menu */
+/** CODE FOR THE STARFISH NAVIGATION MENU PLUG-IN  **/
+/*** ESSENTIAL STYLES ***/
+.qc-menu, .qc-menu * {
+	margin:			0;
+	padding:		0;
+	list-style:		none;
+	z-index: 10;
+}
+.qc-menu {
+	line-height:	1.4em;
+}
+.qc-menu ul {
+	position:		absolute;
+	top:			-999em;
+	width:			25em; /* left offset of submenus need to match (see below) */
+}
+.qc-menu ul li {
+	width:			100%;
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+.qc-menu li:hover {
+	visibility:		inherit; /* fixes IE7 'sticky bug' */
+}
+.qc-menu li {
+	float:			left;
+	position:		relative;
+}
+.qc-menu a {
+	display:		block;
+	position:		relative;
+}
+.qc-menu li:hover ul,
+.qc-menu li.sfHover ul {
+	left:			0;
+	top:			20px; /* match top ul list item height */
+	z-index:		99;
+}
+ul.qc-menu li:hover li ul,
+ul.qc-menu li.sfHover li ul {
+	top:			-999em;
+}
+ul.qc-menu li li:hover ul,
+ul.qc-menu li li.sfHover ul {
+	left:			25em; /* match ul width */
+	top:			0;
+}
+ul.qc-menu li li:hover li ul,
+ul.qc-menu li li.sfHover li ul {
+	top:			-999em;
+}
+ul.qc-menu li li li:hover ul,
+ul.qc-menu li li li.sfHover ul {
+	left:			14em; /* match ul width */
+	top:			0;
+}
+
+/*** DEMO SKIN ***/
+.qc-menu 
+{
+    margin-left: 25px;
+	background-color: #7d90d5;
+	color: white;
+	text-transform:uppercase;
+    font-weight:bold;
+    padding-bottom: 8px;
+}
+
+.qc-menu a {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-decoration:none;
+}
+.qc-menu a, .qc-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
+	color:			White;
+}
+
+.qc-menu li 
+{
+    margin-top: 1px;  
+	background:		#7d90d5;
+	padding-bottom: 1px;
+	margin-right: 12px;
+
+}
+.qc-menu li li {
+	background:		#7d90d5;
+    margin-top: 0px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-left:	0px solid #fff;
+	text-align: left;
+}
+
+.qc-menu li li a {
+	border-left:	0px solid #fff;
+}
+
+.qc-menu li li li {
+	background:		#7d90d5;
+}
+.qc-menu li:hover, .qc-menu li.sfHover,
+.qc-menu a:focus, .qc-menu a:hover, .qc-menu a:active {
+	background:		#cccccc;
+	outline:		0;
+}
+
+/*** arrows **/
+.qc-menu a.sf-with-ul {
+	padding-right: 	2.25em;
+	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
+}
+.sf-sub-indicator {
+	position:		absolute;
+	display:		block;
+	right:			.75em;
+	top:			1.05em; /* IE6 only */
+	width:			10px;
+	height:			10px;
+	text-indent: 	-999em;
+	overflow:		hidden;
+	background:		url('../images/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+}
+a > .sf-sub-indicator {  /* give all except IE6 the correct values */
+	top:			.8em;
+	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
+}
+/* apply hovers to modern browsers */
+a:focus > .sf-sub-indicator,
+a:hover > .sf-sub-indicator,
+a:active > .sf-sub-indicator,
+li:hover > a > .sf-sub-indicator,
+li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+}
+
+/* point right for anchors in subs */
+.qc-menu ul .sf-sub-indicator { background-position:  -10px 0; }
+.qc-menu ul a > .sf-sub-indicator { background-position:  0 0; }
+/* apply hovers to modern browsers */
+.qc-menu ul a:focus > .sf-sub-indicator,
+.qc-menu ul a:hover > .sf-sub-indicator,
+.qc-menu ul a:active > .sf-sub-indicator,
+.qc-menu ul li:hover > a > .sf-sub-indicator,
+.qc-menu ul li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px 0; /* arrow hovers for modern browsers*/
+}
+
+
+#selected-qc-menu-item 
+{
+    padding-top: 7px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-decoration:none;
+	background-color: #0021a6;
+	margin-top: -2px;
+	
+}
+
+.action-qc-menu-item
+{
+    float:right;
+    padding-top: 4px;
+	padding-bottom: 5px;
+	text-decoration:none;
+	height: 16px;
+	cursor: pointer;
+	cursor: hand; 
+    margin-right: 5px;
+}

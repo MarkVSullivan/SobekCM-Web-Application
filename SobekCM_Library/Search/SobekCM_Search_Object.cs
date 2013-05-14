@@ -75,6 +75,33 @@ namespace SobekCM.Library.Search
         public SobekCM_Term_Enum Third_Term;
         public string Third_Value;
 
+        public SobekCM_Search_Object( )
+        {
+            // Set the default links
+            First_Link = SobekCM_Link_Enum.AND;
+            Second_Link = SobekCM_Link_Enum.AND;
+            Third_Link = SobekCM_Link_Enum.AND;
+
+            // Set the default terms
+            First_Term = new SobekCM_Term_Enum(); //Settings.SMaRT_UserSettings.Discovery_Panel_Search_Term1;
+            Second_Term = new SobekCM_Term_Enum(); //Settings.SMaRT_UserSettings.Discovery_Panel_Search_Term2;
+            Third_Term = new SobekCM_Term_Enum(); //Settings.SMaRT_UserSettings.Discovery_Panel_Search_Term3;
+            Fourth_Term = new SobekCM_Term_Enum(); //Settings.SMaRT_UserSettings.Discovery_Panel_Search_Term4;
+
+            // Set the default values
+            First_Value = String.Empty;
+            Second_Value = String.Empty;
+            Third_Value = String.Empty;
+            Fourth_Value = String.Empty;
+
+            // Set the default aggregation and institutions
+            Aggregation = String.Empty;
+            Institution = String.Empty;
+
+            // Set default search precision
+            Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+        }
+
         /// <summary> Constructor for a new instance of the SobekCM_Search_Object class </summary>
         /// <param name="Default_First_Term"></param>
         /// <param name="Default_Second_Term"></param>

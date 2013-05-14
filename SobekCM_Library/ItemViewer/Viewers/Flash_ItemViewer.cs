@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -56,12 +56,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -121,7 +121,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (flash_file.IndexOf("http:") < 0)
             {
-                flash_file = CurrentItem.SobekCM_Web.Source_URL + "/" + flash_file;
+                flash_file = CurrentItem.Web.Source_URL + "/" + flash_file;
             }
 
             // Add the HTML for the image

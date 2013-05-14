@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -109,7 +110,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //string select_subcollect = "Select subcollections to include in search:";
 
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 searchLanguage = "Búsqueda de la:";
                 inLanguage = "en";
@@ -120,7 +121,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 contains_any_form = "Contiene todas las formas de los términos de búsqueda";
             }
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 searchLanguage = "Recherche de:";
                 inLanguage = "en";
@@ -285,7 +286,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("             <td>");
             Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionContains\" value=\"contains\" /> <label for=\"precisionContains\">" + contains_exactly + "</label> <br />");
             Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionResults\" value=\"results\" checked=\"checked\" /> <label for=\"precisionResults\">" + contains_any_form + "</label> <br />");
-            if (currentMode.Language == Language_Enum.English)
+            if (currentMode.Language == Web_Language_Enum.English)
             {
                 Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionLike\" value=\"resultslike\" /> <label for=\"precisionLike\">" + containsMeaning + "</label> ");
             }
@@ -336,13 +337,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string and_language = "and";
             string or_language = "or";
             string and_not_language = "and not";
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 and_language = "et";
                 or_language = "ou";
                 and_not_language = "et non";
             }
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 and_language = "y";
                 or_language = "o";

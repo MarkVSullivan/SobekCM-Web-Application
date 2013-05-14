@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Items;

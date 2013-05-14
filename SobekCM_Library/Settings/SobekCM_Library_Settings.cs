@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Builder;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Search;
 
@@ -18,10 +21,10 @@ namespace SobekCM.Library
     public class SobekCM_Library_Settings
     {
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        public const string CURRENT_WEB_VERSION = "3.04";
+        public const string CURRENT_WEB_VERSION = "3.20 BETA";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        public const string CURRENT_BUILDER_VERSION = "3.04";
+        public const string CURRENT_BUILDER_VERSION = "3.20 BETA";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -61,10 +64,13 @@ namespace SobekCM.Library
         private static bool includeTreeviewOnSystemHome;
         private static bool includePartnersOnSystemHome;
         private static bool convertOfficeFilesToPdf;
+        private static bool builderVerbose;
         private static string privacyEmailAddress;
         private static int builderSecondsBetweenPolls;
         private static int builderLogExpirationDays;
         private static int webOutputCachingMinutes;
+        private static string mainBuilderInputFolder;
+        private static string webServerIp;
 
         private static readonly string base_url;
 
@@ -78,9 +84,15 @@ namespace SobekCM.Library
         private static readonly Dictionary<int, KeyValuePair<int, string>> dispositionFutureTypes;
         private static readonly Dictionary<int, KeyValuePair<int, string>> dispositionPastTypes;
         private static readonly Dictionary<int, KeyValuePair<int, string>> workflowTypes;
+
+
+
         private static readonly List<Metadata_Search_Field> metadataFields;
         private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByCode;
         private static readonly Dictionary<short, Metadata_Search_Field> metadataFieldsByID;
+        private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByFacetName;
+
+
         private static string mangoUnionSearchBaseUrl;  // "http://solrcits.fcla.edu/citsZ.jsp?type=search&base=uf";
         private static string mangoUnionSearchText;
         private static List<string> searchStopWords;
@@ -110,8 +122,9 @@ namespace SobekCM.Library
                 helpUrl = String.Empty;
                 includePartnersOnSystemHome = false;
                 includeTreeviewOnSystemHome = false;
-                Default_UI_Language = Language_Enum.English;
+                Default_UI_Language = Web_Language_Enum.English;
                 webOutputCachingMinutes = 0;
+                builderVerbose = false;
 
                 // Define new empty collections
                 dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -120,6 +133,7 @@ namespace SobekCM.Library
                 metadataFields = new List<Metadata_Search_Field>();
                 metadataFieldsByCode = new Dictionary<string, Metadata_Search_Field>();
                 metadataFieldsByID = new Dictionary<short, Metadata_Search_Field>();
+                metadataFieldsByFacetName = new Dictionary<string, Metadata_Search_Field>();
                 incomingFolders = new List<Builder_Source_Folder>();
                 searchStopWords = new List<string>();
 
@@ -127,8 +141,9 @@ namespace SobekCM.Library
                 if (String.IsNullOrEmpty(SobekCM_Database.Connection_String))
                 {
                     Read_Configuration_File();
+                    SobekCM_Database.Connection_String = Database_Connection_String;
                 }
-                SobekCM_Database.Connection_String = Database_Connection_String;
+                
                 Refresh(SobekCM_Database.Get_Settings_Complete(null));
             }
             catch (Exception)
@@ -145,6 +160,8 @@ namespace SobekCM.Library
 
         public static void Read_Configuration_File( string config_file )
         {
+            if (!File.Exists(config_file))
+                return;
 
             System.IO.StreamReader reader = new System.IO.StreamReader(config_file);
             System.Xml.XmlTextReader xmlReader = new System.Xml.XmlTextReader(reader);
@@ -231,6 +248,7 @@ namespace SobekCM.Library
                 Get_String_Value(settingsDictionary, "Archive DropBox", ref archiveDropbox, ref error);
                 Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", ref builderLogExpirationDays, ref error, 10 );
                 Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", ref builderSecondsBetweenPolls, ref error, 60);
+                Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", ref builderVerbose, ref error, false);
                 Get_String_Value(settingsDictionary, "Caching Server", ref cachingServer, ref error);
                 Get_Boolean_Value(settingsDictionary, "Can Submit Edit Online", ref canSubmit, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", ref convertOfficeFilesToPdf, ref error, false);                
@@ -249,6 +267,7 @@ namespace SobekCM.Library
                 Get_String_Value(settingsDictionary, "JPEG2000 Server", ref jpeg2000Server, ref error);
                 Get_String_Value(settingsDictionary, "Log Files Directory", ref logFilesDirectory, ref error);
                 Get_String_Value(settingsDictionary, "Log Files URL", ref logFilesUrl, ref error);
+                Get_String_Value(settingsDictionary, "Main Builder Input Folder", ref mainBuilderInputFolder, String.Empty);
                 Get_String_Value(settingsDictionary, "Mango Union Search Base URL", ref mangoUnionSearchBaseUrl, ref error);
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", ref mangoUnionSearchText, ref error);
                 Get_String_Value(settingsDictionary, "MarcXML Feed Location", ref marcxmlFeedLocation, ref error);
@@ -265,6 +284,7 @@ namespace SobekCM.Library
                 Get_String_Value(settingsDictionary, "Shibboleth System Name", ref shibbolethSystemName, String.Empty);
                 Get_Boolean_Value(settingsDictionary, "Show Florida SUS Settings", ref showFloridaSusSettings, ref error, false);
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", ref sobekcmImageserver, String.Empty);
+                Get_String_Value(settingsDictionary, "SobekCM Web Server IP", ref webServerIp, String.Empty);
                 Get_String_Value(settingsDictionary, "Static Pages Location", ref staticPagesLocation, ref error);
                 Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", ref statisticsCachingEnabled, ref error, false);
                 Get_String_Value(settingsDictionary, "System Base Abbreviation", ref systemBaseAbbreviation, String.Empty);
@@ -281,7 +301,7 @@ namespace SobekCM.Library
                 // Pull the language last, since it must be converted into a Language_Enum
                 string default_ui_language_string = "English";
                 Get_String_Value(settingsDictionary, "System Default Language", ref default_ui_language_string, "English");
-                Default_UI_Language = Language_Enum_Converter.Code_To_Language_Enum(default_ui_language_string);
+                Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(default_ui_language_string);
 
 
                 return !error;
@@ -533,21 +553,21 @@ namespace SobekCM.Library
             lock (thisLock)
             {
                 // Add ANYWHERE
-                Metadata_Search_Field anywhere = new Metadata_Search_Field(-1, "INVALID", "Anywhere", "ZZ", "all");
+                Metadata_Search_Field anywhere = new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "all");
                 metadataFields.Add(anywhere);
                 metadataFieldsByCode["ZZ"] = anywhere;
                 metadataFieldsByID[-1] = anywhere;
 
                 // Add OCLC
-                Metadata_Search_Field oclc = new Metadata_Search_Field(-1, "INVALID", "OCLC", "OC", "oclc");
+                Metadata_Search_Field oclc = new Metadata_Search_Field(-1, String.Empty, "OCLC", "OC", "oclc");
                 metadataFieldsByCode["OC"] = oclc;
 
                 // Add ALEPH
-                Metadata_Search_Field aleph = new Metadata_Search_Field(-1, "INVALID", "ALEPH", "AL", "aleph");
+                Metadata_Search_Field aleph = new Metadata_Search_Field(-1, String.Empty, "ALEPH", "AL", "aleph");
                 metadataFieldsByCode["AL"] = aleph;
 
                 // Add Full Text
-                Metadata_Search_Field fulltext = new Metadata_Search_Field(-1, "INVALID", "Full Text", "TX", "fulltext");
+                Metadata_Search_Field fulltext = new Metadata_Search_Field(-1, String.Empty, "Full Text", "TX", "fulltext");
                 metadataFieldsByCode["TX"] = fulltext;
 
                 // Get the data columns
@@ -577,6 +597,11 @@ namespace SobekCM.Library
                     metadataFields.Add(newField);
                     metadataFieldsByCode[code] = newField;
                     metadataFieldsByID[id] = newField;
+
+                    if (facet.Length > 0)
+                    {
+                        metadataFieldsByFacetName[facet.Replace("_", " ").ToLower()] = newField;
+                    }
                 }
             }
         }
@@ -592,6 +617,18 @@ namespace SobekCM.Library
             }
         }
 
+        /// <summary> Gets a single metadata search field, by the facet name </summary>
+        /// <param name="Facet_Name"> Name for this field for faceting purposes </param>
+        /// <returns> Metadata search field, or else NULL </returns>
+        public static Metadata_Search_Field Metadata_Search_Field_By_Facet_Name(string Facet_Name )
+        {
+            lock (thisLock)
+            {
+                return metadataFieldsByFacetName.ContainsKey(Facet_Name.Replace("_", " ").ToLower()) ? metadataFieldsByFacetName[Facet_Name.Replace("_", " ").ToLower()] : null;
+            }
+        }
+
+
         /// <summary> Gets a single metadata search field, by primary identifiere  </summary>
         /// <param name="MetadataTypeID"> Primary identifier for the metadata search field </param>
         /// <returns> Metadata search field, or else NULL </returns>
@@ -603,6 +640,14 @@ namespace SobekCM.Library
             }
         }
 
+        /// <summary> Returns the list of all metadat fields in this library </summary>
+        public static ReadOnlyCollection<Metadata_Search_Field> All_Metadata_Fields
+        {
+            get
+            {
+                return new ReadOnlyCollection<Metadata_Search_Field>(metadataFields);
+            }
+        }
         
         #endregion
 
@@ -645,7 +690,7 @@ namespace SobekCM.Library
         #region Static Public Properties
 
         /// <summary> Returns the default user interface language </summary>
-        public static Language_Enum Default_UI_Language { get; private set; }
+        public static Web_Language_Enum Default_UI_Language { get; private set; }
 
         /// <summary> Gets the base name for this system </summary>
         public static string System_Name
@@ -1018,6 +1063,23 @@ namespace SobekCM.Library
         {
             get { return sobekDatabaseType; }
         }
+
+        /// <summary> Database type </summary>
+        public static string Database_Type_String
+        {
+            get
+            { 
+                switch ( sobekDatabaseType )
+                {
+                    case SobekCM_Database_Type_Enum.MSSQL:
+                        return "Microsoft SQL Server";
+                       
+                    case SobekCM_Database_Type_Enum.PostgreSQL:
+                        return "PostgreSQL";
+                }
+                return "Unrecognized";
+            }
+        }
             
 
 
@@ -1052,6 +1114,12 @@ namespace SobekCM.Library
             get { return builderLogExpirationDays; }
         }
 
+        /// <summary> Flag indicates if the builder should be extra verbose in the log files (used for debugging purposes mostly) </summary>
+        public static bool Builder_Verbose_Flag
+        {
+            get { return builderVerbose; }
+        }
+
         /// <summary> Number of minutes clients are suggested to cache the web output </summary>
         public static int Web_Output_Caching_Minutes
         {
@@ -1072,6 +1140,19 @@ namespace SobekCM.Library
             set { ghostscriptExecutable = value; }
         }
 
+        /// <summary> Returns the network location for the main builder, which runs essentially
+        /// without restrictions  </summary>
+        public static string Main_Builder_Input_Folder
+        {
+            get { return mainBuilderInputFolder; }
+        }
+
+        /// <summary> IP address for the SobekCM web server </summary>
+        public static string SobekCM_Web_Server_IP
+        {
+            get { return webServerIp; }
+            set { webServerIp = value; }
+        }
 
         #region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
         

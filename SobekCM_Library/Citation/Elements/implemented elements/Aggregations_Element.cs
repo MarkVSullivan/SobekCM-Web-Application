@@ -6,9 +6,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -73,7 +74,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -81,15 +82,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Select the collections to which this item should belong";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -101,10 +102,10 @@ namespace SobekCM.Library.Citation.Elements
 
             List<string> codes = new List<string>();
             List<string> possibles = new List<string>();
-            if (Bib.SobekCM_Web.Aggregation_Count > 0)
+            if (Bib.Behaviors.Aggregation_Count > 0)
             {
-                codes.AddRange(Bib.SobekCM_Web.Aggregation_Code_List);
-                possibles.AddRange(Bib.SobekCM_Web.Aggregation_Code_List);
+                codes.AddRange(Bib.Behaviors.Aggregation_Code_List);
+                possibles.AddRange(Bib.Behaviors.Aggregation_Code_List);
             }
 
             // Check the user to see if this should be limited
@@ -141,7 +142,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears any preexisting alternate collections </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.SobekCM_Web.Clear_Aggregations();
+            Bib.Behaviors.Clear_Aggregations();
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -154,7 +155,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)
                 {
                     string code = HttpContext.Current.Request.Form[thisKey].ToUpper();
-                    Bib.SobekCM_Web.Add_Aggregation(code);
+                    Bib.Behaviors.Add_Aggregation(code);
                 }
             }
         }

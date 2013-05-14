@@ -65,12 +65,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -107,10 +107,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("\t\t\t<div class=\"SobekCitation\">");
 
             // Determine the string for the item URL
-            string itemURL = SobekCM_Library_Settings.Image_URL + CurrentItem.SobekCM_Web.File_Root + "/";
+            string itemURL = SobekCM_Library_Settings.Image_URL + CurrentItem.Web.File_Root + "/";
 
 			// Try to get the HTML for this
-            string map = Get_Html_Page(CurrentItem.SobekCM_Web.Source_URL + "/" + htmlFile, Tracer);
+            string map = Get_Html_Page(CurrentItem.Web.Source_URL + "/" + htmlFile, Tracer);
 
             string url_options = CurrentMode.URL_Options();
             string urlOptions1 = String.Empty;
@@ -187,7 +187,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 builder.AppendLine("      <b><h4>Unable to pull html view for item</h4></b>");
                 builder.AppendLine("      <h5>We apologize for the inconvenience.</h5>");
-                string error_message = "Unable to pull html view for item " + CurrentItem.SobekCM_Web.ItemID;
+                string error_message = "Unable to pull html view for item " + CurrentItem.Web.ItemID;
                 string returnurl = "?m=hc&em=" + error_message.Replace(" ", "%20");
                 builder.AppendLine("      <h5>Click <a href=\"" + returnurl + "\">here</a> to report the problem.</h5>");
                 builder.AppendLine("    </td>");

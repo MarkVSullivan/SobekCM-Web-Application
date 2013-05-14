@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 
 #endregion
@@ -78,19 +79,19 @@ namespace SobekCM.Library.Navigation
 				{
 					if (thisLanguage.IndexOf("en") == 0)
 					{
-						navigator.Default_Language = Language_Enum.English;
+						navigator.Default_Language = Web_Language_Enum.English;
 						break;
 					}
 
 					if (thisLanguage.IndexOf("fr") == 0)
 					{
-						navigator.Default_Language = Language_Enum.French;
+						navigator.Default_Language = Web_Language_Enum.French;
 						break;
 					}
 
 					if (thisLanguage.IndexOf("es") == 0)
 					{
-						navigator.Default_Language = Language_Enum.Spanish;
+						navigator.Default_Language = Web_Language_Enum.Spanish;
 						break;
 					}
 				}
@@ -102,15 +103,15 @@ namespace SobekCM.Library.Navigation
 			{
 				if (( QueryString["l"] == "es" ) || ( QueryString["l"] == "sp" ))
 				{
-					navigator.Language = Language_Enum.Spanish;
+					navigator.Language = Web_Language_Enum.Spanish;
 				}
 				if ( QueryString["l"] == "fr" )
 				{
-					navigator.Language = Language_Enum.French;
+					navigator.Language = Web_Language_Enum.French;
 				}
 				if (QueryString["l"] == "en")
 				{
-					navigator.Language = Language_Enum.English;
+					navigator.Language = Web_Language_Enum.English;
 				}
 			}
 
@@ -129,6 +130,12 @@ namespace SobekCM.Library.Navigation
 			{
 				navigator.Is_Robot = true;
 			}
+
+            // Was a fragment specified in the query string?
+            if (QueryString["fragment"] != null)
+            {
+                navigator.Fragment = QueryString["fragment"];
+            }
 			
 			// Parse URL request different now, depending on if this is a legacy URL type or the new URL type
 			navigator.Mode = Display_Mode_Enum.None;
@@ -250,7 +257,7 @@ namespace SobekCM.Library.Navigation
 
 							case "internal":
 								navigator.Mode = Display_Mode_Enum.Internal;
-								navigator.Internal_Type = Internal_Type_Enum.Cache;
+								navigator.Internal_Type = Internal_Type_Enum.Aggregations_List;
 								if ( url_relative_list.Count > 1 )
 								{
 									switch( url_relative_list[1] )
@@ -384,72 +391,6 @@ namespace SobekCM.Library.Navigation
 								{
 									switch( url_relative_list[1] )
 									{
-										case "admin":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Home;
-											break;
-
-										case "builder":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Builder_Status;
-											break;
-
-										case "aggregations":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Aggregations_Mgmt;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
-
-										case "editaggr":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Aggregation_Single;
-											if (url_relative_list.Count > 2)
-												navigator.Aggregation = url_relative_list[2];
-											if (url_relative_list.Count > 3)
-												navigator.My_Sobek_SubMode = url_relative_list[3];
-											break;
-
-										case "aliases":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Forwarding;
-											break;
-
-										case "webskins":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Interfaces;
-											break;
-
-										case "projects":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Projects;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
-
-										case "restrictions":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_IP_Restrictions;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
-
-										case "portals":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_URL_Portals;
-											break;
-
-										case "users":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Users;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
-
-										case "groups":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_User_Groups;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
-
-										case "wordmarks":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Wordmarks;
-											break;
-
-										case "reset":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Reset;
-											break;
-
 										case "logon":
 											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 											if (QueryString["return"] != null)
@@ -637,21 +578,95 @@ namespace SobekCM.Library.Navigation
 											if (url_relative_list.Count > 2)
 												navigator.My_Sobek_SubMode = url_relative_list[2];
 											break;
-
-										case "headings":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Thematic_Headings;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
-
-										case "settings":
-											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Settings;
-											if (url_relative_list.Count > 2)
-												navigator.My_Sobek_SubMode = url_relative_list[2];
-											break;
 									}
 								}
 								break;
+
+                            case "admin":
+                                navigator.Mode = Display_Mode_Enum.Administrative;
+						        navigator.Admin_Type = Admin_Type_Enum.Home;
+                                if (QueryString["return"] != null)
+                                    navigator.Return_URL = QueryString["return"];
+                                if (url_relative_list.Count > 1)
+                                {
+                                    switch (url_relative_list[1])
+                                    {
+                                        case "builder":
+                                            navigator.Admin_Type = Admin_Type_Enum.Builder_Status;
+                                            break;
+
+                                        case "aggregations":
+                                            navigator.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "editaggr":
+                                            navigator.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.Aggregation = url_relative_list[2];
+                                            if (url_relative_list.Count > 3)
+                                                navigator.My_Sobek_SubMode = url_relative_list[3];
+                                            break;
+
+                                        case "aliases":
+                                            navigator.Admin_Type = Admin_Type_Enum.Forwarding;
+                                            break;
+
+                                        case "webskins":
+                                            navigator.Admin_Type = Admin_Type_Enum.Interfaces;
+                                            break;
+
+                                        case "projects":
+                                            navigator.Admin_Type = Admin_Type_Enum.Projects;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "restrictions":
+                                            navigator.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "portals":
+                                            navigator.Admin_Type = Admin_Type_Enum.URL_Portals;
+                                            break;
+
+                                        case "users":
+                                            navigator.Admin_Type = Admin_Type_Enum.Users;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "groups":
+                                            navigator.Admin_Type = Admin_Type_Enum.User_Groups;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "wordmarks":
+                                            navigator.Admin_Type = Admin_Type_Enum.Wordmarks;
+                                            break;
+
+                                        case "reset":
+                                            navigator.Admin_Type = Admin_Type_Enum.Reset;
+                                            break;
+
+                                        case "headings":
+                                            navigator.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "settings":
+                                            navigator.Admin_Type = Admin_Type_Enum.Settings;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+                                    }
+                                }
+                                break;
 					 
 							case "preferences":
 								navigator.Mode = Display_Mode_Enum.Preferences;
@@ -982,6 +997,23 @@ namespace SobekCM.Library.Navigation
 											navigator.Viewport_Point_Y = Convert.ToInt32(split[1]);
 										}
 									}
+
+                                    // Collect number of thumbnails per page
+                                    if (QueryString["nt"] != null)
+                                    {
+                                        short nt_temp;
+                                        if (short.TryParse(QueryString["nt"], out nt_temp))
+                                            navigator.Thumbnails_Per_Page = nt_temp;
+                                    }
+
+                                    // Collect size of thumbnails per page
+                                    if (QueryString["ts"] != null)
+                                    {
+                                        short ts_temp;
+                                        if (short.TryParse(QueryString["ts"], out ts_temp))
+                                            navigator.Size_Of_Thumbnails = ts_temp;
+                                    }
+
 
 									// Collect the text search string
 									if (QueryString["search"] != null)

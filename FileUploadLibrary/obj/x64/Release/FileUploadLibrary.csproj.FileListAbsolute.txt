@@ -1,5 +1,0 @@
-C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\x64\Release\FileUploadLibrary.dll
-C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\x64\Release\FileUploadLibrary.pdb
-C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\x64\Release\ResolveAssemblyReference.cache
-C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\x64\Release\FileUploadLibrary.dll
-C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\x64\Release\FileUploadLibrary.pdb

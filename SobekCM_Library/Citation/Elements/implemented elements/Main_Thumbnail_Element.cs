@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -39,7 +40,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -47,15 +48,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Select the image to use as the main thumbnail when searching or browsing.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -67,13 +68,13 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add all the possible thumbnail files
             items.Clear();
-            ReadOnlyCollection<string> files = Bib.SobekCM_Web.Get_Thumbnail_Files(SobekCM_Library_Settings.Image_Server_Network + Bib.SobekCM_Web.AssocFilePath);
+            ReadOnlyCollection<string> files = Bib.Web.Get_Thumbnail_Files(SobekCM_Library_Settings.Image_Server_Network + Bib.Web.AssocFilePath);
             foreach (string thisFile in files)
             {
                 items.Add(thisFile);
             }
 
-            render_helper(Output, Bib.SobekCM_Web.Main_Thumbnail, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, Bib.Behaviors.Main_Thumbnail, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -92,7 +93,7 @@ namespace SobekCM.Library.Citation.Elements
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_","")) == 0))
             {
-                Bib.SobekCM_Web.Main_Thumbnail = HttpContext.Current.Request.Form[thisKey];
+                Bib.Behaviors.Main_Thumbnail = HttpContext.Current.Request.Form[thisKey];
                 return;
             }
         }

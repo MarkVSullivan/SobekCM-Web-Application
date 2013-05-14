@@ -13,6 +13,7 @@ using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.MemoryMgmt;
@@ -289,7 +290,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader_aggr\">");
                 Output.WriteLine("    <tr height=\"45px\">");
                 Output.WriteLine("      <td align=\"left\" width=\"100px\">");
-                Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button hide_intheader_button2\" onclick=\"return hide_internal_header();\" alt=\"Hide Internal Header\"></button>");
+                Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button_aggr hide_intheader_button_aggr\" onclick=\"return hide_internal_header();\" alt=\"Hide Internal Header\"></button>");
                 Output.WriteLine("      </td>");
 
                 Output.WriteLine("      <td align=\"center\" valign=\"middle\">");
@@ -300,27 +301,27 @@ namespace SobekCM.Library.HTML
 
                 currentMode.Mode = Display_Mode_Enum.Aggregation_Private_Items;
                 currentMode.Info_Browse_Mode = String.Empty;
-                Output.WriteLine("          <button title=\"View Private Items\" class=\"intheader_button view_private_items\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
+                Output.WriteLine("          <button title=\"View Private Items\" class=\"intheader_button_aggr view_private_items\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
 
                 // Add button to view item count information
                 currentMode.Mode = Display_Mode_Enum.Aggregation_Item_Count;
-                Output.WriteLine("          <button title=\"View Item Count\" class=\"intheader_button show_item_count\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                Output.WriteLine("          <button title=\"View Item Count\" class=\"intheader_button_aggr show_item_count\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                 // Add button to view usage statistics information
                 currentMode.Mode = Display_Mode_Enum.Aggregation_Usage_Statistics;
-                Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button show_usage_statistics\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                 // Add admin view is system administrator
                 if ((Current_User.Is_System_Admin) || (Current_User.Is_Aggregation_Curator(Hierarchy_Object.Code)))
                 {
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Aggregation_Single;
-                    Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button admin_view_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
+                    currentMode.Mode = Display_Mode_Enum.Administrative;
+                    currentMode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                    Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
                 }
                 else
                 {
                     currentMode.Mode = Display_Mode_Enum.Aggregation_Admin_View;
-                    Output.WriteLine("          <button title=\"View Administrative Information\" class=\"intheader_button admin_view_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
+                    Output.WriteLine("          <button title=\"View Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
                 }
                 Output.WriteLine("      </td>");
 
@@ -542,7 +543,7 @@ namespace SobekCM.Library.HTML
                 string select_subcollect = "Select subcollections to include in search:";
 
                 // Change text if this is Spanish
-                if (currentMode.Language == Language_Enum.Spanish)
+                if (currentMode.Language == Web_Language_Enum.Spanish)
                 {
                     show_collect_groups = "SELECCIONE GRUPOS DE COLECCIONES";
                     show_collect = "SELECCIONE COLECCIONES";
@@ -557,7 +558,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Change the text if this is french
-                if (currentMode.Language == Language_Enum.French)
+                if (currentMode.Language == Web_Language_Enum.French)
                 {
                     show_collect_groups = "VOIR LE GROUPE DE COLLECTION";
                     show_collect = "VOIR LES COLLECTIONS";
@@ -686,7 +687,7 @@ namespace SobekCM.Library.HTML
             string browseBy = "BROWSE BY";
             const string browseMap = "MAP BROWSE";
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 home = "INICIO";
                 libraryHome = "INICIO " + currentMode.SobekCM_Instance_Abbreviation.ToUpper();
@@ -697,7 +698,7 @@ namespace SobekCM.Library.HTML
                 myCollections = "MIS COLECCIONES";
             }
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 home = "PAGE D'ACCUEIL";
                 libraryHome = "PAGE D'ACCUEIL";
@@ -1317,7 +1318,7 @@ namespace SobekCM.Library.HTML
                         string treeText = "TREE VIEW";
                         const string thumbnailText = "THUMBNAIL VIEW";
 
-                        if (currentMode.Language == Language_Enum.Spanish)
+                        if (currentMode.Language == Web_Language_Enum.Spanish)
                         {
                             listText = "LISTADO";
                             descriptionText = "VISTA BREVE";

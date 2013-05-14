@@ -92,6 +92,22 @@
 			<element type="Download" repeatable="true" />
 		</panel>
     </page>
+
+  <page>
+      <name language="eng">IEEE-LOM</name>
+      <panel>
+        <name language="eng">Learning Object Metadata</name>
+        <element type="LOM_Aggregation_Level" />
+        <element type="LOM_Learning_Resource_Type" />
+        <element type="LOM_Status" />
+        <element type="LOM_Interactivity_Type" />
+        <element type="LOM_Interactivity_Level" />
+        <element type="LOM_Difficulty_Level" />
+        <element type="LOM_Intended_End_User_Role" />
+        <element type="LOM_Context" />
+        <element type="LOM_Typical_Age_Range" />
+       </panel>
+    </page>
 	</inputs>
 
 </input_template>

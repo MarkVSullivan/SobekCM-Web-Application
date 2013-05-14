@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -113,7 +114,7 @@ namespace SobekCM.Library.MySobekViewer
             string col2Width = "100px";
             string col3Width = "605px";
 
-            if ( currentMode.Language == Language_Enum.French)
+            if ( currentMode.Language == Web_Language_Enum.French)
             {
                 accountInfoLabel = "Informations sur le Compte";
                 userNameLabel = "Nom du Compte";
@@ -143,7 +144,7 @@ namespace SobekCM.Library.MySobekViewer
                 col3Width = "490px";
             }
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 accountInfoLabel = "Información de la Cuenta";
                 userNameLabel = "Nombre de la Cuenta";
@@ -438,7 +439,8 @@ namespace SobekCM.Library.MySobekViewer
                         // system-wide settings screen
                         if (user.UserID == 1)
                         {
-                            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Settings;
+                            currentMode.Mode = Display_Mode_Enum.Administrative;
+                            currentMode.Admin_Type = Admin_Type_Enum.Settings;
                             redirect_url = currentMode.Redirect_URL();
                         }
                         HttpContext.Current.Response.Redirect(redirect_url);

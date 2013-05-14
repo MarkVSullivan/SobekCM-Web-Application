@@ -15,7 +15,7 @@
 	<includeUserAsAuthor>false</includeUserAsAuthor>
 	<uploads>NONE</uploads>
 	<bibidRoot>AA</bibidRoot>
-	<defaultVisibility>-1</defaultVisibility>
+	<defaultVisibility>PRIVATE</defaultVisibility>
 
 	<!-- This defines the inputs which are available for the user -->
 	<inputs>

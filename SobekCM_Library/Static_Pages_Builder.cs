@@ -8,11 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
-using SobekCM.Bib_Package.Writers;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
@@ -39,7 +40,7 @@ namespace SobekCM.Library
         private readonly Item_Lookup_Object itemList;
 
         /// <summary> MarcXML writer object </summary>
-        private readonly MARC_Writer marcWriter;
+        private readonly MarcXML_File_ReaderWriter marcWriter;
 
         private readonly string primaryWebServerUrl;
         private readonly string staticSobekcmDataLocation;
@@ -68,7 +69,7 @@ namespace SobekCM.Library
             tracer = new Custom_Tracer();
             assistant = new SobekCM_Assistant();
 
-            marcWriter = new MARC_Writer();
+           // marcWriter = new MARC_Writer();
 
 
             // Save all the objects needed by the UFDC Library
@@ -85,7 +86,7 @@ namespace SobekCM.Library
                                   ViewerCode = "citation",
                                   Skin = "UFDC",
                                   Mode = Display_Mode_Enum.Item_Display,
-                                  Language = Language_Enum.English,
+                                  Language = Web_Language_Enum.English,
                                   Base_URL = primaryWebServerUrl
                               };
         }
@@ -102,7 +103,7 @@ namespace SobekCM.Library
             tracer = new Custom_Tracer();
             assistant = new SobekCM_Assistant();
 
-            marcWriter = new MARC_Writer();
+           // marcWriter = new MARC_Writer();
 
             // Get the list of all items
             SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String; ;
@@ -132,7 +133,7 @@ namespace SobekCM.Library
                                   ViewerCode = "FC",
                                   Skin = "UFDC",
                                   Mode = Display_Mode_Enum.Item_Display,
-                                  Language = Language_Enum.English,
+                                  Language = Web_Language_Enum.English,
                                   Base_URL = primaryWebServerUrl
                               };
 
@@ -707,7 +708,7 @@ namespace SobekCM.Library
             currentMode.ViewerCode = "citation";
             currentMode.Skin = "UFDC";
             currentMode.Mode = Display_Mode_Enum.Item_Display;
-            currentMode.Language = Language_Enum.English;
+            currentMode.Language = Web_Language_Enum.English;
             currentMode.Internal_User = false;
             currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
@@ -747,7 +748,7 @@ namespace SobekCM.Library
                 currentMode.ViewerCode = "citation";
                 currentMode.Skin = "UFDC";
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Language = Language_Enum.English;
+                currentMode.Language = Web_Language_Enum.English;
                 currentMode.Internal_User = false;
                 currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
@@ -760,14 +761,19 @@ namespace SobekCM.Library
                 if (currentItem == null)
                     return false;
 
-                if (currentItem.SobekCM_Web.Aggregation_Count > 0)
-                    currentMode.Aggregation = currentItem.SobekCM_Web.Aggregations[0].Code;
+                if (currentItem.Behaviors.Aggregation_Count > 0)
+                    currentMode.Aggregation = currentItem.Behaviors.Aggregations[0].Code;
                 if (currentMode.Aggregation == "EPC")
                     currentMode.Aggregation = "FLCITY";
 
-                string marcFile = directory + currentItem.SobekCM_Web.File_Root + "\\" + currentItem.VID + "\\marc.xml";
+                string marcFile = directory + currentItem.Web.File_Root + "\\" + currentItem.VID + "\\marc.xml";
 
-                return marcWriter.Save_As_MARC_XML(marcFile, currentItem, currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
+                List<string> collectionnames = new List<string>();
+                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                string Error_Message;
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                return marcWriter.Write_Metadata(marcFile, currentItem, options, out Error_Message);
             }
             catch
             {
@@ -794,7 +800,7 @@ namespace SobekCM.Library
             currentMode.ViewerCode = "citation";
             currentMode.Skin = "UFDC";
             currentMode.Mode = Display_Mode_Enum.Item_Display;
-            currentMode.Language = Language_Enum.English;
+            currentMode.Language = Web_Language_Enum.English;
             currentMode.Internal_User = false;
             currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
@@ -803,8 +809,8 @@ namespace SobekCM.Library
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
             assistant.Get_Item(String.Empty, currentMode, itemList, SobekCM_Library_Settings.Image_URL, iconList, tracer, null, out currentItem, out currentPage, out itemsInTitle );
-            if (currentItem.SobekCM_Web.Aggregation_Count > 0)
-                currentMode.Aggregation = currentItem.SobekCM_Web.Aggregations[0].Code;
+            if (currentItem.Behaviors.Aggregation_Count > 0)
+                currentMode.Aggregation = currentItem.Behaviors.Aggregations[0].Code;
             if (currentMode.Aggregation == "EPC")
                 currentMode.Aggregation = "FLCITY";
 
@@ -820,7 +826,7 @@ namespace SobekCM.Library
         private void Finish_writing_html(SobekCM_Item currentItem, Page_TreeNode currentPage, string filename, string text_file_location )
         {
             string bibid = currentItem.BibID;
-            currentItem.SobekCM_Web.Text_Searchable = false;
+            currentItem.Behaviors.Text_Searchable = false;
 
             // Create the HTML writer
             Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(currentItem, currentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer)
@@ -851,7 +857,7 @@ namespace SobekCM.Library
             itemWriter.Write_HTML(writer, tracer);
 
             // Write the table of contents as static HTML, rather than the TreeView web control
-            if ((currentItem.SobekCM_Web.Static_PageCount > 1) && (currentItem.SobekCM_Web.Static_Division_Count > 1))
+            if ((currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
             {
                 writer.WriteLine("        <ul class=\"SobekNavBarMenu\">" + Environment.NewLine + "          <li class=\"SobekNavBarHeader\"> TABLE OF CONTENTS </li>" + Environment.NewLine + "        </ul>" + Environment.NewLine  +
                                  "        <div class=\"HideTocRow\">" + Environment.NewLine + "          <img src=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + "design/skins/" + itemWriter.Skin.Skin_Code + "/tabs/cLG.gif\" border=\"0\" alt=\"\" /><img src=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + "design/skins/" + itemWriter.Skin.Skin_Code + "/tabs/AU.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">HIDE</span><img src=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + "design/skins/" + itemWriter.Skin.Skin_Code + "/tabs/cRG.gif\" border=\"0\" alt=\"\" />" + Environment.NewLine + "        </div>");
@@ -901,7 +907,7 @@ namespace SobekCM.Library
 
             // If there is a table of contents write it again, this time it will be complete
             // and also show a hierarchy if there is one
-            if ((currentItem.SobekCM_Web.Static_PageCount > 1) && (currentItem.SobekCM_Web.Static_Division_Count > 1))
+            if ((currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
             {
                 writer.WriteLine("       <tr>");
                 writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Table of Contents</span></td>");
@@ -1077,7 +1083,7 @@ namespace SobekCM.Library
 
             // Restore the text searchable flag and robot flag
             currentMode.Is_Robot = false;
-            currentItem.SobekCM_Web.Text_Searchable = false;
+            currentItem.Behaviors.Text_Searchable = false;
         }
 
         private void recursively_write_toc(StreamWriter writer, abstract_TreeNode treeNode, string indent)

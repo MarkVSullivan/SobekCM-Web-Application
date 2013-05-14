@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using SobekCM.Library.Configuration;
 
 #endregion
 
@@ -64,17 +65,17 @@ namespace SobekCM.Library.Application_State
         /// <param name="English"> Term in english </param>
         /// <param name="language"> Current language of the web interface </param>
         /// <returns> Translation of term, if it exists, otherwise the original term </returns>
-        public string Get_Translation(string English, Language_Enum language)
+        public string Get_Translation(string English, Web_Language_Enum language)
         {
             if (English.Length == 0)
                 return String.Empty;
 
             switch (language)
             {
-                case Language_Enum.Spanish:
+                case Web_Language_Enum.Spanish:
                     return Get_Spanish(English);
 
-                case Language_Enum.French:
+                case Web_Language_Enum.French:
                     return Get_French(English);
 
                 default:

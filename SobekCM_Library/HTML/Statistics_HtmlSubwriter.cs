@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 
@@ -63,7 +64,7 @@ namespace SobekCM.Library.HTML
             string recent_searches_title = "Recent Searches in " + currentMode.SobekCM_Instance_Abbreviation;
             string usage_title = "Usage Statistics for " + currentMode.SobekCM_Instance_Abbreviation;
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 title = "INICIO";
                 item_count = "NUMERO DE OBJETOS";
@@ -72,7 +73,7 @@ namespace SobekCM.Library.HTML
                 recent_searches_title = "Búsquedas Recientes en " + currentMode.SobekCM_Instance_Abbreviation;
             }
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 title = "PAGE D'ACCUEIL";
                 item_count = "NOMBRE DE DOCUMENTS";
@@ -491,7 +492,7 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_items_by_collection", "Rendering HTML");
 
             Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<p>The most commonly utilized items by collection appear below.</p>");
+            Output.WriteLine("<p>The most commonly accessed items by collection appear below.</p>");
 
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Definitions;
             Output.WriteLine("<p>The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
@@ -1429,7 +1430,7 @@ namespace SobekCM.Library.HTML
 
 
             Output.WriteLine();
-            Output.WriteLine("<h2>Collection History</h2>");
+            Output.WriteLine("<h2>Collection Work_History</h2>");
 
             if ((statsCount != null) && (statsCount.Rows.Count > 0))
             {
@@ -1686,7 +1687,7 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_collection_history_text", "Rendering HTML");
 
             Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<p>Below is the item count with fiscal year to date information included in comma-seperated value form.  To use the data below, cut and paste it into a CSV or text file.  The resulting file can be opened in a variety of applications, including OpenOffice and Microsoft Excel.</p>");
+            Output.WriteLine("<p>Below is the history collection information included in comma-seperated value form.  To use the data below, cut and paste it into a CSV or text file.  The resulting file can be opened in a variety of applications, including OpenOffice and Microsoft Excel.</p>");
             Output.WriteLine("</div>");
 
             Output.WriteLine("<pre>");

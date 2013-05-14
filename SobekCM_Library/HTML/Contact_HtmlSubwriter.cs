@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
@@ -149,7 +150,7 @@ namespace SobekCM.Library.HTML
                 string submit = "Submit";
                 string cancel = "Cancel";
 
-                if (currentMode.Language == Language_Enum.French)
+                if (currentMode.Language == Web_Language_Enum.French)
                 {
                     contact_us_title = "Contactez Nous";
                     please_complete = "Veuillez remplir les champs obligatoires indiqués:";
@@ -162,7 +163,7 @@ namespace SobekCM.Library.HTML
                     cancel = "Annuler";
                 }
 
-                if (currentMode.Language == Language_Enum.Spanish)
+                if (currentMode.Language == Web_Language_Enum.Spanish)
                 {
                     contact_us_title = "Contáctenos";
                     please_complete = "Por Favor llene la información Requerida:";

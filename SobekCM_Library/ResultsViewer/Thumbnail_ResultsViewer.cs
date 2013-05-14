@@ -77,9 +77,7 @@ namespace SobekCM.Library.ResultsViewer
                     resultsBldr.AppendLine("\t<tr valign=\"top\">");
                 }
 
-                bool multiple_title = false;
-                if (titleResult.Item_Count > 1)
-                    multiple_title = true;
+                bool multiple_title = titleResult.Item_Count > 1;
 
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
@@ -158,16 +156,16 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Calculate the thumbnail
-                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
 
                 // Add the thumbnail
-                if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
+                if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
                     resultsBldr.AppendLine("<tr><td><a href=\"" + internal_link + "\"><img src=\"" + CurrentMode.Default_Images_URL + "NoThumb.jpg\" /></a></td></tr>");
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<tr><td><a href=\"" + internal_link + "\"><img src=\"" + SobekCM_Library_Settings.Image_URL + thumb + "\" alt=\"MISSING THUMBNAIL\" /></a></td></tr>");
+                    string thumb = SobekCM_Library_Settings.Image_URL + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");           
+                    resultsBldr.AppendLine("<tr><td><a href=\"" + internal_link + "\"><img src=\"" +  thumb + "\" alt=\"MISSING THUMBNAIL\" /></a></td></tr>");
                 }
 
                 // Add the title

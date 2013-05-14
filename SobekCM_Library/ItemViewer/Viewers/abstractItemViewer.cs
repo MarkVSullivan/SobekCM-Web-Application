@@ -2,9 +2,10 @@
 
 using System;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Users;
 
 #endregion
 
@@ -48,6 +49,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    /// <summary> Sets the current item for this viewer to display </summary>
 	    public virtual SobekCM_Item CurrentItem { protected get; set; }
 
+        /// <summary> Sets the current user, in case there are any user options to include </summary>
+        public virtual User_Object CurrentUser { protected get; set; }
+
 	    /// <summary> Abstract method adds any viewer_specific information to the Navigation Bar Menu Section </summary>
         /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
         /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
@@ -76,7 +80,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-                return CurrentItem.SobekCM_Web.Static_PageCount;
+                return CurrentItem.Web.Static_PageCount;
 			}
 		}
 
@@ -183,12 +187,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			get
 			{
                 bool some_pages_named = false;
-				string[] page_names = new string[ CurrentItem.SobekCM_Web.Static_PageCount ];
+				string[] page_names = new string[ CurrentItem.Web.Static_PageCount ];
 				for( int i = 0 ; i < page_names.Length ; i++ )
 				{
-                    if (CurrentItem.SobekCM_Web.Pages_By_Sequence[i].Label.Length > 0)
+                    if (CurrentItem.Web.Pages_By_Sequence[i].Label.Length > 0)
                     {
-                        page_names[i] = CurrentItem.SobekCM_Web.Pages_By_Sequence[i].Label;
+                        page_names[i] = CurrentItem.Web.Pages_By_Sequence[i].Label;
                         some_pages_named = true;
                     }
                     else
@@ -234,11 +238,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return CurrentMode.Page; }
         }
 
+	    /// <summary> Flag indicates if the item viewer should add the standard item menu, or
+	    /// if this item viewer overrides that menu and will write its own menu </summary>
+	    /// <remarks> By default, this returns TRUE.  The QC and the spatial editing itemviewers create their own custom menus
+	    /// due to the complexity of the work being done in those viewers. </remarks>
+	    public virtual bool Include_Standard_Item_Menu
+	    {
+            get { return true;  }
+	    }
+
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This value is override by some of the children classes, but by default this returns TRUE </value>
-        public virtual bool Show_Page_Selector
+        public virtual ItemViewer_PageSelector_Type_Enum Page_Selector
         {
-            get { return true; }
+            get
+            {
+                return ItemViewer_PageSelector_Type_Enum.DropDownList;
+            }
         }
 
         /// <summary> Abstract property gets the type of item viewer </summary>

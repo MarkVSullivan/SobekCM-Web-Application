@@ -4,8 +4,9 @@ using System;
 using System.Data;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package.SobekCM_Info;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Items;
 
 #endregion
@@ -65,12 +66,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This always returns FALSE </value>
-        public override bool Show_Page_Selector
+        /// <value> This always returns NONE </value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -196,14 +197,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string map_text = "Related Map Sets";
             const string AERIAL_TEXT = "Related Flights";
 
-            if (CurrentMode.Language == Language_Enum.French)
+            if (CurrentMode.Language == Web_Language_Enum.French)
             {
                 volumes_text = "Tous les Volumes";
                 issues_text = "Tous les Éditions";
                 map_text = "Définit la Carte Connexes";
             }
 
-            if (CurrentMode.Language == Language_Enum.Spanish)
+            if (CurrentMode.Language == Web_Language_Enum.Spanish)
             {
                 volumes_text = "Todos los Volumenes";
                 issues_text = "Todas las Ediciones";
@@ -211,15 +212,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             string issues_type = volumes_text;
-            if ( CurrentItem.SobekCM_Web.GroupType.ToUpper().IndexOf("NEWSPAPER") >= 0 )
+            if ( CurrentItem.Behaviors.GroupType.ToUpper().IndexOf("NEWSPAPER") >= 0 )
             {
                 issues_type = issues_text;
             }
-            else if (CurrentItem.SobekCM_Web.GroupType.ToUpper().IndexOf("MAP") >= 0)
+            else if (CurrentItem.Behaviors.GroupType.ToUpper().IndexOf("MAP") >= 0)
             {
                 issues_type = map_text;
             }
-            else if (CurrentItem.SobekCM_Web.GroupType.ToUpper().IndexOf("AERIAL") >= 0)
+            else if (CurrentItem.Behaviors.GroupType.ToUpper().IndexOf("AERIAL") >= 0)
             {
                 issues_type = AERIAL_TEXT;
             }
@@ -291,7 +292,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the final HTML
             Literal secondLiteral = new Literal();
-            if (CurrentItem.SobekCM_Web.Related_Titles_Count > 0)
+            if (CurrentItem.Web.Related_Titles_Count > 0)
             {
                 StringBuilder relatedBuilder = new StringBuilder(1000);
                 relatedBuilder.AppendLine("<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
@@ -299,7 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 relatedBuilder.AppendLine("    <td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;Related Titles</b></td>");
                 relatedBuilder.AppendLine("  </tr>");
                 string url_opts = CurrentMode.URL_Options();
-                foreach (Related_Titles thisTitle in CurrentItem.SobekCM_Web.All_Related_Titles)
+                foreach (Related_Titles thisTitle in CurrentItem.Web.All_Related_Titles)
                 {
                     relatedBuilder.AppendLine("  <tr>");
                     relatedBuilder.AppendLine("    <td width=\"15px\">&nbsp;</td>");
@@ -431,7 +432,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Is this a newspaper?
             bool newspaper = false;
-            if ( CurrentItem.SobekCM_Web.GroupType.ToUpper() == "NEWSPAPER")
+            if ( CurrentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER")
             {
                 newspaper = true;
             }
@@ -454,7 +455,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("\t<tr valign=\"top\">");
 
             // Find the base address for this thumbnail
-            string jpeg_base = (SobekCM_Library_Settings.Image_URL + CurrentItem.SobekCM_Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+            string jpeg_base = (SobekCM_Library_Settings.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
@@ -543,7 +544,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     string vid = thisItem[vid_column].ToString();
                     string url = redirect_url.Replace("<%VID%>", vid).Replace("&", "&amp;");
-                    if (Convert.ToInt32(thisItem[itemid_column]) == CurrentItem.SobekCM_Web.ItemID)
+                    if (Convert.ToInt32(thisItem[itemid_column]) == CurrentItem.Web.ItemID)
                     {
                         builder.AppendLine("<table width=\"170px\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\"><tr><td><a href=\"" + url + "\"><img src=\"" + jpeg_base + vid + "/" + thisItem[main_thumbnail_column] + "\" alt=\"MISSING THUMBNAIL\" /></a></td></tr><tr><td align=\"center\"><span class=\"SobekThumbnailText\"><i>" + thumbnail_text + "</i></span></td></tr></table></td>" );
                     }
@@ -576,15 +577,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             const int LINE_TO_LONG = 100;
 
             // Add the root node
-            TreeNode rootNode = new TreeNode("<b>" + CurrentItem.SobekCM_Web.GroupTitle + "</b>");
-            if (CurrentItem.SobekCM_Web.GroupTitle.Length > LINE_TO_LONG)
-                rootNode.Text = "<b>" + CurrentItem.SobekCM_Web.GroupTitle.Substring(0, LINE_TO_LONG) + "...</b>";
+            TreeNode rootNode = new TreeNode("<b>" + CurrentItem.Behaviors.GroupTitle + "</b>");
+            if (CurrentItem.Behaviors.GroupTitle.Length > LINE_TO_LONG)
+                rootNode.Text = "<b>" + CurrentItem.Behaviors.GroupTitle.Substring(0, LINE_TO_LONG) + "...</b>";
             rootNode.SelectAction = TreeNodeSelectAction.None;
             treeView1.Nodes.Add(rootNode);
 
             // Is this a newspaper?
             bool newspaper = false;
-            if (CurrentItem.SobekCM_Web.GroupType.ToUpper() == "NEWSPAPER")
+            if (CurrentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER")
             {
                 newspaper = true;
             }
@@ -642,7 +643,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         TreeNode singleNode = new TreeNode(title);
                         if (title.Length > LINE_TO_LONG)
                             singleNode.Text = title.Substring(0, LINE_TO_LONG) + "...";
-                        if (itemid == CurrentItem.SobekCM_Web.ItemID)
+                        if (itemid == CurrentItem.Web.ItemID)
                         {
                             currentSelectedNode = singleNode;
                             singleNode.SelectAction = TreeNodeSelectAction.None;
@@ -668,7 +669,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 singleNode1.ToolTip = singleNode1.Text;
                                 singleNode1.Text = level1_text.Substring(0, LINE_TO_LONG) + "...";
                             }
-                            if (itemid == CurrentItem.SobekCM_Web.ItemID)
+                            if (itemid == CurrentItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode1;
                                 singleNode1.SelectAction = TreeNodeSelectAction.None;
@@ -718,7 +719,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 singleNode2.ToolTip = singleNode2.Text;
                                 singleNode2.Text = level2_text.Substring(0, LINE_TO_LONG) + "...";
                             }
-                            if (itemid == CurrentItem.SobekCM_Web.ItemID)
+                            if (itemid == CurrentItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode2;
                                 singleNode2.SelectAction = TreeNodeSelectAction.None;
@@ -769,7 +770,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 singleNode3.Text = level2_text + " " + level3_text + ", " + level1_text;
                             }
 
-                            if (itemid == CurrentItem.SobekCM_Web.ItemID)
+                            if (itemid == CurrentItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode3;
                                 singleNode3.SelectAction = TreeNodeSelectAction.None;
@@ -814,7 +815,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 singleNode4.ToolTip = singleNode4.Text;
                                 singleNode4.Text = level4_text.Substring(0, LINE_TO_LONG) + "...";
                             }
-                            if (itemid == CurrentItem.SobekCM_Web.ItemID)
+                            if (itemid == CurrentItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode4;
                                 singleNode4.SelectAction = TreeNodeSelectAction.None;
@@ -852,7 +853,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             lastNode5.ToolTip = lastNode5.Text;
                             lastNode5.Text = level5_text.Substring(0, LINE_TO_LONG) + "...";
                         }
-                        if (itemid == CurrentItem.SobekCM_Web.ItemID)
+                        if (itemid == CurrentItem.Web.ItemID)
                         {
                             currentSelectedNode = lastNode5;
                             lastNode5.SelectAction = TreeNodeSelectAction.None;

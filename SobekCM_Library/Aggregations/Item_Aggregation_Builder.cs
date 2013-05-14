@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.WebContent;
@@ -209,25 +210,25 @@ namespace SobekCM.Library.Aggregations
             if ( File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text.html"))
     			thisObject.Add_Home_Page_File(  "html/home/text.html", SobekCM_Library_Settings.Default_UI_Language );
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_en.html"))
-                thisObject.Add_Home_Page_File("html/home/text_en.html",  Language_Enum.English );
+                thisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English );
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_fr.html"))
-                thisObject.Add_Home_Page_File("html/home/text_fr.html", Language_Enum.French);
+                thisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French);
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_es.html"))
-                thisObject.Add_Home_Page_File("html/home/text_es.html", Language_Enum.Spanish);
+                thisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish);
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_sp.html"))
-                thisObject.Add_Home_Page_File("html/home/text_sp.html", Language_Enum.Spanish);
+                thisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish);
 
 			// Just use the standard banner image
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll.jpg"))
                 thisObject.Add_Banner_Image("images/banners/coll.jpg", SobekCM_Library_Settings.Default_UI_Language);
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_en.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_en.jpg", Language_Enum.English);
+                thisObject.Add_Banner_Image("images/banners/coll_en.jpg", Web_Language_Enum.English);
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_fr.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Language_Enum.French);
+                thisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Web_Language_Enum.French);
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_es.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_es.jpg", Language_Enum.Spanish);
+                thisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
             if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_sp.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Language_Enum.Spanish);
+                thisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.ApplicationBlocks.Data;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
@@ -15,6 +15,7 @@ using SobekCM.Library.Items;
 using SobekCM.Library.Items.Authority;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Results;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 using SobekCM.Tools;
 using SobekCM.Tools.FDA;
@@ -58,6 +59,25 @@ namespace SobekCM.Library.Database
             try
             {
                 SqlConnection newConnection = new SqlConnection(connectionString);
+                newConnection.Open();
+
+                newConnection.Close();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Test connectivity to the database </summary>
+        /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
+        public static bool Test_Connection( string Test_Connection_String )
+        {
+
+            try
+            {
+                SqlConnection newConnection = new SqlConnection(Test_Connection_String);
                 newConnection.Open();
 
                 newConnection.Close();
@@ -2460,18 +2480,19 @@ namespace SobekCM.Library.Database
 				}
 
 				// Get the item id and the thumbnail from the first table
-				Resource.SobekCM_Web.ItemID = Convert.ToInt32(tempSet.Tables[0].Rows[0][0]);
-				Resource.SobekCM_Web.Main_Thumbnail = tempSet.Tables[0].Rows[0][1].ToString();
-				Resource.SobekCM_Web.IP_Restriction_Membership = Convert.ToInt16(tempSet.Tables[0].Rows[0][2]);
+				Resource.Web.ItemID = Convert.ToInt32(tempSet.Tables[0].Rows[0][0]);
+				Resource.Behaviors.Main_Thumbnail = tempSet.Tables[0].Rows[0][1].ToString();
+				Resource.Behaviors.IP_Restriction_Membership = Convert.ToInt16(tempSet.Tables[0].Rows[0][2]);
 				Resource.Tracking.Born_Digital = Convert.ToBoolean(tempSet.Tables[0].Rows[0][3]);
-				Resource.SobekCM_Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
+                Resource.Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
+                Resource.Behaviors.Dark_Flag = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Dark"]);
 
 				// Add the aggregation codes
-				Resource.SobekCM_Web.Clear_Aggregations();
+				Resource.Behaviors.Clear_Aggregations();
 				foreach( DataRow thisRow in tempSet.Tables[1].Rows )
 				{
 					string code = thisRow[0].ToString();
-					Resource.SobekCM_Web.Add_Aggregation(code);
+					Resource.Behaviors.Add_Aggregation(code);
 				}
 
 				// Return the first table from the returned dataset
@@ -2724,7 +2745,7 @@ namespace SobekCM.Library.Database
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
 				{
-					return null;
+					return null;  
 				}
 
 				// Build the collection group object
@@ -2859,7 +2880,8 @@ namespace SobekCM.Library.Database
             }
         }
 
-		/// <summary> Adds the search terms to display under advanced search from the datatable extracted from the database </summary>
+		/// <summary> Adds the search terms to display under advanced search from the datatable extracted from the database 
+		/// and also the list of browseable fields for this collection </summary>
 		/// <param name="aggrInfo">Partially built item aggregation object</param>
 		/// <param name="searchTermsTable"> Table of all advanced search values </param>
 		private static void add_advanced_terms(Item_Aggregation aggrInfo, DataTable searchTermsTable )
@@ -2876,7 +2898,16 @@ namespace SobekCM.Library.Database
 				aggrInfo.Advanced_Search_Fields.Add(5);
 				aggrInfo.Advanced_Search_Fields.Add(7);
 				aggrInfo.Advanced_Search_Fields.Add(1);
-				aggrInfo.Advanced_Search_Fields.Add(2);            
+				aggrInfo.Advanced_Search_Fields.Add(2);
+
+                aggrInfo.Browseable_Fields.Add(4);
+                aggrInfo.Browseable_Fields.Add(3);
+                aggrInfo.Browseable_Fields.Add(6);
+                aggrInfo.Browseable_Fields.Add(5);
+                aggrInfo.Browseable_Fields.Add(7);
+                aggrInfo.Browseable_Fields.Add(1);
+                aggrInfo.Browseable_Fields.Add(2);   
+
 			}
 			else
 			{
@@ -2889,6 +2920,11 @@ namespace SobekCM.Library.Database
 						aggrInfo.Advanced_Search_Fields.Add(thisTypeId);
 						lastTypeId = thisTypeId;
 					}
+				    bool canBrowse = Convert.ToBoolean(thisRow[1]);
+                    if ((canBrowse) && (!aggrInfo.Browseable_Fields.Contains(thisTypeId)))
+                    {
+                        aggrInfo.Browseable_Fields.Add(thisTypeId);
+                    }
 				}
 			}
 		}
@@ -3375,10 +3411,7 @@ namespace SobekCM.Library.Database
 					while (reader.Read())
 					{
 						string code = reader.GetString(0).ToUpper();
-						if (!Icon_List.ContainsKey(code))
-						{
-							Icon_List[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
-						}
+    					Icon_List[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
 					}
 					reader.Close();
 				}
@@ -3388,6 +3421,46 @@ namespace SobekCM.Library.Database
 			// Succesful
 			return true;
 		}
+
+        /// <summary> Populates the dictionary of all files and MIME types from the database </summary>
+        /// <param name="MIME_List"> List of files and MIME types to be populated with a successful database pulll </param>
+        /// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
+        /// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
+        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer tracer)
+        {
+            if (tracer != null)
+            {
+                tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
+            }
+
+            // Create the connection
+            using (SqlConnection connect = new SqlConnection(connectionString))
+            {
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Mime_Types", connect) { CommandType = CommandType.StoredProcedure };
+
+
+                // Create the data reader
+                connect.Open();
+                using (SqlDataReader reader = executeCommand.ExecuteReader())
+                {
+                    // Clear existing icons
+                    MIME_List.Clear();
+
+                    while (reader.Read())
+                    {
+                        string extension = reader.GetString(0).ToLower();
+                        MIME_List[extension] = new Mime_Type_Info(extension, reader.GetString(1), reader.GetBoolean(2), reader.GetBoolean(3));
+                    }
+                    reader.Close();
+                }
+                connect.Close();
+            }
+
+            // Succesful
+            return true;
+        }
 
 		/// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
 		/// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
@@ -3580,6 +3653,28 @@ namespace SobekCM.Library.Database
 				return false;
 			}
 		}
+
+        /// <summary> Get the list of groups, with the top item (VID) </summary>
+        /// <returns> List of groups, with the top item (VID) </returns>
+        public static DataTable Get_All_Groups_First_VID()
+        {
+            // Define a temporary dataset
+            SqlConnection connection = new SqlConnection(connectionString + "Connection Timeout=45");
+            SqlCommand command = new SqlCommand("SobekCM_Get_All_Groups_First_VID", connection) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            DataSet tempSet = new DataSet();
+            adapter.Fill(tempSet);
+
+            // If there was no data for this collection and entry point, return null (an ERROR occurred)
+            if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+            {
+                return null;
+            }
+
+            // Return the first table from the returned dataset
+            return tempSet.Tables[0];
+        }
+
 
 		/// <summary> Gets the dataset of all public items and item groups </summary>
 		/// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
@@ -5365,6 +5460,7 @@ namespace SobekCM.Library.Database
 		{
 			get
 			{
+                lastException = null;
 				try
 				{
 					// Define a temporary dataset
@@ -5386,8 +5482,9 @@ namespace SobekCM.Library.Database
 		/// <remarks> This calls the 'SobekCM_MarcXML_Test_Feed' stored procedure </remarks>
 		public static DataTable MarcXML_Test_Feed_Records
 		{
-			get
+    		get
 			{
+                lastException = null;
 				try
 				{
 					// Define a temporary dataset
@@ -7017,43 +7114,50 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Gets the size of the online files and the size of the archived files, by aggregation </summary>
-		/// <param name="AggregationCode1"> Code for the primary aggregation  </param>
-		/// <param name="AggregationCode2"> Code for the secondary aggregation </param>
-		/// <returns> Dataset with two tables, first is the online space, and second is the archived space </returns>
-		/// <remarks> If two codes are passed in, then the values returned is the size of all items which exist
-		///  in both the provided aggregations.  Otherwise, it is just the size of all items in the primary 
-		///  aggregation. <br /><br /> This calls the 'SobekCM_Online_Archived_Space' stored procedure </remarks> 
-		public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2)
-		{
-			try
-			{
-				// Create the connection
-				SqlConnection connect = new SqlConnection(connectionString);
+        /// <summary> Gets the size of the online files and the size of the archived files, by aggregation </summary>
+        /// <param name="AggregationCode1"> Code for the primary aggregation  </param>
+        /// <param name="AggregationCode2"> Code for the secondary aggregation </param>
+        /// <param name="Online_Stats_Type"> Flag indicates if online content reporting should be included ( 0=skip, 1=summary, 2=details )</param>
+        /// <param name="Archival_Stats_Type"> Flag indicates if locally archived reporting should be included ( 0=skip, 1=summary, 2=details )</param>
+        /// <returns> Dataset with two tables, first is the online space, and second is the archived space </returns>
+        /// <remarks> If two codes are passed in, then the values returned is the size of all items which exist
+        ///  in both the provided aggregations.  Otherwise, it is just the size of all items in the primary 
+        ///  aggregation. <br /><br /> This calls the 'SobekCM_Online_Archived_Space' stored procedure </remarks> 
+        public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2, short Online_Stats_Type, short Archival_Stats_Type)
+        {
+            try
+            {
+                // Create the connection
+                SqlConnection connect = new SqlConnection(connectionString);
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Online_Archived_Space", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue("@code1", AggregationCode1);
-				executeCommand.Parameters.AddWithValue("@code2", AggregationCode2);
+                // Create the command 
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Online_Archived_Space", connect)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 120
+                };
+                executeCommand.Parameters.AddWithValue("@code1", AggregationCode1);
+                executeCommand.Parameters.AddWithValue("@code2", AggregationCode2);
+                executeCommand.Parameters.AddWithValue("@include_online", Online_Stats_Type);
+                executeCommand.Parameters.AddWithValue("@include_archive", Archival_Stats_Type);
 
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
+                // Create the adapter
+                SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
 
-				// Create the dataset
-				DataSet list = new DataSet();
+                // Create the dataset
+                DataSet list = new DataSet();
 
-				// Fill the dataset
-				adapter.Fill(list);
+                // Fill the dataset
+                adapter.Fill(list);
 
-				return list;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				return null;
-			}
-		}
+                return list;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return null;
+            }
+        }
 
 		#endregion
 
@@ -7172,31 +7276,35 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Completes a given archive tivoli file request in the database </summary>
-		/// <param name="TivoliRequestID"></param>
-		/// <param name="Tivoli_Completion_Message"></param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
-		public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Tivoli_Completion_Message)
-		{
-			try
-			{
-				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@tivolirequestid", TivoliRequestID);
-				paramList[1] = new SqlParameter("@email_body", Tivoli_Completion_Message);
+        /// <summary> Completes a given archive tivoli file request in the database </summary>
+        /// <param name="TivoliRequestID">Primary key for the tivolie request which either completed or failed </param>
+        /// <param name="Email_Body"> Body of the response email </param>
+        /// <param name="Email_Subject">Subject line to use for the response email </param>
+        /// <param name="isFailure"> Flag indicates if this represents a failure to retrieve the material from TIVOLI</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
+        public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Email_Body, string Email_Subject, bool isFailure)
+        {
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[4];
+                paramList[0] = new SqlParameter("@tivolirequestid", TivoliRequestID);
+                paramList[1] = new SqlParameter("@email_body", Email_Body);
+                paramList[2] = new SqlParameter("@email_subject", Email_Subject);
+                paramList[3] = new SqlParameter("@isFailure", isFailure);
 
-				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
 
-				return true;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				return false;
-			}
-		}
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return false;
+            }
+        }
 
 		/// <summary> Requests a package or file from the archives/tivoli </summary>
 		/// <param name="BibID"> Bibliographic identifier (BibID) for the item to retrieve files for </param>
@@ -8194,9 +8302,10 @@ namespace SobekCM.Library.Database
 					reader.Close();
 				}
 			}
-			catch
+			catch (Exception ee )
 			{
-				
+			    string message = ee.Message;
+			    bool error = true;
 			}
 			connect.Close();
 
@@ -8276,6 +8385,43 @@ namespace SobekCM.Library.Database
 		//}
 
 		#endregion
+
+        #region Methods used by the Statistics Usage Reader
+
+        /// <summary> Gets all the tables ued during the process of reading the statistics 
+        /// from the web iis logs and creating the associated SQL commands  </summary>
+        /// <returns> Large dataset with several tables ( all items, all titles, aggregations, etc.. )</returns>
+        public static DataSet Get_Statistics_Lookup_Tables()
+        {
+            try
+            {
+                // Create the connection
+                SqlConnection connect = new SqlConnection(connectionString);
+
+                // Create the command 
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect);
+                executeCommand.CommandType = CommandType.StoredProcedure;
+
+                // Create the adapter
+                SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
+
+                // Create the dataset
+                DataSet returnValue = new DataSet();
+
+                // Fill the dataset
+                adapter.Fill(returnValue);
+
+                // Return the results
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                throw ee;
+            }
+        }
+
+
+        #endregion
 	}
 
 }

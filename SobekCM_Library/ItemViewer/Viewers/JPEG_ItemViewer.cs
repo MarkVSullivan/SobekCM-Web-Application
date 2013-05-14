@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Web;
 using System.Web.UI.WebControls;
 
 #endregion
@@ -90,10 +91,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("JPEG_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
             }
 
+
+            string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
+
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if (( CurrentItem.Behaviors.Dark_Flag ) || ( CurrentItem.Behaviors.IP_Restriction_Membership > 0 ))
+                displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
+
+
+            string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
+            
+
+            if (( CurrentItem.Web.Pages_By_Sequence.Count > 1) && ( Current_Page -1 < CurrentItem.Web.Pages_By_Sequence.Count  ))
+            {
+                string name_of_page = CurrentItem.Web.Pages_By_Sequence[Current_Page - 1].Label;
+                name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
+            }
+
+
             // Add the HTML for the image
-            Literal mainLiteral = new Literal
-                                      { Text = "\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">" + Environment.NewLine + "\t\t\t<img src=\"" + CurrentItem.SobekCM_Web.Source_URL + "/" + FileName + "\" alt=\"MISSING IMAGE\" />" + Environment.NewLine + "\t\t</td>" + Environment.NewLine };
-            placeHolder.Controls.Add( mainLiteral );
+            Literal mainLiteral = new Literal { Text = "\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">" + Environment.NewLine + "\t\t\t<img src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />" + Environment.NewLine + "\t\t</td>" + Environment.NewLine };
+            placeHolder.Controls.Add(mainLiteral);
         }
 
 

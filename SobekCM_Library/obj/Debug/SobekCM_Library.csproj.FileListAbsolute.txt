@@ -1,15 +1,49 @@
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.XML
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Bib_Package_3_0_3.xml
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Debug\ResolveAssemblyReference.cache
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Debug\SobekCM_Library.dll
-C:\inetpub\wwwroot\UFDC Web\SobekCM_Library\obj\Debug\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Library.XML
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Library.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Client.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Core.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Zoom.Net.YazSharp.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Zoom.Net.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\FileUploadLibrary.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Zoom.Net.YazSharp.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Zoom.Net.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\Zoom.Net.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Debug\SobekCM_Library.csprojResolveAssemblyReference.cache
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Debug\SobekCM_Library.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\obj\Debug\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Resource_Object.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Resource_Object.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\SobekCM_Resource_Object.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Library.XML
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Library.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Library.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\FileUploadLibrary.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Client.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Microsoft.ApplicationServer.Caching.Core.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Resource_Object.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Tools.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Zoom.Net.YazSharp.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Zoom.Net.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\FileUploadLibrary.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\FileUploadLibrary.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Resource_Object.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Resource_Object.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Tools.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\SobekCM_Tools.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Zoom.Net.YazSharp.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Zoom.Net.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\bin\Debug\Zoom.Net.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\obj\Debug\SobekCM_Library.csprojResolveAssemblyReference.cache
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\obj\Debug\SobekCM_Library.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Library\obj\Debug\SobekCM_Library.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Library\bin\Debug\GemBox.Spreadsheet.dll

@@ -8,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -76,7 +76,7 @@ public class SobekCM_Page_Globals
             Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
                                                               ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
                                                               ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                              ref Global.URL_Portals);
+                                                              ref Global.URL_Portals, ref Global.Mime_Types);
 
             tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 
@@ -248,7 +248,7 @@ public class SobekCM_Page_Globals
                 }
 
                 // If this was a call for RESET, clear the memory
-                if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Reset))
+                if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type == Admin_Type_Enum.Reset))
                 {
                     Reset_Memory();
 
@@ -770,10 +770,10 @@ public class SobekCM_Page_Globals
             currentMode.Internal_User = currentUser.Is_Internal_User;
 
             // Check if this is an administrative task that the current user does not have access to
-            if ((!currentUser.Is_System_Admin) && ( !currentUser.Is_Portal_Admin ))
+            if ((!currentUser.Is_System_Admin) && ( !currentUser.Is_Portal_Admin ) && ( currentMode.Mode == Display_Mode_Enum.Administrative ))
             {
-                if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Aggregations_Mgmt) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Forwarding) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Interfaces) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Projects) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Users) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_User_Groups) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Wordmarks) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_IP_Restrictions) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Builder_Status) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Settings) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Thematic_Headings))
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                currentMode.Mode = Display_Mode_Enum.My_Sobek;
+                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
             }
         }
         else
@@ -817,11 +817,11 @@ public class SobekCM_Page_Globals
             // Check if a different skin should be used if this is an item display
             if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print))
             {
-                if ((currentItem != null) && (currentItem.SobekCM_Web.Web_Skin_Count > 0))
+                if ((currentItem != null) && (currentItem.Behaviors.Web_Skin_Count > 0))
                 {                    
-                    if (!currentItem.SobekCM_Web.Web_Skins.Contains(current_skin_code))
+                    if (!currentItem.Behaviors.Web_Skins.Contains(current_skin_code))
                     {
-                        string new_skin_code = currentItem.SobekCM_Web.Web_Skins[0];
+                        string new_skin_code = currentItem.Behaviors.Web_Skins[0];
                         if ( new_skin_code != "UFDC" )
                         {
                             current_skin_code = new_skin_code;
@@ -1131,7 +1131,7 @@ public class SobekCM_Page_Globals
         Application_State_Builder.Build_Application_State(tracer, true, ref Global.Skins, ref Global.Translation,
                                                           ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
                                                           ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                          ref Global.URL_Portals  );
+                                                          ref Global.URL_Portals, ref Global.Mime_Types  );
 
         // Since this reset, send to the admin, memory management portion
         currentMode.Mode = Display_Mode_Enum.Internal;

@@ -3,8 +3,9 @@
 using System.IO;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -32,9 +33,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            render_helper(Output, Bib.SobekCM_Web.Dark_Flag, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, Bib.Behaviors.Dark_Flag, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -43,7 +44,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This sets the flag to FALSE.  It will be set to TRUE if the checkbox is present (thus TRUE) in the return form </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.SobekCM_Web.Dark_Flag = false;
+            Bib.Behaviors.Dark_Flag = false;
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -52,8 +53,8 @@ namespace SobekCM.Library.Citation.Elements
         {
             if (HttpContext.Current.Request.Form[html_element_name] != null)
             {
-                Bib.SobekCM_Web.Dark_Flag = true;
-                Bib.SobekCM_Web.IP_Restriction_Membership = -1;
+                Bib.Behaviors.Dark_Flag = true;
+                Bib.Behaviors.IP_Restriction_Membership = -1;
             }
         }
     }

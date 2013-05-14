@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -105,12 +106,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             string search_collection = "Search Collection";
             const string includePrivates = "Include non-public items";
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 search_collection = "Buscar en la colección";
             }
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 search_collection = "Recherche dans la collection";
             }

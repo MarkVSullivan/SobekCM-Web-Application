@@ -6,11 +6,11 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
-using SobekCM.Bib_Package.Database;
-using SobekCM.Bib_Package.Divisions;
-using SobekCM.Bib_Package.Writers;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
 #endregion
 
@@ -120,7 +120,7 @@ namespace SobekCM.Library.Builder
             {
                 if (bibPackage != null)
                 {
-                    bibPackage.SobekCM_Web.File_Root = value;
+                    bibPackage.Web.File_Root = value;
                 }
                 fileRoot = value;
             }
@@ -195,7 +195,7 @@ namespace SobekCM.Library.Builder
                 else if ( !String.IsNullOrEmpty(vid))
                     bibPackage.VID = vid;
 
-                switch (bibPackage.METS.RecordStatus_Enum)
+                switch (bibPackage.METS_Header.RecordStatus_Enum)
                 {
                     case METS_Record_Status.METADATA_UPDATE:
                         type = Incoming_Digital_Resource_Type.METADATA_UPDATE;
@@ -271,7 +271,7 @@ namespace SobekCM.Library.Builder
                             // Copy the data over
                             thisFile.Width = serviceFile.Width;
                             thisFile.Height = serviceFile.Height;
-                            thisFile.Service_Copy = serviceFile.Service_Copy;
+                            thisFile.System_Name = serviceFile.System_Name;
                         }
                     }
                 }
@@ -342,7 +342,7 @@ namespace SobekCM.Library.Builder
         public bool Compute_Jpeg2000_Attributes(SobekCM_File_Info JPEG2000_File, string File_Location)
         {
             // If the width and height are already determined, done!
-            if ((JPEG2000_File.Width > 0) && (JPEG2000_File.Height > 0) && ( JPEG2000_File.Service_Copy.Length > 0 ))
+            if ((JPEG2000_File.Width > 0) && (JPEG2000_File.Height > 0) && (JPEG2000_File.System_Name.Length > 0))
                 return true;
 
             // Does this file exist?
@@ -350,10 +350,10 @@ namespace SobekCM.Library.Builder
             {
                 return get_attributes_from_jpeg2000(JPEG2000_File, File_Location + "/" + JPEG2000_File.System_Name);
             }
-            
-            if (( JPEG2000_File.Service_Copy.Length > 0 ) && ( File.Exists(JPEG2000_File.Service_Copy )))
+
+            if ((JPEG2000_File.System_Name.Length > 0) && (File.Exists(JPEG2000_File.System_Name)))
             {
-                return get_attributes_from_jpeg2000(JPEG2000_File, JPEG2000_File.Service_Copy);
+                return get_attributes_from_jpeg2000(JPEG2000_File, JPEG2000_File.System_Name);
             }
 
             return false;
@@ -472,24 +472,26 @@ namespace SobekCM.Library.Builder
             {
                 // Set the image location
                 string greenstoneLink = SobekCM_Library_Settings.Image_URL;
-                bibPackage.SobekCM_Web.Image_Root = greenstoneLink + bibPackage.SobekCM_Web.File_Root.Replace("\\", "/");
-                if (bibPackage.SobekCM_Web.Image_Root.IndexOf("/" + vid) < 0)
-                    bibPackage.SobekCM_Web.Image_Root = bibPackage.SobekCM_Web.Image_Root + "/" + vid;
-                bibPackage.SobekCM_Web.Set_BibID_VID(bibPackage.BibID, bibPackage.VID);
+                bibPackage.Web.Image_Root = greenstoneLink + bibPackage.Web.File_Root.Replace("\\", "/");
+                if (bibPackage.Web.Image_Root.IndexOf("/" + vid) < 0)
+                    bibPackage.Web.Image_Root = bibPackage.Web.Image_Root + "/" + vid;
+                bibPackage.Web.Set_BibID_VID(bibPackage.BibID, bibPackage.VID);
 
 
                 List<string> collectionnames = new List<string>();
                 // Get the collection names
-                if ((bibPackage.SobekCM_Web.Aggregation_Count > 0) && ( Collection_Codes != null ))
+                if ((bibPackage.Behaviors.Aggregation_Count > 0) && ( Collection_Codes != null ))
                 {
-                    collectionnames.AddRange(from aggregation in bibPackage.SobekCM_Web.Aggregations select aggregation.Code into altCollection select Collection_Codes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
+                    collectionnames.AddRange(from aggregation in bibPackage.Behaviors.Aggregations select aggregation.Code into altCollection select Collection_Codes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
                 }
 
                 // Save the marc xml file
-                MARC_Writer marcWriter = new MARC_Writer();
-                marcWriter.Save_As_MARC_XML(bibPackage.Source_Directory + "\\marc.xml", bibPackage, bibPackage.MARC_Sobek_Standard_Tags( collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation ));
+                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                string Error_Message;
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = bibPackage.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                return marcWriter.Write_Metadata(bibPackage.Source_Directory + "\\marc.xml", bibPackage, options, out Error_Message);
 
-                return true;
             }
             catch
             {
@@ -521,7 +523,7 @@ namespace SobekCM.Library.Builder
                 }
 
                 // Set the file root again
-                bibPackage.SobekCM_Web.File_Root = fileRoot;
+                bibPackage.Web.File_Root = fileRoot;
                 SobekCM_Database.Save_Digital_Resource(bibPackage, createTime, existed);
 
                 // Save the behaviors if this is a new item
@@ -530,17 +532,17 @@ namespace SobekCM.Library.Builder
                     // Some work here just in case the METS is missing stuff, or has old data
 
                     // Make sure not set to UFDC as only web skin by default (used to list UFDC on all METS files )
-                    if ((bibPackage.SobekCM_Web.Web_Skin_Count == 1) && (bibPackage.SobekCM_Web.Web_Skins[0].ToUpper().Trim() == "UFDC"))
-                        bibPackage.SobekCM_Web.Clear_Web_Skins();
+                    if ((bibPackage.Behaviors.Web_Skin_Count == 1) && (bibPackage.Behaviors.Web_Skins[0].ToUpper().Trim() == "UFDC"))
+                        bibPackage.Behaviors.Clear_Web_Skins();
 
                     // Now, save the behaviors for this item
                     SobekCM_Database.Save_Behaviors(bibPackage, false, false);
                 }
 
                 //// Set the suppress endeca flag
-                //if ((New_Item) && (!bibPackage.SobekCM_Web.Suppress_Endeca))
+                //if ((New_Item) && (!bibPackage.Behaviors.Suppress_Endeca))
                 //{
-                //    SobekCM.Library.Database.SobekCM_Database.Set_Endeca_Flag(bibPackage.BibID, bibPackage.SobekCM_Web.Suppress_Endeca);
+                //    SobekCM.Library.Database.SobekCM_Database.Set_Endeca_Flag(bibPackage.BibID, bibPackage.Behaviors.Suppress_Endeca);
                 //}
                 return true;
             }
@@ -704,7 +706,7 @@ namespace SobekCM.Library.Builder
                 if (bibPackage == null)
                     return "NULL";
 
-                switch (bibPackage.METS.RecordStatus_Enum)
+                switch (bibPackage.METS_Header.RecordStatus_Enum)
                 {
                     case METS_Record_Status.BIB_LEVEL:
                         return "Bib Level";

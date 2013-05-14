@@ -113,10 +113,14 @@ namespace SobekCM.Library.MySobekViewer
                     errorCode = 0;
 
                     // Perform the database delete
-                    Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
-                    bool database_result = SobekCM_Database.Delete_SobekCM_Item(currentMode.BibID, currentMode.VID, User.Is_System_Admin, String.Empty );
+                        Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
+                    bool database_result2 = SobekCM_Database.Delete_SobekCM_Item(currentMode.BibID, currentMode.VID, User.Is_System_Admin, String.Empty );
 
-                    if (!database_result)
+                    // Perform the SOLR delete
+                    Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");
+                    bool solr_result2 = Solr.Solr_Controller.Delete_Resource_From_Index( SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
+
+                    if (!database_result2)
                     {
                         Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error performing delete in the database", Custom_Trace_Type_Enum.Error);
                         errorCode = 3;
@@ -241,7 +245,7 @@ namespace SobekCM.Library.MySobekViewer
                         break;
 
                     case 2:
-                        Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE FAILED</strong><br /><br />Invalid item indicated</center></span>");
+                        Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE FAILED</strong><br /><br />Item indicated does not exists</center></span>");
                         break;
 
                     case 3:

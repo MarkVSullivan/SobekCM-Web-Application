@@ -33,12 +33,21 @@ namespace SobekCM.URL_Rewriter
             string appRelative = HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath.ToLower();
             string url_authority = HttpContext.Current.Request.Url.Authority;
 
-            // If this is for a valid file, skip out immediately
-            if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0))
+            // If this is for a FILES request, handle that first
+            if ((appRelative.IndexOf("~/files/") == 0) && ( appRelative.Length > 8 ))
+            {
+                string new_query_string = appRelative.Substring(7);
+                HttpContext.Current.RewritePath("~/files.aspx?urlrelative=" + appRelative);
+                return;
+            }
+
+
+            // If this is a direct request for a valid file, skip out immediately
+            if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || ( appRelative.IndexOf(".html") > 0 ) || ( appRelative.IndexOf(".htm") > 0 ))
                 return;
 
             // Special code for calls to the data ASPX file
-            if ((appRelative.IndexOf("sobekcm_data.aspx") >= 0) || ( appRelative.IndexOf("ufdc_data.aspx") >= 0 ))
+            if (appRelative.IndexOf("sobekcm_data.aspx") >= 0) 
             {
                 string current_querystring = HttpContext.Current.Request.QueryString.ToString();
                 if (current_querystring.Length > 0)
@@ -53,16 +62,16 @@ namespace SobekCM.URL_Rewriter
             }
 
             // Special code for calls to the oai ASPX file
-            if ((appRelative.IndexOf("sobekcm_oai.aspx") >= 0) || ( appRelative.IndexOf("ufdc_oai.aspx") >= 0 ))
+            if ((appRelative.IndexOf("sobekcm_oai.aspx") >= 0) || ( HttpContext.Current.Request.QueryString["verb"] != null ))
             {
                 string current_querystring = HttpContext.Current.Request.QueryString.ToString();
                 if (current_querystring.Length > 0)
                 {
-                    HttpContext.Current.RewritePath("~/sobekcm_oai.aspx?" + current_querystring + "&portal=" + url_authority, true);
+                    HttpContext.Current.RewritePath("~/sobekcm_oai.aspx?" + current_querystring, true);
                 }
                 else
                 {
-                    HttpContext.Current.RewritePath("~/sobekcm_oai.aspx?portal=" + url_authority, true);
+                    HttpContext.Current.RewritePath("~/sobekcm_oai.aspx", true);
                 }
                 return;
             }
@@ -83,23 +92,24 @@ namespace SobekCM.URL_Rewriter
             }
 
             // If there is a period here ( and this is not a RSS request ) return
-            if ((appRelative.IndexOf(".") < 0) || ( appRelative.IndexOf("~/rss") == 0 ) || (( appRelative.IndexOf("ufdc.aspx") >= 0 ) || ( appRelative.IndexOf("sobekcm.aspx") >= 0 )))
+            if ((appRelative.IndexOf(".") < 0) || ( appRelative.IndexOf("~/rss") == 0 ) || ( appRelative.IndexOf("sobekcm.aspx") >= 0 ))
             {
-                // Remove ufdc.aspx and sobekcm.aspx
+                // Remove sobekcm.aspx
                 if (appRelative.IndexOf("sobekcm.aspx") > 0)
                 {
                     appRelative = appRelative.Replace("sobekcm.aspx", "");
                 }
-                else
-                {
-                    if (appRelative.IndexOf("ufdc.aspx") > 0)
-                        appRelative = appRelative.Replace("ufdc.aspx", "");
-                }
-
 
                 // there is nothing to process            
                 if (appRelative.Replace("/", "").Replace("~", "").Length == 0)
                 {
+                    // Special code to handle this if this is going to a virtual directory, and does not have a final '/'
+                    string url_requested = HttpContext.Current.Request.Url.ToString();
+                    if (( url_requested.IndexOf("?") < 0 ) && ( url_requested[url_requested.Length - 1] != '/'))
+                    {
+                        HttpContext.Current.Response.RedirectPermanent(url_requested + "/");
+                    }
+
                     string current_querystring2 = HttpContext.Current.Request.QueryString.ToString();
                     if (current_querystring2.Length > 0)
                     {

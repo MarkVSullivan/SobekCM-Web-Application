@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Search;
 using SobekCM.Library.WebContent;
 
 #endregion
@@ -53,7 +55,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (( browseObject == null ) || ( browseObject.Source != Item_Aggregation_Browse_Info.Source_Type.Static_HTML))
             {
                 // Determine the correct metadata code
-                string metadata_code = Long_to_Short(Current_Mode.Info_Browse_Mode.Trim());
+                string metadata_code = Current_Mode.Info_Browse_Mode.Trim().Replace("_", " ");
                 Current_Mode.Info_Browse_Mode = metadata_code;
 
                 // Only get values if there was a metadata code
@@ -121,7 +123,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 if ((results != null) && (currentMode.Info_Browse_Mode.Length > 0))
                 {
-                    Output.WriteLine("  <h1>Browse by " + translator.Get_Translation(Short_to_Title(currentMode.Info_Browse_Mode), currentMode.Language) + "</h1>");
+                    Output.WriteLine("  <h1>Browse by " + translator.Get_Translation( currentMode.Info_Browse_Mode, currentMode.Language) + "</h1>");
                 }
                 else
                 {
@@ -148,41 +150,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             List<string> internal_browses = new List<string>();
             if ((currentUser != null) && ((currentUser.Is_Internal_User) || (currentUser.Is_Aggregation_Curator(currentMode.Aggregation))))
             {
-                internal_browses.Add("affiliation");
-                internal_browses.Add("attribution");
-                internal_browses.Add("creator");
-                internal_browses.Add("cultural context");
-                internal_browses.Add("donor");
-                internal_browses.Add("format");
-                internal_browses.Add("frequency");
-                internal_browses.Add("genre");
-                internal_browses.Add("country");
-                internal_browses.Add("state");
-                internal_browses.Add("county");
-                internal_browses.Add("city");
-                internal_browses.Add("holding location");
-                internal_browses.Add("language");
-                internal_browses.Add("material");
-                internal_browses.Add("type");
-                internal_browses.Add("publication place");
-                internal_browses.Add("publisher");
-                internal_browses.Add("source institution");
-                internal_browses.Add("style period");
-                internal_browses.Add("all subjects");
-                internal_browses.Add("subject keyword");
-                internal_browses.Add("temporal subject");
-                internal_browses.Add("spatial coverage");
-                internal_browses.Add("name as subject");
-                internal_browses.Add("title as subject");
-                internal_browses.Add("target audience");
-                internal_browses.Add("technique");
-                internal_browses.Add("tickler");
-                internal_browses.Add("title");
+                // Just add every metadata field here
+                foreach (Metadata_Search_Field field in SobekCM_Library_Settings.All_Metadata_Fields)
+                {
+                    if (( field.Facet_Term.Length > 0 ) && ( currentCollection.Browseable_Fields.Contains(field.ID)))
+                        internal_browses.Add(field.Facet_Term);
+                }
             }
 
             // Retain the original short code (or the first public code)
-            string original_browse_mode = currentMode.Info_Browse_Mode;
-            string original_short_code = Long_to_Short(currentMode.Info_Browse_Mode);
+            string original_browse_mode = currentMode.Info_Browse_Mode.ToLower();
 
             // Get any paging URL and retain original page
             int current_page = currentMode.Page;
@@ -207,10 +184,23 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     SortedList<string, Item_Aggregation_Browse_Info> sortedBrowses = new SortedList<string, Item_Aggregation_Browse_Info>();
                     foreach (Item_Aggregation_Browse_Info thisBrowse in public_browses)
                     {
-                        string short_code = Long_to_Short(thisBrowse.Code);
-                        if (internal_browses.Contains(short_code))
-                            internal_browses.Remove(short_code);
-                        sortedBrowses[Short_to_Title(short_code)] = thisBrowse;
+                        if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML)
+                        {
+                            sortedBrowses[thisBrowse.Code.ToLower()] = thisBrowse;
+                        }
+                        else
+                        {
+                            Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Facet_Name(thisBrowse.Code);
+                            if (facetField != null)
+                            {
+                                string facetName = facetField.Facet_Term;
+
+                                if (internal_browses.Contains(facetName))
+                                    internal_browses.Remove(facetName);
+
+                                sortedBrowses[facetName.ToLower()] = thisBrowse;
+                            }
+                        }
                     }
 
                     Output.WriteLine("<b> &nbsp;Public Browses</b><br />");
@@ -232,15 +222,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-                            string short_code = Long_to_Short(thisBrowse.Code);
-                            if (short_code != original_short_code)
+                            Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Facet_Name(thisBrowse.Code);
+                            if (thisBrowse.Code.ToLower() != original_browse_mode)
                             {
-                                currentMode.Info_Browse_Mode = short_code.Replace(" ", "_");
-                                Output.WriteLine("<a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp") + "\">" + Short_to_Title(short_code) + "</a><br />");
+                                currentMode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
+                                Output.WriteLine("<a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp") + "\">" + facetField.Facet_Term + "</a><br />");
                             }
                             else
                             {
-                                Output.WriteLine(Short_to_Title(short_code) + "<br />");
+                                Output.WriteLine( facetField.Facet_Term + "<br />");
                             }
                         }
                     }
@@ -256,14 +246,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     foreach (string thisShort in internal_browses)
                     {
-                        if (thisShort != original_short_code)
+                        Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Facet_Name(thisShort);
+                        if ( thisShort.ToLower() != original_browse_mode)
                         {
-                            currentMode.Info_Browse_Mode = thisShort.Replace(" ", "_");
-                            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL().Replace("&","&amp")+ "\">" + Short_to_Title(thisShort) + "</a><br />");
+                            currentMode.Info_Browse_Mode = thisShort.ToLower().Replace(" ", "_");
+                            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp") + "\">" + facetField.Facet_Term + "</a><br />");
                         }
                         else
                         {
-                            Output.WriteLine(Short_to_Title(thisShort) + "<br />");
+                            Output.WriteLine(facetField.Facet_Term + "<br />");
                         }
                     }
 
@@ -287,7 +278,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML))
             {
                 // Read the content file for this browse
-                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + base.currentCollection.objDirectory, Tracer);
+                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + currentCollection.objDirectory, Tracer);
            
                 // Apply current user settings for this
                 string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Static_Text, currentCollection, htmlSkin.Skin_Code, htmlSkin.Base_Skin_Code, currentMode.Base_URL, currentMode.URL_Options(), Tracer);
@@ -334,7 +325,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     currentMode.Mode = Display_Mode_Enum.Results;
                     currentMode.Search_Precision = Search_Precision_Type_Enum.Exact_Match;
                     currentMode.Search_Type = Search_Type_Enum.Advanced;
-                    currentMode.Search_Fields = Short_to_Code(original_short_code);
+                    Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Facet_Name(original_browse_mode);
+                    currentMode.Search_Fields = facetField.Web_Code;
                     currentMode.Search_String = "\"<%TERM%>\"";
                     string search_url = currentMode.Redirect_URL();
 
@@ -344,7 +336,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         foreach (string thisResult in results)
                         {
-                            Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisResult.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&", "&amp") + "\">" + thisResult.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
+                            Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisResult.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22").Replace("&", "&amp")) + "\">" + thisResult.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
                         }
                     }
                     else if (results.Count < 500)
@@ -723,375 +715,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("</table>");
             }
             Output.WriteLine();
-        }
-
-        private static string Short_to_Code(string Short)
-        {
-            switch (Short.ToLower().Replace("_", " "))
-            {
-                case "title":
-                    return "TI";
-
-                case "type":
-                    return "TY";
-
-                case "identifier":
-                case "identifiers":
-                    return "ID";
-
-                case "language":
-                    return "LA";
-
-                case "creator":
-                    return "AU";
-
-                case "publisher":
-                    return "PU";
-
-                case "publication place":
-                    return "PP";
-
-                case "subject keyword":
-                    return "TO";
-
-                case "genre":
-                    return "GE";
-
-                case "target audience":
-                    return "TA";
-
-                case "spatial coverage":
-                    return "SP";
-
-                case "country":
-                    return "CO";
-
-                case "state":
-                    return "ST";
-
-                case "county":
-                    return "CT";
-
-                case "city":
-                    return "CI";
-
-                case "source institution":
-                    return "SO";
-
-                case "holding location":
-                    return "HO";
-                    
-                case "tickler":
-                    return "TL";
-
-                case "donor":
-                    return "DO";
-
-                case "format":
-                    return "FO";
-
-                case "publication date":
-                    return "DA";
-
-                case "affiliation":
-                    return "AF";
-
-                case "frequency":
-                    return "FR";
-
-                case "name as subject":
-                    return "SN";
-
-                case "title as subject":
-                    return "ST";
-
-                case "all subjects":
-                    return "SU";
-
-                case "temporal subject":
-                    return "TE";
-
-                case "attribution":
-                    return "AT";
-
-                case "material":
-                    return "MA";
-
-                case "style period":
-                    return "SY";
-
-                case "technique":
-                    return "TQ";
-
-                case "cultural context":
-                    return "CC";
-
-                case "inscription":
-                    return "IN";
-
-            }
-
-            return "ZZ";
-        }
-
-        private string Short_to_Title(string Short)
-        {
-            switch (Short.ToLower().Replace("_"," "))
-            {
-                case "title":
-                    return "Titles";
-
-                case "type":
-                    return "Material Types";
-
-                case "identifier":
-                    return "Identifiers";
-
-                case "language":
-                    return "Languages";
-
-                case "creator":
-                    return "Creators / Contributors";
-
-                case "publisher":
-                    return "Publishers";
-
-                case "publication place":
-                    return "Publication Place";
-
-                case "subject keyword":
-                    return "Subjects ( Topical )";
-
-                case "genre":
-                    return "Subjects ( Genre )";
-
-                case "target audience":
-                    return "Target Audiences";
-
-                case "spatial coverage":
-                    return "Subjects ( Geographic )";
-
-                case "country":
-                    return "Geographic ( Countries )";
-
-                case "state":
-                    return "Geographic ( States )";
-
-                case "county":
-                    return "Geographic ( Counties )";
-
-                case "city":
-                    return "Geographic ( Cities )";
-
-                case "source institution":
-                    return "Source Institutions";
-
-                case "holding location":
-                    return "Holding Locations";
-
-                case "identifiers":
-                    return "Identifiers";
-
-                case "tickler":
-                    return "Ticklers";
-
-                case "donor":
-                    return "Donors";
-
-                case "format":
-                    return "Format / Physical Desc";
-
-                case "publication date":
-                    return "Publication Dates";
-
-                case "affiliation":
-                    return "Affiliations";
-
-                case "frequency":
-                    return "Frequencies";
-
-                case "name as subject":
-                    return "Subjects ( Name )";
-
-                case "title as subject":
-                    return "Subjects ( Title )";
-
-                case "all subjects":
-                    return "Subjects ( All )";
-
-                case "temporal subject":
-                    return "Subjects ( Temporal )";
-
-                case "attribution":
-                    return "Attributions";
-
-                case "material":
-                    return "Materials";
-
-                case "style period":
-                    return "Style / Period";
-
-                case "technique":
-                    return "Technique";
-
-                case "cultural context":
-                    return "Cultural Context";
-
-                case "inscription":
-                    return "Inscription";
-            }
-
-            return Short;
-        }
-
-        private string Long_to_Short(string Long)
-        {
-            switch (Long.Replace(" ", "_").ToUpper())
-            {
-                case "TITLE":
-                case "TITLES":
-                    return "title";
-
-                case "TYPE":
-                case "RESOURCE_TYPE":
-                case "MATERIAL_TYPE":
-                    return "type";
-
-                case "LANGUAGE":
-                case "LANGUAGES":
-                    return "language";
-
-                case "CREATOR":
-                case "CREATORS":
-                case "AUTHOR":
-                case "AUTHORS":
-                case "CONTRIBUTOR":
-                    return "creator";
-
-                case "PUBLISHER":
-                case "PUBLISHERS":
-                case "MANUFACTURER":
-                case "MANUFACTURERS":
-                    return "publisher";
-
-                case "PUBLICATION_PLACE":
-                case "PLACE":
-                    return "publication place";
-
-                case "SUBJECT_KEYWORD":
-                case "SUBJECT_KEYWORDS":
-                case "SUBJECT":
-                case "SUBJECTS":
-                    return "subject keyword";
-
-                case "GENRE":
-                case "GENRES":
-                    return "genre";
-
-                case "TARGET_AUDIENCE":
-                case "TARGET_AUDIENCES":
-                case "AUDIENCE":
-                case "AUDIENCES":
-                    return "target audience";
-
-                case "SPATIAL_COVERAGE":
-                case "SPATIAL_COVERAGES":
-                case "SPATIAL":
-                    return "spatial coverage";
-
-                case "COUNTRY":
-                case "COUNTRIES":
-                    return "country";
-
-                case "STATE":
-                case "STATES":
-                    return "state";
-
-                case "COUNTY":
-                case "COUNTIES":
-                    return "county";
-
-                case "CITY":
-                case "CITIES":
-                    return "city";
-
-                case "SOURCE_INSTITUTION":
-                case "SOURCE":
-                    return "source institution";
-
-                case "HOLDING_LOCATION":
-                case "HOLDING":
-                    return "holding location";
-
-                case "IDENTIFIER":
-                case "IDENTIFIERS":
-                    return "identifier";
-
-                case "TICKLER":
-                case "TKR":
-                case "TICKLERS":
-                    return "tickler";
-
-                case "DONOR":
-                case "DONORS":
-                    return "donor";
-
-                case "FORMAT":
-                case "FORMATS":
-                    return "format";
-
-                case "DATE":
-                case "DATES":
-                case "PUBLICATION_DATE":
-                    return "publication date";
-
-                case "AFFILIATION":
-                case "AFFILIATIONS":
-                    return "affiliation";
-
-                case "FREQUENCY":
-                case "FREQUENCIES":
-                    return "frequency";
-
-                case "NAME_AS_SUBJECT":
-                case "NAMES_AS_SUBJECT":
-                case "NAMED_SUBJECT":
-                    return "name as subject";
-
-                case "TITLE_AS_SUBJECT":
-                case "TITLES_AS_SUBJECT":
-                    return "title as subject";
-
-                case "ALL_SUBJECTS":
-                    return "all subjects";
-
-                case "TEMPORAL":
-                case "TEMPORALS":
-                case "TEMPORAL_SUBJECT":
-                case "TEMPORAL_SUBJECTS":
-                    return "temporal subject";
-
-                case "ATTRIBUTION":
-                case "ATTRIBUTIONS":
-                    return "attribution";
-
-                case "MATERIALS":
-                    return "material";
-
-                case "STYLE_PERIOD":
-                    return "style period";
-
-                case "TECHNIQUE":
-                    return "technique";
-
-                case "CULTURAL_CONTEXT":
-                    return "cultural context";
-
-                case "INSCRIPTION":
-                    return "inscription";
-            }
-
-            return Long.ToLower().Replace("_", " ");
         }
     }
 }

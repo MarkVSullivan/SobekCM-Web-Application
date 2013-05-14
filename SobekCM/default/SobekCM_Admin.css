@@ -1,4 +1,19 @@
-/* Style sheet for administrative functions of SobekCM */
+/**************************************************************************
+**     SOBEKCM_Admin.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for administrative features of ths system.                                            
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
 
 
 .SobekAdminTitle
@@ -30,7 +45,7 @@
 
 
 .admin_interface_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.admin_interface_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:215px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_interface_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:265px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
 input.admin_interface_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.admin_interface_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.admin_interface_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }

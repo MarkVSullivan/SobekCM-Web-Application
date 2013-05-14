@@ -7,9 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -44,7 +45,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
 
             // Check that an acronym exists
@@ -53,15 +54,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Select files to make downloadable and provide labels for them.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -98,7 +99,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Now, add all the other download-eligible files
-            ReadOnlyCollection<string> otherFiles = Bib.SobekCM_Web.Get_Download_Eligible_Files(SobekCM_Library_Settings.Image_Server_Network + Bib.SobekCM_Web.AssocFilePath);
+            ReadOnlyCollection<string> otherFiles = Bib.Web.Get_Download_Eligible_Files(SobekCM_Library_Settings.Image_Server_Network + Bib.Web.AssocFilePath);
             foreach (string thisOtherFile in otherFiles)
             {
                 if (!possible_select_items.Contains(thisOtherFile))
@@ -204,7 +205,7 @@ namespace SobekCM.Library.Citation.Elements
             if (different)
             {
                 // Get the directory for this package
-                string directory = SobekCM_Library_Settings.Image_Server_Network + Bib.SobekCM_Web.AssocFilePath;
+                string directory = SobekCM_Library_Settings.Image_Server_Network + Bib.Web.AssocFilePath;
 
                 // Clear existing
                 Bib.Divisions.Download_Tree.Clear();

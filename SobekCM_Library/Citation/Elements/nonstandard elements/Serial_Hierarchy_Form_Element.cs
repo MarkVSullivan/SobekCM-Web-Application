@@ -6,9 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -42,7 +44,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -50,15 +52,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Enter serial hierarchy information which explains how this volume related to the larger body of work.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -85,7 +87,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
-            string serial_hierarchy_string = show_hierarchy_value(Bib.Serial_Info);
+            string serial_hierarchy_string = show_hierarchy_value(Bib.Behaviors.Serial_Info);
             if (serial_hierarchy_string.Length == 0)
             {
                 Output.WriteLine("              <a title=\"Click to edit the serial hierarchy\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_serial_hierarchy_term')\" onblur=\"return link_blurred2('form_serial_hierarchy_term')\" onkeypress=\"return popup_keypress_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565 );\"><div class=\"form_linkline_empty form_serial_hierarchy_line\" id=\"form_serial_hierarchy_term\"><i>Empty Serial Hierarchy</i></div></a>");
@@ -107,9 +109,9 @@ namespace SobekCM.Library.Citation.Elements
             
             // Determine which is primary, the enumeration or chronology.
             bool enum_primary = true;
-            if ( Bib.Serial_Info.Count > 0)
+            if ( Bib.Behaviors.Serial_Info.Count > 0)
             {
-                if ( Bib.Bib_Info.Series_Part_Info.Year == Bib.Serial_Info[0].Display)
+                if ( Bib.Bib_Info.Series_Part_Info.Year == Bib.Behaviors.Serial_Info[0].Display)
                 {
                     enum_primary = false;
                 }
@@ -212,7 +214,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Delete existing serial information
-            Bib.Serial_Info.Clear();
+            Bib.Behaviors.Serial_Info.Clear();
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -326,24 +328,24 @@ namespace SobekCM.Library.Citation.Elements
             if (primary == "enum")
             {
                 if (Bib.Bib_Info.Series_Part_Info.Enum1.Length > 0)
-                    Bib.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Enum1_Index, Bib.Bib_Info.Series_Part_Info.Enum1);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Enum1_Index, Bib.Bib_Info.Series_Part_Info.Enum1);
 
                 if (Bib.Bib_Info.Series_Part_Info.Enum2.Length > 0)
-                    Bib.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Enum2_Index, Bib.Bib_Info.Series_Part_Info.Enum2);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Enum2_Index, Bib.Bib_Info.Series_Part_Info.Enum2);
 
                 if (Bib.Bib_Info.Series_Part_Info.Enum3.Length > 0)
-                    Bib.Serial_Info.Add_Hierarchy(level, Bib.Bib_Info.Series_Part_Info.Enum3_Index, Bib.Bib_Info.Series_Part_Info.Enum3);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level, Bib.Bib_Info.Series_Part_Info.Enum3_Index, Bib.Bib_Info.Series_Part_Info.Enum3);
             }
             else
             {
                 if (Bib.Bib_Info.Series_Part_Info.Year.Length > 0)
-                    Bib.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Year_Index, Bib.Bib_Info.Series_Part_Info.Year);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Year_Index, Bib.Bib_Info.Series_Part_Info.Year);
 
                 if (Bib.Bib_Info.Series_Part_Info.Month.Length > 0)
-                    Bib.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Month_Index, Bib.Bib_Info.Series_Part_Info.Month);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, Bib.Bib_Info.Series_Part_Info.Month_Index, Bib.Bib_Info.Series_Part_Info.Month);
 
                 if (Bib.Bib_Info.Series_Part_Info.Day.Length > 0)
-                    Bib.Serial_Info.Add_Hierarchy(level, Bib.Bib_Info.Series_Part_Info.Day_Index, Bib.Bib_Info.Series_Part_Info.Day);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level, Bib.Bib_Info.Series_Part_Info.Day_Index, Bib.Bib_Info.Series_Part_Info.Day);
             }
         }
 

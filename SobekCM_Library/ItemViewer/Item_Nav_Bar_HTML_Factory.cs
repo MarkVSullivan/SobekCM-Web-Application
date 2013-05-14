@@ -1,7 +1,9 @@
 ﻿#region Using directives
 
 using System.Collections.Generic;
-using SobekCM.Bib_Package.SobekCM_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 
@@ -23,7 +25,7 @@ namespace SobekCM.Library.ItemViewer
         /// <returns> Collection of the html for the navigation bar (one view could have multiple tabs)</returns>
         public static List<string> Get_Nav_Bar_HTML(View_Object Item_View, string Resource_Type, 
             string Skin_Code, SobekCM_Navigation_Object Current_Mode, int Page_Sequence,
-            Language_Support_Info Translator, bool Show_Zoomable )
+            Language_Support_Info Translator, bool Show_Zoomable, SobekCM_Item Current_Item )
         {
             List<string> returnVal = new List<string>();
 
@@ -85,9 +87,22 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.GOOGLE_MAP:
                     if (Current_Mode.Coordinates.Length > 0)
                     {
-                        returnVal.Add(Current_Mode.ViewerCode == "mapsearch"
-                                          ? HTML_Helper(Skin_Code, "mapsearch", Translator.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode)
-                                          : HTML_Helper(Skin_Code, "map", Translator.Get_Translation("SEARCH RESULTS", Current_Mode.Language), Current_Mode));
+                        if (Current_Mode.ViewerCode == "mapsearch")
+                        {
+                            returnVal.Add( HTML_Helper(Skin_Code, "mapsearch", Translator.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode));
+                        }
+                        else
+                        {
+                            if (( Current_Item.Web.Static_PageCount > 1 ) || ( Current_Item.Bib_Info.SobekCM_Type != TypeOfResource_SobekCM_Enum.Map ))
+                            {
+                                returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("SEARCH RESULTS", Current_Mode.Language), Current_Mode));
+                            }
+                            else
+                            {
+                                returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("MAP COVERAGE", Current_Mode.Language), Current_Mode));
+                            }
+ 
+                        }
                     }
                     else
                     {
@@ -157,14 +172,22 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.PAGE_TURNER:
-                    returnVal.Add(HTML_Helper(Skin_Code, "pageturner", Translator.Get_Translation("PAGE TURNER", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "pageturner#page/1/mode/2up", Translator.Get_Translation("PAGE TURNER", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.YOUTUBE_VIDEO:
                     returnVal.Add(HTML_Helper(Skin_Code, "youtube", Translator.Get_Translation("VIDEO", Current_Mode.Language), Current_Mode));
                     break;
 
+                case View_Enum.EMBEDDED_VIDEO:
+                    returnVal.Add(HTML_Helper(Skin_Code, "video", Translator.Get_Translation("VIDEO", Current_Mode.Language), Current_Mode));
+                    break;
+
                 case View_Enum.TRACKING:
+                    // DO nothing in this case.. do not write any tab
+                    break;
+
+                case View_Enum.QUALITY_CONTROL:
                     // DO nothing in this case.. do not write any tab
                     break;
             }
@@ -176,25 +199,20 @@ namespace SobekCM.Library.ItemViewer
         {
             if (Current_Mode.ViewerCode == Viewer_Code)
             {
-                string selectedTabStart = "<img src=\"" + Current_Mode.Base_URL + "design/skins/" + interface_code + "/tabs/cL_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\"> ";
-                string selectedTabEnd = " </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + interface_code + "/tabs/cR_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
-                return selectedTabStart + Display_Text + selectedTabEnd;
+                return "<li id=\"selected-sf-menu-item\">" + Display_Text + "</li>";
             }
-
-            string unselectedTabStart = "<img src=\"" + Current_Mode.Base_URL + "design/skins/" + interface_code + "/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> ";
-            string unselectedTabEnd = " </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + interface_code + "/tabs/cR.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
 
             // When rendering for robots, provide the text and image, but not the text
             if (Current_Mode.Is_Robot)
             {
-                return unselectedTabStart + Display_Text + unselectedTabEnd;
+                return "<li class=\"selected-sf-menu-item\">" + Display_Text + "</li>";
             }
-            
-            string current_viewer_code = Current_Mode.ViewerCode;
+
+            string previousViewerCode = Current_Mode.ViewerCode;
             Current_Mode.ViewerCode = Viewer_Code;
-            string toReturn = "<a href=\"" + Current_Mode.Redirect_URL() + "\"> " + unselectedTabStart + Display_Text + unselectedTabEnd + " </a>";
-            Current_Mode.ViewerCode = current_viewer_code;
-            return toReturn;
+            string returnValue = "<li><a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a></li>";
+            Current_Mode.ViewerCode = previousViewerCode;
+            return returnValue;
         }
     }
 }

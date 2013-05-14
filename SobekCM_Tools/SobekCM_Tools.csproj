@@ -157,12 +157,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SobekCM_Bib_Package\SobekCM_Bib_Package.csproj">
-      <Project>{395C2621-CE19-41E0-AA1A-ABDB37F6E815}</Project>
-      <Name>SobekCM_Bib_Package</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>

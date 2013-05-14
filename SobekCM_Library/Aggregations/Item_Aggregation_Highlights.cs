@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 
 #endregion
 
@@ -15,26 +16,26 @@ namespace SobekCM.Library.Aggregations
     [Serializable]
     public class Item_Aggregation_Highlights
     {
-        private readonly Dictionary<Language_Enum, string> text;
-        private readonly Dictionary<Language_Enum, string> tooltips;
+        private readonly Dictionary<Web_Language_Enum, string> text;
+        private readonly Dictionary<Web_Language_Enum, string> tooltips;
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Highlights class </summary>
         public Item_Aggregation_Highlights()
         {
-            tooltips = new Dictionary<Language_Enum, string>();
-            text = new Dictionary<Language_Enum, string>();
+            tooltips = new Dictionary<Web_Language_Enum, string>();
+            text = new Dictionary<Web_Language_Enum, string>();
             Link = String.Empty;
             Image = String.Empty;
         }
 
         /// <summary> Gets the dictionary of languages to text </summary>
-        public Dictionary<Language_Enum, string> Text_Dictionary
+        public Dictionary<Web_Language_Enum, string> Text_Dictionary
         {
             get { return text; }
         }
 
         /// <summary> Gets the dictionary of languages to tooltips </summary>
-        public Dictionary<Language_Enum, string> Tooltip_Dictionary
+        public Dictionary<Web_Language_Enum, string> Tooltip_Dictionary
         {
             get { return tooltips; }
         }
@@ -53,19 +54,19 @@ namespace SobekCM.Library.Aggregations
             {
                 Writer.WriteLine("      <hi:link>" + Link + "</hi:link>");
             }
-            foreach (KeyValuePair<Language_Enum, string> thisTooltip in tooltips)
+            foreach (KeyValuePair<Web_Language_Enum, string> thisTooltip in tooltips)
             {
-                if (thisTooltip.Key == Language_Enum.DEFAULT)
+                if (thisTooltip.Key == Web_Language_Enum.UNDEFINED)
                     Writer.WriteLine("      <hi:tooltip>" + thisTooltip.Value + "</hi:tooltip>");
                 else
-                    Writer.WriteLine("      <hi:tooltip lang=\"" + Language_Enum_Converter.Language_Enum_To_Code(thisTooltip.Key) + "\">" + thisTooltip.Value + "</hi:tooltip>");
+                    Writer.WriteLine("      <hi:tooltip lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisTooltip.Key) + "\">" + thisTooltip.Value + "</hi:tooltip>");
             }
-            foreach (KeyValuePair<Language_Enum, string> thisText in text)
+            foreach (KeyValuePair<Web_Language_Enum, string> thisText in text)
             {
-                if (thisText.Key == Language_Enum.DEFAULT)
+                if (thisText.Key == Web_Language_Enum.UNDEFINED)
                     Writer.WriteLine("      <hi:text>" + thisText.Value + "</hi:text>");
                 else
-                    Writer.WriteLine("      <hi:text lang=\"" + Language_Enum_Converter.Language_Enum_To_Code(thisText.Key) + "\">" + thisText.Value + "</hi:text>");
+                    Writer.WriteLine("      <hi:text lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisText.Key) + "\">" + thisText.Value + "</hi:text>");
             }
             Writer.WriteLine("    </hi:highlight>");
         }
@@ -73,7 +74,7 @@ namespace SobekCM.Library.Aggregations
         /// <summary> Add a language tooltip to this highlight </summary>
         /// <param name="Language">Language enumeration for this tooltip </param>
         /// <param name="Tooltip"> Tooltip </param>
-        public void Add_Tooltip( Language_Enum Language, string Tooltip)
+        public void Add_Tooltip(Web_Language_Enum Language, string Tooltip)
         {
             tooltips[Language] = Tooltip;
         }
@@ -81,16 +82,16 @@ namespace SobekCM.Library.Aggregations
         /// <summary> Gets the language-specific tooltip, if one exists </summary>
         /// <param name="Language"> Language of the tooltip to retrieve </param>
         /// <returns> Language-specific tooltip </returns>
-        public string Get_Tooltip(Language_Enum Language)
+        public string Get_Tooltip(Web_Language_Enum Language)
         {
             if (tooltips.ContainsKey(Language))
                 return tooltips[Language];
 
-            if (tooltips.ContainsKey(Language_Enum.DEFAULT))
-                return tooltips[Language_Enum.DEFAULT];
+            if (tooltips.ContainsKey(Web_Language_Enum.DEFAULT))
+                return tooltips[Web_Language_Enum.DEFAULT];
 
-            if (tooltips.ContainsKey(Language_Enum.English))
-                return tooltips[Language_Enum.English];
+            if (tooltips.ContainsKey(Web_Language_Enum.English))
+                return tooltips[Web_Language_Enum.English];
 
             if (tooltips.Count > 0)
                 return tooltips.ElementAt(0).Value;
@@ -101,7 +102,7 @@ namespace SobekCM.Library.Aggregations
         /// <summary> Add a language text to this highlight </summary>
         /// <param name="Language">Language enumeration for this text </param>
         /// <param name="Text"> Text </param>
-        public void Add_Text(Language_Enum Language, string Text)
+        public void Add_Text(Web_Language_Enum Language, string Text)
         {
             text[Language] = Text;
         }
@@ -109,16 +110,16 @@ namespace SobekCM.Library.Aggregations
         /// <summary> Gets the language-specific text, if one exists </summary>
         /// <param name="Language"> Language of the text to retrieve </param>
         /// <returns> Language-specific text </returns>
-        public string Get_Text(Language_Enum Language)
+        public string Get_Text(Web_Language_Enum Language)
         {
             if (text.ContainsKey(Language))
                 return text[Language];
 
-            if (text.ContainsKey(Language_Enum.DEFAULT))
-                return text[Language_Enum.DEFAULT];
+            if (text.ContainsKey(Web_Language_Enum.DEFAULT))
+                return text[Web_Language_Enum.DEFAULT];
 
-            if (text.ContainsKey(Language_Enum.English))
-                return text[Language_Enum.English];
+            if (text.ContainsKey(Web_Language_Enum.English))
+                return text[Web_Language_Enum.English];
 
             if (text.Count > 0)
                 return text.ElementAt(0).Value;
@@ -130,7 +131,7 @@ namespace SobekCM.Library.Aggregations
         /// <param name="Language"> Language of the current interface </param>
         /// <param name="Directory"> Directory within which the image will be found for the image </param>
         /// <returns> HTML for this highlight </returns>
-        public string ToHTML( Language_Enum Language, string Directory )
+        public string ToHTML( Web_Language_Enum Language, string Directory )
         {
             StringBuilder highlightBldr = new StringBuilder(500);
             highlightBldr.Append("<span id=\"SobekHighlight\">" + Environment.NewLine );

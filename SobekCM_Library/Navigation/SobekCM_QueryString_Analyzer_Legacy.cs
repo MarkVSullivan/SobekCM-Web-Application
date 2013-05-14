@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 
 #endregion
@@ -131,11 +132,11 @@ namespace SobekCM.Library.Navigation
 			{
 				if (( QueryString["l"].ToUpper() == "ES" ) || ( QueryString["l"].ToUpper() == "SP" ))
 				{
-					navigator.Language = Language_Enum.Spanish;
+					navigator.Language = Web_Language_Enum.Spanish;
 				}
 				if ( QueryString["l"].ToUpper() == "FR" )
 				{
-					navigator.Language = Language_Enum.French;
+					navigator.Language = Web_Language_Enum.French;
 				}
 			}
 
@@ -576,42 +577,7 @@ namespace SobekCM.Library.Navigation
 
 	            switch (mode[2])
 	            {
-	                case 'a':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Home;
-	                    break;
-
-	                case 'b':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Aggregations_Mgmt;
-	                    break;
-
-	                case 'd':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Forwarding;
-	                    break;
-
-	                case 'i':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Interfaces;
-	                    break;
-
-	                case 'j':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Projects;
-	                    break;
-
-	                case 'r':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_IP_Restrictions;
-	                    break;
-
-	                case 'u':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Users;
-	                    break;
-
-	                case 'w':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Wordmarks;
-	                    break;
-
-	                case 'z':
-	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Reset;
-	                    break;
-                    
+                   
 	                case 'l':
 	                    navigator.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 	                    break;
