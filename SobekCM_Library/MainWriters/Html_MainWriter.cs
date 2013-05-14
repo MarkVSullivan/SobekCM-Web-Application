@@ -1331,6 +1331,12 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/bookturner/bookturner.js\"></script>    "); 
             }
 
+            // Add code for the QC item viewer's special CSS
+            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) && (currentMode.ViewerCode.IndexOf("qc") == currentMode.ViewerCode.Length - 2 ))
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
+            }
+
             // Add a printer friendly CSS
             Output.WriteLine("  <style type=\"text/css\" media=\"printer\">");
             Output.WriteLine("    @import url( " + currentMode.Base_URL + "default/print.css );");
@@ -1798,8 +1804,7 @@ namespace SobekCM.Library.MainWriters
                     
 
                 default:
-                    string headerTemp = htmlSkin.Header_HTML ?? String.Empty;
-                    Output.WriteLine(headerTemp.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                    Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
             }
 
