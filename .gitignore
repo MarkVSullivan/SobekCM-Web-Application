@@ -43,6 +43,7 @@ _p.c
 .log
 .scc
 
+
 # Visual C++ cache files
 ipch
 .aps
@@ -158,4 +159,5 @@ SobekCM/design/extra/
 SobekCM/design/skins/
 SobekCM/design/webcontent/
 SobekCM/design/wordmarks/
-
+SobekCM/SobekCM.v11.suo
+SobekCM/SobekCM_.psess
