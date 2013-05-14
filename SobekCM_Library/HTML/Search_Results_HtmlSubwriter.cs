@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.Users;
@@ -103,14 +104,14 @@ namespace SobekCM.Library.HTML
                 string new_search = "NEW SEARCH";
                 string home_text = "HOME";
 
-                if (currentMode.Language == Language_Enum.French)
+                if (currentMode.Language == Web_Language_Enum.French)
                 {
                     refine_search = "MODIFIER LA RECHERCHE";
                     new_search = "RELANCEZ LA RECHERCHE";
                     home_text = "PAGE D'ACCUEIL";
                 }
 
-                if (currentMode.Language == Language_Enum.Spanish)
+                if (currentMode.Language == Web_Language_Enum.Spanish)
                 {
                     refine_search = "REDUZCA SU BÚSQUEDA";
                     new_search = "BÚSQUEDA NUEVA";

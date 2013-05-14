@@ -42,7 +42,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				return -100;
+				return 800;
 			}
 		}
 
@@ -57,14 +57,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		}
 
 		/// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-		/// <value> This is a single page viewer, so this property always returns FALSE</value>
-		public override bool Show_Page_Selector
-		{
-			get
-			{
-				return false;
-			}
-		}
+		/// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
+        {
+            get
+            {
+                return ItemViewer_PageSelector_Type_Enum.NONE;
+            }
+        }
 
 		/// <summary> Adds the main view section to the page turner </summary>
 		/// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
@@ -86,9 +86,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			string displayFileName = FileName;
 			if (displayFileName.IndexOf("http") < 0)
 			{
-				displayFileName = CurrentItem.SobekCM_Web.Source_URL + "/" + displayFileName;
+				displayFileName = CurrentItem.Web.Source_URL + "/" + displayFileName;
 			}
 			displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
+                displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
 
 
 			// Start the citation table

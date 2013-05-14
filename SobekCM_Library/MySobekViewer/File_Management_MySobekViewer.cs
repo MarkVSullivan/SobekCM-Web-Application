@@ -10,9 +10,9 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Database;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
@@ -102,7 +102,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                     {
-                        HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
+                        HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
                         file_name_from_keys = String.Empty;
                         label_from_keys = String.Empty;
                     }
@@ -141,7 +141,7 @@ namespace SobekCM.Library.MySobekViewer
                             List<string> keys = new List<string>();
                             foreach (string thisKey in HttpContext.Current.Session.Keys)
                             {
-                                if (thisKey.IndexOf("file_" + item.SobekCM_Web.ItemID + "_") == 0)
+                                if (thisKey.IndexOf("file_" + item.Web.ItemID + "_") == 0)
                                     keys.Add(thisKey);
                             }
                             foreach (string thisKey in keys)
@@ -161,7 +161,7 @@ namespace SobekCM.Library.MySobekViewer
                                 List<string> keys2 = new List<string>();
                                 foreach (string thisKey in HttpContext.Current.Session.Keys)
                                 {
-                                    if (thisKey.IndexOf("file_" + item.SobekCM_Web.ItemID + "_") == 0)
+                                    if (thisKey.IndexOf("file_" + item.Web.ItemID + "_") == 0)
                                         keys2.Add(thisKey);
                                 }
                                 foreach (string thisKey in keys2)
@@ -274,11 +274,11 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         // Create the new file object and compute a label
                         System.IO.FileInfo fileInfo = new System.IO.FileInfo(thisFile);
-                        SobekCM.Bib_Package.Divisions.SobekCM_File_Info newFile = new SobekCM.Bib_Package.Divisions.SobekCM_File_Info(fileInfo.Name);
+                        SobekCM.Resource_Object.Divisions.SobekCM_File_Info newFile = new SobekCM.Resource_Object.Divisions.SobekCM_File_Info(fileInfo.Name);
                         string label = fileInfo.Name.Replace(fileInfo.Extension, "");
-                        if (System.Web.HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + thisFileKey] != null)
+                        if (System.Web.HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + thisFileKey] != null)
                         {
-                            string possible_label = System.Web.HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + thisFileKey].ToString();
+                            string possible_label = System.Web.HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + thisFileKey].ToString();
                             if (possible_label.Length > 0)
                                 label = possible_label;
                         }
@@ -322,9 +322,9 @@ namespace SobekCM.Library.MySobekViewer
                         FileInfo fileInfo = new FileInfo(thisFile);
                         SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
                         string label = fileInfo.Name.Replace( fileInfo.Extension, "");
-                        if (HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + thisFileKey] != null)
+                        if (HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + thisFileKey] != null)
                         {
-                            string possible_label = HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + thisFileKey].ToString();
+                            string possible_label = HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + thisFileKey].ToString();
                             if (possible_label.Length > 0)
                                 label = possible_label;
                         }
@@ -335,14 +335,14 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Add the JPEG2000 and JPEG-specific viewers
-                item.SobekCM_Web.Clear_Views();
+                item.Behaviors.Clear_Views();
                 if (jpeg_added)
                 {
-                    item.SobekCM_Web.Add_View(SobekCM.Bib_Package.SobekCM_Info.View_Enum.JPEG);
+                    item.Behaviors.Add_View(SobekCM.Resource_Object.Behaviors.View_Enum.JPEG);
                 }
                 if (jp2_added)
                 {
-                    item.SobekCM_Web.Add_View(SobekCM.Bib_Package.SobekCM_Info.View_Enum.JPEG2000);
+                    item.Behaviors.Add_View(SobekCM.Resource_Object.Behaviors.View_Enum.JPEG2000);
                 }
                 
 
@@ -355,7 +355,7 @@ namespace SobekCM.Library.MySobekViewer
                 try
                 {
                     SobekCM_Database.Save_Digital_Resource( Item_To_Complete );
-                    SobekCM_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.SobekCM_Web.Text_Searchable, false);
+                    SobekCM_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false);
                 }
                 catch (Exception ee)
                 {
@@ -372,8 +372,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 // Assign the file root and assoc file path
-                Item_To_Complete.SobekCM_Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
-                Item_To_Complete.SobekCM_Web.AssocFilePath = Item_To_Complete.SobekCM_Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
+                Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
+                Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
                 // Create the static html pages
                 string base_url = currentMode.Base_URL;
@@ -394,9 +394,9 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Save_SobekCM_METS();
 
                 // Finally, set the item for more processing if there were any files
-                if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.SobekCM_Web.ItemID > 0 ))
+                if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.Web.ItemID > 0 ))
                 {
-                    Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.SobekCM_Web.ItemID, true, Tracer);
+                    Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
                 }
             }
             catch (Exception ee)
@@ -609,11 +609,11 @@ namespace SobekCM.Library.MySobekViewer
                         string input_name = "upload_label" + file_counter.ToString();
                         Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
                         Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-                        if (HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + fileKey] == null)
+                        if (HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] == null)
                         {
                             if ( image_files_to_labels.ContainsKey( fileKey ))
                             {
-                                HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + fileKey] = image_files_to_labels[fileKey];
+                                HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] = image_files_to_labels[fileKey];
                                 Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( image_files_to_labels[fileKey] ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
                             }
                             else
@@ -623,7 +623,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         else
                         {
-                            string label_from_session = HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + fileKey].ToString();
+                            string label_from_session = HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey].ToString();
                             Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( label_from_session ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
                         }
                         Output.WriteLine("</td></tr>");
@@ -682,11 +682,11 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
                     Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
 
-                        if (HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + fileKey] == null)
+                        if (HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] == null)
                         {
                             if (  resource_files_to_labels.ContainsKey( fileKey ))
                             {
-                                HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + fileKey] = resource_files_to_labels[fileKey];
+                                HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] = resource_files_to_labels[fileKey];
                                 Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( resource_files_to_labels[fileKey] ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
                             }
                             else
@@ -696,7 +696,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         else
                         {
-                            string label_from_session = HttpContext.Current.Session["file_" + item.SobekCM_Web.ItemID + "_" + fileKey].ToString();
+                            string label_from_session = HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey].ToString();
                             Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( label_from_session ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
                         }
 
@@ -747,7 +747,7 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder filesBuilder = new StringBuilder(2000);
             filesBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            filesBuilder.AppendLine("Add a new item for this package:");
+            filesBuilder.AppendLine("Add a new file for this package:");
             filesBuilder.AppendLine("<blockquote>");
 
             LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());

@@ -3,8 +3,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Library.Database;
 
 #endregion
@@ -26,6 +26,8 @@ namespace SobekCM.Library.Email
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Send_Email( string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, bool HTML_Format, string URL )
         {
+            return false;
+
             if (HTML_Format)
             {
                 return HTML_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL) || Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL);
@@ -104,7 +106,7 @@ namespace SobekCM.Library.Email
 
                 messageBuilder.AppendLine("<table cellspacing=\"0px\" cellpadding=\"0px\">\n");
                 messageBuilder.AppendLine("<tr><td colspan=\"2\" style=\"background: black; color: white; font-family:Arial, Helvetica, sans-serif;\"><b>ITEM INFORMATION</b></td></tr>\n");
-                messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + SobekCM_Library_Settings.Image_URL + Item.SobekCM_Web.AssocFilePath.Replace("\\", "/") + "/" + Item.SobekCM_Web.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
+                messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + SobekCM_Library_Settings.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
                 messageBuilder.AppendLine("<td>");
                 messageBuilder.AppendLine("<table style=\"font-family:Arial, Helvetica, sans-serif; font-size:smaller;\">");
                 messageBuilder.AppendLine("<tr><td>Title:</td><td><a href=\"" + URL + "\"><b>" + Item.Bib_Info.Main_Title + "</b></a></td></tr>");

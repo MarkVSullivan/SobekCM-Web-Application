@@ -3,8 +3,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
@@ -129,7 +129,7 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("</TitleResult>");          
             Output.WriteLine("</ResultSet>");
 
-            //SobekCM.Bib_Package.Database.DataSets.UFDC_All_Items simplified_xml = new SobekCM.Bib_Package.Database.DataSets.UFDC_All_Items();
+            //SobekCM.Resource_Object.Database.DataSets.UFDC_All_Items simplified_xml = new SobekCM.Resource_Object.Database.DataSets.UFDC_All_Items();
 
             //List<Results.SobekCM_Item_Collection.SobekCM_Item_Row> itemRows;
             //for ( int i = 0 ; i < search_results.Title_Count ; i++ )

@@ -7,8 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -49,7 +50,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -57,15 +58,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Enter the code for any icons or wordmarks which should appear beside this item when viewed on the web.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -75,22 +76,22 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if ( Bib.SobekCM_Web.Wordmark_Count == 0 )
+            if ( Bib.Behaviors.Wordmark_Count == 0 )
             {
                 render_helper(Output, String.Empty, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
                 return;
             }
 
-            if (Bib.SobekCM_Web.Wordmark_Count == 1)
+            if (Bib.Behaviors.Wordmark_Count == 1)
             {
-                render_helper(Output, Bib.SobekCM_Web.Wordmarks[0].Code, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+                render_helper(Output, Bib.Behaviors.Wordmarks[0].Code, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
                 return;
             }
 
             List<string> allWordmarks = new List<string>();
-            if (Bib.SobekCM_Web.Wordmark_Count > 0)
+            if (Bib.Behaviors.Wordmark_Count > 0)
             {
-                allWordmarks.AddRange(Bib.SobekCM_Web.Wordmarks.Select(thisIcon => thisIcon.Code));
+                allWordmarks.AddRange(Bib.Behaviors.Wordmarks.Select(thisIcon => thisIcon.Code));
             }
             render_helper(Output, new ReadOnlyCollection<string>(allWordmarks), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
@@ -101,7 +102,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears any preexisting wordmarks </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.SobekCM_Web.Clear_Wordmarks();
+            Bib.Behaviors.Clear_Wordmarks();
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -115,16 +116,16 @@ namespace SobekCM.Library.Citation.Elements
 
                 string code = HttpContext.Current.Request.Form[thisKey].ToLower();
                 bool found = false;
-                if (Bib.SobekCM_Web.Wordmark_Count > 0)
+                if (Bib.Behaviors.Wordmark_Count > 0)
                 {
-                    if (Bib.SobekCM_Web.Wordmarks.Any(thisIcon => thisIcon.Code.ToLower() == code))
+                    if (Bib.Behaviors.Wordmarks.Any(thisIcon => thisIcon.Code.ToLower() == code))
                     {
                         found = true;
                     }
                 }
                 if (!found)
                 {
-                    Bib.SobekCM_Web.Add_Wordmark(code);
+                    Bib.Behaviors.Add_Wordmark(code);
                 }
             }
         }

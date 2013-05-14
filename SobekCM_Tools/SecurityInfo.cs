@@ -74,6 +74,19 @@ namespace SobekCM.Tools
 			}
 		}
 
+        /// <summary> Gets the complete current users name as a string. </summary>
+        /// <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
+        public static string Current_UserName
+        {
+            get
+            {
+                AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+                WindowsPrincipal principal = (WindowsPrincipal)Thread.CurrentPrincipal;
+                WindowsIdentity identity = (WindowsIdentity)principal.Identity;
+                return identity.Name;
+            }
+        }
+
 
 		/// <summary> Returns a string value from the registry under HKEY_LOCAL_MACHINE. </summary>
 		/// <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>

@@ -53,7 +53,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
             if ( FileName.Length > 0 )
             {
-                string filesource = CurrentItem.SobekCM_Web.Source_URL + "/" + FileName;
+                string filesource = CurrentItem.Web.Source_URL + "/" + FileName;
                 string text = Get_Html_Page( filesource, Tracer );
 
                 // If there was a term search here, highlight it

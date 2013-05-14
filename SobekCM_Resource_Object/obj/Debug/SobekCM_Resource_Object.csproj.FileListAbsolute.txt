@@ -1,0 +1,28 @@
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\SobekCM_Resource_Object.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\SobekCM_Resource_Object.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\SobekCM_Resource_Object.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Zoom.Net.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Zoom.Net.YazSharp.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Zoom.Net.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Zoom.Net.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\Zoom.Net.YazSharp.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\obj\Debug\SobekCM_Resource_Object.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\obj\Debug\SobekCM_Resource_Object.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\SobekCM_Resource_Object.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\SobekCM_Resource_Object.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\SobekCM_Resource_Object.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Microsoft.ApplicationBlocks.Data.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Zoom.Net.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Zoom.Net.YazSharp.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Zoom.Net.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Zoom.Net.xml
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\bin\Debug\Zoom.Net.YazSharp.pdb
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\obj\Debug\SobekCM_Resource_Object.dll
+C:\Users\msulliva\Desktop\Version 3.2.0 BETA\Code\SobekCM_Resource_Object\obj\Debug\SobekCM_Resource_Object.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\SolrNet.dll
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\SolrNet.pdb
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\bin\Debug\SolrNet.xml
+C:\inetpub\wwwroot\UFDC\SobekCM_Resource_Object\obj\Debug\SobekCM_Resource_Object.csprojResolveAssemblyReference.cache

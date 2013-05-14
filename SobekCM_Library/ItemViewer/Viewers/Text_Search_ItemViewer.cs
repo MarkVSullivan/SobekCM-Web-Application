@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Solr;
 
@@ -60,12 +61,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -87,17 +88,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Citation_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Text_Search_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
             }
 
             string search_this_document = "Search this document";
 
-            if (CurrentMode.Language == Language_Enum.French)
+            if (CurrentMode.Language == Web_Language_Enum.French)
             {
                 search_this_document = "Rechercher sur ce Document";
             }
 
-            if (CurrentMode.Language == Language_Enum.Spanish)
+            if (CurrentMode.Language == Web_Language_Enum.Spanish)
             {
                 search_this_document = "Buscar en este Objeto";
             }
@@ -146,7 +147,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string next_page = "Next Page";
                     string last_page = "Last Page";
 
-                    if (CurrentMode.Language == Language_Enum.Spanish)
+                    if (CurrentMode.Language == Web_Language_Enum.Spanish)
                     {
                         first_page = "Primera Página";
                         previous_page = "Página Anterior";
@@ -154,7 +155,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         last_page = "Última Página";
                     }
 
-                    if (CurrentMode.Language == Language_Enum.French)
+                    if (CurrentMode.Language == Web_Language_Enum.French)
                     {
                         first_page = "Première Page";
                         previous_page = "Page Précédente";
@@ -230,7 +231,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 resultsWriter.AppendLine("      <div style=\"background-color: White;\">");
                 resultsWriter.AppendLine("        <table align=\"center\" width=\"100%\" cellspacing=\"15px\" height=\"1px\">");
 
-                string thumbnail_root = CurrentItem.SobekCM_Web.Source_URL;
+                string thumbnail_root = CurrentItem.Web.Source_URL;
                 string url_options = CurrentMode.URL_Options();
                 if (url_options.Length > 0)
                 {
@@ -385,7 +386,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string restrict_language = "You can restrict your results by searching for";
 
 
-            if (CurrentMode.Language == Language_Enum.French)
+            if (CurrentMode.Language == Web_Language_Enum.French)
             {
                 your_search_language = "Votre recherche dans les textes intégrals pour les pages contenant ";
                 and_not_language = " ET PAS ";
@@ -399,7 +400,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 restrict_language = "Vous pouvez limiter votre rechereche en cherchant par";
             }
 
-            if (CurrentMode.Language == Language_Enum.Spanish)
+            if (CurrentMode.Language == Web_Language_Enum.Spanish)
             {
                 your_search_language = "Su búsqueda dentro de el texto completo por paginas conteniendo ";
                 and_not_language = " Y NO ";

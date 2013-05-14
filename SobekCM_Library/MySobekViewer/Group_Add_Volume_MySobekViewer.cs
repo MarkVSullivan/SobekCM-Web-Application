@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
-using SobekCM.Bib_Package.Database;
-using SobekCM.Bib_Package.Writers;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -178,9 +178,9 @@ namespace SobekCM.Library.MySobekViewer
                         // Clear some values for this item
                         saveItem.VID = String.Empty;
                         saveItem.Divisions.Clear();
-                        saveItem.Serial_Info.Clear();
+                        saveItem.Behaviors.Serial_Info.Clear();
                         saveItem.Bib_Info.Series_Part_Info.Clear();
-                        saveItem.SobekCM_Web.Clear_Ticklers();
+                        saveItem.Behaviors.Clear_Ticklers();
                         saveItem.Tracking.Internal_Comments = String.Empty;
 
                         // Save the template changes to this item
@@ -205,7 +205,7 @@ namespace SobekCM.Library.MySobekViewer
                             case "save_again":
                                 // No redirect, but save values
                                 date = saveItem.Bib_Info.Origin_Info.Date_Issued;
-                                ipRestrict = saveItem.SobekCM_Web.IP_Restriction_Membership;
+                                ipRestrict = saveItem.Behaviors.IP_Restriction_Membership;
                                 trackingBox = saveItem.Tracking.Tracking_Box;
                                 bornDigital = saveItem.Tracking.Born_Digital;
                                 dispositionAdvice = saveItem.Tracking.Disposition_Advice;
@@ -214,20 +214,20 @@ namespace SobekCM.Library.MySobekViewer
                                 materialRecdNotes = saveItem.Tracking.Material_Received_Notes;
                                 if (!hierarchyCopiedFromDate)
                                 {
-                                    if (saveItem.Serial_Info.Count > 0)
+                                    if (saveItem.Behaviors.Serial_Info.Count > 0)
                                     {
-                                        level1 = saveItem.Serial_Info[0].Display;
-                                        level1Order = saveItem.Serial_Info[0].Order;
+                                        level1 = saveItem.Behaviors.Serial_Info[0].Display;
+                                        level1Order = saveItem.Behaviors.Serial_Info[0].Order;
                                     }
-                                    if (saveItem.Serial_Info.Count > 1)
+                                    if (saveItem.Behaviors.Serial_Info.Count > 1)
                                     {
-                                        level2 = saveItem.Serial_Info[1].Display;
-                                        level2Order = saveItem.Serial_Info[1].Order;
+                                        level2 = saveItem.Behaviors.Serial_Info[1].Display;
+                                        level2Order = saveItem.Behaviors.Serial_Info[1].Order;
                                     }
-                                    if (saveItem.Serial_Info.Count > 2)
+                                    if (saveItem.Behaviors.Serial_Info.Count > 2)
                                     {
-                                        level3 = saveItem.Serial_Info[2].Display;
-                                        level3Order = saveItem.Serial_Info[2].Order;
+                                        level3 = saveItem.Behaviors.Serial_Info[2].Display;
+                                        level3Order = saveItem.Behaviors.Serial_Info[2].Order;
                                     }
                                 }
                                 message = message + "<span style=\"color: blue\"><strong>Saved new volume ( " + saveItem.BibID + " : " + saveItem.VID + ")</strong></span>";
@@ -258,65 +258,65 @@ namespace SobekCM.Library.MySobekViewer
         private void complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
             // If this is a newspaper type, and the pubdate has a value, try to use that for the serial heirarchy
-            if ((Item_To_Complete.Serial_Info.Count == 0) && (Item_To_Complete.Bib_Info.Origin_Info.Date_Issued.Length > 0) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper ))
+            if ((Item_To_Complete.Behaviors.Serial_Info.Count == 0) && (Item_To_Complete.Bib_Info.Origin_Info.Date_Issued.Length > 0) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper ))
             {
                     DateTime asDateTime;
                     if (DateTime.TryParse(Item_To_Complete.Bib_Info.Origin_Info.Date_Issued, out asDateTime))
                     {
                         hierarchyCopiedFromDate = true;
-                        Item_To_Complete.Serial_Info.Add_Hierarchy(1, asDateTime.Year, asDateTime.Year.ToString());
+                        Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(1, asDateTime.Year, asDateTime.Year.ToString());
                         switch (asDateTime.Month)
                         {
                             case 1:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "January");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "January");
                                 break;
 
                             case 2:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "February");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "February");
                                 break;
 
                             case 3:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "March");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "March");
                                 break;
 
                             case 4:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "April");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "April");
                                 break;
 
                             case 5:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "May");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "May");
                                 break;
 
                             case 6:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "June");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "June");
                                 break;
 
                             case 7:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "July");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "July");
                                 break;
 
                             case 8:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "August");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "August");
                                 break;
 
                             case 9:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "September");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "September");
                                 break;
 
                             case 10:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "October");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "October");
                                 break;
 
                             case 11:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "November");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "November");
                                 break;
 
                             case 12:
-                                Item_To_Complete.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "December");
+                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "December");
                                 break;
                         }
 
-                        Item_To_Complete.Serial_Info.Add_Hierarchy(3, asDateTime.Day, asDateTime.Day.ToString());
+                        Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(3, asDateTime.Day, asDateTime.Day.ToString());
                     }
             }
 
@@ -337,11 +337,11 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Save to the database
-            Item_To_Complete.SobekCM_Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
+            Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
             SobekCM_Database.Save_New_Digital_Resource(Item_To_Complete, false, false, user.UserName, String.Empty, -1);
 
             // Assign the file root and assoc file path
-            Item_To_Complete.SobekCM_Web.AssocFilePath = Item_To_Complete.SobekCM_Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
+            Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
             // Create the static html pages
             string base_url = currentMode.Base_URL;
@@ -369,40 +369,28 @@ namespace SobekCM.Library.MySobekViewer
             Database.SobekCM_Database.Add_Item_To_User_Folder(user.UserID, "Submitted Items", Item_To_Complete.BibID, Item_To_Complete.VID, 0, String.Empty, Tracer);
 
             // Save Bib_Level METS?
-            //SobekCM.Bib_Package.Writers.OAI_Writer oaiWriter = new SobekCM.Bib_Package.Writers.OAI_Writer();
+            //SobekCM.Resource_Object.Writers.OAI_Writer oaiWriter = new SobekCM.Resource_Object.Writers.OAI_Writer();
             //oaiWriter.Save_OAI_File(bibPackage, resource_folder + "\\oai_dc.xml", bibPackage.Processing_Parameters.Collection_Primary.ToLower(), createDate);
 
             // If there was no match, try to save to the tracking database
-            Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.SobekCM_Web.ItemID, user.Full_Name, String.Empty);
+            Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, user.Full_Name, String.Empty);
 
 
-            MARC_Writer marc_writer = new MARC_Writer();
+
             List<string> collectionnames = new List<string>();
-            //// Get the collection names
-            //if (item.Processing_Parameters.Collection_Primary.Length > 0)
-            //{
-            //    DataRow[] primCode = Collection_Codes.Select("collectioncode = '" + item.Processing_Parameters.Collection_Primary + "'");
-            //    if (primCode.Length > 0)
-            //    {
-            //        collectionnames.Add(primCode[0]["ShortName"].ToString());
-            //    }
-            //}
-            //foreach (string altCollection in bibPackage.Processing_Parameters.Collections_Alternate)
-            //{
-            //    DataRow[] altCode = Collection_Codes.Select("collectioncode = '" + altCollection + "'");
-            //    if (altCode.Length > 0)
-            //    {
-            //        collectionnames.Add(altCode[0]["ShortName"].ToString());
-            //    }
-            //}
-            marc_writer.Save_As_MARC_XML(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
+            MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+            string Error_Message;
+            Dictionary<string, object> options = new Dictionary<string, object>();
+            options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out Error_Message);
+
 
             // Copy this to all the image servers
             SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(Tracer));
             string[] allFiles = Directory.GetFiles(user_in_process_directory);
 
             // Copy all the files over to the server 
-            string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.SobekCM_Web.AssocFilePath;
+            string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
             // Create the folder
             if (!Directory.Exists(serverNetworkFolder))
                 Directory.CreateDirectory(serverNetworkFolder);
@@ -535,8 +523,8 @@ namespace SobekCM.Library.MySobekViewer
 
             // Create a new blank item for display purposes
             SobekCM_Item displayItem = new SobekCM_Item {BibID = item.BibID};
-            displayItem.SobekCM_Web.IP_Restriction_Membership = ipRestrict;
-            displayItem.Serial_Info.Clear();
+            displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
+            displayItem.Behaviors.Serial_Info.Clear();
             displayItem.Tracking.Born_Digital = bornDigital;
             displayItem.Tracking.Tracking_Box = trackingBox;
             displayItem.Tracking.Material_Received_Notes = materialRecdNotes;
@@ -552,13 +540,13 @@ namespace SobekCM.Library.MySobekViewer
                 displayItem.Bib_Info.Origin_Info.Date_Issued = date;
             if ((level1.Length > 0) && (level1Order >= 0))
             {
-                displayItem.Serial_Info.Add_Hierarchy(1, level1Order, level1);
+                displayItem.Behaviors.Serial_Info.Add_Hierarchy(1, level1Order, level1);
                 if ((level2.Length > 0) && (level2Order >= 0))
                 {
-                    displayItem.Serial_Info.Add_Hierarchy(2, level2Order, level2);
+                    displayItem.Behaviors.Serial_Info.Add_Hierarchy(2, level2Order, level2);
                     if ((level3.Length > 0) && (level3Order >= 0))
                     {
-                        displayItem.Serial_Info.Add_Hierarchy(3, level3Order, level3);
+                        displayItem.Behaviors.Serial_Info.Add_Hierarchy(3, level3Order, level3);
                     }
                 }
             }

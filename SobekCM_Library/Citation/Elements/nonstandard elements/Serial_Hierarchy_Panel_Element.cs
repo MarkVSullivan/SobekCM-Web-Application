@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -41,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -49,15 +50,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Enter serial hierarchy information which explains how this volume related to the larger body of work.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -87,10 +88,10 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the rows of enumeration data
             Output.WriteLine("    <tr><td width=\"100px\">Level 1:</td>");
-            if (Bib.Serial_Info.Count > 0)
+            if (Bib.Behaviors.Serial_Info.Count > 0)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Serial_Info[0].Display) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Serial_Info[0].Order.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Display) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input')\" ></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             }
             else
             {
@@ -99,10 +100,10 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             Output.WriteLine("    <tr><td>Level 2:</td>");
-            if (Bib.Serial_Info.Count > 1)
+            if (Bib.Behaviors.Serial_Info.Count > 1)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Serial_Info[1].Display) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Serial_Info[1].Order.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\"></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input')\" ></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\"></td></tr>");
             }
             else
             {
@@ -111,10 +112,10 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             Output.WriteLine("    <tr><td>Level 3:</td>");
-            if (Bib.Serial_Info.Count > 2)
+            if (Bib.Behaviors.Serial_Info.Count > 2)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Serial_Info[2].Display) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Serial_Info[2].Order.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input')\" ></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             }
             else
             {
@@ -153,7 +154,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Delete existing serial information
-            Bib.Serial_Info.Clear();
+            Bib.Behaviors.Serial_Info.Clear();
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -189,7 +190,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 if ( enum1Order >= 0 )
                 {
-                    Bib.Serial_Info.Add_Hierarchy(level++, enum1Order, enum1Text);
+                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, enum1Order, enum1Text);
 
                     if (enum2Text.Length > 0)
                     {
@@ -200,7 +201,7 @@ namespace SobekCM.Library.Citation.Elements
                         }
                         if ( enum2Order >= 0 )
                         {
-                            Bib.Serial_Info.Add_Hierarchy(level++, enum2Order, enum2Text);
+                            Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, enum2Order, enum2Text);
 
                             if (enum3Text.Length > 0)
                             {
@@ -211,7 +212,7 @@ namespace SobekCM.Library.Citation.Elements
                                 }
                                 if (enum3Order >= 0)
                                 {
-                                    Bib.Serial_Info.Add_Hierarchy(level, enum3Order, enum3Text);
+                                    Bib.Behaviors.Serial_Info.Add_Hierarchy(level, enum3Order, enum3Text);
                                 }
                             }
                         }

@@ -1,3 +1,20 @@
+/**************************************************************************
+**     SOBEKCM_BookTurner.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for the full screen book page-turning view.                                           
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
+
 body 
 {
 	background-color: #121212;

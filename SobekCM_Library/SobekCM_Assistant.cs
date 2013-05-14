@@ -8,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Items;
 using SobekCM.Library.MemoryMgmt;
@@ -770,7 +771,7 @@ namespace SobekCM.Library
                         if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Current_User != null))
                         {
                             string note_to_add = "Online edit by " + Current_User.Full_Name + " ( " + DateTime.Now.ToShortDateString() + " )";
-                            Current_Item.METS.Add_Creator_Individual_Notes( note_to_add );
+                            Current_Item.METS_Header.Add_Creator_Individual_Notes( note_to_add );
                             Cached_Data_Manager.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
                         }
                         else
@@ -834,7 +835,7 @@ namespace SobekCM.Library
 
 
                     // Put this back on the cache
-                    Current_Item.METS.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
+                    Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
                     Cached_Data_Manager.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
                     Cached_Data_Manager.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
                 }
@@ -1223,7 +1224,7 @@ namespace SobekCM.Library
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Assistant.Perform_Database_Search", "Query the database for search results");
+                Tracer.Add_Trace("SobekCM_Assistant.Perform_Database_Sear`ch", "Query the database for search results");
             }
 
             // Get the list of facets first
@@ -1628,9 +1629,9 @@ namespace SobekCM.Library
             }
 
             string languageCode = "en";
-            if (Current_Mode.Language == Language_Enum.Spanish)
+            if (Current_Mode.Language == Web_Language_Enum.Spanish)
                 languageCode = "es";
-            if (Current_Mode.Language == Language_Enum.French)
+            if (Current_Mode.Language == Web_Language_Enum.French)
                 languageCode = "fr";
 
             // If there is an aggregation listed, try to get that now

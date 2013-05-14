@@ -8,12 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
-using SobekCM.Bib_Package.SobekCM_Info;
-using SobekCM.Bib_Package.VRACore;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
+using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
+using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
@@ -117,14 +122,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		}
 
 		/// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-		/// <value> This is a single page viewer, so this property always returns FALSE</value>
-		public override bool Show_Page_Selector
-		{
-			get
-			{
-				return false;
-			}
-		}
+		/// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
+        {
+            get
+            {
+                return ItemViewer_PageSelector_Type_Enum.NONE;
+            }
+        }
 
 		/// <summary> Adds the main view section to the page turner </summary>
 		/// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
@@ -142,7 +147,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				if (!CurrentItem.Tracking.Tracking_Info_Pulled)
 				{
-					DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.SobekCM_Web.ItemID, Tracer);
+					DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.Web.ItemID, Tracer);
 					CurrentItem.Tracking.Set_Tracking_Info(data);
 				}
 			}
@@ -176,23 +181,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			StringBuilder result = new StringBuilder(3000);
             result.AppendLine("        <!-- CITATION ITEM VIEWER OUTPUT -->" );
-
-			// Start the citation table
-			switch (CurrentMode.Language)
-			{
-				case Language_Enum.French:
-                    result.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Citation Complète</b></span></td>" + Environment.NewLine + "        </tr>");
-					break;
-
-				case Language_Enum.Spanish:
-                    result.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Cita Completa</b></span></td>" + Environment.NewLine + "        </tr>");
-					break;
-
-				default:
-                    result.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Full Citation</b></span></td>" + Environment.NewLine + "        </tr>");
-					break;
-			}
-			result.AppendLine("        <tr>" + Environment.NewLine + "          <td class=\"SobekCitationDisplay\">" );
+			result.AppendLine("        <td class=\"SobekCitationDisplay\">" );
 
 			// Set the text
 			const string STANDARD_VIEW = "STANDARD VIEW";
@@ -233,7 +222,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if ((CurrentItem.Bib_Info.Location.Other_URL.Length > 0) && (!CurrentItem.Divisions.Has_Files))
 				external_link_only = true;
 
-			if ((CurrentItem.METS.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL) && (!external_link_only) && ( !isRobot ))
+			if ((CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL) && (!external_link_only) && ( !isRobot ))
 			{
 				if (citationType == Citation_Type.Metadata)
 				{
@@ -290,7 +279,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					break;
 
 				case Citation_Type.Metadata:
-                    mainLiteral.Text = result + Environment.NewLine + Metadata_String() + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
+                    mainLiteral.Text = result + Environment.NewLine + Metadata_String( Tracer ) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
 					break;
 
 				case Citation_Type.Statistics:
@@ -591,27 +580,65 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 		/// <summary> Returns the string which contains the metadata links and basic information about the types of metadata</summary>
 		/// <returns> Sttring with the metadata links and basic information about the types of metadata</returns>
-		protected string Metadata_String()
+		protected string Metadata_String( Custom_Tracer Tracer )
 		{
 			// Get the links for the METS and GSA
-			string greenstoneLocation = CurrentItem.SobekCM_Web.Source_URL + "/";
+			string greenstoneLocation = CurrentItem.Web.Source_URL + "/";
 			string complete_mets = greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
 		    string marc_xml = greenstoneLocation + "marc.xml";
 
-			StringBuilder builder = new StringBuilder(3000);
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
+            {
+                complete_mets = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
+                marc_xml = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/marc.xml";
+            }
+
+
+		    StringBuilder builder = new StringBuilder(3000);
 			builder.AppendLine("<br />");
             builder.AppendLine("<blockquote>");
 
-            builder.AppendLine("<blockquote>The data about this digital resource is available in a variety of metadata formats.  For more information about these formats, see the <a href=\"http://www.uflib.ufl.edu/ufdc2/technical/Metadata/metadata.htm\">Metadata Section</a> of the <a href=\"http://www.uflib.ufl.edu/ufdc2/technical/\">Technical Aspects</a> information.</blockquote>");
+            builder.AppendLine("<blockquote>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</blockquote>");
             builder.AppendLine("<br />");
 
-            builder.AppendLine("<a href=\"" + complete_mets + "\" target=\"_blank\">View Complete METS</a>");
-            builder.AppendLine("<blockquote>This metadata file is the source metadata file submitted along with all the digital resource files.  This contains all of the citation and processing information used to build this resource.  This file follows the established <a href=\"http://www.loc.gov/standards/mets/\">Metadata Encoding and Transmission Standard</a>.  This METS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.</blockquote>");
+            builder.AppendLine("<a href=\"" + complete_mets + "\" target=\"_blank\">View Complete METS/MODS</a>");
+            builder.AppendLine("<blockquote>This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established <a href=\"http://www.loc.gov/standards/mets/\">Metadata Encoding and Transmission Standard</a> (METS) and <a href=\"http://www.loc.gov/standards/mods/\">Metadata Object Description Schema</a> (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.</blockquote>");
 
             builder.AppendLine("<br />");
             builder.AppendLine("<a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
             builder.AppendLine("<blockquote>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + CurrentMode.Redirect_URL("FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</blockquote>");
 
+            // Should the TEI be added here?
+
+            if (CurrentItem.Behaviors.Has_Viewer_Type(View_Enum.TEI))
+            {
+                // Does a TEI file exist?
+                string error_message = String.Empty;
+                string tei_filename = CurrentItem.Source_Directory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".tei.xml";
+
+
+                if (!System.IO.File.Exists(tei_filename))
+                {
+
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("Citation_ItemViewer.Metadata_String", "Building default TEI file");
+                    }
+
+                    SobekCM.Resource_Object.Metadata_File_ReaderWriters.TEI_File_ReaderWriter writer = new TEI_File_ReaderWriter();
+
+                    Dictionary<string, object> Options = new Dictionary<string, object>();
+                    
+                    writer.Write_Metadata(tei_filename, CurrentItem, Options, out error_message);
+                }
+
+                // Add the HTML for this
+                builder.AppendLine("<br />");
+                builder.AppendLine("<a href=\"" + greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".tei.xml\" target=\"_blank\">View TEI/Text File</a>");
+                builder.AppendLine("<blockquote>The full-text of this item is also available in the established standard <a href=\"http://www.tei-c.org/index.xml\">Text Encoding Initiative</a> (TEI) downloadable file.</blockquote>");
+
+            }
 
             builder.AppendLine("</blockquote>");
             builder.AppendLine("<br />");
@@ -646,16 +673,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
 			List<string> collections = new List<string>();
-			if (CurrentItem.SobekCM_Web.Aggregation_Count > 0)
+			if (CurrentItem.Behaviors.Aggregation_Count > 0)
 			{
-			    collections.AddRange(from aggregation in CurrentItem.SobekCM_Web.Aggregations select Code_Manager[aggregation.Code] into aggr where aggr != null where aggr.Type.ToUpper() == "COLLECTION" select aggr.ShortName);
+			    collections.AddRange(from aggregation in CurrentItem.Behaviors.Aggregations select Code_Manager[aggregation.Code] into aggr where aggr != null where aggr.Type.ToUpper() == "COLLECTION" select aggr.ShortName);
 			}
 		  
 			//// Build the value
 			StringBuilder builder = new StringBuilder();
 
 			// Add the edit item button, if the user can edit it
-			if ((userCanEditItem) && (CurrentItem.METS.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL))
+			if ((userCanEditItem) && (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL))
 			{
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
@@ -689,6 +716,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <returns> HTML string with the basic information about this digital resource for display </returns>
 		public string Standard_Citation_String(bool Include_Links, Custom_Tracer Tracer)
 		{
+            // Retrieve all the metadata modules that wil be used here
+		    Zoological_Taxonomy_Info taxonInfo = CurrentItem.Get_Metadata_Module(GlobalVar.ZOOLOGICAL_TAXONOMY_METADATA_MODULE_KEY) as Zoological_Taxonomy_Info;
+		    VRACore_Info vraInfo = CurrentItem.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
+		    GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+		    LearningObjectMetadata lomInfo = CurrentItem.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
+
 			// Compute the URL to use for all searches from the citation
 			Display_Mode_Enum lastMode = CurrentMode.Mode;
 			CurrentMode.Mode = Display_Mode_Enum.Results;
@@ -715,7 +748,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 
-		    if ((CurrentMode.Language == Language_Enum.French) || (CurrentMode.Language == Language_Enum.Spanish))
+		    if ((CurrentMode.Language == Web_Language_Enum.French) || (CurrentMode.Language == Web_Language_Enum.Spanish))
 				width = 180;
 
 			if (Tracer != null)
@@ -733,6 +766,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			string related_items = translator.Get_Translation("Related Items", CurrentMode.Language);
 			string system_info = translator.Get_Translation("System Admin Information", CurrentMode.Language);
 			string zoological_taxonomy = translator.Get_Translation("Zoological Taxonomic Information", CurrentMode.Language);
+            string learningobject_title = translator.Get_Translation("Learning Resource Information", CurrentMode.Language);
 			List<string> tempList = new List<string>();
 
 			// Build the value
@@ -770,7 +804,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 				else
 				{
-					if (CurrentItem.METS.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
+					if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
 					{
 						// Does thir portal have a special PURL to be used here?
 						if (!String.IsNullOrEmpty(CurrentMode.Portal_PURL))
@@ -1217,27 +1251,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			// Collect the state/edition information
-			if ((CurrentItem.Bib_Info.Origin_Info.Edition.Length > 0) || (CurrentItem.Bib_Info.VRACore.State_Edition_Count > 0))
+			if ((CurrentItem.Bib_Info.Origin_Info.Edition.Length > 0) || (( vraInfo != null ) && ( vraInfo.State_Edition_Count > 0)))
 			{
 				string edition_title = "Edition";
 				List<string> editions = new List<string>();
 				if (CurrentItem.Bib_Info.Origin_Info.Edition.Length > 0)
 					editions.Add(CurrentItem.Bib_Info.Origin_Info.Edition);
 
-				if (CurrentItem.Bib_Info.VRACore.State_Edition_Count > 0)
+                if ((vraInfo != null) && (vraInfo.State_Edition_Count > 0))
 				{
 				    edition_title = "State / Edition";
-				    editions.AddRange(CurrentItem.Bib_Info.VRACore.State_Editions);
+				    editions.AddRange(vraInfo.State_Editions);
 				}
 			    Add_Citation_HTML_Rows(edition_title, editions, indent, result);
 			}
 
 			// Collect and display all the material information
-			if (CurrentItem.Bib_Info.VRACore.Material_Count > 0)
+			if (( vraInfo != null ) && ( vraInfo.Material_Count > 0))
 			{
 				StringBuilder materialsBuilder = new StringBuilder();
 				string materials_type = String.Empty;
-				foreach (VRACore_Materials_Info materials in CurrentItem.Bib_Info.VRACore.Materials)
+				foreach (VRACore_Materials_Info materials in vraInfo.Materials)
 				{
 					if ((materials_type.Length == 0) && (materials.Type.Length > 0))
 						materials_type = materials.Type;
@@ -1257,33 +1291,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			// Collect and display all the measurements information
-			if (CurrentItem.Bib_Info.VRACore.Measurement_Count > 0)
+			if (( vraInfo != null ) && ( vraInfo.Measurement_Count > 0))
 			{
-				List<string> measurements = (from measurement in CurrentItem.Bib_Info.VRACore.Measurements where measurement.Measurements.Length > 0 select measurement.Measurements).ToList();
+				List<string> measurements = (from measurement in vraInfo.Measurements where measurement.Measurements.Length > 0 select measurement.Measurements).ToList();
 			    Add_Citation_HTML_Rows("Measurements", measurements, indent, result);
 			}
 
 			// Display all cultural context information
-			if (CurrentItem.Bib_Info.VRACore.Cultural_Context_Count > 0)
+			if (( vraInfo != null ) && ( vraInfo.Cultural_Context_Count > 0))
 			{
 				tempList.Clear();
-			    tempList.AddRange(CurrentItem.Bib_Info.VRACore.Cultural_Contexts.Select(Convert_String_To_XML_Safe));
+			    tempList.AddRange(vraInfo.Cultural_Contexts.Select(Convert_String_To_XML_Safe));
 			    Add_Citation_HTML_Rows("Cultural Context", tempList, indent, result);
 			}
 
 			// Display all style/period information
-			if (CurrentItem.Bib_Info.VRACore.Style_Period_Count > 0)
+			if (( vraInfo != null ) && ( vraInfo.Style_Period_Count > 0))
 			{
 				tempList.Clear();
-			    tempList.AddRange(CurrentItem.Bib_Info.VRACore.Style_Periods.Select(Convert_String_To_XML_Safe));
+			    tempList.AddRange( vraInfo.Style_Periods.Select(Convert_String_To_XML_Safe));
 			    Add_Citation_HTML_Rows("Style/Period", tempList, indent, result);
 			}
 
 			// Display all technique information
-			if (CurrentItem.Bib_Info.VRACore.Technique_Count > 0)
+			if (( vraInfo != null ) && ( vraInfo.Technique_Count > 0))
 			{
 				tempList.Clear();
-			    tempList.AddRange(CurrentItem.Bib_Info.VRACore.Techniques.Select(Convert_String_To_XML_Safe));
+			    tempList.AddRange( vraInfo.Techniques.Select(Convert_String_To_XML_Safe));
 			    Add_Citation_HTML_Rows("Technique", tempList, indent, result);
 			}
 
@@ -1301,31 +1335,310 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine(indent + "</table>");
 
 			// Add the taxonomic data if it exists
-			if (CurrentItem.hasZoologicalTaxonomy)
+			if (( taxonInfo != null ) && ( taxonInfo.hasData ))
 			{
                 result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
                 result.AppendLine(indent + "<tr>");
                 result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + zoological_taxonomy + "</b></td>");
                 result.AppendLine(indent + "</tr>");
 
-				result.Append(Single_Citation_HTML_Row("Scientific Name", CurrentItem.Zoological_Taxonomy.Scientific_Name, indent));
-				result.Append(Single_Citation_HTML_Row("Kingdom", CurrentItem.Zoological_Taxonomy.Kingdom, indent));
-				result.Append(Single_Citation_HTML_Row("Phylum", CurrentItem.Zoological_Taxonomy.Phylum, indent));
-				result.Append(Single_Citation_HTML_Row("Class", CurrentItem.Zoological_Taxonomy.Class, indent));
-				result.Append(Single_Citation_HTML_Row("Order", CurrentItem.Zoological_Taxonomy.Order, indent));
-				result.Append(Single_Citation_HTML_Row("Family", CurrentItem.Zoological_Taxonomy.Family, indent));
-				result.Append(Single_Citation_HTML_Row("Genus", CurrentItem.Zoological_Taxonomy.Genus, indent));
-				result.Append(Single_Citation_HTML_Row("Species", CurrentItem.Zoological_Taxonomy.Specific_Epithet, indent));
-				result.Append(Single_Citation_HTML_Row("Taxonomic Rank", CurrentItem.Zoological_Taxonomy.Taxonomic_Rank, indent));
-				result.Append(Single_Citation_HTML_Row("Common Name", CurrentItem.Zoological_Taxonomy.Common_Name, indent));
+                result.Append(Single_Citation_HTML_Row("Scientific Name", taxonInfo.Scientific_Name, indent));
+                result.Append(Single_Citation_HTML_Row("Kingdom", taxonInfo.Kingdom, indent));
+                result.Append(Single_Citation_HTML_Row("Phylum", taxonInfo.Phylum, indent));
+                result.Append(Single_Citation_HTML_Row("Class", taxonInfo.Class, indent));
+                result.Append(Single_Citation_HTML_Row("Order", taxonInfo.Order, indent));
+                result.Append(Single_Citation_HTML_Row("Family", taxonInfo.Family, indent));
+                result.Append(Single_Citation_HTML_Row("Genus", taxonInfo.Genus, indent));
+                result.Append(Single_Citation_HTML_Row("Species", taxonInfo.Specific_Epithet, indent));
+                result.Append(Single_Citation_HTML_Row("Taxonomic Rank", taxonInfo.Taxonomic_Rank, indent));
+                result.Append(Single_Citation_HTML_Row("Common Name", taxonInfo.Common_Name, indent));
 
                 result.AppendLine(indent + "</table>");
 			}
 
+            // Add the learning object metadata if it exists
+            if ((lomInfo != null) && (lomInfo.hasData))
+            {
+                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
+                result.AppendLine(indent + "<tr>");
+                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + learningobject_title + "</b></td>");
+                result.AppendLine(indent + "</tr>");
+
+                // Add the LOM Aggregation level
+                if (lomInfo.AggregationLevel != AggregationLevelEnum.UNDEFINED)
+                {
+                    string lom_temp = String.Empty;
+                    switch ( lomInfo.AggregationLevel )
+                    {
+                        case AggregationLevelEnum.level1:
+                            lom_temp = "Level 1 - a single, atomic object";
+                            break;
+
+                        case AggregationLevelEnum.level2:
+                            lom_temp = "Level 2 - a lesson plan";
+                            break;
+
+                        case AggregationLevelEnum.level3:
+                            lom_temp = "Level 3 - a course, or set of lesson plans";
+                            break;
+
+                        case AggregationLevelEnum.level4:
+                            lom_temp = "Level 4 - a set of courses";
+                            break;
+                    }
+
+                    result.Append(Single_Citation_HTML_Row("Aggregation Level", lom_temp, indent));
+                }
+                
+
+                // Add the LOM Learning resource type
+                if (lomInfo.LearningResourceTypes.Count > 0)
+                {
+                    List<string> types = new List<string>();
+
+                    foreach (LOM_VocabularyState thisType in lomInfo.LearningResourceTypes)
+                    {
+                        types.Add(thisType.Value);
+                    }
+
+                    Add_Citation_HTML_Rows("Learning Resource Type", types, indent, result);
+                }
+
+                // Add the LOM Status
+                if (lomInfo.Status != StatusEnum.UNDEFINED)
+                {
+                    string lom_temp = String.Empty;
+                    switch (lomInfo.Status)
+                    {
+                        case StatusEnum.draft:
+                            lom_temp = "Draft";
+                            break;
+
+                        case StatusEnum.final:
+                            lom_temp = "Final";
+                            break;
+
+                        case StatusEnum.revised:
+                            lom_temp = "Revised";
+                            break;
+
+                        case StatusEnum.unavailable:
+                            lom_temp = "Unavailable";
+                            break;
+                    }
+
+                    result.Append(Single_Citation_HTML_Row("Status", lom_temp, indent));
+                }
+
+                // Add the LOM Interactivity Type
+                if (lomInfo.InteractivityType != InteractivityTypeEnum.UNDEFINED )
+                {
+                    string lom_temp = String.Empty;
+                    switch (lomInfo.InteractivityType)
+                    {
+                        case InteractivityTypeEnum.active:
+                            lom_temp = "Active";
+                            break;
+
+                        case InteractivityTypeEnum.expositive:
+                            lom_temp = "Expositive";
+                            break;
+
+                        case InteractivityTypeEnum.mixed:
+                            lom_temp = "Mixed";
+                            break;
+                    }
+
+                    result.Append(Single_Citation_HTML_Row("Interactivity Type", lom_temp, indent));
+                }
+
+                // Add the LOM Interactivity Level
+                if (lomInfo.InteractivityLevel != InteractivityLevelEnum.UNDEFINED)
+                {
+                    string lom_temp = String.Empty;
+                    switch (lomInfo.InteractivityLevel)
+                    {
+                        case InteractivityLevelEnum.very_low:
+                            lom_temp = "Very low";
+                            break;
+
+                        case InteractivityLevelEnum.low:
+                            lom_temp = "Low";
+                            break;
+
+                        case InteractivityLevelEnum.medium:
+                            lom_temp = "Mediuim";
+                            break;
+
+                        case InteractivityLevelEnum.high:
+                            lom_temp = "High";
+                            break;
+
+                        case InteractivityLevelEnum.very_high:
+                            lom_temp = "Very high";
+                            break;
+                    }
+
+                    result.Append(Single_Citation_HTML_Row("Interactivity Level", lom_temp, indent));
+                }
+
+                // Add the LOM Difficulty Level
+                if (lomInfo.DifficultyLevel != DifficultyLevelEnum.UNDEFINED)
+                {
+                    string lom_temp = String.Empty;
+                    switch (lomInfo.DifficultyLevel)
+                    {
+                        case DifficultyLevelEnum.very_easy:
+                            lom_temp = "Very easy";
+                            break;
+
+                        case DifficultyLevelEnum.easy:
+                            lom_temp = "Easy";
+                            break;
+
+                        case DifficultyLevelEnum.medium:
+                            lom_temp = "Mediuim";
+                            break;
+
+                        case DifficultyLevelEnum.difficult:
+                            lom_temp = "Difficult";
+                            break;
+
+                        case DifficultyLevelEnum.very_difficult:
+                            lom_temp = "Very difficult";
+                            break;
+                    }
+
+                    result.Append(Single_Citation_HTML_Row("Interactivity Level", lom_temp, indent));
+                }
+
+                
+                // Add the LOM Intended End User Role
+                if (lomInfo.IntendedEndUserRoles.Count > 0)
+                {
+                    List<string> roles = new List<string>();
+
+                    foreach (IntendedEndUserRoleEnum thisUser in lomInfo.IntendedEndUserRoles)
+                    {
+                        switch( thisUser )
+                        {
+                            case IntendedEndUserRoleEnum.teacher:
+                                roles.Add("Teacher");
+                                break;
+
+                            case IntendedEndUserRoleEnum.learner:
+                                roles.Add("Learner");
+                                break;
+
+                            case IntendedEndUserRoleEnum.author:
+                                roles.Add("Author");
+                                break;
+
+                            case IntendedEndUserRoleEnum.manager:
+                                roles.Add("Manager");
+                                break;
+
+                        }
+                    }
+
+                    Add_Citation_HTML_Rows("Intended User Roles", roles, indent, result);
+                }
+                
+                // Add the LOM Context 
+                if (lomInfo.Contexts.Count > 0)
+                {
+                    List<string> contexts = new List<string>();
+
+                    foreach (LOM_VocabularyState thisContext in lomInfo.Contexts)
+                    {
+                        if ( thisContext.Source.Length > 0 )
+                            contexts.Add( thisContext.Source + " " + thisContext.Value );
+                        else
+                            contexts.Add(thisContext.Value);
+                    }
+
+                    Add_Citation_HTML_Rows("Context", contexts, indent, result);
+                }
+
+
+                // Add the LOM Typical Age Range
+                if (lomInfo.TypicalAgeRanges.Count > 0)
+                {
+                    List<string> ranges = new List<string>();
+
+                    foreach (LOM_LanguageString thisUser in lomInfo.TypicalAgeRanges)
+                    {
+                        ranges.Add(thisUser.Value);
+                    }
+
+                    Add_Citation_HTML_Rows("Typical Age Range", ranges, indent, result);
+                }
+
+                // Add the typical learning time
+                result.Append(Single_Citation_HTML_Row("Typical Learning Time", lomInfo.TypicalLearningTime, indent));
+
+                // Add the system requirements
+                if (lomInfo.SystemRequirements.Count > 0)
+                {
+                    List<string> reqs = new List<string>();
+
+                    foreach (LOM_System_Requirements thisContext in lomInfo.SystemRequirements)
+                    {
+                        string start = String.Empty;
+                        switch ( thisContext.RequirementType )
+                        {
+                            case RequirementTypeEnum.operating_system:
+                                start = "Operating System: " + thisContext.Name;
+                                break;
+
+                            case RequirementTypeEnum.browser:
+                                start = "Browser: " + thisContext.Name;
+                                break;
+
+                            case RequirementTypeEnum.hardware:
+                                start = "Hardware: " + thisContext.Name;
+                                break;
+
+                            case RequirementTypeEnum.software:
+                                start = "Software: " + thisContext.Name;
+                                break;
+                        }
+
+                        // Add with version, if included
+                        if (thisContext.MinimumVersion.Length == 0)
+                        {
+                            if (thisContext.MaximumVersion.Length > 0)
+                            {
+                                reqs.Add(start + " ( - " + thisContext.MaximumVersion + " )");
+                            }
+                            else
+                            {
+                                reqs.Add(start);
+                            }
+                        }
+                        else
+                        {
+                            if (thisContext.MaximumVersion.Length > 0)
+                            {
+                                reqs.Add(start + " ( " + thisContext.MinimumVersion + " - " + thisContext.MaximumVersion + " )");
+                            }
+                            else
+                            {
+                                reqs.Add(start + " ( " + thisContext.MinimumVersion + " - )");
+                            }
+                        }
+                    }
+
+                    Add_Citation_HTML_Rows("System Requirements", reqs, indent, result);
+                }
+
+                result.AppendLine(indent + "</table>");
+            }
+
 
 			// Add the subjects and coordinate information if that exists
 			if ((subjects.Count > 0) || (genres.Count > 0) || (CurrentItem.Bib_Info.TemporalSubjects_Count > 0) || (hierGeo.Count > 0) ||
-				((CurrentItem.Bib_Info.hasCoordinateInformation) && ((CurrentItem.Bib_Info.Coordinates.Point_Count > 0) || (CurrentItem.Bib_Info.Coordinates.Polygon_Count > 0))))
+                ((geoInfo != null) && (geoInfo.hasData) && ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))))
 			{
                 result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
                 result.AppendLine(indent + "<tr>");
@@ -1374,27 +1687,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 				Add_Citation_HTML_Rows("Spatial Coverage", hierGeo, indent, result);
 
-				if (CurrentItem.Bib_Info.hasCoordinateInformation)
+                if (( geoInfo != null) && ( geoInfo.hasData))
 				{
-					for (int i = 0; i < CurrentItem.Bib_Info.Coordinates.Point_Count; i++)
+                    for (int i = 0; i < geoInfo.Point_Count; i++)
 					{
-						if (CurrentItem.Bib_Info.Coordinates.Points[i].Label.Length > 0)
+                        if (geoInfo.Points[i].Label.Length > 0)
 						{
-							tempList.Add(CurrentItem.Bib_Info.Coordinates.Points[i].Latitude + " x " + CurrentItem.Bib_Info.Coordinates.Points[i].Longitude + " ( " + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Coordinates.Points[i].Label) + " )");
+                            tempList.Add(geoInfo.Points[i].Latitude + " x " + geoInfo.Points[i].Longitude + " ( " + Convert_String_To_XML_Safe(geoInfo.Points[i].Label) + " )");
 						}
 						else
 						{
-							tempList.Add(CurrentItem.Bib_Info.Coordinates.Points[i].Latitude + " x " + CurrentItem.Bib_Info.Coordinates.Points[i].Longitude);
+                            tempList.Add(geoInfo.Points[i].Latitude + " x " + geoInfo.Points[i].Longitude);
 						}
 					}
 					Add_Citation_HTML_Rows("Coordinates", tempList, indent, result);
 
 					tempList.Clear();
-					if (CurrentItem.Bib_Info.Coordinates.Polygon_Count == 1)
+                    if (geoInfo.Polygon_Count == 1)
 					{
-						for (int i = 0; i < CurrentItem.Bib_Info.Coordinates.Polygon_Count; i++)
+                        for (int i = 0; i < geoInfo.Polygon_Count; i++)
 						{
-							Coordinate_Polygon polygon = CurrentItem.Bib_Info.Coordinates.Get_Polygon(i);
+                            Coordinate_Polygon polygon = geoInfo.Get_Polygon(i);
 							StringBuilder polygonBuilder = new StringBuilder();
 							foreach (Coordinate_Point thisPoint in polygon.Edge_Points)
 							{
@@ -1439,7 +1752,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 result.AppendLine(indent + "</table>");
 			}
 
-			if ((CurrentItem.Bib_Info.Abstracts_Count > 0) || (CurrentItem.Bib_Info.Notes_Count > 0) || (CurrentItem.SobekCM_Web.User_Tags_Count > 0))
+			if ((CurrentItem.Bib_Info.Abstracts_Count > 0) || (CurrentItem.Bib_Info.Notes_Count > 0) || (CurrentItem.Behaviors.User_Tags_Count > 0))
 			{
 				// Ensure that if this user is non-internal, the only notes field is not internal
 				bool valid_notes_exist = CurrentMode.Internal_User;
@@ -1456,7 +1769,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 				}
 
-				if ((valid_notes_exist) || (CurrentItem.Bib_Info.Abstracts_Count > 0) || (CurrentItem.SobekCM_Web.User_Tags_Count > 0) || ( CurrentItem.Bib_Info.VRACore.Inscription_Count > 0))
+				if ((valid_notes_exist) || (CurrentItem.Bib_Info.Abstracts_Count > 0) || (CurrentItem.Behaviors.User_Tags_Count > 0) || (( vraInfo != null ) && ( vraInfo.Inscription_Count > 0)))
 				{
 					result.Append(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">\n");
 					result.Append(indent + "<tr>\n" + indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + notes_info + "</b></td>\n" + indent + "</tr>\n");
@@ -1489,15 +1802,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						}
 					}
 
-					if (CurrentItem.Bib_Info.VRACore.Inscription_Count > 0)
+					if (( vraInfo != null ) && ( vraInfo.Inscription_Count > 0))
 					{
-						Add_Citation_HTML_Rows("Inscription", CurrentItem.Bib_Info.VRACore.Inscriptions, indent, result);
+						Add_Citation_HTML_Rows("Inscription", vraInfo.Inscriptions, indent, result);
 					}
 
-					if (CurrentItem.SobekCM_Web.User_Tags_Count > 0)
+					if (CurrentItem.Behaviors.User_Tags_Count > 0)
 					{
 						int tag_counter = 1;
-						foreach (Descriptive_Tag tag in CurrentItem.SobekCM_Web.User_Tags)
+						foreach (Descriptive_Tag tag in CurrentItem.Behaviors.User_Tags)
 						{
 							if ((currentUser != null) && (currentUser.UserID == tag.UserID))
 							{
@@ -1680,7 +1993,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Add the system id
 
-		    result.Append(CurrentItem.METS.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL
+		    result.Append(CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL
 		                      ? Single_Citation_HTML_Row("System ID", CurrentItem.BibID + ":" + CurrentItem.VID, indent)
 		                      : Single_Citation_HTML_Row("System ID", CurrentItem.BibID, indent));
 
@@ -1738,9 +2051,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 					else
 					{
-						if (relatedItem.UFDC_ID.Length > 0)
+						if (relatedItem.SobekCM_ID.Length > 0)
 						{
-							url = "<a href=\"?b=" + relatedItem.UFDC_ID + "\" target=\"RELATEDITEM\" >" + title + "</a>";
+                            url = "<a href=\"?b=" + relatedItem.SobekCM_ID + "\" target=\"RELATEDITEM\" >" + title + "</a>";
 							title = String.Empty;
 						}
 					}
@@ -1778,17 +2091,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				if (Code_Manager != null)
 				{
 				    codeList.AddRange(CurrentMode.Internal_User
-				                          ? CurrentItem.SobekCM_Web.Aggregations.Select(aggregation => aggregation.Code).Select(altCode =>"<a href=\"" + CurrentMode.Base_URL + altCode.ToLower() + url_options + "\">" +Convert_String_To_XML_Safe(Code_Manager.Get_Collection_Short_Name(altCode)) + "</a> ( " +altCode + " )")
-				                          : CurrentItem.SobekCM_Web.Aggregations.Select(aggregation => aggregation.Code).Select(altCode =>"<a href=\"" + CurrentMode.Base_URL + altCode.ToLower() + url_options + "\">" +Convert_String_To_XML_Safe(Code_Manager.Get_Collection_Short_Name(altCode)) + "</a>"));
+				                          ? CurrentItem.Behaviors.Aggregations.Select(aggregation => aggregation.Code).Select(altCode =>"<a href=\"" + CurrentMode.Base_URL + altCode.ToLower() + url_options + "\">" +Convert_String_To_XML_Safe(Code_Manager.Get_Collection_Short_Name(altCode)) + "</a> ( " +altCode + " )")
+				                          : CurrentItem.Behaviors.Aggregations.Select(aggregation => aggregation.Code).Select(altCode =>"<a href=\"" + CurrentMode.Base_URL + altCode.ToLower() + url_options + "\">" +Convert_String_To_XML_Safe(Code_Manager.Get_Collection_Short_Name(altCode)) + "</a>"));
 				    Add_Citation_HTML_Rows("Aggregations", codeList, indent, result);
 					codeList.Clear();
 				}
 
 				if (CurrentMode.Internal_User)
 				{
-					if (CurrentItem.SobekCM_Web.Ticklers_Count > 0)
+					if (CurrentItem.Behaviors.Ticklers_Count > 0)
 					{
-						Add_Citation_HTML_Rows("Ticklers", CurrentItem.SobekCM_Web.Ticklers, indent, result);
+						Add_Citation_HTML_Rows("Ticklers", CurrentItem.Behaviors.Ticklers, indent, result);
 					}
 				}
 
@@ -1805,11 +2118,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + mets_info + "</b></td>");
 			    result.AppendLine(indent + "</tr>");
 				result.Append(Single_Citation_HTML_Row("Format", CurrentItem.Bib_Info.SobekCM_Type_String, indent));
-				result.Append(Single_Citation_HTML_Row("Creation Date", CurrentItem.METS.Create_Date.ToShortDateString(), indent));
-				result.Append(Single_Citation_HTML_Row("Last Modified", CurrentItem.METS.Modify_Date.ToShortDateString(), indent));
-				result.Append(Single_Citation_HTML_Row("Last Type", CurrentItem.METS.RecordStatus, indent));
-				result.Append(Single_Citation_HTML_Row("Last User", CurrentItem.METS.Creator_Individual, indent));
-				result.Append(Single_Citation_HTML_Row("System Folder", CurrentItem.SobekCM_Web.AssocFilePath.Replace("/", "\\"), indent));
+				result.Append(Single_Citation_HTML_Row("Creation Date", CurrentItem.METS_Header.Create_Date.ToShortDateString(), indent));
+				result.Append(Single_Citation_HTML_Row("Last Modified", CurrentItem.METS_Header.Modify_Date.ToShortDateString(), indent));
+				result.Append(Single_Citation_HTML_Row("Last Type", CurrentItem.METS_Header.RecordStatus, indent));
+				result.Append(Single_Citation_HTML_Row("Last User", CurrentItem.METS_Header.Creator_Individual, indent));
+				result.Append(Single_Citation_HTML_Row("System Folder", CurrentItem.Web.AssocFilePath.Replace("/", "\\"), indent));
 
 				result.AppendLine(indent + "</table>");
 			}
@@ -1821,8 +2134,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle2\"><b>&nbsp;" + system_info + "</b></td>");
                 result.AppendLine(indent + "</tr>");
 
-                result.Append(Single_Citation_HTML_Row("Item Primary Key", CurrentItem.SobekCM_Web.ItemID.ToString(), indent));
-                result.Append(Single_Citation_HTML_Row("Group Primary Key", CurrentItem.SobekCM_Web.GroupID.ToString(), indent));
+                result.Append(Single_Citation_HTML_Row("Item Primary Key", CurrentItem.Web.ItemID.ToString(), indent));
+                result.Append(Single_Citation_HTML_Row("Group Primary Key", CurrentItem.Web.GroupID.ToString(), indent));
                 result.AppendLine(indent + "</table>");
 
 			}
@@ -1847,11 +2160,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    // Add with proper language
 		    switch (CurrentMode.Language)
 		    {
-		        case Language_Enum.French:
+		        case Web_Language_Enum.French:
 		            results.Append(Translator.Get_French(Row_Name));
 		            break;
 
-		        case Language_Enum.Spanish:
+		        case Web_Language_Enum.Spanish:
 		            results.Append(Translator.Get_Spanish(Row_Name));
 		            break;
 
@@ -1893,11 +2206,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    // Add with proper language
 		    switch (CurrentMode.Language)
 		    {
-		        case Language_Enum.French:
+		        case Web_Language_Enum.French:
 		            results.Append(Translator.Get_French(Row_Name));
 		            break;
 
-		        case Language_Enum.Spanish:
+		        case Web_Language_Enum.Spanish:
 		            results.Append(Translator.Get_Spanish(Row_Name));
 		            break;
 
@@ -1932,10 +2245,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				switch (CurrentMode.Language)
 				{
-					case Language_Enum.French:
+					case Web_Language_Enum.French:
                         return indent + "    <tr>" + Environment.NewLine + indent + "      <td width=\"15\"> </td>" + Environment.NewLine + indent + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_French(Row_Name) + ": </b></td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "    </tr>" + Environment.NewLine;
 
-					case Language_Enum.Spanish:
+					case Web_Language_Enum.Spanish:
                         return indent + "    <tr>" + Environment.NewLine + indent + "      <td width=\"15\"> </td>" + Environment.NewLine + indent + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_Spanish(Row_Name) + ": </b></td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "    </tr>" + Environment.NewLine;
 
 					default:

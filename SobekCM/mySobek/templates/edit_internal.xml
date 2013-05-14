@@ -86,6 +86,7 @@
         <element type="EAD" />
         <element type="Container" />
         <element type="OtherURL" />
+        <element type="EmbeddedVideo" />
         <element type="RelatedItem" repeatable="true" />
       </panel>
 		<panel>
@@ -93,6 +94,37 @@
 			<element type="Download" repeatable="true" />
 		</panel>
     </page>
+
+  <page>
+      <name language="eng">IEEE-LOM</name>
+      <panel>
+        <name language="eng">Learning Object Metadata</name>
+        <element type="LOM_Aggregation_Level" />
+        <element type="LOM_Learning_Resource_Type" />
+        <element type="LOM_Status" />
+        <element type="LOM_Interactivity_Type" />
+        <element type="LOM_Interactivity_Level" />
+        <element type="LOM_Difficulty_Level" />
+        <element type="LOM_Intended_End_User_Role" />
+        <element type="LOM_Context" />
+        <element type="LOM_Typical_Age_Range" />
+       </panel>
+    </page>
+
+    <page>
+      <name language="eng">VRACore</name>
+      <panel>
+        <name language="eng">Visual Resource Metadata</name>
+        <element type="VRA_CulturalContext" />
+        <element type="VRA_Inscription" />
+        <element type="VRA_Materials" />
+        <element type="VRA_Measurements" />
+        <element type="VRA_StateEdition" />
+        <element type="VRA_StylePeriod" />
+        <element type="VRA_Technique" />
+       </panel>
+    </page>
+
 	</inputs>
 
 </input_template>

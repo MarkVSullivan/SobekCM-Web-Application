@@ -3,3 +3,19 @@ C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Debug\ResolveAssemblyReference.cache
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
 C:\inetpub\wwwroot\UFDC Web\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
+C:\Users\msulliva\Desktop\Version 3.0.4b\FileUploadLibrary\bin\Debug\FileUploadLibrary.XML
+C:\Users\msulliva\Desktop\Version 3.0.4b\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
+C:\Users\msulliva\Desktop\Version 3.0.4b\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
+C:\Users\msulliva\Desktop\Version 3.0.4b\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
+C:\Users\msulliva\Desktop\Version 3.0.4b\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
+C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\bin\Debug\FileUploadLibrary.XML
+C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
+C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
+C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
+C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Debug\FileUploadLibrary.XML
+C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\FileUploadLibrary.csprojResolveAssemblyReference.cache

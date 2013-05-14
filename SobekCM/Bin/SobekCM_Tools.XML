@@ -4,41 +4,6 @@
         <name>SobekCM_Tools</name>
     </assembly>
     <members>
-        <member name="T:SobekCM.Tools.FDA.FDA_File_Warning">
-            <summary> Class stores the basic information about a file-level warning in a FDA report </summary>
-            <remarks> This class is used within a single <see cref="T:SobekCM.Tools.FDA.FDA_File"/> object within a complete <see cref="T:SobekCM.Tools.FDA.FDA_Report_Data"/> object and is not generally used alone.</remarks>
-            <example> For examples, see the example under the <see cref="T:SobekCM.Tools.FDA.FDA_Report_Data"/> class.</example>
-        </member>
-        <member name="M:SobekCM.Tools.FDA.FDA_File_Warning.#ctor">
-            <summary> Constructor creates a new instance of the FDA_File_Warning class </summary>
-        </member>
-        <member name="M:SobekCM.Tools.FDA.FDA_File_Warning.#ctor(System.String,System.String)">
-            <summary> Constructor creates a new instance of the FDA_File_Warning class </summary>
-            <param name="Code"> Warning code for this file-level warning </param>
-            <param name="Text"> Warning text for this file-level warning </param>
-        </member>
-        <member name="P:SobekCM.Tools.FDA.FDA_File_Warning.Code">
-            <summary> Gets or sets the code for this file-level warning </summary>
-        </member>
-        <member name="P:SobekCM.Tools.FDA.FDA_File_Warning.Text">
-            <summary> Gets or sets the text for this file-level warning </summary>
-        </member>
-        <member name="T:SobekCM.Tools.Properties.Resources">
-            <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
-            </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Properties.Resources.ResourceManager">
-            <summary>
-              Returns the cached ResourceManager instance used by this class.
-            </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Properties.Resources.Culture">
-            <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            </summary>
-        </member>
         <member name="T:SobekCM.Tools.Logs.LogFileXHTML">
              <summary>
              This class establishes a rich XHTML log file.  Then, lines can be added in three
@@ -701,6 +666,155 @@
         <member name="P:SobekCM.Tools.Logs.LogFileXHTML.FileName">
             <summary> Returns the filename for this log file </summary>
         </member>
+        <member name="T:SobekCM.Tools.Logs.LogFileXHTML_Style">
+            <summary> [ NOT YET FULLY IMPLEMENTED ] <br/> <br/>
+            LogFileXHTML_Style is a class used to hold information about a specific style used in the <see cref="T:SobekCM.Tools.Logs.LogFileXHTML"/> class. 
+            <br/> <br/> </summary>
+            <remarks> This class is created by calls to the <see cref="M:SobekCM.Tools.Logs.LogFileXHTML.AddNewStyle(System.String,System.String,System.Boolean)"/> method in the <see cref="T:SobekCM.Tools.Logs.LogFileXHTML"/> class. 
+            <br/> <br/>
+            Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center.  </remarks> 
+        </member>
+        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.bold">
+            <summary> Private bool variable stores flag which indicates if this style should have the actual log portion of the line emboldened. </summary>
+        </member>
+        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.fontColor">
+            <summary> Private string variable stores the information for the color of the font used for this style. </summary>
+        </member>
+        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.fontFamily">
+            <summary> Private string variable stores the information for the font family for this style. </summary>
+        </member>
+        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.fontSize">
+            <summary> Private string variable stores the information for the size of the font to use for this style. </summary>
+        </member>
+        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.italics">
+            <summary> Private bool variable stores flag which indicates if the actual log information for these style should be italicized. </summary>
+        </member>
+        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.name">
+            <summary> Private string variable stores the name of this style to be referenced in the body of the XHTML document. </summary>
+        </member>
+        <member name="M:SobekCM.Tools.Logs.LogFileXHTML_Style.#ctor(System.Boolean,System.String,System.String,System.Boolean,System.String)">
+            <summary> Constructor for the LogFileXHTML_Style class. </summary>
+            <param name="bold"> Flag which indicates if this style should have the actual log portion of the line emboldened. </param>
+            <param name="font_Color"> The information for the color of the font used for this style. </param>
+            <param name="font_Size"> The information for the size of the font to use for this style. </param>
+            <param name="italics"> Flag which indicates if the actual log information for these style should be italicized. </param>
+            <param name="name"> The name of this style to be referenced in the body of the XHTML document. </param>
+        </member>
+        <member name="M:SobekCM.Tools.Logs.LogFileXHTML_Style.#ctor(System.String)">
+            <summary> Constructor for the LogFileXHTML_Style class which takes the style definition from
+            HTML and parses each element for this object. </summary>
+            <remarks> The input string must be of the exact form which the ToString() method creates. </remarks>
+            <param name="style_definition"> Style sheet in HTML format, as output by ToString() </param>
+        </member>
+        <member name="M:SobekCM.Tools.Logs.LogFileXHTML_Style.ToString">
+            <summary> Returns the Style Sheet definition line which defines this style. </summary>
+            <returns> Style sheet definition XHTML line. </returns>
+        </member>
+        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Bold">
+            <summary> Gets flag which indicates if this style should have the actual log portion of the line emboldened. </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Font_Color">
+            <summary> Gets the information for the color of the font used for this style. </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Font_Family">
+            <summary> Gets the information for the font family for this style. </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Font_Size">
+            <summary> Gets the information for the size of the font to use for this style. </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Italics">
+            <summary> Gets flag which indicates if the actual log information for these style should be italicized. </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Name">
+            <summary> Gets the name of this style to be referenced in the body of the XHTML document. </summary>
+        </member>
+        <member name="T:SobekCM.Tools.Logs.LogFile_Exception">
+            <summary> LogFile_Exception is a custom exception which is thrown for any error
+            caught while creating, or writing to a log file. <br/> <br/> </summary>
+            <remarks> This class extends the <see cref="T:System.ApplicationException"/> class. </remarks>&gt;
+        </member>
+        <member name="M:SobekCM.Tools.Logs.LogFile_Exception.#ctor(System.String)">
+            <summary> Constructor which creates a new LogFile_Exception </summary>
+            <param name="customMessage"> Custom message which explains the error which
+            occurred to fire this exception. </param>
+        </member>
+        <member name="T:SobekCM.Tools.SecurityInfo">
+            <summary> Object used to determine and ensure security.  It allows
+            for reading from the registry, checking local users and computer information, 
+            and writing and reading to encrypted files. <br/><br/>
+            </summary>
+            <remarks> This class allows for the following actions: <ul>
+            <li type="circle"/> Encrypting and Decrypting strings. [ <see cref="M:SobekCM.Tools.SecurityInfo.EncryptString(System.String,System.String,System.String)"/> and <see cref="M:SobekCM.Tools.SecurityInfo.DecryptString(System.String,System.String,System.String)"/> ] 
+            <li type="circle"/> Reading and Writing to encrypted files. [ <see cref="M:SobekCM.Tools.SecurityInfo.ReadFromEncryptedFile(System.String,System.String,System.String,System.Int32,System.Int32)"/> and <see cref="M:SobekCM.Tools.SecurityInfo.WriteToEncryptedFile(System.String,System.String,System.String,System.String,System.Int32)"/> ] 
+            <li type="circle"/> Getting the current username. [ <see cref="P:SobekCM.Tools.SecurityInfo.UserName"/> ]
+            <li type="circle"/> Getting username and security level information from a security database.
+            </ul> <br/> <br/>
+            Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center. </remarks>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.LocalMachineKey(System.String,System.String)">
+            <summary> Returns a string value from the registry under HKEY_LOCAL_MACHINE. </summary>
+            <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
+            <param name="valueName"> Name of the value to retrieve </param>
+            <returns> String value from the registry, or "-1" if an error occurs </returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.CurrentUserKey(System.String,System.String)">
+            <summary> Returns a string value from the registry under HKEY_CURRENT_USER. </summary>
+            <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
+            <param name="valueName"> Name of the value to retrieve </param>
+            <returns> String value from the registry, or "-1" if an error occurs </returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.ReadFromEncryptedFile(System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary> Reads text from a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
+            <param name="filename"> Path and name of file to be read from</param>
+            <param name="key"> 8 character (64bit) key for decryption</param>
+            <param name="IV"> 8 character (64bit) initialization vector for decryption</param>
+            <param name="position"> Character position to start reading from</param>
+            <param name="length"> Number of characters to read from the file</param>
+            <returns> Character array of data read and decrypted from file or a NULL if there was an error</returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.WriteToEncryptedFile(System.String,System.String,System.String,System.String,System.Int32)">
+            <summary> Writes text to a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
+            <param name="textToWrite"> Text which will be written to the file</param>
+            <param name="filename"> Path and name of file to be written to</param>
+            <param name="key"> 8 character (64bit) key for encryption</param>
+            <param name="IV"> 8 character (64bit) initialization vector for encryption</param>
+            <param name="position"> Character position in file to write the text</param>
+            <returns> TRUE if written successfully, otherwise FALSE </returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.SHA1_EncryptString(System.String)">
+            <summary> Encrypt a string, given the string.  </summary>
+            <param name="Source"> String to encrypt </param>
+            <returns> The encrypted string </returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.DES_EncryptString(System.String,System.String,System.String)">
+            <summary> Encrypt a string, given the string.  </summary>
+            <param name="Source"> String to encrypt </param>
+            <param name="Key"> Key for the encryption </param>
+            <param name="IV"> Initialization Vector for the encryption </param>
+            <returns> The encrypted string </returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.EncryptString(System.String,System.String,System.String)">
+            <summary> Encrypt a string, given the string, the key, and the IV values.  </summary>
+            <param name="Source"> String to encrypt </param>
+            <param name="Key"> Key for the encryption </param>
+            <param name="IV"> Initialization Vector for the encryption </param>
+            <returns> The encrypted string </returns>
+        </member>
+        <member name="M:SobekCM.Tools.SecurityInfo.DecryptString(System.String,System.String,System.String)">
+            <summary> Decrypt a string, given the string, the key, and the IV values.  </summary>
+            <param name="Source"> String to decrypt </param>
+            <param name="Key"> Key for the encryption </param>
+            <param name="IV"> Initialization Vector for the encryption </param>
+            <returns> The decrypted string </returns>
+        </member>
+        <member name="P:SobekCM.Tools.SecurityInfo.UserName">
+            <summary> Gets the complete current users name as a string. </summary>
+            <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
+        </member>
+        <member name="P:SobekCM.Tools.SecurityInfo.Current_UserName">
+            <summary> Gets the complete current users name as a string. </summary>
+            <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
+        </member>
         <member name="T:SobekCM.Tools.Settings.IS_UserSettings">
             <summary> IS_UserSettings is an abstract, static class which uses Isolated Storage and XML to
             store and retrive the settings for an application's user.
@@ -825,244 +939,24 @@
         <member name="P:SobekCM.Tools.FDA.FDA_File.Warnings">
             <summary> Gets the collection of warnings linked to this file </summary>
         </member>
-        <member name="T:SobekCM.Tools.SecurityInfo">
-            <summary> Object used to determine and ensure security.  It allows
-            for reading from the registry, checking local users and computer information, 
-            and writing and reading to encrypted files. <br/><br/>
-            </summary>
-            <remarks> This class allows for the following actions: <ul>
-            <li type="circle"/> Encrypting and Decrypting strings. [ <see cref="M:SobekCM.Tools.SecurityInfo.EncryptString(System.String,System.String,System.String)"/> and <see cref="M:SobekCM.Tools.SecurityInfo.DecryptString(System.String,System.String,System.String)"/> ] 
-            <li type="circle"/> Reading and Writing to encrypted files. [ <see cref="M:SobekCM.Tools.SecurityInfo.ReadFromEncryptedFile(System.String,System.String,System.String,System.Int32,System.Int32)"/> and <see cref="M:SobekCM.Tools.SecurityInfo.WriteToEncryptedFile(System.String,System.String,System.String,System.String,System.Int32)"/> ] 
-            <li type="circle"/> Getting the current username. [ <see cref="P:SobekCM.Tools.SecurityInfo.UserName"/> ]
-            <li type="circle"/> Getting username and security level information from a security database.
-            </ul> <br/> <br/>
-            Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center. </remarks>
+        <member name="T:SobekCM.Tools.FDA.FDA_File_Warning">
+            <summary> Class stores the basic information about a file-level warning in a FDA report </summary>
+            <remarks> This class is used within a single <see cref="T:SobekCM.Tools.FDA.FDA_File"/> object within a complete <see cref="T:SobekCM.Tools.FDA.FDA_Report_Data"/> object and is not generally used alone.</remarks>
+            <example> For examples, see the example under the <see cref="T:SobekCM.Tools.FDA.FDA_Report_Data"/> class.</example>
         </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.LocalMachineKey(System.String,System.String)">
-            <summary> Returns a string value from the registry under HKEY_LOCAL_MACHINE. </summary>
-            <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
-            <param name="valueName"> Name of the value to retrieve </param>
-            <returns> String value from the registry, or "-1" if an error occurs </returns>
+        <member name="M:SobekCM.Tools.FDA.FDA_File_Warning.#ctor">
+            <summary> Constructor creates a new instance of the FDA_File_Warning class </summary>
         </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.CurrentUserKey(System.String,System.String)">
-            <summary> Returns a string value from the registry under HKEY_CURRENT_USER. </summary>
-            <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
-            <param name="valueName"> Name of the value to retrieve </param>
-            <returns> String value from the registry, or "-1" if an error occurs </returns>
+        <member name="M:SobekCM.Tools.FDA.FDA_File_Warning.#ctor(System.String,System.String)">
+            <summary> Constructor creates a new instance of the FDA_File_Warning class </summary>
+            <param name="Code"> Warning code for this file-level warning </param>
+            <param name="Text"> Warning text for this file-level warning </param>
         </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.ReadFromEncryptedFile(System.String,System.String,System.String,System.Int32,System.Int32)">
-            <summary> Reads text from a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-            <param name="filename"> Path and name of file to be read from</param>
-            <param name="key"> 8 character (64bit) key for decryption</param>
-            <param name="IV"> 8 character (64bit) initialization vector for decryption</param>
-            <param name="position"> Character position to start reading from</param>
-            <param name="length"> Number of characters to read from the file</param>
-            <returns> Character array of data read and decrypted from file or a NULL if there was an error</returns>
+        <member name="P:SobekCM.Tools.FDA.FDA_File_Warning.Code">
+            <summary> Gets or sets the code for this file-level warning </summary>
         </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.WriteToEncryptedFile(System.String,System.String,System.String,System.String,System.Int32)">
-            <summary> Writes text to a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-            <param name="textToWrite"> Text which will be written to the file</param>
-            <param name="filename"> Path and name of file to be written to</param>
-            <param name="key"> 8 character (64bit) key for encryption</param>
-            <param name="IV"> 8 character (64bit) initialization vector for encryption</param>
-            <param name="position"> Character position in file to write the text</param>
-            <returns> TRUE if written successfully, otherwise FALSE </returns>
-        </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.SHA1_EncryptString(System.String)">
-            <summary> Encrypt a string, given the string.  </summary>
-            <param name="Source"> String to encrypt </param>
-            <returns> The encrypted string </returns>
-        </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.DES_EncryptString(System.String,System.String,System.String)">
-            <summary> Encrypt a string, given the string.  </summary>
-            <param name="Source"> String to encrypt </param>
-            <param name="Key"> Key for the encryption </param>
-            <param name="IV"> Initialization Vector for the encryption </param>
-            <returns> The encrypted string </returns>
-        </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.EncryptString(System.String,System.String,System.String)">
-            <summary> Encrypt a string, given the string, the key, and the IV values.  </summary>
-            <param name="Source"> String to encrypt </param>
-            <param name="Key"> Key for the encryption </param>
-            <param name="IV"> Initialization Vector for the encryption </param>
-            <returns> The encrypted string </returns>
-        </member>
-        <member name="M:SobekCM.Tools.SecurityInfo.DecryptString(System.String,System.String,System.String)">
-            <summary> Decrypt a string, given the string, the key, and the IV values.  </summary>
-            <param name="Source"> String to decrypt </param>
-            <param name="Key"> Key for the encryption </param>
-            <param name="IV"> Initialization Vector for the encryption </param>
-            <returns> The decrypted string </returns>
-        </member>
-        <member name="P:SobekCM.Tools.SecurityInfo.UserName">
-            <summary> Gets the complete current users name as a string. </summary>
-            <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
-        </member>
-        <member name="T:SobekCM.Tools.FDA.FDA_Report_Type">
-            <summary> Enumeration indicates the type of FDA Ingest Report </summary>
-        </member>
-        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.INGEST">
-            <summary> FDA Ingest Report when a SIP is successfully ingested into the digital archive </summary>
-        </member>
-        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.WITHDRAWAL">
-            <summary> Report is created when an item is withdrawn from the digital archive </summary>
-        </member>
-        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.DISSEMINATION">
-            <summary> Dissemination Report is written when an item is re-ingested into the archive </summary>
-        </member>
-        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.ERROR">
-            <summary> FDA Ingest Error Report when a SIP is not ingested into the digital archive </summary>
-        </member>
-        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.INVALID">
-            <summary> Used to indicate an unrecognized FDA report type </summary>
-        </member>
-        <member name="T:SobekCM.Tools.FDA.FDA_Report_Writer">
-             <summary> Class is used to write the FDA Report data in various formats </summary>
-             <example>
-             <i><em>Example #1</em></i> - Simple code to read a FDA report, save it to the database, and write it to another location
-             <code>
-                // Read the report and save it in another location
-                public void Read_And_Save_Report(string Source, string Destination)
-                {
-                    // Try to read the report
-                    FDA_Report_Data reportData = FDA_Report_Reader.Read(Source);
-            
-                    // If this appears valid, save to the database
-                    if (reportData.Report_Type != FDA_Report_Type.INVALID)
-                    {
-                        // Try to save to the database
-                        if ( reportData.Save_To_Database())
-                        {
-                             // Since this was successful, delete the old and save the briefer version
-                             File.Delete( Source );
-                             FDA_Report_Writer.Write( reportData, Destination );    /// 
-                        }
-                    }      
-                }
-             </code>
-             </example>
-        </member>
-        <member name="M:SobekCM.Tools.FDA.FDA_Report_Writer.Write_Text(SobekCM.Tools.FDA.FDA_Report_Data,System.String)">
-            <summary> Writes the basic information about a FDA report as a text file </summary>
-            <param name="report_data">FDA Report information</param>
-            <param name="fileName">Name for the text output file</param>
-            <returns>Flag indicating if the report creation was successful</returns>
-        </member>
-        <member name="M:SobekCM.Tools.FDA.FDA_Report_Writer.Write(SobekCM.Tools.FDA.FDA_Report_Data,System.String)">
-            <summary> Writes the basic information about a FDA ingest report as a valid XML file </summary>
-            <param name="report_data">FDA Report information</param>
-            <param name="fileName">Name for the XML output file</param>
-            <returns>Flag indicating if the report creation was successful</returns>
-        </member>
-        <member name="T:SobekCM.Tools.FDA.FDA_Report_Reader">
-             <summary> Class is used to read the XML report from FDA </summary>
-             <remarks> This uses an XML reader to iterate through each node in a FDA report and build the associated <see cref="T:SobekCM.Tools.FDA.FDA_Report_Data"/> object.<br/><br/>
-             This does not save any GLOBAL files or any files not included in the package from the DEPOSITOR.  When saving the individual file information in 
-             each package, this greatly ballooned the size of each FDA report data.  </remarks>
-             <example>
-             <i><em>Example #1</em></i> - Simple code to read a FDA report, save it to the database, and write it to another location
-             <code>
-                // Read the report and save it in another location
-                public void Read_And_Save_Report(string Source, string Destination)
-                {
-                    // Try to read the report
-                    FDA_Report_Data reportData = FDA_Report_Reader.Read(Source);
-            
-                    // If this appears valid, save to the database
-                    if (reportData.Report_Type != FDA_Report_Type.INVALID)
-                    {
-                        // Try to save to the database
-                        if ( reportData.Save_To_Database())
-                        {
-                             // Since this was successful, delete the old and save the briefer version
-                             File.Delete( Source );
-                             FDA_Report_Writer.Write( reportData, Destination );    /// 
-                        }
-                    }      
-                }
-             </code>
-             </example>
-        </member>
-        <member name="M:SobekCM.Tools.FDA.FDA_Report_Reader.Read(System.String)">
-            <summary>Reads the FDA report and creates the associated data object </summary>
-            <param name="fileName">Name (including path) of the report to read</param>
-            <returns>All the important data from an ingest report</returns>
-            <remarks>If an exception occurred during this process, the last exception is accessible in the <see cref="P:SobekCM.Tools.FDA.FDA_Report_Reader.Last_Exception"/> property. </remarks>
-        </member>
-        <member name="P:SobekCM.Tools.FDA.FDA_Report_Reader.Last_Exception">
-            <summary> Get the last exception which occurred  </summary>
-        </member>
-        <member name="T:SobekCM.Tools.Logs.LogFileXHTML_Style">
-            <summary> [ NOT YET FULLY IMPLEMENTED ] <br/> <br/>
-            LogFileXHTML_Style is a class used to hold information about a specific style used in the <see cref="T:SobekCM.Tools.Logs.LogFileXHTML"/> class. 
-            <br/> <br/> </summary>
-            <remarks> This class is created by calls to the <see cref="M:SobekCM.Tools.Logs.LogFileXHTML.AddNewStyle(System.String,System.String,System.Boolean)"/> method in the <see cref="T:SobekCM.Tools.Logs.LogFileXHTML"/> class. 
-            <br/> <br/>
-            Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center.  </remarks> 
-        </member>
-        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.bold">
-            <summary> Private bool variable stores flag which indicates if this style should have the actual log portion of the line emboldened. </summary>
-        </member>
-        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.fontColor">
-            <summary> Private string variable stores the information for the color of the font used for this style. </summary>
-        </member>
-        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.fontFamily">
-            <summary> Private string variable stores the information for the font family for this style. </summary>
-        </member>
-        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.fontSize">
-            <summary> Private string variable stores the information for the size of the font to use for this style. </summary>
-        </member>
-        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.italics">
-            <summary> Private bool variable stores flag which indicates if the actual log information for these style should be italicized. </summary>
-        </member>
-        <member name="F:SobekCM.Tools.Logs.LogFileXHTML_Style.name">
-            <summary> Private string variable stores the name of this style to be referenced in the body of the XHTML document. </summary>
-        </member>
-        <member name="M:SobekCM.Tools.Logs.LogFileXHTML_Style.#ctor(System.Boolean,System.String,System.String,System.Boolean,System.String)">
-            <summary> Constructor for the LogFileXHTML_Style class. </summary>
-            <param name="bold"> Flag which indicates if this style should have the actual log portion of the line emboldened. </param>
-            <param name="font_Color"> The information for the color of the font used for this style. </param>
-            <param name="font_Size"> The information for the size of the font to use for this style. </param>
-            <param name="italics"> Flag which indicates if the actual log information for these style should be italicized. </param>
-            <param name="name"> The name of this style to be referenced in the body of the XHTML document. </param>
-        </member>
-        <member name="M:SobekCM.Tools.Logs.LogFileXHTML_Style.#ctor(System.String)">
-            <summary> Constructor for the LogFileXHTML_Style class which takes the style definition from
-            HTML and parses each element for this object. </summary>
-            <remarks> The input string must be of the exact form which the ToString() method creates. </remarks>
-            <param name="style_definition"> Style sheet in HTML format, as output by ToString() </param>
-        </member>
-        <member name="M:SobekCM.Tools.Logs.LogFileXHTML_Style.ToString">
-            <summary> Returns the Style Sheet definition line which defines this style. </summary>
-            <returns> Style sheet definition XHTML line. </returns>
-        </member>
-        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Bold">
-            <summary> Gets flag which indicates if this style should have the actual log portion of the line emboldened. </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Font_Color">
-            <summary> Gets the information for the color of the font used for this style. </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Font_Family">
-            <summary> Gets the information for the font family for this style. </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Font_Size">
-            <summary> Gets the information for the size of the font to use for this style. </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Italics">
-            <summary> Gets flag which indicates if the actual log information for these style should be italicized. </summary>
-        </member>
-        <member name="P:SobekCM.Tools.Logs.LogFileXHTML_Style.Name">
-            <summary> Gets the name of this style to be referenced in the body of the XHTML document. </summary>
-        </member>
-        <member name="T:SobekCM.Tools.Logs.LogFile_Exception">
-            <summary> LogFile_Exception is a custom exception which is thrown for any error
-            caught while creating, or writing to a log file. <br/> <br/> </summary>
-            <remarks> This class extends the <see cref="T:System.ApplicationException"/> class. </remarks>&gt;
-        </member>
-        <member name="M:SobekCM.Tools.Logs.LogFile_Exception.#ctor(System.String)">
-            <summary> Constructor which creates a new LogFile_Exception </summary>
-            <param name="customMessage"> Custom message which explains the error which
-            occurred to fire this exception. </param>
+        <member name="P:SobekCM.Tools.FDA.FDA_File_Warning.Text">
+            <summary> Gets or sets the text for this file-level warning </summary>
         </member>
         <member name="T:SobekCM.Tools.FDA.FDA_Report_Data">
              <summary> Class stores all the important data from a FDA Ingest Report </summary>
@@ -1227,6 +1121,116 @@
         </member>
         <member name="P:SobekCM.Tools.FDA.FDA_Report_Data.Report_Type_String">
             <summary> Gets the report type as a string </summary>
+        </member>
+        <member name="T:SobekCM.Tools.FDA.FDA_Report_Reader">
+             <summary> Class is used to read the XML report from FDA </summary>
+             <remarks> This uses an XML reader to iterate through each node in a FDA report and build the associated <see cref="T:SobekCM.Tools.FDA.FDA_Report_Data"/> object.<br/><br/>
+             This does not save any GLOBAL files or any files not included in the package from the DEPOSITOR.  When saving the individual file information in 
+             each package, this greatly ballooned the size of each FDA report data.  </remarks>
+             <example>
+             <i><em>Example #1</em></i> - Simple code to read a FDA report, save it to the database, and write it to another location
+             <code>
+                // Read the report and save it in another location
+                public void Read_And_Save_Report(string Source, string Destination)
+                {
+                    // Try to read the report
+                    FDA_Report_Data reportData = FDA_Report_Reader.Read(Source);
+            
+                    // If this appears valid, save to the database
+                    if (reportData.Report_Type != FDA_Report_Type.INVALID)
+                    {
+                        // Try to save to the database
+                        if ( reportData.Save_To_Database())
+                        {
+                             // Since this was successful, delete the old and save the briefer version
+                             File.Delete( Source );
+                             FDA_Report_Writer.Write( reportData, Destination );    /// 
+                        }
+                    }      
+                }
+             </code>
+             </example>
+        </member>
+        <member name="M:SobekCM.Tools.FDA.FDA_Report_Reader.Read(System.String)">
+            <summary>Reads the FDA report and creates the associated data object </summary>
+            <param name="fileName">Name (including path) of the report to read</param>
+            <returns>All the important data from an ingest report</returns>
+            <remarks>If an exception occurred during this process, the last exception is accessible in the <see cref="P:SobekCM.Tools.FDA.FDA_Report_Reader.Last_Exception"/> property. </remarks>
+        </member>
+        <member name="P:SobekCM.Tools.FDA.FDA_Report_Reader.Last_Exception">
+            <summary> Get the last exception which occurred  </summary>
+        </member>
+        <member name="T:SobekCM.Tools.FDA.FDA_Report_Type">
+            <summary> Enumeration indicates the type of FDA Ingest Report </summary>
+        </member>
+        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.INGEST">
+            <summary> FDA Ingest Report when a SIP is successfully ingested into the digital archive </summary>
+        </member>
+        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.WITHDRAWAL">
+            <summary> Report is created when an item is withdrawn from the digital archive </summary>
+        </member>
+        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.DISSEMINATION">
+            <summary> Dissemination Report is written when an item is re-ingested into the archive </summary>
+        </member>
+        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.ERROR">
+            <summary> FDA Ingest Error Report when a SIP is not ingested into the digital archive </summary>
+        </member>
+        <member name="F:SobekCM.Tools.FDA.FDA_Report_Type.INVALID">
+            <summary> Used to indicate an unrecognized FDA report type </summary>
+        </member>
+        <member name="T:SobekCM.Tools.FDA.FDA_Report_Writer">
+             <summary> Class is used to write the FDA Report data in various formats </summary>
+             <example>
+             <i><em>Example #1</em></i> - Simple code to read a FDA report, save it to the database, and write it to another location
+             <code>
+                // Read the report and save it in another location
+                public void Read_And_Save_Report(string Source, string Destination)
+                {
+                    // Try to read the report
+                    FDA_Report_Data reportData = FDA_Report_Reader.Read(Source);
+            
+                    // If this appears valid, save to the database
+                    if (reportData.Report_Type != FDA_Report_Type.INVALID)
+                    {
+                        // Try to save to the database
+                        if ( reportData.Save_To_Database())
+                        {
+                             // Since this was successful, delete the old and save the briefer version
+                             File.Delete( Source );
+                             FDA_Report_Writer.Write( reportData, Destination );    /// 
+                        }
+                    }      
+                }
+             </code>
+             </example>
+        </member>
+        <member name="M:SobekCM.Tools.FDA.FDA_Report_Writer.Write_Text(SobekCM.Tools.FDA.FDA_Report_Data,System.String)">
+            <summary> Writes the basic information about a FDA report as a text file </summary>
+            <param name="report_data">FDA Report information</param>
+            <param name="fileName">Name for the text output file</param>
+            <returns>Flag indicating if the report creation was successful</returns>
+        </member>
+        <member name="M:SobekCM.Tools.FDA.FDA_Report_Writer.Write(SobekCM.Tools.FDA.FDA_Report_Data,System.String)">
+            <summary> Writes the basic information about a FDA ingest report as a valid XML file </summary>
+            <param name="report_data">FDA Report information</param>
+            <param name="fileName">Name for the XML output file</param>
+            <returns>Flag indicating if the report creation was successful</returns>
+        </member>
+        <member name="T:SobekCM.Tools.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:SobekCM.Tools.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
         </member>
     </members>
 </doc>

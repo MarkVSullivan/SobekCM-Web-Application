@@ -6,9 +6,9 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using Microsoft.Practices.ServiceLocation;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Database;
-using SobekCM.Bib_Package.Solr;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Solr;
 using SolrNet;
 
 #endregion
@@ -86,25 +86,25 @@ namespace SobekCM.Library.Solr
                                 DataRow itemRow = itemInfoSet.Tables[0].Rows[0];
 
                                 // Copy over the serial hierarchy
-                                item.Serial_Info.Clear();
+                                item.Behaviors.Serial_Info.Clear();
                                 string level1_text = itemRow["Level1_Text"].ToString();
                                 if (level1_text.Length > 0)
                                 {
-                                    item.Serial_Info.Add_Hierarchy(0, Convert.ToInt32(itemRow["Level1_Index"]), level1_text);
+                                    item.Behaviors.Serial_Info.Add_Hierarchy(0, Convert.ToInt32(itemRow["Level1_Index"]), level1_text);
                                     string level2_text = itemRow["Level2_Text"].ToString();
                                     if (level2_text.Length > 0)
                                     {
-                                        item.Serial_Info.Add_Hierarchy(0, Convert.ToInt32(itemRow["Level2_Index"]), level2_text);
+                                        item.Behaviors.Serial_Info.Add_Hierarchy(0, Convert.ToInt32(itemRow["Level2_Index"]), level2_text);
                                         string level3_text = itemRow["Level3_Text"].ToString();
                                         if (level1_text.Length > 0)
                                         {
-                                            item.Serial_Info.Add_Hierarchy(0, Convert.ToInt32(itemRow["Level3_Index"]), level3_text);
+                                            item.Behaviors.Serial_Info.Add_Hierarchy(0, Convert.ToInt32(itemRow["Level3_Index"]), level3_text);
                                         }
                                     }
                                 }
 
                                 // Copy the main thumbnail
-                                item.SobekCM_Web.Main_Thumbnail = itemRow["MainThumbnailFile"].ToString();
+                                item.Behaviors.Main_Thumbnail = itemRow["MainThumbnailFile"].ToString();
                                 long aleph = Convert.ToInt64(itemRow["ALEPH_Number"]);
                                 long oclc = Convert.ToInt64(itemRow["OCLC_Number"]);
                                 if (aleph > 1)
@@ -117,12 +117,12 @@ namespace SobekCM.Library.Solr
                                 }
 
                                 // Set the aggregations
-                                item.SobekCM_Web.Clear_Aggregations();
+                                item.Behaviors.Clear_Aggregations();
                                 foreach (DataRow thisAggrRow in itemInfoSet.Tables[1].Rows)
                                 {
                                     string code = thisAggrRow["Code"].ToString();
                                     string name = thisAggrRow["Name"].ToString();
-                                    item.SobekCM_Web.Add_Aggregation(code, name);
+                                    item.Behaviors.Add_Aggregation(code, name);
                                 }
                             }
 

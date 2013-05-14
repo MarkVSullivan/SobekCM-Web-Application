@@ -8,11 +8,11 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
-using SobekCM.Bib_Package.Database;
-using SobekCM.Bib_Package.Testing;
-using SobekCM.Bib_Package.Writers;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Testing;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -135,10 +135,15 @@ namespace SobekCM.Library.MySobekViewer
                     bool isNumber = currentMode.My_Sobek_SubMode.All(Char.IsNumber);
                     if (isNumber)
                     {
-                            if (isProject)
-                                Double.TryParse(currentMode.My_Sobek_SubMode[0].ToString(), out page);
-                            else
-                                Double.TryParse(currentMode.My_Sobek_SubMode, out page);
+                        if (isProject)
+                            Double.TryParse(currentMode.My_Sobek_SubMode[0].ToString(), out page);
+                        else
+                            Double.TryParse(currentMode.My_Sobek_SubMode, out page);
+                    }
+                    else if ( isProject )
+                    { 
+                        if ( Char.IsNumber(currentMode.My_Sobek_SubMode[0]))
+                            Double.TryParse(currentMode.My_Sobek_SubMode[0].ToString(), out page);
                     }
                 }
             }
@@ -232,8 +237,8 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     Cached_Data_Manager.Remove_Project(user.UserID, item.BibID, null);
 
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Projects;
+                    currentMode.Mode = Display_Mode_Enum.Administrative;
+                    currentMode.Admin_Type = Admin_Type_Enum.Projects;
                     currentMode.My_Sobek_SubMode = String.Empty;
                     HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
                 }
@@ -317,8 +322,8 @@ namespace SobekCM.Library.MySobekViewer
                 Cached_Data_Manager.Remove_Project(user.UserID, item.BibID, null);
 
                 // Redirect
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Projects;
+                currentMode.Mode = Display_Mode_Enum.Administrative;
+                currentMode.Admin_Type = Admin_Type_Enum.Projects;
                 currentMode.My_Sobek_SubMode = String.Empty;
                 HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
 
@@ -351,9 +356,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Update the METS file with METS note and name
-                item.METS.Creator_Individual = user.UserName;
-                item.METS.Modify_Date = DateTime.Now;
-                item.METS.RecordStatus_Enum = METS_Record_Status.METADATA_UPDATE;
+                item.METS_Header.Creator_Individual = user.UserName;
+                item.METS_Header.Modify_Date = DateTime.Now;
+                item.METS_Header.RecordStatus_Enum = METS_Record_Status.METADATA_UPDATE;
 
                 // Save the METS file and related items
                 bool successful_save = true;
@@ -372,7 +377,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, itemList, iconList, webSkin);
                     string filename = user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html";
-                    staticBuilder.Create_Item_Citation_HTML(item, filename, SobekCM_Library_Settings.Image_Server_Network + item.SobekCM_Web.AssocFilePath);
+                    staticBuilder.Create_Item_Citation_HTML(item, filename, SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath);
                 }
                 catch (Exception)
                 {
@@ -395,22 +400,25 @@ namespace SobekCM.Library.MySobekViewer
                 // Make sure the progress has been added to this item's work log
                 try
                 {
-                    Database.SobekCM_Database.Tracking_Online_Edit_Complete(item.SobekCM_Web.ItemID, user.Full_Name, String.Empty);
+                    Database.SobekCM_Database.Tracking_Online_Edit_Complete(item.Web.ItemID, user.Full_Name, String.Empty);
                 }
                 catch(Exception)
                 {
                     // This is not critical
                 }
 
-                MARC_Writer marc_writer = new MARC_Writer();
                 List<string> collectionnames = new List<string>();
-                marc_writer.Save_As_MARC_XML(item.Source_Directory + "\\marc.xml", item, item.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
+                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                string Error_Message;
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = item.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                marcWriter.Write_Metadata(item.Source_Directory + "\\marc.xml", item, options, out Error_Message);
 
                 // Copy this to all the image servers
                 SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(null));
                 string[] allFiles = Directory.GetFiles(user_bib_vid_process_directory);
 
-                string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + item.SobekCM_Web.AssocFilePath;
+                string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath;
 
                 // Create the folder
                 if (!Directory.Exists(serverNetworkFolder))
@@ -521,9 +529,10 @@ namespace SobekCM.Library.MySobekViewer
                     StringWriter mets_output = new StringWriter(mets_builder);
 
                     SobekCM_Item testItem = Test_Bib_Package.Create(String.Empty);
+                    METS_File_ReaderWriter metsWriter = new METS_File_ReaderWriter();
 
-                    METS_Writer.Save_SobekCM_MODS_METS(mets_output, testItem, true, false, " &nbsp; ");
-
+                    string Error_Message;
+                    metsWriter.Write_Metadata(mets_output, testItem, null, out Error_Message);
                     string mets_string = mets_builder.ToString();
                     string header = mets_string.Substring(0, mets_string.IndexOf("<METS:mets"));
                     string remainder = mets_string.Substring(header.Length);

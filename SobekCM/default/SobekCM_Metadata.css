@@ -1,4 +1,20 @@
-/* Style sheet for myUFDC */
+/**************************************************************************
+**     SOBEKCM_Metadata.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for editing metadata and creating new resources
+**     through the online web interface.                                      
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
 
 .tree { text-align: justify; }
 .tree td div {   /*height: 40px !important */  }
@@ -135,6 +151,7 @@ input.physical_description_input_focused {  color:#0000a8;  width: 300px; margin
 
 input.language_input  {  color:Blue;  width: 150px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.language_input_focused {  color:#0000a8;  width: 150px; margin-top: 6px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.language_input  {  color:Blue;  width: 150px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 input.tickler_input  {  color:Blue;  width: 125px; margin-top: 6px; margin-right: 10px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.tickler_input_focused {  color:#0000a8;  width: 125px; margin-top: 6px; margin-right: 10px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
@@ -377,6 +394,9 @@ input.complex_abstract_language_focused  {  color:#0000a8;  width: 150px; margin
 textarea.complex_abstract_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
 textarea.complex_abstract_input_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small; }
 
+textarea.embeddedvideo_input {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+textarea.embeddedvideo_input_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small; }
+
 select.complex_note_type { color:Blue; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select.complex_note_type_focused { color:#0000a8; width: 200px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 textarea.complex_note_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
@@ -394,6 +414,52 @@ input.disposition_advice_input  {  color:Blue;  width: 338px; margin-top: 6px; m
 input.disposition_advice_input_focused  {  color:#0000a8;  width: 338px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select.disposition_advice_select { color:Blue; width: 130px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select.disposition_advice_select_focused { color:#0000a8; width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+
+
+select.lom_aggrlevel_select { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.lom_status_select { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.lom_interacttype_select { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.lom_interactlevel_select { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.lom_difflevel_select { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.lom_intendeduser_input  { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.lom_type_input  {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.lom_type_input_focused  {  color:#0000a8;  width: 150px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.lom_agerange_input  {  color:Blue;  width: 80px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.lom_agerange_input_focused  {  color:#0000a8;  width: 80px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.lom_context_input  {  color:Blue;  width: 80px;margin-left: 10px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.lom_context_input_focused  {  color:#0000a8;  width: 80px; margin-left: 10px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select.lom_context_select { color:Blue; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_culturalcontext_input {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_culturalcontext_input_focused {  background-color: #fbf7b4; color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_inscription_input {  color:Blue;  width: 350px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_inscription_input_focused {  background-color: #fbf7b4; color:Blue;  width: 350px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_materials_first_input {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_materials_first_input_focused {  background-color: #fbf7b4; color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_materials_second_input {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_materials_second_input_focused {  background-color: #fbf7b4; color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_measurement_first_input {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_measurement_first_input_focused {  background-color: #fbf7b4; color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_measurement_second_input {  color:Blue;  width: 80px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_measurement_second_input_focused { background-color: #fbf7b4;  color:Blue;  width: 80px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_state_input {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_state_input_focused {  background-color: #fbf7b4; color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_styleperiod_input {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_styleperiod_input_focused {  background-color: #fbf7b4; color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+input.vra_technique_input {  color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.vra_technique_input_focused {  background-color: #fbf7b4; color:Blue;  width: 150px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 
 #bornDigital { margin-top: 8px; }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.Navigation;
@@ -192,7 +193,7 @@ namespace SobekCM.Library.HTML
                     string next_page = "Next Page";
                     string last_page = "Last Page";
 
-                    if (currentMode.Language == Language_Enum.Spanish)
+                    if (currentMode.Language == Web_Language_Enum.Spanish)
                     {
                         first_page = "Primera Página";
                         previous_page = "Página Anterior";
@@ -200,7 +201,7 @@ namespace SobekCM.Library.HTML
                         last_page = "Última Página";
                     }
 
-                    if (currentMode.Language == Language_Enum.French)
+                    if (currentMode.Language == Web_Language_Enum.French)
                     {
                         first_page = "Première Page";
                         previous_page = "Page Précédente";
@@ -564,7 +565,7 @@ namespace SobekCM.Library.HTML
                 showing_coord_range_text = "{0} - {1} of {2} matching flights";
             }
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 bookshelf_view = "VISTA BIBLIOTECA";
                 map_view = "VISTA MAPA";
@@ -575,7 +576,7 @@ namespace SobekCM.Library.HTML
                 showing_range_text = "{0} - {1} de {2} títulos correspondientes";
             }
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 bookshelf_view = "MODE MA BIBLIOTHEQUE";
                 map_view = "MODE CARTE";
@@ -744,7 +745,7 @@ namespace SobekCM.Library.HTML
             {
                 Output.WriteLine("<div class=\"SobekResultsNavBarImbed\">");
                 Output.WriteLine("<br />");
-                Output.WriteLine("  " + resultsStatistics.Total_Items + " items for export");
+                Output.WriteLine("  " + resultsStatistics.Total_Items + "");
                 Output.WriteLine("</div>");
             }
             else
@@ -1009,28 +1010,28 @@ namespace SobekCM.Library.HTML
             string or_language = "or ";
             string and_not_language = "not ";
             string no_matches_language = "resulted in no matching records.";
-            string one_match_language = "resulted in 1 matching record.";
+            string one_match_language = "resulted in one matching record.";
             string multiple_records_language = "resulted in {0} matching records.";
-            string one_item_language = "resulted in 1 item in ";
+            string one_item_language = "resulted in one item in ";
             string multiple_items_language = "resulted in {0} items in ";
-            string one_title_language = "1 title.";
+            string one_title_language = "one title.";
             string multiple_titles_language = " titles.";
 
             // Set special language for aerials
             if (currentMode.Aggregation == "aerials")
             {
                 no_matches_language = "resulted in no matching flights.";
-                one_match_language = "resulted in 1 matching flights.";
+                one_match_language = "resulted in one matching flight.";
                 multiple_records_language = "resulted in {0} matching flights.";
-                one_item_language = "resulted in 1 flight in ";
+                one_item_language = "resulted in one flight in ";
                 multiple_items_language = "resulted in {0} flights in ";
-                one_title_language = "1 county.";
+                one_title_language = "one county.";
                 multiple_titles_language = " counties.";
             }
             
             switch (currentMode.Language)
             {
-                case Language_Enum.French:
+                case Web_Language_Enum.French:
                     Output.Write("Votre recherche de <i>" + Hierarchy_Object.Name + "</i> en ");
                     and_language = "et ";
                     or_language = "ou ";
@@ -1045,7 +1046,7 @@ namespace SobekCM.Library.HTML
                     multiple_titles_language = " titres.";
                     break;
 
-                case Language_Enum.Spanish:
+                case Web_Language_Enum.Spanish:
                     Output.Write("Su búsqueda de <i>" + Hierarchy_Object.Name + "</i> en ");
                     and_language = "y ";
                     or_language = "o ";
@@ -1174,11 +1175,11 @@ namespace SobekCM.Library.HTML
         private string Search_Label_from_UFDC_Code(string code)
         {
             string in_language = "in ";
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 in_language = "en ";
             }
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 in_language = "en ";
             }
@@ -1485,14 +1486,14 @@ namespace SobekCM.Library.HTML
             int total_facets_to_show = MINIMIZED_FACET_COUNT;
             char other_sort_type = '2';
             char other_show_type = '1';
-            if ((facetInformation[facet_index] == '1') || ( facetInformation[facet_index] == '3' ))
+            if ((facetInformation[facet_index - 1] == '1') || ( facetInformation[facet_index - 1 ] == '3' ))
             {
                 total_facets_to_show = MAXIMIZED_FACET_COUNT;
             }
 
             string resort_image = "2_to_1.gif";
             string sort_instructions = sort_by_frequency;
-            switch ( facetInformation[facet_index])
+            switch ( facetInformation[facet_index - 1])
             {
                 case '0':
                     other_sort_type = '2';
@@ -1519,10 +1520,10 @@ namespace SobekCM.Library.HTML
                     break;
             }
 
-            builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + facet_index + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></span>");
+            builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + (facet_index - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></span>");
             builder.AppendLine("<b> &nbsp;" + title + "</b><br />");
             builder.AppendLine("<div class=\"SobekFacetBox\">");
-            if ((facetInformation[facet_index] == '2') || (facetInformation[facet_index] == '3'))
+            if ((facetInformation[facet_index - 1] == '2') || (facetInformation[facet_index - 1] == '3'))
             {
                 SortedList<string, string> order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < collection.Count))
@@ -1545,13 +1546,13 @@ namespace SobekCM.Library.HTML
             }
             if (facet_count > MINIMIZED_FACET_COUNT)
             {
-                builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + facet_index + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
+                builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + (facet_index - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
             }
             else
             {
                 if (facet_count < collection.Count)
                 {
-                    builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + facet_index + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
+                    builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + ( facet_index - 1 ) + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
                 }
             }
             builder.AppendLine("</div>");

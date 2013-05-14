@@ -131,7 +131,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <table cellspacing=\"0\" cellpadding=\"2\" id=\"internalheader\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td align=\"left\">");
-            Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button hide_intheader_button\" onclick=\"return hide_internal_header();\"></button>");
+            Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button_aggr hide_intheader_button_aggr\" onclick=\"return hide_internal_header();\"></button>");
             Output.WriteLine("      </td>");
             Add_Internal_Header_Search_Box(Output);
             Output.WriteLine("    </tr>");
@@ -180,7 +180,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("              </select>");
                 Output.WriteLine("            </td>");
                 Output.WriteLine("            <td>");
-                Output.WriteLine("              <a onclick=\"internal_search('" + currentMode.Base_URL + "contains')\"><img src=\"" + currentMode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform serach\" style=\"margin-top: 1px\" /></a>");
+                Output.WriteLine("              <a onclick=\"internal_search('" + currentMode.Base_URL + "contains')\"><img src=\"" + currentMode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
                 Output.WriteLine("              &nbsp;");
                 Output.WriteLine("            </td>");
                 Output.WriteLine("          </tr>");

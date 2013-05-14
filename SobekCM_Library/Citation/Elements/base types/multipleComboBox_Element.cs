@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -68,7 +70,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> instance_values, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, List<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             render_helper(Output, new ReadOnlyCollection<string>(instance_values), items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL );
         }
@@ -81,7 +83,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             render_helper(Output, instance_values, items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
@@ -95,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> instance_values, List<string> possible_values, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, List<string> instance_values, List<string> possible_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             render_helper(Output, new ReadOnlyCollection<string>(instance_values), possible_values, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
@@ -108,7 +110,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             render_helper(Output, instance_value, items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
@@ -122,7 +124,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, List<string> possible_values, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, List<string> possible_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             List<string> allValues = new List<string>();
             allValues.AddRange(instance_values);
@@ -245,7 +247,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, List<string> possible_values, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string instance_value, List<string> possible_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             string id_name = html_element_name.Replace("_", "");
 
@@ -346,11 +348,27 @@ namespace SobekCM.Library.Citation.Elements
         {
             while ( xmlReader.Read() )
             {
-                if (( xmlReader.NodeType == XmlNodeType.Element ) && ( xmlReader.Name.ToLower() == "value" ))
+                if ( xmlReader.NodeType == XmlNodeType.Element ) 
                 {
-                    xmlReader.Read();
-                    items.Add(xmlReader.Value.Trim());
-                    return;
+                    if (xmlReader.Name.ToLower() == "value")
+                    {
+                        xmlReader.Read();
+                        items.Add(xmlReader.Value.Trim());
+                    }
+                    if (xmlReader.Name.ToLower() == "options")
+                    {
+                        xmlReader.Read();
+                        string options = xmlReader.Value.Trim();
+                        items.Clear();
+                        if (options.Length > 0)
+                        {
+                            string[] options_parsed = options.Split(",".ToCharArray());
+                            foreach (string thisOption in options_parsed.Where(thisOption => !items.Contains(thisOption.Trim())))
+                            {
+                                items.Add(thisOption.Trim());
+                            }
+                        }
+                    }
                 }
             }
         }

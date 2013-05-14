@@ -10,8 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -250,14 +250,11 @@ namespace SobekCM.Library.MySobekViewer
                                 SobekCM_Item newItem;
                                 Page_TreeNode newPage;
                                 SobekCM_Items_In_Title itemsInTitle;
-                                // Root = 'http://ufdcweb1.uflib.ufl.edu/'
                                 newAssistant.Get_Item(currentMode, Item_List, SobekCM_Library_Settings.Image_URL, null, user, Tracer, out newItem, out newPage, out itemsInTitle );
                                 SobekCM_Database.Add_Item_To_User_Folder(user.UserID, add_bookshelf, split[0], split[1], 1, comments, Tracer);
 
                                 // Determine the email format
-                                bool is_html_format = true;
-                                if (format == "TEXT")
-                                    is_html_format = false;
+                                bool is_html_format = (format != "TEXT");
 
                                 // Send this email
                                 Item_Email_Helper.Send_Email(email, String.Empty, comments, user.Full_Name, currentMode.SobekCM_Instance_Abbreviation, newItem, is_html_format, currentMode.Base_URL + newItem.BibID + "/" + newItem.VID);

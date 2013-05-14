@@ -63,6 +63,7 @@ public partial class UFDC : System.Web.UI.Page
             {
                 if ((Page_Globals.currentMode.Mode != Display_Mode_Enum.Error) &&
                     (Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) &&
+                    (Page_Globals.currentMode.Mode != Display_Mode_Enum.Administrative) &&
                     (Page_Globals.currentMode.Mode != Display_Mode_Enum.Contact) &&
                     (Page_Globals.currentMode.Mode != Display_Mode_Enum.Contact_Sent) &&
                     (Page_Globals.currentMode.Mode != Display_Mode_Enum.Item_Print) &&
@@ -209,6 +210,13 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Add_Html()
     {
+
+        //Response.Output.WriteLine("128.227.58.79 &nbsp; &nbsp; &nbsp; " + Global.IP_Restrictions.Restrictive_Range_Membership("128.227.58.79") + "<br />");
+        //Response.Output.WriteLine("128.227.103.116 &nbsp; &nbsp; &nbsp; " + Global.IP_Restrictions.Restrictive_Range_Membership("128.227.103.116") + "<br />");
+        //Response.Output.WriteLine("128.227.83.43 &nbsp; &nbsp; &nbsp; " + Global.IP_Restrictions.Restrictive_Range_Membership("128.227.83.43") + "<br />");
+
+
+
         if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
             return;
 
@@ -263,5 +271,12 @@ public partial class UFDC : System.Web.UI.Page
         base.OnInit(e);
     }
 
+    protected void Repository_Title()
+    {
+        if ( !String.IsNullOrEmpty( SobekCM.Library.SobekCM_Library_Settings.System_Name))
+            Response.Output.Write(SobekCM.Library.SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository");
+        else
+            Response.Output.Write("SobekCM Digital Repository");
+    }
 }
 

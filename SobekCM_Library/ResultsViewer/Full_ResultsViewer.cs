@@ -86,16 +86,16 @@ namespace SobekCM.Library.ResultsViewer
             //// Read this item information
             //Item.SobekCM_METS_Based_ItemBuilder builder = new SobekCM.Library.Items.SobekCM_METS_Based_ItemBuilder();
             //string mets_location = SobekCM_Library_Settings.Image_URL + dbTitle.File_Root + "/" + dbItem.VID_String;
-            //SobekCM.Bib_Package.SobekCM_Item thisItem = builder.Build_Brief_Item(mets_location, Tracer);
+            //SobekCM.Resource_Object.SobekCM_Item thisItem = builder.Build_Brief_Item(mets_location, Tracer);
 
             //if (thisItem != null)
             //{
             //    // Pull values from the database
-            //    thisItem.SobekCM_Web.GroupTitle = dbTitle.GroupTitle;
-            //    thisItem.SobekCM_Web.AssocFilePath = dbTitle.File_Root + "/" + dbItem.VID_String;
-            //    thisItem.SobekCM_Web.File_Root = String.Empty;
-            //    thisItem.SobekCM_Web.Image_Root = SobekCM_Library_Settings.Image_URL;
-            //    thisItem.SobekCM_Web.IP_Restriction_Membership = dbItem.IP_Range_Membership;
+            //    thisItem.Behaviors.GroupTitle = dbTitle.GroupTitle;
+            //    thisItem.Web.AssocFilePath = dbTitle.File_Root + "/" + dbItem.VID_String;
+            //    thisItem.Web.File_Root = String.Empty;
+            //    thisItem.Behaviors.Image_Root = SobekCM_Library_Settings.Image_URL;
+            //    thisItem.Behaviors.IP_Restriction_Membership = dbItem.IP_Range_Membership;
 
             //    string preview_citation = "PREVIEW CITATION";
             //    string preview_image = "PREVIEW IMAGE";
@@ -125,13 +125,13 @@ namespace SobekCM.Library.ResultsViewer
             //    resultsBldr.AppendLine("        <table cellspacing=\"6px\">");
 
             //    string mainTitleCompare = thisItem.Bib_Info.Main_Title.ToString().ToUpper().Replace(".", "").Replace("&QUOT;", "").Replace("&AMP;", "").Replace("&", "").Replace("\"", "").Replace(">","").Replace("<","").Trim();
-            //    string groupTitleCompare = thisItem.SobekCM_Web.GroupTitle.ToUpper().Replace(".", "").Replace("&QUOT;", "").Replace("&AMP;", "").Replace("&", "").Replace("\"", "").Replace(">", "").Replace("<", "").Trim();
+            //    string groupTitleCompare = thisItem.Behaviors.GroupTitle.ToUpper().Replace(".", "").Replace("&QUOT;", "").Replace("&AMP;", "").Replace("&", "").Replace("\"", "").Replace(">", "").Replace("<", "").Trim();
             //    if (mainTitleCompare != groupTitleCompare)
             //    {
             //        resultsBldr.AppendLine("          <tr valign=\"top\">");
             //        resultsBldr.AppendLine("            <td width=\"30px\"> </td>");
             //        resultsBldr.AppendLine("            <td><b>Group Title: </b></td>");
-            //        resultsBldr.AppendLine("            <td align=\"left\">" + thisItem.SobekCM_Web.GroupTitle.Replace("<","&lt;").Replace(">","&gt;") + "</td>");
+            //        resultsBldr.AppendLine("            <td align=\"left\">" + thisItem.Behaviors.GroupTitle.Replace("<","&lt;").Replace(">","&gt;") + "</td>");
             //        resultsBldr.AppendLine("          </tr>");
             //    }
 
@@ -152,7 +152,7 @@ namespace SobekCM.Library.ResultsViewer
 
             //    // If this is for an image, but it doesn't exist, skip it
             //    bool skip_image = false;
-            //    if (thisItem.SobekCM_Web.Main_Page.FileName.Length == 0)
+            //    if (thisItem.Behaviors.Main_Page.FileName.Length == 0)
             //    {
             //        skip_image = true;
             //    }
@@ -209,7 +209,7 @@ namespace SobekCM.Library.ResultsViewer
             //        else
             //        {
             //            resultsBldr.AppendLine("    <td align=\"center\" colspan=\"3\">");
-            //            string image_link = SobekCM_Library_Settings.Image_URL + thisItem.SobekCM_Web.AssocFilePath + "/" + thisItem.SobekCM_Web.Main_Page.FileName;
+            //            string image_link = SobekCM_Library_Settings.Image_URL + thisItem.Web.AssocFilePath + "/" + thisItem.Behaviors.Main_Page.FileName;
             //            resultsBldr.AppendLine("      <a href=\"" + full_item_link + "\"><img border=\"0\" src=\"" + image_link + "\" /></a>");
             //            resultsBldr.AppendLine("    </td>");
             //        }

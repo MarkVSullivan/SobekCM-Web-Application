@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Database;
 
 #endregion
@@ -174,7 +174,7 @@ namespace SobekCM.Library.Application_State
             titleLookupByBib[newTitle.BibID] = newTitle;
         }
 
-        /// <summary> Adds an single item ( as a <see cref="SobekCM.Bib_Package.SobekCM_Item"/> object) to the collections of items </summary>
+        /// <summary> Adds an single item ( as a <see cref="SobekCM.Resource_Object.SobekCM_Item"/> object) to the collections of items </summary>
         /// <param name="Item"> Single digital resource to add to the collection of items </param>
         /// <remarks> This does perform a multiple-check to see if volumes already exist for this title / item group </remarks>
         public void Add_SobekCM_Item(SobekCM_Item Item)
@@ -182,13 +182,13 @@ namespace SobekCM.Library.Application_State
             Add_SobekCM_Item(Item, true);
         }
 
-        /// <summary> Adds an single item ( as a <see cref="SobekCM.Bib_Package.SobekCM_Item"/> object) to the collections of items </summary>
+        /// <summary> Adds an single item ( as a <see cref="SobekCM.Resource_Object.SobekCM_Item"/> object) to the collections of items </summary>
         /// <param name="Item"> Single digital resource to add to the collection of items </param>
         /// <param name="check_for_multiples"> Flag indicates whether to perform a multiple-check to see if volumes already exist for this title / item group </param>
         public void Add_SobekCM_Item(SobekCM_Item Item, bool check_for_multiples)
         {
             // Create this item
-            Single_Item newItem = new Single_Item(Item.VID, Item.SobekCM_Web.IP_Restriction_Membership, Item.Bib_Info.Main_Title.ToString());
+            Single_Item newItem = new Single_Item(Item.VID, Item.Behaviors.IP_Restriction_Membership, Item.Bib_Info.Main_Title.ToString());
 
             // Add this to the existing title, or add a new one
             string bibId = Item.BibID;

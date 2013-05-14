@@ -5,9 +5,10 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Xml;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -41,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -49,15 +50,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Enter information about any related items here.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -209,7 +210,7 @@ namespace SobekCM.Library.Citation.Elements
                     popup_form_builder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_url_" + item_index + "', 'form_relateditem_large_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_url_" + item_index + "', 'form_relateditem_large_input')\" /></td></tr>");
 
                     // Add the system ID and ISSN row
-                    popup_form_builder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.UFDC_ID) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
+                    popup_form_builder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
                     popup_form_builder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(issn) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_issn_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_issn_" + item_index + "', 'form_relateditem_medium_input')\" /></td></tr>");
 
                     // Add the OCLC and LCCN row
@@ -306,7 +307,7 @@ namespace SobekCM.Library.Citation.Elements
                             newItem.Main_Title.Title = title;
                         }
                         newItem.URL = url;
-                        newItem.UFDC_ID = sobekid;
+                        newItem.SobekCM_ID = sobekid;
                         if (issn.Length > 0)
                             newItem.Add_Identifier(issn, "ISSN");
                         if (oclc.Length > 0)

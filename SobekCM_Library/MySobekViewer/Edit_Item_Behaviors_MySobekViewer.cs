@@ -4,8 +4,8 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Database;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -99,15 +99,15 @@ namespace SobekCM.Library.MySobekViewer
                 template.Save_To_Bib(item, user, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(item, item.SobekCM_Web.Text_Searchable, false );
+                SobekCM_Database.Save_Behaviors(item, item.Behaviors.Text_Searchable, false );
 
                 // Save the serial hierarchy as well (sort of a behavior)
-                SobekCM_Database.Save_Serial_Hierarchy_Information(item, item.SobekCM_Web.GroupID, item.SobekCM_Web.ItemID);
+                SobekCM_Database.Save_Serial_Hierarchy_Information(item, item.Web.GroupID, item.Web.ItemID);
 
                 // Did the tracking box change?
                 if (item.Tracking.Tracking_Box != oldTrackingBox)
                 {
-                    SobekCM_Database.Create_Full_Citation_Value(item.SobekCM_Web.ItemID);
+                    SobekCM_Database.Create_Full_Citation_Value(item.Web.ItemID);
                 }
 
                 // Remoe from the caches (to replace the other)

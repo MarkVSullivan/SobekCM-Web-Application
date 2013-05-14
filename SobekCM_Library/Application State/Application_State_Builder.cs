@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
 
 #endregion
@@ -68,6 +69,7 @@ namespace SobekCM.Library.Application_State
         /// <param name="Aggregation_Aliases"> [REF] List of all existing aliases for existing aggregations </param>
         /// <param name="IP_Restrictions"> [REF] List of all IP Restriction ranges in use by this digital library </param>
         /// <param name="URL_Portals"> [REF] List of all web portals into this system </param>
+        /// <param name="Mime_Types">[REF] Dictionary of MIME types by extension</param>
         public static void Build_Application_State(Custom_Tracer Tracer, bool Reload_All,
             ref SobekCM_Skin_Collection Skins, ref Language_Support_Info Translator,
             ref Aggregation_Code_Manager Code_Manager, ref Item_Lookup_Object All_Items_Lookup,
@@ -76,7 +78,8 @@ namespace SobekCM.Library.Application_State
             ref List<Thematic_Heading> Thematic_Headings,
             ref Dictionary<string, string> Aggregation_Aliases, 
             ref IP_Restriction_Ranges IP_Restrictions,
-            ref Portal_List URL_Portals)
+            ref Portal_List URL_Portals,
+            ref Dictionary<string, Mime_Type_Info> Mime_Types)
 		{
             // Should we reload the data from the exteral configuraiton file?
             if (Reload_All)
@@ -93,7 +96,7 @@ namespace SobekCM.Library.Application_State
             }
 
             // Set the database connection strings
-            Bib_Package.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
+            Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
             SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
 
             // Set the workflow and disposition types
@@ -285,6 +288,26 @@ namespace SobekCM.Library.Application_State
                     }
                 }
             }
+
+
+            // Get the MIME type list
+            if ((Mime_Types == null) || (Reload_All))
+            {
+                if (Mime_Types != null)
+                {
+                    // Get the translation hashes into memory
+                    lock (Mime_Types)
+                    {
+                        SobekCM_Database.Populate_MIME_List(Mime_Types, Tracer);
+                    }
+                }
+                else
+                {
+                    Mime_Types = new Dictionary<string, Mime_Type_Info>();
+                    SobekCM_Database.Populate_MIME_List(Mime_Types, Tracer);
+                }
+            }
+
 		}
 	}
 }

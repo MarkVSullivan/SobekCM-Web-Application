@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.SessionState;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
@@ -66,7 +67,7 @@ namespace SobekCM.Library.HTML
             if ((user.Is_Portal_Admin) && (!user.Is_System_Admin))
                 sobek_admin = "PORTAL ADMIN";
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 title = "INICIO";
                 collection_details = "DETALLES DE LA COLECCIÓN";
@@ -77,7 +78,7 @@ namespace SobekCM.Library.HTML
                 memory_mgmt_title = "Actual del uso de la memoria";
             }
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 title = "PAGE D'ACCUEIL";
                 collection_details = "DETAILS DE LA COLLECTION";
@@ -160,8 +161,9 @@ namespace SobekCM.Library.HTML
                 // Write the sobek admin tab
                 if ((user.Is_System_Admin) || ( user.Is_Portal_Admin ))
                 {
-                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Admin_Home;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_admin + Unselected_Tab_End + "</a>");
+                    currentMode.Mode = Display_Mode_Enum.Administrative;
+                    currentMode.Admin_Type = Admin_Type_Enum.Home;
+                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_admin + Unselected_Tab_End + "</a>");
                 }
                 currentMode.Mode = Display_Mode_Enum.Internal;
 
@@ -606,7 +608,7 @@ namespace SobekCM.Library.HTML
             string key = "KEY";
             string objectTitle = "OBJECT";
 
-                if (currentMode.Language == Language_Enum.French)
+                if (currentMode.Language == Web_Language_Enum.French)
                 {
                     global_values = "VALEURS MONIDAL";
                     application_state = "APPLICATAION LES VALEURS DE L'ÉTAT";
@@ -618,7 +620,7 @@ namespace SobekCM.Library.HTML
                     objectTitle = "Objet";
                 }
 
-                if (currentMode.Language == Language_Enum.Spanish)
+                if (currentMode.Language == Web_Language_Enum.Spanish)
                 {
                     global_values = "GLOBAL VALORES";
                     application_state = "APLICACIÓN ESTADO VALORES";
@@ -1273,7 +1275,7 @@ namespace SobekCM.Library.HTML
         {
             // Create the strings for the sub views
             const string bibid = "BIBID : VID";
-            string last_event = "LAST BUILD";
+            string last_event = "DATE";
             string mets_type = "METS TYPE";
             const string allTypes = "ALL";
 
@@ -1286,12 +1288,12 @@ namespace SobekCM.Library.HTML
 
             switch (currentMode.Language)
             {
-                case Language_Enum.French:
+                case Web_Language_Enum.French:
                     last_event = "Dernière année de construction";
                     mets_type = "Type de METS";
                     break;
 
-                case Language_Enum.Spanish:
+                case Web_Language_Enum.Spanish:
                     last_event = "Última Construido";
                     mets_type = "Tipe de METS";
                     break;
@@ -1546,7 +1548,7 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     Output.WriteLine("<br />");
-                    Output.WriteLine("<center>NO TRACKING INFORMATION FOR YOUR SELECTION.</center>");
+                    Output.WriteLine("<center>NO INFORMATION FOR YOUR SELECTION.</center>");
                     Output.WriteLine("<br />");
                 }
             }

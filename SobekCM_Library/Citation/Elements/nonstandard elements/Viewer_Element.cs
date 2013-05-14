@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.SobekCM_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -43,7 +44,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -51,15 +52,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Select the view types for this material when viewed online.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -91,13 +92,13 @@ namespace SobekCM.Library.Citation.Elements
             // Options = NONE, HTML, HTML_MAP, JPEG, JPEG2000, RELATED_IMAGES, TEXT, PAGE TURNER, GOOGLE MAP, EMPTY STRING
             // Get collection of all items
             List<View_Object> views = new List<View_Object>();
-            if (Bib.SobekCM_Web.Item_Level_Page_Views_Count > 0)
+            if (Bib.Behaviors.Item_Level_Page_Views_Count > 0)
             {
-                views.AddRange(Bib.SobekCM_Web.Item_Level_Page_Views);
+                views.AddRange(Bib.Behaviors.Item_Level_Page_Views);
             }
-            if (Bib.SobekCM_Web.Views_Count > 0)
+            if (Bib.Behaviors.Views_Count > 0)
             {
-                views.AddRange(Bib.SobekCM_Web.Views.Where(itemView => (itemView.View_Type != View_Enum.CITATION) && (itemView.View_Type != View_Enum.ALL_VOLUMES) && (itemView.View_Type != View_Enum.DOWNLOADS) && (itemView.View_Type != View_Enum.FLASH) && (itemView.View_Type != View_Enum.GOOGLE_MAP) && (itemView.View_Type != View_Enum.PDF) && (itemView.View_Type != View_Enum.TOC)));
+                views.AddRange(Bib.Behaviors.Views.Where(itemView => (itemView.View_Type != View_Enum.CITATION) && (itemView.View_Type != View_Enum.ALL_VOLUMES) && (itemView.View_Type != View_Enum.DOWNLOADS) && (itemView.View_Type != View_Enum.FLASH) && (itemView.View_Type != View_Enum.GOOGLE_MAP) && (itemView.View_Type != View_Enum.PDF) && (itemView.View_Type != View_Enum.TOC)));
             }
 
             if (views.Count == 0 )
@@ -114,6 +115,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.Write("<option value=\"pageturner\" >Page Turner</option>");
                 Output.Write("<option value=\"related\" >Related Images</option>");
                 Output.Write("<option value=\"text\" >Text</option>");
+                Output.Write("<option value=\"tei\" >TEI</option>");
                 Output.Write("</select>"); 
 
                 // Add the file sublabel
@@ -175,6 +177,10 @@ namespace SobekCM.Library.Citation.Elements
                                      ? "<option value=\"text\" selected=\"selected\" >Text</option>"
                                      : "<option value=\"text\" >Text</option>");
 
+                    Output.Write(views[i - 1].View_Type == View_Enum.TEI
+                                    ? "<option value=\"tei\" selected=\"selected\" >TEI</option>"
+                                    : "<option value=\"tei\" >TEI</option>");
+
                     Output.Write("</select>");
 
                     // Add the file sublabel
@@ -228,8 +234,8 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Clear the viewers
-            Bib.SobekCM_Web.Clear_Views();
-            Bib.SobekCM_Web.Clear_Item_Level_Page_Views();
+            Bib.Behaviors.Clear_Views();
+            Bib.Behaviors.Clear_Item_Level_Page_Views();
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -283,6 +289,10 @@ namespace SobekCM.Library.Citation.Elements
                         case "text":
                             viewType = View_Enum.TEXT;
                             break;
+
+                        case "tei":
+                            viewType = View_Enum.TEI;
+                            break;
                     }
 
                     // Get the details information for html and html map
@@ -299,7 +309,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
 
                     // Add this view
-                    Bib.SobekCM_Web.Add_View(viewType, label, file);
+                    Bib.Behaviors.Add_View(viewType, label, file);
                 }
             }
         }

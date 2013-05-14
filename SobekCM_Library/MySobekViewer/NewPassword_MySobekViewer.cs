@@ -143,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     else
                     {
-                        validationErrors.Add("Unable to change database.  Verify current password.");
+                        validationErrors.Add("Unable to change password.  Verify current password.");
                     }
                 }
             }

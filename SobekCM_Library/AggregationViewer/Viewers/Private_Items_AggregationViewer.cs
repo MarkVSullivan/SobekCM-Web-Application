@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -151,7 +152,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string next_page = "Next Page";
                 string last_page = "Last Page";
 
-                if (currentMode.Language == Language_Enum.Spanish)
+                if (currentMode.Language == Web_Language_Enum.Spanish)
                 {
                     first_page = "Primera Página";
                     previous_page = "Página Anterior";
@@ -159,7 +160,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     last_page = "Última Página";
                 }
 
-                if (currentMode.Language == Language_Enum.French)
+                if (currentMode.Language == Web_Language_Enum.French)
                 {
                     first_page = "Première Page";
                     previous_page = "Page Précédente";

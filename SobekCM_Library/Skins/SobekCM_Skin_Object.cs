@@ -102,8 +102,8 @@ namespace SobekCM.Library.Skins
         /// <param name="Footer_HTML"> HTML to use for the standard footer </param>
         internal void Set_Header_Footer_HTML(string Header_HTML, string Footer_HTML)
         {
-            this.Header_HTML = Header_HTML;
-            this.Footer_HTML = Footer_HTML;
+            this.Header_HTML = Header_HTML ?? String.Empty;
+            this.Footer_HTML = Footer_HTML ?? String.Empty;
             Header_Item_HTML = String.Empty;
             Footer_Item_HTML = String.Empty;
         }
@@ -115,10 +115,10 @@ namespace SobekCM.Library.Skins
         /// <param name="Footer_Item_HTML"> HTML to use for the item-specific footer (used when displaying an item in the item viewer)</param>
         internal void Set_Header_Footer_HTML(string Header_HTML, string Footer_HTML, string Header_Item_HTML, string Footer_Item_HTML)
         {
-            this.Header_HTML = Header_HTML;
-            this.Footer_HTML = Footer_HTML;
-            this.Header_Item_HTML = Header_Item_HTML;
-            this.Footer_Item_HTML = Footer_Item_HTML;
+            this.Header_HTML = Header_HTML ?? String.Empty;
+            this.Footer_HTML = Footer_HTML ?? String.Empty;
+            this.Header_Item_HTML = Header_Item_HTML ?? String.Empty;
+            this.Footer_Item_HTML = Footer_Item_HTML ?? String.Empty;
         }
 
         /// <summary> Method sets the header and footer by passing in the names for the source files containing the HTML for the headers and footers </summary>

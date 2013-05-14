@@ -167,9 +167,12 @@ namespace SobekCM.Library.Builder
 
         /// <summary> Moves all packages from the inbound folder into the processing folder
         /// to queue them for loading into the library  </summary>
+        /// <param name="Message"> Message to be passed out if something occurred during this attempted move </param>
         /// <returns> TRUE if successful, or FALSE if an error occurs </returns>
-        public bool Move_From_Inbound_To_Processing()
+        public bool Move_From_Inbound_To_Processing( out string Message )
         {
+            Message = String.Empty;
+
             // Get the directories
             string inboundFolder = Inbound_Folder;
 
@@ -182,6 +185,7 @@ namespace SobekCM.Library.Builder
                 }
                 catch
                 {
+                    Message = "Unable to create the non-existent inbound folder " + inboundFolder;
                     return false;
                 }
             }
@@ -195,23 +199,33 @@ namespace SobekCM.Library.Builder
                 }
                 catch
                 {
+                    Message = "Unable to create the non-existent processing folder " + Processing_Folder;
                     return false;
                 }
             }
 
             // If there are loose METS here, move them into flat folders of the same name
-            string[] looseMets = Directory.GetFiles(inboundFolder, "*.mets*");
-            foreach (string thisLooseMets in looseMets)
+            try
             {
-                string filename = (new FileInfo(thisLooseMets)).Name;
-                string[] filenameSplitter = filename.Split(".".ToCharArray());
-                if (!Directory.Exists(inboundFolder + "\\" + filenameSplitter[0]))
-                    Directory.CreateDirectory(inboundFolder + "\\" + filenameSplitter[0]);
-                if (File.Exists(inboundFolder + "\\" + filenameSplitter[0] + "\\" + filename))
-                    File.Delete(thisLooseMets);
-                else
-                    File.Move(thisLooseMets, inboundFolder + "\\" + filenameSplitter[0] + "\\" + filename);
+                string[] looseMets = Directory.GetFiles(inboundFolder, "*.mets*");
+                foreach (string thisLooseMets in looseMets)
+                {
+                    string filename = (new FileInfo(thisLooseMets)).Name;
+                    string[] filenameSplitter = filename.Split(".".ToCharArray());
+                    if (!Directory.Exists(inboundFolder + "\\" + filenameSplitter[0]))
+                        Directory.CreateDirectory(inboundFolder + "\\" + filenameSplitter[0]);
+                    if (File.Exists(inboundFolder + "\\" + filenameSplitter[0] + "\\" + filename))
+                        File.Delete(thisLooseMets);
+                    else
+                        File.Move(thisLooseMets, inboundFolder + "\\" + filenameSplitter[0] + "\\" + filename);
+                }
             }
+            catch (Exception ee)
+            {
+                Message = "Error moving the package from " + inboundFolder + " to " + Processing_Folder + ":" + ee.Message;
+                return false;
+            }
+
 
             // Get the list of all terminal directories
             IEnumerable<string> terminalDirectories = Get_Terminal_SubDirectories(inboundFolder);
@@ -229,6 +243,10 @@ namespace SobekCM.Library.Builder
                 {
                     if (!resource.Move(Processing_Folder))
                         returnVal = false;
+                }
+                else
+                {
+                    Message = "Resource ( " + resource.Resource_Folder + " ) needs to age more before it will be processed";
                 }
             }
 

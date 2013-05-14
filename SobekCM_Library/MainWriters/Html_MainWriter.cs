@@ -8,11 +8,12 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
-using SobekCM.Bib_Package.SobekCM_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Items;
@@ -56,6 +57,7 @@ namespace SobekCM.Library.MainWriters
         private Item_HtmlSubwriter itemWriter;
         private Search_Results_HtmlSubwriter resultsWriter;
         private MySobek_HtmlSubwriter mySobekWriter;
+        private Admin_HtmlSubwriter adminWriter;
 
         /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
@@ -244,7 +246,7 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
 
             // Start with the basic html at the beginning of the page
-            if (( currentMode.Mode != Display_Mode_Enum.Item_Print ) && ((currentMode.Mode != Display_Mode_Enum.My_Sobek) || ( !mySobekWriter.Contains_Popup_Forms )))
+            if (( currentMode.Mode != Display_Mode_Enum.Item_Print ) && ((currentMode.Mode != Display_Mode_Enum.My_Sobek) || ( !mySobekWriter.Contains_Popup_Forms )) && ((currentMode.Mode != Display_Mode_Enum.Administrative) || ( !adminWriter.Contains_Popup_Forms )))
             {
                 Display_Header(Output, Tracer);
             }
@@ -262,6 +264,16 @@ namespace SobekCM.Library.MainWriters
 
                         // Add HTML
                         finish_page = mySobekWriter.Write_HTML(Output, Tracer);
+                        break;
+
+                    #endregion
+
+                    #region Start adding HTML and controls for ADMINISTRATIVE mode
+
+                    case Display_Mode_Enum.Administrative:
+
+                        // Add HTML
+                        finish_page = adminWriter.Write_HTML(Output, Tracer);
                         break;
 
                     #endregion
@@ -284,11 +296,11 @@ namespace SobekCM.Library.MainWriters
                         Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Internal HTML Subwriter");
 
                         // Build the subwriter for this case
-                        Internal_HtmlSubwriter adminWriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager)
+                        Internal_HtmlSubwriter internalWriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager)
                                                                  { Mode = currentMode, Skin = htmlSkin, Hierarchy_Object = hierarchyObject };
 
                         // Add the pure HTML for this case and the page can be finished right here
-                        adminWriter.Write_HTML(Output, Tracer);
+                        internalWriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         break;
 
@@ -615,6 +627,46 @@ namespace SobekCM.Library.MainWriters
 
                 #endregion
 
+                #region Start adding HTML and controls for ADMINISTRATIVE mode
+
+                case Display_Mode_Enum.Administrative:
+
+                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building the admin HTML subwriter");
+
+                    // Build the my sobek subwriter
+                    adminWriter = new Admin_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
+                    subwriter = adminWriter;
+                    adminWriter.Hierarchy_Object = hierarchyObject;
+                    adminWriter.Skin = htmlSkin;
+                    adminWriter.Mode = currentMode;
+
+                    // If the my sobek writer contains pop up forms, add the header here first
+                    if (adminWriter.Contains_Popup_Forms)
+                    {
+                        StringBuilder header_builder = new StringBuilder();
+                        StringWriter header_writer = new StringWriter(header_builder);
+                        Display_Header(header_writer, Tracer);
+                        LiteralControl header_literal = new LiteralControl(header_builder.ToString());
+                        Main_Place_Holder.Controls.Add(header_literal);
+                    }
+
+                    // Add any necessary controls
+                    adminWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
+
+                    // Finally, add the footer
+                    if (adminWriter.Contains_Popup_Forms)
+                    {
+                        StringBuilder footer_builder = new StringBuilder();
+                        StringWriter footer_writer = new StringWriter(footer_builder);
+                        Display_Footer(footer_writer, Tracer);
+                        LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
+                        Main_Place_Holder.Controls.Add(footer_literal);
+                    }
+
+                    break;
+
+                #endregion
+
                 #region Start adding HTML and add controls for RESULTS mode
 
                 case Display_Mode_Enum.Results:
@@ -702,8 +754,8 @@ namespace SobekCM.Library.MainWriters
                         //    {
                         //        currentMode.ViewerCode = "GM";
                         //    }
-                        //    currentMode.ViewerCode = currentItem.SobekCM_Web.Get_Valid_Viewer_Code(currentMode.ViewerCode, currentMode.Page);
-                        //    SobekCM.Bib_Package.SobekCM_Info.View_Object viewObject = currentItem.SobekCM_Web.Get_Viewer(currentMode.ViewerCode);
+                        //    currentMode.ViewerCode = currentItem.Behaviors.Get_Valid_Viewer_Code(currentMode.ViewerCode, currentMode.Page);
+                        //    SobekCM.Resource_Object.Behaviors.View_Object viewObject = currentItem.Behaviors.Get_Viewer(currentMode.ViewerCode);
                         //    page_viewer = SobekCM.Library.ItemViewer.Viewers.ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.Type.Type.ToUpper());
 
                         //    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + page_viewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
@@ -739,9 +791,9 @@ namespace SobekCM.Library.MainWriters
 
                         // Check that this item is not checked out by another user
                         bool itemCheckedOutByOtherUser = false;
-                        if (currentItem.SobekCM_Web.CheckOut_Required)
+                        if (currentItem.Behaviors.CheckOut_Required)
                         {
-                            if (!checkedItems.Check_Out(currentItem.SobekCM_Web.ItemID, HttpContext.Current.Request.UserHostAddress))
+                            if (!checkedItems.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
                             {
                                 itemCheckedOutByOtherUser = true;
                             }
@@ -749,15 +801,15 @@ namespace SobekCM.Library.MainWriters
 
                         // Check to see if this is IP restricted
                         string restriction_message = String.Empty;
-                        if (currentItem.SobekCM_Web.IP_Restriction_Membership > 0)
+                        if (currentItem.Behaviors.IP_Restriction_Membership > 0)
                         {
                             if (HttpContext.Current != null)
                             {
                                 int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
-                                int comparison = currentItem.SobekCM_Web.IP_Restriction_Membership & user_mask;
+                                int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                                 if (comparison == 0)
                                 {
-                                    int restriction = currentItem.SobekCM_Web.IP_Restriction_Membership;
+                                    int restriction = currentItem.Behaviors.IP_Restriction_Membership;
                                     int restriction_counter = 0;
                                     while (restriction % 2 != 1)
                                     {
@@ -819,6 +871,13 @@ namespace SobekCM.Library.MainWriters
                 return;
             }
 
+            if (currentMode.Mode == Display_Mode_Enum.Administrative)
+            {
+
+                adminWriter.Add_Additional_HTML(Output, Tracer);
+                return;
+            }
+
             if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && !((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item)))
             {
                 Tracer.Add_Trace("Html_MainWriter.Add_Additional_HTML", "No html rendered");
@@ -847,6 +906,8 @@ namespace SobekCM.Library.MainWriters
 
             // The my Sobek viewer closes its own footer since it must be in the form as well.
             if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ( mySobekWriter.Contains_Popup_Forms ))
+                return;
+            if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (adminWriter.Contains_Popup_Forms))
                 return;
 
             if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && (resultsWriter == null) && ( currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
@@ -958,7 +1019,8 @@ namespace SobekCM.Library.MainWriters
             Tracer.Add_Trace("Html_MainWriter.Get_Body_Attributes", "Adding body attributes to HTML");
 
             StringBuilder onload_builder = new StringBuilder();
-            string onunload = String.Empty;
+      //      string onunload = String.Empty;
+            string onresize = String.Empty;
 
             switch (currentMode.Mode)
             {
@@ -972,6 +1034,8 @@ namespace SobekCM.Library.MainWriters
                     {
                         onload_builder.Append("load();");
                     }
+                    onload_builder.Append("itemwriter_load();");
+                    onresize = "  onresize=\"itemwriter_load();\"";
                     break;
 
                 case Display_Mode_Enum.Results:
@@ -1017,7 +1081,7 @@ namespace SobekCM.Library.MainWriters
 
             if (onload_builder.Length > 0)
             {
-                return (onunload.Length == 0) ?  " onload=\"" + onload_builder + "\"" : " onload=\"" + onload_builder + "\"" + onunload;
+                return (onresize.Length == 0) ? " onload=\"" + onload_builder + "\"" : " onload=\"" + onload_builder + "\"" + onresize;
             }
 
             return String.Empty;
@@ -1065,7 +1129,7 @@ namespace SobekCM.Library.MainWriters
                     }
                     else
                     {
-                        thisTitle = thisTitle + " Home Page";
+                        thisTitle = thisTitle + " Home";
                     }
                     break;
 
@@ -1117,6 +1181,10 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Simple_HTML_CMS:
                     thisTitle = htmlBasedContent.Title;
                     break;
+
+                case Display_Mode_Enum.Administrative:
+                    thisTitle = thisTitle + " System Administration";
+                    break;
             }
 
             return thisTitle;
@@ -1142,6 +1210,7 @@ namespace SobekCM.Library.MainWriters
                     break;
 
                 case Display_Mode_Enum.My_Sobek:
+                case Display_Mode_Enum.Administrative:
                 case Display_Mode_Enum.Results:
                 case Display_Mode_Enum.Contact:
                     Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
@@ -1177,6 +1246,17 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
+
+
+            // Write the style sheet to use 
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
+            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || ( currentMode.Mode == Display_Mode_Enum.Item_Print ))
+            {
+                // Write the style sheet to use 
+                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            }
+
             // Special CSS when printing an item from the selection menu
             if (currentMode.Mode == Display_Mode_Enum.Item_Print)
             {
@@ -1184,9 +1264,6 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
                 return;
             }
-
-            // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // Include the interface's style sheet if it has one
             if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
@@ -1198,9 +1275,9 @@ namespace SobekCM.Library.MainWriters
 
             // If this is either my sobek or the basic text, include the my sobek css (since metadata help
             // pages are displayed through the TEXT mode.
-            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) || (currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
+            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) || (currentMode.Mode == Display_Mode_Enum.Administrative) || (currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
             {
-                if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Aggregations_Mgmt) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Forwarding) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Interfaces) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Users) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Wordmarks) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Projects) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_IP_Restrictions) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_User_Groups) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_URL_Portals) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Builder_Status) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Settings) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Thematic_Headings) || ( currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Aggregation_Single ))
+                if (currentMode.Mode == Display_Mode_Enum.Administrative )
                 {
                     Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
 
@@ -1210,7 +1287,7 @@ namespace SobekCM.Library.MainWriters
                     //Output.WriteLine("  </style>");
                     
                     // If editing projects, add the mySobek stylesheet as well
-                    if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Admin_Projects) && ( currentMode.My_Sobek_SubMode.Length > 0 ))
+                    if ((currentMode.Admin_Type == Admin_Type_Enum.Projects) && ( currentMode.My_Sobek_SubMode.Length > 0 ))
                     {
                         Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
 
@@ -1266,7 +1343,7 @@ namespace SobekCM.Library.MainWriters
             // Add a thumbnail to this item
             if (currentItem != null)
             {
-                string image_src = currentMode.Base_URL + "/" + currentItem.SobekCM_Web.AssocFilePath + "/" + currentItem.SobekCM_Web.Main_Thumbnail;
+                string image_src = currentMode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
 
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\","/").Replace("//","/") + "\" />");
             }
@@ -1314,7 +1391,7 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<a name=\"top\"></a>");
 
             // Should the internal header be added?
-            if (( subwriter != null ) && ( currentMode.Mode != Display_Mode_Enum.My_Sobek ) && (currentUser != null))
+            if ((subwriter != null) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative) && (currentUser != null))
             {
 
                 bool displayHeader = false;
@@ -1368,7 +1445,7 @@ namespace SobekCM.Library.MainWriters
                         Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader\">");
                         Output.WriteLine("    <tr>");
                         Output.WriteLine("      <td align=\"left\">");
-                        Output.WriteLine("        <button title=\"Show Internal Header\" class=\"intheader_button show_intheader_button\" onclick=\"return show_internal_header();\"></button>");
+                        Output.WriteLine("        <button title=\"Show Internal Header\" class=\"intheader_button_aggr show_intheader_button_aggr\" onclick=\"return show_internal_header();\"></button>");
                         Output.WriteLine("      </td>");
                         Output.WriteLine("    </tr>");
                         Output.WriteLine("  </table>"); 
@@ -1410,9 +1487,9 @@ namespace SobekCM.Library.MainWriters
 
                     if (currentItem != null)
                     {
-                        if (currentItem.SobekCM_Web.Aggregation_Count > 0)
+                        if (currentItem.Behaviors.Aggregation_Count > 0)
                         {
-                            foreach (Aggregation_Info aggregation in currentItem.SobekCM_Web.Aggregations)
+                            foreach (Aggregation_Info aggregation in currentItem.Behaviors.Aggregations)
                             {
                                 string aggrCode = aggregation.Code;
                                 if (aggrCode.ToLower() != currentMode.Aggregation)
@@ -1582,28 +1659,19 @@ namespace SobekCM.Library.MainWriters
 
 
             // Get the language selections
-            Language_Enum language = currentMode.Language;
-            currentMode.Language = Language_Enum.Template;
+            Web_Language_Enum language = currentMode.Language;
+            currentMode.Language = Web_Language_Enum.TEMPLATE;
             string template_language = currentMode.Redirect_URL();
             string english = template_language.Replace("l=XXXXX", "l=en");
             string french = template_language.Replace("l=XXXXX", "l=fr");
             string spanish = template_language.Replace("l=XXXXX", "l=es");
             currentMode.Language = language;
 
-            // Get the graphics selections
-            string high_graphics = template_language.Replace("?ba=s", "?").Replace("&ba=s", "").Replace("l=XXXXX", "");
-            string low_graphics = high_graphics + "&ba=s";
-            if (high_graphics.IndexOf("?") < 0)
-            {
-                low_graphics = high_graphics + "?ba=s";
-            }
-
             if (currentMode.Is_Robot)
             {
                 english = String.Empty;
                 french = String.Empty;
                 spanish = String.Empty;
-                low_graphics = String.Empty;
             }
 
             // Determine which container to use, depending on the current mode
@@ -1703,34 +1771,35 @@ namespace SobekCM.Library.MainWriters
             switch (currentMode.Mode)
             {
                 case Display_Mode_Enum.Item_Display:
-                    Output.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                    Output.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
 
                 case Display_Mode_Enum.Results:
                 case Display_Mode_Enum.Aggregation_Browse_Info:
                     if (paged_results != null)
                     {
-                        Output.WriteLine("<div id=\"container-facets\">" + Environment.NewLine + htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                        Output.WriteLine("<div id=\"container-facets\">" + Environment.NewLine + htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     }
                     else
                     {
-                        Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                        Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     }
                     break;
 
                 case Display_Mode_Enum.Aggregation_Browse_By:
-                    Output.WriteLine("<div id=\"container-facets\"><div>" + Environment.NewLine + htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                    Output.WriteLine("<div id=\"container-facets\"><div>" + Environment.NewLine + htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
 
                 case Display_Mode_Enum.Simple_HTML_CMS:
                     Output.WriteLine(siteMap != null
-                                         ? htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url)
-                                         : htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                                         ? htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url)
+                                         : htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
                     
 
                 default:
-                    Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%LOWGRAPHICS%>", low_graphics).Replace("<%HIGHGRAPHICS%>", high_graphics).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+                    string headerTemp = htmlSkin.Header_HTML ?? String.Empty;
+                    Output.WriteLine(headerTemp.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
             }
 
@@ -1841,56 +1910,60 @@ namespace SobekCM.Library.MainWriters
 
         private static void Email_Information(string email_title, Exception objErr, Custom_Tracer Tracer, bool Redirect )
         {
-            try
+            // Is ther an error email address in the configuration?
+            if (SobekCM_Library_Settings.System_Error_Email.Length > 0)
             {
-                // Build the error message
-                string err;
-                if (objErr != null)
+                try
                 {
-                    if (objErr.InnerException != null)
+                    // Build the error message
+                    string err;
+                    if (objErr != null)
                     {
-                        err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                              "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
-                              "Error Message: " + objErr.Message + "<br /><br />" +
-                              "Inner Exception: " + objErr.InnerException.Message + "<br /><br />" +
-                              "Stack Trace: " + objErr.InnerException.StackTrace + "<br /><br />";
+                        if (objErr.InnerException != null)
+                        {
+                            err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
+                                  "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error Message: " + objErr.Message + "<br /><br />" +
+                                  "Inner Exception: " + objErr.InnerException.Message + "<br /><br />" +
+                                  "Stack Trace: " + objErr.InnerException.StackTrace + "<br /><br />";
+                        }
+                        else
+                        {
+                            err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
+                                  "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error Message: " + objErr.Message + "<br /><br />" +
+                                  "Stack Trace: " + objErr.StackTrace + "<br /><br />";
+
+                        }
+
+                        if (objErr.Message.IndexOf("Timeout expired") >= 0)
+                            email_title = "Database Timeout Expired";
                     }
                     else
                     {
-                        err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                              "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
-                              "Error Message: " + objErr.Message + "<br /><br />" +
-                              "Stack Trace: " + objErr.StackTrace + "<br /><br />";
-
+                        err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />";
                     }
 
-                    if (objErr.Message.IndexOf("Timeout expired") >= 0)
-                        email_title = "Database Timeout Expired";
+                    // Email the error message
+                    if (Tracer != null)
+                    {
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1);
+                    }
+                    else
+                    {
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1);
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />";
+                    // Failed to send the email.. but not much else to do here really
                 }
-
-                // Email the error message
-                if (Tracer != null)
-                {
-                    SobekCM_Database.Send_Database_Email(ConfigurationManager.AppSettings["Error_Emails"], email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1);
-                }
-                else
-                {
-                    SobekCM_Database.Send_Database_Email(ConfigurationManager.AppSettings["Error_Emails"], email_title, err, true, false, -1);
-                }
-            }
-            catch(Exception)
-            {
-                // Failed to send the email.. but not much else to do here really
             }
 
             // Forward to our error message
             if (Redirect)
             {
-                HttpContext.Current.Response.Redirect(ConfigurationManager.AppSettings["Error_HTML_Page"]);
+                HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL);
             }
         }
 

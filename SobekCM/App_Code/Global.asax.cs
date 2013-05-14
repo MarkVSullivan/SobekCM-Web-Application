@@ -7,6 +7,7 @@ using System.Web;
 using SobekCM.Library;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
 using darrenjohnstone.net.FileUpload;
 
@@ -31,25 +32,7 @@ public class Global : HttpApplication
     public static List<Thematic_Heading> Thematic_Headings;
     public static Language_Support_Info Translation;
     public static Portal_List URL_Portals;
-
-
-    //void Application_Start(object sender, EventArgs e)
-    //{
-    //        // This sets up the default processor
-    //        UploadManager.Instance.ProcessorType = typeof(DummyProcessor);
-    //        UploadManager.Instance.ProcessorInit += Processor_Init;
-    //}
-
-    ///// <summary>
-    ///// Initialises the file processor.
-    ///// </summary>
-    ///// <param name="sender">Sender</param>
-    ///// <param name="args">Arguments</param>
-    //void Processor_Init(object sender, FileProcessorInitEventArgs args)
-    //{
-    //}
-
-
+    public static Dictionary<string, Mime_Type_Info> Mime_Types; 
 
     void Application_Error(object sender, EventArgs e)
     {
@@ -57,8 +40,8 @@ public class Global : HttpApplication
         Exception objErr = Server.GetLastError();
         if (objErr == null)
             return;
-        if ((objErr != null) && (objErr.GetBaseException() != null))
-            objErr = objErr.GetBaseException();
+
+        objErr = objErr.GetBaseException();
 
         try
         {
@@ -104,48 +87,6 @@ public class Global : HttpApplication
                 {
                     // Nothing else to do here.. no other known way to log this error
                 }
-
-                  
-
-                //try
-                //{
-                //    string err = Request.UserHostAddress + "\n\nError Caught in Application_Error event\nError in: " + Request.Url.ToString();
-                //    if (objErr is SobekCM.Library.SobekCM_Traced_Exception)
-                //    {
-                //        SobekCM.Library.SobekCM_Traced_Exception sobekException = (SobekCM.Library.SobekCM_Traced_Exception)objErr;
-
-                //        err = err + "\nError Message:" + sobekException.InnerException.Message.ToString() +
-                //            "\nStack Trace:" + sobekException.InnerException.StackTrace.ToString() + "\n\n" +
-                //            sobekException.Trace_Route;
-                //    }
-                //    else
-                //    {
-                //        // Build the error message
-                //        err = err + "\nError Message:" + objErr.Message.ToString() +
-                //            "\nStack Trace:" + objErr.StackTrace.ToString();
-                //    }
-
-                //    // Email the error message
-                //    System.Net.Mail.MailMessage myMail = new System.Net.Mail.MailMessage("ufdc_error@uflib.ufl.edu", System.Configuration.ConfigurationSettings.AppSettings["Error_Emails"]);
-                //    if ((objErr.Message.IndexOf("Timeout expired") >= 0) && (objErr.StackTrace.IndexOf("Database") >= 0))
-                //    {
-                //        myMail.Subject = "SobekCM Database Timeout Error";
-                //    }
-                //    else
-                //    {
-                //        myMail.Subject = "SobekCM Exception Caught";
-                //    }
-                //    myMail.Body = err;
-
-                //    // Mail this
-                //    System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient("smtp.ufl.edu");
-
-                //    client.Send(myMail);
-                //}
-                //catch
-                //{
-
-                //}
             }
         }
         catch ( Exception )
@@ -183,10 +124,6 @@ public class Global : HttpApplication
                         Response.Redirect("http://ufdc.ufl.edu/sobekcm/missing_config", true);
                     }
                 }
-                
-
-                // Forward to our error message
-               // Response.Redirect(System.Configuration.ConfigurationSettings.AppSettings["Error_HTML_Page"]);
             }
             catch (Exception)
             {

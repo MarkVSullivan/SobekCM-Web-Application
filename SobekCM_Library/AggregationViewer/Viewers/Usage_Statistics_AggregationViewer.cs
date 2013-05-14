@@ -77,11 +77,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             switch (submode)
             {
                 case "views":
-                    Output.WriteLine("<h1>History of Collection-Level Usage</h1>");
+                    Output.WriteLine("<h1>Work_History of Collection-Level Usage</h1>");
                     break;
 
                 case "itemviews":
-                    Output.WriteLine("<h1>History of Item Usage</h1>");
+                    Output.WriteLine("<h1>Work_History of Item Usage</h1>");
                     break;
 
                 case "titles":
@@ -376,7 +376,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_collection_history", "Rendering HTML");
 
             Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<p>Usage history for this collection is displayed below. This history includes just the top-level views of the collection.</p>");
+            Output.WriteLine("<p>Usage history for the items within this collection are displayed below.</p>");
 
             currentMode.Info_Browse_Mode = "definitions";
             Output.WriteLine("<p>The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");

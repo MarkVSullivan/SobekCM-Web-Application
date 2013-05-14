@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Xml;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 
 #endregion
@@ -279,12 +280,12 @@ namespace SobekCM.Library.Aggregations
                             {
                                 string bodyLanguage = nodeReader.GetAttribute("lang");
                                 nodeReader.Read();
-                                hierarchyObject.Add_Home_Page_File(  nodeReader.Value, Language_Enum_Converter.Code_To_Language_Enum(bodyLanguage));
+                                hierarchyObject.Add_Home_Page_File(  nodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(bodyLanguage));
                             }
                             else
                             {
                                 nodeReader.Read();
-                                hierarchyObject.Add_Home_Page_File( nodeReader.Value, Language_Enum.DEFAULT);
+                                hierarchyObject.Add_Home_Page_File( nodeReader.Value, Web_Language_Enum.DEFAULT);
                             }
 
                             break;
@@ -334,11 +335,11 @@ namespace SobekCM.Library.Aggregations
                             nodeReader.Read();
                             if (special)
                             {
-                                hierarchyObject.Add_Front_Banner_Image(nodeReader.Value, Language_Enum_Converter.Code_To_Language_Enum( lang));
+                                hierarchyObject.Add_Front_Banner_Image(nodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum( lang));
                             }
                             else
                             {
-                                hierarchyObject.Add_Banner_Image(nodeReader.Value, Language_Enum_Converter.Code_To_Language_Enum(lang));
+                                hierarchyObject.Add_Banner_Image(nodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(lang));
                             }
 
 
@@ -480,7 +481,7 @@ namespace SobekCM.Library.Aggregations
                             if ((nodeReader.HasAttributes) && (nodeReader.MoveToAttribute("lang")))
                                 languageText = nodeReader.Value.ToUpper();
                             nodeReader.Read();
-                            highlight.Add_Tooltip( Language_Enum_Converter.Code_To_Language_Enum(languageText), nodeReader.Value );
+                            highlight.Add_Tooltip( Web_Language_Enum_Converter.Code_To_Enum(languageText), nodeReader.Value );
                             break;
 
                         case "HI:TEXT":
@@ -488,7 +489,7 @@ namespace SobekCM.Library.Aggregations
                             if ((nodeReader.HasAttributes) && (nodeReader.MoveToAttribute("lang")))
                                 languageText = nodeReader.Value.ToUpper();
                             nodeReader.Read();
-                            highlight.Add_Text(Language_Enum_Converter.Code_To_Language_Enum(languageText), nodeReader.Value);
+                            highlight.Add_Text(Web_Language_Enum_Converter.Code_To_Enum(languageText), nodeReader.Value);
                             break;
                     }
                 }
@@ -581,7 +582,7 @@ namespace SobekCM.Library.Aggregations
                             
                             // read and save the title
                             nodeReader.Read();
-                            newBrowse.Add_Label( nodeReader.Value, Language_Enum_Converter.Code_To_Language_Enum(titleLanguage));
+                            newBrowse.Add_Label( nodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(titleLanguage));
                             break;
 
                         case "HI:BODY":
@@ -595,7 +596,7 @@ namespace SobekCM.Library.Aggregations
                             // read and save the title
                             nodeReader.Read();
                             string bodySource = nodeReader.Value;
-                            newBrowse.Add_Static_HTML_Source(bodySource, Language_Enum_Converter.Code_To_Language_Enum(bodyLanguage));
+                            newBrowse.Add_Static_HTML_Source(bodySource, Web_Language_Enum_Converter.Code_To_Enum(bodyLanguage));
                             break;
                     }
                 }

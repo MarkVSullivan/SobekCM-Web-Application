@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
@@ -104,17 +104,17 @@ namespace SobekCM.Library.MainWriters
                 {
                     int first_page_to_show = (currentMode.Page - 1) * 20;
                     int last_page_to_show = (currentMode.Page * 20) - 1;
-                    if (first_page_to_show < currentItem.SobekCM_Web.Static_PageCount)
+                    if (first_page_to_show < currentItem.Web.Static_PageCount)
                     {
                         int page = first_page_to_show;
                         string jpeg_to_view = String.Empty;
-                        while ((page < currentItem.SobekCM_Web.Static_PageCount) && (page <= last_page_to_show))
+                        while ((page < currentItem.Web.Static_PageCount) && (page <= last_page_to_show))
                         {
-                            Page_TreeNode thisPage = currentItem.SobekCM_Web.Pages_By_Sequence[page];
+                            Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page];
                             bool found = false;
                             foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.System_Name.ToUpper().IndexOf(".JPG") > 0))
                             {
-                                jpeg_to_view = currentGreenstoneImageRoot + currentItem.SobekCM_Web.AssocFilePath + "/" + thisFile.System_Name;
+                                jpeg_to_view = currentGreenstoneImageRoot + currentItem.Web.AssocFilePath + "/" + thisFile.System_Name;
                                 found = true;
                                 break;
                             }
@@ -133,19 +133,19 @@ namespace SobekCM.Library.MainWriters
                 {
                     // Get the list of all TEXT files
                     List<string> existing_text_files = new List<string>();
-                    if (Directory.Exists(SobekCM_Library_Settings.Image_Server_Network + currentItem.SobekCM_Web.AssocFilePath))
+                    if (Directory.Exists(SobekCM_Library_Settings.Image_Server_Network + currentItem.Web.AssocFilePath))
                     {
-                        string[] allFiles = Directory.GetFiles(SobekCM_Library_Settings.Image_Server_Network + currentItem.SobekCM_Web.AssocFilePath, "*.txt");
+                        string[] allFiles = Directory.GetFiles(SobekCM_Library_Settings.Image_Server_Network + currentItem.Web.AssocFilePath, "*.txt");
                         existing_text_files.AddRange(allFiles.Select(thisFile => (new FileInfo(thisFile)).Name.ToUpper()));
                     }
 
 
                     int page = 0;
                     string jpeg_to_view = String.Empty;
-                    while (page < currentItem.SobekCM_Web.Static_PageCount)
+                    while (page < currentItem.Web.Static_PageCount)
                     {
                         string text_to_read = String.Empty;
-                        Page_TreeNode thisPage = currentItem.SobekCM_Web.Pages_By_Sequence[page];
+                        Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page];
                         bool found = false;
                         foreach (SobekCM_File_Info thisFile in thisPage.Files)
                         {
@@ -153,9 +153,9 @@ namespace SobekCM.Library.MainWriters
                             {
                                 if (existing_text_files.Contains(thisFile.System_Name.ToUpper().Replace(".JPG", "") + ".TXT"))
                                 {
-                                    text_to_read = currentGreenstoneImageRoot + currentItem.SobekCM_Web.AssocFilePath + "/" + thisFile.System_Name.Replace(".JPG", ".TXT").Replace(".jpg", ".txt");
+                                    text_to_read = currentGreenstoneImageRoot + currentItem.Web.AssocFilePath + "/" + thisFile.System_Name.Replace(".JPG", ".TXT").Replace(".jpg", ".txt");
                                 }
-                                jpeg_to_view = currentGreenstoneImageRoot + currentItem.SobekCM_Web.AssocFilePath + "/" + thisFile.System_Name;
+                                jpeg_to_view = currentGreenstoneImageRoot + currentItem.Web.AssocFilePath + "/" + thisFile.System_Name;
                                 found = true;
                                 break;
                             }

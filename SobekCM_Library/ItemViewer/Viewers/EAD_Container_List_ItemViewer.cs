@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package.EAD;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.EAD;
 
 #endregion
 
@@ -33,12 +34,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -78,6 +79,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("EAD_Container_List_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
             }
 
+            // Get the metadata module for EADs
+            EAD_Info eadInfo = (EAD_Info) CurrentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+
             // Build any search terms
             List<string> terms = new List<string>();
             if (CurrentMode.Text_Search.Length > 0)
@@ -102,7 +106,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Step through the top level first
-            foreach( Component_Info container in CurrentItem.EAD.Container_Hierarchy.C_Tags )
+            foreach (Container_Info container in eadInfo.Container_Hierarchy.Containers)
             {
                 // Add this container title and date information first
                 builder.Append("<h2>" + container.Unit_Title);
@@ -141,7 +145,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
 
                     // Add each child tree node
-                    foreach (Component_Info child in container.Children)
+                    foreach (Container_Info child in container.Children)
                     {
                         // Add this node
                         TreeNode childNode = new TreeNode(child.Unit_Title) {SelectAction = TreeNodeSelectAction.None};
@@ -168,9 +172,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
 
                         // Add the grand children
-                        if (child.Children.Count > 0)
+                        if (child.Children_Count > 0)
                         {
-                            foreach (Component_Info grandChild in child.Children)
+                            foreach (Container_Info grandChild in child.Children)
                             {
                                 // Add this node
                                 TreeNode grandChildNode = new TreeNode(grandChild.Unit_Title)

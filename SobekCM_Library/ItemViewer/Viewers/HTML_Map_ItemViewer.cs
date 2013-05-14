@@ -89,10 +89,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("\t\t<tr><td align=\"center\">" );
 
             builder.AppendLine("<b>CLICK ON A LINK BELOW TO VIEW A MAP SHEET</b>");
-            builder.AppendLine("\t\t\t<img src=\"" + CurrentItem.SobekCM_Web.Source_URL + "/" + imageFile + "\" usemap=\"#Map\" alt=\"Click on a sheet in the map to view a sheet\" />" );
+            builder.AppendLine("\t\t\t<img src=\"" + CurrentItem.Web.Source_URL + "/" + imageFile + "\" usemap=\"#Map\" alt=\"Click on a sheet in the map to view a sheet\" />" );
 
             // Try to get the HTML for this
-            string map = Get_Html_Page(CurrentItem.SobekCM_Web.Source_URL + "/" + htmlFile, Tracer);
+            string map = Get_Html_Page(CurrentItem.Web.Source_URL + "/" + htmlFile, Tracer);
 
             // Get the link for this item
             string itemLink = CurrentMode.Base_URL + "?b=" + CurrentItem.BibID + "&v=" + CurrentItem.VID;

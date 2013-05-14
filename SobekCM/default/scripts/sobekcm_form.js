@@ -81,6 +81,36 @@ function blanket_size(popUpDivVar, linkname, windowheight ) {
 	}
 }
 
+function blanket_size(popUpDivVar, windowheight) {
+    if (typeof window.innerWidth != 'undefined') {
+        viewportheight = window.innerHeight;
+    } else {
+        viewportheight = document.documentElement.clientHeight;
+    }
+    if ((viewportheight > document.body.parentNode.scrollHeight) && (viewportheight > document.body.parentNode.clientHeight)) {
+        blanket_height = viewportheight;
+    } else {
+        if (document.body.parentNode.clientHeight > document.body.parentNode.scrollHeight) {
+            blanket_height = document.body.parentNode.clientHeight;
+        } else {
+            blanket_height = document.body.parentNode.scrollHeight;
+        }
+    }
+
+    blanket_height = blanket_height + 100;
+    var blanket = document.getElementById('blanket_outer');
+    if (blanket != null)
+        blanket.style.height = blanket_height + 'px';
+
+
+    //popUpDiv_height=350; // blanket_height/2-150;//150 is half popup's height
+    //popUpDiv.style.top = popUpDiv_height + 'px';
+
+    var popUpDiv = document.getElementById(popUpDivVar);
+    //maybe_top = ((blanket_height - 100 )/ 2) - windowheight;
+    popUpDiv.style.top = 150;
+}
+
 function window_pos(popUpDivVar, windowwidth) {
 	if (typeof window.innerWidth != 'undefined') {
 		viewportwidth = window.innerHeight;
@@ -214,8 +244,11 @@ function findTop(obj) {
 	return curtop;
 }
 
-function open_new_bookshelf_folder()
+
+
+function open_new_bookshelf_folder() 
 {
+
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('item_action');
     hiddenfield.value = 'new_bookshelf';
@@ -290,93 +323,6 @@ function move_form_close( )
 }
 
 
-// Populate the print form and show it
-function print_form_open(linkname ) 
-{
-    // Populate the hidden value this data
-    var hiddenfield = document.getElementById('item_action');
-    hiddenfield.value = 'print';
-     
-    // Toggle the interface form
-	blanket_size('form_print', linkname, -36 );
-	window_pos('form_print', 532);
-	toggle('blanket_outer');
-	toggle('form_print');	
-	
-	// Create the draggable object to allow this window to be dragged around
-	$("#form_print").draggable();
-		
-	return false;
-} 
-
-// Form was closed (cancelled) so clear all the data
-function print_form_close( )
-{
-    // Clear the hidden value this data
-    var hiddenfield = document.getElementById('item_action');
-    hiddenfield.value = '';
-       
-    // Close the associated form
-    popdown( 'form_print' );    
-    
-    // Return false to prevent a return trip to the server
-    return false;
-}
-
-// Print the view the user requested
-function print_item( page, url_start, url_options )
-{
-    // Close the associated form
-    popdown( 'form_print' );    
-    
-    // CAN NOT USE THE OPTION BELOW SINCE THE RADIO BUTTONS HAVE UNIQUE
-    // IDS TO ENABLE THE LABELS TO WORK
-    //var print_option = document.itemNavForm.print_pages.value;
-
-    var url_ender = "JJ" + page;
-    
-    var include_citation = '0';
-    var print_citation_button = document.getElementById('print_citation');
-    if ( print_citation_button.checked == true )
-        include_citation = '1';
-    
-    var citation_only_button = document.getElementById('citation_only');
-    if ( citation_only_button.checked == true )
-        url_ender = "FC";
-        
-    var contact_sheet_button = document.getElementById('contact_sheet');
-    if (( contact_sheet_button != null ) && ( contact_sheet_button.checked == true ))
-        url_ender = "RI";
-        
-    var all_pages_button = document.getElementById('all_pages');
-    if (( all_pages_button != null ) && ( all_pages_button.checked == true ))
-        url_ender = "JJ*";
-        
-    var tracking_sheet_button = document.getElementById('tracking_sheet');
-    if (( tracking_sheet_button != null ) && ( tracking_sheet_button.checked == true ))
-        url_ender = "TR";
-        
-    var range_button = document.getElementById('range_page');
-    if (( range_button != null ) && ( range_button.checked == true ))
-    {
-        var range_from_select = document.getElementById('print_from');
-        var range_to_select = document.getElementById('print_to');
-        url_ender = "JJ" + range_from_select.value + "-" + range_to_select.value;
-    }
-    
-    var current_view_button = document.getElementById('current_view');
-    if (( current_view_button != null ) && ( current_view_button.checked = true ))
-    {
-        url_ender = "XX" + page;
-    }
-
-    // Open new window
-    var new_url = url_start + '?options=' + include_citation + url_ender + url_options;
-    window.open(new_url, "item_print_window", "status=0,toolbar=0,location=0,menubar=0,directories=0");
-    
-    // Return false to prevent a return trip to the server
-    return false;
-}
 
 function edit_notes_form_open( linkname, id, notes )
 {
@@ -432,55 +378,7 @@ function email_form_open2( linkname, id )
 	return false;
 }
 
-// Open the email form
-function email_form_open( linkname, id )
-{
-    // Populate the hidden value this data
-    var hiddenfield = document.getElementById('item_action');
-    hiddenfield.value = 'email';
-    
-    // Variable holds the 'height' to use for form placement
-    var form_location = -36;
-    var horiz_location = 408;
-    
-    // Populate the hidden field with the id
-    var hiddenfield2 = document.getElementById('bookshelf_items');
-    if ( hiddenfield2 != null )
-    {
-        hiddenfield2.value = id;
-        form_location = 664;
-        horiz_location = 480;
-    }
-    
-    // Toggle the email form
-	blanket_size('form_email', linkname, form_location );
-	window_pos('form_email', horiz_location);
-	toggle('blanket_outer');
-	toggle('form_email');	
-	
-	// Create the draggable object to allow this window to be dragged around
-	$("#form_email").draggable();
-	
-	// Put focus on the email address
-	var focusfield = document.getElementById('email_address');
-    focusfield.focus();	
-		
-	return false;
-}
 
-// Close the email form
-function email_form_close()
-{
-    // Clear the hidden value this data
-    var hiddenfield = document.getElementById('item_action');
-    hiddenfield.value = '';
-       
-    // Close the associated form
-    popdown( 'form_email' );    
-    
-    // Return false to prevent a return trip to the server
-    return false;
-}
 
 // Open the save search/browse form
 function save_search_form_open( linkname, id )
@@ -509,47 +407,7 @@ function save_search_form_open( linkname, id )
 	return false;
 }
 
-// Open add item form
-function add_item_form_open( linkname, id )
-{
-    // Populate the hidden value this data
-    var hiddenfield = document.getElementById('item_action');
-    hiddenfield.value = 'add_item';
-    
-    // Populate the hidden field with the id
-    var hiddenfield2 = document.getElementById('bookshelf_items');
-    if ( hiddenfield2 != null )
-        hiddenfield.value = id;
-     
-    // Toggle the interface form
-	blanket_size('add_item_form', linkname, -36 );
-	window_pos('add_item_form', 274);
-	toggle('blanket_outer');
-	toggle('add_item_form');	
-	
-	// Create the draggable object to allow this window to be dragged around
-	$("#add_item_form").draggable();
-	
-	// Put focus on the interface code
-	var focusfield = document.getElementById('add_notes');
-    focusfield.focus();	
-		
-	return false;
-}
 
-// Close the add item form
-function add_item_form_close()
-{
-    // Clear the hidden value this data
-    var hiddenfield = document.getElementById('item_action');
-    hiddenfield.value = '';
-           
-    // Close the associated form
-    popdown( 'add_item_form' );    
-        
-    // Return false to prevent a return trip to the server
-    return false;
-}
 
 function edit_tag(linkname, id, describe_tag) {
 
@@ -616,19 +474,7 @@ function describe_item_form_close() {
     return false;
 }
 
-function toggle_share_form( linkname )
-{
-    // Toggle the interface form
-	blanket_size('share_form', linkname, -36 );
-	window_pos('share_form', -396);
-	toggle('share_form');		
-	
-	// Close after five seconds
-	setTimeout( "close_share_form()", 5000 );
-	
-	// Return false to prevent a return trip to the server
-    return false;
-}
+
 
 function toggle_share_form2( linkname )
 {
@@ -648,8 +494,15 @@ function toggle_share_form2( linkname )
     return false;
 }
 
-function close_share_form()
+
+
+function get_viewport() 
 {
-	var el = document.getElementById('share_form');
-	if ( el.style.display == 'block' ) {	el.style.display = 'none';}
+    var e = window, a = 'inner';
+    if (!('innerWidth' in window)) 
+    {
+        a = 'client';
+        e = document.documentElement || document.body;
+    }
+    return { width: e[a + 'Width'], height: e[a + 'Height'] } 
 }

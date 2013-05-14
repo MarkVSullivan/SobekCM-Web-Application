@@ -7,9 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
-using SobekCM.Bib_Package.Tracking;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Tracking;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.Users;
@@ -105,12 +105,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns FALSE</value>
-        public override bool Show_Page_Selector
+        /// <value> This is a single page viewer, so this property always returns NONE</value>
+        public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
-                return false;
+                return ItemViewer_PageSelector_Type_Enum.NONE;
             }
         }
 
@@ -130,7 +130,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 if (!CurrentItem.Tracking.Tracking_Info_Pulled)
                 {
-                    DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.SobekCM_Web.ItemID, Tracer);
+                    DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.Web.ItemID, Tracer);
                     CurrentItem.Tracking.Set_Tracking_Info(data);
                 }
             }
@@ -178,7 +178,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine("            <div class=\"SobekCitation\">");
             result.AppendLine("              <div class=\"CitationViewSelectRow\">");
 
-            if (CurrentItem.METS.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
+            if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
                     if (citationType == Tracking_Type.Milestones)
                     {
@@ -289,7 +289,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Returns the information from history/worklog tracking information as an HTML string </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> History/worklog information about this digital resource as an HTML string</returns>
+        /// <returns> Work_History/worklog information about this digital resource as an HTML string</returns>
         protected string History_String(Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -314,7 +314,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("    <th><span style=\"color: White\">LOCATION / NOTES</span></th>");
                 builder.AppendLine("  </tr>");
 
-                foreach (Tracking_Progress worklog in CurrentItem.Tracking.History)
+                foreach (Tracking_Progress worklog in CurrentItem.Tracking.Work_History)
                 {
                     builder.AppendLine("  <tr>");
                     builder.AppendLine("    <td>" + worklog.Workflow_Name + "</td>");
@@ -434,7 +434,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 // Now, pull the list of all archived files
-                DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.SobekCM_Web.ItemID, Tracer);
+                DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.Web.ItemID, Tracer);
                 DataTable archiveTable = data.Tables[2];
                 DataColumn filenameColumn = archiveTable.Columns["Filename"];
                 DataColumn sizeColumn = archiveTable.Columns["Size"];
@@ -488,8 +488,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                string directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.SobekCM_Web.AssocFilePath;
-                string url = SobekCM_Library_Settings.Image_URL + CurrentItem.SobekCM_Web.AssocFilePath;
+                string directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+                string url = SobekCM_Library_Settings.Image_URL + CurrentItem.Web.AssocFilePath;
 
                 FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
 
@@ -561,7 +561,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     string thisFileUpper = thisFile.System_Name.ToUpper();
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
-                                       // string file = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.SobekCM_Web.AssocFilePath + thisFile.System_Name;
+                                       // string file = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
                                         Add_File_HTML(sortedFiles[thisFileUpper], builder, url, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
@@ -573,7 +573,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                     {
-                                        //string file = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.SobekCM_Web.AssocFilePath + fileName + thisFileEnder.ToLower();
+                                        //string file = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
                                         Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], builder, url, true);
                                         sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                     }
@@ -759,7 +759,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             break;
 
                         case "UFDC_METS.XML":
-                            type = "UFDC Service METS File";
+                        case "SobekCM_METS.XML":
+                            type = "SobekCM Service METS File";
                             break;
 
                         case "DOC.XML":

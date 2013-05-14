@@ -4,8 +4,8 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Database;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -52,8 +52,11 @@ namespace SobekCM.Library.MySobekViewer
             // Since this is a mass update, just create a new empty item with the GroupID included
             // from the provided item
             SobekCM_Item emptyItem = new SobekCM_Item {BibID = Current_Item.BibID};
-            emptyItem.SobekCM_Web.GroupID = Current_Item.SobekCM_Web.GroupID;
+            emptyItem.Web.GroupID = Current_Item.Web.GroupID;
             emptyItem.Bib_Info.Source.Code = String.Empty;
+            emptyItem.Behaviors.CheckOut_Required_Is_Null = true;
+            emptyItem.Behaviors.IP_Restriction_Membership_Is_Null = true;
+            emptyItem.Behaviors.Dark_Flag_Is_Null = true;
             item = emptyItem;           
 
             // If the user cannot edit this item, go back
@@ -160,11 +163,11 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("  <br />");
 
-            Output.WriteLine("  <b>Edit this item's behaviors within this library.</b>");
+            Output.WriteLine("  <b>Change the behavior of all items belonging to this group</b>");
             Output.WriteLine("    <ul>");
-            Output.WriteLine("      <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
+            Output.WriteLine("      <li>Enter any behaviors you would like to have propogate through all the items within this item group.and press the SAVE button when complete.</li>");
             Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-            Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing behaviors online.</li>");
+            Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on mass updating behaviors online.</li>");
 
             Output.WriteLine("     </ul>");
             Output.WriteLine("</div>");

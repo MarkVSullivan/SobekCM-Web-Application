@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -77,7 +78,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             render_helper(Output, instance_value, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
@@ -91,7 +92,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <param name="initial_value"> Flag indicates if the value in the instance_value param is actually instructional text, and not a true value</param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, bool initial_value)
+        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, bool initial_value)
         {
             string id_name = html_element_name.Replace("_", "");
 

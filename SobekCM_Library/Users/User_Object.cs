@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
-using SobekCM.Bib_Package.SobekCM_Info;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
 
 #endregion
@@ -30,6 +30,7 @@ namespace SobekCM.Library.Users
         private readonly List<string> projects;
         private readonly List<string> templates;
         private readonly List<string> userGroups;
+        private readonly Dictionary<string, object> userOptions; 
 
         #endregion
 
@@ -74,9 +75,57 @@ namespace SobekCM.Library.Users
             Receive_Stats_Emails = true;
             Has_Item_Stats = false;
             Include_Tracking_In_Standard_Forms = true;
+            userOptions = new Dictionary<string, object>();
         }
 
         #endregion
+
+        /// <summary> Get the user option as an object, by option key </summary>
+        /// <param name="Option_Key"> Key for the user option </param>
+        /// <returns> Option, as an uncast object, or NULL </returns>
+        public object Get_Option( string Option_Key )
+        {
+            if (userOptions.ContainsKey(Option_Key))
+                return userOptions[Option_Key];
+            return null;
+        }
+
+        /// <summary> Get the user option as an integer, by option key </summary>
+        /// <param name="Option_Key"> Key for the user option </param>
+        /// <param name="Default_Value"> Default value to return, if no value is present </param>
+        /// <returns> Either the value from the user options, or else the default value </returns>
+        public int Get_Option(string Option_Key, int Default_Value )
+        {
+            if (userOptions.ContainsKey(Option_Key))
+            {
+                int tempValue;
+                if (int.TryParse(userOptions[Option_Key].ToString(), out tempValue))
+                    return tempValue;
+            }
+            return Default_Value;
+        }
+
+        /// <summary> Get the user option as a string, by option key </summary>
+        /// <param name="Option_Key"> Key for the user option </param>
+        /// <param name="Default_Value"> Default value to return, if no value is present </param>
+        /// <returns> Either the value from the user options, or else the default value </returns>
+        public string Get_Option(string Option_Key, string Default_Value)
+        {
+            if (userOptions.ContainsKey(Option_Key))
+            {
+                return userOptions[Option_Key].ToString();
+            }
+            return Default_Value;
+        }
+
+
+        /// <summary> Add a new user option </summary>
+        /// <param name="Option_Key"> Key for the user option </param>
+        /// <param name="Option_Value"> Value for this user option </param>
+        public void Add_Option( string Option_Key, object Option_Value )
+        {
+            userOptions[Option_Key] = Option_Value;
+        }
 
         #region Public properties of this user object
 
@@ -575,9 +624,9 @@ namespace SobekCM.Library.Users
                     return true;
             }
 
-            if (Item.SobekCM_Web.Aggregation_Count > 0)
+            if (Item.Behaviors.Aggregation_Count > 0)
             {
-                ReadOnlyCollection<Aggregation_Info> colls = Item.SobekCM_Web.Aggregations;
+                ReadOnlyCollection<Aggregation_Info> colls = Item.Behaviors.Aggregations;
                 if (colls.Any(thisCollection => aggregations.Can_Edit(thisCollection.Code.ToUpper())))
                 {
                     return true;

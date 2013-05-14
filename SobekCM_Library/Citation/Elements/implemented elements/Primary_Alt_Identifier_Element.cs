@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web;
-using SobekCM.Bib_Package;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
 
 #endregion
@@ -36,7 +37,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -44,15 +45,15 @@ namespace SobekCM.Library.Citation.Elements
                 const string defaultAcronym = "Primary alternate identifier associated with this item group.  This may range from a locally defined identifier to an identifier established by a standard committe.";
                 switch (CurrentLanguage)
                 {
-                    case Language_Enum.English:
+                    case Web_Language_Enum.English:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.Spanish:
+                    case Web_Language_Enum.Spanish:
                         Acronym = defaultAcronym;
                         break;
 
-                    case Language_Enum.French:
+                    case Web_Language_Enum.French:
                         Acronym = defaultAcronym;
                         break;
 
@@ -66,8 +67,8 @@ namespace SobekCM.Library.Citation.Elements
             // standard identifier class as possible to support any later changes.
             List<string> terms = new List<string>();
             List<string> schemes = new List<string>();
-            terms.Add( Bib.SobekCM_Web.Primary_Identifier.Identifier);
-            schemes.Add(Bib.SobekCM_Web.Primary_Identifier.Type);
+            terms.Add( Bib.Behaviors.Primary_Identifier.Identifier);
+            schemes.Add(Bib.Behaviors.Primary_Identifier.Type);
 
             render_helper(Output, terms, schemes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
@@ -111,7 +112,7 @@ namespace SobekCM.Library.Citation.Elements
 
             foreach (string index in terms.Keys)
             {
-                Bib.SobekCM_Web.Set_Primary_Identifier( schemes.ContainsKey(index) ? schemes[index] : "Primary Identifier", terms[index]);
+                Bib.Behaviors.Set_Primary_Identifier( schemes.ContainsKey(index) ? schemes[index] : "Primary Identifier", terms[index]);
             }
         }
     }

@@ -77,6 +77,10 @@
             <summary> Gets the complete current users name as a string. </summary>
             <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
         </member>
+        <member name="P:SobekCM.Tools.SecurityInfo.Current_UserName">
+            <summary> Gets the complete current users name as a string. </summary>
+            <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
+        </member>
         <member name="T:SobekCM.Tools.Logs.LogFileXHTML_Style">
             <summary> [ NOT YET FULLY IMPLEMENTED ] <br/> <br/>
             LogFileXHTML_Style is a class used to hold information about a specific style used in the <see cref="T:SobekCM.Tools.Logs.LogFileXHTML"/> class. 

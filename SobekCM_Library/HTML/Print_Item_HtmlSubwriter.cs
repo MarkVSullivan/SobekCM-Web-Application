@@ -3,8 +3,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.Navigation;
@@ -90,7 +90,7 @@ namespace SobekCM.Library.HTML
                     {
                         if (mode[2] == '*')
                         {
-                            print_pages(include_brief_citation, 1, currentItem.SobekCM_Web.Static_PageCount, Output);
+                            print_pages(include_brief_citation, 1, currentItem.Web.Static_PageCount, Output);
                         }
                         else
                         {
@@ -152,7 +152,7 @@ namespace SobekCM.Library.HTML
                 print_brief_citation("700", Output);
 
             // Get this page
-            Page_TreeNode thisPage = currentItem.SobekCM_Web.Pages_By_Sequence[page-1];
+            Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page-1];
 
             // Find the jpeg2000 image and show the image
             foreach (SobekCM_File_Info thisFile in thisPage.Files)
@@ -165,10 +165,10 @@ namespace SobekCM.Library.HTML
                         size_pixels = 1536;
                     int rotation = (currentMode.Viewport_Rotation % 4) * 90;
 
-                    string jpeg2000_filename = thisFile.Service_Copy;
+                    string jpeg2000_filename = thisFile.System_Name;
                     if ((jpeg2000_filename.Length > 0) && (jpeg2000_filename[0] != '/'))
                     {
-                        jpeg2000_filename = "/UFDC/" + currentItem.SobekCM_Web.AssocFilePath + "/" + jpeg2000_filename;
+                        jpeg2000_filename = "/UFDC/" + currentItem.Web.AssocFilePath + "/" + jpeg2000_filename;
                     }
 
                     // Build the source URL
@@ -216,7 +216,7 @@ namespace SobekCM.Library.HTML
             while (page_index < to_page)
             {
                 // Get this page
-                Page_TreeNode thisPage = currentItem.SobekCM_Web.Pages_By_Sequence[page_index];
+                Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page_index];
 
                 // Find the jpeg image and show the image
                 foreach (SobekCM_File_Info thisFile in thisPage.Files)
@@ -226,7 +226,7 @@ namespace SobekCM.Library.HTML
                         if (page_index > from_page - 1)
                             Output.WriteLine("<br />");
 
-                        Output.WriteLine("<img src=\"" + currentItem.SobekCM_Web.Source_URL + "/" + thisFile.System_Name + "\" />");
+                        Output.WriteLine("<img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.System_Name + "\" />");
                         break;
                     }
                 }
@@ -246,9 +246,9 @@ namespace SobekCM.Library.HTML
 
             int page_index = 0;
             int col = 0;
-            while (page_index < currentItem.SobekCM_Web.Static_PageCount)
+            while (page_index < currentItem.Web.Static_PageCount)
             {
-                Page_TreeNode thisPage = currentItem.SobekCM_Web.Pages_By_Sequence[page_index];
+                Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page_index];
 
                 // Find the jpeg image
                 foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.System_Name.IndexOf(".jpg") > 0))
@@ -261,7 +261,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("  <tr align=\"center\" valign=\"top\">");
                     }
 
-                    Output.WriteLine("    <td><img src=\"" + currentItem.SobekCM_Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
+                    Output.WriteLine("    <td><img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
                     col++;
                     break;
                 }

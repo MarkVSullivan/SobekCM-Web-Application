@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Application_State;
 
 #endregion
@@ -79,12 +79,12 @@ namespace SobekCM.Library.Items
                 if (Sequence >= 1)
                 {
                     int requested_page = Sequence - 1;
-                    if ((requested_page < 0) || (requested_page > Current_Item.SobekCM_Web.Static_PageCount - 1))
+                    if ((requested_page < 0) || (requested_page > Current_Item.Web.Static_PageCount - 1))
                         requested_page = 0;
 
-                    if (requested_page <= Current_Item.SobekCM_Web.Static_PageCount - 1)
+                    if (requested_page <= Current_Item.Web.Static_PageCount - 1)
                     {
-                        returnValue = Current_Item.SobekCM_Web.Pages_By_Sequence[requested_page];
+                        returnValue = Current_Item.Web.Pages_By_Sequence[requested_page];
                     }
                 }
             }

@@ -3,8 +3,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Divisions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;

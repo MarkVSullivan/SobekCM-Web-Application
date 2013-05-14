@@ -9,14 +9,15 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Bib_Package;
-using SobekCM.Bib_Package.Bib_Info;
-using SobekCM.Bib_Package.Database;
-using SobekCM.Bib_Package.Divisions;
-using SobekCM.Bib_Package.SobekCM_Info;
-using SobekCM.Bib_Package.Writers;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
@@ -233,7 +234,7 @@ namespace SobekCM.Library.MySobekViewer
                     item = SobekCM_Item.Read_METS(existing_mets[0]);
 
                     // Set the visibility information from the template
-                    item.SobekCM_Web.IP_Restriction_Membership = template.Default_Visibility;
+                    item.Behaviors.IP_Restriction_Membership = template.Default_Visibility;
                 }
 
                 // If there is still no item, just create a new one
@@ -384,12 +385,12 @@ namespace SobekCM.Library.MySobekViewer
                         HttpContext.Current.Session["Item"] = item;
 
                         // Save the pertinent data to the METS file package
-                        item.METS.Create_Date = DateTime.Now;
+                        item.METS_Header.Create_Date = DateTime.Now;
                         if ((HttpContext.Current.Session["agreement_date"] != null) && (HttpContext.Current.Session["agreement_date"].ToString().Length > 0))
                         {
                             DateTime asDateTime;
                             if (DateTime.TryParse(HttpContext.Current.Session["agreement_date"].ToString(), out asDateTime))
-                                item.METS.Create_Date = asDateTime;
+                                item.METS_Header.Create_Date = asDateTime;
                         }
                         HttpContext.Current.Session["Item"] = item;
 
@@ -481,7 +482,7 @@ namespace SobekCM.Library.MySobekViewer
                     item.Save_METS();
                 else
                 {
-                    item.SobekCM_Web.Show_Validation_Errors = true;
+                    item.Web.Show_Validation_Errors = true;
                     currentMode.My_Sobek_SubMode = "2";
                     HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
                 }
@@ -696,14 +697,14 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // Add the JPEG2000 and JPEG-specific viewers
-                    Item_To_Complete.SobekCM_Web.Clear_Views();
+                    Item_To_Complete.Behaviors.Clear_Views();
                     if (jpeg_added)
                     {
-                        Item_To_Complete.SobekCM_Web.Add_View(View_Enum.JPEG);
+                        Item_To_Complete.Behaviors.Add_View(View_Enum.JPEG);
                     }
                     if (jp2_added)
                     {
-                        Item_To_Complete.SobekCM_Web.Add_View(View_Enum.JPEG2000);
+                        Item_To_Complete.Behaviors.Add_View(View_Enum.JPEG2000);
                     }
                 }
 
@@ -743,8 +744,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 // Assign the file root and assoc file path
-                Item_To_Complete.SobekCM_Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
-                Item_To_Complete.SobekCM_Web.AssocFilePath = Item_To_Complete.SobekCM_Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
+                Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
+                Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
                 // Create the static html pages
                 string base_url = currentMode.Base_URL;
@@ -769,15 +770,15 @@ namespace SobekCM.Library.MySobekViewer
                 itemList.Add_SobekCM_Item(Item_To_Complete);
 
                 //// Link this item and user
-                //Database.SobekCM_Database.Add_User_Item_Link(user.UserID, item.SobekCM_Web.ItemID, 1, true);
-                //Database.SobekCM_Database.Add_User_BibID_Link(user.UserID, item.SobekCM_Web.GroupID);
+                //Database.SobekCM_Database.Add_User_Item_Link(user.UserID, item.Web.ItemID, 1, true);
+                //Database.SobekCM_Database.Add_User_BibID_Link(user.UserID, item.Behaviors.GroupID);
                 //Database.SobekCM_Database.Add_Item_To_User_Folder(user.UserID, "Submitted Items", item.BibID, item.VID, 0, String.Empty, Tracer);
 
                 // Save Bib_Level METS?
-                //SobekCM.Bib_Package.Writers.OAI_Writer oaiWriter = new SobekCM.Bib_Package.Writers.OAI_Writer();
+                //SobekCM.Resource_Object.Writers.OAI_Writer oaiWriter = new SobekCM.Resource_Object.Writers.OAI_Writer();
                 //oaiWriter.Save_OAI_File(bibPackage, resource_folder + "\\oai_dc.xml", bibPackage.Processing_Parameters.Collection_Primary.ToLower(), createDate);
 
-                MARC_Writer marc_writer = new MARC_Writer();
+
                 List<string> collectionnames = new List<string>();
                 //// Get the collection names
                 //if (item.Processing_Parameters.Collection_Primary.Length > 0)
@@ -796,7 +797,12 @@ namespace SobekCM.Library.MySobekViewer
                 //        collectionnames.Add(altCode[0]["ShortName"].ToString());
                 //    }
                 //}
-                marc_writer.Save_As_MARC_XML(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
+                // Save the marc xml file
+                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                string Error_Message;
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out Error_Message);
 
                 // Delete the TEMP mets file
                 if (File.Exists(userInProcessDirectory + "\\TEMP000001_00001.mets"))
@@ -814,7 +820,7 @@ namespace SobekCM.Library.MySobekViewer
                 string[] allFiles = Directory.GetFiles(userInProcessDirectory);
 
 
-                string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.SobekCM_Web.AssocFilePath;
+                string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
                 // Create the folder
                 if (!Directory.Exists(serverNetworkFolder))
@@ -856,9 +862,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Finally, set the item for more processing if there were any files
-                if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.SobekCM_Web.ItemID > 0 ))
+                if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.Web.ItemID > 0 ))
                 {
-                    Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.SobekCM_Web.ItemID, true, Tracer);
+                    Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
                 }
 
                 // Clear any temporarily assigned current project and template
@@ -985,13 +991,13 @@ namespace SobekCM.Library.MySobekViewer
             const string col2Width = "80px";
             const string col3Width = "625px";
 
-            if (currentMode.Language == Language_Enum.French)
+            if (currentMode.Language == Web_Language_Enum.French)
             {
                 templateLabel = "Modèle";
                 projectLabel = "Projet";
             }
 
-            if (currentMode.Language == Language_Enum.Spanish)
+            if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 templateLabel = "Plantilla";
                 projectLabel = "Proyecto";
@@ -1015,8 +1021,8 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("<strong>Step 1 of " + totalTemplatePages + ": Grant of Permission</strong><br />");
 
                     Output.WriteLine("<blockquote>You must read and accept the below permissions to continue.<br /><br />");
-                    Output.WriteLine(template.Permissions_Agreement);
-                    Output.WriteLine("<p>Please review the <a href=\"?g=ufirg&amp;m=hitauthor_faq#policies&amp;n=gs\">Policies</A> if you have any questions or please contact us with any questions prior to submitting files. </p>\n");
+                    Output.WriteLine(template.Permissions_Agreement.Replace("<%BASEURL%>", currentMode.Base_URL));
+               //     Output.WriteLine("<p>Please review the <a href=\"?g=ufirg&amp;m=hitauthor_faq#policies&amp;n=gs\">Policies</A> if you have any questions or please contact us with any questions prior to submitting files. </p>\n");
                     Output.WriteLine("<table width=\"700\">");
                     Output.WriteLine("  <tr align=\"right\">");
                     Output.WriteLine("    <td>You must read and accept the above permissions agreement to continue. &nbsp; &nbsp; </td>");
@@ -1138,7 +1144,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine("<strong>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</strong><br />");
                 Output.WriteLine("<blockquote>" + template_page_instructions + "</blockquote>");
-                if ((validationErrors != null) && (validationErrors.Count > 0) && ( item.SobekCM_Web.Show_Validation_Errors ))
+                if ((validationErrors != null) && (validationErrors.Count > 0) && (item.Web.Show_Validation_Errors))
                 {
                     Output.WriteLine("<span style=\"color: red;\"><b>The following errors were detected:</b>");
                     Output.WriteLine("<blockquote>");
@@ -1747,6 +1753,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (item != null)
                     {
                         // Transfer the default type note over to the type
+                        item.Bib_Info.SobekCM_Type_String = String.Empty;
                         if (item.Bib_Info.Notes_Count > 0)
                         {
                             Note_Info deleteNote = null;
@@ -1782,6 +1789,7 @@ namespace SobekCM.Library.MySobekViewer
             if (item == null)
             {
                 item = new SobekCM_Item();
+                item.Bib_Info.SobekCM_Type_String = String.Empty;
             }
 
             // Set the source directory first
@@ -1811,20 +1819,19 @@ namespace SobekCM.Library.MySobekViewer
             {
                 item.Bib_Info.Main_Entity_Name.Full_Name = user.Family_Name + ", " + user.Given_Name;
             }
-            item.SobekCM_Web.IP_Restriction_Membership = template.Default_Visibility;
+            item.Behaviors.IP_Restriction_Membership = template.Default_Visibility;
 
             item.VID = "00001";
             item.BibID = "TEMP000001";
-            item.Bib_Info.SobekCM_Type_String = String.Empty;
-            if ((item.SobekCM_Web.Aggregation_Count == 0) && (currentMode.Default_Aggregation == "dloc1"))
-                item.SobekCM_Web.Add_Aggregation("DLOC");
-            item.METS.Create_Date = DateTime.Now;
-            item.METS.Modify_Date = item.METS.Create_Date;
-            item.METS.Creator_Individual = user.Full_Name;
-            if ( project_code.Length == 0 ) 
-                item.METS.Add_Creator_Org_Notes("Created using template '" + templateCode + "'");
+            if ((item.Behaviors.Aggregation_Count == 0) && (currentMode.Default_Aggregation == "dloc1"))
+                item.Behaviors.Add_Aggregation("DLOC");
+            item.METS_Header.Create_Date = DateTime.Now;
+            item.METS_Header.Modify_Date = item.METS_Header.Create_Date;
+            item.METS_Header.Creator_Individual = user.Full_Name;
+            if ( project_code.Length == 0 )
+                item.METS_Header.Add_Creator_Org_Notes("Created using template '" + templateCode + "'");
             else
-                item.METS.Add_Creator_Org_Notes("Created using template '" + templateCode + "' and project '" + project_code + "'.");
+                item.METS_Header.Add_Creator_Org_Notes("Created using template '" + templateCode + "' and project '" + project_code + "'.");
 
             if (item.Bib_Info.Main_Title.Title.ToUpper().IndexOf("PROJECT LEVEL METADATA") == 0)
                 item.Bib_Info.Main_Title.Clear();

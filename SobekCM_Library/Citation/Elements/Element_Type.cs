@@ -20,6 +20,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> This special note field maps to <see cref="Acquisition_Note_Element"/> and is generally reserved from editing by users </summary>
         Acquisition,
 
+        /// <summary> Flag indicates if this item requires additional work </summary>
+        Additional_Work_Needed,
+
         /// <summary> Allows entry of affiliation information either for the digital resource in 
         /// general or for the just a single named entity (FUTURE PLAN)</summary>
         Affiliation,
@@ -84,6 +87,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Edition element type maps to <see cref="Edition_Element"/> </summary>
         Edition,
 
+        /// <summary> Embedded video module stores all the HTML to embed a video </summary>
+        EmbeddedVideo,
+
         /// <summary> Encoding level element type maps to <see cref="Encoding_Level_Element"/> </summary>
         EncodingLevel,
 
@@ -110,6 +116,9 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Electronic Thesis and Disseratation information - student's graduation date </summary>
         ETD_GraduationDate,
+
+        /// <summary> Electronic Thesis and Dissertation inforamtion - send to UMI information </summary>
+        ETD_UMI,
 
         /// <summary> Frequency element type maps to <see cref="FAST_Subject_Element"/> </summary>
         FAST_Subject,
@@ -139,7 +148,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Group title element type maps to <see cref="Group_Title_Element"/> </summary>
         Group_Title,
 
-        /// <summary> History element type does not currently map to any element (FUTURE PLAN)</summary>
+        /// <summary> Work_History element type does not currently map to any element (FUTURE PLAN)</summary>
         History,
 
         /// <summary> Holding location element types maps to <see cref="Holding_Element"/> </summary>
@@ -150,6 +159,42 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Language element type maps to <see cref="Language_Element"/> </summary>
         Language,
+
+        /// <summary> Learning object metadata - functional granularity of this learning object </summary>
+        LOM_Aggregation_Level,
+
+        /// <summary> Learning object metadata - category describes where this learning object falls within a particular classification schema </summary>
+        LOM_Classification_Taxonomy,
+
+        /// <summary> Learning object metadata - principal environment within which the learning and use of the learning object is intended to take place </summary>
+        LOM_Context,
+
+        /// <summary> Learning object metadata - how hard it is to work with or through this learning object for the typical intended target audience </summary>
+        LOM_Difficulty_Level,
+
+        /// <summary> Learning object metadata - principal user(s) for which this learning object was designed </summary>
+        LOM_Intended_End_User_Role,
+
+        /// <summary> Learning object metadata - degree of interactivity characterizing this learning object.  Refers to degree to which the learner can influence the aspect or behavior of the learning object. </summary>
+        LOM_Interactivity_Level,
+
+        /// <summary> Learning object metadata - predominant mode of learning supported by this learning object </summary>
+        LOM_Interactivity_Type,
+
+        /// <summary> Learning object metadata - specific kind of learning object </summary>
+        LOM_Learning_Resource_Type,
+
+        /// <summary> Learning object metadata - completion status or condition of this learning object </summary>
+        LOM_Status,
+
+        /// <summary> Learning object metadata - technical capabilities necessary for using this learning object </summary>
+        LOM_System_Requirements,
+
+        /// <summary> Learning object metadata - age (range) of the typical intended user </summary>
+        LOM_Typical_Age_Range,
+
+        /// <summary> Learning object metadata - approximate or typical time it takes to work with or through this learning object for the typical intended audience </summary>
+        LOM_Typical_Learning_Time,
 
         /// <summary> Main thumbnail element type maps to <see cref="Main_Thumbnail_Element"/> </summary>
         MainThumbnail,
@@ -201,6 +246,10 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Rights element type maps to <see cref="Rights_Element"/> </summary>
         Rights,
+
+        /// <summary> Allows the embargo date to be set for an item which is currently under embargo </summary>
+        Rights_Embargo_Date,
+
 
         /// <summary> Scale element type maps to <see cref="Scale_Element"/> </summary>
         Scale,
@@ -335,6 +384,9 @@ namespace SobekCM.Library.Citation.Elements
                 case "ACQUISITION":
                     return Element_Type.Acquisition;
 
+                case "ADDITIONAL_WORK_NEEDED":
+                    return Element_Type.Additional_Work_Needed;
+
                 case "AFFILIATION":
                     return Element_Type.Affiliation;
 
@@ -402,6 +454,9 @@ namespace SobekCM.Library.Citation.Elements
                 case "EDITION":
                     return Element_Type.Edition;
 
+                case "EMBEDDEDVIDEO":
+                    return Element_Type.EmbeddedVideo;
+
                 case "ENCODINGLEVEL":
                     return Element_Type.EncodingLevel;
 
@@ -428,6 +483,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "ETD_GRADUATIONDATE":
                     return Element_Type.ETD_GraduationDate;
+
+                case "ETD_UMI":
+                    return Element_Type.ETD_UMI;
 
                 case "FAST_SUBJECT":
                     return Element_Type.FAST_Subject;
@@ -464,6 +522,42 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "LANGUAGE":
                     return Element_Type.Language;
+
+                case "LOM_AGGREGATION_LEVEL":
+                    return Element_Type.LOM_Aggregation_Level;
+
+                case "LOM_CLASSIFICATION_TAXONOMY":
+                    return Element_Type.LOM_Classification_Taxonomy;
+
+                case "LOM_CONTEXT":
+                    return Element_Type.LOM_Context;
+
+                case "LOM_DIFFICULTY_LEVEL":
+                    return Element_Type.LOM_Difficulty_Level;
+
+                case "LOM_INTENDED_END_USER_ROLE":
+                    return Element_Type.LOM_Intended_End_User_Role;
+
+                case "LOM_INTERACTIVITY_LEVEL":
+                    return Element_Type.LOM_Interactivity_Level;
+
+                case "LOM_INTERACTIVITY_TYPE":
+                    return Element_Type.LOM_Interactivity_Type;
+
+                case "LOM_LEARNING_RESOURCE_TYPE":
+                    return Element_Type.LOM_Learning_Resource_Type;
+
+                case "LOM_STATUS":
+                    return Element_Type.LOM_Status;
+
+                case "LOM_SYSTEM_REQUIREMENTS":
+                    return Element_Type.LOM_System_Requirements;
+
+                case "LOM_TYPICAL_AGE_RANGE":
+                    return Element_Type.LOM_Typical_Age_Range;
+
+                case "LOM_TYPICAL_LEARNING_TIME":
+                    return Element_Type.LOM_Typical_Learning_Time;
 
                 case "MANUFACTURER":
                     return Element_Type.Manufacturer;
@@ -518,6 +612,9 @@ namespace SobekCM.Library.Citation.Elements
                 case "RIGHTS":
                     return Element_Type.Rights;
 
+                case "RIGHTS_EMBARGO_DATE":
+                    return Element_Type.Rights_Embargo_Date;
+
                 case "SCALE":
                     return Element_Type.Scale;
 
@@ -541,6 +638,12 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "TEMPORAL":
                     return Element_Type.Temporal;
+
+                case "TEXTDISPLAYABLE":
+                    return Element_Type.TextDisplayable;
+
+                case "TEXTSEARCHABLE":
+                    return Element_Type.TextSearchable;
 
                 case "THUMBNAIL":
                     return Element_Type.MainThumbnail;
@@ -576,10 +679,14 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "VRA_MATERIAL":
                 case "MATERIAL":
+                case "VRA_MATERIALS":
+                case "MATERIALS":
                     return Element_Type.VRA_Material;
 
                 case "VRA_MEASUREMENT":
                 case "MEASUREMENT":
+                case "VRA_MEASUREMENTS":
+                case "MEASUREMENTS":
                     return Element_Type.VRA_Measurement;
 
                 case "VRA_STATEEDITION":
@@ -635,11 +742,7 @@ namespace SobekCM.Library.Citation.Elements
                 case "ZT_TAXONRANK":
                     return Element_Type.ZT_TaxonRank;
 
-				case "TEXTDISPLAYABLE":
-					return Element_Type.TextDisplayable;	
 
-				case "TEXTSEARCHABLE":
-					return Element_Type.TextSearchable;
 			}
 
 			// Default of empty string
@@ -658,6 +761,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 case Element_Type.Acquisition:
                     return "Acquisition";
+
+                case Element_Type.Additional_Work_Needed:
+			        return "Additional_Work_Needed";
 
                 case Element_Type.Affiliation:
                     return "Affiliation";
@@ -721,6 +827,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 case Element_Type.Edition:
                     return "Edition";
+
+                case Element_Type.EmbeddedVideo:
+			        return "EmbeddedVideo";
 
                 case Element_Type.EncodingLevel:
                     return "EncodingLevel";

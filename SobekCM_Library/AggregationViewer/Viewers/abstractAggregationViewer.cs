@@ -5,6 +5,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -173,7 +174,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             switch ( currentMode.Language )
             {
-                case Language_Enum.French:
+                case Web_Language_Enum.French:
                     Output.WriteLine("<div id=\"SobekQuickTips\">");
                     Output.WriteLine("  <h1>Conseils rapides</h1>");
                     Output.WriteLine("  <ul>");
@@ -203,7 +204,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine();
                     break;
 
-                case Language_Enum.Spanish:
+                case Web_Language_Enum.Spanish:
                     Output.WriteLine("<div id=\"SobekQuickTips\">");
                     Output.WriteLine("  <h1>Consejos Rápidos:</h1>");
                     Output.WriteLine("  <ul>");
