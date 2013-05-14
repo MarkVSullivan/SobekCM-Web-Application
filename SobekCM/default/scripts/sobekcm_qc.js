@@ -88,16 +88,18 @@ function UpdateDivDropdown(CheckBoxID, MaxPageCount)
 
 }
 
-//Change all subsequent division types when one div type is changed
+//Change all subsequent division types when one div type is changed. Also update the named division type textboxes as appropriate
 function DivisionTypeChanged(selectID,MaxPageCount)
 {
-   //get the list of all the thumbnail spans on the page
+   //Get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
+	//Get the array from the global variable if previously assigned
 	if(window.spanArrayGlobal!= null)
 	 { 
 	  spanArrayObjects = window.spanArrayGlobal;
 	 }
+	 //else set the array values here
 	else
 	{
 	  for(var j=0;j<MaxPageCount;j++)
@@ -121,16 +123,115 @@ function DivisionTypeChanged(selectID,MaxPageCount)
     var i = spanArray.indexOf(currID)+1;
 	var currVal = document.getElementById(selectID).value;
 
-	while(document.getElementById('selectDivType'+spanArray[i]).disabled==true)
-	{
+//	var k=i;
+	//while(document.getElementById('selectDivType'+spanArray[k]).disabled==true)
+	//{
 	  //alert(i);
-	  if(document.getElementById('selectDivType'+ spanArray[i]))
-	    document.getElementById('selectDivType'+ spanArray[i]).value = currVal;
-	  i++;
+	 // if(document.getElementById('selectDivType'+ spanArray[k]))
+	 //   document.getElementById('selectDivType'+ spanArray[k]).value = currVal;
+	 // k++;
+//	}
+	
+	
+	//if the new Division type selected is a nameable div
+	if(currVal.indexOf('!')==0)
+	{
+	  document.getElementById('divNameTableRow'+currID).className='txtNamedDivVisible';
+
+	 var j=i;
+	 //Make the name textboxes of all other pages of this div visible
+	 while(document.getElementById('selectDivType'+spanArray[j]).disabled==true)
+  	 {
+	  //alert(i);
+	  if(document.getElementById('selectDivType'+ spanArray[j]))
+	    document.getElementById('selectDivType'+ spanArray[j]).value = currVal;
+	  if(document.getElementById('divNameTableRow'+ spanArray[j]))
+		document.getElementById('divNameTableRow'+ spanArray[j]).className = 'txtNamedDivVisible';
+	  j++;
+	 }
+
+
 	}
+	
+	//else if the division type selected is not a nameable div
+	else if(currVal.indexOf('!')==-1)
+	{
+	 //Hide the name textbox for this page
+	 document.getElementById('divNameTableRow'+currID).className='txtNamedDivHidden';
+	 var j=i;
+	
+	//Hide the name textboxes of all the other pages of this division type
+    while(document.getElementById('selectDivType'+spanArray[j]).disabled==true)
+  	 {
+	  //alert(i);
+	  
+	 if(document.getElementById('selectDivType'+ spanArray[j]))
+	    document.getElementById('selectDivType'+ spanArray[j]).value = currVal;
+	  if(document.getElementById('divNameTableRow'+ spanArray[j]))
+		document.getElementById('divNameTableRow'+ spanArray[j]).className = 'txtNamedDivHidden';
+	  j++;
+	 }
+	}
+	
+
 }
 
 
+//Update the division name through the textboxes of the division type when changed in one
+function DivNameTextChanged(textboxID, MaxPageCount)
+{
+   //Get the list of all the thumbnail spans on the page
+	var spanArrayObjects = new Array();
+
+	//Get the array from the global variable if previously assigned
+	if(window.spanArrayGlobal!= null)
+	 { 
+	  spanArrayObjects = window.spanArrayGlobal;
+	 }
+	 //else set the array values here
+	else
+	{
+	  for(var j=0;j<MaxPageCount;j++)
+	  {
+	     spanArrayObjects[j]='span'+j;
+	  }
+	 
+	}
+	
+	 var spanArray=new Array();
+
+	 //get the spanIDs from the array of span objects 
+	 for(var k=0;k<spanArrayObjects.length;k++)
+	 {
+	 //var pageIndex = spanID.split('span')[1];
+	   spanArray[k]=spanArrayObjects[k].split('span')[1];
+	 }
+     var currVal = document.getElementById(textboxID).value;
+     var currID = textboxID.split('txtDivName')[1];
+  
+  //Update the textboxes of the same division after this one
+  var i=spanArray.indexOf(currID)+1;
+
+  while(document.getElementById('selectDivType'+spanArray[i]).disabled==true)
+  {
+     document.getElementById('txtDivName'+spanArray[i]).value = currVal;
+	 i++;
+  }
+  //If updated somewhere in the middle of the div, also update the previous textboxes all the way till the start of the current division
+  if(document.getElementById('selectDivType'+currID).disabled==true)
+  { 
+    i=spanArray.indexOf(currID)-1;
+	while(i>0 && document.getElementById('selectDivType'+spanArray[i]).disabled==true)
+	{
+	  document.getElementById('txtDivName'+spanArray[i]).value = currVal;
+	  i--;
+	}
+	document.getElementById('txtDivName'+spanArray[i]).value = currVal;
+  }
+  
+  
+
+}
 
 
 //Autonumber subsequent textboxes on changing one textbox value
@@ -245,9 +346,10 @@ function PickMainThumbnail(spanID)
 	var hiddenfield = document.getElementById('Main_Thumbnail_Index');
 	var hidden_request = document.getElementById('QC_behaviors_request');
 	 hidden_request.value="";
-	 
+
+	
 	//Cursor currently set to the "Pick Main Thumbnail" cursor?
-	if($('body').css('cursor').indexOf("url")>-1)
+	if($('body').css('cursor').indexOf("thumbnail_cursor")>-1)
 	{
 	  var spanImageID='spanImg'+pageIndex;
 	  //is there a previously selected Main Thumbnail?
@@ -265,12 +367,15 @@ function PickMainThumbnail(spanID)
 	  if(document.getElementById(spanImageID).className=="pickMainThumbnailIcon")
 	  {
 		document.getElementById(spanImageID).className="pickMainThumbnailIconSelected";
+		
+		//Remove the current cursor class
+		$('body').removeClass('qcPickMainThumbnailCursor');
 		//Change the cursor back to default
 		$('body').addClass('qcResetMouseCursorToDefault');
-					 //Set the hidden field value with the main thumbnail
-			 
-			 hiddenfield.value = pageIndex;
-	         hidden_request.value = "pick_main_thumbnail";
+		
+		//Set the hidden field value with the main thumbnail
+		hiddenfield.value = pageIndex;
+	    hidden_request.value = "pick_main_thumbnail";
 
 		
 	  }
@@ -301,7 +406,7 @@ function PickMainThumbnail(spanID)
 
 }
 
-//Show the QC Icon bar below the thumbnail on mouseover
+//Show the QC Icons below the thumbnail on mouseover
 function showQcPageIcons(spanID)
 {
   //alert(spanID);
@@ -336,22 +441,74 @@ function hideErrorIcon(spanID)
 }
 
 //Change the cursor to the custom cursor
-function ChangeMouseCursor()
+function ChangeMouseCursor(MaxPageCount)
+{
+
+	//Remove the default cursor style class, and any other custom class first before setting this one, 
+	//otherwise it will override the custom cursor class
+	$('body').removeClass('qcResetMouseCursorToDefault');
+    $('body').removeClass('qcMovePagesCursor');
+	//Set the custom cursor
+	$('body').addClass('qcPickMainThumbnailCursor');
+
+		//Clear and hide all the 'move' checkboxes, in case currently visible
+		for(var i=0;i<MaxPageCount; i++)
+		{
+		  if(document.getElementById('chkMoveThumbnail'+i))
+		  {
+			  document.getElementById('chkMoveThumbnail'+i).checked=false;
+			  document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailHidden';
+		  }
+		
+		}
+
+}
+
+function ResetCursorToDefault(MaxPageCount)
+{
+	//Remove custom cursor classes if any
+	$('body').removeClass('qcPickMainThumbnailCursor');
+	$('body').removeClass('qcMovePagesCursor');
+
+	//Reset to default
+	$('body').addClass('qcResetMouseCursorToDefault');
+	
+	//Clear and hide all the 'move' checkboxes, in case currently visible
+	for(var i=0;i<MaxPageCount; i++)
+	{
+	  if(document.getElementById('chkMoveThumbnail'+i))
+	  {
+		  document.getElementById('chkMoveThumbnail'+i).checked=false;
+		  document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailHidden';
+	  }
+	
+	}
+	
+}
+
+//Change cursor: move pages
+function MovePages(MaxPageCount)
 {
 
 //Remove the default cursor style class first before setting the custom one, 
 //otherwise it will override the custom cursor class
 $('body').removeClass('qcResetMouseCursorToDefault');
+$('body').removeClass('qcPickMainThumbnailCursor');
 
-//Set the custom cursor
-$('body').addClass('qcPickMainThumbnailCursor');
+//First change the cursor
+$('body').addClass('qcMovePagesCursor');
+
+   //Unhide all the checkboxes
+	for(var i=0;i<MaxPageCount; i++)
+	{
+		if(document.getElementById('chkMoveThumbnail'+i))
+		{
+		  document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailVisible';
+		}
+	}
 
 }
 
-function ResetCursorToDefault()
-{
-$('body').addClass('qcResetMouseCursorToDefault');
-}
 
 //Make the thumbnails sortable
 function MakeSortable1()
@@ -389,8 +546,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 												//if position has been changed, update the page division correspondingly
 												  if(startPosition != newPosition)
 												  {
-												    alert('Div moved');
-													 //get the spanID of the current span being dragged & dropped
+												    //get the spanID of the current span being dragged & dropped
 													 var spanID=$(ui.item).attr('id');
 													 var pageIndex = spanID.split('span')[1];
 													
@@ -415,7 +571,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													
 													//CASE 1: 
 													//If the new position is position 0: Theoretically this cannot happen since the sortable list container boundary
-													//is set to make this impossible, but just in case...
+													//set makes this impossible, but just in case...
 													if(indexSpanArray==0)
 													{
 							                          //Make the moved div the start of a new div
@@ -530,10 +686,35 @@ function qc_auto_save()
 					success: function(data)
 					{
 						  
-							alert('Autosaving...');
+	//						alert('Autosaving...');
 							return false;
 		 
 					}// end successful POST function
 				}); // end jQuery ajax call
     }); // end setting up the autosave on every form on the page
+}
+
+
+//When any 'move page' checkbox is is checked/unchecked
+function chkMoveThumbnailChanged(chkBoxID, MaxPageCount)
+{
+
+ document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+ 
+ //If a checkbox has been checked
+ if (document.getElementById(chkBoxID).checked==true)
+  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+else
+{ 
+  //Check if there is any other checked checkbox on the screen
+  for(var i=0; i<MaxPageCount; i++)
+  {
+    if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true)
+	{
+	  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+	}
+  }
+
+}
+  
 }

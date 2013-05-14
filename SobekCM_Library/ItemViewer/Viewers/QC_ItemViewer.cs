@@ -11,6 +11,9 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.Configuration;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
+using System.Xml;
+
+
 
 #endregion
 
@@ -21,21 +24,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private readonly string title;
 		private int thumbnailsPerPage;
 		private int thumbnailSize;
+        private int currPageNumber;
 		private string hidden_request;
 		private string hidden_main_thumbnail;
 		private bool autosave_option;
 
 		private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
-        private QualityControl_Profile qc_profile;
+		private QualityControl_Profile qc_profile;
 
 		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
 		public QC_ItemViewer( SobekCM_Item Current_Object )
 		{
-            // Get the default QC profile
-            qc_profile = QualityControl_Configuration.Default_Profile;
+			// Get the default QC profile
+			qc_profile = QualityControl_Configuration.Default_Profile;
 
 			title = "Quality Control";
 
+            
 			 // See if there was a hidden request
 			hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
 			hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
@@ -160,13 +165,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 									if (divisionType.Length == 0)
 										divisionType = "Chapter";
 
-                                    // Get the division config, based on the division type
-                                    QualityControl_Division_Config divInfo = qc_profile[divisionType];
-                                    if (divInfo.BaseTypeName.Length > 0)
-                                    {
-                                        divisionLabel = divisionType;
-                                        divisionType = divInfo.BaseTypeName;
-                                    }
+									// Get the division config, based on the division type
+									QualityControl_Division_Config divInfo = qc_profile[divisionType];
+									if (divInfo.BaseTypeName.Length > 0)
+									{
+										divisionLabel = divisionType;
+										divisionType = divInfo.BaseTypeName;
+									}
 
 
 									// Create the new division and add to the package
@@ -306,7 +311,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-
         private void add_main_menu(StringBuilder builder)
         {
             //StringBuilder builder = new StringBuilder(4000);
@@ -367,7 +371,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // placeHolder.Controls.Add(htmlLiteral);
         }
-
   
 		/// <summary> Adds the main view section to the page turner </summary>
 		/// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
@@ -382,6 +385,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			int images_per_page = thumbnailsPerPage;
 			int size_of_thumbnails = thumbnailSize;
 
+            // Get the links for the METS
+            string greenstoneLocation = CurrentItem.Web.Source_URL + "/";
+            string complete_mets = greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
+
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
+            {
+                complete_mets = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
+            }
+
+
 			// Build the value
 			StringBuilder builder = new StringBuilder(5000);
 
@@ -394,11 +408,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<input type=\"hidden\" id=\"QC_behaviors_request\" name=\"QC_behaviors_request\" value=\"\" />");
 			builder.AppendLine("<input type=\"hidden\" id=\"Main_Thumbnail_Index\" name=\"Main_Thumbnail_Index\" value=\"\" />");
 			builder.AppendLine("<input type=\"hidden\" id=\"Autosave_Option\" name=\"Autosave_Option\" value=\"\" />");
-  //          builder.AppendLine("<input type=\"hidden\" id=\"Remove_Main_Thumbnail_Index\" name=\"Main_Thumbnail_Index\" value=\"\" />");
-
-
-		    
-
+  
 			// Start the citation table
 			builder.AppendLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
 			if (CurrentItem.Web.Static_PageCount < 100)
@@ -407,8 +417,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				builder.AppendLine("\t<tr>") ;
 			}
 			builder.AppendLine("\t\t<td>" );
-
-           // add_main_menu(builder);
 
 			// Start the main div for the thumbnails
 	
@@ -449,7 +457,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the name of the file
 					builder.AppendLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + thisFile.File_Name_Sans_Extension + "\" />" + thisFile.File_Name_Sans_Extension + "</td>");
-					
+					                  
 					//Determine the error icon size, main-thumbnail-selected icon size based on the current thumbnail size 
 					int error_icon_height = 20;
 					int error_icon_width = 20;
@@ -485,9 +493,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							pick_main_thumbnail_width = 20;
 							break;
 					}
-					
+
+                    //Add the checkbox for moving this thumbnail
+                    builder.AppendLine("<td><span class=\"chkMoveThumbnailHidden\"><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, "+CurrentItem.Web.Static_PageCount+")\"/></span>");
+
+
 					//Add the error icon
-					builder.AppendLine("<td><span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
+					builder.AppendLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
 					int main_thumbnail_index = -1;
 					if (!String.IsNullOrEmpty(hidden_main_thumbnail))
 						Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
@@ -503,6 +515,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					// Write the image and determine some values, based on current thumbnail size
 					string division_text = "Division:";
 					string pagination_text = "Pagination:";
+					string division_name_text = "Name:";
 					string division_box = "divisionbox_small";
 					string pagination_box = "pagebox_small";
 					int icon_width = 15;
@@ -550,64 +563,79 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					builder.AppendLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					builder.AppendLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,0," + thumbnailsPerPage + ");\"></input></td></tr>");
+                    builder.AppendLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,0," + CurrentItem.Web.Static_PageCount + ");\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
 
 					// Add the Division prompting, and the check box for a new division
 					builder.Append("<tr><td class=\"divisiontext\" align=\"left\">" + division_text);
-					builder.Append("<input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.name, " + thumbnailsPerPage + ");\"");
+                    builder.Append("<input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.name, " +  CurrentItem.Web.Static_PageCount + ");\"");
 					if ( newParent )
 						builder.Append(" checked=\"checked\"");
 					builder.AppendLine("/></td>");
 
 					// Determine the text for the parent
 					string parentLabel = String.Empty;
+					string parentType = "Chapter";
 					if (thisParent != null)
 					{
-						parentLabel = thisParent.Display_Label;
-						//if (parentLabel.Length == 0)
-						//    parentLabel = thisParent.Type;
+						parentLabel = thisParent.Label;
+						parentType = thisParent.Type;
+
 					}
 
 					// Add the division box
-				 //   builder.AppendLine("<td><input type=\"text\" class=\"" + division_box + "\" value=\"" + parentLabel + "\"></input></td></tr>");
-					if(newParent)
-						builder.AppendLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" onchange=\"DivisionTypeChanged(this.id," + thumbnailsPerPage + ");\">");
+	       			if(newParent)
+                        builder.AppendLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" onchange=\"DivisionTypeChanged(this.id," + CurrentItem.Web.Static_PageCount + ");\">");
 					else
 					{
-						builder.AppendLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" disabled=\"disabled\" onchange=\"DivisionTypeChanged(this.id," + thumbnailsPerPage + ");\">");
+                        builder.AppendLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" disabled=\"disabled\" onchange=\"DivisionTypeChanged(this.id," + CurrentItem.Web.Static_PageCount + ");\">");
 					}
 
-                    string txtDivNameCssClass = "txtNamedDivHidden";
+					string txtDivNameCssClass = "txtNamedDivHidden";
+                    //Add the division types fromt he current QC Config profile to a local dictionary
+                    Dictionary<string, bool> qcDivisionList = new Dictionary<string, bool>();
                     foreach (QualityControl_Division_Config qcDivConfig in qc_profile.All_Division_Types)
                     {
-                        if(qcDivConfig.TypeName == parentLabel && qcDivConfig.isNameable==false)
-                            builder.AppendLine("<option value=\"" + qcDivConfig.TypeName + "\" selected=\"selected\">" + qcDivConfig.TypeName + "</option>");
-                        else if (qcDivConfig.TypeName == parentLabel && qcDivConfig.isNameable == true)
-                        {
-                            builder.AppendLine("<option value=\"!" + qcDivConfig.TypeName + "\" selected=\"selected\">" + qcDivConfig.TypeName + "</option>");
-                            txtDivNameCssClass = "txtNamedDivVisible";
-                        }
-                        else if (qcDivConfig.isNameable == true)
-                            builder.AppendLine("<option value=\"!" + qcDivConfig.TypeName + "\">" + qcDivConfig.TypeName + "</option>");
-                        else
-                            builder.AppendLine("<option value=\"" + qcDivConfig.TypeName + "\">" + qcDivConfig.TypeName + "</option>");
+                        qcDivisionList.Add(qcDivConfig.TypeName,qcDivConfig.isNameable);
                     }
 
-			
+                    //Get the division types from the Page Tree (from this METS), and the extra ones not in the profile to the 
+                    foreach (KeyValuePair<Page_TreeNode, Division_TreeNode> node in childToParent)
+                    {
+                        string type = node.Value.Type;
+                        string label = node.Value.Label;
+                        if (!qcDivisionList.ContainsKey(type))
+                        {
+                            bool isNameable = (String.IsNullOrEmpty(label)) ? false : true;
+                            qcDivisionList.Add(type, isNameable);
+                        }
+                    }
+
+
+                    //Iterate through all the division types in this profile
+                    foreach (KeyValuePair<string, bool> divisionType in qcDivisionList)
+                    {
+                        if (divisionType.Key == parentType && divisionType.Value == false)
+                            builder.AppendLine("<option value=\"" + divisionType.Key + "\" selected=\"selected\">" + divisionType.Key + "</option>");
+                        else if (divisionType.Key == parentType && divisionType.Value == true)
+                        {
+                            builder.AppendLine("<option value=\"!" + divisionType.Key + "\" selected=\"selected\">" + divisionType.Key + "</option>");
+                            txtDivNameCssClass = "txtNamedDivVisible";
+                        }
+                        else if (divisionType.Value == true)
+                            builder.AppendLine("<option value=\"!" + divisionType.Key + "\">" + divisionType.Key + "</option>");
+                        else
+                            builder.AppendLine("<option value=\"" + divisionType.Key + "\">" + divisionType.Key + "</option>");
+                    }
+
 					builder.AppendLine("</select></td></tr>");
 
-                    //// Add the text box for entering the name of this page
-                    //builder.AppendLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-                    //builder.AppendLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,0," + thumbnailsPerPage + ");\"></input></td></tr>");
-
-
 					//Add the textbox for named divisions
-                    builder.AppendLine("<tr id=\"divNameTableRow"+page_index+"\" class=\""+txtDivNameCssClass+"\"><td class=\"namedDivisionText\" align=\"left\">Name:</td>");
-                    builder.AppendLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\""+pagination_box+"\"/></td></tr>");
-                    
+					builder.AppendLine("<tr id=\"divNameTableRow"+page_index+"\" class=\""+txtDivNameCssClass+"\"><td class=\"namedDivisionText\" align=\"left\">"+division_name_text+"</td>");
+                    builder.AppendLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id," + CurrentItem.Web.Static_PageCount + ");\"/></td></tr>");
+					
 					//Add the span with the on-hover-options for the page thumbnail
 					builder.AppendLine("<tr><td colspan=\"100%\">");
 					builder.AppendLine("<span id=\"qcPageOptions"+page_index+"\" class=\"qcPageOptionsSpan\" style=\"float:right\"><img src=\""+CurrentMode.Base_URL+"default/images/ToolboxImages/Main_Information.ICO\" height=\""+icon_height+"\" width=\""+icon_width+"\" alt=\"Missing Icon Image\"></img>");
@@ -650,10 +678,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
 			builder.AppendLine("<script type=\"text/javascript\">window.onload=MakeSpanFlashOnPageLoad();</script>");
 			builder.AppendLine("<script type=\"text/javascript\">window.onload=MakeSortable1();</script>");
+//		    builder.AppendLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
 //			builder.AppendLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
 			
-            //If the autosave option is not set, or it is set to true, set the interval (3 minutes) for autosaving
-            if(String.IsNullOrEmpty(autosave_option.ToString()) || autosave_option)
+			//If the autosave option is not set, or set to true, set the interval (3 minutes) for autosaving
+			if(String.IsNullOrEmpty(autosave_option.ToString()) || autosave_option)
 			  builder.AppendLine("<script type=\"text/javascript\">setInterval(qc_auto_save, 180* 1000);</script>");
 
 			//Add the Complete and Cancel buttons at the end of the form
@@ -744,12 +773,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.min.js\"></script>");
 				
 			  navRowBuilder.AppendLine("<link rel=\"stylesheet\" href=\"http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css\" />");
-			  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/jquery-1.9.1.js\"></script>");
+			 // navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/jquery-1.9.1.js\"></script>");
 			  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
-				
-                add_main_menu(navRowBuilder);
 
-				navRowBuilder.AppendLine("<table width=\"100%\"><tr align=\"center\">");
+
+             // navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-1.6.2.min.js\"></script>");
+              //navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.8.16.custom.min.js\"></script>");
+              navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+
+              // Add the popup form
+			  navRowBuilder.AppendLine();
+              navRowBuilder.AppendLine("<!-- Pop-up form for moving page(s) by selecting the checkbox in image -->");
+              navRowBuilder.AppendLine("<div class=\"qcmove_popup_div\" id=\"form_qcmove\" style=\"display:none;\">");
+              navRowBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">MOVE SELECTED PAGES</td><td align=\"right\"><a href=\"" + CurrentMode.Base_URL + "logon/help\" target=\"_FORM_QCMOVE_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcmove' ); \">X</a> &nbsp; </td></tr></table></div>");
+              navRowBuilder.AppendLine("  <br />");
+              navRowBuilder.AppendLine("  <table class=\"popup_table\">");
+
+              // Add the rows of data
+			    navRowBuilder.AppendLine("<tr><td>ALL STUFF HERE</td></tr>");
+
+
+
+              // Finish the popup form
+              navRowBuilder.AppendLine("  </table>");
+              navRowBuilder.AppendLine("  <br />");
+              navRowBuilder.AppendLine("</div>");
+              navRowBuilder.AppendLine();
+
+
+
+              add_main_menu(navRowBuilder);
+
+              navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\">Move to</button></div>");
+			  navRowBuilder.AppendLine("<table width=\"100%\"><tr align=\"center\">");
 				
 
 				//Add the dropdown for the number of thumbnails per page, only if there are >25 thumbnails
@@ -808,7 +864,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Thumbnails_Per_Page = -100;
 
 
-				//Add the control for the thumbnail size
+				// For now, just add a TEST link here
+			    navRowBuilder.AppendLine("<td><a id=\"form_qcmove_link\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );\">test</a></td>");
 
 				//Get the icons for the thumbnail sizes
 				string image_location = CurrentMode.Default_Images_URL;
@@ -875,13 +932,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
 				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
 				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault(); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault("+CurrentItem.Web.Static_PageCount+"); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
 				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor(); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor("+CurrentItem.Web.Static_PageCount+"); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
 				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/prev_Error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
+                navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + CurrentItem.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+                //navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
+                //navRowBuilder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
 				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
 				navRowBuilder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
 				navRowBuilder.AppendLine("</span>");
@@ -925,7 +982,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Get the proper number of thumbnails per page
 			if (CurrentUser != null)
 			{
-                                
+								
 				// First, pull the thumbnails per page from the user options
 				thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", 50);
 
@@ -1031,7 +1088,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				return ItemViewer_PageSelector_Type_Enum.PageLinks;
 			}
 		}
-
 
         /// <summary> Flag indicates if the item viewer should add the standard item menu, or
         /// if this item viewer overrides that menu and will write its own menu </summary>

@@ -1,0 +1,23 @@
+﻿/**************************************************************************
+**     SOBEKCM_QC.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for the online Quality Control interface.                                            
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
+
+
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
+.popup_title a { color: White; text-decoration: none; font-weight: bold; }
+.popup_table { padding-left: 20px; margin-left: 20px; }
+
+.qcmove_popup_div { position:absolute; background-color:#eeeeee; width:620px; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
