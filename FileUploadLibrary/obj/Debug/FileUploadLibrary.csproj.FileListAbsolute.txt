@@ -19,3 +19,9 @@ C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\obj\Debug\FileUploadLibr
 C:\Users\msulliva\Desktop\Version 2.2\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
 C:\inetpub\wwwroot\UFDC\FileUploadLibrary\bin\Debug\FileUploadLibrary.XML
 C:\inetpub\wwwroot\UFDC\FileUploadLibrary\obj\Debug\FileUploadLibrary.csprojResolveAssemblyReference.cache
+C:\GitRepository\SobekCM\SobekCM-Web-Application\FileUploadLibrary\bin\Debug\FileUploadLibrary.XML
+C:\GitRepository\SobekCM\SobekCM-Web-Application\FileUploadLibrary\bin\Debug\FileUploadLibrary.dll
+C:\GitRepository\SobekCM\SobekCM-Web-Application\FileUploadLibrary\bin\Debug\FileUploadLibrary.pdb
+C:\GitRepository\SobekCM\SobekCM-Web-Application\FileUploadLibrary\obj\Debug\FileUploadLibrary.csprojResolveAssemblyReference.cache
+C:\GitRepository\SobekCM\SobekCM-Web-Application\FileUploadLibrary\obj\Debug\FileUploadLibrary.dll
+C:\GitRepository\SobekCM\SobekCM-Web-Application\FileUploadLibrary\obj\Debug\FileUploadLibrary.pdb
