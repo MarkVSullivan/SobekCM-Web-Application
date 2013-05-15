@@ -19,7 +19,7 @@ using System.Xml;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
-	public class QC_ItemViewer : abstractItemViewer
+	public class QC_ItemViewer : abstractItemViewer   
 	{
 		private readonly string title;
 		private int thumbnailsPerPage;
