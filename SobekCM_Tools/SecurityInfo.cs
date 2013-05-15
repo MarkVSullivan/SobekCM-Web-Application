@@ -12,7 +12,7 @@ using Microsoft.Win32;
 
 namespace SobekCM.Tools
 {
-	/// <summary> Object used to determine and ensure security.  It allows
+	/// <summary> Object used to determine and ensure security.    It allows
 	/// for reading from the registry, checking local users and computer information, 
 	/// and writing and reading to encrypted files. <br /><br />
 	/// </summary>
