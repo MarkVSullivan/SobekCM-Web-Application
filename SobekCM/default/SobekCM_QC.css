@@ -15,9 +15,64 @@
 **                                                                 
 **************************************************************************/
 
+  .qcpage { background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;}
+  .qcfilename { color: #3c3c3c;font-size: 1.15em;font-weight: bold;}
+  .qcthumbnails { border: 1px solid  #a9a9a9; }
+  .paginationtext { color: #3c3c3c; }
+  .divisiontext { color: #3c3c3c; }
+  .namedDivisionText{ color: #3c3c3c; }
+
+  .divisionbox_small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
+  .divisionbox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
+  .divisionbox_large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  .divisionbox_full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  
+  .pagebox_small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
+  .pagebox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
+  .pagebox_large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  .pagebox_full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+
+ .qcPageOptionsSpan{ float: right;  visibility: hidden;}
+ .qcPageOptionsSpanHover{float:right; visibility: visible;}
+
+.errorIconSpan{float:right; visibility: hidden;}
+.errorIconSpanHover{float:right; visibility: visible;}
+
+.pickMainThumbnailIcon{visibility: hidden; float:right;}
+.pickMainThumbnailIconSelected{visibility: visible; float:right;}
+
+.chkMoveThumbnailHidden{visibility: Hidden;}
+.chkMoveThumbnailVisible{visibility: Visible;}
+
+.movePageArrowIconHidden{ visibility: hidden;}
+.movePageArrowIconVisible{ visibility: :Visible;}
+
+.spanQCIconsTopNavRow{float:right;}
+
+.qcPickMainThumbnailCursor{cursor:url(../default/images/thumbnail_cursor.cur),default;}
+.qcMovePagesCursor{cursor:url(../default/images/move_pages_cursor.cur),default;}
+.qcResetMouseCursorToDefault{cursor:default;}
+
+.txtNamedDivHidden{ visibility: hidden;}
+.txtNamedDivVisibile{ visibility: visible;}
+
+.qcDivMoveOnScroll {position: fixed; bottom: 3px; right: 0.1%;visibility: visible; }
+.qcDivMoveOnScrollHidden{ position: fixed;bottom: 3px;right: 0.1%;visibility: hidden;}
+
 
 .popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
 .popup_table { padding-left: 20px; margin-left: 20px; }
 
-.qcmove_popup_div { position:absolute; background-color:#eeeeee; width:620px; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.qcmove_popup_div { position:fixed; background-color:#eeeeee; width:620px; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+
+.btnMovePages {
+	background-color:#ffab23;
+    display:inline-block;
+	color:#333333;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:4px 16px;
+	text-decoration:none;}
+.btnMovePages:hover { background-color:#ffec64;}

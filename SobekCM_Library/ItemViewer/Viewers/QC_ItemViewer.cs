@@ -310,8 +310,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				return goToUrls.ToArray();
 			}
 		}
-
-        private void add_main_menu(StringBuilder builder)
+		
+		        private void add_main_menu(StringBuilder builder)
         {
             //StringBuilder builder = new StringBuilder(4000);
             builder.AppendLine("<div id=\"qcmenubar\">");
@@ -371,6 +371,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // placeHolder.Controls.Add(htmlLiteral);
         }
+
+
   
 		/// <summary> Adds the main view section to the page turner </summary>
 		/// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
@@ -463,6 +465,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					int error_icon_width = 20;
 					int pick_main_thumbnail_height = 20;
 					int pick_main_thumbnail_width = 20;
+				    int arrow_height = 12;
+				    int arrow_width = 15;
 					switch (size_of_thumbnails)
 					{
 						case 2:
@@ -470,6 +474,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							error_icon_width = 25;
 							pick_main_thumbnail_height = 25;
 							pick_main_thumbnail_width = 25;
+					        arrow_height = 17;
+					        arrow_width = 20;
 							break;
 
 						case 3:
@@ -477,6 +483,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							error_icon_width = 30;
 							pick_main_thumbnail_height = 30;
 							pick_main_thumbnail_width = 30;
+                            arrow_height = 22;
+					        arrow_width = 25;
 							break;
 
 						case 4:
@@ -484,6 +492,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							error_icon_width = 30;
 							pick_main_thumbnail_height = 30;
 							pick_main_thumbnail_width = 30;
+                            arrow_height = 22;
+					        arrow_width = 25;
 							break;
 
 						default:
@@ -491,12 +501,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							error_icon_height = 20;
 							pick_main_thumbnail_height = 20;
 							pick_main_thumbnail_width = 20;
+                            arrow_height = 12;
+					        arrow_width = 15;
 							break;
 					}
 
                     //Add the checkbox for moving this thumbnail
-                    builder.AppendLine("<td><span class=\"chkMoveThumbnailHidden\"><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, "+CurrentItem.Web.Static_PageCount+")\"/></span>");
-
+                    builder.AppendLine("<td><span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, "+CurrentItem.Web.Static_PageCount+")\"/></span>");
+                    builder.AppendLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );update_popup_form(" + thisFile.File_Name_Sans_Extension + ",'After');\"><img src=\"" + CurrentMode.Base_URL + "default/images/left_arrow2.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
+                    builder.AppendLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );update_popup_form("+thisFile.File_Name_Sans_Extension+",'After');\"><img src=\"" + CurrentMode.Base_URL + "default/images/right_arrow2.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img>");
 
 					//Add the error icon
 					builder.AppendLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
@@ -790,9 +803,49 @@ namespace SobekCM.Library.ItemViewer.Viewers
               navRowBuilder.AppendLine("  <table class=\"popup_table\">");
 
               // Add the rows of data
-			    navRowBuilder.AppendLine("<tr><td>ALL STUFF HERE</td></tr>");
+			    navRowBuilder.AppendLine("<tr><td>Move selected pages:</td>");
+                navRowBuilder.AppendLine("<td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages1\" value=\"After\" checked=\"true\" onclick=\"rbMovePagesChanged(this.value);\">After");
+			    navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;");
+			    navRowBuilder.AppendLine("<td><select id=\"selectDestinationPageList1\">");
+                //Add the select options
+                
+                //iterate through the page items
+                if (CurrentItem.Web.Static_PageCount > 0)
+                {
+                    int page_index = 0;
+                    foreach (Page_TreeNode thisFile in CurrentItem.Web.Pages_By_Sequence)
+                    {
+                        page_index++;
+                        
+                        navRowBuilder.AppendLine("<option value=\"" + page_index + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
 
+                    }
+                }
 
+			    navRowBuilder.AppendLine("</td></tr>");
+                navRowBuilder.AppendLine("<tr><td></td><td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages2\" value=\"Before\" onclick=\"rbMovePagesChanged(this.value);\">Before</td>");
+	
+                navRowBuilder.AppendLine("<td><select id=\"selectDestinationPageList2\"  disabled=\"true\">");
+
+                //iterate through the page items
+                if (CurrentItem.Web.Static_PageCount > 0)
+                {
+                    int page_index = 0;
+                    foreach (Page_TreeNode thisFile in CurrentItem.Web.Pages_By_Sequence)
+                    {
+                        page_index++;
+
+                        navRowBuilder.AppendLine("<option value=\"" + page_index + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
+
+                    }
+                }
+                navRowBuilder.AppendLine("</select></td></tr>");
+
+             //Add the Cancel & Move buttons
+                navRowBuilder.AppendLine("    <tr><td colspan=\"2\"><center>");
+                navRowBuilder.AppendLine("      <br><input type=\"image\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/move_big_button.gif\" value=\"Submit\" alt=\"Submit\" />&nbsp;");
+                navRowBuilder.AppendLine("      <a href=\"#template\" onclick=\" popdown( 'form_qcmove' );\"><img border=\"0\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel1_big_button.gif\" alt=\"CANCEL\" /></a><br> ");
+                navRowBuilder.AppendLine("    </center></td></tr>");
 
               // Finish the popup form
               navRowBuilder.AppendLine("  </table>");
@@ -800,11 +853,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
               navRowBuilder.AppendLine("</div>");
               navRowBuilder.AppendLine();
 
-
-
               add_main_menu(navRowBuilder);
 
-              navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\">Move to</button></div>");
+              navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
 			  navRowBuilder.AppendLine("<table width=\"100%\"><tr align=\"center\">");
 				
 
@@ -1088,8 +1139,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				return ItemViewer_PageSelector_Type_Enum.PageLinks;
 			}
 		}
-
-        /// <summary> Flag indicates if the item viewer should add the standard item menu, or
+		
+		        /// <summary> Flag indicates if the item viewer should add the standard item menu, or
         /// if this item viewer overrides that menu and will write its own menu </summary>
         /// <remarks> By default, this returns TRUE.  The QC and the spatial editing itemviewers create their own custom menus
         /// due to the complexity of the work being done in those viewers. </remarks>

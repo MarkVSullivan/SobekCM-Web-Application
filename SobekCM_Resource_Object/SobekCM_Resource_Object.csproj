@@ -96,7 +96,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\UFDC_Bib_Package.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\SobekCM_Resource_Object.xml</DocumentationFile>
     <FileAlignment>4096</FileAlignment>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -106,7 +106,7 @@
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>UFDC_Bib_Package.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\Release\SobekCM_Resource_Object.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <FileAlignment>4096</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -114,10 +114,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ApplicationBlocks.Data">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet">
       <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
@@ -139,10 +139,10 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Zoom.Net">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\Zoom.net\Zoom.Net.dll</HintPath>
+      <HintPath>..\DLLs\Zoom.net\Zoom.Net.dll</HintPath>
     </Reference>
     <Reference Include="Zoom.Net.YazSharp">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\Zoom.net\Zoom.Net.YazSharp.dll</HintPath>
+      <HintPath>..\DLLs\Zoom.net\Zoom.Net.YazSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
