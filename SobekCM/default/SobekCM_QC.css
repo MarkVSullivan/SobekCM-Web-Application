@@ -76,3 +76,180 @@
 	padding:4px 16px;
 	text-decoration:none;}
 .btnMovePages:hover { background-color:#ffec64;}
+
+
+/* Code for the QC main menu */
+/** CODE FOR THE STARFISH NAVIGATION MENU PLUG-IN  **/
+/*** ESSENTIAL STYLES ***/
+.qc-menu, .qc-menu * {
+	margin:			0;
+	padding:		0;
+	list-style:		none;
+	z-index: 10;
+}
+.qc-menu {
+	line-height:	1.4em;
+}
+.qc-menu ul {
+	position:		absolute;
+	top:			-999em;
+	width:			25em; /* left offset of submenus need to match (see below) */
+}
+.qc-menu ul li {
+	width:			100%;
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+.qc-menu li:hover {
+	visibility:		inherit; /* fixes IE7 'sticky bug' */
+}
+.qc-menu li {
+	float:			left;
+	position:		relative;
+}
+.qc-menu a {
+	display:		block;
+	position:		relative;
+}
+.qc-menu li:hover ul,
+.qc-menu li.sfHover ul {
+	left:			0;
+	top:			20px; /* match top ul list item height */
+	z-index:		99;
+}
+ul.qc-menu li:hover li ul,
+ul.qc-menu li.sfHover li ul {
+	top:			-999em;
+}
+ul.qc-menu li li:hover ul,
+ul.qc-menu li li.sfHover ul {
+	left:			25em; /* match ul width */
+	top:			0;
+}
+ul.qc-menu li li:hover li ul,
+ul.qc-menu li li.sfHover li ul {
+	top:			-999em;
+}
+ul.qc-menu li li li:hover ul,
+ul.qc-menu li li li.sfHover ul {
+	left:			14em; /* match ul width */
+	top:			0;
+}
+
+/*** DEMO SKIN ***/
+.qc-menu 
+{
+    margin-left: 25px;
+	background-color: #7d90d5;
+	color: white;
+	text-transform:uppercase;
+    font-weight:bold;
+    padding-bottom: 8px;
+}
+
+.qc-menu a {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-decoration:none;
+}
+.qc-menu a, .qc-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
+	color:			White;
+}
+
+.qc-menu li 
+{
+    margin-top: 1px;  
+	background:		#7d90d5;
+	padding-bottom: 1px;
+	margin-right: 12px;
+
+}
+.qc-menu li li {
+	background:		#7d90d5;
+    margin-top: 0px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-left:	0px solid #fff;
+	text-align: left;
+}
+
+.qc-menu li li a {
+	border-left:	0px solid #fff;
+}
+
+.qc-menu li li li {
+	background:		#7d90d5;
+}
+.qc-menu li:hover, .qc-menu li.sfHover,
+.qc-menu a:focus, .qc-menu a:hover, .qc-menu a:active {
+	background:		#cccccc;
+	outline:		0;
+}
+
+/*** arrows **/
+.qc-menu a.sf-with-ul {
+	padding-right: 	2.25em;
+	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
+}
+.sf-sub-indicator {
+	position:		absolute;
+	display:		block;
+	right:			.75em;
+	top:			1.05em; /* IE6 only */
+	width:			10px;
+	height:			10px;
+	text-indent: 	-999em;
+	overflow:		hidden;
+	background:		url('../images/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+}
+a > .sf-sub-indicator {  /* give all except IE6 the correct values */
+	top:			.8em;
+	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
+}
+/* apply hovers to modern browsers */
+a:focus > .sf-sub-indicator,
+a:hover > .sf-sub-indicator,
+a:active > .sf-sub-indicator,
+li:hover > a > .sf-sub-indicator,
+li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+}
+
+/* point right for anchors in subs */
+.qc-menu ul .sf-sub-indicator { background-position:  -10px 0; }
+.qc-menu ul a > .sf-sub-indicator { background-position:  0 0; }
+/* apply hovers to modern browsers */
+.qc-menu ul a:focus > .sf-sub-indicator,
+.qc-menu ul a:hover > .sf-sub-indicator,
+.qc-menu ul a:active > .sf-sub-indicator,
+.qc-menu ul li:hover > a > .sf-sub-indicator,
+.qc-menu ul li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px 0; /* arrow hovers for modern browsers*/
+}
+
+
+#selected-qc-menu-item 
+{
+    padding-top: 7px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-decoration:none;
+	background-color: #0021a6;
+	margin-top: -2px;
+	
+}
+
+.action-qc-menu-item
+{
+    float:right;
+    padding-top: 4px;
+	padding-bottom: 5px;
+	text-decoration:none;
+	height: 16px;
+	cursor: pointer;
+	cursor: hand; 
+    margin-right: 5px;
+}
