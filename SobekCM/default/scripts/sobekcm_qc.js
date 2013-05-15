@@ -123,16 +123,7 @@ function DivisionTypeChanged(selectID,MaxPageCount)
     var i = spanArray.indexOf(currID)+1;
 	var currVal = document.getElementById(selectID).value;
 
-//	var k=i;
-	//while(document.getElementById('selectDivType'+spanArray[k]).disabled==true)
-	//{
-	  //alert(i);
-	 // if(document.getElementById('selectDivType'+ spanArray[k]))
-	 //   document.getElementById('selectDivType'+ spanArray[k]).value = currVal;
-	 // k++;
-//	}
-	
-	
+
 	//if the new Division type selected is a nameable div
 	if(currVal.indexOf('!')==0)
 	{
@@ -440,7 +431,7 @@ function hideErrorIcon(spanID)
 
 }
 
-//Change the cursor to the custom cursor
+//Change the cursor to the custom cursor for Selecting a Main Thumbnail
 function ChangeMouseCursor(MaxPageCount)
 {
 
@@ -462,6 +453,17 @@ function ChangeMouseCursor(MaxPageCount)
 		
 		}
 
+	//Also re-hide the button for moving multiple pages in case previously made visible
+	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+	
+	 //Hide all the left/right arrows for moving pages
+	for(var i=0; i<MaxPageCount; i++)
+	{
+			 if(document.getElementById('movePageArrows'+i))
+			   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
+		
+	}
+		
 }
 
 function ResetCursorToDefault(MaxPageCount)
@@ -483,7 +485,16 @@ function ResetCursorToDefault(MaxPageCount)
 	  }
 	
 	}
+	//Also re-hide the button for moving multiple pages in case previously made visible
+	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
 	
+	 //Hide all the left/right arrows for moving pages
+	for(var i=0; i<MaxPageCount; i++)
+	{
+			 if(document.getElementById('movePageArrows'+i))
+			   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
+		
+	}
 }
 
 //Change cursor: move pages
@@ -699,11 +710,28 @@ function qc_auto_save()
 function chkMoveThumbnailChanged(chkBoxID, MaxPageCount)
 {
 
+  var checked=false;
  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+ //Hide all the left/right arrows for moving pages
+for(var i=0; i<MaxPageCount; i++)
+{
+		 if(document.getElementById('movePageArrows'+i))
+		   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
+	
+}
+ 
  
  //If a checkbox has been checked
  if (document.getElementById(chkBoxID).checked==true)
-  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+ {
+    document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+    for(var i=0; i<MaxPageCount; i++)
+	{
+		 if(document.getElementById('movePageArrows'+i))
+		   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';
+	
+	}
+}
 else
 { 
   //Check if there is any other checked checkbox on the screen
@@ -712,9 +740,93 @@ else
     if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true)
 	{
 	  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+	  checked = true;
 	}
+  }
+  
+  if(checked==true)
+  {
+     //Unhide the left/right arrows for moving pages
+     for(var i=0; i<MaxPageCount; i++)
+	{
+		 if(document.getElementById('movePageArrows'+i))
+		   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';
+	
+	}
+  
   }
 
 }
   
 }
+
+
+// ------------------ Functions for the Move-Multiple-Selected-Pages Popup Form---------------------//
+
+
+//Disable\enable the select dropdowns based on the radio button selected
+function rbMovePagesChanged(rbValue)
+{
+  if(rbValue=='After')
+    {
+	  document.getElementById('selectDestinationPageList1').disabled=false;
+	  document.getElementById('selectDestinationPageList2').disabled=true;
+	}
+	else if(rbValue=='Before')
+	{
+	  document.getElementById('selectDestinationPageList2').disabled=false;
+	  document.getElementById('selectDestinationPageList1').disabled=true;
+	}
+}
+
+
+//Update the popup form based on the parameters passed in
+function update_popup_form(pageID,before_after)
+{
+  alert(pageID+before_after);
+  if(before_after=='After')
+  {
+    if(document.getElementById('selectDestinationPageList1'))
+	{
+	  document.getElementByID('rbMovePages1').checked=true;
+	  document.getElementById('selectDestinationPageList1').disabled=false;
+	  document.getElementById('selectDestinationPageList2').disabled=true;	
+      //Change the dropdown selected option as well
+	   var ddl = document.getElementById('selectDestinationPageList1');
+		var opts = ddl.options.length;
+		for (var i=0; i<opts; i++)
+		{
+			if (ddl.options[i].value == pageID)
+			{
+				ddl.options[i].selected = true;
+				
+			}
+		}
+	  
+	}
+  }
+  else if(before_after=='Before')
+  {
+    if(document.getElementById('selectDestinationPageList1'))
+	{
+	 document.getElementById('rbMovePages2').checked=true;
+	  document.getElementById('selectDestinationPageList1').disabled=true;
+	  document.getElementById('selectDestinationPageList2').disabled=false;	
+
+      //Change the dropdown selected option as well
+	   var ddl = document.getElementById('selectDestinationPageList2');
+		var opts = ddl.options.length;
+		for (var i=0; i<opts; i++)
+		{
+			if (ddl.options[i].value == pageID)
+			{
+				ddl.options[i].selected = true;
+				
+			}
+		}	  
+	}
+  }
+}
+
+
+//--------------------End of Functions for the Move-Multiple-Selected-Pages Popup Form----------------//
