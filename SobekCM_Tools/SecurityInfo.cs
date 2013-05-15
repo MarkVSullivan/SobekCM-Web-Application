@@ -25,7 +25,7 @@ namespace SobekCM.Tools
 	/// Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center. </remarks>
 	public class SecurityInfo
 	{
-	    ///// <summary> Gets the MAC address of the network adapter for the current computer </summary>
+	    ///// <summary> Gets the MAC    address of the network adapter for the current computer </summary>
         ///// <remarks> The MAC address is returned as a string in the form 00:##:##:##:##:##. </remarks>
         //public string MAC_Address
         //{
