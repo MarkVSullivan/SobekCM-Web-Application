@@ -294,6 +294,61 @@ namespace SobekCM.Library.Items
             }
         }
 
+        /// <summary> Builds a digital resource for a single volume within a title </summary>
+        /// <param name="BibID"> Bibliographic identifier for the title </param>
+        /// <param name="VID"> Volume identifier for the title </param>
+        /// <param name="METS_Location"> Location of the METS file to read </param>
+        /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built version of a digital resource </returns>
+        public SobekCM_Item Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Create the requested item");
+            }
+
+            try
+            {
+                // Get the basic information about this item
+                DataSet itemDetails = SobekCM_Database.Get_Item_Details(BibID, VID, Tracer);
+
+                // If the itemdetails was null, this item is somehow invalid item then
+                if (itemDetails == null)
+                    return null;
+
+
+                // Try to read the UFDC service METS
+                SobekCM_Item thisPackage = Build_Item_From_METS(METS_Location, String.Empty, Tracer);
+
+                if (thisPackage == null)
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the indicated METS file ( " + METS_Location + " )", Custom_Trace_Type_Enum.Error);
+                    }
+
+                    return null;
+                }
+
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Finish building this item");
+                }
+
+                // Now finish building the object from the application state values
+                Finish_Building_Item(thisPackage, itemDetails, false);
+
+                return thisPackage;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
         private SobekCM_Item Build_Item_From_METS(string METS_URL, string METS_Name, Custom_Tracer tracer)
         {
             try

@@ -358,7 +358,7 @@ namespace SobekCM.Library.HTML
             }
             currentMode.ViewerCode = currentItem.Web.Get_Valid_Viewer_Code(currentMode.ViewerCode, currentMode.Page);
             View_Object viewObject = currentItem.Web.Get_Viewer(currentMode.ViewerCode);
-            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), currentItem);
+            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), currentItem, currentUser, currentMode);
 
             // If this was in fact restricted by IP address, restrict now
             if (itemRestrictedFromUserByIp)
