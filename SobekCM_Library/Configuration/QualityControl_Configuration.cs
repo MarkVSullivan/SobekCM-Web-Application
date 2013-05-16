@@ -538,7 +538,12 @@ namespace SobekCM.Library.Configuration
         {
             get
             {
-                return divisionTypeLookup[TypeName];
+                if ( divisionTypeLookup.ContainsKey(TypeName))
+                    return divisionTypeLookup[TypeName];
+                else
+                {
+                    return null;
+                }
             }
         }
     }

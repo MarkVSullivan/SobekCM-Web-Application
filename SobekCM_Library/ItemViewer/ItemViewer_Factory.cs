@@ -1,5 +1,7 @@
 ﻿#region Using directives
 
+using SobekCM.Library.Navigation;
+using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.ItemViewer.Viewers;
@@ -18,9 +20,10 @@ namespace SobekCM.Library.ItemViewer
         /// <param name="viewObject"> View object from the digital resource object </param>
         /// <param name="Resource_Type">Resource type often impacts how an item viewer renders</param>
         /// <param name="Current_Object">Current resource object </param>
+        /// <param name="Current_User">Currently session's user </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
         /// via HTML. </returns>
-        public static abstractItemViewer Get_Viewer(View_Object viewObject, string Resource_Type, SobekCM_Item Current_Object)
+        public static abstractItemViewer Get_Viewer(View_Object viewObject, string Resource_Type, SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode )
         {
             switch (viewObject.View_Type)
             {
@@ -102,7 +105,7 @@ namespace SobekCM.Library.ItemViewer
                     return new Tracking_ItemViewer();
 
                 case View_Enum.QUALITY_CONTROL:
-                    return new QC_ItemViewer(Current_Object);
+                    return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);
             }
 
             return null;
