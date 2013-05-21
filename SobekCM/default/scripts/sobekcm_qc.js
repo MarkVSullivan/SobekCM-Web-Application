@@ -32,10 +32,16 @@ function UpdateDivDropdown(CheckBoxID, MaxPageCount)
 	if(document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).disabled==true)
 	{
 	  document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).disabled=false;
+	  
+	  //If a division name textbox is required and disabled, enable it
+	  document.getElementById('txtDivName'+(CheckBoxID.split('newdiv')[1])).disabled = false;
 	}
 	else
 	{
 	 document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).disabled=true;
+	 //Disable the named division textbox
+	 if(document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).value.indexOf('!')==0)
+	   document.getElementById('txtDivName'+(CheckBoxID.split('newdiv')[1])).disabled = true;
 	 
 	 //update the subsequent divs
 	 var index=CheckBoxID.split('newdiv')[1];
@@ -135,7 +141,10 @@ function DivisionTypeChanged(selectID,MaxPageCount)
   	 {
 	  //alert(i);
 	  if(document.getElementById('selectDivType'+ spanArray[j]))
-	    document.getElementById('selectDivType'+ spanArray[j]).value = currVal;
+	   { 
+	     document.getElementById('selectDivType'+ spanArray[j]).value = currVal;
+		 document.getElementById('txtDivName'+spanArray[j]).disabled = true;
+	   }
 	  if(document.getElementById('divNameTableRow'+ spanArray[j]))
 		document.getElementById('divNameTableRow'+ spanArray[j]).className = 'txtNamedDivVisible';
 	  j++;
@@ -174,7 +183,7 @@ function DivNameTextChanged(textboxID, MaxPageCount)
    //Get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
-	//Get the array from the global variable if previously assigned
+	//Get the array of all UI thumbnails from the global variable if previously assigned
 	if(window.spanArrayGlobal!= null)
 	 { 
 	  spanArrayObjects = window.spanArrayGlobal;
@@ -570,19 +579,37 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													var indexTemp = spanArray[startPosition].split('span')[1];
 													
 													//If the span being moved is the start of a new Div 															
-													if(document.getElementById('newDivType'+indexTemp).checked==false)
+													if (document.getElementById('newDivType' + spanArray[newPosition-1].split('span')[1]).checked == true)
 													{
-													   document.getElementById('newDivType'+(spanArray[startPosition].split('span')[1])).checked=true;
-													   document.getElementById('selectDivType'+(spanArray[startPosition].split('span')[1])).disabled=false;
-													   //alert('still in the right place');
-													   document.getElementById('selectDivType'+(spanArray[startPosition].split('span')[1])).value=document.getElementById('selectDivType'+pageIndex).value;
-														  														  														  
+													   alert('Moving a new division page');
+
+                                                        //If the next div is not the start of a new division 
+													   if (document.getElementById('newDivType' + (spanArray[startPosition].split('span')[1])).checked == false)
+													   {
+													        document.getElementById('newDivType' + (spanArray[startPosition].split('span')[1])).checked = true;
+													        document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).disabled = false;
+													        //alert('still in the right place');
+													        document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value = document.getElementById('selectDivType' + pageIndex).value;
+
+													        //Update the division name textbox
+													        if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.index('!') == 0)
+													        {
+													            document.getElementById('divNameTableRow' + (spanArray[startPosition].split('span')[1])).className = 'txtNamedDivVisible';
+													            document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = false;
+
+													        }
+													        else
+													        {
+													            document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = true;
+													        }
+													   }
+													    //else do nothing
 													}
 													//else do nothing
 													
 													//CASE 1: 
 													//If the new position is position 0: Theoretically this cannot happen since the sortable list container boundary
-													//set makes this impossible, but just in case...
+													//set makes this impossible, but just in case.
 													if(indexSpanArray==0)
 													{
 							                          //Make the moved div the start of a new div
@@ -595,20 +622,46 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													  //Unmark the replaced div's NewDiv Checkbox (and disable the dropdown)
 													  document.getElementById('newDivType'+(spanArray[newPosition].split('span')[1])).checked=false;
 													  document.getElementById('selectDivType'+(spanArray[newPosition].split('span')[1])).disabled=true;
-	
+	                                                  
+													  //If this is now a named div, update the division name textbox
+													  if(document.getElementById('selectDivType'+(spanArray[newPosition].split('span')[1])).value.IndexOf('!')==0)
+													  {
+													      document.getElementById('divNameTableRow' + (spanArray[newPosition].split('span')[1])).className = 'txtNamedDivVisible';
+														document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1])).value = document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1]+1)).value;
+														document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1]+1)).disabled=true;
+													  }
+													  else
+													  {
+													      document.getElementById('divNameTableRow' + (spanArray[newPosition].split('span')[1])).className = 'txtNamedDivHidden';
+														document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1]+1)).disabled=false;
+													  }
 													}
 													
 													//else
 													//CASE 2: Span moved to any location other than 0
-													
-													//else check if the span being replaced is not the start of a new div
-													else if(indexSpanArray>0)
+																									
+													else if (indexSpanArray > 0)
 													{
-                                                      //Moved span's DivType = preceding Div's Div type
+													 //Moved span's DivType = preceding Div's Div type
 													  document.getElementById('selectDivType'+(spanArray[newPosition-1].split('span')[1])).value = document.getElementById('selectDivType'+(spanArray[newPosition-2].split('span')[1])).value;
 													  //Moved span != start of a new Division
 													  document.getElementById('newDivType'+(spanArray[newPosition-1].split('span')[1])).checked=false;
 													  document.getElementById('selectDivType'+(spanArray[newPosition-1].split('span')[1])).disabled=true;
+													  
+													  //update the division name textbox
+													  if(document.getElementById('selectDivType'+(spanArray[newPosition-2].split('span')[1])).value.indexOf('!')==0)
+													  {
+													    document.getElementById('divNameTableRow' + (spanArray[newPosition - 1].split('span')[1])).className = 'txtNamedDivVisible';
+														document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).disabled=true;
+													    document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).value=document.getElementById('txtDivName'+(spanArray[newPosition-2].split('span')[1])).value;
+														
+													  }
+													  else
+													  {
+													    document.getElementById('divNameTableRow' + (spanArray[newPosition - 1].split('span')[1])).className = 'txtNamedDivHidden';
+														document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).disabled=false;
+													  }
+													  
 													  
 													}//end else if
 											 

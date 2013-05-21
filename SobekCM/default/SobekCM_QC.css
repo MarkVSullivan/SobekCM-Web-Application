@@ -54,7 +54,7 @@
 .qcResetMouseCursorToDefault{cursor:default;}
 
 .txtNamedDivHidden{ visibility: hidden;}
-.txtNamedDivVisibile{ visibility: visible;}
+.txtNamedDivVisible{ visibility: visible;}
 
 .qcDivMoveOnScroll {position: fixed; bottom: 3px; right: 0.1%;visibility: visible; }
 .qcDivMoveOnScrollHidden{ position: fixed;bottom: 3px;right: 0.1%;visibility: hidden;}
