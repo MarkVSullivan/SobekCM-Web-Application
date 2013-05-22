@@ -836,25 +836,26 @@ function rbMovePagesChanged(rbValue)
 //Update the popup form based on the parameters passed in
 function update_popup_form(pageID,before_after)
 {
-  alert(pageID+before_after);
+  //alert(pageID+before_after);
   if(before_after=='After')
   {
     if(document.getElementById('selectDestinationPageList1'))
 	{
-	  document.getElementByID('rbMovePages1').checked=true;
+	 // alert(before_after);
+	  document.getElementById('rbMovePages1').checked=true;
 	  document.getElementById('selectDestinationPageList1').disabled=false;
 	  document.getElementById('selectDestinationPageList2').disabled=true;	
       //Change the dropdown selected option as well
-	   var ddl = document.getElementById('selectDestinationPageList1');
+	  var ddl = document.getElementById('selectDestinationPageList1');
 		var opts = ddl.options.length;
+		
 		for (var i=0; i<opts; i++)
 		{
-			if (ddl.options[i].value == pageID)
+			if (ddl.options[i].text == pageID)
 			{
-				ddl.options[i].selected = true;
-				
+			  ddl.selectedIndex = i;
 			}
-		}
+		}	
 	  
 	}
   }
@@ -862,7 +863,7 @@ function update_popup_form(pageID,before_after)
   {
     if(document.getElementById('selectDestinationPageList1'))
 	{
-	 document.getElementById('rbMovePages2').checked=true;
+	  document.getElementById('rbMovePages2').checked=true;
 	  document.getElementById('selectDestinationPageList1').disabled=true;
 	  document.getElementById('selectDestinationPageList2').disabled=false;	
 
@@ -871,14 +872,22 @@ function update_popup_form(pageID,before_after)
 		var opts = ddl.options.length;
 		for (var i=0; i<opts; i++)
 		{
-			if (ddl.options[i].value == pageID)
+			if (ddl.options[i].text == pageID)
 			{
-				ddl.options[i].selected = true;
+				ddl.selectedIndex = i;
 				
 			}
 		}	  
 	}
   }
+}
+
+
+//test popup form update function
+function update_popup_form1()
+{
+
+alert('hello');
 }
 
 
