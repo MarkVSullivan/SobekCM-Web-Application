@@ -718,8 +718,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					//Add the checkbox for moving this thumbnail
 					builder.AppendLine("<td><span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, "+qc_item.Web.Static_PageCount+")\"/></span>");
-					builder.AppendLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );update_popup_form(" + thisFile.File_Name_Sans_Extension + ",'After');\"><img src=\"" + CurrentMode.Base_URL + "default/images/left_arrow2.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
-					builder.AppendLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );update_popup_form("+thisFile.File_Name_Sans_Extension+",'After');\"><img src=\"" + CurrentMode.Base_URL + "default/images/right_arrow2.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
+					builder.AppendLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/left_arrow3.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
+					builder.AppendLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('"+thisFile.File_Name_Sans_Extension+"','After'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/right_arrow3.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
 
 					//Add the error icon
 					builder.AppendLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
@@ -1024,7 +1024,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				navRowBuilder.AppendLine("<tr><td>Move selected pages:</td>");
 				navRowBuilder.AppendLine("<td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages1\" value=\"After\" checked=\"true\" onclick=\"rbMovePagesChanged(this.value);\">After");
 				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<td><select id=\"selectDestinationPageList1\">");
+                navRowBuilder.AppendLine("<td><select id=\"selectDestinationPageList1\" name=\"selectDestinationPageList1\">");
 				//Add the select options
 				
 				//iterate through the page items
