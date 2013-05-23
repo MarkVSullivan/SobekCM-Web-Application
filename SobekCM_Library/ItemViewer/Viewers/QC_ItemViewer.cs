@@ -173,7 +173,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
 			}
-
             else if (hidden_request == "move_selected_pages")
             {
                 // Read the data from the http form, perform all requests, and
@@ -189,8 +188,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string url_redirect = HttpContext.Current.Request.Url.ToString();
                 HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
             }
+            else if (hidden_request == "delete_page")
+            {
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                Save_From_Form_Request_To_Item();
 
+                string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+                if (filename_to_delete.Length > 0)
+                {
+                    Delete_Single_Page(filename_to_delete);
+                }
+
+
+            }
 		}
+
+        private void Delete_Single_Page(string filename)
+        {
+            bool b = true;
+        }
 
         private void Move_Multiple_Pages(string relative_position, string destination_fileName)
         {
@@ -365,7 +382,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					qc_item.Divisions.Physical_Tree.Roots.Remove(parentNode);
 					this_root_index--;
-				}
+				} 
 
 				// If this insert point is prior to the previously collected insert point, use this one for the first chapter
 				if (this_root_index < index_within_chapter_roots_to_begin_insert)
@@ -644,6 +661,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			builder.AppendLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
 			builder.AppendLine("<input type=\"hidden\" id=\"QC_behaviors_request\" name=\"QC_behaviors_request\" value=\"\" />");
+            builder.AppendLine("<input type=\"hidden\" id=\"QC_affected_file\" name=\"QC_affected_file\" value=\"\" />");
 			builder.AppendLine("<input type=\"hidden\" id=\"Main_Thumbnail_Index\" name=\"Main_Thumbnail_Index\" value=\"\" />");
 			builder.AppendLine("<input type=\"hidden\" id=\"Autosave_Option\" name=\"Autosave_Option\" value=\"\" />");
             builder.AppendLine("<input type=\"hidden\" id=\"QC_move_relative_position\" name=\"QC_move_relative_position\" value=\"\" />");
@@ -696,7 +714,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					builder.AppendLine("<table>");
 
 					// Add the name of the file
-					builder.AppendLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + thisFile.File_Name_Sans_Extension + "\" />" + thisFile.File_Name_Sans_Extension + "</td>");
+				    string filename_sans_extension = thisFile.File_Name_Sans_Extension;
+                    builder.AppendLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" />" + filename_sans_extension + "</td>");
 									  
 					//Determine the error icon size, main-thumbnail-selected icon size based on the current thumbnail size 
 					int error_icon_height = 20;
@@ -903,11 +922,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					for (int i = 0; i < num_spaces; i++) { builder.AppendLine("&nbsp;"); }
 					builder.AppendLine("<a href=\"" + url + "\" target=\"_blank\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/View.ico\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img></a>");
 					for (int i = 0; i < num_spaces; i++) { builder.AppendLine("&nbsp;"); }
-					builder.AppendLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
-					for (int i = 0; i < num_spaces; i++) { builder.AppendLine("&nbsp;"); }
-					builder.AppendLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
-					for (int i = 0; i < num_spaces; i++) { builder.AppendLine("&nbsp;"); }
-					builder.AppendLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
+
+                    builder.AppendLine("<img class=\"qc_toolboximage\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
+
+
+                    //for (int i = 0; i < num_spaces; i++) { builder.AppendLine("&nbsp;"); }
+                    //builder.AppendLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
+                    //for (int i = 0; i < num_spaces; i++) { builder.AppendLine("&nbsp;"); }
+                    //builder.AppendLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
+
 					builder.AppendLine("</span>");
 					builder.AppendLine("</td></tr>");
 

@@ -934,3 +934,15 @@ function move_pages_submit()
 
 
 //--------------------End of Functions for the Move-Multiple-Selected-Pages Popup Form----------------//
+
+
+function ImageDeleteClicked(filename) {
+    var hidden_request = document.getElementById('QC_behaviors_request');
+    var details = document.getElementById('QC_affected_file');
+
+    hidden_request.value = 'delete_page';
+    details.value = filename;
+    
+    document.itemNavForm.submit();
+    return false;
+}
