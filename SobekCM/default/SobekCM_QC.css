@@ -253,3 +253,8 @@ li.sfHover > a > .sf-sub-indicator {
 	cursor: hand; 
     margin-right: 5px;
 }
+
+.qc_toolboximage {
+    cursor: pointer;
+	cursor: hand; 
+}

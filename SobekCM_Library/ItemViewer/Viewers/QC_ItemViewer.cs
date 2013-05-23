@@ -200,6 +200,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Delete_Single_Page(filename_to_delete);
                 }
 
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
             }
 		}
