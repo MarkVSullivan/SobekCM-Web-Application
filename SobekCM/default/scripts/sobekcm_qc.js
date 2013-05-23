@@ -937,12 +937,17 @@ function move_pages_submit()
 
 
 function ImageDeleteClicked(filename) {
-    var hidden_request = document.getElementById('QC_behaviors_request');
-    var details = document.getElementById('QC_affected_file');
 
-    hidden_request.value = 'delete_page';
-    details.value = filename;
-    
-    document.itemNavForm.submit();
+    input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
+
+    if (input_box == true) {
+        var hidden_request = document.getElementById('QC_behaviors_request');
+        var details = document.getElementById('QC_affected_file');
+
+        hidden_request.value = 'delete_page';
+        details.value = filename;
+
+        document.itemNavForm.submit();
+    }
     return false;
 }
