@@ -568,6 +568,59 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		
 				private void add_main_menu(StringBuilder builder)
 		{
+            string Num_Of_Thumbnails = "Thumbnails per page";
+            string Size_Of_Thumbnail = "Thumbnail size";
+            string Go_To_Thumbnail = "Go to thumbnail";
+
+            if (CurrentMode.Language == Web_Language_Enum.French)
+            {
+                Num_Of_Thumbnails = "Vignettes par page";
+                Size_Of_Thumbnail = "la taille des vignettes";
+                Go_To_Thumbnail = "Aller à l'Vignette";
+            }
+
+            if (CurrentMode.Language == Web_Language_Enum.Spanish)
+            {
+                Num_Of_Thumbnails = "Miniaturas por página";
+                Size_Of_Thumbnail = "Miniatura de tamaño";
+                Go_To_Thumbnail = "Ir a la miniatura";
+            }
+
+
+            //Set the number of thumbnails to show per page
+            int thumbnails_per_page;
+            int size_of_thumbnails;
+
+            if (qc_item.Web.Static_PageCount > 100)
+                thumbnails_per_page = 50;
+            else
+            {
+                thumbnails_per_page = qc_item.Web.Static_PageCount;
+            }
+            //Set the thumbnails_per_page to the value from the query string, if present
+            Uri uri = HttpContext.Current.Request.Url;
+
+            if (uri.Query.IndexOf("ts") > 0)
+            {
+                size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("nt"));
+                CurrentMode.Size_Of_Thumbnails = (short)size_of_thumbnails;
+            }
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = -1;
+            }
+
+            // Get the links for the METS
+            string greenstoneLocation = qc_item.Web.Source_URL + "/";
+            string complete_mets = greenstoneLocation + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((qc_item.Behaviors.Dark_Flag) || (qc_item.Behaviors.IP_Restriction_Membership > 0))
+            {
+                complete_mets = CurrentMode.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+            }
+
+
 			//StringBuilder builder = new StringBuilder(4000);
 			builder.AppendLine("<div id=\"qcmenubar\">");
 			builder.AppendLine("<ul class=\"qc-menu\">");
@@ -625,6 +678,147 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// htmlLiteral.Text = builder.ToString();
 
 			// placeHolder.Controls.Add(htmlLiteral);
+
+            
+            builder.AppendLine("<table width=\"100%\"><tr align=\"center\">");
+
+
+            //Add the dropdown for the number of thumbnails per page, only if there are >25 thumbnails
+            if (qc_item.Web.Static_PageCount > 25)
+            {
+                //Redirect to the first page of results when the number of thumbnails option is changed by the user
+                string current_viewercode = CurrentMode.ViewerCode;
+                CurrentMode.ViewerCode = "1qc";
+                string current_Page_url = CurrentMode.Redirect_URL("1qc");
+
+                // Collect the list of options to display
+                List<int> thumbsOptions = new List<int>();
+                thumbsOptions.Add(25);
+                if (qc_item.Web.Static_PageCount > 50) thumbsOptions.Add(50);
+                if (qc_item.Web.Static_PageCount > 100) thumbsOptions.Add(100);
+                if (qc_item.Web.Static_PageCount > 250) thumbsOptions.Add(250);
+                if (qc_item.Web.Static_PageCount > 500) thumbsOptions.Add(500);
+
+                // Start the drop down select list 
+                builder.AppendLine("<td valign=\"top\">");
+                builder.AppendLine("<span><select id=\"selectNumOfThumbnails\" onchange=\"location=this.options[this.selectedIndex].value;\">");
+                //   builder.AppendLine("<br/><br/><span><select id=\"selectNumOfThumbnails\" onchange=current_Page_url>");
+
+                // Step through all the options
+                foreach (int thumbOption in thumbsOptions)
+                {
+                    CurrentMode.Thumbnails_Per_Page = (short)thumbOption;
+                    if (thumbnailsPerPage == thumbOption)
+                    {
+                        builder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\" selected=\"selected\">" + thumbOption + " thumbnails per page</option>");
+                    }
+                    else
+                    {
+
+                        builder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\">" + thumbOption + " thumbnails per page</option>");
+                    }
+                }
+
+                CurrentMode.Thumbnails_Per_Page = -1;
+                if (thumbnails_per_page == int.MaxValue)
+                {
+                    builder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\" selected=\"selected\">All thumbnails</option>");
+                }
+                else
+                {
+                    builder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\">All thumbnails</option>");
+                }
+
+                //Reset the Current Mode Thumbnails_Per_Page
+
+                CurrentMode.ViewerCode = current_viewercode;
+                builder.AppendLine("</select></span>");
+                builder.AppendLine("</td>");
+
+            }
+            CurrentMode.Thumbnails_Per_Page = -100;
+
+
+            // For now, just add a TEST link here
+            builder.AppendLine("<td><a id=\"form_qcmove_link\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );\">test</a></td>");
+
+            //Get the icons for the thumbnail sizes
+            string image_location = CurrentMode.Default_Images_URL;
+
+
+
+            builder.AppendLine("<td valign=\"top\">");
+            if (thumbnailSize == 1)
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 1;
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+            }
+            if (thumbnailSize == 2)
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 2;
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+            }
+            if (thumbnailSize == 3)
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 3;
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+            }
+            //Reset the current mode
+            CurrentMode.Size_Of_Thumbnails = -1;
+            builder.AppendLine("</td>");
+
+
+            //Add the dropdown for the thumbnail anchor within the page to directly navigate to
+            builder.AppendLine("<td valign=\"top\">");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
+            builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
+
+            //iterate through the page items
+            if (qc_item.Web.Static_PageCount > 0)
+            {
+                int thumbnail_count = 0;
+                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                {
+                    thumbnail_count++;
+
+                    string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+
+                    builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
+
+                }
+            }
+            builder.AppendLine("</select></span>");
+            //   builder.AppendLine("<br /><br />");
+
+            //Add the nav row QC image icons
+            builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
+                builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
+            else
+                builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            //builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            //builder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
+            builder.AppendLine("</span>");
+
+            builder.AppendLine("</td></tr></table>");
 		}
 
 
@@ -989,57 +1183,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				string Num_Of_Thumbnails = "Thumbnails per page";
-				string Size_Of_Thumbnail = "Thumbnail size";
-				string Go_To_Thumbnail = "Go to thumbnail";
 
-				if (CurrentMode.Language == Web_Language_Enum.French)
-				{
-					Num_Of_Thumbnails = "Vignettes par page";
-					Size_Of_Thumbnail = "la taille des vignettes";
-					Go_To_Thumbnail = "Aller à l'Vignette";
-				}
-
-				if (CurrentMode.Language == Web_Language_Enum.Spanish)
-				{
-					Num_Of_Thumbnails = "Miniaturas por página";
-					Size_Of_Thumbnail = "Miniatura de tamaño";
-					Go_To_Thumbnail = "Ir a la miniatura";
-				}
-
-
-				//Set the number of thumbnails to show per page
-				int thumbnails_per_page;
-				int size_of_thumbnails;
-
-				if (qc_item.Web.Static_PageCount > 100)
-					thumbnails_per_page = 50;
-				else
-				{
-					thumbnails_per_page = qc_item.Web.Static_PageCount;
-				}
-				//Set the thumbnails_per_page to the value from the query string, if present
-				Uri uri = HttpContext.Current.Request.Url;
-
-				if (uri.Query.IndexOf("ts") > 0)
-				{
-					size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("nt"));
-					CurrentMode.Size_Of_Thumbnails = (short) size_of_thumbnails;
-				}
-				else
-				{
-					CurrentMode.Size_Of_Thumbnails = -1;
-				}
-
-				// Get the links for the METS
-				string greenstoneLocation = qc_item.Web.Source_URL + "/";
-				string complete_mets = greenstoneLocation + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
-
-				// MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-				if ((qc_item.Behaviors.Dark_Flag) || (qc_item.Behaviors.IP_Restriction_Membership > 0))
-				{
-					complete_mets = CurrentMode.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
-				}
 
 				// Build the value
 				StringBuilder navRowBuilder = new StringBuilder(5000);
@@ -1126,147 +1270,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			  add_main_menu(navRowBuilder);
 
-			  navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
-			  navRowBuilder.AppendLine("<table width=\"100%\"><tr align=\"center\">");
-				
+              navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
 
-				//Add the dropdown for the number of thumbnails per page, only if there are >25 thumbnails
-				if (qc_item.Web.Static_PageCount > 25)
-				{
-					//Redirect to the first page of results when the number of thumbnails option is changed by the user
-					string current_viewercode = CurrentMode.ViewerCode;
-					CurrentMode.ViewerCode = "1qc";
-					string current_Page_url = CurrentMode.Redirect_URL("1qc");
-
-					// Collect the list of options to display
-					List<int> thumbsOptions = new List<int>();
-					thumbsOptions.Add(25);
-					if (qc_item.Web.Static_PageCount > 50) thumbsOptions.Add(50);
-					if (qc_item.Web.Static_PageCount > 100) thumbsOptions.Add(100);
-					if (qc_item.Web.Static_PageCount > 250) thumbsOptions.Add(250);
-					if (qc_item.Web.Static_PageCount > 500) thumbsOptions.Add(500);
-
-					// Start the drop down select list 
-					navRowBuilder.AppendLine("<td valign=\"top\">");
-					navRowBuilder.AppendLine("<span><select id=\"selectNumOfThumbnails\" onchange=\"location=this.options[this.selectedIndex].value;\">");
-					//   navRowBuilder.AppendLine("<br/><br/><span><select id=\"selectNumOfThumbnails\" onchange=current_Page_url>");
-
-					// Step through all the options
-					foreach (int thumbOption in thumbsOptions)
-					{
-						CurrentMode.Thumbnails_Per_Page = (short) thumbOption;
-						if (thumbnailsPerPage == thumbOption)
-						{
-							navRowBuilder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\" selected=\"selected\">" + thumbOption + " thumbnails per page</option>");
-						}
-						else
-						{
-
-							navRowBuilder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\">" + thumbOption + " thumbnails per page</option>");
-						}
-					}
-
-					CurrentMode.Thumbnails_Per_Page = -1;
-					if (thumbnails_per_page == int.MaxValue)
-					{
-						navRowBuilder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\" selected=\"selected\">All thumbnails</option>");
-					}
-					else
-					{
-						navRowBuilder.AppendLine("<option value=\"" + CurrentMode.Redirect_URL() + "\">All thumbnails</option>");
-					}
-
-					//Reset the Current Mode Thumbnails_Per_Page
-
-					CurrentMode.ViewerCode = current_viewercode;
-					navRowBuilder.AppendLine("</select></span>");
-					navRowBuilder.AppendLine("</td>");
-
-				}
-				CurrentMode.Thumbnails_Per_Page = -100;
-
-
-				// For now, just add a TEST link here
-				navRowBuilder.AppendLine("<td><a id=\"form_qcmove_link\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );\">test</a></td>");
-
-				//Get the icons for the thumbnail sizes
-				string image_location = CurrentMode.Default_Images_URL;
-				
-
-
-				navRowBuilder.AppendLine("<td valign=\"top\">");
-				if (thumbnailSize == 1)
-					navRowBuilder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
-				else
-				{
-					CurrentMode.Size_Of_Thumbnails = 1;
-					navRowBuilder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
-				}
-				if (thumbnailSize == 2)
-					navRowBuilder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
-				else
-				{
-					CurrentMode.Size_Of_Thumbnails = 2;
-					navRowBuilder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
-				}
-				if (thumbnailSize == 3)
-					navRowBuilder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
-				else
-				{
-					CurrentMode.Size_Of_Thumbnails = 3;
-					navRowBuilder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
-				}
-				//Reset the current mode
-				CurrentMode.Size_Of_Thumbnails = -1;
-				navRowBuilder.AppendLine("</td>");
-
-
-				//Add the dropdown for the thumbnail anchor within the page to directly navigate to
-				navRowBuilder.AppendLine("<td valign=\"top\">");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
-				navRowBuilder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
-
-				//iterate through the page items
-				if (qc_item.Web.Static_PageCount > 0)
-				{
-					int thumbnail_count = 0;
-					foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-					{
-						thumbnail_count++;
-
-						string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count/thumbnails_per_page + (thumbnail_count%thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
-
-						navRowBuilder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
-
-					}
-				}
-				navRowBuilder.AppendLine("</select></span>");
-			 //   navRowBuilder.AppendLine("<br /><br />");
-
-				//Add the nav row QC image icons
-				navRowBuilder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
-					navRowBuilder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
-				else
-					navRowBuilder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault("+qc_item.Web.Static_PageCount+"); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor("+qc_item.Web.Static_PageCount+"); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-				//navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				//navRowBuilder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
-				navRowBuilder.AppendLine("&nbsp;&nbsp;&nbsp;");
-				navRowBuilder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
-				navRowBuilder.AppendLine("</span>");
-
-				navRowBuilder.AppendLine("</td></tr></table>");
-			
+		
 				// Finish the nav row controls
 				navRowBuilder.AppendLine("\t\t<!-- END QUALITY CONTROL VIEWER NAV ROW -->");
 
