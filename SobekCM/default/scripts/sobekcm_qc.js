@@ -581,7 +581,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													//If the span being moved is the start of a new Div 															
 													if (document.getElementById('newDivType' + spanArray[newPosition-1].split('span')[1]).checked == true)
 													{
-													   alert('Moving a new division page');
+													   //alert('Moving a new division page');
 
                                                         //If the next div is not the start of a new division 
 													   if (document.getElementById('newDivType' + (spanArray[startPosition].split('span')[1])).checked == false)
@@ -592,7 +592,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													        document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value = document.getElementById('selectDivType' + pageIndex).value;
 
 													        //Update the division name textbox
-													        if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.index('!') == 0)
+													        if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.index('!')==0)
 													        {
 													            document.getElementById('divNameTableRow' + (spanArray[startPosition].split('span')[1])).className = 'txtNamedDivVisible';
 													            document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = false;
@@ -882,12 +882,54 @@ function update_popup_form(pageID,before_after)
   }
 }
 
-
-//test popup form update function
-function update_popup_form1()
+//Move the selected pages
+function move_pages_submit()
 {
+   // alert('in function move_pages_submit');
+     var hidden_request = document.getElementById('QC_behaviors_request');
+	 var hidden_action = document.getElementById('QC_move_relative_position');
+	 var hidden_destination = document.getElementById('QC_move_destination');
+	 var file_name='';
+	 
 
-alert('hello');
+	 
+	 hidden_request.value='move_selected_pages';
+     hidden_action.value = '';
+	 hidden_destination.value=file_name;
+	 
+	 //if 'Before' selected, change to corresponding 'After' unless 'Before' 0th option is selected
+	 if(document.getElementById('rbMovePages2').checked==true)
+	 {
+	   if(document.getElementById('selectDestinationPageList2').selectedIndex>0)
+	   { 
+	     var ddl=document.getElementById('selectDestinationPageList2');
+	     var selIndex = ddl.selectedIndex-1;
+		 hidden_action.value = 'After';
+		 hidden_destination.value = ddl.options[selIndex].value;
+	   //  alert(hidden_destination.value);
+	   }
+	   else
+	   {
+	     hidden_action.value = 'Before';
+		 var ddl=document.getElementById('selectDestinationPageList2');
+		 hidden_destination.value = ddl.options[ddl.selectedIndex].value;
+		// alert(hidden_destination.value);
+	   }
+	   
+	 }
+	 
+	 //else assign the selected 'After' values to the hidden variables
+	 else
+	 {
+	   hidden_action.value = 'After';
+	   var ddl=document.getElementById('selectDestinationPageList1');
+	   var selIndex = ddl.selectedIndex;
+	   hidden_destination.value = ddl.options[selIndex].value;
+	//   alert(hidden_destination.value);
+	 }
+	 
+	 document.itemNavForm.submit();
+	 return false;
 }
 
 

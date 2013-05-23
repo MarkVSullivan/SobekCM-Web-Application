@@ -31,7 +31,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private string hidden_request;
 		private string hidden_main_thumbnail;
 		private bool autosave_option;
-		private string userInProcessDirectory;
+	    private string hidden_move_relative_position;
+	    private string hidden_move_destination_fileName;
+        private string userInProcessDirectory;
 
 		private SobekCM_Item qc_item;
 
@@ -88,11 +90,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			title = "Quality Control";
 
 			
-			 // See if there was a hidden request
+			 // See if there were hidden requests
 			hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
 			hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
-
-			try
+            hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
+            hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
+			
+            try
 			{
 				bool autosaveCacheValue=true;
 				bool autosaveCache = false;
@@ -118,7 +122,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			catch (Exception e)
 			{
-				bool error = true;
+				throw new ApplicationException("Error retrieving auto save option. "+ e.Message);
 			}
 
 			//If a main thumbnail value was selected (either for assignment or removal)
@@ -170,7 +174,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			}
 
+            else if (hidden_request == "move_selected_pages")
+            {
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                Save_From_Form_Request_To_Item();
+
+                //If there were multiple selected pages to be moved, move these now and save to the temporary METS file
+                if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
+                {
+                    Move_Multiple_Pages(hidden_move_relative_position, hidden_move_destination_fileName);
+                }
+
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+            }
+
 		}
+
+        private void Move_Multiple_Pages(string relative_position, string destination_fileName)
+        {
+            bool b = true;
+
+        }
 
 		private void Save_From_Form_Request_To_Item()
 		{
@@ -620,6 +646,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<input type=\"hidden\" id=\"QC_behaviors_request\" name=\"QC_behaviors_request\" value=\"\" />");
 			builder.AppendLine("<input type=\"hidden\" id=\"Main_Thumbnail_Index\" name=\"Main_Thumbnail_Index\" value=\"\" />");
 			builder.AppendLine("<input type=\"hidden\" id=\"Autosave_Option\" name=\"Autosave_Option\" value=\"\" />");
+            builder.AppendLine("<input type=\"hidden\" id=\"QC_move_relative_position\" name=\"QC_move_relative_position\" value=\"\" />");
+            builder.AppendLine("<input type=\"hidden\" id=\"QC_move_destination\" name=\"QC_move_destination\" value=\"\" />");
   
 			// Start the citation table
 			builder.AppendLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
@@ -718,8 +746,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					//Add the checkbox for moving this thumbnail
 					builder.AppendLine("<td><span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, "+qc_item.Web.Static_PageCount+")\"/></span>");
-					builder.AppendLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/left_arrow3.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
-					builder.AppendLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('"+thisFile.File_Name_Sans_Extension+"','After'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/right_arrow3.png\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
+                    builder.AppendLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
+                    builder.AppendLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
 
 					//Add the error icon
 					builder.AppendLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
@@ -1034,8 +1062,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
 					{
 						page_index++;
-						
-						navRowBuilder.AppendLine("<option value=\"" + page_index + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
+
+                        navRowBuilder.AppendLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
 
 					}
 				}
@@ -1053,7 +1081,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					{
 						page_index++;
 
-						navRowBuilder.AppendLine("<option value=\"" + page_index + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
+                        navRowBuilder.AppendLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
 
 					}
 				}
@@ -1061,7 +1089,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			 //Add the Cancel & Move buttons
 				navRowBuilder.AppendLine("    <tr><td colspan=\"2\"><center>");
-				navRowBuilder.AppendLine("      <br><input type=\"image\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/move_big_button.gif\" value=\"Submit\" alt=\"Submit\" />&nbsp;");
+                navRowBuilder.AppendLine("      <br><a href=\"\" onclick=\"move_pages_submit();\"><input type=\"image\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/move_big_button.gif\" value=\"Submit\" alt=\"Submit\" /></a>&nbsp;");
 				navRowBuilder.AppendLine("      <a href=\"#template\" onclick=\" popdown( 'form_qcmove' );\"><img border=\"0\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel1_big_button.gif\" alt=\"CANCEL\" /></a><br> ");
 				navRowBuilder.AppendLine("    </center></td></tr>");
 
