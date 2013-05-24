@@ -345,6 +345,12 @@ hr {
 
 .edit_behaviors_button:hover { background-position: 0 -39px; }
 
+.qualitycontrol_button {
+    background: url(images/qc_button.png) no-repeat;   
+}
+
+.qualitycontrol_button:hover { background-position: 0 -39px; }
+
 .add_comment_button {
     background: url(images/add_comment.png) no-repeat;   
 }

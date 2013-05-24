@@ -81,6 +81,15 @@
 /* Code for the QC main menu */
 /** CODE FOR THE STARFISH NAVIGATION MENU PLUG-IN  **/
 /*** ESSENTIAL STYLES ***/
+
+  
+        #qcmenubar
+      {
+       width: 100%; background-color: #7d90d5;  height: 30px;  
+       color:#FFFFFF; vertical-align: top;
+       
+      }
+
 .qc-menu, .qc-menu * {
 	margin:			0;
 	padding:		0;
@@ -88,7 +97,7 @@
 	z-index: 10;
 }
 .qc-menu {
-	line-height:	1.4em;
+	line-height:	1.6em;
 }
 .qc-menu ul {
 	position:		absolute;
@@ -245,13 +254,16 @@ li.sfHover > a > .sf-sub-indicator {
 .action-qc-menu-item
 {
     float:right;
-    padding-top: 4px;
 	padding-bottom: 5px;
 	text-decoration:none;
 	height: 16px;
 	cursor: pointer;
 	cursor: hand; 
     margin-right: 5px;
+}
+
+.qc-menu-item {
+    padding-top: 3px;
 }
 
 .qc_toolboximage {
