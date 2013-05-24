@@ -1156,6 +1156,14 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                     currentMode.Mode = Display_Mode_Enum.Item_Display;
 
+
+                    // Add ability to edit behaviors for this item
+                    string currentViewerCode = currentMode.ViewerCode;
+                    currentMode.ViewerCode = "qc";
+                    Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    currentMode.Mode = Display_Mode_Enum.Item_Display;
+                    currentMode.ViewerCode = currentViewerCode;
+
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
