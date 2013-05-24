@@ -41,7 +41,7 @@ function itemwriter_load() {
         if (document.URL.indexOf('thumbs') < 0) {
             var column_width = $('#itemviewleftnavbar').width();
             if (viewport_width < 30 + column_width + main_view_width) {
-                alert('viewport_width=' + viewport_width + ', column_width=' + column_width + ', main_view_width=' + main_view_height);
+                
                 $('#itemviewleftnavbar').hide();
             } else {
                 $('#itemviewleftnavbar').show();

@@ -668,7 +668,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 		
-				private void add_main_menu(StringBuilder builder)
+		private void add_main_menu(StringBuilder builder)
 		{
 			string Num_Of_Thumbnails = "Thumbnails per page";
 			string Size_Of_Thumbnail = "Thumbnail size";
@@ -727,7 +727,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<div id=\"qcmenubar\">");
 			builder.AppendLine("<ul class=\"qc-menu\">");
 
-			builder.AppendLine("<li>Resource<ul>");
+            builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
 			builder.AppendLine("\t<li>View METS</li>");
 			builder.AppendLine("\t<li>View Directory</li>");
 			builder.AppendLine("\t<li>View QC History</li>");
@@ -741,7 +741,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t<li>Cancel</li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li>Edit<ul>");
+            builder.AppendLine("<li class=\"qc-menu-item\">Edit<ul>");
 			builder.AppendLine("\t<li>Clear Pagination</li>");
 			builder.AppendLine("\t<li>Clear All &amp; Reorder Pages</li>");
 			builder.AppendLine("\t<li>Automatic Numbering<ul>");
@@ -751,7 +751,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li>View<ul>");
+            builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
 			builder.AppendLine("\t<li>Thumbnail Size<ul>");
 			builder.AppendLine("\t\t<li>Small</li>");
 			builder.AppendLine("\t\t<li>Medium</li>");
@@ -764,17 +764,101 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li>Help</li>");
+            builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
+            
+            // Add the option to GO TO a certain thumbnail next
+            builder.AppendLine("<li class=\"qc-menu-item\">");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
+            builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
+
+            //iterate through the page items
+            if (qc_item.Web.Static_PageCount > 0)
+            {
+                int thumbnail_count = 0;
+                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                {
+                    thumbnail_count++;
+
+                    string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+
+                    builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
+
+                }
+            }
+            builder.AppendLine("</select></span>");
+
+		    builder.AppendLine("</li>");
+
+            //Get the icons for the thumbnail sizes
+            string image_location = CurrentMode.Default_Images_URL;
+
+
+            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></li>");
+            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+
+
+            if (thumbnailSize == 3)
+                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 3;
+                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
+            }
+
+            if (thumbnailSize == 2)
+                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\"/></a></li>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 2;
+                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\"/></a></li>");
+            }
+
+            if (thumbnailSize == 1)
+                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\"/></a></li>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 1;
+                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\"/></a></li>");
+            }
+
+
+            //Reset the current mode
+            CurrentMode.Size_Of_Thumbnails = (short) thumbnailSize;
+
+
+
+            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+
+
+
 
 			builder.AppendLine("</ul>");
+
+
+
+
+            ////Add the nav row QC image icons
+            //builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
+            //builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            //if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
+            //    builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
+            //else
+            //    builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
+            //builder.AppendLine("</span>");
+
 			builder.AppendLine("</div>");
 
-			builder.AppendLine("<script>");
-			builder.AppendLine("    jQuery(document).ready(function(){");
-			builder.AppendLine("       jQuery('ul.qc-menu').superfish();");
-			builder.AppendLine("    });");
-			builder.AppendLine("</script>");
-			builder.AppendLine();
+            builder.AppendLine("<script>");
+            builder.AppendLine("    jQuery(document).ready(function(){");
+            builder.AppendLine("       jQuery('ul.qc-menu').superfish();");
+            builder.AppendLine("    });");
+            builder.AppendLine("</script>");
+            builder.AppendLine();
+
+		    return;
+
 
 			//  Literal htmlLiteral = new Literal();
 			// htmlLiteral.Text = builder.ToString();
@@ -844,83 +928,83 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// For now, just add a TEST link here
 			builder.AppendLine("<td><a id=\"form_qcmove_link\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );\">test</a></td>");
 
-			//Get the icons for the thumbnail sizes
-			string image_location = CurrentMode.Default_Images_URL;
+            //Get the icons for the thumbnail sizes
+            string image_location = CurrentMode.Default_Images_URL;
 
 
 
 			builder.AppendLine("<td valign=\"top\">");
-			if (thumbnailSize == 1)
-				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
-			else
-			{
-				CurrentMode.Size_Of_Thumbnails = 1;
-				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
-			}
-			if (thumbnailSize == 2)
-				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
-			else
-			{
-				CurrentMode.Size_Of_Thumbnails = 2;
-				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
-			}
-			if (thumbnailSize == 3)
-				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
-			else
-			{
-				CurrentMode.Size_Of_Thumbnails = 3;
-				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
-			}
-			//Reset the current mode
-			CurrentMode.Size_Of_Thumbnails = -1;
+            if (thumbnailSize == 1)
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 1;
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+            }
+            if (thumbnailSize == 2)
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 2;
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+            }
+            if (thumbnailSize == 3)
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 3;
+                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+            }
+            //Reset the current mode
+            CurrentMode.Size_Of_Thumbnails = -1;
 			builder.AppendLine("</td>");
 
 
 			//Add the dropdown for the thumbnail anchor within the page to directly navigate to
 			builder.AppendLine("<td valign=\"top\">");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
-			builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
+            builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
 
-			//iterate through the page items
-			if (qc_item.Web.Static_PageCount > 0)
-			{
-				int thumbnail_count = 0;
-				foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-				{
-					thumbnail_count++;
+            //iterate through the page items
+            if (qc_item.Web.Static_PageCount > 0)
+            {
+                int thumbnail_count = 0;
+                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                {
+                    thumbnail_count++;
 
-					string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+                    string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
 
-					builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
+                    builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
 
-				}
-			}
-			builder.AppendLine("</select></span>");
-			//   builder.AppendLine("<br /><br />");
+                }
+            }
+            builder.AppendLine("</select></span>");
+            //   builder.AppendLine("<br /><br />");
 
-			//Add the nav row QC image icons
-			builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
-				builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
-			else
-				builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-			//builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			//builder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
-			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-			builder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
-			builder.AppendLine("</span>");
+            //Add the nav row QC image icons
+            builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
+                builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
+            else
+                builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+            //builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            //builder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
+            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+            builder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
+            builder.AppendLine("</span>");
 
-			builder.AppendLine("</td></tr></table>");
+            builder.AppendLine("</td></tr></table>");
 		}
 
 
