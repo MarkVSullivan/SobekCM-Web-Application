@@ -95,7 +95,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
 			hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
 			hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
-			
+			// If the hidden more relative position is BEFORE, it is before the very first page
+            if (hidden_move_relative_position == "Before")
+                hidden_move_destination_fileName = "[BEFORE FIRST]";
+            
 			try
 			{
 				bool autosaveCacheValue=true;
@@ -164,7 +167,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-				Save_From_Form_Request_To_Item();
+				Save_From_Form_Request_To_Item( String.Empty );
 
 				// Save this updated information in the temporary folder's METS file for reading
 				// later if necessary.
@@ -177,13 +180,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-				Save_From_Form_Request_To_Item();
+                List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName);
 
-				//If there were multiple selected pages to be moved, move these now and save to the temporary METS file
-				if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
-				{
-					Move_Multiple_Pages(hidden_move_relative_position, hidden_move_destination_fileName);
-				}
+                ////If there were multiple selected pages to be moved, move these now and save to the temporary METS file
+                //if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
+                //{
+                //    Move_Multiple_Pages(hidden_move_relative_position, hidden_move_destination_fileName, selected_pages);
+                //}
 
 				string url_redirect = HttpContext.Current.Request.Url.ToString();
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
@@ -192,7 +195,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-				Save_From_Form_Request_To_Item();
+                Save_From_Form_Request_To_Item(String.Empty);
 
 				string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
 				if (filename_to_delete.Length > 0)
@@ -204,6 +207,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
 			}
+            else if (hidden_request == "delete_selected_page")
+            {
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                Save_From_Form_Request_To_Item(String.Empty);
+
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+
+            }
 		}
 
 		private void Delete_Single_Page(string filename)
@@ -211,7 +224,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			bool b = true;
 		}
 
-		private void Move_Multiple_Pages(string relative_position, string destination_fileName)
+		private void Move_Multiple_Pages(string relative_position, string destination_fileName, List<QC_Viewer_Page_Division_Info> selected_pages)
 		{
 			bool b = true;
 			//Step through all the pages in the form and collect the list of pages selected to be moved
@@ -281,7 +294,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							// Get the page name 
 							thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
-                            
+							
 							// Is this a new division?
 							if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
 							{
@@ -338,10 +351,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-        /// <summary> Save all the data from form post-back into the item in memory, and 
-        /// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
-        /// <returns> Returns the list of all selected (or checked on the checkbox) page data</returns>
-		private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item()
+		/// <summary> Save all the data from form post-back into the item in memory, and 
+		/// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
+		/// <returns> Returns the list of all selected (or checked on the checkbox) page data</returns>
+        private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item(string filename_to_move_after )
 		{
 			// Get the current page number
 			int current_qc_viewer_page_num = 1;
@@ -360,7 +373,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Is this a division, or page node?
 				if (thisNode.Page)
 				{
-					Page_TreeNode thisPage = (Page_TreeNode) thisNode;
+					Page_TreeNode thisPage = (Page_TreeNode)thisNode;
 					// Verify the page 
 					if (thisPage.Files.Count > 0)
 					{
@@ -377,16 +390,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 				else
 				{
-					lastDivision = (Division_TreeNode) thisNode;
+					lastDivision = (Division_TreeNode)thisNode;
 				}
 			}
 
-			// Step through and collect the list of pages to move from the form data
+			// Step through and collect all the form data
 			List<QC_Viewer_Page_Division_Info> page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
 			List<Page_TreeNode> existing_pages_in_window = new List<Page_TreeNode>();
+
 			//Get the list of pages to be moved
 			List<string> pages_to_move_list = new List<string>();
-			
+			List<QC_Viewer_Page_Division_Info> selected_page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
+		  
 			try
 			{
 				// Now, step through each of the pages in the return
@@ -407,10 +422,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						// Get the page name 
 						thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
-						//Should this page be moved?
-						if (HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex]!=null)
+						// Was this page selected with the checkbox?  (for bulk delete or move)
+						if (HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null)
 						{
-							
+                            thisInfo.Checkbox_Selected = true;
+							selected_page_div_from_form.Add(thisInfo);
+						}
+
+						// Is this a new division?
+						if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
+						{
+							thisInfo.New_Division = true;
+
+							// Get the new division type/label
+							thisInfo.Division_Type = HttpContext.Current.Request.Form["selectDivType" + thisIndex].Trim().Replace("!", "");
+							thisInfo.Division_Label = String.Empty;
+							if (HttpContext.Current.Request.Form["txtDivName" + thisIndex] != null)
+								thisInfo.Division_Label = HttpContext.Current.Request.Form["txtDivName" + thisIndex].Trim();
+							if (thisInfo.Division_Type.Length == 0)
+								thisInfo.Division_Type = "Chapter";
+
+							// Get the division config, based on the division type
+							if (qc_profile[thisInfo.Division_Type] != null)
+							{
+								QualityControl_Division_Config divInfo = qc_profile[thisInfo.Division_Type];
+
+								if (divInfo.BaseTypeName.Length > 0)
+								{
+									thisInfo.Division_Label = thisInfo.Division_Type;
+									thisInfo.Division_Type = divInfo.BaseTypeName;
+								}
+							}
+						}
+						else
+						{
+							thisInfo.New_Division = false;
 						}
 
 						// Add this page to the collection
@@ -463,11 +509,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					 i < window_last_division.Nodes.Count;
 					 i++)
 				{
-					remnant_pages.Add((Page_TreeNode) window_last_division.Nodes[i]);
+					remnant_pages.Add((Page_TreeNode)window_last_division.Nodes[i]);
 				}
 			}
 
-		 
+
 
 			// Clear the window pages completely, including the remnant pages, which we add back at the end
 			int index_within_chapter_roots_to_begin_insert = qc_item.Divisions.Physical_Tree.Roots.Count;
@@ -486,7 +532,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					qc_item.Divisions.Physical_Tree.Roots.Remove(parentNode);
 					this_root_index--;
-				} 
+				}
 
 				// If this insert point is prior to the previously collected insert point, use this one for the first chapter
 				if (this_root_index < index_within_chapter_roots_to_begin_insert)
@@ -504,6 +550,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 			}
 
+            int move_into_division_index = -1;
+            int move_into_node_index = -1;
+          //  string filename_to_move_after = "00002";
+
 			// Add each page from the original form
 			Division_TreeNode last_added_division = existing_division_containing_first_page;
 			foreach (QC_Viewer_Page_Division_Info pageInfo in page_div_from_form)
@@ -511,24 +561,87 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Is this a new division?
 				if (pageInfo.New_Division)
 				{
-					last_added_division = new Division_TreeNode(pageInfo.Division_Type, pageInfo.Division_Label);
+                    // If there was a last division, ensure some pages were added and add to the METS
+                    if (last_added_division != null)
+                    {
+                        // Were any pages added to this last div?
+                        if (last_added_division.Nodes.Count > 0)
+                        {
+                            // Since there were pages, add this to the METS
+                            qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+                        }
+                    }
 
-					qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+                    // Create the new division
+					last_added_division = new Division_TreeNode(pageInfo.Division_Type, pageInfo.Division_Label);
 				}
 
 				// Get the page tree node and assign the new page label
 				Page_TreeNode thisPage = pages_by_name[pageInfo.Filename];
 				thisPage.Label = pageInfo.Page_Label;
 
-				// Add this page to the last division (possibly just created above)
-				last_added_division.Add_Child(thisPage);
+				// Add this page to the last division (possibly just created above) assuming it is 
+                // not marked for removal (either by mass delete or mass move)
+                if (!pageInfo.Checkbox_Selected)
+                    last_added_division.Add_Child(thisPage);
+                else
+                {
+                    // Save the built page node for later, in case they will be MOVED
+                    pageInfo.METS_STructMap_Page_Node = thisPage;
+                }
+
+                // Were we involved in a mass move, in which case we are looking for the insertion point?
+                if ((filename_to_move_after.Length > 0) && (move_into_division_index < 0 ) && (pageInfo.Filename == filename_to_move_after))
+                {
+                    move_into_division_index = index_within_chapter_roots_to_begin_insert;
+                    move_into_node_index = last_added_division.Nodes.Count;
+                }
 			}
 
-			// Handle all the remnant by adding to the last division 
-			foreach (Page_TreeNode thisNode in remnant_pages)
-			{
-				last_added_division.Add_Child(thisNode);
-			}
+            // Handle all the remnant by adding to the last division 
+            foreach (Page_TreeNode thisNode in remnant_pages)
+            {
+                last_added_division.Add_Child(thisNode);
+            }
+            
+            // Handle any unfinished divisions
+            // If there was a last division, ensure some pages were added and add to the METS
+            if (last_added_division != null)
+            {
+                // Were any pages added to this last div?
+                if (last_added_division.Nodes.Count > 0)
+                {
+                    // Since there were pages, add this to the METS
+                    qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+                }
+            }
+
+
+            // Insert any pages which were moved
+            if ((filename_to_move_after.Length > 0) && ( selected_page_div_from_form.Count > 0 ))
+            {
+                // TODO: Check for the lack of any divisions what-so-ever within the METS.  If so, add one.
+
+                Division_TreeNode divNodeToInsertWithin = null;
+
+                 // Get the division
+                if (move_into_division_index >= 0)
+                    divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[move_into_division_index];
+                else if (filename_to_move_after == "[BEFORE FIRST]")
+                {
+                    divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[0];
+                    move_into_node_index = 0;
+                }
+
+                if ( divNodeToInsertWithin != null )
+                {
+                    // Insert each page in order
+                    foreach (QC_Viewer_Page_Division_Info insertPage in selected_page_div_from_form)
+                    {
+                        divNodeToInsertWithin.Nodes.Insert(move_into_node_index++, insertPage.METS_STructMap_Page_Node);
+                    }
+                }
+            }
 
 			// Save the updated to the session
 			HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
@@ -541,12 +654,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Directory.CreateDirectory(userInProcessDirectory);
 
 				// Save the METS
-				qc_item.Save_METS( userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
+				qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
 			}
 			catch (Exception)
 			{
 				throw;
 			}
+
+			// Return the information about all checked boxes
+			return selected_page_div_from_form;
 		}
 
 		/// <summary> Override the property to get the current item, since the QC viewer uses a DIFFERENT item, to avoid
@@ -727,7 +843,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<div id=\"qcmenubar\">");
 			builder.AppendLine("<ul class=\"qc-menu\">");
 
-            builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
+			builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
 			builder.AppendLine("\t<li>View METS</li>");
 			builder.AppendLine("\t<li>View Directory</li>");
 			builder.AppendLine("\t<li>View QC History</li>");
@@ -741,7 +857,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t<li>Cancel</li>");
 			builder.AppendLine("</ul></li>");
 
-            builder.AppendLine("<li class=\"qc-menu-item\">Edit<ul>");
+			builder.AppendLine("<li class=\"qc-menu-item\">Edit<ul>");
 			builder.AppendLine("\t<li>Clear Pagination</li>");
 			builder.AppendLine("\t<li>Clear All &amp; Reorder Pages</li>");
 			builder.AppendLine("\t<li>Automatic Numbering<ul>");
@@ -751,7 +867,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
-            builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
+			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
 			builder.AppendLine("\t<li>Thumbnail Size<ul>");
 			builder.AppendLine("\t\t<li>Small</li>");
 			builder.AppendLine("\t\t<li>Medium</li>");
@@ -764,72 +880,72 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
-            builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
-            
-            // Add the option to GO TO a certain thumbnail next
-            builder.AppendLine("<li class=\"qc-menu-item\">");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
-            builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
+			builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
+			
+			// Add the option to GO TO a certain thumbnail next
+			builder.AppendLine("<li class=\"qc-menu-item\">");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
+			builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
 
-            //iterate through the page items
-            if (qc_item.Web.Static_PageCount > 0)
-            {
-                int thumbnail_count = 0;
-                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-                {
-                    thumbnail_count++;
+			//iterate through the page items
+			if (qc_item.Web.Static_PageCount > 0)
+			{
+				int thumbnail_count = 0;
+				foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+				{
+					thumbnail_count++;
 
-                    string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+					string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
 
-                    builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
+					builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
 
-                }
-            }
-            builder.AppendLine("</select></span>");
+				}
+			}
+			builder.AppendLine("</select></span>");
 
-		    builder.AppendLine("</li>");
+			builder.AppendLine("</li>");
 
-            //Get the icons for the thumbnail sizes
-            string image_location = CurrentMode.Default_Images_URL;
-
-
-            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></li>");
-            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
-            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
-            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+			//Get the icons for the thumbnail sizes
+			string image_location = CurrentMode.Default_Images_URL;
 
 
-            if (thumbnailSize == 3)
-                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
-            else
-            {
-                CurrentMode.Size_Of_Thumbnails = 3;
-                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
-            }
-
-            if (thumbnailSize == 2)
-                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\"/></a></li>");
-            else
-            {
-                CurrentMode.Size_Of_Thumbnails = 2;
-                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\"/></a></li>");
-            }
-
-            if (thumbnailSize == 1)
-                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\"/></a></li>");
-            else
-            {
-                CurrentMode.Size_Of_Thumbnails = 1;
-                builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\"/></a></li>");
-            }
+			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></li>");
+			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 
 
-            //Reset the current mode
-            CurrentMode.Size_Of_Thumbnails = (short) thumbnailSize;
+			if (thumbnailSize == 3)
+				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
+			else
+			{
+				CurrentMode.Size_Of_Thumbnails = 3;
+				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
+			}
+
+			if (thumbnailSize == 2)
+				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\"/></a></li>");
+			else
+			{
+				CurrentMode.Size_Of_Thumbnails = 2;
+				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\"/></a></li>");
+			}
+
+			if (thumbnailSize == 1)
+				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\"/></a></li>");
+			else
+			{
+				CurrentMode.Size_Of_Thumbnails = 1;
+				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\"/></a></li>");
+			}
+
+
+			//Reset the current mode
+			CurrentMode.Size_Of_Thumbnails = (short) thumbnailSize;
 
 
 
-            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 
 
 
@@ -839,25 +955,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
 
-            ////Add the nav row QC image icons
-            //builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
-            //builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            //if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
-            //    builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
-            //else
-            //    builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
-            //builder.AppendLine("</span>");
+			////Add the nav row QC image icons
+			//builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
+			//builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			//if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
+			//    builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
+			//else
+			//    builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
+			//builder.AppendLine("</span>");
 
 			builder.AppendLine("</div>");
 
-            builder.AppendLine("<script>");
-            builder.AppendLine("    jQuery(document).ready(function(){");
-            builder.AppendLine("       jQuery('ul.qc-menu').superfish();");
-            builder.AppendLine("    });");
-            builder.AppendLine("</script>");
-            builder.AppendLine();
+			builder.AppendLine("<script>");
+			builder.AppendLine("    jQuery(document).ready(function(){");
+			builder.AppendLine("       jQuery('ul.qc-menu').superfish();");
+			builder.AppendLine("    });");
+			builder.AppendLine("</script>");
+			builder.AppendLine();
 
-		    return;
+			return;
 
 
 			//  Literal htmlLiteral = new Literal();
@@ -928,83 +1044,84 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// For now, just add a TEST link here
 			builder.AppendLine("<td><a id=\"form_qcmove_link\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"return popup('form_qcmove', 'form_qcmove_link', 280, 400 );\">test</a></td>");
 
-            //Get the icons for the thumbnail sizes
-            string image_location = CurrentMode.Default_Images_URL;
+			//Get the icons for the thumbnail sizes
+			//string image_location = CurrentMode.Default_Images_URL;
+			image_location = CurrentMode.Default_Images_URL;
 
 
 
 			builder.AppendLine("<td valign=\"top\">");
-            if (thumbnailSize == 1)
-                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
-            else
-            {
-                CurrentMode.Size_Of_Thumbnails = 1;
-                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
-            }
-            if (thumbnailSize == 2)
-                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
-            else
-            {
-                CurrentMode.Size_Of_Thumbnails = 2;
-                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
-            }
-            if (thumbnailSize == 3)
-                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
-            else
-            {
-                CurrentMode.Size_Of_Thumbnails = 3;
-                builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
-            }
-            //Reset the current mode
-            CurrentMode.Size_Of_Thumbnails = -1;
+			if (thumbnailSize == 1)
+				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+			else
+			{
+				CurrentMode.Size_Of_Thumbnails = 1;
+				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+			}
+			if (thumbnailSize == 2)
+				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+			else
+			{
+				CurrentMode.Size_Of_Thumbnails = 2;
+				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+			}
+			if (thumbnailSize == 3)
+				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+			else
+			{
+				CurrentMode.Size_Of_Thumbnails = 3;
+				builder.Append("<a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+			}
+			//Reset the current mode
+			CurrentMode.Size_Of_Thumbnails = -1;
 			builder.AppendLine("</td>");
 
 
 			//Add the dropdown for the thumbnail anchor within the page to directly navigate to
 			builder.AppendLine("<td valign=\"top\">");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
-            builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
+			builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
 
-            //iterate through the page items
-            if (qc_item.Web.Static_PageCount > 0)
-            {
-                int thumbnail_count = 0;
-                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-                {
-                    thumbnail_count++;
+			//iterate through the page items
+			if (qc_item.Web.Static_PageCount > 0)
+			{
+				int thumbnail_count = 0;
+				foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+				{
+					thumbnail_count++;
 
-                    string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+					string current_Page_url1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
 
-                    builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
+					builder.AppendLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
 
-                }
-            }
-            builder.AppendLine("</select></span>");
-            //   builder.AppendLine("<br /><br />");
+				}
+			}
+			builder.AppendLine("</select></span>");
+			//   builder.AppendLine("<br /><br />");
 
-            //Add the nav row QC image icons
-            builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
-                builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
-            else
-                builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            builder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
-            //builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            //builder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
-            builder.AppendLine("&nbsp;&nbsp;&nbsp;");
-            builder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
-            builder.AppendLine("</span>");
+			//Add the nav row QC image icons
+			builder.AppendLine("<span id=\"qcIconsTopNavRow\" class=\"spanQCIconsTopNavRow\">");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			if (String.IsNullOrEmpty(autosave_option.ToString()) || (autosave_option))
+				builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn Off Autosave</a>");
+			else
+				builder.AppendLine("<span><a id=\"autosaveLink\" href=\"\" onclick=\"javascript:changeAutoSaveOption(); return false;\">Turn On Autosave</a>");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			builder.AppendLine("<span><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></span>");
+			//builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			//builder.AppendLine("<span><img src=\"" + image_location + "ToolboxImages/next_error.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></span>");
+			builder.AppendLine("&nbsp;&nbsp;&nbsp;");
+			builder.AppendLine("<span><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></span>");
+			builder.AppendLine("</span>");
 
-            builder.AppendLine("</td></tr></table>");
+			builder.AppendLine("</td></tr></table>");
 		}
 
 
@@ -1624,6 +1741,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			public string Division_Type { get; set;  }
 	
 			public string Division_Label { get; set; }
+
+			public Page_TreeNode METS_STructMap_Page_Node { get; set; }
+
+            public bool Checkbox_Selected { get; set;  }
+
+            public QC_Viewer_Page_Division_Info()
+            {
+                Checkbox_Selected = false;
+            }
 		}
 	}
 }
