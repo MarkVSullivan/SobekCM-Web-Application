@@ -833,7 +833,7 @@ function rbMovePagesChanged(rbValue)
 }
 
 
-//Update the popup form based on the parameters passed in
+//Update the popup form based on the target page filename and relative position passed in
 function update_popup_form(pageID,before_after)
 {
   //alert(pageID+before_after);
