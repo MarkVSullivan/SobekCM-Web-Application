@@ -173,6 +173,7 @@
     <Compile Include="ItemViewer\Fragments\Send_Fragment_ItemViewer.cs" />
     <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Google_Coordinate_Entry_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs" />
     <Compile Include="AdminViewer\Aggregation_Single_AdminViewer.cs" />
     <Compile Include="OAI\OAI_Record.cs" />

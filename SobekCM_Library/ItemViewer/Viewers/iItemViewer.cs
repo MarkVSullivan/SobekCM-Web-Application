@@ -72,12 +72,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Fragment renders the share (social media) form to be included on demand in an item view </summary>
         Fragment_ShareForm,
 
-
-
-
-
         /// <summary> Displays the item in a full-screen implementation of GnuBooks page turner </summary>
         GnuBooks_PageTurner,
+
+        /// <summary> Allow a user to enter coordinate information ( i.e., map coverage, points of interest, etc.. ) </summary>
+        Google_Coordinate_Entry,
 
         /// <summary> Google map display allows user to view the geographic coverage of this digital resource</summary>
         Google_Map,

@@ -459,8 +459,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
+            string viewercode = CurrentMode.ViewerCode;
+            ushort subpage = CurrentMode.SubPage;
+            CurrentMode.ViewerCode = String.Empty;
+            CurrentMode.SubPage = 0;
             CurrentMode.VID = "<%VID%>";
             string redirect_url = CurrentMode.Redirect_URL(String.Empty);
+            CurrentMode.ViewerCode = viewercode;
+            CurrentMode.SubPage = subpage;
             CurrentMode.VID = current_vid;
 
             // Get the data columns for quick access

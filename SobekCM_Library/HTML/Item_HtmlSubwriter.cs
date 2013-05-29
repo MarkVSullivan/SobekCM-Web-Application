@@ -472,6 +472,10 @@ namespace SobekCM.Library.HTML
                 if ((PageViewer != null) && (PageViewer is QC_ItemViewer))
                     return false;
 
+                // The pageturner does not use the nav bar
+                if ((PageViewer != null) && (PageViewer is Google_Coordinate_Entry_ItemViewer))
+                    return false;
+
                 // If the flag eas explicitly set, return TRUE
                 if (Nav_Bar_Menu_Section_Added)
                     return true;
