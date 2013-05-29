@@ -32,6 +32,9 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Flash viewer is used to display a flash file for a digital resource </summary>
         FLASH,
 
+        /// <summary> Google coordinate edit view (restricted to item editors) </summary>
+        GOOGLE_COORDINATE_ENTRY,
+            
         /// <summary> Google map view shows the coverage of a digital resource graphically </summary>
         GOOGLE_MAP,
 
@@ -59,6 +62,7 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Restricted viewer is displayed when the item is restricted by IP address </summary>
         RESTRICTED,
 
+        /// <summary> Quality control viewer (restricted to item editors)  </summary>
         QUALITY_CONTROL,
 
         /// <summary> Sanborn (project-specific) resource viewer </summary>

@@ -169,6 +169,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Outer div which contains all the thumbnails
 			builder.AppendLine("<div align=\"center\" style=\"margin:5px;\"><span align=\"left\" style=\"float:left\">");
 
+
 			// Step through each page in the item
 		    for (int page_index = page * images_per_page; (page_index < (page + 1) * images_per_page) && (page_index < CurrentItem.Web.Static_PageCount); page_index++)
 			{

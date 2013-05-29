@@ -1030,7 +1030,7 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.Item_Display:
                     // Build the item viewer panel
-                    if ((currentMode.ViewerCode == "map") || (currentMode.ViewerCode == "mapsearch"))
+                    if ((currentMode.ViewerCode == "map") || (currentMode.ViewerCode == "mapsearch") || (currentMode.ViewerCode == "mapedit"))
                     {
                         onload_builder.Append("load();");
                     }
