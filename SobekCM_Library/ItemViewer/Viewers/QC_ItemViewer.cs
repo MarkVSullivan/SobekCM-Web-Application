@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Items;
+using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -47,6 +48,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// but in this case (QC viewer) we need the information for early processing
 			this.CurrentMode = Current_Mode;
 			this.CurrentUser = Current_User;
+
+            // If there is no user, send to the login
+            if (CurrentUser == null)
+            {
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                return;
+            }
+
+            // If the user cannot edit this item, go back
+            if (!CurrentUser.Can_Edit_This_Item(Current_Object))
+            {
+                CurrentMode.ViewerCode = String.Empty;
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                return;
+            }
 
 			// Get the special qc_item, which matches the passed in Current_Object, at least the first time.
 			// If the QC work is already in process, we may find a temporary METS file to read.
@@ -167,7 +185,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-				Save_From_Form_Request_To_Item( String.Empty );
+				Save_From_Form_Request_To_Item( String.Empty, String.Empty );
 
 				// Save this updated information in the temporary folder's METS file for reading
 				// later if necessary.
@@ -180,7 +198,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-                List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName);
+                List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
 
                 ////If there were multiple selected pages to be moved, move these now and save to the temporary METS file
                 //if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
@@ -195,9 +213,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-                Save_From_Form_Request_To_Item(String.Empty);
+                string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+                Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
 
-				string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+				
 				if (filename_to_delete.Length > 0)
 				{
 					Delete_Single_Page(filename_to_delete);
@@ -211,7 +230,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 // Read the data from the http form, perform all requests, and
                 // update the qc_item (also updates the session and temporary files)
-                Save_From_Form_Request_To_Item(String.Empty);
+                Save_From_Form_Request_To_Item(String.Empty, String.Empty);
 
                 string url_redirect = HttpContext.Current.Request.Url.ToString();
                 HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
@@ -224,137 +243,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			bool b = true;
 		}
 
-		private void Move_Multiple_Pages(string relative_position, string destination_fileName, List<QC_Viewer_Page_Division_Info> selected_pages)
-		{
-			bool b = true;
-			//Step through all the pages in the form and collect the list of pages selected to be moved
-			try
-			{
-
-				// Get the current page number
-				int current_qc_viewer_page_num = 1;
-				if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
-					Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
-
-
-				// First, build a dictionary of all the pages ( filename --> page division object )
-				Dictionary<Page_TreeNode, Division_TreeNode> pages_to_division = new Dictionary<Page_TreeNode, Division_TreeNode>();
-				Dictionary<string, Page_TreeNode> pages_by_name = new Dictionary<string, Page_TreeNode>();
-				List<Page_TreeNode> page_list = new List<Page_TreeNode>();
-				List<string> page_filename_list = new List<string>();
-			   
-
-				Division_TreeNode lastDivision = null;
-				foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
-				{
-					// Is this a division, or page node?
-					if (thisNode.Page)
-					{
-						Page_TreeNode thisPage = (Page_TreeNode)thisNode;
-						// Verify the page 
-						if (thisPage.Files.Count > 0)
-						{
-							string filename = thisPage.Files[0].File_Name_Sans_Extension;
-							pages_by_name[filename] = thisPage;
-							page_filename_list.Add(filename);
-						}
-
-						// Add to the list of pages
-						page_list.Add(thisPage);
-
-						// Save the link from the page, up to the division
-						pages_to_division[thisPage] = lastDivision;
-					}
-					else
-					{
-						lastDivision = (Division_TreeNode)thisNode;
-					}
-				}
-
-				// Step through and collect all the form data
-				List<QC_Viewer_Page_Division_Info> page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
-				List<Page_TreeNode> existing_pages_in_window = new List<Page_TreeNode>();
-				try
-				{
-					// Now, step through each of the pages in the return
-					string[] keysFromForm = HttpContext.Current.Request.Form.AllKeys;
-					foreach (string thisKey in keysFromForm)
-					{
-						// Has this gotten to the next page?
-						if ((thisKey.IndexOf("filename") == 0) && (thisKey.Length > 8))
-						{
-							QC_Viewer_Page_Division_Info thisInfo = new QC_Viewer_Page_Division_Info();
-
-							// Get the filename for this new page
-							thisInfo.Filename = HttpContext.Current.Request.Form[thisKey];
-
-							// Get the index to use for all the other keys
-							string thisIndex = thisKey.Substring(8);
-
-							// Get the page name 
-							thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
-
-							
-							// Is this a new division?
-							if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
-							{
-								thisInfo.New_Division = true;
-
-								// Get the new division type/label
-								thisInfo.Division_Type = HttpContext.Current.Request.Form["selectDivType" + thisIndex].Trim().Replace("!", "");
-								thisInfo.Division_Label = String.Empty;
-								if (HttpContext.Current.Request.Form["txtDivName" + thisIndex] != null)
-									thisInfo.Division_Label = HttpContext.Current.Request.Form["txtDivName" + thisIndex].Trim();
-								if (thisInfo.Division_Type.Length == 0)
-									thisInfo.Division_Type = "Chapter";
-
-								// Get the division config, based on the division type
-								if (qc_profile[thisInfo.Division_Type] != null)
-								{
-									QualityControl_Division_Config divInfo = qc_profile[thisInfo.Division_Type];
-
-									if (divInfo.BaseTypeName.Length > 0)
-									{
-										thisInfo.Division_Label = thisInfo.Division_Type;
-										thisInfo.Division_Type = divInfo.BaseTypeName;
-									}
-								}
-							}
-							else
-							{
-								thisInfo.New_Division = false;
-							}
-
-							// Add this page to the collection
-							page_div_from_form.Add(thisInfo);
-
-							// Also, collect the page node from the mets/resource for clearing later
-							if (pages_by_name.ContainsKey(thisInfo.Filename))
-							{
-								Page_TreeNode existing_pagenode = pages_by_name[thisInfo.Filename];
-								existing_pages_in_window.Add(existing_pagenode);
-							}
-						}
-					}
-				}
-				catch (Exception ee)
-				{
-					throw new ApplicationException("Error reading form data"+ee.Message);
-				}
-
-
-			}
-
-			catch (Exception e)
-			{
-				throw new ApplicationException("Error moving the selected pages" + e.Message);
-			}
-		}
 
 		/// <summary> Save all the data from form post-back into the item in memory, and 
 		/// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
 		/// <returns> Returns the list of all selected (or checked on the checkbox) page data</returns>
-        private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item(string filename_to_move_after )
+        private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item(string filename_to_move_after, string filename_to_omit )
 		{
 			// Get the current page number
 			int current_qc_viewer_page_num = 1;
@@ -423,7 +316,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
 						// Was this page selected with the checkbox?  (for bulk delete or move)
-						if (HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null)
+						if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || ( thisInfo.Filename == filename_to_omit ))
 						{
                             thisInfo.Checkbox_Selected = true;
 							selected_page_div_from_form.Add(thisInfo);
@@ -1208,6 +1101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
 
 					// Start the box for this thumbnail
+                    builder.AppendLine("<a name=\"" + thisPage.Label + "\" id=\"" + thisPage.Label + "\"></a>");
 					builder.AppendLine("<span id=\"span" + page_index + "\" onclick=\"PickMainThumbnail(this.id);\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'; showQcPageIcons(this.id); showErrorIcon(this.id);\" onmouseout=\"this.className='thumbnailNormal'; hideQcPageIcons(this.id); hideErrorIcon(this.id);\" >");
 					builder.AppendLine("<div class=\"qcpage\" align=\"center\" id=\"parent" + image_url + "\" >");
 					builder.AppendLine("<table>");
