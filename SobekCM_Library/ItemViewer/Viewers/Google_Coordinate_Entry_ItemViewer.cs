@@ -100,6 +100,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/>");
             mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper.css\"/>");
            
+            //keep in here for testing
+            //string mapperHTMLFile = @""+ CurrentMode.Base_URL + "default/mapper.txt";
+            //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapper.txt");
+            //string path = @"U:\vs12_projects\git\SobekCM\default\mapper.txt";
+            //string[] lines = File.ReadAllLines(path);
+            //for (int i = 0; i < lines.Length; i++)
+            //{
+            //    mapperBuilder.AppendLine(Convert.ToString(lines[i]));
+            //}
+
             //js
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-1.9.1.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-ui-1.10.1.js\"></script>");
@@ -112,12 +122,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_mapper.js\"></script>");                                       //custom script
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-markerwithlabel-1.8.1.min.js\"></script>");               //must load after custom
 
-            //the goodies
-            #region Literal 
-
-            mapperBuilder.AppendLine("  ");
-            mapperBuilder.AppendLine("  ");
-            mapperBuilder.AppendLine("  ");
+            //html goodies
             mapperBuilder.AppendLine(" <div id=\"mapper_container_thebigdeal\">  ");
             mapperBuilder.AppendLine("     <div id=\"container1\"> ");
             mapperBuilder.AppendLine("         <div id=\"container2a\"> ");
@@ -149,13 +154,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbar_zoomOut\" title=\"Zoom Map Out\" onclick=\"checkZoomLevel();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-zoomOut.png\" /></a> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                     <div class=\"grouping\"> ");
-            mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbar_manageItem\" title=\"Manage Item\" onclick=\"action1();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action1.png\" /></a> ");
+            mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbar_manageItem\" title=\"Manage Location Details\" onclick=\"action1();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action1.png\" /></a> ");
             mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbar_manageOverlay\" title=\"Manage Map Coverage\" onclick=\"action2();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action2.png\" /></a> ");
             mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbar_managePOI\" title=\"Manage Point of Interest\" onclick=\"action3();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action3.png\" /></a> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                     <div class=\"grouping\"> ");
             mapperBuilder.AppendLine("                         <input id=\"toolbar_find\" class=\"search\" title=\"Locate: Find A Location On The Map\" type=\"text\" placeholder=\"Locate\" onBlur=\"finder(this.value);\" onClick=\"this.select();\" /> ");
-            mapperBuilder.AppendLine("                         <input id=\"toolbar_search\" class=\"search\" title=\"Search: Search For Collection Item On The Map\" type=\"text\" placeholder=\"Search\" onBlur=\"searcher(this.value);\" onClick=\"this.select();\" /> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("             </div> ");
@@ -220,13 +224,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                     <h3 class=\"tab-title\">Actions</h3> ");
             mapperBuilder.AppendLine("                     <div class=\"tab\" > ");
             mapperBuilder.AppendLine("                         <div class=\"tab-content\"> ");
-            mapperBuilder.AppendLine("                             <a href=\"#\" id=\"toolbox_manageItem\" title=\"Create Item\" onclick=\"action1();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action1.png\" /></a>&nbsp ");
-            mapperBuilder.AppendLine("                             <a href=\"#\" id=\"toolbox_manageOverlay\" title=\"Create Map Coverage\" onclick=\"action2();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action2.png\" /></a>&nbsp ");
-            mapperBuilder.AppendLine("                             <a href=\"#\" id=\"toolbox_managePOI\" title=\"Create Point of Interest\" onclick=\"action3();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action3.png\" /></a> ");
+            mapperBuilder.AppendLine("                             <a href=\"#\" id=\"toolbox_manageItem\" title=\"Manage Location Details\" onclick=\"action1();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action1.png\" /></a>&nbsp ");
+            mapperBuilder.AppendLine("                             <a href=\"#\" id=\"toolbox_manageOverlay\" title=\"Manage Map Coverage\" onclick=\"action2();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action2.png\" /></a>&nbsp ");
+            mapperBuilder.AppendLine("                             <a href=\"#\" id=\"toolbox_managePOI\" title=\"Manage Point of Interest\" onclick=\"action3();\"><img class=\"button\" src=\"/sobekcm/default/images/mapper/button-action3.png\" /></a> ");
             mapperBuilder.AppendLine("                             <br/> ");
             mapperBuilder.AppendLine("                             <br/> ");
             mapperBuilder.AppendLine("                             <input id=\"toolbox_locate\" class=\"search\" title=\"Locate: Find A Location On The Map\" type=\"text\" placeholder=\"Locate\" onBlur=\"finder(this.value);\" onClick=\"this.select();\" /> ");
-            mapperBuilder.AppendLine("                             <input id=\"toolbox_search\" class=\"search\" title=\"Search: Search For Collection Item On The Map\" type=\"text\" placeholder=\"Search\" onBlur=\"searcher(this.value);\" onClick=\"this.select();\" /> ");
             mapperBuilder.AppendLine("                             <br/> ");
             mapperBuilder.AppendLine("                             <br/> ");
             mapperBuilder.AppendLine("                             <div style=\"clear:both;\"></div> ");
@@ -239,7 +242,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                     <h3 class=\"tab-title\">Manage Location Details</h3> ");
             mapperBuilder.AppendLine("                     <div class=\"tab\" style=\"text-align:center;\"> ");
             mapperBuilder.AppendLine(" 						<div class=\"tab-content\"> ");
-            mapperBuilder.AppendLine(" 							<a href=\"#\" id=\"toolbox_placeItem\" title=\"Place Item\"><img src=\"/sobekcm/default/images/mapper/button-action1.png\" /></a> ");
+            mapperBuilder.AppendLine(" 							<a href=\"#\" id=\"toolbox_placeItem\" title=\"Place a Point\"><img src=\"/sobekcm/default/images/mapper/button-action1.png\" /></a> ");
             mapperBuilder.AppendLine(" 							<a href=\"#\" id=\"item_getUserLocation\" title=\"Center On Your Current Position\"><img src=\"/sobekcm/default/images/mapper/getUserLocation.png\" /></a> ");
             mapperBuilder.AppendLine(" 							<div style=\"clear:both;text-align:left;\"> ");
             mapperBuilder.AppendLine(" 								<br /> ");
@@ -324,8 +327,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("         </div> ");
             mapperBuilder.AppendLine("     </div> ");
             mapperBuilder.AppendLine(" </div> ");
-            
-            #endregion
+
+
 
 
             mapperBuilder.AppendLine("</td>");

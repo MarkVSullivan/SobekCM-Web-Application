@@ -1,6 +1,3 @@
-
-
-
 <div id="mapper_container_thebigdeal"> 
     <div id="container1">
         <div id="container2a">
@@ -32,13 +29,12 @@
                         <a href="#" id="toolbar_zoomOut" title="Zoom Map Out" onclick="checkZoomLevel();"><img class="button" src="/sobekcm/default/images/mapper/button-zoomOut.png" /></a>
                     </div>
                     <div class="grouping">
-                        <a href="#" id="toolbar_manageItem" title="Manage Item" onclick="action1();"><img class="button" src="/sobekcm/default/images/mapper/button-action1.png" /></a>
+                        <a href="#" id="toolbar_manageItem" title="Manage Location Details" onclick="action1();"><img class="button" src="/sobekcm/default/images/mapper/button-action1.png" /></a>
                         <a href="#" id="toolbar_manageOverlay" title="Manage Map Coverage" onclick="action2();"><img class="button" src="/sobekcm/default/images/mapper/button-action2.png" /></a>
                         <a href="#" id="toolbar_managePOI" title="Manage Point of Interest" onclick="action3();"><img class="button" src="/sobekcm/default/images/mapper/button-action3.png" /></a>
                     </div>
                     <div class="grouping">
                         <input id="toolbar_find" class="search" title="Locate: Find A Location On The Map" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
-                        <input id="toolbar_search" class="search" title="Search: Search For Collection Item On The Map" type="text" placeholder="Search" onBlur="searcher(this.value);" onClick="this.select();" />
                     </div>
                 </div>
             </div>
@@ -103,13 +99,12 @@
                     <h3 class="tab-title">Actions</h3>
                     <div class="tab" >
                         <div class="tab-content">
-                            <a href="#" id="toolbox_manageItem" title="Create Item" onclick="action1();"><img class="button" src="/sobekcm/default/images/mapper/button-action1.png" /></a>&nbsp
-                            <a href="#" id="toolbox_manageOverlay" title="Create Map Coverage" onclick="action2();"><img class="button" src="/sobekcm/default/images/mapper/button-action2.png" /></a>&nbsp
-                            <a href="#" id="toolbox_managePOI" title="Create Point of Interest" onclick="action3();"><img class="button" src="/sobekcm/default/images/mapper/button-action3.png" /></a>
+                            <a href="#" id="toolbox_manageItem" title="Manage Location Details" onclick="action1();"><img class="button" src="/sobekcm/default/images/mapper/button-action1.png" /></a>&nbsp
+                            <a href="#" id="toolbox_manageOverlay" title="Manage Map Coverage" onclick="action2();"><img class="button" src="/sobekcm/default/images/mapper/button-action2.png" /></a>&nbsp
+                            <a href="#" id="toolbox_managePOI" title="Manage Point of Interest" onclick="action3();"><img class="button" src="/sobekcm/default/images/mapper/button-action3.png" /></a>
                             <br/>
                             <br/>
                             <input id="toolbox_locate" class="search" title="Locate: Find A Location On The Map" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
-                            <input id="toolbox_search" class="search" title="Search: Search For Collection Item On The Map" type="text" placeholder="Search" onBlur="searcher(this.value);" onClick="this.select();" />
                             <br/>
                             <br/>
                             <div style="clear:both;"></div>
@@ -122,7 +117,7 @@
                     <h3 class="tab-title">Manage Location Details</h3>
                     <div class="tab" style="text-align:center;">
 						<div class="tab-content">
-							<a href="#" id="toolbox_placeItem" title="Place Item"><img src="/sobekcm/default/images/mapper/button-action1.png" /></a>
+							<a href="#" id="toolbox_placeItem" title="Place a Point"><img src="/sobekcm/default/images/mapper/button-action1.png" /></a>
 							<a href="#" id="item_getUserLocation" title="Center On Your Current Position"><img src="/sobekcm/default/images/mapper/getUserLocation.png" /></a>
 							<div style="clear:both;text-align:left;">
 								<br />
