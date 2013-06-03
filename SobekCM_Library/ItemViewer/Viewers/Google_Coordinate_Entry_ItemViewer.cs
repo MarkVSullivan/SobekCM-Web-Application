@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
+using System.IO;
+using System.Web.UI;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -62,7 +64,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <value> This always returns the value 800 </value>
         public override int Viewer_Width
         {
-            get { return 800; }
+            get { return -1; }
         }
 
         /// <summary> Property gets the type of item viewer </summary>
@@ -88,17 +90,256 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
             // Start to build the response
-            StringBuilder responseBuilder = new StringBuilder();
-            responseBuilder.AppendLine("<td>");
+            StringBuilder mapperBuilder = new StringBuilder();
 
-            responseBuilder.AppendLine("Hello World!");
+            //page content
+            mapperBuilder.AppendLine("<td>");
+            
+            //css
+            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
+            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/>");
+            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper.css\"/>");
+            
+            //mapperBuilder.AppendLine("<div id=\"mapper_container_thebigdeal\"> ");
+
+            //string mapperHTMLFile = @""+ CurrentMode.Base_URL + "default/mapper.txt";
+            //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapper.txt");
+            string path007 = @"U:\vs12_projects\git\SobekCM\default\mapper.txt";
+            string[] lines = File.ReadAllLines(path007);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                mapperBuilder.AppendLine(Convert.ToString(lines[i]));
+            }
+
+            //js
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-1.9.1.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-ui-1.10.1.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-migrate-1.1.1.min.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-rotate.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-knob.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-infobox.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_mapper.js\"></script>");                                       //custom script
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-markerwithlabel-1.8.1.min.js\"></script>");               //must load after custom
+
+            
+            //mapperBuilder.AppendLine("</div>");
+
+            #region literal
+
+            
+            //mapperBuilder.AppendLine("     <div id=\"container1\"> ");
+            //mapperBuilder.AppendLine("        <div id=\"container2a\"> ");
+            //mapperBuilder.AppendLine("            <div> ");
+            //mapperBuilder.AppendLine("                <div id=\"toolbar\"> ");
+            //mapperBuilder.AppendLine("                    <div class=\"grouping\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"Default.aspx\" id=\"toolbar_reset\" title=\"Reset: Reset Map To Defaults\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-reset.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_toggleControls\" title=\"Controls: Toggle Map Controls\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-controls.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_toggletoolbox\" title=\"Toolbox: Toggle Toolbox\" onclick=\"toggletoolbox(4);\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-toolbox.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                    <div class=\"grouping\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_layerRoadmap\" title=\"Roadmap: Toggle Road Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-roadmap.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_layerTerrain\" title=\"Terrain: Toggle Terrain Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-terrain.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_layerSatellite\" title=\"Satellite: Toggle Satellite Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-satellite.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_layerHybrid\" title=\"Hybrid: Toggle Hybrid Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-hybrid.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_layerCustom\" title=\"Block/Lot: Toggle Block/Lot Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-blockLot.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_layerReset\" title=\"Reset Map Type\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-layerReset.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                    <div class=\"grouping\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_panUp\" title=\"Pan Map Up\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panUp.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_panLeft\" title=\"Pan Map Left\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panLeft.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_panReset\" title=\"Pan To Default\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panReset.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_panRight\" title=\"Pan Map Right\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panRight.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_panDown\" title=\"Pan Map Down\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panDown.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                    <div class=\"grouping\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_zoomIn\" title=\"Zoom Map In\" onclick=\"checkZoomLevel();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-zoomIn.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_zoomReset\" title=\"Reset Zoom Levels\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-zoomReset2.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_zoomOut\" title=\"Zoom Map Out\" onclick=\"checkZoomLevel();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-zoomOut.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                    <div class=\"grouping\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_manageItem\" title=\"Manage Item\" onclick=\"action1();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-action1.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_manageOverlay\" title=\"Manage Map Coverage\" onclick=\"action2();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-action2.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbar_managePOI\" title=\"Manage Point of Interest\" onclick=\"action3();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-action3.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                    <div class=\"grouping\"> ");
+            //mapperBuilder.AppendLine("                        <input id=\"toolbar_find\" class=\"search\" title=\"Locate: Find A Location On The Map\" type=\"text\" placeholder=\"Locate\" onBlur=\"finder(this.value);\" onClick=\"this.select();\" /> ");
+            //mapperBuilder.AppendLine("                        <input id=\"toolbar_search\" class=\"search\" title=\"Search: Search For Collection Item On The Map\" type=\"text\" placeholder=\"Search\" onBlur=\"searcher(this.value);\" onClick=\"this.select();\" /> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                </div> ");
+            //mapperBuilder.AppendLine("            </div> ");
+            //mapperBuilder.AppendLine("        </div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("        <div id=\"container_toggle_toolbar1\"><a href=\"#\" id=\"toolbar_toggle1\" title=\"Toolbar: Hide the Toolbar\" onclick=\"Toggle('#container2a');\"><img src=\"../sobekcm/default/images/mapper/toolbar-toggle.png\" /></a></div> ");
+            //mapperBuilder.AppendLine("        <div id=\"container_toggle_toolbar2\"><a href=\"#\" id=\"toolbar_toggle2\" title=\"Toolbar: Show the Toolbar\" onclick=\"Toggle('#container2a');\"><img src=\"../sobekcm/default/images/mapper/toolbar-toggle.png\" /></a></div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("        <div id=\"container2b\"> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("            <div id=\"messageContainer\" style=\"display:none;\"></div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("            <div id=\"toolbox\" class=\"ui-widget-content\"> ");
+            //mapperBuilder.AppendLine("                <div class=\"toolbar\" > ");
+            //mapperBuilder.AppendLine("         ");
+            //mapperBuilder.AppendLine("                    <a href=\"#\" id=\"tmin\" onclick=\"toggletoolbox(1);\"><img src=\"../sobekcm/default/images/mapper/toolbox-minimize2.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    <a href=\"#\" id=\"tmax\" onclick=\"toggletoolbox(2);\"><img src=\"../sobekcm/default/images/mapper/toolbox-maximize2.png\" /></a> ");
+            //mapperBuilder.AppendLine("                    <a href=\"#\" id=\"tclose\" onclick=\"toggletoolbox(3);\"><img src=\"../sobekcm/default/images/mapper/toolbox-close2.png\" /></a> ");
+            //mapperBuilder.AppendLine("                </div> ");
+            //mapperBuilder.AppendLine("                <div id=\"toolboxTabs\"> ");
+            //mapperBuilder.AppendLine("                    <h3 class=\"tab-title\">Map Controls</h3> ");
+            //mapperBuilder.AppendLine("                    <div class=\"tab\"> ");
+            //mapperBuilder.AppendLine("                        <div class=\"tab-content\"> ");
+            //mapperBuilder.AppendLine("                        <table> ");
+            //mapperBuilder.AppendLine("                            <tr> ");
+            //mapperBuilder.AppendLine("                                <td><a id=\"toolbox_layerRoadmap\" title=\"Roadmap: Toggle Road Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-roadmap.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_layerTerrain\" title=\"Terrain: Toggle Terrain Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-terrain.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td>&nbsp;</td> ");
+            //mapperBuilder.AppendLine("                                <td></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_panUp\" title=\"Pan Map Up\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panUp.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td></td> ");
+            //mapperBuilder.AppendLine("                            </tr> ");
+            //mapperBuilder.AppendLine("                            <tr> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_layerSatellite\" title=\"Satellite: Toggle Satellite Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-satellite.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_layerHybrid\" title=\"Hybrid: Toggle Hybrid Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-hybrid.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td>&nbsp;</td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_panLeft\" title=\"Pan Map Left\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panLeft.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_panReset\" title=\"Pan To Default\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panReset.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_panRight\" title=\"Pan Map Right\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panRight.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                            </tr> ");
+            //mapperBuilder.AppendLine("                            <tr> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_layerCustom\" title=\"Block/Lot: Toggle Block/Lot Map Layer\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-blockLot.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_layerReset\" title=\"Reset Map Type\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-layerReset.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td>&nbsp;</td> ");
+            //mapperBuilder.AppendLine("                                <td></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_panDown\" title=\"Pan Map Down\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-panDown.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td></td> ");
+            //mapperBuilder.AppendLine("                            </tr> ");
+            //mapperBuilder.AppendLine("                            <tr><td colspan=\"6\"><br /></td></tr> ");
+            //mapperBuilder.AppendLine("                            <tr> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"Default.aspx\" id=\"toolbox_reset\" title=\"Reset: Reset Map To Defaults\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-reset.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_toggleControls\" title=\"Controls: Toggle Map Controls\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-controls.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td>&nbsp;</td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_zoomIn\" title=\"Zoom Map In\" onclick=\"checkZoomLevel();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-zoomIn.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_zoomReset\" title=\"Reset Zoom Levels\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-zoomReset2.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                                <td><a href=\"#\" id=\"toolbox_zoomOut\" title=\"Zoom Map Out\" onclick=\"checkZoomLevel();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-zoomOut.png\" /></a></td> ");
+            //mapperBuilder.AppendLine("                            </tr> ");
+            //mapperBuilder.AppendLine("                        </table> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("                    <h3 class=\"tab-title\">Actions</h3> ");
+            //mapperBuilder.AppendLine("                    <div class=\"tab\" > ");
+            //mapperBuilder.AppendLine("                        <div class=\"tab-content\"> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"toolbox_manageItem\" title=\"Create Item\" onclick=\"action1();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-action1.png\" /></a>&nbsp ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"toolbox_manageOverlay\" title=\"Create Map Coverage\" onclick=\"action2();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-action2.png\" /></a>&nbsp ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"toolbox_managePOI\" title=\"Create Point of Interest\" onclick=\"action3();\"><img class=\"button\" src=\"../sobekcm/default/images/mapper/button-action3.png\" /></a> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <input id=\"toolbox_locate\" class=\"search\" title=\"Locate: Find A Location On The Map\" type=\"text\" placeholder=\"Locate\" onBlur=\"finder(this.value);\" onClick=\"this.select();\" /> ");
+            //mapperBuilder.AppendLine("                            <input id=\"toolbox_search\" class=\"search\" title=\"Search: Search For Collection Item On The Map\" type=\"text\" placeholder=\"Search\" onBlur=\"searcher(this.value);\" onClick=\"this.select();\" /> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                             <div style=\"clear:both;\"></div> ");
+            //mapperBuilder.AppendLine("                            <div id=\"search_results\"></div> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("             ");
+            //mapperBuilder.AppendLine("             ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("         ");
+            //mapperBuilder.AppendLine("                    <h3 class=\"tab-title\">Manage Location Details</h3> ");
+            //mapperBuilder.AppendLine("                    <div class=\"tab\" style=\"text-align:center;\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbox_placeItem\" title=\"Place Item\"><img src=\"../sobekcm/default/images/mapper/button-action1.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"item_getUserLocation\" title=\"Center On Your Current Position\"><img src=\"../sobekcm/default/images/mapper/getUserLocation.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <div style=\"clear:both;text-align:left;\"> ");
+            //mapperBuilder.AppendLine("                            <br /> ");
+            //mapperBuilder.AppendLine("                            <textarea id=\"posItem\" class=\"tab-field\" title=\"Coordinates: This is the selected Latitude and Longitude of the point you selected.\" rows=\"2\" cols=\"24\" placeholder=\"Selected Lat/Long\"></textarea> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <textarea id=\"rgItem\" class=\"tab-field\" title=\"Address: This is the nearest address of the point you selected.\" rows=\"3\" cols=\"24\" placeholder=\"Nearest Address\"></textarea> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                        <div style=\"clear:both;\"> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"saveItem\" title=\"Save Item\" onclick=\"buttonSaveItem();\" class=\"button2\">Save Item</a> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"clearItem\" title=\"Clear Item\" onclick=\"buttonClearItem();\" class=\"button2\">Clear Item</a> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("                    <h3 class=\"tab-title\" onclick=\"action2();\" >Manage Map Coverage</h3> ");
+            //mapperBuilder.AppendLine("                    <div class=\"tab\" style=\"text-align:center;\"> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"toolbox_placeOverlay\" title=\"Place Overlay\"><img src=\"../sobekcm/default/images/mapper/button-action2.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <a href=\"#\" id=\"overlay_getUserLocation\" title=\"Center On Your Current Position\"><img src=\"../sobekcm/default/images/mapper/getUserLocation.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        <div style=\"clear:both;\"> ");
+            //mapperBuilder.AppendLine("                            <br /><br /> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                        <div id=\"rotation\" style=\"float:left;\"> ");
+            //mapperBuilder.AppendLine("                                <div id=\"rotationKnob\" title=\"Rotate: Edit the rotation value\"> ");
+            //mapperBuilder.AppendLine("                                <input class=\"knob\" data-displayInput=\"false\" data-width=\"68\" data-step=\"1\" data-min=\"0\" data-max=\"360\" data-cursor=true data-bgColor=\"#B2B2B2\" data-fgColor=\"#111111\" data-thickness=\"0.3\" value=\"0\"> ");
+            //mapperBuilder.AppendLine("                                </div> ");
+            //mapperBuilder.AppendLine("                                <a id=\"rotationCounterClockwise\" href=\"#\" title=\".1&deg Left: Click to Rotate .1&deg Counter-Clockwise\" onclick=\"rotate(-0.1)\"><img src=\"../sobekcm/default/images/mapper/rotation-counterClockwise.png\" /></a> ");
+            //mapperBuilder.AppendLine("                                <a id=\"rotationReset\" href=\"#\" title=\"Reset: Click to Reset Rotation\" onclick=\"rotate(0)\"><img src=\"../sobekcm/default/images/mapper/rotation-reset.png\" /></a> ");
+            //mapperBuilder.AppendLine("                                <a id=\"rotationClockwise\" href=\"#\" title=\".1&deg Right: Click to Rotate .1&deg Clockwise\" onclick=\"rotate(0.1)\"><img src=\"../sobekcm/default/images/mapper/rotation-clockwise.png\" /></a> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                        <div id=\"transparency\" title=\"Transparency: Set the transparency of this Overlay\"> ");
+            //mapperBuilder.AppendLine("                            <div id=\"overlayTransparencySlider\"></div> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                        <div style=\"clear:both;margin-left:-3px;\"> ");
+            //mapperBuilder.AppendLine("                            <br /> ");
+            //mapperBuilder.AppendLine("                            <br /> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"saveOverlay\" title=\"Save Overlay\" onclick=\"buttonSaveOverlay();\" class=\"button2\">Save Overlay</a> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"clearOverlay\" title=\"Clear Overlay\" onclick=\"buttonClearOverlay();\" class=\"button2\">Clear Overlay</a> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("                    <h3 class=\"tab-title\">Manage POI Details</h3> ");
+            //mapperBuilder.AppendLine("                    <div class=\"tab\" style=\"text-align:center;height:295px;\"> ");
+            //mapperBuilder.AppendLine("                        <div class=\"tab-content2\" style=\"margin: 0 -20px 0 -20px;\"> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"toolbox_placePOI\" title=\"Place Point Of Interest\"><img src=\"../sobekcm/default/images/mapper/button-action3.png\" /></a> ");
+            //mapperBuilder.AppendLine("                            <a href=\"#\" id=\"poi_getUserLocation\" title=\"Center On Your Current Position\"><img src=\"../sobekcm/default/images/mapper/getUserLocation.png\" /></a> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                                <a id=\"toolbox_poiMarker\" href=\"#\" title=\"Marker: Place a Point\"><img src=\"../sobekcm/default/images/mapper/button-drawMarker.png\"/></a>  ");
+            //mapperBuilder.AppendLine("                                <a id=\"toolbox_poiCircle\" href=\"#\" title=\"Circle: Place a Circle\"><img src=\"../sobekcm/default/images/mapper/button-drawCircle.png\"/></a>  ");
+            //mapperBuilder.AppendLine("                                <a id=\"toolbox_poiRectangle\" href=\"#\" title=\"Rectangle: Place a Rectangle\"><img src=\"../sobekcm/default/images/mapper/button-drawRectangle.png\"/></a>  ");
+            //mapperBuilder.AppendLine("                                <a id=\"toolbox_poiPolygon\" href=\"#\" title=\"Polygon: Place a Polygon\"><img src=\"../sobekcm/default/images/mapper/button-drawPolygon.png\"/></a>  ");
+            //mapperBuilder.AppendLine("                                <a id=\"toolbox_poiLine\" href=\"#\" title=\"Line: Place a Line\"><img src=\"../sobekcm/default/images/mapper/button-drawLine.png\"/></a>  ");
+            //mapperBuilder.AppendLine("                            <br/> ");
+            //mapperBuilder.AppendLine("                            <div style=\"clear:both;text-align:left;\"> ");
+            //mapperBuilder.AppendLine("                                <br /> ");
+            //mapperBuilder.AppendLine("                     ");
+            //mapperBuilder.AppendLine("                                <div id=\"poiList_Container\"> ");
+            //mapperBuilder.AppendLine("                                    <div id=\"poiList_ScollContainer\"> ");
+            //mapperBuilder.AppendLine("                                        <div id=\"poiList\"></div> ");
+            //mapperBuilder.AppendLine("                                    </div> ");
+            //mapperBuilder.AppendLine("                                </div> ");
+            //mapperBuilder.AppendLine("                              ");
+            //mapperBuilder.AppendLine("                                <br /> ");
+            //mapperBuilder.AppendLine("                            </div> ");
+            //mapperBuilder.AppendLine("                            <div style=\"clear:both;\"> ");
+            //mapperBuilder.AppendLine("                                <a href=\"#\" id=\"savePOI\" title=\"Save Point Of Interest Set\" onclick=\"buttonSavePOI();\" class=\"button2\">Save POI(s)</a> ");
+            //mapperBuilder.AppendLine("                                <a href=\"#\" id=\"clearPOI\" title=\"Clear Point Of Interest Set\" onclick=\"buttonClearPOI();\" class=\"button2\">Clear POI(s)</a> ");
+            //mapperBuilder.AppendLine("                            </div> ");
+            //mapperBuilder.AppendLine("                        </div> ");
+            //mapperBuilder.AppendLine("                    </div> ");
+            //mapperBuilder.AppendLine("                </div> ");
+            //mapperBuilder.AppendLine("            </div> ");
+            //mapperBuilder.AppendLine("            <!-- ");
+            //mapperBuilder.AppendLine("                <div id=\"debugger\" style=\"width:300px;position:absolute;left:50%;margin-top:940px;margin-left:-150px;min-height:50px;opacity:0.6;z-index:100000;background-color:lightskyblue;\">Debugger:<a style=\"float:right;\" onclick=\"hide('#debugger');\">X</a></div> ");
+            //mapperBuilder.AppendLine("            --> ");
+            //mapperBuilder.AppendLine("                <div id=\"googleMap\"></div> ");
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine("        </div> ");
+            //mapperBuilder.AppendLine("    </div> ");
 
 
-            responseBuilder.AppendLine("</td>");
+            #endregion
+            
+
+            mapperBuilder.AppendLine("</td>");
 
             // Add the literal to the placeholder
             Literal placeHolderText = new Literal();
-            placeHolderText.Text = responseBuilder.ToString();
+            placeHolderText.Text = mapperBuilder.ToString();
             placeHolder.Controls.Add(placeHolderText);
             
         }
