@@ -1,4 +1,10 @@
 ﻿
+//temp js (fixes temporary padding issue)
+document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
+document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
+
+
+
 var collectionTypeToLoad = "stAugustine";        //define collection settings to load
 setupInterface(collectionTypeToLoad);            //start the whole thing
 
@@ -1717,6 +1723,8 @@ function initialize() {
 
     //#endregion
 
+    $("#footer_item_wrapper").remove();
+    
 }                         //on page load functions (mainly google map event listeners)
 
 //create custom overlay functions (these must stay here after map has been initialized)
