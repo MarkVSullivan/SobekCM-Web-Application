@@ -3,8 +3,6 @@
 document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
 document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
 
-
-
 var collectionTypeToLoad = "stAugustine";        //define collection settings to load
 setupInterface(collectionTypeToLoad);            //start the whole thing
 
