@@ -91,7 +91,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             StringBuilder responseBuilder = new StringBuilder();
             responseBuilder.AppendLine("<td>");
 
-            responseBuilder.AppendLine("THIS IS WHERE EVERYTHING WILL GO");
+            responseBuilder.AppendLine("Hello World!");
 
 
             responseBuilder.AppendLine("</td>");
