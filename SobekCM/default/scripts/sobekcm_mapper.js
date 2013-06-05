@@ -1,9 +1,8 @@
-﻿
-//temp js (fixes temporary padding issue)
+﻿//temp js (fixes temporary padding issue)
 document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
 document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
 
-var collectionTypeToLoad = "stAugustine";        //define collection settings to load
+var collectionTypeToLoad = "default";        //define collection settings to load
 setupInterface(collectionTypeToLoad);            //start the whole thing
 
 //#region Declarations
@@ -809,6 +808,9 @@ function useSearchAsItemLocation() {
 
 }            //assign search location pin to item location
 function setupInterface(collection) {
+    
+    //displayIncomingOverlays();
+
     switch (collection) {
 
         case "default":
@@ -864,6 +866,17 @@ function setupInterface(collection) {
             break;
     }
 }           //setup everything
+
+
+var incomingOverlayBounds = [];
+var incomingOverlaySourceURL = [];
+var incomingOverlayRotation = [];
+var overlays = [];
+function displayIncomingOverlays() {
+    for (var i = 0; i < incomingOverlayBounds.length; i++) {
+        createOverlay2(incomingOverlayBounds[i]);
+    }
+}
 
 //#endregion
 
@@ -1722,6 +1735,7 @@ function initialize() {
     //#endregion
 
     $("#footer_item_wrapper").remove();
+    initOverlays(); //initialize all the incoming overlays
     
 }                         //on page load functions (mainly google map event listeners)
 
@@ -1737,7 +1751,6 @@ function createOverlay(withBounds) {
     } else {                                                                                    //if it IS a new overlay
         overlay = new CustomOverlay(overlayBounds, overlaySourceURL, map, 0);                   //create the overlay
     }
-
     overlayCurrent = overlay;                                                                   //set overlay cyrrent to overlay
     overlayCurrent.setMap(map);                                                                 //display overlay current on the map
 
@@ -1824,6 +1837,17 @@ CustomOverlay.prototype.onRemove = function () {
     this.div_ = null;
     
 };
+
+var overlaysOnMap = [];
+var oomCount = 0;
+function createOverlay2(withBounds) {
+    //called from rectangle drawing manager
+    var overlaySourceURL = incomingOverlaySourceURL[oomCount];
+    var overlayBounds = withBounds;
+    overlaysOnMap[oomCount] = new CustomOverlay(overlayBounds, overlaySourceURL, map, 0);
+    overlaysOnMap[oomCount].setMap(map);
+    oomCount++;
+}
 
 //start this whole mess once the google map is loaded
 google.maps.event.addDomListener(window, 'load', initialize);
