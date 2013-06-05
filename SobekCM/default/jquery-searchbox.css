@@ -1,0 +1,65 @@
+#os-bar {
+    height: 30px;
+    padding: 5px;
+	-moz-box-shadow: 0 -1px 0 #b9b9b9;
+    -webkit-box-shadow: 0 -1px 0 #b9b9b9;
+	box-shadow: 0 -1px 0 #b9b9b9;
+    }
+    #os-bar .search-os {
+        background: #fff;
+        padding: 2px;
+        float: right;
+        width: 200px;
+        height: 25px;
+        -moz-border-radius: 14px;
+        -webkit-border-radius: 14px;
+        border-radius: 14px;
+        -moz-box-shadow: inset 2px 2px 3px #cacaca, 0 1px 0 #dbdbdb;
+        -webkit-box-shadow: 0 1px 0 #dbdbdb;
+        box-shadow: inset 2px 2px 3px #cacaca, 0 1px 0 #dbdbdb;
+        }
+        .search-os input.search-input {
+            color: #5b5b5b;
+            float: left;
+            width: 150px;
+            border: 0;
+            padding: 5px 8px 4px 0;
+            background: transparent;
+            outline: none;
+            }
+            .active-os input.search-input {
+                color: #000;
+                }
+        .search-os input.search-reset {
+            display: none;
+            float: left;
+            width: 14px;
+            height: 14px;
+            background: url("/images/icons-os.png") -14px -14px;
+            border: 0;
+            margin: 6px 0 5px 0;
+            padding: 0;
+            cursor: pointer;
+            }
+            .search-os input.search-reset:hover {
+                background-position: -14px 0;
+                }
+        .search-os input.search-submit {
+            float: left;
+            width: 14px;
+            height: 14px;
+            background: url("/images/icons-os.png") 0 -14px;
+            border: 0;
+            padding: 0;
+            margin: 6px 4px 5px 8px;
+            }
+            .active-os input.search-submit {
+                cursor: pointer;
+                }
+                .active-os input.search-submit:hover {
+                    background-position: 0 0;
+                    }
+        .infocus-os {
+            -moz-box-shadow: inset 2px 2px 3px #cacaca, 0 1px 0 #bdd7ee, 0 0 2px 1px #2b7cff; 
+            }
+            
