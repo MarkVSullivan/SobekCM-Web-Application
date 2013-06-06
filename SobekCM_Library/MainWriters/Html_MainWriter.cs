@@ -242,6 +242,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Add_Text_To_Page( TextWriter Output,  Custom_Tracer Tracer)
         {
+
             // Always add the link to the main, small SobekCM.js
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
 
