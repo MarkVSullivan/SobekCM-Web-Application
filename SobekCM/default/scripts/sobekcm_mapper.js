@@ -2,8 +2,8 @@
 document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
 document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
 
-var collectionTypeToLoad = "default";        //define collection settings to load
-setupInterface(collectionTypeToLoad);            //start the whole thing
+var collectionTypeToLoad = "default";               //define collection settings to load
+setupInterface(collectionTypeToLoad);               //start the whole thing
 
 //#region Declarations
 
@@ -12,6 +12,9 @@ setupInterface(collectionTypeToLoad);            //start the whole thing
 var inputOverlaySourceURL = "http://ufdcimages.uflib.ufl.edu/US/AC/H0/00/04/00002/00001.jpg";
 
 //global static defines (do not change)
+var overlaysOnMap = []; //holds all overlays
+var oomCount = 0;       //counts how many overlays are on the map
+var efun1 = 0;          //used to track freeze
 var searchCount = 0;    //interates how many searches
 var degree = 0;         //initializing degree
 var firstMarker = 0;    //used to iterate if marker placement was the first (to prevent duplicates)
@@ -41,9 +44,11 @@ var overlayCurrent;     //used in custom overlay tracking
 var getCoord;           //used to store coords from marker
 var itemMarker;         //hold current item marker
 var CustomOverlay;      //does nothing
+var cCoordsFrozen = "no";                                //used to freeze/unfreeze coordinate viewer
 CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
 
 //global dynamic defines (do not define here)
+
 var mapCenter;                                                          //used to center map on load
 var mapControlsOnMap;                                                   //by default, are map controls displayed (true/false)
 var defaultDisplayDrawingMangerTool;                                    //by default, is the drawingmanger displayed (true/false)
@@ -644,26 +649,8 @@ function testBounds() {
         mapInBounds = "yes";
     } else {
         mapInBounds = "no";
-        map.setCenter(mapCenter); //recenter
+        map.panTo(mapCenter); //recenter
         displayMessage(L5);
-    }
-    if (movedBy != 0) {
-        //not used
-        if (movedBy == -100) {
-            if (document.getElementById("tmin") != null) {
-                google.maps.event.addDomListener(document.getElementById("tmin"), 'click', function () {
-                    if (document.getElementById("tclose") != null) {
-                        google.maps.event.addDomListener(document.getElementById("tclose"), 'click', function () {
-                            if (document.getElementById("tmax") != null) {
-                                google.maps.event.addDomListener(document.getElementById("tmax"), 'click', function () {
-                                    displayMessage("Matt Rocks!"); //yep
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        }
     }
 }                         //test the map bounds
 function finder(stuff) {
@@ -822,8 +809,8 @@ function setupInterface(collection) {
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
             kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
-            defaultZoomLevel = 14;                                                  //zoom level, starting
-            maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+            defaultZoomLevel = 13;                                                  //zoom level, starting
+            maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
             minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
             minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
@@ -832,9 +819,9 @@ function setupInterface(collection) {
             preservedRotation = 0;                                                  //rotation, default
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                new google.maps.LatLng(29.78225755812941, -81.4306640625),
-                new google.maps.LatLng(29.99181288866604, -81.1917114257)
+            var strictBounds = new google.maps.LatLngBounds(                        //set the bounds for this google map instance
+                new google.maps.LatLng(85, -180),                                   // top left corner of map of world
+                new google.maps.LatLng(-85, 180)                                    // bottom right corner
             );
             break;
         case "stAugustine":
@@ -862,11 +849,31 @@ function setupInterface(collection) {
             );
             break;
         case "custom":
-            alert("Not Implemented Yet!");
+            mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
+            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            defaultDsiplayCursorLatLongTool = true;                                 //by default, is the cursor lat/long tool displayed (true/false)
+            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
+            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            defaultZoomLevel = 13;                                                  //zoom level, starting
+            maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            preservedRotation = 0;                                                  //rotation, default
+            knobRotationValue = 0;                                                  //rotation to display by default 
+            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+                new google.maps.LatLng(29.21570636285318, -82.87811279296875),
+                new google.maps.LatLng(30.07978967039041, -81.76300048828125)
+            );
             break;
     }
 }           //setup everything
-
 
 var incomingOverlayBounds = [];
 var incomingOverlaySourceURL = [];
@@ -874,8 +881,10 @@ var incomingOverlayRotation = [];
 var overlays = [];
 function displayIncomingOverlays() {
     for (var i = 0; i < incomingOverlayBounds.length; i++) {
-        createOverlay2(incomingOverlayBounds[i]);
-    }
+        overlaysOnMap[oomCount] = new CustomOverlay(incomingOverlayBounds[i], incomingOverlaySourceURL[i], map, incomingOverlaySourceURL[i]);
+        overlaysOnMap[oomCount].setMap(map);
+        oomCount++;
+   }
 }
 
 //#endregion
@@ -1705,25 +1714,28 @@ function initialize() {
     google.maps.event.addListener(map, 'rightclick', function () {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
     });                                           //on right click stop drawing thing
-    
     google.maps.event.addDomListener(map, 'mousemove', function (point) {
-        //cCoord.innerHTML = point.latLng.toString(); //directly inject into page
-        var str = point.latLng.toString();
-        var cLatV = str.replace("(", "").replace(")", "").split(",", 1);
-        var cLongV = str.replace(cLatV, "").replace("(", "").replace(")", "").replace(",", ""); //is this better than passing into array?s
-        if (cLatV.indexOf("-") != 0) {
-            latH = "N";
-        } else {
-            latH = "S";
-        }
-        if (cLongV.indexOf("-") != 0) {
-            longH = "W";
-        } else {
-            longH = "E";
-        }
 
-        cLat.innerHTML = cLatV + " (" + latH + ")";
-        cLong.innerHTML = cLongV + " (" + longH + ")";
+        if (cCoordsFrozen == "no") {
+            //cCoord.innerHTML = point.latLng.toString(); //directly inject into page
+            var str = point.latLng.toString();
+            var cLatV = str.replace("(", "").replace(")", "").split(",", 1);
+            var cLongV = str.replace(cLatV, "").replace("(", "").replace(")", "").replace(",", ""); //is this better than passing into array?s
+            if (cLatV.indexOf("-") != 0) {
+                latH = "N";
+            } else {
+                latH = "S";
+            }
+            if (cLongV.indexOf("-") != 0) {
+                longH = "W";
+            } else {
+                longH = "E";
+            }
+
+            cLat.innerHTML = cLatV + " (" + latH + ")";
+            cLong.innerHTML = cLongV + " (" + longH + ")";
+        }
+        
     });                                    //used to display cursor location via lat/long
     google.maps.event.addListener(map, 'dragend', function () {
         testBounds();
@@ -1736,6 +1748,51 @@ function initialize() {
 
     $("#footer_item_wrapper").remove();
     initOverlays(); //initialize all the incoming overlays
+    
+    //keypress shortcuts/actions
+    window.onkeypress = keypress;
+    function keypress(e) {
+        var keycode = null;
+        if (window.event) {
+            keycode = window.event.keyCode;
+        } else if (e) {
+            keycode = e.which;
+        }
+        switch (keycode) {
+            case 122: //z
+                if (navigator.appName == "Microsoft Internet Explorer") {
+                    var copyString = cLat.innerHTML;
+                    copyString += ", " + cLong.innerHTML;
+                    window.clipboardData.setData("Text", copyString);
+                    displayMessage("Coordinates Copied To Clipboard");
+                } else {
+                    if (cCoordsFrozen == "no") {
+                        //freeze
+                        cCoordsFrozen = "yes";
+                        displayMessage("Coordinates Viewer Frozen");
+                        
+                        efun1++;
+                        switch (efun1) {
+                            case 20:
+                                displayMessage("I'm getting cold...");
+                                break;
+                            case 40:
+                                displayMessage("I'm nearly frozen...");
+                                break;
+                            case 60:
+                                displayMessage("I'm frostbitten, goodnight Zzz...");
+                                break;
+                        }
+                        
+                    } else {
+                        //unfreeze
+                        cCoordsFrozen = "no";
+                        displayMessage("Coordinates Viewer UnFrozen");
+                    }  
+                }
+            break;
+        }
+    }
     
 }                         //on page load functions (mainly google map event listeners)
 
@@ -1837,17 +1894,6 @@ CustomOverlay.prototype.onRemove = function () {
     this.div_ = null;
     
 };
-
-var overlaysOnMap = [];
-var oomCount = 0;
-function createOverlay2(withBounds) {
-    //called from rectangle drawing manager
-    var overlaySourceURL = incomingOverlaySourceURL[oomCount];
-    var overlayBounds = withBounds;
-    overlaysOnMap[oomCount] = new CustomOverlay(overlayBounds, overlaySourceURL, map, 0);
-    overlaysOnMap[oomCount].setMap(map);
-    oomCount++;
-}
 
 //start this whole mess once the google map is loaded
 google.maps.event.addDomListener(window, 'load', initialize);
