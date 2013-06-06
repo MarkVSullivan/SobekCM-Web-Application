@@ -298,8 +298,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 mapperBuilder.AppendLine("   }");
-                mapperBuilder.AppendLine("</script>");
+                mapperBuilder.AppendLine("");
                 mapperBuilder.AppendLine("<!-- End Geo Objects Writer -->");
+                mapperBuilder.AppendLine("");
+                mapperBuilder.AppendLine("var baseURL = \"" + CurrentMode.Base_URL+"\";");
+                mapperBuilder.AppendLine("</script>");
                 mapperBuilder.AppendLine("");
                 
             }
