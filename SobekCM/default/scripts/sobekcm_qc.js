@@ -828,7 +828,6 @@ function qc_auto_save()
 					success: function(data)
 					{
 						  var currdate = new Date();
-						//  var currenttime = currdate.getHours()+":"+currdate.getMinutes()+":"+currdate.getSeconds();
 						  var hours = currdate.getHours();
 						  var minutes = currdate.getMinutes();
 						  var ampm = hours >= 12 ? 'PM' : 'AM';
