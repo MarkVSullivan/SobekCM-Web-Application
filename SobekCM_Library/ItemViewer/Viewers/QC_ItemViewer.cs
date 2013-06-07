@@ -1370,7 +1370,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string displayTimeText = (timeSaved==null) ? String.Empty : "Last saved at " + timeSaved.ToString();
 
             builder.AppendLine("<tr><td colspan = \"100%\" style=\"float:left\"");
-            builder.AppendLine("<span id=\"displayTimeSaved\">" + displayTimeText + "</span>");
+            builder.AppendLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span>");
             builder.AppendLine("</td></tr>");
 
 			//Add the Complete and Cancel buttons at the end of the form

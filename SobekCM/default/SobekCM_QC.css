@@ -61,6 +61,7 @@
 .qcDivMoveOnScroll {position: fixed; bottom: 3px; right: 0.1%;visibility: visible; }
 .qcDivMoveOnScrollHidden{ position: fixed;bottom: 3px;right: 0.1%;visibility: hidden;}
 
+.displayTimeSaved{ color: #555555;font-size: 9pt;}
 
 .popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
