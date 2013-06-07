@@ -602,7 +602,7 @@ $('body').addClass('qcMovePagesCursor');
 
 function DeletePages(MaxPageCount)
 {
-
+//Change the mouse cursor, unhide all the checkboxes
 
 }
 
@@ -827,8 +827,20 @@ function qc_auto_save()
 					async: true,
 					success: function(data)
 					{
+						  var currdate = new Date();
+						//  var currenttime = currdate.getHours()+":"+currdate.getMinutes()+":"+currdate.getSeconds();
+						  var hours = currdate.getHours();
+						  var minutes = currdate.getMinutes();
+						  var ampm = hours >= 12 ? 'PM' : 'AM';
+						  hours = hours%12;
+						  hours = hours?hours:12;
+						  hours = hours<10?'0'+hours:hours;
+						  minutes=minutes<10?'0'+minutes:minutes;
+						  var time = hours+":"+minutes+' '+ampm;
 						  
-	//						alert('Autosaving...');
+                          var timeToDisplay = "Last saved at "+time;
+						$("#displayTimeSaved").text(timeToDisplay);
+							
 							return false;
 		 
 					}// end successful POST function
@@ -1030,3 +1042,11 @@ function ImageDeleteClicked(filename) {
     return false;
 }
 
+
+
+ 
+                
+
+
+
+ 

@@ -184,11 +184,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else if (hidden_request == "save")
 			{
+                ////Save the current time
+                HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
+
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
 				Save_From_Form_Request_To_Item( String.Empty, String.Empty );
 
-				// Save this updated information in the temporary folder's METS file for reading
+                // Save this updated information in the temporary folder's METS file for reading
 				// later if necessary.
 
 				string url_redirect = HttpContext.Current.Request.Url.ToString();
@@ -802,7 +805,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Get the icons for the thumbnail sizes
 			string image_location = CurrentMode.Default_Images_URL;
 
-
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></li>");
             builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:DeletePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;left\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
@@ -1078,7 +1080,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				page = (ushort)((qc_item.Web.Static_PageCount - 1) / images_per_page);
 
 			//Outer div which contains all the thumbnails
-			builder.AppendLine("<div id=\"allThumbnailsOuterDiv1\" align=\"center\" style=\"margin:5px;\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
+			builder.AppendLine("<div id=\"allThumbnailsOuterDiv1\" align=\"center\" style=\"margin:5px;\" class=\"qcContainerDivClass\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
 
 			List<abstract_TreeNode> static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
 			// Step through each page in the item
@@ -1363,6 +1365,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//If the autosave option is not set, or set to true, set the interval (3 minutes) for autosaving
 			if(String.IsNullOrEmpty(autosave_option.ToString()) || autosave_option)
 			  builder.AppendLine("<script type=\"text/javascript\">setInterval(qc_auto_save, 180* 1000);</script>");
+
+            //Display the time the form was last saved
+            object timeSaved = HttpContext.Current.Session["QC_timeUpdated"];
+            string displayTimeText = (timeSaved==null) ? String.Empty : "Last saved at " + timeSaved.ToString();
+
+            builder.AppendLine("<tr><td colspan = \"100%\" style=\"float:left\"");
+            builder.AppendLine("<span id=\"displayTimeSaved\">" + displayTimeText + "</span>");
+            builder.AppendLine("</td></tr>");
 
 			//Add the Complete and Cancel buttons at the end of the form
 			builder.AppendLine("</tr><tr><td colspan=\"100%\" style=\"float:right\">");
