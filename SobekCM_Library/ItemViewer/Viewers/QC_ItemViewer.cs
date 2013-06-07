@@ -1393,8 +1393,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-
-
 				// Build the value
 				StringBuilder navRowBuilder = new StringBuilder(5000);
 
