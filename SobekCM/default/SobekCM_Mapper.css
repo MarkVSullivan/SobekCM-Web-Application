@@ -17,8 +17,11 @@ body {
     height:100%;
     width:100%;
     position:absolute;
+} 
 
-    } 
+#container1 {
+
+}
 
 h3 {
 	font-family:'Arial Black', Gadget, sans-serif;
@@ -77,7 +80,8 @@ a img {
 
 #toolbar{
 	position:absolute;
-	left:50%;
+	left: 50%;
+    width: 1190px;
 	margin-left:-545px;
 }
 

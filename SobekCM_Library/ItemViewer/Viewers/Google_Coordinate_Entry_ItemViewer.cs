@@ -5,13 +5,41 @@ using System.Text;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Web.UI;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
+using SobekCM.Library.ItemViewer.Viewers;
+using SobekCM.Library.Navigation;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Class to allow a user to add coordinate information to 
     /// a digital resource ( map coverage, points of interest, etc.. ) </summary>
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <see cref="iItemViewer" /> interface. </remarks>
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
+
+        private bool googleItemSearch;
+        private StringBuilder mapBuilder;
+        private List<string> matchingTilesList;
+        private double providedMaxLat;
+        private double providedMaxLong;
+        private double providedMinLat;
+        private double providedMinLong;
+        private bool validCoordinateSearchFound;
+
+        List<Coordinate_Polygon> allPolygons;
+        List<Coordinate_Point> allPoints;
+        List<Coordinate_Line> allLines;
+
         /// <summary> Constructor for a new instance of the Google_Coordinate_Entry_ItemViewer class </summary>
         public Google_Coordinate_Entry_ItemViewer()
         {
@@ -99,7 +127,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
             mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/>");
             mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper.css\"/>");
-           
+
             //keep in here for testing
             //string mapperHTMLFile = @""+ CurrentMode.Base_URL + "default/mapper.txt";
             //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapper.txt");
@@ -119,9 +147,170 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-infobox.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
+            
+            //add geo objects 
+            mapperBuilder.AppendLine("");
+            mapperBuilder.AppendLine("<!-- Begin Geo Objects Writer -->");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\">");
+            mapperBuilder.AppendLine("   var incomingOverlayBounds = [];");    //may not need to declare
+            mapperBuilder.AppendLine("   var incomingOverlaySourceURL = [];"); //may not need to declare
+            mapperBuilder.AppendLine("   var incomingOverlayRotation = [];");  //may not need to declare
+            mapperBuilder.AppendLine("   function initOverlays(){");   
+            
+            mapBuilder = new StringBuilder();
+
+            // Keep track of any matching tiles
+            matchingTilesList = new List<string>();
+
+            // Add the points
+            if (CurrentItem != null)
+            {
+                allPolygons = new List<Coordinate_Polygon>();
+                allPoints = new List<Coordinate_Point>();
+                allLines = new List<Coordinate_Line>();
+
+                     // Collect all the polygons, points, and lines
+                GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                if ((geoInfo != null) && (geoInfo.hasData))
+                {
+                    if (geoInfo.Polygon_Count > 0)
+                    {
+                        foreach (Coordinate_Polygon thisPolygon in geoInfo.Polygons)
+                            allPolygons.Add(thisPolygon);
+                    }
+                    if (geoInfo.Line_Count > 0)
+                    {
+                        foreach (Coordinate_Line thisLine in geoInfo.Lines)
+                            allLines.Add(thisLine);
+                    }
+                    if (geoInfo.Point_Count > 0)
+                    {
+                        foreach (Coordinate_Point thisPoint in geoInfo.Points)
+                            allPoints.Add(thisPoint);
+                    }
+                }
+                List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
+                for (int i = 0; i < pages.Count; i++)
+                {
+                    abstract_TreeNode pageNode = pages[i];
+                    GeoSpatial_Information geoInfo2 = pageNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                    if ((geoInfo2 != null) && (geoInfo2.hasData))
+                    {
+                        if (geoInfo2.Polygon_Count > 0)
+                        {
+                            foreach (Coordinate_Polygon thisPolygon in geoInfo2.Polygons)
+                            {
+                                thisPolygon.Page_Sequence = (ushort)(i + 1);
+                                allPolygons.Add(thisPolygon);
+                            }
+                        }
+                        if (geoInfo2.Line_Count > 0)
+                        {
+                            foreach (Coordinate_Line thisLine in geoInfo2.Lines)
+                            {
+                                allLines.Add(thisLine);
+                            }
+                        }
+                        if (geoInfo2.Point_Count > 0)
+                        {
+                            foreach (Coordinate_Point thisPoint in geoInfo2.Points)
+                            {
+                                allPoints.Add(thisPoint);
+                            }
+                        }
+                    }
+                }
+
+                // Add all the polygons now
+                string[] polygonBounds = new string[60]; //2do chage to list
+                string[] polygonURL = new string[60]; //2do change to list
+                int[] polygonRotation = new int[60]; //2do change to list
+                int it = 0;
+                if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
+                {
+                    // Add each polygon 
+                    foreach (Coordinate_Polygon itemPolygon in allPolygons)
+                    {
+                        //get and set the bounds
+                        string bounds = "new google.maps.LatLngBounds( ";
+                        int localit = 0;
+                        string bounds1 = "new google.maps.LatLng";
+                        string bounds2 = "new google.maps.LatLng";
+                        foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                        {
+                            if (localit == 0)
+                            {
+                                bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                            }
+                            if(localit == 2)
+                            {
+                                bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                            }
+                            localit++;
+                            
+                        }
+                        bounds += bounds2 + ", " + bounds1;
+                        bounds += ")";
+                        polygonBounds[it] = bounds;
+                        mapperBuilder.AppendLine("      incomingOverlayBounds[" + it + "] = " + bounds + ";");
+                        
+                        //get the image url
+                        List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                        string first_page_jpeg = String.Empty;
+                        foreach (SobekCM_File_Info thisFile in first_page_files)
+                        {
+                            if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                            {
+                                first_page_jpeg = thisFile.System_Name;
+                                break;
+                            }
+                        }
+                        string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                        polygonURL[it] = first_page_complete_url;
+                        mapperBuilder.AppendLine("      incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
+
+                        //get and set the rotation value
+                        polygonRotation[it] = 0;
+                        mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
+
+                        //iterate
+                        it++;
+
+                    }
+                    mapperBuilder.AppendLine("");
+                    mapperBuilder.AppendLine("      displayIncomingOverlays();");
+                    mapperBuilder.AppendLine("");
+                }
+
+                // Draw all the single points 
+                if (allPoints.Count > 0)
+                {
+                    //add each point
+                    for (int point = 0; point < allPoints.Count; point++)
+                    {
+                        //not yet completed
+                        mapperBuilder.AppendLine("      <!-- point holder: " + allPoints[point].Latitude + ", " + allPoints[point].Longitude + ", " + allPoints[point].Label + " -->");
+                    }
+                    mapperBuilder.AppendLine("");
+                    //mapperBuilder.AppendLine("      displayIncomingPoints();");
+                    mapperBuilder.AppendLine("");
+                }
+
+                mapperBuilder.AppendLine("   }");
+                mapperBuilder.AppendLine("");
+                mapperBuilder.AppendLine("<!-- End Geo Objects Writer -->");
+                mapperBuilder.AppendLine("");
+                mapperBuilder.AppendLine("var baseURL = \"" + CurrentMode.Base_URL+"\";");
+                mapperBuilder.AppendLine("</script>");
+                mapperBuilder.AppendLine("");
+                
+            }
+
+            //more js (must load after first
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_mapper.js\"></script>");                                       //custom script
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-markerwithlabel-1.8.1.min.js\"></script>");               //must load after custom
-
+            
             //html goodies
             mapperBuilder.AppendLine(" <div id=\"mapper_container_thebigdeal\">  ");
             mapperBuilder.AppendLine("     <div id=\"container1\"> ");
