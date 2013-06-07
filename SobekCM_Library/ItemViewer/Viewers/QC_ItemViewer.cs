@@ -193,7 +193,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Save this updated information in the temporary folder's METS file for reading
 				// later if necessary.
-
 				string url_redirect = HttpContext.Current.Request.Url.ToString();
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
