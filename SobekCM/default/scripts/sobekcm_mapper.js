@@ -1,4 +1,29 @@
-﻿//temp js (fixes temporary padding issue)
+﻿
+var customIndex4 = 10;
+function getCustomIndex() {
+    customIndex4++;
+    return customIndex4;
+}
+
+function displayOverlayRectangle(index) {
+
+    //var index = overlaysOnMap.indexOf(this);
+    displayMessage(index);
+
+    alert("index: " + index);
+
+    var customIndex5 = getCustomIndex();
+    incomingOverlayRectangle[customIndex5].setMap(map);
+
+    alert("set to map");
+    alert("or.l: " + incomingOverlayRectangle.length);
+    alert("or.b: " + incomingOverlayRectangle[index].getBounds());
+    alert("index: " + index);
+
+}
+
+
+//temp js (fixes temporary padding issue)
 document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
 document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
 
@@ -12,6 +37,11 @@ setupInterface(collectionTypeToLoad);               //start the whole thing
 var inputOverlaySourceURL = "http://ufdcimages.uflib.ufl.edu/US/AC/H0/00/04/00002/00001.jpg";
 
 //global static defines (do not change)
+var prevOverlayRectangle = null;
+var curOverlayRectangle = null;
+//var currentOverlayIndex = 0;
+//var overlayRectangleOBJ = new google.maps.Rectangle(); //init new rect
+var overlayRectangle = [];
 var overlaysOnMap = []; //holds all overlays
 var oomCount = 0;       //counts how many overlays are on the map
 var efun1 = 0;          //used to track freeze
@@ -602,13 +632,12 @@ function rotate(degreeIn) {
 }                     //variable rotation fcn
 function hide(what) {
     $(what).hide();
-
 }                           //hide somethign using jquery
 function show(what) {
     $(what).show();
 }                           //display something using jquery
 function d(message) {
-    document.getElementById("debugger").innerHTML += ">" + message + "<br />";
+    document.getElementById("debugger").innerHTML += "-- " + message + "<br />";
 }                           //debugger tool
 function polygonCenter(poly) {
     var lowx,
@@ -867,16 +896,34 @@ var incomingOverlayRotation = [];
 var overlays = [];
 function displayIncomingOverlays() {
     for (var i = 0; i < incomingOverlayBounds.length; i++) {
-        overlaysOnMap[overlayCount] = new CustomOverlay(incomingOverlayBounds[i], incomingOverlaySourceURL[i], map, incomingOverlaySourceURL[i]);
-        overlaysOnMap[overlayCount].setMap(map);
-        
-        //google.maps.event.addDomListener(document.getElementById("overlay"+overlayCount), 'click', function () {
-        //    alert(overlayCount);
-        //});
-        
-        overlayCount++;
+        overlaysOnMap[i] = new CustomOverlay(incomingOverlayBounds[i], incomingOverlaySourceURL[i], map, incomingOverlaySourceURL[i]);
+        overlaysOnMap[i].setMap(map);
+        //alert(i);
+        //addL(i);
    }
 }
+
+function addIncomingOverlayListeners() {
+    for (var i = 0; i < incomingOverlayRectangle.length; i++) {
+        addL(i);
+    }
+}
+//var ro1 = { map: map };
+function addL(i) {
+    var me = i;
+    google.maps.event.addDomListener(document.getElementById("overlay" + me), 'click', function () {
+        displayMessage("index: " + me);
+        incomingOverlayRectangle[me].setMap(map);
+        alert("done");
+
+        //alert("hit");
+        //alert("index1: " + i);
+        //incomingOverlayRectangle[i].setMap(map);
+        ////displayOverlayRectangle(currentOverlayIndex);
+        //alert("fcn callback");
+    });
+}
+
 
 //#endregion
 
@@ -934,7 +981,8 @@ function initialize() {
         testBounds();
     });
     google.maps.event.addDomListener(document.getElementById("toolbar_panReset"), 'click', function () {
-        map.panTo(mapCenter);
+        //map.panTo(mapCenter);
+        addIncomingOverlayListeners();
     });
     google.maps.event.addDomListener(document.getElementById("toolbox_panUp"), 'click', function () {
         map.panBy(0, -100);
@@ -1478,13 +1526,6 @@ function initialize() {
                     }
                 }
             }
-            if (placerType == "overlay") {
-                for (var i = 0; i < overlaysOnMap.length; i++) {
-                    if (overlaysOnMap[i] == this) {
-                        alert(i);
-                    }
-                }
-            }
         });
         
     });
@@ -1801,6 +1842,9 @@ function createOverlay(withBounds) {
 }
 function CustomOverlay(bounds, image, map, rotation) {
 
+    //iterate here
+    overlayCount++;
+    
     // Now initialize all properties.
     this.bounds_ = bounds;
     this.image_ = image;
@@ -1819,6 +1863,64 @@ function CustomOverlay(bounds, image, map, rotation) {
 }
 CustomOverlay.prototype.onAdd = function () {
 
+    //for (var i = 0; i < incomingOverlayBounds.length; i++) {
+
+    //    //iterate here
+    //    overlayCount++;
+
+    //    // Create the DIV and set some basic attributes.
+    //    var div = document.createElement('div');
+    //    div.id = 'overlay' + overlayCount; //change
+    //    div.style.borderStyle = 'none';
+    //    div.style.borderWidth = '0px';
+    //    div.style.position = 'absolute';
+    //    div.style.opacity = preserveOpacity;
+
+    //    alert(div.id);
+
+    //    // Create an IMG element and attach it to the DIV.
+    //    var img = document.createElement('img');
+    //    img.src = this.image_;
+    //    img.style.width = '100%';
+    //    img.style.height = '100%';
+    //    img.style.position = 'absolute';
+    //    div.appendChild(img);
+
+    //    // Set the overlay's div_ property to this DIV
+    //    this.div_ = div;
+
+    //    // We add an overlay to a map via one of the map's panes.
+    //    // We'll add this overlay to the overlayLayer pane.
+    //    var panes = this.getPanes();
+    //    panes.overlayLayer.appendChild(div);
+
+    //    CustomOverlay.prototype.draw = function () {
+
+    //        // Size and position the overlay. We use a southwest and northeast
+    //        // position of the overlay to peg it to the correct position and size.
+    //        // We need to retrieve the projection from this overlay to do this.
+    //        var overlayProjection = this.getProjection();
+
+    //        // Retrieve the southwest and northeast coordinates of this overlay
+    //        // in latlngs and convert them to pixels coordinates.
+    //        // We'll use these coordinates to resize the DIV.
+    //        var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+    //        var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+
+    //        // Resize the image's DIV to fit the indicated dimensions.
+    //        var div = this.div_;
+    //        div.style.left = sw.x + 'px';
+    //        div.style.top = ne.y + 'px';
+    //        div.style.width = (ne.x - sw.x) + 'px';
+    //        div.style.height = (sw.y - ne.y) + 'px';
+
+    //        //for a preserved rotation
+    //        if (preservedRotation != 0) {
+    //            keepRotate(preservedRotation);
+    //        }
+    //    };
+    //}
+
     if (overlayPrevious != null) {
         overlayPrevious.setMap(null);
     }
@@ -1828,8 +1930,8 @@ CustomOverlay.prototype.onAdd = function () {
     // the overlay to the map via the DOM.
 
     // Create the DIV and set some basic attributes.
-    var div = document.createElement('div');
-    div.id = 'overlay' + overlayCount; //change
+    var div = document.createElement("div");
+    div.id = "overlay" + overlaysOnMap.indexOf(this);
     div.style.borderStyle = 'none';
     div.style.borderWidth = '0px';
     div.style.position = 'absolute';
@@ -1837,11 +1939,14 @@ CustomOverlay.prototype.onAdd = function () {
 
     // Create an IMG element and attach it to the DIV.
     var img = document.createElement('img');
-    img.src = this.image_;
+    img.src = incomingOverlaySourceURL[overlaysOnMap.indexOf(this)]; //this.image
     img.style.width = '100%';
     img.style.height = '100%';
     img.style.position = 'absolute';
     div.appendChild(img);
+
+    //
+    var me = overlaysOnMap.indexOf(this);
 
     // Set the overlay's div_ property to this DIV
     this.div_ = div;
@@ -1850,7 +1955,91 @@ CustomOverlay.prototype.onAdd = function () {
     // We'll add this overlay to the overlayLayer pane.
     var panes = this.getPanes();
     panes.overlayLayer.appendChild(div);
+    
+    google.maps.event.addDomListener(document.getElementById("overlay" + me), 'click', function () {
+        displayMessage("index: " + me);
+        incomingOverlayRectangle[me].setMap(map);
+        alert("done");
+
+        //alert("hit");
+        //alert("index1: " + i);
+        //incomingOverlayRectangle[i].setMap(map);
+        ////displayOverlayRectangle(currentOverlayIndex);
+        //alert("fcn callback");
+    });
+
+    //var currentOverlayIndex = overlaysOnMap.indexOf(this);
+    //alert("coi: " + currentOverlayIndex);
+    //alert("oom inof: " + overlaysOnMap.indexOf(this));
+
+    //google.maps.event.addDomListener(document.getElementById("overlay" + currentOverlayIndex), 'click', function () {
+    //    alert("hit");
+    //    //alert("coi: " + currentOverlayIndex);
+    //    //alert("oom inof: " + overlaysOnMap.indexOf(this));
+    //    displayMessage(currentOverlayIndex);
+    //    incomingOverlayRectangle[currentOverlayIndex].setMap(map);
+    //    //displayOverlayRectangle(currentOverlayIndex);
+    //    alert("fcn callback");
+    //});
+    
+    //google.maps.event.addDomListener(document.getElementById("overlay" + currentOverlayIndex), 'click', function () {
+    //    alert("coi: " + currentOverlayIndex);
+    //    //var currentOverlayIndex = overlaysOnMap.indexOf(this);
+    //    displayMessage(currentOverlayIndex);
+    //    alert("pOR: " + prevOverlayRectangle);
+    //    if (prevOverlayRectangle != null) {
+    //        alert(prevOverlayRectangle.getBounds());
+    //        prevOverlayRectangle.setMap(null);
+    //        prevOverlayRectangle = curOverlayRectangle;
+    //    } else {
+    //        alert("por: null");
+    //        //do nothing
+    //    }
+        
+    //    //assign all of this at start?
+    //    alert("or: " + overlayRectangle[currentOverlayIndex]);
+    //    alert("coi: " + currentOverlayIndex);
+    //    overlayRectangle[currentOverlayIndex] = new google.maps.Rectangle(); //init new rect
+    //    alert("coi: " + currentOverlayIndex);
+    //    alert("create or options");
+    //    alert("coi: " + currentOverlayIndex);
+    //    var rectOptions = { //make options
+    //        strokeColor: "#FF0000",
+    //        strokeOpacity: 0.8,
+    //        strokeWeight: 2,
+    //        fillColor: "#FF0000",
+    //        fillOpacity: 0.1,
+    //        map: map,
+    //        bounds: incomingOverlayBounds[currentOverlayIndex],
+    //        zindex: 5
+    //    };
+    //    alert("or options created: " + rectOptions);
+    //    alert("coi: " + currentOverlayIndex);
+    //    alert("iob: " + incomingOverlayBounds[currentOverlayIndex]);
+    //    alert("coi: " + currentOverlayIndex);
+    //    alert("set or options");
+    //    overlayRectangle[currentOverlayIndex].setOptions(rectOptions); //set options
+    //    //overlayRectangle[currentOverlayIndex].setBounds(incomingOverlayBounds[currentOverlayIndex]);
+        
+    //    alert("or: " + overlayRectangle[currentOverlayIndex]);
+    //    alert("coi: " + currentOverlayIndex);
+    //    alert("set to map");
+    //    alert("coi: " + currentOverlayIndex);
+        
+    //    overlayRectangle[currentOverlayIndex].setMap(map); //display on map
+
+    //    alert("or to pOR");
+    //    alert("or: " + overlayRectangle[currentOverlayIndex]);
+    //    alert("coi: " + currentOverlayIndex);
+    //    prevOverlayRectangle = overlayRectangle[currentOverlayIndex]; //set to prev
+    //    alert("pOR: " + prevOverlayRectangle);
+    //    alert("coi: " + currentOverlayIndex);
+    //    alert("done");
+
+    //});
+    
 };
+
 CustomOverlay.prototype.draw = function () {
 
     // Size and position the overlay. We use a southwest and northeast
@@ -1879,8 +2068,9 @@ CustomOverlay.prototype.draw = function () {
 CustomOverlay.prototype.onRemove = function () {
     this.div_.parentNode.removeChild(this.div_);
     this.div_ = null;
-    
 };
+
+
 
 //start this whole mess once the google map is loaded
 google.maps.event.addDomListener(window, 'load', initialize);
