@@ -319,22 +319,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapperBuilder.AppendLine("     }; ");
                 mapperBuilder.AppendLine("");
 
-                mapperBuilder.AppendLine("");
-                mapperBuilder.AppendLine(" function addIncomingOverlayListeners() { ");
-                mapperBuilder.AppendLine("     for (var i = 0; i < incomingOverlayBounds.length; i++) { ");
-                mapperBuilder.AppendLine("         google.maps.event.addDomListener(document.getElementById(\"overlay\" + i), 'click', function() { ");
-                mapperBuilder.AppendLine("             alert(\"hit\"); ");
-                mapperBuilder.AppendLine("             //alert(\"coi: \" + currentOverlayIndex); ");
-                mapperBuilder.AppendLine("             //alert(\"oom inof: \" + overlaysOnMap.indexOf(this)); ");
-                mapperBuilder.AppendLine("             displayMessage(i); ");
-                mapperBuilder.AppendLine("             incomingOverlayRectangle[i].setMap(map); ");
-                mapperBuilder.AppendLine("             //displayOverlayRectangle(currentOverlayIndex); ");
-                mapperBuilder.AppendLine("             alert(\"fcn callback\"); ");
-                mapperBuilder.AppendLine("         }); ");
-                mapperBuilder.AppendLine("     } ");
-                mapperBuilder.AppendLine(" } ");
-                mapperBuilder.AppendLine("");
-
                 mapperBuilder.AppendLine("var baseURL = \"" + CurrentMode.Base_URL+"\";");
                 mapperBuilder.AppendLine("</script>");
                 mapperBuilder.AppendLine("");
