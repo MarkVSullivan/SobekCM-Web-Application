@@ -155,6 +155,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("   var incomingOverlayBounds = [];");    //may not need to declare
             mapperBuilder.AppendLine("   var incomingOverlaySourceURL = [];"); //may not need to declare
             mapperBuilder.AppendLine("   var incomingOverlayRotation = [];");  //may not need to declare
+            mapperBuilder.AppendLine("   var incomingOverlayRectangle = [];");  //may not need to declare
             mapperBuilder.AppendLine("   function initOverlays(){");   
             
             mapBuilder = new StringBuilder();
@@ -273,7 +274,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         //get and set the rotation value
                         polygonRotation[it] = 0;
                         mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
-
+                        
+                        //setup rectangle options and bounds
+                        mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "] = new google.maps.Rectangle(); ");
+                        mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setOptions(overlayRectangleOptions); ");
+                        mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setBounds(" + bounds + "); ");
+                        
                         //iterate
                         it++;
 
@@ -301,6 +307,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapperBuilder.AppendLine("");
                 mapperBuilder.AppendLine("<!-- End Geo Objects Writer -->");
                 mapperBuilder.AppendLine("");
+
+                mapperBuilder.AppendLine("");
+                mapperBuilder.AppendLine("     var overlayRectangleOptions = { ");
+                mapperBuilder.AppendLine("         strokeColor: \"#FF0000\", ");
+                mapperBuilder.AppendLine("         strokeOpacity: 0.8, ");
+                mapperBuilder.AppendLine("         strokeWeight: 2, ");
+                mapperBuilder.AppendLine("         fillColor: \"#FF0000\", ");
+                mapperBuilder.AppendLine("         fillOpacity: 0.1, ");
+                mapperBuilder.AppendLine("         zindex: 5 ");
+                mapperBuilder.AppendLine("     }; ");
+                mapperBuilder.AppendLine("");
+
                 mapperBuilder.AppendLine("var baseURL = \"" + CurrentMode.Base_URL+"\";");
                 mapperBuilder.AppendLine("</script>");
                 mapperBuilder.AppendLine("");
