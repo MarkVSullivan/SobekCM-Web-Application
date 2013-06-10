@@ -1494,7 +1494,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			  add_main_menu(navRowBuilder);
 
 			  navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
-
+              //Add the button to delete pages
+			    navRowBuilder.AppendLine("div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"\" >Delete</button></div>" );
 		
 				// Finish the nav row controls
 				navRowBuilder.AppendLine("\t\t<!-- END QUALITY CONTROL VIEWER NAV ROW -->");

@@ -53,6 +53,7 @@
 
 .qcPickMainThumbnailCursor{cursor:url(../default/images/thumbnail_cursor.cur),default;}
 .qcMovePagesCursor{cursor:url(../default/images/move_pages_cursor.cur),default;}
+.qcDeletePagesCursor{cursor:url(../default/images/delete_cursor.cur),default;}
 .qcResetMouseCursorToDefault{cursor:default;}
 
 .txtNamedDivHidden{ visibility: hidden;}
@@ -79,6 +80,18 @@
 	padding:4px 16px;
 	text-decoration:none;}
 .btnMovePages:hover { background-color:#ffec64;}
+
+.btnDeletePages {
+  	background-color:#ffab23;
+    display:inline-block;
+	color:#333333;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:4px 16px;
+	text-decoration:none;  
+}
+.btnDeletePages:hover{ background-color: #ffec64;}
 
 
 /* Code for the QC main menu */

@@ -451,6 +451,7 @@ function ChangeMouseCursor(MaxPageCount)
 	//Remove custom cursor classes if any
 	$('body').removeClass('qcPickMainThumbnailCursor');
 	$('body').removeClass('qcMovePagesCursor');
+	$('body').removeClass('qcDeletePagesCursor');
 
 	//Reset to default
 	$('body').addClass('qcResetMouseCursorToDefault');
@@ -484,6 +485,8 @@ function ChangeMouseCursor(MaxPageCount)
 		//otherwise it will override the custom cursor class
 		$('body').removeClass('qcResetMouseCursorToDefault');
 		$('body').removeClass('qcMovePagesCursor');
+		$('body').removeClass('qcDeletePagesCursor');
+		
 		//Set the custom cursor
 		$('body').addClass('qcPickMainThumbnailCursor');
 
@@ -516,6 +519,7 @@ function ResetCursorToDefault(MaxPageCount)
 	//Remove custom cursor classes if any
 	$('body').removeClass('qcPickMainThumbnailCursor');
 	$('body').removeClass('qcMovePagesCursor');
+	$('body').removeClass('qcDeletePagesCursor');
 
 	//Reset to default
 	$('body').addClass('qcResetMouseCursorToDefault');
@@ -551,6 +555,7 @@ if($('body').css('cursor').indexOf("move_pages_cursor")>-1)
 	//Remove custom cursor classes if any
 	$('body').removeClass('qcPickMainThumbnailCursor');
 	$('body').removeClass('qcMovePagesCursor');
+	$('body').removeClass('qcDeletePagesCursor');
 
 	//Reset to default
 	$('body').addClass('qcResetMouseCursorToDefault');
@@ -583,6 +588,7 @@ else
 //otherwise it will override the custom cursor class
 $('body').removeClass('qcResetMouseCursorToDefault');
 $('body').removeClass('qcPickMainThumbnailCursor');
+$('body').removeClass('qcDeletePagesCursor');
 
 //First change the cursor
 $('body').addClass('qcMovePagesCursor');
@@ -603,7 +609,60 @@ $('body').addClass('qcMovePagesCursor');
 function DeletePages(MaxPageCount)
 {
 //Change the mouse cursor, unhide all the checkboxes
+//If this cursor is already set, change back to default
+if($('body').css('cursor').indexOf("delete_cursor")>-1)
+{
+	//Remove custom cursor classes if any
+	$('body').removeClass('qcPickMainThumbnailCursor');
+	$('body').removeClass('qcMovePagesCursor');
+	$('body').removeClass('qcDeletePages');
 
+	//Reset to default
+	$('body').addClass('qcResetMouseCursorToDefault');
+	
+	//Clear and hide all the 'move' checkboxes, in case currently visible
+	for(var i=0;i<MaxPageCount; i++)
+	{
+	  if(document.getElementById('chkMoveThumbnail'+i))
+	  {
+		  document.getElementById('chkMoveThumbnail'+i).checked=false;
+		  document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailHidden';
+	  }
+	
+	}
+	//Also re-hide the button for moving multiple pages in case previously made visible
+	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+	
+	 //Hide all the left/right arrows for moving pages
+	for(var i=0; i<MaxPageCount; i++)
+	{
+			 if(document.getElementById('movePageArrows'+i))
+			   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
+		
+	}
+
+}
+else
+{
+//Remove the default cursor style class first before setting the custom one, 
+//otherwise it will override the custom cursor class
+$('body').removeClass('qcResetMouseCursorToDefault');
+$('body').removeClass('qcPickMainThumbnailCursor');
+$('body').removeClass('qcMovePagesCursor');
+
+//First change the cursor
+$('body').addClass('qcDeletePagesCursor');
+
+   //Unhide all the checkboxes
+	for(var i=0;i<MaxPageCount; i++)
+	{
+		if(document.getElementById('chkMoveThumbnail'+i))
+		{
+		  document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailVisible';
+		}
+	}
+
+}
 }
 
 
@@ -838,7 +897,7 @@ function qc_auto_save()
 						  var time = hours+":"+minutes+' '+ampm;
 						  
                           var timeToDisplay = "Last saved at "+time;
-						$("#displayTimeSaved").text(timeToDisplay);
+						  $("#displayTimeSaved").text(timeToDisplay);
 							
 							return false;
 		 
@@ -863,8 +922,8 @@ for(var i=0; i<MaxPageCount; i++)
 }
  
  
- //If a checkbox has been checked
- if (document.getElementById(chkBoxID).checked==true)
+ //If a checkbox has been checked, and the move_thumbnails cursor is currently set
+ if (document.getElementById(chkBoxID).checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
  {
     document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
     for(var i=0; i<MaxPageCount; i++)
@@ -879,14 +938,14 @@ else
   //Check if there is any other checked checkbox on the screen
   for(var i=0; i<MaxPageCount; i++)
   {
-    if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true)
+    if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
 	{
 	  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
 	  checked = true;
 	}
   }
   
-  if(checked==true)
+  if(checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
   {
      //Unhide the left/right arrows for moving pages
      for(var i=0; i<MaxPageCount; i++)
