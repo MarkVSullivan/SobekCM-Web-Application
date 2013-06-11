@@ -276,10 +276,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
                         
                         //setup rectangle options and bounds
-                        mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "] = new google.maps.Rectangle(); ");
-                        mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setOptions(overlayRectangleOptions); ");
-                        mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setBounds(" + bounds + "); ");
-                        
+                        //mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "] = new google.maps.Rectangle(); ");
+                        //mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setOptions(overlayRectangleOptions); ");
+                        //mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setBounds(" + bounds + "); ");
+                                             
                         //iterate
                         it++;
 
@@ -308,16 +308,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapperBuilder.AppendLine("<!-- End Geo Objects Writer -->");
                 mapperBuilder.AppendLine("");
 
-                mapperBuilder.AppendLine("");
-                mapperBuilder.AppendLine("     var overlayRectangleOptions = { ");
-                mapperBuilder.AppendLine("         strokeColor: \"#FF0000\", ");
-                mapperBuilder.AppendLine("         strokeOpacity: 0.8, ");
-                mapperBuilder.AppendLine("         strokeWeight: 2, ");
-                mapperBuilder.AppendLine("         fillColor: \"#FF0000\", ");
-                mapperBuilder.AppendLine("         fillOpacity: 0.1, ");
-                mapperBuilder.AppendLine("         zindex: 5 ");
-                mapperBuilder.AppendLine("     }; ");
-                mapperBuilder.AppendLine("");
+                //mapperBuilder.AppendLine("");
+                //mapperBuilder.AppendLine("      var overlayRectangles = []; ");
+                //mapperBuilder.AppendLine("");
+                //mapperBuilder.AppendLine("     var overlayRectangleOptions = { ");
+                //mapperBuilder.AppendLine("         strokeColor: \"#FF0000\", ");
+                //mapperBuilder.AppendLine("         strokeOpacity: 0.8, ");
+                //mapperBuilder.AppendLine("         strokeWeight: 2, ");
+                //mapperBuilder.AppendLine("         fillColor: \"#FF0000\", ");
+                //mapperBuilder.AppendLine("         fillOpacity: 0.1, ");
+                //mapperBuilder.AppendLine("         zindex: 5 ");
+                //mapperBuilder.AppendLine("     }; ");
+                //mapperBuilder.AppendLine("");
 
                 mapperBuilder.AppendLine("var baseURL = \"" + CurrentMode.Base_URL+"\";");
                 mapperBuilder.AppendLine("</script>");

@@ -1,29 +1,4 @@
-﻿
-var customIndex4 = 10;
-function getCustomIndex() {
-    customIndex4++;
-    return customIndex4;
-}
-
-function displayOverlayRectangle(index) {
-
-    //var index = overlaysOnMap.indexOf(this);
-    displayMessage(index);
-
-    alert("index: " + index);
-
-    var customIndex5 = getCustomIndex();
-    incomingOverlayRectangle[customIndex5].setMap(map);
-
-    alert("set to map");
-    alert("or.l: " + incomingOverlayRectangle.length);
-    alert("or.b: " + incomingOverlayRectangle[index].getBounds());
-    alert("index: " + index);
-
-}
-
-
-//temp js (fixes temporary padding issue)
+﻿//temp js (fixes temporary padding issue)
 document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
 document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
 
@@ -95,7 +70,7 @@ var minZoomLevel_BlockLot;                                              //max zo
 var isCustomOverlay;                                                    //used to determine if other overlays (block/lot etc) //unknown
 var preservedRotation;                                                  //rotation, default
 var knobRotationValue;                                                  //rotation to display by default 
-var preserveOpacity;                                                    //opacity, default value (0-1,1=opaque)
+var preserveOpacity = 0.65;                                             //opacity, default value (0-1,1=opaque)
 var strictBounds;                                                       //set the bounds for this google map instance
 
 //#endregion
@@ -1074,6 +1049,7 @@ function initialize() {
         })});
         drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
         placerType = "overlay";
+        toggleOverlayEditor();
     });
     google.maps.event.addDomListener(document.getElementById("toolbox_placePOI"), 'click', function () {
         drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE] } });
@@ -1789,20 +1765,6 @@ function initialize() {
 
 }                         //on page load functions (mainly google map event listeners)
 
-var incomingOverlayBounds = [];
-var incomingOverlaySourceURL = [];
-var incomingOverlayRotation = [];
-var overlays = [];
-function displayIncomingOverlays() {
-    for (var i = 0; i < incomingOverlayBounds.length; i++) {
-        overlaysOnMap[i] = new CustomOverlay(incomingOverlayBounds[i], incomingOverlaySourceURL[i], map, incomingOverlaySourceURL[i]);
-        overlaysOnMap[i].setMap(map);
-
-        //displayOverlayRectangle(incomingOverlayBounds[i]); //add all the rectangles
-    }
-}
-
-//create custom overlay functions (these must stay here after map has been initialized)
 function createOverlay(withBounds) {
     //called from rectangle drawing manager
     var overlaySourceURL = inputOverlaySourceURL;
@@ -1814,39 +1776,106 @@ function createOverlay(withBounds) {
     } else {                                                                                    //if it IS a new overlay
         overlay = new CustomOverlay(overlayBounds, overlaySourceURL, map, 0);                   //create the overlay
     }
+
     overlayCurrent = overlay;                                                                   //set overlay cyrrent to overlay
     overlayCurrent.setMap(map);                                                                 //display overlay current on the map
 
 }
-function CustomOverlay(bounds, image, map, rotation) {
-    //iterate here
-    overlayCount++;
-    
-    // Now initialize all properties.
-    this.bounds_ = bounds;
-    this.image_ = image;
-    this.map_ = map;
 
-    preservedRotation = rotation;
+var incomingOverlayBounds = [];         //defined in c# to js on page
+var incomingOverlaySourceURL = [];      //defined in c# to js on page
+var incomingOverlayRotation = [];       //defined in c# to js on page
+var ghostOverlayRectangle = [];         //holds ghost overlay rectangles (IE overlay hotspots)
+var ghostOverlayRectangleOptions = {    //define options for ghost rectangle
+    strokeColor: "#FF0000",             //color doesnt matter
+    strokeOpacity: 0.0,                 //make border invisible
+    strokeWeight: 1,                    //should not matter?
+    fillColor: "#FF0000",               //color doesnt matter
+    fillOpacity: 0.0,                   //make fill transparent
+    editable: false,                    //just to be sure?
+    draggable: false,                   //just to be sure?
+    zindex: 6                           //perhaps higher?
+};
+var visibleOverlayRectangleOptions = {  //define options for visible rectangle 
+    strokeColor: "#FF0000",             //for testing (red)
+    strokeOpacity: 0.8,                 //for testing
+    strokeWeight: 2,                    //for testing
+    fillColor: "#FF0000",               //for testing (red)
+    fillOpacity: 0.1,                   //for testing
+    editable: true,                     //sobek standard
+    draggable: true,                    //sobek standard
+    //strokeOpacity: 0.2,              //sobek standard
+    //strokeWeight: 1,                 //sobek standard
+    //fillOpacity: 0.0,                   //sobek standard 
+    zindex: 5                           //sobek standard
+};
+var visibleOverlayRectangle = new google.maps.Rectangle(); //init maybe move to array later
 
-    if (overlayPrevious != null) {
-        overlayPrevious.setMap(null);
+//Displays all the overlays sent from the C# code. Also calls displayGhostOverlayRectangle.
+function displayIncomingOverlays() {
+    //go through and display overlays as long as there is an overlay to display
+    for (var i = 0; i < incomingOverlayBounds.length; i++) {
+        overlaysOnMap[i] = new CustomOverlay(incomingOverlayBounds[i], incomingOverlaySourceURL[i], map, incomingOverlayRotation[i]);
+        overlaysOnMap[i].setMap(map);                                                //set the overlay to the map
+        displayGhostOverlayRectangle(incomingOverlayBounds[i], i);                   //add all the ghost rectangles
     }
-
-    // We define a property to hold the image's div. We'll
-    // actually create this div upon receipt of the onAdd()
-    // method so we'll leave it null for now.
-    this.div_ = null;
 }
+
+//Displays an invisible rectangle on top of the overlay div (creates a hotspot). This rectangle is used as a psuedo listener if the 'overlay div' is clicked. This solved issue of creating listener for overlay div directly.
+//Supporting URL: http://stackoverflow.com/questions/17025240/google-maps-listener-only-running-once
+function displayGhostOverlayRectangle(ghostBounds, ghostIndex) {
+    ghostOverlayRectangle[ghostIndex] = new google.maps.Rectangle();                //init rect
+    ghostOverlayRectangle[ghostIndex].setOptions(ghostOverlayRectangleOptions);     //set options
+    ghostOverlayRectangle[ghostIndex].setBounds(ghostBounds);                       //set bounds
+    ghostOverlayRectangle[ghostIndex].setMap(map);                                  //set to map
+    //create the listener for this ghost rectangle
+    google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'click', function () {
+        displayVisibleOverlayRectangle(ghostBounds, ghostIndex);                    //add the visible rectangles
+    });
+}
+
+//Displays the visible rectangle which is used to edit an overlay. Called by the ghost listener.    
+function displayVisibleOverlayRectangle(bounds, overlayIndex) {
+    visibleOverlayRectangle.setOptions(visibleOverlayRectangleOptions);
+    visibleOverlayRectangle.setBounds(bounds);
+    visibleOverlayRectangle.setMap(map);
+
+    google.maps.event.addListener(visibleOverlayRectangle, "click", function () {
+        visibleOverlayRectangle.setMap(null);
+        displayGhostOverlayRectangle(visibleOverlayRectangle.getBounds(), overlayIndex);
+    });
+    google.maps.event.addListener(visibleOverlayRectangle, "drag", function () {
+        ghostOverlayRectangle[overlayIndex].setMap(null);
+        document.getElementById("overlay" + overlayIndex).innerHTML = null;
+        overlaysOnMap[overlayIndex] = null;
+    });
+    google.maps.event.addListener(visibleOverlayRectangle, "dragstart", function () {
+        ghostOverlayRectangle[overlayIndex].setMap(null);
+        document.getElementById("overlay" + overlayIndex).innerHTML = null;
+        overlaysOnMap[overlayIndex] = null;
+    });
+    google.maps.event.addListener(visibleOverlayRectangle, "dragend", function () {
+        overlaysOnMap[overlayIndex] = new CustomOverlay(visibleOverlayRectangle.getBounds(), incomingOverlaySourceURL[overlayIndex], map, preservedRotation);
+        overlaysOnMap[overlayIndex].setMap(map);
+    });
+
+}
+
+//Starts the creation of a custom overlay div which contains a rectangular image.
+//Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
+function CustomOverlay(bounds, image, map, rotation) {
+    overlayCount++;                 //iterate how many overlays have been drawn
+    this.bounds_ = bounds;          //set the bounds
+    this.image_ = image;            //set source url
+    this.map_ = map;                //set to map
+    preservedRotation = rotation;   //set the rotation
+    this.div_ = null;               //defines a property to hold the image's div. We'll actually create this div upon receipt of the onAdd() method so we'll leave it null for now.
+}
+
+//Continues support for adding an custom overlay
+//Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
+// Note: an overlay's receipt of onAdd() indicates that the map's panes are now available for attaching the overlay to the map via the DOM.
 CustomOverlay.prototype.onAdd = function () {
-
-    if (overlayPrevious != null) {
-        overlayPrevious.setMap(null);
-    }
-
-    // Note: an overlay's receipt of onAdd() indicates that
-    // the map's panes are now available for attaching
-    // the overlay to the map via the DOM.
 
     // Create the DIV and set some basic attributes.
     var div = document.createElement("div");
@@ -1864,9 +1893,6 @@ CustomOverlay.prototype.onAdd = function () {
     img.style.position = 'absolute';
     div.appendChild(img);
 
-    //get the index
-    var overlayIndex = overlaysOnMap.indexOf(this);
-    
     // Set the overlay's div_ property to this DIV
     this.div_ = div;
 
@@ -1874,11 +1900,10 @@ CustomOverlay.prototype.onAdd = function () {
     // We'll add this overlay to the overlayLayer pane.
     var panes = this.getPanes();
     panes.overlayLayer.appendChild(div);
-     
-    //add the listener
-    tempAddListener(overlayIndex);
-
 };
+
+//Continues support for adding an custom overlay
+//Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
 CustomOverlay.prototype.draw = function () {
     // Size and position the overlay. We use a southwest and northeast
     // position of the overlay to peg it to the correct position and size.
@@ -1903,69 +1928,13 @@ CustomOverlay.prototype.draw = function () {
         keepRotate(preservedRotation);
     }
 };
-//CustomOverlay.prototype.onRemove = function () {
-//    this.div_.parentNode.removeChild(this.div_);
-//    this.div_ = null;
-//};
-function tempAddListener(get) {
-    
-    //alert("adding: " + get);
-    if (document.getElementById("overlay" + get) != null) { //check to see if div is there
-        google.maps.event.addDomListener(document.getElementById("overlay" + get), 'click', function () {
-            
-            displayMessage("listener fired at overlay: " + get);
-            displayOverlayRectangle(incomingOverlayBounds[get]);
-            
-        });
-    } else {
-        //could not find the div
-    } 
-    
-}
-function displayOverlayRectangle(bounds) {
-    //2do: set drawing manager, set mode, match listeners of rectangle
-    var tempOverlayRectangle = new google.maps.Rectangle();
-    var tempOverlayRectangleOptions = { 
-        strokeColor: "#FF0000", 
-        strokeOpacity: 0.8, 
-        strokeWeight: 2, 
-        fillColor: "#FF0000", 
-        fillOpacity: 0.1, 
-        zindex: 5 
-    };
-    tempOverlayRectangle.setOptions(tempOverlayRectangleOptions);
-    tempOverlayRectangle.setBounds(bounds);
-    tempOverlayRectangle.setMap(map);
-}
-function initOverlayListeners() {
-    for (var i = 0; i < overlaysOnMap.length; i++) {
-        //tempRemoveListener(i);
-        tempAddListener(i);
-    }
-}
-function tempRemoveListener(get) {
-    //alert("removing: " + get);
-    if (document.getElementById("overlay" + get) != null) { //check to see if div is there
-        google.maps.event.clearListeners(document.getElementById("overlay" + get), 'click'); //removing previous listener
-    } else {
-        //could not find the div
-    }
 
-}
-function howMany() {
-    var overlaysThere = 0;
-    for (var i = 0; i < 52; i++) {
-        //check to see if div is there
-        if (document.getElementById("overlay" + i) != null) {
-            //alert("overlay div " + i + " is there");
-            //alert(document.getElementById("overlay" + i).innerHTML);
-            overlaysThere++;
-        } else {
-            alert("overlay div " + i + " is not there");
-        }
-    }
-    alert("there are " + overlaysThere + " overlay divs present");
-}
+//Not currently used
+//Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
+CustomOverlay.prototype.onRemove = function () {
+    this.div_.parentNode.removeChild(this.div_);
+    this.div_ = null;
+};
 
 //start this whole mess once the google map is loaded
 google.maps.event.addDomListener(window, 'load', initialize);
