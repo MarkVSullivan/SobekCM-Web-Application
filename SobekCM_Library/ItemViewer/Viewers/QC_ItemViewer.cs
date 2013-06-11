@@ -319,13 +319,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
 						// Was this page selected with the checkbox?  (for bulk delete or move)
-						if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || ( thisInfo.Filename == filename_to_omit ))
-						{
-                            thisInfo.Checkbox_Selected = true;
-							selected_page_div_from_form.Add(thisInfo);
-						}
-
-						// Is this a new division?
+                        //Get this info only if the move/delete operations are explicitly triggered
+					    if (hidden_request == "delete_page" || hidden_request == "delete_selected_page" || hidden_request == "move_selected_pages")
+					    {
+					        if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == filename_to_omit))
+					        {
+					            thisInfo.Checkbox_Selected = true;
+					            selected_page_div_from_form.Add(thisInfo);
+					        }
+					    }
+					    // Is this a new division?
 						if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
 						{
 							thisInfo.New_Division = true;
@@ -1495,7 +1498,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			  navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
               //Add the button to delete pages
-			    navRowBuilder.AppendLine("div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"\" >Delete</button></div>" );
+			    navRowBuilder.AppendLine("<div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>" );
 		
 				// Finish the nav row controls
 				navRowBuilder.AppendLine("\t\t<!-- END QUALITY CONTROL VIEWER NAV ROW -->");
