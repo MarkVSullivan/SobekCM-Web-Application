@@ -468,7 +468,7 @@ function ChangeMouseCursor(MaxPageCount)
 	}
 	//Also re-hide the button for moving multiple pages in case previously made visible
 	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-	
+	document.getElementByOd('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
 	 //Hide all the left/right arrows for moving pages
 	for(var i=0; i<MaxPageCount; i++)
 	{
@@ -503,6 +503,7 @@ function ChangeMouseCursor(MaxPageCount)
 
 		//Also re-hide the button for moving multiple pages in case previously made visible
 		document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+		document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
 		
 		 //Hide all the left/right arrows for moving pages
 		for(var i=0; i<MaxPageCount; i++)
@@ -536,6 +537,7 @@ function ResetCursorToDefault(MaxPageCount)
 	}
 	//Also re-hide the button for moving multiple pages in case previously made visible
 	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+	document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
 	
 	 //Hide all the left/right arrows for moving pages
 	for(var i=0; i<MaxPageCount; i++)
@@ -572,7 +574,7 @@ if($('body').css('cursor').indexOf("move_pages_cursor")>-1)
 	}
 	//Also re-hide the button for moving multiple pages in case previously made visible
 	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-	
+	document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButtonHidden';
 	 //Hide all the left/right arrows for moving pages
 	for(var i=0; i<MaxPageCount; i++)
 	{
@@ -632,7 +634,7 @@ if($('body').css('cursor').indexOf("delete_cursor")>-1)
 	}
 	//Also re-hide the button for moving multiple pages in case previously made visible
 	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-	
+	document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButtonHidden';
 	 //Hide all the left/right arrows for moving pages
 	for(var i=0; i<MaxPageCount; i++)
 	{
@@ -912,7 +914,8 @@ function chkMoveThumbnailChanged(chkBoxID, MaxPageCount)
 {
 
   var checked=false;
- document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
+  document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButtonHidden';
  //Hide all the left/right arrows for moving pages
 for(var i=0; i<MaxPageCount; i++)
 {
@@ -933,20 +936,26 @@ for(var i=0; i<MaxPageCount; i++)
 	
 	}
 }
+else if(document.getElementById(chkBoxID).checked==true && $('body').css('cursor').indexOf("delete_cursor")>-1)
+{
+     document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButton';
+   
+}
 else
 { 
   //Check if there is any other checked checkbox on the screen
   for(var i=0; i<MaxPageCount; i++)
   {
-    if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
+    if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true)
 	{
-	  document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+	  
 	  checked = true;
 	}
   }
   
   if(checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
   {
+     document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
      //Unhide the left/right arrows for moving pages
      for(var i=0; i<MaxPageCount; i++)
 	{
@@ -956,6 +965,16 @@ else
 	}
   
   }
+  
+  else if(checked==true && $('body').css('cursor').indexOf("delete_cursor")>-1)
+  {
+    document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButton';
+  }
+  else
+  {
+     document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButtonHidden';
+	 document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
+  }  
 
 }
   
@@ -1088,7 +1107,8 @@ function ImageDeleteClicked(filename) {
 
     input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
 
-    if (input_box == true) {
+    if (input_box == true) 
+	{
         var hidden_request = document.getElementById('QC_behaviors_request');
         var details = document.getElementById('QC_affected_file');
 
@@ -1101,7 +1121,23 @@ function ImageDeleteClicked(filename) {
 }
 
 
+function DeleteSelectedPages()
+{
+	input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
+	
+	if (input_box == true) 
+	{
+        var hidden_request = document.getElementById('QC_behaviors_request');
+  //      var details = document.getElementById('QC_affected_file');
 
+        hidden_request.value = 'delete_selected_page';
+  //      details.value = filename;
+
+        document.itemNavForm.submit();
+    }
+    return false;
+	
+}
  
                 
 
