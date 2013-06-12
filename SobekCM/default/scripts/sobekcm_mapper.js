@@ -1765,6 +1765,7 @@ function initialize() {
 
 }                         //on page load functions (mainly google map event listeners)
 
+//not currently used 
 function createOverlay(withBounds) {
     //called from rectangle drawing manager
     var overlaySourceURL = inputOverlaySourceURL;
@@ -1792,8 +1793,6 @@ var ghostOverlayRectangleOptions = {    //define options for ghost rectangle
     strokeWeight: 1,                    //should not matter?
     fillColor: "#FF0000",               //color doesnt matter
     fillOpacity: 0.0,                   //make fill transparent
-    editable: false,                    //just to be sure?
-    draggable: false,                   //just to be sure?
     zindex: 6                           //perhaps higher?
 };
 var visibleOverlayRectangleOptions = {  //define options for visible rectangle 
@@ -1810,6 +1809,12 @@ var visibleOverlayRectangleOptions = {  //define options for visible rectangle
     zindex: 5                           //sobek standard
 };
 var visibleOverlayRectangle = new google.maps.Rectangle(); //init maybe move to array later
+var workingOverlayIndex = null;
+var workingOverlayBounds = null;
+var workingOverlay = null;
+var prevWorkingOverlayIndex = null;
+var prevWorkingOverlayBounds = null;
+var prevWorkingOverlay = null;
 
 //Displays all the overlays sent from the C# code. Also calls displayGhostOverlayRectangle.
 function displayIncomingOverlays() {
@@ -1830,33 +1835,87 @@ function displayGhostOverlayRectangle(ghostBounds, ghostIndex) {
     ghostOverlayRectangle[ghostIndex].setMap(map);                                  //set to map
     //create the listener for this ghost rectangle
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'click', function () {
-        displayVisibleOverlayRectangle(ghostBounds, ghostIndex);                    //add the visible rectangles
+        //if there is a working overlay, save it
+        if (workingOverlay != null) {
+            displayMessage("save overlay: " + workingOverlayIndex);                     //say I saved it
+            overlaysOnMap[workingOverlayIndex] = new CustomOverlay(workingOverlayBounds, incomingOverlaySourceURL[workingOverlayIndex], map, preservedRotation); //create new overlay with working bounds
+            overlaysOnMap[workingOverlayIndex].setMap(map);                             //show new overlay
+            workingOverlay.setMap(null);                                                //hide old overlay
+            workingOverlay = null;                                                      //delete old overlay
+            displayGhostOverlayRectangle(workingOverlayBounds, workingOverlayIndex);    //create ghost for new overlay (also adds all the listeners)
+            workingOverlayBounds = null;                                                //reset working bounds
+            workingOverlayIndex = null;                                                 //reset working index
+            visibleOverlayRectangle.setMap(null);                                       //hide the vis rect for this new overlay
+            displayVisibleOverlayRectangle(ghostBounds, ghostIndex);                    //create the visible rectangle from the ghost
+        } else {
+            alert(ghostIndex);
+            displayVisibleOverlayRectangle(ghostBounds, ghostIndex);                    //create the visible rectangle from the ghost
+        }
+        
+        //displayVisibleOverlayRectangle(ghostBounds, ghostIndex);                    //create the visible rectangle from the ghost
+
     });
 }
 
 //Displays the visible rectangle which is used to edit an overlay. Called by the ghost listener.    
 function displayVisibleOverlayRectangle(bounds, overlayIndex) {
-    visibleOverlayRectangle.setOptions(visibleOverlayRectangleOptions);
-    visibleOverlayRectangle.setBounds(bounds);
-    visibleOverlayRectangle.setMap(map);
+    //workingOverlay = overlaysOnMap[overlayIndex];                           //assign working overlay
+    
+    workingOverlay = new CustomOverlay(bounds, incomingOverlaySourceURL[overlayIndex], map, preservedRotation); //create new overlay with vis rect bounds
+    overlaysOnMap[overlayIndex].setMap(null);                               //hide old overlay
+    overlaysOnMap[overlayIndex] = null;                                     //delete old overlay
+    workingOverlay.setMap(map);                                             //set working to map
+    ghostOverlayRectangle[overlayIndex].setMap(null);                       //hide ghost rect for old overlay
+    ghostOverlayRectangle[overlayIndex] = null;                             //delete ghost for old overlay
+    visibleOverlayRectangle.setOptions(visibleOverlayRectangleOptions);     //set visible rect options
+    visibleOverlayRectangle.setBounds(bounds);                              //set vis rect bounds to incoming
+    visibleOverlayRectangle.setMap(map);                                    //show vis rect on map
 
     google.maps.event.addListener(visibleOverlayRectangle, "click", function () {
-        visibleOverlayRectangle.setMap(null);
-        displayGhostOverlayRectangle(visibleOverlayRectangle.getBounds(), overlayIndex);
+        visibleOverlayRectangle.setMap(null); //hide vis rectangle
+        displayGhostOverlayRectangle(visibleOverlayRectangle.getBounds(), overlayIndex); //create a ghost (may triggers a save)
     });
-    google.maps.event.addListener(visibleOverlayRectangle, "drag", function () {
-        ghostOverlayRectangle[overlayIndex].setMap(null);
-        document.getElementById("overlay" + overlayIndex).innerHTML = null;
-        overlaysOnMap[overlayIndex] = null;
-    });
-    google.maps.event.addListener(visibleOverlayRectangle, "dragstart", function () {
-        ghostOverlayRectangle[overlayIndex].setMap(null);
-        document.getElementById("overlay" + overlayIndex).innerHTML = null;
-        overlaysOnMap[overlayIndex] = null;
-    });
-    google.maps.event.addListener(visibleOverlayRectangle, "dragend", function () {
-        overlaysOnMap[overlayIndex] = new CustomOverlay(visibleOverlayRectangle.getBounds(), incomingOverlaySourceURL[overlayIndex], map, preservedRotation);
-        overlaysOnMap[overlayIndex].setMap(map);
+    
+
+    //google.maps.event.addListener(visibleOverlayRectangle, "drag", function () {
+    //    ghostOverlayRectangle[overlayIndex].setMap(null);
+    //    document.getElementById("overlay" + overlayIndex).innerHTML = null;
+    //    overlaysOnMap[overlayIndex] = null;
+    //});
+    
+
+    //google.maps.event.addListener(visibleOverlayRectangle, "dragstart", function () {
+    //    ghostOverlayRectangle[overlayIndex].setMap(null);
+
+    //});
+    
+
+    //google.maps.event.addListener(visibleOverlayRectangle, "dragend", function () {
+    //    if (workingOverlay != null) { //if there is a previous working overlay
+    //        workingOverlay.setMap(null);
+    //    }
+
+    //    ghostOverlayRectangle[overlayIndex].setMap(null);
+
+    //    workingOverlayIndex = overlayIndex;
+    //    workingOverlayBounds = visibleOverlayRectangle.getBounds();
+
+    //    workingOverlay = new CustomOverlay(visibleOverlayRectangle.getBounds(), incomingOverlaySourceURL[overlayIndex], map, preservedRotation);
+    //    workingOverlay.setMap(map);
+
+    //    editState = null;
+    //});
+    
+
+    google.maps.event.addListener(visibleOverlayRectangle, "bounds_changed", function () {
+        //if there is a previous working overlay
+        if (workingOverlay != null) {
+            workingOverlay.setMap(null); //hide the old one
+        }
+        workingOverlayIndex = overlayIndex; //set working index (used when saving)
+        workingOverlayBounds = visibleOverlayRectangle.getBounds(); //set working bounds (used when saving)
+        workingOverlay = new CustomOverlay(visibleOverlayRectangle.getBounds(), incomingOverlaySourceURL[overlayIndex], map, preservedRotation); //create new overlay with vis rect bounds
+        workingOverlay.setMap(map); //show new overlay
     });
 
 }
@@ -1864,6 +1923,10 @@ function displayVisibleOverlayRectangle(bounds, overlayIndex) {
 //Starts the creation of a custom overlay div which contains a rectangular image.
 //Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
 function CustomOverlay(bounds, image, map, rotation) {
+    //if there is a previous working overlay
+    if (workingOverlay != null) {
+        workingOverlay.setMap(null); //hide the old one
+    }
     overlayCount++;                 //iterate how many overlays have been drawn
     this.bounds_ = bounds;          //set the bounds
     this.image_ = image;            //set source url
@@ -1876,7 +1939,7 @@ function CustomOverlay(bounds, image, map, rotation) {
 //Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
 // Note: an overlay's receipt of onAdd() indicates that the map's panes are now available for attaching the overlay to the map via the DOM.
 CustomOverlay.prototype.onAdd = function () {
-
+  
     // Create the DIV and set some basic attributes.
     var div = document.createElement("div");
     div.id = "overlay" + overlaysOnMap.indexOf(this);
@@ -1887,7 +1950,7 @@ CustomOverlay.prototype.onAdd = function () {
 
     // Create an IMG element and attach it to the DIV.
     var img = document.createElement('img');
-    img.src = incomingOverlaySourceURL[overlaysOnMap.indexOf(this)]; //this.image
+    img.src = this.image_;
     img.style.width = '100%';
     img.style.height = '100%';
     img.style.position = 'absolute';
