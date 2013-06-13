@@ -36,6 +36,15 @@ namespace SobekCM.Library.HTML
 
             return true;
         }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+        }
     }
 }
 

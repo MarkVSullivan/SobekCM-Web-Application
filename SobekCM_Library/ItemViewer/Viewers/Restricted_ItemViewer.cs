@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System.IO;
 using System.Web.UI.WebControls;
 
 #endregion
@@ -58,24 +59,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            return false;
-        }
-
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
-        {
-            Literal mainLiteral = new Literal {Text = "<td align=\"left\" colspan=\"3\">" + restrictedMessage + "</td>"};
-            placeHolder.Controls.Add(mainLiteral);
+            Output.WriteLine("<td align=\"left\" colspan=\"3\">" + restrictedMessage + "</td>");
         }
     }
 }

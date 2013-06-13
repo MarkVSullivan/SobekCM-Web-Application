@@ -74,37 +74,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This always returns the value FALSE, to suppress the standard header information </value>
-        public override bool Show_Header
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("HTML_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("HTML_ItemViewer.Write_Main_Viewer_Section", "");
             }
-
-			// Build the value
-			StringBuilder builder = new StringBuilder(2000);
 
 			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
 
 			// Start the citation table
-            builder.AppendLine("\t\t<!-- HTML VIEWER OUTPUT -->" );
-            builder.AppendLine("\t\t<td align=\"left\"><span class=\"SobekViewerTitle\"><b>" + title + "</b></span></td></tr>");
-            builder.AppendLine("\t\t<tr><td class=\"SobekDocumentDisplay\">" );
-            builder.AppendLine("\t\t\t<div class=\"SobekCitation\">");
+            Output.WriteLine("\t\t<!-- HTML VIEWER OUTPUT -->" );
+            Output.WriteLine("\t\t<td align=\"left\"><span class=\"SobekViewerTitle\"><b>" + title + "</b></span></td></tr>");
+            Output.WriteLine("\t\t<tr><td class=\"SobekDocumentDisplay\">" );
+            Output.WriteLine("\t\t\t<div class=\"SobekCitation\">");
 
             // Determine the string for the item URL
             string itemURL = SobekCM_Library_Settings.Image_URL + CurrentItem.Web.File_Root + "/";
@@ -120,38 +107,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 urlOptions1 = "?" + url_options;
                 urlOptions2 = "&" + url_options;
             }
-            builder.AppendLine(map.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%ITEMURL%>", itemURL));
+            Output.WriteLine(map.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%ITEMURL%>", itemURL));
 
-            builder.AppendLine("\t\t\t</div>" );
+            Output.WriteLine("\t\t\t</div>" );
 
 			// Finish the table
-			builder.AppendLine( "\t\t</td>"  );
-            builder.AppendLine("\t\t<!-- END HTML VIEWER OUTPUT -->" );
+			Output.WriteLine( "\t\t</td>"  );
+            Output.WriteLine("\t\t<!-- END HTML VIEWER OUTPUT -->" );
 
 			// Restore the mode
 			CurrentMode.ViewerCode = current_view_code;
-
-			// Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add( mainLiteral );
 		}
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("HTML_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
-		}
-
 		
 		private String Get_Html_Page(string strURL, Custom_Tracer Tracer )
 		{

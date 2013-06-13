@@ -58,15 +58,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return false;
             }
         }
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This always returns the value FALSE, to suppress the standard header information </value>
-        public override bool Show_Header
-        {
-            get
-            {
-                return false;
-            }
-        }
 
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>
@@ -100,16 +91,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override ItemViewer_Type_Enum ItemViewer_Type
         {
             get { return ItemViewer_Type_Enum.Google_Coordinate_Entry; }
-        }
-
-        /// <summary> Abstract method adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> TRUE if this viewer added something to the left navigational bar, otherwise FALSE</returns>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            return false;
         }
 
         /// <summary> Abstract method adds the main view section to the page turner </summary>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -111,16 +112,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-		/// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-		/// <value> This always returns the value FALSE, to suppress the standard header information </value>
-		public override bool Show_Header
-		{
-			get
-			{
-				return false;
-			}
-		}
-
 		/// <summary> Gets the flag that indicates if the page selector should be shown </summary>
 		/// <value> This is a single page viewer, so this property always returns NONE</value>
         public override ItemViewer_PageSelector_Type_Enum Page_Selector
@@ -131,14 +122,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-		/// <summary> Adds the main view section to the page turner </summary>
-		/// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        
+
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Citation_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Citation_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
 			}
 
 			// If this is an internal user or can edit this item, ensure the extra information 
@@ -176,12 +169,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					citationType = Citation_Type.Standard;
 			}
 
-			// Add the HTML for the image
-			Literal mainLiteral = new Literal();
-
-			StringBuilder result = new StringBuilder(3000);
-            result.AppendLine("        <!-- CITATION ITEM VIEWER OUTPUT -->" );
-			result.AppendLine("        <td class=\"SobekCitationDisplay\">" );
+			// Add the HTML for the citation
+            Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->" );
+			Output.WriteLine("        <td class=\"SobekCitationDisplay\">" );
 
 			// Set the text
 			const string STANDARD_VIEW = "STANDARD VIEW";
@@ -194,27 +184,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Add the tabs for the different citation information
 			string viewer_code = CurrentMode.ViewerCode;
-            result.AppendLine("            <div class=\"SobekCitation\">");
-            result.AppendLine("              <div class=\"CitationViewSelectRow\">");
+            Output.WriteLine("            <div class=\"SobekCitation\">");
+            Output.WriteLine("              <div class=\"CitationViewSelectRow\">");
 			if (citationType == Citation_Type.Standard)
 			{
-                result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + STANDARD_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + STANDARD_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
 			}
 			else
 			{
-                result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("citation") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + STANDARD_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("citation") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + STANDARD_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
 			}
 
 			if (citationType == Citation_Type.MARC)
 			{
-                result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
 			}
 			else
 			{
 				if ( !isRobot )
-                    result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("marc") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                    Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("marc") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
 				else
-                    result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" />");
+                    Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" />");
 			}
 
 			// If this item is an external link item (i.e. has related URL, but no pages or downloads) skip the next parts
@@ -226,24 +216,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				if (citationType == Citation_Type.Metadata)
 				{
-					result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + METADATA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+					Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + METADATA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
 				}
 				else
 				{
-					result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("metadata") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + METADATA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+					Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("metadata") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + METADATA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
 				}
 
 				if (citationType == Citation_Type.Statistics)
 				{
-					result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + STATISTICS_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+					Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + STATISTICS_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
 				}
 				else
 				{
-					result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("usage") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + STATISTICS_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+					Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("usage") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + STATISTICS_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
 				}
 			}
 
-			result.AppendLine("              </div>");
+			Output.WriteLine("              </div>");
 
 			// Get any search terms
 			List<string> terms = new List<string>();
@@ -254,76 +244,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 		    // Now, add the text
+            Output.WriteLine();
 			switch (citationType)
 			{
 				case Citation_Type.Standard:
 					if ( terms.Count > 0 )
 					{
-                        mainLiteral.Text = result + Environment.NewLine + Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(!isRobot, Tracer), terms) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
+                        Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(!isRobot, Tracer), terms) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" );
 					}
 					else
 					{
-                        mainLiteral.Text = result + Environment.NewLine + Standard_Citation_String(!isRobot, Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
+                        Output.WriteLine(Standard_Citation_String(!isRobot, Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" );
 					}
 					break;
 
 				case Citation_Type.MARC:
 					if ( terms.Count > 0 )
 					{
-                        mainLiteral.Text = result + Environment.NewLine + Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(MARC_String(Tracer), terms) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
+                        Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(MARC_String(Tracer), terms) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" );
 					}
 					else
 					{
-                        mainLiteral.Text = result + Environment.NewLine + MARC_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
+                        Output.WriteLine( MARC_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
 					}
 					break;
 
 				case Citation_Type.Metadata:
-                    mainLiteral.Text = result + Environment.NewLine + Metadata_String( Tracer ) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" + Environment.NewLine;
+                    Output.WriteLine( Metadata_String( Tracer ) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
 					break;
 
 				case Citation_Type.Statistics:
-                    mainLiteral.Text = result + Environment.NewLine + Statistics_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->";
+                    Output.WriteLine( Statistics_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
 					break;
 			}
 
 			CurrentMode.ViewerCode = viewer_code;
-
-			placeHolder.Controls.Add( mainLiteral );
-		}
-
-		/// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-		/// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-		/// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		/// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-		/// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-		public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Citation_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-			}
-
-			return false;
-		}
-
-
-		private static string Convert_String_To_XML_Safe(string element)
-		{
-			string xml_safe = element;
-			int i = xml_safe.IndexOf("&");
-			while (i >= 0)
-			{
-				if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
-					(i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
-				{
-					xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
-				}
-
-				i = xml_safe.IndexOf("&", i + 1);
-			}
-			return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("[", "").Replace("]", "");
 		}
 
 		#region Section returns the item level statistics

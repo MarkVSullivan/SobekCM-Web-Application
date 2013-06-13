@@ -1690,6 +1690,25 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("\t<tr>");
 
+            // Add the HTML from the pageviewer
+            // Add the main viewer section
+            if (PageViewer != null)
+            {
+                // Was this to draw a fragment?
+                if (String.IsNullOrEmpty(currentMode.Fragment))
+                {
+                    Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing page viewer to add main viewer section to <i>mainPlaceHolder</i>");
+                    PageViewer.Write_Main_Viewer_Section(Output, Tracer);
+
+                    //if (PageViewer is Citation_ItemViewer)
+                    //    ((Citation_ItemViewer) PageViewer).Write_Main_Viewer_Section(Output, Tracer);
+                    //else
+                    //{
+                    //    PageViewer.Write_Main_Viewer_Section(Output, Tracer);
+                    //}
+                }
+            }
+
             return true;
         }
 
@@ -2034,6 +2053,60 @@ namespace SobekCM.Library.HTML
                     (selectedNodeExpander.Parent).Expand();
                     selectedNodeExpander = selectedNodeExpander.Parent;
                 }
+            }
+        }
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        public override List<Tuple<string, string>> Body_Attributes
+        {
+            get
+            {
+                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+
+                // Add any viewer specific body attributes
+                if (PageViewer != null)
+                    PageViewer.Add_ViewerSpecific_Body_Attributes(returnValue);
+
+                // Add default script attachments
+                returnValue.Add(new Tuple<string, string>("onload", "itemwriter_load();"));
+                returnValue.Add(new Tuple<string, string>("onresize", "itemwriter_load();"));
+
+                return returnValue;
+            }
+        }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get
+            {
+                return currentItem != null ? currentItem.Bib_Info.Main_Title.Title : "{0} Item";
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // ROBOTS SHOULD BE SENT TO THE CMS PAGE FOR THIS
+            Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+
+            // Write the style sheet to use 
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
+            // Add code for the GnuBooks page turner if that is the valid viewer
+            if (PageViewer != null)
+                PageViewer.Write_Within_HTML_Head(Output, Tracer);
+
+            // Add a thumbnail to this item
+            if (currentItem != null)
+            {
+                string image_src = currentMode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
+
+                Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/") + "\" />");
             }
         }
     }
