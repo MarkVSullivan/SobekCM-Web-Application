@@ -266,16 +266,33 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
   //Mode '0': Autonumber all the thumbnail page names till the end
   if(mode=='0')
   {
-    
+    var textboxValue = document.getElementById(textboxID).value;
+	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
+//	lastNumber = lastNumber.toUpperCase().trim();
     var matches = document.getElementById(textboxID).value.match(/\d+/g);
-    if (matches != null) 
+	var varRomanMatches = true;
+	var isRomanLower=true;
+
+	for(var x=0;x<lastNumber.length;x++)
+	{
+	  var c=lastNumber.charAt(x);
+	  if("IVXLCDM".indexOf(c)==-1 && "ivxlcdm".indexOf(c)==-1)
+	  {
+     	  varRomanMatches=false;
+	  }
+
+	}
+
+	if (matches != null) 
     {
        // the id attribute contains a digit
        var len=matches.length;
        var number = matches[len-1];
 	   var nonNumber='';
 	   var val=document.getElementById(textboxID).value;
-      // alert(number);
+	   
+       
+	  // alert(number);
        
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
@@ -294,15 +311,233 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
            
        }//end if
     }//end if
+    else if(varRomanMatches==true)
+	{
+//	   alert('Possible roman numeral detected!');
+	   var romanToNumberError="No error";
+	   
+	   for(var x=0;x<lastNumber.length;x++)
+		{
+		  var c=lastNumber.charAt(x);
+		  if("IVXLCDM".indexOf(c)>-1)
+		  {
+			  isRomanLower=false;
+		  }
+		  else
+		  {
+		     isRomanLower =true;
+		  }
+		}
+//	   alert(isRomanLower);
+	   
+   
+        var roman = lastNumber.toUpperCase().trim();
+        
+		if(roman.split('V').length>2||roman.split('L').length>2||roman.split('D').length>2)
+		{
+     		romanToNumberError="Rule 4 violated";
+	    }	  
+		//Rule 1
+		var count=1;
+		var last='Z';
+		for(var x=0;x<roman.length;x++)
+		{
+		  //Duplicate?
+		  if(roman.charAt(x)==last)
+		  {
+		    count++;
+			if(count==4)
+			{
+			  romanToNumberError="Rule 1 violated";
+			}
 
+		  }
+		  else
+		  {
+			  count=1;
+			  last = roman.charAt(x);
+		  }
+		}
 
+		//Create an arraylist containing the values
+		var ptr=0;
+		var values = new Array();
+		var maxDigit=1000;
+        var digit=0;
+		var nextDigit=0;
+		
+		while (ptr<roman.length)
+		{
+		  //Base value of digit
+		  var numeral=roman.charAt(ptr);
+		  switch(numeral)
+		  {
+		   case "I":
+		     digit=1;
+			 break;
+		   case "V":
+		     digit=5;
+			 break;
+		   case "X":
+		      digit=10;
+			  break;
+		   case "L":
+			digit=50;
+			break;
+		   case "C":
+		     digit=100;
+			 break;
+		  case "D":
+		      digit=500;
+			  break;
+		   case "M":
+		      digit=1000;
+			  break;
+		  
+		  }
+		 //Rule 3
+         if(digit>maxDigit)		 
+		 {
+		   romanToNumberError="Rule 3 violated";
+		 }
+		 
+		 //Next digit
+		 var nextDigit=0;
+		 if(ptr<roman.length-1)
+		 {
+		  var nextNumeral=roman.charAt(ptr+1);
+		  switch(nextNumeral)
+		  {
+		   case "I":
+		     nextDigit=1;
+			 break;
+		   case "V":
+		     nextDigit=5;
+			 break;
+		   case "X":
+		      nextDigit=10;
+			  break;
+		   case "L":
+			nextDigit=50;
+			break;
+		   case "C":
+		     nextDigit=100;
+			 break;
+		  case "D":
+		      nextDigit=500;
+			  break;
+		   case "M":
+		      nextDigit=1000;
+			  break;
+		  
+		  }
+		  if(nextDigit>digit)
+		  {
+		    if("IXC".indexOf(numeral)==-1 || nextDigit>(digit*10) || roman.split(numeral).length>3)
+			  {
+			   romanToNumberError="Rule 3 violated";
+			  }
+			  maxDigit=digit-1;
+			  digit=nextDigit-digit;
+			  ptr++;
+		  }
+		  
+		 }
+		 values.push(digit);
+		 //next digit
+		 ptr++;
+	//	  alert(values);
+		
+		
+		}
+		//Rule 5
+		for(var i=0;i<values.length-1;i++)
+		{
+		  if(values[i]<values[i+1])
+		  {
+		    romanToNumberError="Rule 5 violated";
+		  }
+		}
+		
+		//Rule 2
+		var total=0;
+		for(var i=0;i<values.length;i++)
+		{
+		  total=total+values[i];
+		}
+		
+        if((typeof total)=="number" && (romanToNumberError=="No error"))
+		{
+		 // alert(total);
+		  //Now autonumber all the remaining textboxes of the document
+		  for(var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
+			{
+			  total++;
+			 //alert(i);
+			  if(document.getElementById('textbox'+spanArray[i]))
+			  {
+			  
+			    var number=total;
+				
+				//Convert decimal "total" back to a roman numeral
+				
+				//Set up the key-value arrays
+				var values=[1000,900,500,400,100,90,50,40,10,9,5,4,1];
+				var numerals=["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"];
+				
+				//initialize the string
+				var result="";
+				
+				for(var x=0;x<13;x++)
+				{
+				  //If the number being converted is less than the current key value, append the corresponding numeral or numerical pair to the resultant string
+				  while(number>=values[x])
+				  {
+				    number=number-values[x];
+					result=result+numerals[x];
+					
+				  }
+				}
+				
+//				alert(result);
+				if(isRomanLower)
+				{
+				  result=result.toLowerCase();
+				}
+				
+				//End conversion to roman numeral
+
+//				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
+			    document.getElementById('textbox'+spanArray[i]).value = 
+				 document.getElementById(textboxID).value.substr(0,((document.getElementById(textboxID).value.length)-(lastNumber.length))-1)+' '+result;
+			  }//end if
+			}//end for
+		  
+		
+		}
+	}
   }//end if
  
  //Mode '1': Autonumber all the thumbnail pages till the start of the next div
    if(mode=='1')
   {
-    
+    var textboxValue = document.getElementById(textboxID).value;
+	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
+//	lastNumber = lastNumber.toUpperCase().trim();
     var matches = document.getElementById(textboxID).value.match(/\d+/g);
+	var varRomanMatches = true;
+	var isRomanLower=true;
+
+	for(var x=0;x<lastNumber.length;x++)
+	{
+	  var c=lastNumber.charAt(x);
+	  if("IVXLCDM".indexOf(c)==-1 && "ivxlcdm".indexOf(c)==-1)
+	  {
+     	  varRomanMatches=false;
+	  }
+
+	}
+
     if (matches != null) 
     {
        // the id attribute contains a digit
@@ -332,6 +567,220 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
        }//end if
     }//end if
 
+	//else check for roman numeral autonumbering
+	
+	 else if(varRomanMatches==true)
+	{
+//	   alert('Possible roman numeral detected!');
+	   var romanToNumberError="No error";
+	   
+	   for(var x=0;x<lastNumber.length;x++)
+		{
+		  var c=lastNumber.charAt(x);
+		  if("IVXLCDM".indexOf(c)>-1)
+		  {
+			  isRomanLower=false;
+		  }
+		  else
+		  {
+		     isRomanLower =true;
+		  }
+		}
+//	   alert(isRomanLower);
+	   
+   
+        var roman = lastNumber.toUpperCase().trim();
+        
+		if(roman.split('V').length>2||roman.split('L').length>2||roman.split('D').length>2)
+		{
+     		romanToNumberError="Rule 4 violated";
+	    }	  
+		//Rule 1
+		var count=1;
+		var last='Z';
+		for(var x=0;x<roman.length;x++)
+		{
+		  //Duplicate?
+		  if(roman.charAt(x)==last)
+		  {
+		    count++;
+			if(count==4)
+			{
+			  romanToNumberError="Rule 1 violated";
+			}
+
+		  }
+		  else
+		  {
+			  count=1;
+			  last = roman.charAt(x);
+		  }
+		}
+
+		//Create an arraylist containing the values
+		var ptr=0;
+		var values = new Array();
+		var maxDigit=1000;
+        var digit=0;
+		var nextDigit=0;
+		
+		while (ptr<roman.length)
+		{
+		  //Base value of digit
+		  var numeral=roman.charAt(ptr);
+		  switch(numeral)
+		  {
+		   case "I":
+		     digit=1;
+			 break;
+		   case "V":
+		     digit=5;
+			 break;
+		   case "X":
+		      digit=10;
+			  break;
+		   case "L":
+			digit=50;
+			break;
+		   case "C":
+		     digit=100;
+			 break;
+		  case "D":
+		      digit=500;
+			  break;
+		   case "M":
+		      digit=1000;
+			  break;
+		  
+		  }
+		 //Rule 3
+         if(digit>maxDigit)		 
+		 {
+		   romanToNumberError="Rule 3 violated";
+		 }
+		 
+		 //Next digit
+		 var nextDigit=0;
+		 if(ptr<roman.length-1)
+		 {
+		  var nextNumeral=roman.charAt(ptr+1);
+		  switch(nextNumeral)
+		  {
+		   case "I":
+		     nextDigit=1;
+			 break;
+		   case "V":
+		     nextDigit=5;
+			 break;
+		   case "X":
+		      nextDigit=10;
+			  break;
+		   case "L":
+			nextDigit=50;
+			break;
+		   case "C":
+		     nextDigit=100;
+			 break;
+		  case "D":
+		      nextDigit=500;
+			  break;
+		   case "M":
+		      nextDigit=1000;
+			  break;
+		  
+		  }
+		  if(nextDigit>digit)
+		  {
+		    if("IXC".indexOf(numeral)==-1 || nextDigit>(digit*10) || roman.split(numeral).length>3)
+			  {
+			   romanToNumberError="Rule 3 violated";
+			  }
+			  maxDigit=digit-1;
+			  digit=nextDigit-digit;
+			  ptr++;
+		  }
+		  
+		 }
+		 values.push(digit);
+		 //next digit
+		 ptr++;
+	//	  alert(values);
+		
+		
+		}
+		//Rule 5
+		for(var i=0;i<values.length-1;i++)
+		{
+		  if(values[i]<values[i+1])
+		  {
+		    romanToNumberError="Rule 5 violated";
+		  }
+		}
+		
+		//Rule 2
+		var total=0;
+		for(var i=0;i<values.length;i++)
+		{
+		  total=total+values[i];
+		}
+		
+        if((typeof total)=="number" && (romanToNumberError=="No error"))
+		{
+		  //Now autonumber all the remaining textboxes of this div
+		  var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
+		  while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
+			{
+			  total++;
+
+			  if(document.getElementById('textbox'+spanArray[i]))
+			  {
+			  
+			    var number=total;
+				
+				//Convert decimal "total" back to a roman numeral
+				
+				//Set up the key-value arrays
+				var values=[1000,900,500,400,100,90,50,40,10,9,5,4,1];
+				var numerals=["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"];
+				
+				//initialize the string
+				var result="";
+				
+				for(var x=0;x<13;x++)
+				{
+				  //If the number being converted is less than the current key value, append the corresponding numeral or numerical pair to the resultant string
+				  while(number>=values[x])
+				  {
+				    number=number-values[x];
+					result=result+numerals[x];
+					
+				  }
+				}
+				
+//				alert(result);
+				if(isRomanLower)
+				{
+				  result=result.toLowerCase();
+				}
+				
+				//End conversion to roman numeral
+
+//				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
+			    document.getElementById('textbox'+spanArray[i]).value = 
+				 document.getElementById(textboxID).value.substr(0,((document.getElementById(textboxID).value.length)-(lastNumber.length))-1)+' '+result;
+			  }//end if
+			  i++;
+			}//end for
+		  
+		
+		}
+	}
+	
+	
+	
+	//end roman numeral auto numbering
+	
+	
 
   }//end if
   

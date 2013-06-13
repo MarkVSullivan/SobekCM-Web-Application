@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Data;
@@ -1417,13 +1418,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	
 			  navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
-                //test shift+click checkboxes
-
-                //navRowBuilder.AppendLine("<script type=\"text/javascript\">$(document).ready(function() {$(function() {$(\"input[name^='chkMoveThumbnail']\").shiftClick();});");
-                //navRowBuilder.AppendLine("(function($) {$.fn.shiftClick = function() {var lastSelected;var checkBoxes = $(this);this.each(function() {$(this).click(function(ev) {if (ev.shiftKey) {var MaxPageCount = 50;var spanArrayObjects = new Array();if(window.spanArrayGlobal!= null){ spanArrayObjects = window.spanArrayGlobal;}else{for(var j=0;j<MaxPageCount;j++){spanArrayObjects[j]='span'+j;}}var spanArray=new Array();for(var k=0;k<spanArrayObjects.length;k++){spanArray[k]=spanArrayObjects[k].split('span')[1];} var last = checkBoxes.index(lastSelected);var first = checkBoxes.index(this);var thisID = (this.id).split('chkMoveThumbnail')[1];var lastID = (lastSelected.id).split('chkMoveThumbnail')[1];var thisIndex = spanArray.indexOf(thisID);");
-                //navRowBuilder.AppendLine("var lastIndex = spanArray.indexOf(lastID); var start = Math.min(thisIndex, lastIndex);var end = Math.max(thisIndex, lastIndex);var chk = lastSelected.checked; for (var i = start; i < end; i++) {document.getElementById('chkMoveThumbnail'+(spanArray[i])).checked = chk;}} else {lastSelected = this;}})});};})(jQuery);});");
-                //navRowBuilder.AppendLine("</script>");
-
+                // shift+click checkboxes
   
                 navRowBuilder.AppendLine("<script type=\"text/javascript\">$(document).ready(function() {$(function() {$(\"input[name^='chkMoveThumbnail']\").shiftClick();});");
                 navRowBuilder.AppendLine("(function($) {$.fn.shiftClick = function() {var lastSelected;var checkBoxes = $(this);this.each(function() {$(this).click(function(ev) {if (ev.shiftKey) {var MaxPageCount = "+qc_item.Web.Static_PageCount+";var spanArrayObjects = new Array();if(window.spanArrayGlobal!= null){ spanArrayObjects = window.spanArrayGlobal;}else{for(var j=0;j<MaxPageCount;j++){spanArrayObjects[j]='span'+j;}}var spanArray=new Array();for(var k=0;k<spanArrayObjects.length;k++){spanArray[k]=spanArrayObjects[k].split('span')[1];} var last = checkBoxes.index(lastSelected);var first = checkBoxes.index(this);var thisID = (this.id).split('chkMoveThumbnail')[1];var lastID = (lastSelected.id).split('chkMoveThumbnail')[1];var thisIndex = spanArray.indexOf(thisID);");
@@ -1431,8 +1426,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    navRowBuilder.AppendLine("}else{document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';}}}} else {lastSelected = this;}})});};})(jQuery);});");
                 navRowBuilder.AppendLine("</script>");
 
-
-                //end test shift+click checkboxes
+                //end shift+click checkboxes
 
 
 			  // Add the popup form
@@ -1653,6 +1647,129 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get { return false; }
 		}
+
+        /// <summary> Converts a roman numeral to a decimal number </summary>
+        /// <param name="roman">Roman numeral (string)</param>
+        /// <returns>Corresponding decimal number(integer)</returns>
+        public int RomanToNumber(string roman)
+        {
+            bool isLower = false;
+            try
+            {
+                //Check if the roman numeral is in upper or lower case
+                for (int i = 0; i < roman.Length; i++)
+                {
+                    if (char.IsLower(roman[i]))
+                        isLower = true;
+                }
+                roman = roman.ToUpper().Trim();
+                if (roman.Split('V').Length > 2 || roman.Split('L').Length > 2 || roman.Split('D').Length > 2)
+                    throw new ArgumentException("Rule 4 violated");
+
+                //Rule 1
+                int count = 1;
+                char last = 'Z';
+                foreach (char numeral in roman)
+                {
+                    //Valid character?
+                    if ("IVXLCDM".IndexOf(numeral) == -1)
+                        throw new ArgumentException("Invalid Roman Numeral");
+
+                    //Check if a numeral has been repeated more than thrice
+                    if (numeral == last)
+                    {
+                        count++;
+                        if (count == 4)
+                            throw new ArgumentException("Rule 1 violated - numeral repeated more than 3 times");
+                    }
+                    else
+                    {
+                        count = 1;
+                        last = numeral;
+                    }
+                }
+
+                //Create an arraylist containing the values
+                int ptr = 0;
+                ArrayList values = new ArrayList();
+                int maxDigit = 1000;
+
+                while (ptr < roman.Length)
+                {
+                    //Get the base vaue of the numeral
+                    char numeral = roman[ptr];
+                    int digit = (int) Enum.Parse(typeof (RomanDigit), numeral.ToString());
+
+                    //Check for Rule 3
+                    if (digit > maxDigit)
+                    {
+                        throw new ArgumentException("Rule 3 violated");
+                    }
+
+                    //Get the next digit
+                    int nextDigit = 0;
+                    if (ptr < roman.Length - 1)
+                    {
+                        char nextNumeral = roman[ptr + 1];
+                        nextDigit = (int) Enum.Parse(typeof (RomanDigit), nextNumeral.ToString());
+
+                        if (nextDigit > digit)
+                        {
+                            if ("IXC".IndexOf(numeral) == -1 || nextDigit > (digit*10) || roman.Split(numeral).Length > 3)
+                                throw new ArgumentException("Rule 3 violated");
+
+                            maxDigit = digit - 1;
+                            digit = nextDigit - digit;
+                            ptr++;
+                        }
+                    }
+                    values.Add(digit);
+                    //next digit
+                    ptr++;
+                }
+                //Check for rule 5
+                for (int i = 0; i < values.Count - 1; i++)
+                {
+                    if ((int) values[i] < (int) values[i + 1])
+                        throw new ArgumentException("Not a valid roman number: Rule 5 violated");
+                }
+                //Rule 2
+                int total = 0;
+
+                foreach (int digit in values)
+                {
+                    total += digit;
+                }
+
+                return total;
+
+            }
+            catch (Exception e)
+            {
+                return -1;
+            }
+
+        }
+
+	    /// <summary> Map the roman numeral digits with their integer equivalents </summary>
+	    public enum RomanDigit
+	    {
+            /// <summary> Roman numeral I </summary>
+	        I = 1,
+            /// <summary> Roman numeral V </summary>
+	        V = 5,
+            /// <summary> Roman numeral X </summary>
+	        X = 10,
+            /// <summary> Roman numeral L </summary>
+	        L = 50,
+	        /// <summary> Roman numeral C </summary>
+            C = 100,
+            /// <summary> Roman numeral D </summary>
+	        D = 500,
+	        /// <summary>Roman numeral M </summary>
+            M = 1000
+	    };
+
 
 		protected class QC_Viewer_Page_Division_Info
 		{
