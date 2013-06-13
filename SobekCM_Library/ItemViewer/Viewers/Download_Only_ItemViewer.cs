@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
 
@@ -69,56 +70,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Download_Only_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Download_Only_ItemViewer.Write_Main_Viewer_Section", "");
             }
-
-			// Build the value
-			StringBuilder builder = new StringBuilder(1500);
 
 			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
 
 			// Start the citation table
-            builder.AppendLine("\t\t<!-- DOWNLOAD ONLY VIEWER OUTPUT -->" );
-            builder.AppendLine("\t\t<td class=\"SobekDocumentDisplay\">" );
-            builder.AppendLine("\t\t\t<div class=\"SobekCitation\">" );
+            Output.WriteLine("\t\t<!-- DOWNLOAD ONLY VIEWER OUTPUT -->" );
+            Output.WriteLine("\t\t<td class=\"SobekDocumentDisplay\">" );
+            Output.WriteLine("\t\t\t<div class=\"SobekCitation\">" );
 
 
-            builder.AppendLine("\t\t\t</div>" );
+            Output.WriteLine("\t\t\t</div>" );
 
 			// Finish the table
-			builder.AppendLine( "\t\t</td>" );
-            builder.AppendLine("\t\t<!-- END DOWNLOAD ONLY VIEWER OUTPUT -->"  );
+			Output.WriteLine( "\t\t</td>" );
+            Output.WriteLine("\t\t<!-- END DOWNLOAD ONLY VIEWER OUTPUT -->"  );
 
 			// Restore the mode
 			CurrentMode.ViewerCode = current_view_code;
-
-			// Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add( mainLiteral );
-		}
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Download_Only_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
 		}
     }
 }

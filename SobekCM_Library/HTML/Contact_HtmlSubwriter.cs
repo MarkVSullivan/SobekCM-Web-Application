@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
 using System.Text;
@@ -256,6 +257,35 @@ namespace SobekCM.Library.HTML
             }
 
             return true;
+        }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get
+            {
+                return currentMode.Mode == Display_Mode_Enum.Contact_Sent ? "{0} Contact Sent" : "{0} Contact Us";
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Based on display mode, add ROBOT instructions
+            switch (currentMode.Mode)
+            {
+                case Display_Mode_Enum.Contact:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+                    break;
+
+                case Display_Mode_Enum.Contact_Sent:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+                    break;
+            }
         }
     }
 }

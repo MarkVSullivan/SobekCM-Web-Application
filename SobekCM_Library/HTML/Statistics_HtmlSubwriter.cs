@@ -2844,5 +2844,27 @@ namespace SobekCM.Library.HTML
         }
 
         #endregion
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get { return "{0} Statistics"; }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+
+            // Add the code for the calendar pop-up if it may be required
+            if (currentMode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + currentMode.Base_URL + "default/jsDatePick_ltr.css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datepicker/jsDatePick.full.1.3.js\"></script>");
+            }
+        }
     }
 }

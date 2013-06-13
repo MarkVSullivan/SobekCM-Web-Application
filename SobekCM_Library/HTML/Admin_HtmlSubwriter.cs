@@ -354,6 +354,30 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
         }
 
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get { return "{0} System Administration"; }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+
+            // If editing projects, add the mySobek stylesheet as well
+            if ((currentMode.Admin_Type == Admin_Type_Enum.Projects) && (currentMode.My_Sobek_SubMode.Length > 0))
+            {
+                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+            }
+        }
+
         #region Writes the HTML for the admin view tabs 
 
         private void Write_Admin_View_Type_Selectors(TextWriter Output)

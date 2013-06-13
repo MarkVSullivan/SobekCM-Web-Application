@@ -70,5 +70,31 @@ namespace SobekCM.Library.HTML
 
             return true;
         }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get
+            {
+                return "{0} Error";
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+
+
+            // If this is error mode, just include the error text styles directly
+            Output.WriteLine("  <style type=\"text/css\">");
+            Output.WriteLine("    h4 { color: red; font-size: 20px } ");
+            Output.WriteLine("    h5 { color: black; font-size: 16px } ");
+            Output.Write("  </style>");
+        }
     }
 }

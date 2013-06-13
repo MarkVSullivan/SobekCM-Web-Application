@@ -54,10 +54,6 @@ namespace SobekCM.Library.MainWriters
 
         // Special HTML sub-writers that need to have some persistance between methods
         private abstractHtmlSubwriter subwriter;
-        private Item_HtmlSubwriter itemWriter;
-        private Search_Results_HtmlSubwriter resultsWriter;
-        private MySobek_HtmlSubwriter mySobekWriter;
-        private Admin_HtmlSubwriter adminWriter;
 
         /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
@@ -109,7 +105,8 @@ namespace SobekCM.Library.MainWriters
             Portal_List URL_Portals,
             SobekCM_SiteMap Site_Map,
             SobekCM_Items_In_Title Items_In_Title,
-            HTML_Based_Content Static_Web_Content )
+            HTML_Based_Content Static_Web_Content,
+            Custom_Tracer Tracer )
             : base(Current_Mode, Hierarchy_Object, Results_Statistics, Paged_Results, Browse_Object,  Current_Item, Current_Page, Static_Web_Content)
         {
             // Save parameters
@@ -162,6 +159,192 @@ namespace SobekCM.Library.MainWriters
                     }
                 }
             }
+
+            // Create the html sub writer now
+            switch (Current_Mode.Mode)
+            {
+
+
+                case Display_Mode_Enum.Internal:
+                    subwriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager);
+                    break;
+
+                case Display_Mode_Enum.Statistics:
+                    subwriter = new Statistics_HtmlSubwriter(searchHistory, codeManager, statsDateRange);
+                    break;
+
+                case Display_Mode_Enum.Preferences:
+                    subwriter = new Preferences_HtmlSubwriter(currentMode);
+                    break;
+
+                case Display_Mode_Enum.Error:
+                    subwriter = new Error_HtmlSubwriter(false);
+                    // Send the email now
+                    if (currentMode.Caught_Exception != null)
+                    {
+                        if (currentMode.Error_Message.Length == 0)
+                            currentMode.Error_Message = "Unknown exception caught";
+                        Email_Information(currentMode.Error_Message, currentMode.Caught_Exception, Tracer, false);
+                    }
+                    break;
+
+                case Display_Mode_Enum.Legacy_URL:
+                    subwriter = new LegacyUrl_HtmlSubwriter();
+                    break;
+
+                case Display_Mode_Enum.Item_Print:
+                    subwriter = new Print_Item_HtmlSubwriter(currentItem, codeManager, translator, currentMode);
+                    break;
+
+                case Display_Mode_Enum.Contact:
+
+
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append("\n\nSUBMISSION INFORMATION\n");
+                    builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
+                    string lastMode = String.Empty;
+                    try
+                    {
+                        if (HttpContext.Current.Session["Last_Mode"] != null)
+                            lastMode = HttpContext.Current.Session["Last_Mode"].ToString();
+                        builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
+                        builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
+                        builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
+                        builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
+                        builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
+                        builder.Append("\tBrowser Language:\t\t");
+                        bool first = true;
+                        string[] languages = HttpContext.Current.Request.UserLanguages;
+                        if (languages != null)
+                            foreach (string thisLanguage in languages)
+                            {
+                                if (first)
+                                {
+                                    builder.Append(thisLanguage);
+                                    first = false;
+                                }
+                                else
+                                {
+                                    builder.Append(", " + thisLanguage);
+                                }
+                            }
+
+                        builder.Append("\n\nUFDC HISTORY\n");
+                        if (HttpContext.Current.Session["LastSearch"] != null)
+                            builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
+                        if (HttpContext.Current.Session["LastResults"] != null)
+                            builder.Append("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"] + "\n");
+                        if (HttpContext.Current.Session["Last_Mode"] != null)
+                            builder.Append("\tLast Mode:\t\t\t" + HttpContext.Current.Session["Last_Mode"] + "\n");
+                        builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
+                    }
+                    catch (Exception ee)
+                    {
+
+                    }
+                    subwriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), currentMode, hierarchyObject);
+                    break;
+
+
+                case Display_Mode_Enum.Contact_Sent:
+                    subwriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, currentMode, hierarchyObject);
+                    break;
+
+                case Display_Mode_Enum.Simple_HTML_CMS:
+                    subwriter = new Web_Content_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, htmlBasedContent, siteMap);
+                    break;
+
+                case Display_Mode_Enum.My_Sobek:
+                    subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
+                    break;
+
+                case Display_Mode_Enum.Administrative:
+                    subwriter = new Admin_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
+                    break;
+
+                case Display_Mode_Enum.Results:
+                    subwriter = new Search_Results_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser);
+                    break;
+
+                case Display_Mode_Enum.Public_Folder:
+                    subwriter = new Public_Folder_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser, publicFolder);
+                    break;
+
+                case Display_Mode_Enum.Search:
+                case Display_Mode_Enum.Aggregation_Home:
+                case Display_Mode_Enum.Aggregation_Browse_Info:
+                case Display_Mode_Enum.Aggregation_Browse_By:
+                case Display_Mode_Enum.Aggregation_Browse_Map:
+                case Display_Mode_Enum.Aggregation_Private_Items:
+                case Display_Mode_Enum.Aggregation_Item_Count:
+                case Display_Mode_Enum.Aggregation_Usage_Statistics:
+                case Display_Mode_Enum.Aggregation_Admin_View:
+                    subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, ipRestrictionInfo, htmlBasedContent, Tracer);
+                    break;
+
+                case Display_Mode_Enum.Item_Display:
+                    if ((!currentMode.Invalid_Item) && ( currentItem != null ))
+                    {
+                        bool show_toc = false;
+                        if (HttpContext.Current.Session["Show TOC"] != null)
+                        {
+                            Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out show_toc);
+                        }
+
+                        // Check that this item is not checked out by another user
+                        bool itemCheckedOutByOtherUser = false;
+                        if (currentItem.Behaviors.CheckOut_Required)
+                        {
+                            if ( !checkedItems.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
+                            {
+                                itemCheckedOutByOtherUser = true;
+                            }
+                        }
+
+                        // Check to see if this is IP restricted
+                        string restriction_message = String.Empty;
+                        if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+                        {
+                            if (HttpContext.Current != null)
+                            {
+                                int user_mask = (int) HttpContext.Current.Session["IP_Range_Membership"];
+                                int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
+                                if (comparison == 0)
+                                {
+                                    int restriction = currentItem.Behaviors.IP_Restriction_Membership;
+                                    int restriction_counter = 0;
+                                    while (restriction%2 != 1)
+                                    {
+                                        restriction = restriction >> 1;
+                                        restriction_counter++;
+                                    }
+                                    restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
+                                }
+                            }
+                        }
+
+                        // Create the item viewer writer
+                        subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2_Server.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer); 
+                        ((Item_HtmlSubwriter) subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
+                        break;
+                    }
+                    else
+                    {
+                        // Create the invalid item html subwrite and write the HTML
+                        subwriter = new Error_HtmlSubwriter(true);
+                    }
+                    break;
+
+            }
+
+
+            if (subwriter != null)
+            {
+                subwriter.Mode = currentMode;
+                subwriter.Skin = htmlSkin;
+                subwriter.Hierarchy_Object = hierarchyObject;
+            }
+
         }
 
         /// <summary> Returns a flag indicating if the current request requires the navigation form in the main ASPX
@@ -247,7 +430,9 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
 
             // Start with the basic html at the beginning of the page
-            if (( currentMode.Mode != Display_Mode_Enum.Item_Print ) && ((currentMode.Mode != Display_Mode_Enum.My_Sobek) || ( !mySobekWriter.Contains_Popup_Forms )) && ((currentMode.Mode != Display_Mode_Enum.Administrative) || ( !adminWriter.Contains_Popup_Forms )))
+            if (( currentMode.Mode != Display_Mode_Enum.Item_Print ) && 
+                ((currentMode.Mode != Display_Mode_Enum.My_Sobek) || (( subwriter is MySobek_HtmlSubwriter) && ( !((MySobek_HtmlSubwriter)subwriter).Contains_Popup_Forms ))) &&
+                ((currentMode.Mode != Display_Mode_Enum.Administrative) || (( subwriter is MySobek_HtmlSubwriter) && ( !((MySobek_HtmlSubwriter)subwriter).Contains_Popup_Forms ))))
             {
                 Display_Header(Output, Tracer);
             }
@@ -264,7 +449,7 @@ namespace SobekCM.Library.MainWriters
                     case Display_Mode_Enum.My_Sobek:
 
                         // Add HTML
-                        finish_page = mySobekWriter.Write_HTML(Output, Tracer);
+                        finish_page = subwriter.Write_HTML(Output, Tracer);
                         break;
 
                     #endregion
@@ -274,7 +459,7 @@ namespace SobekCM.Library.MainWriters
                     case Display_Mode_Enum.Administrative:
 
                         // Add HTML
-                        finish_page = adminWriter.Write_HTML(Output, Tracer);
+                        finish_page = subwriter.Write_HTML(Output, Tracer);
                         break;
 
                     #endregion
@@ -294,14 +479,8 @@ namespace SobekCM.Library.MainWriters
 
                     case Display_Mode_Enum.Internal:
 
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Internal HTML Subwriter");
-
-                        // Build the subwriter for this case
-                        Internal_HtmlSubwriter internalWriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager)
-                                                                 { Mode = currentMode, Skin = htmlSkin, Hierarchy_Object = hierarchyObject };
-
                         // Add the pure HTML for this case and the page can be finished right here
-                        internalWriter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         break;
 
@@ -310,14 +489,8 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML only and finish the page for STATISTICS mode
 
                     case Display_Mode_Enum.Statistics:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Statistics HTML Subwriter");
-
-                        // Build the subwriter for this case
-                        Statistics_HtmlSubwriter statWriter = new Statistics_HtmlSubwriter(searchHistory, codeManager, statsDateRange)
-                                                                  { Mode = currentMode, Skin = htmlSkin, Hierarchy_Object = hierarchyObject };
-
                         // Add the pure HTML for this case and the page can be finished right here
-                        statWriter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         break;
 
@@ -326,10 +499,7 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML only and finish the page for the PREFERENCES mode
 
                     case Display_Mode_Enum.Preferences:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Preferences HTML Subwriter");
-                        Preferences_HtmlSubwriter preferencesWriter = new Preferences_HtmlSubwriter(currentMode)
-                                                                          { Hierarchy_Object = hierarchyObject, Skin = htmlSkin, Mode = currentMode };
-                        preferencesWriter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         break;
 
@@ -338,20 +508,8 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML only and finish the page for ERROR mode
 
                     case Display_Mode_Enum.Error:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Error HTML Subwriter");
-                        Error_HtmlSubwriter errorWriter = new Error_HtmlSubwriter(false)
-                                                              { Skin = htmlSkin, Mode = currentMode};
-                        errorWriter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
-
-                        // Send the email now
-                        if (currentMode.Caught_Exception != null)
-                        {
-                            if (currentMode.Error_Message.Length == 0)
-                                currentMode.Error_Message = "Unknown exception caught";
-                            Email_Information(currentMode.Error_Message, currentMode.Caught_Exception, Tracer, false);
-                        }
-
                         break;
 
                     #endregion
@@ -359,10 +517,7 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML only and finish the page for LEGACY URL mode
 
                     case Display_Mode_Enum.Legacy_URL:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Legacy URL HTML Subwriter");
-                        LegacyUrl_HtmlSubwriter legacyUrlWriter = new LegacyUrl_HtmlSubwriter
-                                                                      {Skin = htmlSkin, Mode = currentMode};
-                        legacyUrlWriter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         break;
 
@@ -371,12 +526,8 @@ namespace SobekCM.Library.MainWriters
                     #region Start adding HTML and add controls for RESULTS mode
 
                     case Display_Mode_Enum.Results:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Writing html from pre-built Search Results HTML Subwriter");
-
                         // Write the pure HTML for this
-                        resultsWriter.Write_HTML(Output, Tracer);
-
-
+                        subwriter.Write_HTML(Output, Tracer);
                         break;
 
                     #endregion
@@ -418,18 +569,14 @@ namespace SobekCM.Library.MainWriters
                     case Display_Mode_Enum.Item_Display:
                         if (currentMode.Invalid_Item)
                         {
-                            // Create the invalid item html subwrite and write the HTML
-                            Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Invalid Item Writer");
-                            Error_HtmlSubwriter invalidWriter = new Error_HtmlSubwriter(true)
-                                                                    { Hierarchy_Object = hierarchyObject, Skin = htmlSkin, Mode = currentMode };
-                            invalidWriter.Write_HTML(Output, Tracer);
+                            subwriter.Write_HTML(Output, Tracer);
                             finish_page = true;
                         }
                         else
                         {
-                            if (itemWriter != null)
+                            if (subwriter != null)
                             {
-                                itemWriter.Write_HTML(Output, Tracer);
+                                subwriter.Write_HTML(Output, Tracer);
                             }
                         }
                         break;
@@ -439,11 +586,7 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML only and finish the page for ITEM PRINT mode
 
                     case Display_Mode_Enum.Item_Print:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Print Item Subwriter");
-
-                        Print_Item_HtmlSubwriter itemPrinter = new Print_Item_HtmlSubwriter(currentItem, codeManager, translator, currentMode)
-                                                                   {Skin = htmlSkin, Mode = currentMode};
-                        itemPrinter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         draw_footer = false;
                         break;
@@ -453,71 +596,8 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML and controls for CONTACT mode
 
                     case Display_Mode_Enum.Contact:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Contact HTML Subwriter");
-
-                        try
-                        {
-                            Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building submission information for the Contact Writer");
-                            StringBuilder builder = new StringBuilder();
-                            builder.Append("\n\nSUBMISSION INFORMATION\n");
-                            builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
-                            string lastMode = String.Empty;
-                            try
-                            {
-                                if (HttpContext.Current.Session["Last_Mode"] != null)
-                                    lastMode = HttpContext.Current.Session["Last_Mode"].ToString();
-                                builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
-                                builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
-                                builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
-                                builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
-                                builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
-                                builder.Append("\tBrowser Language:\t\t");
-                                bool first = true;
-                                string[] languages = HttpContext.Current.Request.UserLanguages;
-                                if (languages != null)
-                                    foreach (string thisLanguage in languages)
-                                    {
-                                        if (first)
-                                        {
-                                            builder.Append(thisLanguage);
-                                            first = false;
-                                        }
-                                        else
-                                        {
-                                            builder.Append(", " + thisLanguage);
-                                        }
-                                    }
-
-                                builder.Append("\n\nUFDC HISTORY\n");
-                                if (HttpContext.Current.Session["LastSearch"] != null)
-                                    builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
-                                if (HttpContext.Current.Session["LastResults"] != null)
-                                    builder.Append("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"] + "\n");
-                                if (HttpContext.Current.Session["Last_Mode"] != null)
-                                    builder.Append("\tLast Mode:\t\t\t" + HttpContext.Current.Session["Last_Mode"] + "\n");
-                                builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
-                            }
-                            catch (Exception ee)
-                            {
-                                Tracer.Add_Trace("SobekCM.Library.Html_MainWriter.Add_Text_To_Page", ee.ToString(), Custom_Trace_Type_Enum.Error);
-                            }
-
-                            // Build the subwriter for this case
-                            Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Contact HTML Subwriter");
-                            Contact_HtmlSubwriter contactWriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), currentMode, hierarchyObject)
-                                                                      { Hierarchy_Object = hierarchyObject, Skin = htmlSkin };
-
-                            // Add the HTML for this case
-                            contactWriter.Write_HTML(Output, Tracer);
-                        }
-                        catch (Exception ee)
-                        {
-                            if (currentMode.isPostBack)
-                            {
-                                throw new ApplicationException("Error in the CONTACT case during PostBack", ee);
-                            }
-                            throw new ApplicationException("Error in the CONTACT case (not during PostBack)", ee);
-                        }
+                        // Add the HTML for this case
+                        subwriter.Write_HTML(Output, Tracer);
                         break;
 
                     #endregion
@@ -525,10 +605,7 @@ namespace SobekCM.Library.MainWriters
                     #region Add HTML only and finish the page for CONTACT SENT mode
 
                     case Display_Mode_Enum.Contact_Sent:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Building the Contact HTML Subwriter");
-                        Contact_HtmlSubwriter contactSentWriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, currentMode, hierarchyObject)
-                                                                      { Skin = htmlSkin, Hierarchy_Object = hierarchyObject, Mode = currentMode };
-                        contactSentWriter.Write_HTML(Output, Tracer);
+                        subwriter.Write_HTML(Output, Tracer);
                         finish_page = true;
                         break;
 
@@ -592,38 +669,33 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.My_Sobek:
 
-                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building the my sobek HTML subwriter");
-
-                    // Build the my sobek subwriter
-                    mySobekWriter = new MySobek_HtmlSubwriter( results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
-                    subwriter = mySobekWriter;
-                    mySobekWriter.Hierarchy_Object = hierarchyObject;
-                    mySobekWriter.Skin = htmlSkin;
-                    mySobekWriter.Mode = currentMode;
-
-                    // If the my sobek writer contains pop up forms, add the header here first
-                    if ( mySobekWriter.Contains_Popup_Forms )
+                    if ((subwriter != null) && (subwriter is MySobek_HtmlSubwriter))
                     {
-                        StringBuilder header_builder = new StringBuilder();
-                        StringWriter header_writer = new StringWriter(header_builder);
-                        Display_Header(header_writer, Tracer);
-                        LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-                        Main_Place_Holder.Controls.Add(header_literal);
+                        MySobek_HtmlSubwriter mySobekWriter = (MySobek_HtmlSubwriter) subwriter;
+
+                        // If the my sobek writer contains pop up forms, add the header here first
+                        if (mySobekWriter.Contains_Popup_Forms)
+                        {
+                            StringBuilder header_builder = new StringBuilder();
+                            StringWriter header_writer = new StringWriter(header_builder);
+                            Display_Header(header_writer, Tracer);
+                            LiteralControl header_literal = new LiteralControl(header_builder.ToString());
+                            Main_Place_Holder.Controls.Add(header_literal);
+                        }
+
+                        // Add any necessary controls
+                        mySobekWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
+
+                        // Finally, add the footer
+                        if (mySobekWriter.Contains_Popup_Forms)
+                        {
+                            StringBuilder footer_builder = new StringBuilder();
+                            StringWriter footer_writer = new StringWriter(footer_builder);
+                            Display_Footer(footer_writer, Tracer);
+                            LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
+                            Main_Place_Holder.Controls.Add(footer_literal);
+                        }
                     }
-
-                    // Add any necessary controls
-                    mySobekWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
-
-                    // Finally, add the footer
-                    if (mySobekWriter.Contains_Popup_Forms)
-                    {
-                        StringBuilder footer_builder = new StringBuilder();
-                        StringWriter footer_writer = new StringWriter(footer_builder);
-                        Display_Footer(footer_writer, Tracer);
-                        LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
-                        Main_Place_Holder.Controls.Add(footer_literal);
-                    }
-
                     break;
 
                 #endregion
@@ -632,36 +704,33 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.Administrative:
 
-                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building the admin HTML subwriter");
-
-                    // Build the my sobek subwriter
-                    adminWriter = new Admin_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
-                    subwriter = adminWriter;
-                    adminWriter.Hierarchy_Object = hierarchyObject;
-                    adminWriter.Skin = htmlSkin;
-                    adminWriter.Mode = currentMode;
-
-                    // If the my sobek writer contains pop up forms, add the header here first
-                    if (adminWriter.Contains_Popup_Forms)
+                    if ((subwriter != null) && (subwriter is Admin_HtmlSubwriter))
                     {
-                        StringBuilder header_builder = new StringBuilder();
-                        StringWriter header_writer = new StringWriter(header_builder);
-                        Display_Header(header_writer, Tracer);
-                        LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-                        Main_Place_Holder.Controls.Add(header_literal);
-                    }
+                        // Build the my sobek subwriter
+                        Admin_HtmlSubwriter adminWriter = (Admin_HtmlSubwriter) subwriter;
 
-                    // Add any necessary controls
-                    adminWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
+                        // If the my sobek writer contains pop up forms, add the header here first
+                        if (adminWriter.Contains_Popup_Forms)
+                        {
+                            StringBuilder header_builder = new StringBuilder();
+                            StringWriter header_writer = new StringWriter(header_builder);
+                            Display_Header(header_writer, Tracer);
+                            LiteralControl header_literal = new LiteralControl(header_builder.ToString());
+                            Main_Place_Holder.Controls.Add(header_literal);
+                        }
 
-                    // Finally, add the footer
-                    if (adminWriter.Contains_Popup_Forms)
-                    {
-                        StringBuilder footer_builder = new StringBuilder();
-                        StringWriter footer_writer = new StringWriter(footer_builder);
-                        Display_Footer(footer_writer, Tracer);
-                        LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
-                        Main_Place_Holder.Controls.Add(footer_literal);
+                        // Add any necessary controls
+                        adminWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
+
+                        // Finally, add the footer
+                        if (adminWriter.Contains_Popup_Forms)
+                        {
+                            StringBuilder footer_builder = new StringBuilder();
+                            StringWriter footer_writer = new StringWriter(footer_builder);
+                            Display_Footer(footer_writer, Tracer);
+                            LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
+                            Main_Place_Holder.Controls.Add(footer_literal);
+                        }
                     }
 
                     break;
@@ -671,23 +740,16 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and add controls for RESULTS mode
 
                 case Display_Mode_Enum.Results:
-                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building the Search Results HTML Subwriter");
+                    if ((subwriter != null) && (subwriter is Search_Results_HtmlSubwriter))
+                    {
+                        // Make sure the corresponding 'search' is the latest
+                        currentMode.Mode = Display_Mode_Enum.Search;
+                        HttpContext.Current.Session["LastSearch"] = currentMode.Redirect_URL();
+                        currentMode.Mode = Display_Mode_Enum.Results;
 
-                    // Build the results subwriter
-                    resultsWriter = new Search_Results_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser );
-                    subwriter = resultsWriter;
-                    resultsWriter.Hierarchy_Object = hierarchyObject;
-                    resultsWriter.Skin = htmlSkin;
-                    resultsWriter.Mode = currentMode;
-
-                    // Make sure the corresponding 'search' is the latest
-                    currentMode.Mode = Display_Mode_Enum.Search;
-                    HttpContext.Current.Session["LastSearch"] = currentMode.Redirect_URL();
-                    currentMode.Mode = Display_Mode_Enum.Results;
-
-                    // Add the controls and save the tree info in the session state
-                    //System.Web.HttpContext.Current.Session["tree_info"] = resultsWriter.Add_Controls(Main_Place_Holder, Tracer, null);
-                    resultsWriter.Add_Controls(Main_Place_Holder, Tracer, null);
+                        // Add the controls 
+                        ((Search_Results_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer, null);
+                    }
 
                     break;
 
@@ -696,14 +758,11 @@ namespace SobekCM.Library.MainWriters
                 #region Add HTML and controls for PUBLIC FOLDER mode
 
                 case Display_Mode_Enum.Public_Folder:
-                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building the Public Folder HTML Subwriter");
-
-                    // Build the subwriter for this case
-                    subwriter = new Public_Folder_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser, publicFolder)
-                                    {Hierarchy_Object = hierarchyObject, Skin = htmlSkin, Mode = currentMode};
-
-                    // Also try to add any controls
-                    ((Public_Folder_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer, null );
+                    if ((subwriter != null) && (subwriter is Public_Folder_HtmlSubwriter))
+                    {
+                        // Also try to add any controls
+                        ((Public_Folder_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer, null);
+                    }
                     break;
 
                 #endregion
@@ -719,14 +778,11 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Aggregation_Item_Count:
                 case Display_Mode_Enum.Aggregation_Usage_Statistics:
                 case Display_Mode_Enum.Aggregation_Admin_View:
-                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building the Collection HTML Subwriter");
-
-                    // Build the subwriter for this case
-                    subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject,  results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, ipRestrictionInfo, htmlBasedContent, Tracer);
-                    
-                    // Also try to add any controls
-                    ((Aggregation_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer);
-
+                    if ((subwriter != null) && (subwriter is Aggregation_HtmlSubwriter))
+                    {
+                        // Also try to add any controls
+                        ((Aggregation_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer);
+                    }
                     break;
 
                 #endregion
@@ -734,111 +790,15 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and add controls for ITEM DISPLAY mode
 
                 case Display_Mode_Enum.Item_Display:
-                    if (!currentMode.Invalid_Item)
+                    if ((subwriter != null) && (subwriter is Item_HtmlSubwriter))
                     {
-                        if (currentItem == null)
-                            return;
-
-                        //SobekCM.Library.ItemViewer.Viewers.abstractItemViewer page_viewer = null;
-
-                        //// Set the code for bib level mets to show the volume list by dwe
-                        //if ((currentItem.METS.RecordStatus == METS_Record_Status.BIB_LEVEL) && (currentMode.ViewerCode.Length == 0))
-                        //{
-                        //    currentMode.ViewerCode = "BI1";
-                        //}
-
-                        //// Get the valid viewer code
-                        //Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Getting the appropriate item viewer");
-                        //if (currentMode.ViewerCode != "TS")
-                        //{
-                        //    if ((currentMode.ViewerCode.Length == 0) && (currentMode.Coordinates.Length > 0))
-                        //    {
-                        //        currentMode.ViewerCode = "GM";
-                        //    }
-                        //    currentMode.ViewerCode = currentItem.Behaviors.Get_Valid_Viewer_Code(currentMode.ViewerCode, currentMode.Page);
-                        //    SobekCM.Resource_Object.Behaviors.View_Object viewObject = currentItem.Behaviors.Get_Viewer(currentMode.ViewerCode);
-                        //    page_viewer = SobekCM.Library.ItemViewer.Viewers.ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.Type.Type.ToUpper());
-
-                        //    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + page_viewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
-
-                        //    // Assign the rest of the information, if a page viewer was created
-                        //    if (page_viewer != null)
-                        //    {
-                        //        page_viewer.CurrentItem = currentItem;
-                        //        page_viewer.CurrentMode = currentMode;
-                        //        page_viewer.Redirect += new SobekCM.Library.ItemViewer.Viewers.Redirect_Requested(itemWriter_Redirect);
-
-                        //        // If this was the citation viewer, pass in the translation object
-                        //        string type = page_viewer.GetType().ToString();
-                        //        if (page_viewer.GetType().ToString() == "SobekCM.Library.ItemViewer.Viewers.Citation_ItemViewer")
-                        //        {
-                        //            ((SobekCM.Library.ItemViewer.Viewers.Citation_ItemViewer)page_viewer).Translator = translator;
-                        //            if ( currentUser != null )
-                        //            {
-                        //                ((SobekCM.Library.ItemViewer.Viewers.Citation_ItemViewer)page_viewer).User_Can_Edit_Item = currentUser.Can_Edit_This_Item(currentItem);
-                        //            }
-
-                        //        }
-                        //    }
-                        //}
+                        Item_HtmlSubwriter itemWriter = (Item_HtmlSubwriter) subwriter;
 
                         // Determine the browser
-                        bool ie = (currentMode.Browser_Type.IndexOf("IE") >= 0 );
-                        bool show_toc = false;
-                        if (HttpContext.Current.Session["Show TOC"] != null)
-                        {
-                            Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out show_toc);
-                        }
-
-                        // Check that this item is not checked out by another user
-                        bool itemCheckedOutByOtherUser = false;
-                        if (currentItem.Behaviors.CheckOut_Required)
-                        {
-                            if (!checkedItems.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
-                            {
-                                itemCheckedOutByOtherUser = true;
-                            }
-                        }
-
-                        // Check to see if this is IP restricted
-                        string restriction_message = String.Empty;
-                        if (currentItem.Behaviors.IP_Restriction_Membership > 0)
-                        {
-                            if (HttpContext.Current != null)
-                            {
-                                int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
-                                int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
-                                if (comparison == 0)
-                                {
-                                    int restriction = currentItem.Behaviors.IP_Restriction_Membership;
-                                    int restriction_counter = 0;
-                                    while (restriction % 2 != 1)
-                                    {
-                                        restriction = restriction >> 1;
-                                        restriction_counter++;
-                                    }
-                                    restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
-                                }
-                            }
-                        }                        
-
-                        // Create the item viewer writer
-                        Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Building Item Writer");
-                        itemWriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, 
-                            codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2_Server.Length > 0),
-                            currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer);
-                        subwriter = itemWriter;
-                        itemWriter.Mode = currentMode;
-                        itemWriter.Skin = htmlSkin;
-                        itemWriter.Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
+                        bool ie = (currentMode.Browser_Type.IndexOf("IE") >= 0);
 
                         // Add the navigation part to this form
                         itemWriter.Add_Nav_Bar_Menu_Section(Navigation_Place_Holder, ie, Tracer);
-                        //if (itemWriter.PageViewer != null)
-                        //{
-                        //    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing page viewer to add left navigation bar section to <i>navigationPlaceHolder</i>");
-                        //    itemWriter.Nav_Bar_Menu_Section_Added = itemWriter.PageViewer.Add_Nav_Bar_Menu_Section(Navigation_Place_Holder, ie, Tracer);
-                        //}
 
                         // Add the TOC section
                         Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add table of contents to <i>tocPlaceHolder</i>");
@@ -862,20 +822,17 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Add_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            //if ( currentMode.isPostBack)
-            //    return;
+            if (subwriter == null) return;
 
-            if (currentMode.Mode == Display_Mode_Enum.My_Sobek)
+            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ( subwriter is MySobek_HtmlSubwriter ))
             {
-
-                mySobekWriter.Add_Additional_HTML(Output, Tracer);
+                ((MySobek_HtmlSubwriter) subwriter).Add_Additional_HTML(Output, Tracer);
                 return;
             }
 
-            if (currentMode.Mode == Display_Mode_Enum.Administrative)
+            if ((currentMode.Mode == Display_Mode_Enum.Administrative) && ( subwriter is Admin_HtmlSubwriter ))
             {
-
-                adminWriter.Add_Additional_HTML(Output, Tracer);
+                ((Admin_HtmlSubwriter) subwriter).Add_Additional_HTML(Output, Tracer);
                 return;
             }
 
@@ -885,10 +842,10 @@ namespace SobekCM.Library.MainWriters
                 return;
             }
 
-            if (itemWriter != null)
+            if ( subwriter is Item_HtmlSubwriter )
             {
                 Tracer.Add_Trace("Html_MainWriter.Add_Additional_HTML", "Rendering HTML");
-                itemWriter.Write_Additional_HTML(Output, Tracer);
+                ((Item_HtmlSubwriter) subwriter).Write_Additional_HTML(Output, Tracer);
                 return;
             }
 
@@ -902,16 +859,16 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Add_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ( currentMode.isPostBack)
-                return;
+            if ( currentMode.isPostBack) return;
+            if (subwriter == null) return;
 
             // The my Sobek viewer closes its own footer since it must be in the form as well.
-            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ( mySobekWriter.Contains_Popup_Forms ))
+            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ( subwriter is MySobek_HtmlSubwriter ) && ( ((MySobek_HtmlSubwriter)subwriter).Contains_Popup_Forms ))
                 return;
-            if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (adminWriter.Contains_Popup_Forms))
+            if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (subwriter is Admin_HtmlSubwriter) && ( ((Admin_HtmlSubwriter) subwriter).Contains_Popup_Forms))
                 return;
 
-            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && (resultsWriter == null) && ( currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
+            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && (subwriter is PagedResults_HtmlSubwriter) && ( currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
             {
                 if (finishPageInAddFinalHtmlMethod)
                 {
@@ -937,10 +894,10 @@ namespace SobekCM.Library.MainWriters
                 return;
             }
 
-            if (resultsWriter != null)
+            if ( subwriter is PagedResults_HtmlSubwriter ) 
             {
                 Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Rendering HTML");
-                resultsWriter.Write_Final_HTML(Output, Tracer);
+                ((PagedResults_HtmlSubwriter)subwriter).Write_Final_HTML(Output, Tracer);
 
                 Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Adding footer and finishing HTML");
                 Display_Footer(Output, Tracer);
@@ -948,10 +905,10 @@ namespace SobekCM.Library.MainWriters
                 return;
             }
 
-            if (itemWriter != null)
+            if (subwriter is Item_HtmlSubwriter )
             {
                 Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Rendering HTML");
-                itemWriter.Write_Final_HTML(Output, Tracer);
+                ((Item_HtmlSubwriter) subwriter).Write_Final_HTML(Output, Tracer);
 
                 Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Adding footer and finishing HTML");
                 Display_Footer(Output, Tracer);
@@ -964,231 +921,84 @@ namespace SobekCM.Library.MainWriters
 
         #region Methods used to add style references, headers, and footers
 
-        /// <summary> Gets the body attributes to include within the BODY tag of the main HTML response document </summary>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Body attributes to include in the BODY tag </returns>
-        public Dictionary<string, string> Get_Body_Attribute_List(Custom_Tracer Tracer)
-        {
-            // THIS IS NOT USED ANYMORE??
-            Tracer.Add_Trace("Html_MainWriter.Get_Body_Attributes", "Adding body attributes to HTML");
-
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Item_Display:
-                    // Build the item viewer panel
-                    if ((currentMode.ViewerCode.ToUpper() == "GM") || ( currentMode.ViewerCode.ToUpper() == "GS" ))
-                    {
-                        Dictionary<string, string> returnValue = new Dictionary<string, string> {{"onload", "load()"}};
-                        return returnValue;
-                    }
-                    break;
-
-                case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                    if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
-                    {
-                        Dictionary<string, string> returnValue = new Dictionary<string, string> {{"onload", "load()"}};
-                        return returnValue;
-                    }
-                    break;
-
-                case Display_Mode_Enum.Search:
-                    if ( currentMode.Search_Type == Search_Type_Enum.Map )
-                    {
-                        Dictionary<string, string> returnValue = new Dictionary<string, string> {{"onload", "load()"}};
-                        return returnValue;
-
-                    }
-                    break;
-
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                    Dictionary<string, string> returnValue2 = new Dictionary<string, string> {{"onload", "load()"}};
-                    return returnValue2;
-            }
-
-            return new Dictionary<string, string>();
-        }
+    
         
         /// <summary> Gets the body attributes to include within the BODY tag of the main HTML response document </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Body attributes to include in the BODY tag </returns>
         public string Get_Body_Attributes(Custom_Tracer Tracer)
         {
-            //if (currentMode.isPostBack)
-            //    return String.Empty;
-
             Tracer.Add_Trace("Html_MainWriter.Get_Body_Attributes", "Adding body attributes to HTML");
 
-            StringBuilder onload_builder = new StringBuilder();
-      //      string onunload = String.Empty;
-            string onresize = String.Empty;
+            // Get the attributes which should be included by the html sub writer
+            List<Tuple<string, string>> bodyAttributes = subwriter.Body_Attributes;
 
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Item_Print:
-                    return " onload=\"window.print();window.close();\"";
-                    //return " onload=\"window.print();\"";
-
-                case Display_Mode_Enum.Item_Display:
-                    // Build the item viewer panel
-                    if ((currentMode.ViewerCode == "map") || (currentMode.ViewerCode == "mapsearch") || (currentMode.ViewerCode == "mapedit"))
-                    {
-                        onload_builder.Append("load();");
-                    }
-                    onload_builder.Append("itemwriter_load();");
-                    onresize = "  onresize=\"itemwriter_load();\"";
-                    break;
-
-                case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                    if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
-                    {
-                        onload_builder.Append("load();");
-                    }
-                    break;
-
-                case Display_Mode_Enum.Search:
-                    if (currentMode.Search_Type == Search_Type_Enum.Map)
-                    {
-                        onload_builder.Append("load();");
-                    }
-                    break;
-
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                    onload_builder.Append("load();");
-                    break;
-            }
-
+            // Handles special case where a message should be displayed to the user
+            // from a previous action
             if (!currentMode.isPostBack)
             {
                 if ((HttpContext.Current.Session["ON_LOAD_MESSAGE"] != null) || (HttpContext.Current.Session["ON_LOAD_WINDOW"] != null))
                 {
+                    // ENsure the body attributes list is not null
+                    if ( bodyAttributes == null )
+                        bodyAttributes = new List<Tuple<string, string>>();
+
+                    // Handle the previously saved actions
                     if (HttpContext.Current.Session["ON_LOAD_MESSAGE"] != null)
                     {
                         string on_load_message = HttpContext.Current.Session["ON_LOAD_MESSAGE"].ToString();
                         if (on_load_message.Length > 0)
-                            onload_builder.Append("alert('" + on_load_message + "');");
+                            bodyAttributes.Add(new Tuple<string, string>("onload", "alert('" + on_load_message + "');"));
                         HttpContext.Current.Session.Remove("ON_LOAD_MESSAGE");
                     }
                     if (HttpContext.Current.Session["ON_LOAD_WINDOW"] != null)
                     {
                         string on_load_window = HttpContext.Current.Session["ON_LOAD_WINDOW"].ToString();
                         if (on_load_window.Length > 0)
-                            onload_builder.Append("window.open('" + on_load_window + "', 'new_" + DateTime.Now.Millisecond + "');");
+                            bodyAttributes.Add(new Tuple<string, string>("onload", "window.open('" + on_load_window + "', 'new_" + DateTime.Now.Millisecond + "');"));
                         HttpContext.Current.Session.Remove("ON_LOAD_WINDOW");
                     }
                 }
             }
 
-            if (onload_builder.Length > 0)
+            // If there is nothing to add, return now
+            if ((bodyAttributes == null) || (bodyAttributes.Count == 0))
+                return String.Empty;
+
+            // Create the string for the body attributes
+            Dictionary<string, string> collapsedAttributes = new Dictionary<string, string>();
+            foreach (Tuple<string, string> thisAttr in bodyAttributes)
             {
-                return (onresize.Length == 0) ? " onload=\"" + onload_builder + "\"" : " onload=\"" + onload_builder + "\"" + onresize;
+                if (collapsedAttributes.ContainsKey(thisAttr.Item1))
+                    collapsedAttributes[thisAttr.Item1] = collapsedAttributes[thisAttr.Item1] + thisAttr.Item2;
+                else
+                    collapsedAttributes.Add(thisAttr.Item1, thisAttr.Item2);
+            }
+            
+            // Now, build and return the string
+            StringBuilder builder = new StringBuilder();
+            foreach (string thisKey in collapsedAttributes.Keys)
+            {
+                builder.Append(thisKey + "=\"" + collapsedAttributes[thisKey] +"\" ");
             }
 
-            return String.Empty;
+            return builder.ToString();
         }
 
         /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Title to use in the HTML result document </returns>
-        public string Get_Page_Title( Custom_Tracer Tracer )
+        public string Get_Page_Title(Custom_Tracer Tracer)
         {
-            //if (currentMode.isPostBack)
-            //    return String.Empty;
-            
             Tracer.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
 
-            string thisTitle = currentMode.SobekCM_Instance_Abbreviation;
+            string thisTitle = null;
+            if (subwriter != null)
+                thisTitle = subwriter.WebPage_Title;
+            if ( String.IsNullOrEmpty(thisTitle))
+                thisTitle = "{0}";
 
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Public_Folder:
-                    if (publicFolder != null)
-                        return publicFolder.FolderName;
-                    break;
-
-                case Display_Mode_Enum.Item_Display:
-                case Display_Mode_Enum.Item_Print:
-                    // Build the item viewer panel
-                    if (currentItem != null)
-                        thisTitle = currentItem.Bib_Info.Main_Title.Title;
-                    else
-                        thisTitle = thisTitle + " Item";
-                    break;
-
-                case Display_Mode_Enum.Aggregation_Home:
-                    if (hierarchyObject != null)
-                    {
-                        if (hierarchyObject.Code == "ALL")
-                        {
-                            thisTitle = currentMode.SobekCM_Instance_Abbreviation + " Home";
-                        }
-                        else
-                        {
-                            thisTitle = thisTitle + " Home - " + hierarchyObject.Name;
-                        }
-                    }
-                    else
-                    {
-                        thisTitle = thisTitle + " Home";
-                    }
-                    break;
-
-                case Display_Mode_Enum.Search:
-                    if (hierarchyObject != null)
-                    {
-                        thisTitle = thisTitle + " Search - " + hierarchyObject.Name;
-                    }
-                    else
-                    {
-                        thisTitle = thisTitle + " Search";
-                    }
-                    break;
-
-                case Display_Mode_Enum.Results:
-                    if (hierarchyObject != null)
-                    {
-                        thisTitle = thisTitle + " Search Results - " + hierarchyObject.Name;
-                    }
-                    else
-                    {
-                        thisTitle = thisTitle + " Search Results";
-                    }
-                    break;
-
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                    if (hierarchyObject != null)
-                    {
-                        thisTitle = thisTitle + " - " + hierarchyObject.Name;
-                    }
-                    break;
-
-                case Display_Mode_Enum.Preferences:
-                    thisTitle = thisTitle + " Preferences";
-                    break;
-
-                case Display_Mode_Enum.Contact:
-                    thisTitle = thisTitle + " Contact Us";
-                    break;
-
-                case Display_Mode_Enum.Contact_Sent:
-                    thisTitle = thisTitle + " Contact Sent";
-                    break;
-
-                case Display_Mode_Enum.Error:
-                    thisTitle = thisTitle + " Error";
-                    break;
-
-                case Display_Mode_Enum.Simple_HTML_CMS:
-                    thisTitle = htmlBasedContent.Title;
-                    break;
-
-                case Display_Mode_Enum.Administrative:
-                    thisTitle = thisTitle + " System Administration";
-                    break;
-            }
-
-            return thisTitle;
+            return String.Format(thisTitle, currentMode.SobekCM_Instance_Abbreviation);
         }
 
         /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
@@ -1198,71 +1008,26 @@ namespace SobekCM.Library.MainWriters
         {
             Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
 
-            // Based on display mode, add ROBOT instructions
+            // A couple extraordinary cases
             switch (currentMode.Mode)
             {
-                case Display_Mode_Enum.Internal:
-                case Display_Mode_Enum.Aggregation_Home:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                case Display_Mode_Enum.Search:
-                case Display_Mode_Enum.Statistics:
-                case Display_Mode_Enum.Simple_HTML_CMS:
-                    Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
-                    break;
-
-                case Display_Mode_Enum.My_Sobek:
-                case Display_Mode_Enum.Administrative:
-                case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Contact:
-                    Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
-                    break;
-
-
-                case Display_Mode_Enum.Contact_Sent:
-                case Display_Mode_Enum.Item_Display:
-                case Display_Mode_Enum.Item_Print:
-                case Display_Mode_Enum.Error:
                 case Display_Mode_Enum.Reset:
                 case Display_Mode_Enum.Item_Cache_Reload:
                 case Display_Mode_Enum.None:
-                case Display_Mode_Enum.Preferences:
                     Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
                     break;
             }
 
-            // Add any other meta tags here as well
-            if ((currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (htmlBasedContent != null))
-            {
-                if (htmlBasedContent.Description.Length > 0)
-                {
-                    Output.WriteLine("  <meta name=\"description\" content=\"" + htmlBasedContent.Description + "\" />");
-                }
-                if (htmlBasedContent.Keywords.Length > 0)
-                {
-                    Output.WriteLine("  <meta name=\"keywords\" content=\"" + htmlBasedContent.Keywords + "\" />");
-                }
-                if (htmlBasedContent.Author.Length > 0)
-                {
-                    Output.WriteLine("  <meta name=\"author\" content=\"" + htmlBasedContent.Author + "\" />");
-                }
-            }
-
-
-
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
-            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || ( currentMode.Mode == Display_Mode_Enum.Item_Print ))
-            {
-                // Write the style sheet to use 
-                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            }
+            // Add the special code for the html subwriter
+            if ( subwriter != null )
+                subwriter.Write_Within_HTML_Head(Output, Tracer);
 
             // Special CSS when printing an item from the selection menu
             if (currentMode.Mode == Display_Mode_Enum.Item_Print)
             {
-                // Write the style sheet to use 
-                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
                 return;
             }
 
@@ -1273,71 +1038,7 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("    @import url( " + currentMode.Base_URL + htmlSkin.CSS_Style + " );");
                 Output.WriteLine("  </style>");
             }
-
-            // If this is either my sobek or the basic text, include the my sobek css (since metadata help
-            // pages are displayed through the TEXT mode.
-            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) || (currentMode.Mode == Display_Mode_Enum.Administrative) || (currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
-            {
-                if (currentMode.Mode == Display_Mode_Enum.Administrative )
-                {
-                    Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-
-
-                    //Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-                    //Output.WriteLine("    @import url( " + SobekCM_Library_Settings.Base_URL + "default/SobekCM_Admin.css );");
-                    //Output.WriteLine("  </style>");
-                    
-                    // If editing projects, add the mySobek stylesheet as well
-                    if ((currentMode.Admin_Type == Admin_Type_Enum.Projects) && ( currentMode.My_Sobek_SubMode.Length > 0 ))
-                    {
-                        Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-
-                        //Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-                        //Output.WriteLine("    @import url( " + SobekCM_Library_Settings.Base_URL + "default/SobekCM_Metadata.css );");
-                        //Output.WriteLine("  </style>");
-                    }
-                }
-                else
-                {
-                    Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-
-
-                    //Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-                    //Output.WriteLine("    @import url( " + SobekCM_Library_Settings.Base_URL + "default/SobekCM_Metadata.css );");
-                    //Output.WriteLine("  </style>");
-
-                    // If we are currently uploading files, add those specific upload styles 
-                    if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || ( currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management ))
-                    {
-                        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
-                        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
-                    }
-                }
-            }
-
-            // Add the code for the calendar pop-up if it may be required
-            if ((currentMode.Mode == Display_Mode_Enum.Statistics) && (currentMode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View))
-            {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + currentMode.Base_URL + "default/jsDatePick_ltr.css\" />");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datepicker/jsDatePick.full.1.3.js\"></script>");
-            }
-
-
-            // Add code for the GnuBooks page turner if that is the valid viewer
-            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) && (currentMode.ViewerCode == "pageturner"))
-            {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_BookTurner.css\" /> ");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/bookturner/jquery-1.2.6.min.js\"></script> ");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/bookturner/jquery.easing.1.3.js\"></script> ");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/bookturner/bookturner.js\"></script>    "); 
-            }
-
-            // Add code for the QC item viewer's special CSS
-            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) && (currentMode.ViewerCode.IndexOf("qc") == currentMode.ViewerCode.Length - 2 ))
-            {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
-            }
-
+            
             // Add a printer friendly CSS
             Output.WriteLine("  <style type=\"text/css\" media=\"printer\">");
             Output.WriteLine("    @import url( " + currentMode.Base_URL + "default/print.css );");
@@ -1347,38 +1048,7 @@ namespace SobekCM.Library.MainWriters
             // Add the apple touch icon
             Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Skin + "/iphone-icon.png\" />");
 
-            // Add a thumbnail to this item
-            if (currentItem != null)
-            {
-                string image_src = currentMode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
 
-                Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\","/").Replace("//","/") + "\" />");
-            }
-
-            // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
-            {
-                Output.WriteLine("  <link rel=\"search\" href=\"" + currentMode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + currentMode.SobekCM_Instance_Abbreviation + " Search\" />");
-            }
-
-            // If this is error mode, just include the error text styles directly
-            if ((currentMode != null) && (currentMode.Mode == Display_Mode_Enum.Error))
-            {
-                Output.WriteLine("  <style type=\"text/css\">");
-                Output.WriteLine("    h4 { color: red; font-size: 20px } ");
-                Output.WriteLine("    h5 { color: black; font-size: 16px } ");
-                Output.Write("  </style>");
-            }
-
-            // If this is the static html web content view, add any special text which came from the original
-            // static html file which was already read, which can include style sheets, etc..
-            if ((currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (htmlBasedContent != null))
-            {
-                if (htmlBasedContent.Extra_Head_Info.Length > 0)
-                {
-                    Output.WriteLine("  " + htmlBasedContent.Extra_Head_Info.Trim());
-                }
-            }
         }
 
         /// <summary> Writes the header directly to the output stream writer </summary>

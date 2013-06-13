@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System.IO;
 using System.Web.UI.WebControls;
 
 #endregion
@@ -16,57 +17,37 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <value> This always returns the value 600 </value>
         public override int Viewer_Width
         {
-            get
-            {
-                return 600;
-            }
+            get { return 600; }
         }
 
         /// <summary> Gets the type of item viewer this object represents </summary>
         /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.Checked_Out"/>. </value>
         public override ItemViewer_Type_Enum ItemViewer_Type
         {
-            get { return ItemViewer_Type_Enum.Checked_Out;  }
+            get { return ItemViewer_Type_Enum.Checked_Out; }
         }
 
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>
         public override int PageCount
         {
-            get
-            {
-                return 1;
-            }            
+            get { return 1; }
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This is a single page viewer, so this property always returns NONE</value>
         public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
-            get
-            {
-                return ItemViewer_PageSelector_Type_Enum.NONE;
-            }
+            get { return ItemViewer_PageSelector_Type_Enum.NONE; }
         }
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            return false;
-        }
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Literal mainLiteral = new Literal { Text = "<td align=\"center\" colspan=\"3\"><br /><br /><b>The item you have requested contains copyright material and is reserved for single-use.  <br /><br />Someone has currently checked out this digital copy for viewing.  <br /><br />Please try again in several minutes.</b><br /><br /><br /></td>" };
-            placeHolder.Controls.Add(mainLiteral);
+            Output.WriteLine("<td align=\"center\" colspan=\"3\"><br /><br /><b>The item you have requested contains copyright material and is reserved for single-use.  <br /><br />Someone has currently checked out this digital copy for viewing.  <br /><br />Please try again in several minutes.</b><br /><br /><br /></td>");
         }
     }
 }

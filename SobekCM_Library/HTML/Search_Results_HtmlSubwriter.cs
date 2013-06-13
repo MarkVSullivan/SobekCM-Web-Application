@@ -188,5 +188,48 @@ namespace SobekCM.Library.HTML
 
             return true;
         }
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        public override List<Tuple<string, string>> Body_Attributes
+        {
+            get
+            {
+                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                {
+                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+
+                    returnValue.Add(new Tuple<string, string>("onload", "load();"));
+
+                    return returnValue;
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get
+            {
+                if (Hierarchy_Object != null)
+                {
+                    return "{0} Search Results - " + Hierarchy_Object.Name;
+                }
+                else
+                {
+                    return "{0} Search Results";
+                }
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+        }
     }
 }

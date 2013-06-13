@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SobekCM.Resource_Object;
@@ -304,6 +305,44 @@ namespace SobekCM.Library.HTML
         private void print_tracking_sheet(TextWriter Output)
         {
             Output.WriteLine("PRINT TRACKING SHEET");
+        }
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        public override List<Tuple<string, string>> Body_Attributes
+        {
+            get
+            {
+                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+
+                returnValue.Add(new Tuple<string, string>("onload", "window.print();window.close();"));
+ 
+                return returnValue;
+            }
+        }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get {
+                return currentItem != null ? currentItem.Bib_Info.Main_Title.Title : "{0} Item";
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+
+            // Write the style sheet to use 
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
+            // Write the style sheet to use 
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
         }
     }
 }
