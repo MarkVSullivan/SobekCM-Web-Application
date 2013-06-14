@@ -67,65 +67,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("HTML_Map_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("HTML_Map_ItemViewer.Write_Main_Viewer_Section", "");
             }
-
-            // Build the value
-            StringBuilder builder = new StringBuilder(5000);
 
             // Save the current viewer code
             string current_view_code = CurrentMode.ViewerCode;
 
             // Start the citation table
-            builder.AppendLine( "\t\t<!-- HTML MAP VIEWER OUTPUT -->" );
-            builder.AppendLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + title + "</b></span></td></tr>");
-            builder.AppendLine("\t\t<tr><td align=\"center\">" );
+            Output.WriteLine( "\t\t<!-- HTML MAP VIEWER OUTPUT -->" );
+            Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + title + "</b></span></td></tr>");
+            Output.WriteLine("\t\t<tr><td align=\"center\">");
 
-            builder.AppendLine("<b>CLICK ON A LINK BELOW TO VIEW A MAP SHEET</b>");
-            builder.AppendLine("\t\t\t<img src=\"" + CurrentItem.Web.Source_URL + "/" + imageFile + "\" usemap=\"#Map\" alt=\"Click on a sheet in the map to view a sheet\" />" );
+            Output.WriteLine("<b>CLICK ON A LINK BELOW TO VIEW A MAP SHEET</b>");
+            Output.WriteLine("\t\t\t<img src=\"" + CurrentItem.Web.Source_URL + "/" + imageFile + "\" usemap=\"#Map\" alt=\"Click on a sheet in the map to view a sheet\" />");
 
             // Try to get the HTML for this
             string map = Get_Html_Page(CurrentItem.Web.Source_URL + "/" + htmlFile, Tracer);
 
             // Get the link for this item
             string itemLink = CurrentMode.Base_URL + "?b=" + CurrentItem.BibID + "&v=" + CurrentItem.VID;
-            builder.AppendLine(map.Replace("<%ITEM_LINK%>", itemLink));			
+            Output.WriteLine(map.Replace("<%ITEM_LINK%>", itemLink));			
 
             // Finish the citation table
-            builder.AppendLine("\t\t</td>");
-            builder.AppendLine("\t\t<!-- END HTML MAP VIEWER OUTPUT -->");
+            Output.WriteLine("\t\t</td>");
+            Output.WriteLine("\t\t<!-- END HTML MAP VIEWER OUTPUT -->");
 
             // Restore the mode
             CurrentMode.ViewerCode = current_view_code;
-
-            // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add( mainLiteral );
         }
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("HTML_Map_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
-        }
-
         
         private String Get_Html_Page(string strURL, Custom_Tracer Tracer )
         {

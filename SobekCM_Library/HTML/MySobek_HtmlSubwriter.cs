@@ -364,6 +364,24 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
         }
 
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+
+            // If we are currently uploading files, add those specific upload styles 
+            if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management))
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
+            }
+        }
+
         #region Writes the HTML for the standard my Sobek view tabs
 
         private void Write_General_View_Type_Selectors(TextWriter Output)
@@ -463,5 +481,7 @@ namespace SobekCM.Library.HTML
         }
 
         #endregion
+
+
     }
 }

@@ -385,5 +385,48 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("</table>");
             }
         }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get {
+                return thisStaticBrowseObject != null ? thisStaticBrowseObject.Title : "{0}";
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+            // Add any other meta tags here as well
+            if (thisStaticBrowseObject != null)
+            {
+                if (thisStaticBrowseObject.Description.Length > 0)
+                {
+                    Output.WriteLine("  <meta name=\"description\" content=\"" + thisStaticBrowseObject.Description + "\" />");
+                }
+                if (thisStaticBrowseObject.Keywords.Length > 0)
+                {
+                    Output.WriteLine("  <meta name=\"keywords\" content=\"" + thisStaticBrowseObject.Keywords + "\" />");
+                }
+                if (thisStaticBrowseObject.Author.Length > 0)
+                {
+                    Output.WriteLine("  <meta name=\"author\" content=\"" + thisStaticBrowseObject.Author + "\" />");
+                }
+            }
+
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+
+            // If this is the static html web content view, add any special text which came from the original
+            // static html file which was already read, which can include style sheets, etc..
+            if ((thisStaticBrowseObject != null) && (thisStaticBrowseObject.Extra_Head_Info.Length > 0))
+            {
+                Output.WriteLine("  " + thisStaticBrowseObject.Extra_Head_Info.Trim());
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
 
@@ -56,30 +57,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("EmbeddedVideo_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
-        }
-
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("EmbeddedVideo_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("EmbeddedVideo_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
             //Determine the name of the FLASH file
@@ -91,19 +76,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             StringBuilder result = new StringBuilder(500);
-            result.AppendLine("        <!-- EMBEDDED VIDEO VIEWER OUTPUT -->");
-            result.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Streaming Video</b></span></td>");
-            result.AppendLine("        </tr>");
-            result.AppendLine("        <tr>");
-            result.AppendLine("          <td class=\"SobekCitationDisplay\">");
+            Output.WriteLine("        <!-- EMBEDDED VIDEO VIEWER OUTPUT -->");
+            Output.WriteLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Streaming Video</b></span></td>");
+            Output.WriteLine("        </tr>");
+            Output.WriteLine("        <tr>");
+            Output.WriteLine("          <td class=\"SobekCitationDisplay\">");
 
-            result.AppendLine(CurrentItem.Behaviors.Embedded_Video);
+            Output.WriteLine(CurrentItem.Behaviors.Embedded_Video);
 
-            result.AppendLine("          </td>");
-            result.AppendLine("        <!-- END EMBEDDED VIDEO VIEWER OUTPUT -->");
-
-            Literal mainLiteral = new Literal { Text = result.ToString() };
-            placeHolder.Controls.Add(mainLiteral);
+            Output.WriteLine("          </td>");
+            Output.WriteLine("        <!-- END EMBEDDED VIDEO VIEWER OUTPUT -->");
         }
     }
 }

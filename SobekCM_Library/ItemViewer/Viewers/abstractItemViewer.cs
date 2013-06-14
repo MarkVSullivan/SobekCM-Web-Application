@@ -1,6 +1,8 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
@@ -53,11 +55,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual User_Object CurrentUser { protected get; set; }
 
 	    /// <summary> Abstract method adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+	    /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
+	    /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    /// <returns> TRUE if this viewer added something to the left navigational bar, otherwise FALSE</returns>
+	    public virtual bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
+	    {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("abstractItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
+            }
+
+            return false;
+	    }
+
+        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> TRUE if this viewer added something to the left navigational bar, otherwise FALSE</returns>
-        public abstract bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer);
+        public virtual void Write_Nav_Bar_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing by default
+        }
 
 		/// <summary> Gets any HTML for a Navigation Row above the image or text </summary>
         /// <value> This value can be override by child classes, but by default this returns an empty string </value>
@@ -72,7 +90,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Abstract method adds the main view section to the page turner </summary>
         /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public abstract void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer);
+        public virtual void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        {
+            // Do nothing by default
+
+        }
+
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public virtual void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing by default
+        }
 		
 		/// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This value is override by many of the children classes, but by default this returns the number of pages within the digital resource </value>
@@ -211,16 +241,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This value is override by many of the children classes, but by default this returns TRUE </value>
-		public virtual bool Show_Header
-		{ 
-			get
-			{
-				return true;
-			}
-		}
-
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
         /// <value> This value is override by many of the children classes, but by default this returns the value -1 </value>
 		public virtual int Viewer_Width
@@ -271,15 +291,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    #endregion
 
-	    /// <summary> Event is called when an item viewer requests a redirect </summary>
-	    public event Redirect_Requested Redirect;
+        protected static string Convert_String_To_XML_Safe(string element)
+        {
+            string xml_safe = element;
+            int i = xml_safe.IndexOf("&");
+            while (i >= 0)
+            {
+                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
+                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
+                {
+                    xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
+                }
 
-	    /// <summary> Method allows children classes to indirectly invoke the <see cref="Redirect"/> event </summary>
-	    /// <param name="new_url"> URL to which to redirect the user </param>
-	    protected void OnRedirect( string new_url )
-	    {
-	        if ( Redirect != null )
-	            Redirect( new_url );
-	    }
+                i = xml_safe.IndexOf("&", i + 1);
+            }
+            return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("[", "").Replace("]", "");
+        }
+
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        /// <param name="Body_Attributes"> List of body attributes to be included </param>
+        public virtual void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        {
+            // Do nothing by default
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
+        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing
+        }
 	}
 }

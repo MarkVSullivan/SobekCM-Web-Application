@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object.Divisions;
@@ -52,42 +53,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("GnuBooks_PageTurner_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
+                Tracer.Add_Trace("GnuBooks_PageTurner_ItemViewer.Write_Main_Viewer_Section", "");
             }
-
-            return false;
-        }
-
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("GnuBooks_PageTurner_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
-            }
-
-
-            // Build the value
-            StringBuilder builder = new StringBuilder(15000);
 
             // Add the division
-            builder.AppendLine("          <div id=\"GnuBook\"><p style=\"font-size: 14px;\">Book Turner presentations require a Javascript-enabled browser.</p></div>" + Environment.NewLine );
+            Output.WriteLine("          <div id=\"GnuBook\"><p style=\"font-size: 14px;\">Book Turner presentations require a Javascript-enabled browser.</p></div>" + Environment.NewLine );
 
             // Add the javascript
-            builder.AppendLine("<script type=\"text/javascript\"> ");
-            builder.AppendLine("  //<![CDATA[");
+            Output.WriteLine("<script type=\"text/javascript\"> ");
+            Output.WriteLine("  //<![CDATA[");
 
             // Get the list of jpegs, along with widths and heights
             List<int> width = new List<int>();
@@ -116,135 +97,143 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the script for this resource
-            builder.AppendLine("    // Create the GnuBook object");
-            builder.AppendLine("    gb = new GnuBook();");
-            builder.AppendLine();
-            builder.AppendLine("    // Return the width of a given page");
-            builder.AppendLine("    gb.getPageWidth = function(index) {");
+            Output.WriteLine("    // Create the GnuBook object");
+            Output.WriteLine("    gb = new GnuBook();");
+            Output.WriteLine();
+            Output.WriteLine("    // Return the width of a given page");
+            Output.WriteLine("    gb.getPageWidth = function(index) {");
             if (width[0] > 0)
             {
-                builder.AppendLine("        if (index <= 2) return " + width[0] + ";");
+                Output.WriteLine("        if (index <= 2) return " + width[0] + ";");
             }
             for (int i = 1; i < width.Count; i++)
             {
                 if (width[i] > 0)
                 {
-                    builder.AppendLine("        if (index == " + (i + 2) + ") return " + width[i] + ";");
+                    Output.WriteLine("        if (index == " + (i + 2) + ") return " + width[i] + ";");
                 }
             }
-            builder.AppendLine("        return 638;");
-            builder.AppendLine("    }");
-            builder.AppendLine();
-            builder.AppendLine("    // Return the height of a given page");
-            builder.AppendLine("    gb.getPageHeight = function(index) {");
+            Output.WriteLine("        return 638;");
+            Output.WriteLine("    }");
+            Output.WriteLine();
+            Output.WriteLine("    // Return the height of a given page");
+            Output.WriteLine("    gb.getPageHeight = function(index) {");
             if (height[0] > 0)
             {
-                builder.AppendLine("        if (index <= 2) return " + height[0] + ";");
+                Output.WriteLine("        if (index <= 2) return " + height[0] + ";");
             }
             for (int i = 1; i < height.Count; i++)
             {
                 if (height[i] > 0)
                 {
-                    builder.AppendLine("        if (index == " + (i + 2) + ") return " + height[i] + ";");
+                    Output.WriteLine("        if (index == " + (i + 2) + ") return " + height[i] + ";");
                 }
             }
-            builder.AppendLine("        return 825;");
-            builder.AppendLine("    }");
-            builder.AppendLine();
-            builder.AppendLine("    // Return the URI for a page, by index");
-            builder.AppendLine("    gb.getPageURI = function(index) {");
-            builder.AppendLine("        var imgStr = (index).toString();");
-            builder.AppendLine("        if (index < 2) return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
+            Output.WriteLine("        return 825;");
+            Output.WriteLine("    }");
+            Output.WriteLine();
+            Output.WriteLine("    // Return the URI for a page, by index");
+            Output.WriteLine("    gb.getPageURI = function(index) {");
+            Output.WriteLine("        var imgStr = (index).toString();");
+            Output.WriteLine("        if (index < 2) return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
             for (int i = 0; i < files.Count; i++  )
             {
-                builder.AppendLine("        if (index == " + (i + 2) + ") imgStr = '" + files[i] + "';");
+                Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + files[i] + "';");
             }
-            builder.AppendLine("        if (index > " + (files.Count + 1) + ") return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
+            Output.WriteLine("        if (index > " + (files.Count + 1) + ") return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
             string source_url = CurrentItem.Web.Source_URL.Replace("\\", "/");
             if (source_url[source_url.Length - 1] != '/')
                 source_url = source_url + "/";
-            builder.AppendLine("        return '" + source_url + "' + imgStr;");
-            builder.AppendLine("    }");
-            builder.AppendLine();
+            Output.WriteLine("        return '" + source_url + "' + imgStr;");
+            Output.WriteLine("    }");
+            Output.WriteLine();
 
-            builder.AppendLine("    // Return the page label for a page, by index");
-            builder.AppendLine("    gb.getPageName = function(index) {");
-            builder.AppendLine("        var imgStr = '" + translator.Get_Translation("Page", CurrentMode.Language ) + "' + this.getPageNum(index);");
+            Output.WriteLine("    // Return the page label for a page, by index");
+            Output.WriteLine("    gb.getPageName = function(index) {");
+            Output.WriteLine("        var imgStr = '" + translator.Get_Translation("Page", CurrentMode.Language ) + "' + this.getPageNum(index);");
             for (int i = 0; i < files.Count; i++)
             {
-                builder.AppendLine("        if (index == " + (i + 2) + ") imgStr = '" + pagename[i] + "';");
+                Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + pagename[i] + "';");
             }
 
-            builder.AppendLine("        return imgStr;");
-            builder.AppendLine("    }");
-            builder.AppendLine();
+            Output.WriteLine("        return imgStr;");
+            Output.WriteLine("    }");
+            Output.WriteLine();
 
-            builder.AppendLine("    // Return which side, left or right, that a given page should be displayed on");
-            builder.AppendLine("    gb.getPageSide = function(index) {");
-            builder.AppendLine("        if (0 == (index & 0x1)) {");
-            builder.AppendLine("            return 'R';");
-            builder.AppendLine("        } else {");
-            builder.AppendLine("            return 'L';");
-            builder.AppendLine("        }");
-            builder.AppendLine("    }");
-            builder.AppendLine();
-            builder.AppendLine("    // This function returns the left and right indices for the user-visible");
-            builder.AppendLine("    // spread that contains the given index.  The return values may be");
-            builder.AppendLine("    // null if there is no facing page or the index is invalid.");
-            builder.AppendLine("    gb.getSpreadIndices = function(pindex) {   ");
-            builder.AppendLine("        var spreadIndices = [null, null]; ");
-            builder.AppendLine("        if ('rl' == this.pageProgression) {");
-            builder.AppendLine("            // Right to Left");
-            builder.AppendLine("            if (this.getPageSide(pindex) == 'R') {");
-            builder.AppendLine("                spreadIndices[1] = pindex;");
-            builder.AppendLine("                spreadIndices[0] = pindex + 1;");
-            builder.AppendLine("            } else {");
-            builder.AppendLine("            // Given index was LHS");
-            builder.AppendLine("                spreadIndices[0] = pindex;");
-            builder.AppendLine("                spreadIndices[1] = pindex - 1;");
-            builder.AppendLine("            }");
-            builder.AppendLine("        } else {");
-            builder.AppendLine("            // Left to right");
-            builder.AppendLine("            if (this.getPageSide(pindex) == 'L') {");
-            builder.AppendLine("                spreadIndices[0] = pindex;");
-            builder.AppendLine("                spreadIndices[1] = pindex + 1;");
-            builder.AppendLine("            } else {");
-            builder.AppendLine("                // Given index was RHS");
-            builder.AppendLine("                spreadIndices[1] = pindex;");
-            builder.AppendLine("                spreadIndices[0] = pindex - 1;");
-            builder.AppendLine("            }");
-            builder.AppendLine("        }");
-            builder.AppendLine();
-            builder.AppendLine("        return spreadIndices;");
-            builder.AppendLine("    }");
-            builder.AppendLine();
-            builder.AppendLine("    // For a given \"accessible page index\" return the page number in the book.");
-            builder.AppendLine("    // For example, index 5 might correspond to \"Page 1\" if there is front matter such");
-            builder.AppendLine("    // as a title page and table of contents.");
-            builder.AppendLine("    gb.getPageNum = function(index) {");
-            builder.AppendLine("        return index;");
-            builder.AppendLine("    }");
-            builder.AppendLine();
-            builder.AppendLine("    // Total number of leafs");
+            Output.WriteLine("    // Return which side, left or right, that a given page should be displayed on");
+            Output.WriteLine("    gb.getPageSide = function(index) {");
+            Output.WriteLine("        if (0 == (index & 0x1)) {");
+            Output.WriteLine("            return 'R';");
+            Output.WriteLine("        } else {");
+            Output.WriteLine("            return 'L';");
+            Output.WriteLine("        }");
+            Output.WriteLine("    }");
+            Output.WriteLine();
+            Output.WriteLine("    // This function returns the left and right indices for the user-visible");
+            Output.WriteLine("    // spread that contains the given index.  The return values may be");
+            Output.WriteLine("    // null if there is no facing page or the index is invalid.");
+            Output.WriteLine("    gb.getSpreadIndices = function(pindex) {   ");
+            Output.WriteLine("        var spreadIndices = [null, null]; ");
+            Output.WriteLine("        if ('rl' == this.pageProgression) {");
+            Output.WriteLine("            // Right to Left");
+            Output.WriteLine("            if (this.getPageSide(pindex) == 'R') {");
+            Output.WriteLine("                spreadIndices[1] = pindex;");
+            Output.WriteLine("                spreadIndices[0] = pindex + 1;");
+            Output.WriteLine("            } else {");
+            Output.WriteLine("            // Given index was LHS");
+            Output.WriteLine("                spreadIndices[0] = pindex;");
+            Output.WriteLine("                spreadIndices[1] = pindex - 1;");
+            Output.WriteLine("            }");
+            Output.WriteLine("        } else {");
+            Output.WriteLine("            // Left to right");
+            Output.WriteLine("            if (this.getPageSide(pindex) == 'L') {");
+            Output.WriteLine("                spreadIndices[0] = pindex;");
+            Output.WriteLine("                spreadIndices[1] = pindex + 1;");
+            Output.WriteLine("            } else {");
+            Output.WriteLine("                // Given index was RHS");
+            Output.WriteLine("                spreadIndices[1] = pindex;");
+            Output.WriteLine("                spreadIndices[0] = pindex - 1;");
+            Output.WriteLine("            }");
+            Output.WriteLine("        }");
+            Output.WriteLine();
+            Output.WriteLine("        return spreadIndices;");
+            Output.WriteLine("    }");
+            Output.WriteLine();
+            Output.WriteLine("    // For a given \"accessible page index\" return the page number in the book.");
+            Output.WriteLine("    // For example, index 5 might correspond to \"Page 1\" if there is front matter such");
+            Output.WriteLine("    // as a title page and table of contents.");
+            Output.WriteLine("    gb.getPageNum = function(index) {");
+            Output.WriteLine("        return index;");
+            Output.WriteLine("    }");
+            Output.WriteLine();
+            Output.WriteLine("    // Total number of leafs");
 
             // TRUE FOR EVEN PAGE BOOKS at least
-            builder.AppendLine("    gb.numLeafs = " + (files.Count + 4) + ";");
-            builder.AppendLine();
-            builder.AppendLine("    // Book title and the URL used for the book title link");
-            builder.AppendLine("    gb.bookTitle= '" + CurrentItem.Bib_Info.Main_Title.ToString().Replace("'","") + "';");
-            builder.AppendLine("    gb.bookUrl = '" + CurrentMode.Base_URL + CurrentMode.BibID + "/" + CurrentMode.VID + "';");
-            builder.AppendLine();
-            builder.AppendLine("    // Let's go!");
-            builder.AppendLine("    gb.init();");
+            Output.WriteLine("    gb.numLeafs = " + (files.Count + 4) + ";");
+            Output.WriteLine();
+            Output.WriteLine("    // Book title and the URL used for the book title link");
+            Output.WriteLine("    gb.bookTitle= '" + CurrentItem.Bib_Info.Main_Title.ToString().Replace("'","") + "';");
+            Output.WriteLine("    gb.bookUrl = '" + CurrentMode.Base_URL + CurrentMode.BibID + "/" + CurrentMode.VID + "';");
+            Output.WriteLine();
+            Output.WriteLine("    // Let's go!");
+            Output.WriteLine("    gb.init();");
 
 
-            builder.Append("  //]]>");
-            builder.Append("</script>");
+            Output.Write("  //]]>");
+            Output.Write("</script>");
+        }
 
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
+        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_BookTurner.css\" /> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/jquery-1.2.6.min.js\"></script> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/jquery.easing.1.3.js\"></script> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/bookturner.js\"></script>    ");
 
-            // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add(mainLiteral);
         }
     }
 }

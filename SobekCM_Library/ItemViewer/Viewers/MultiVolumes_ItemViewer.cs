@@ -75,16 +75,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This always returns the value FALSE, to suppress the standard header information </value>
-        public override bool Show_Header
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
         /// <value> This always returns the value 650 </value>
         public override int Viewer_Width
@@ -884,22 +874,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 currentSelectedNode.Expand();
                 currentSelectedNode = currentSelectedNode.Parent;
             }
-        }
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("MultiVolumes_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
         }
 
         #region Nested type: View_Type

@@ -94,16 +94,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This always returns the value FALSE, to suppress the standard header information </value>
-        public override bool Show_Header
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This is a single page viewer, so this property always returns NONE</value>
         public override ItemViewer_PageSelector_Type_Enum Page_Selector
@@ -114,14 +104,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Tracking_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Tracking_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
             // If this is an internal user or can edit this item, ensure the extra information 
@@ -157,14 +147,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the HTML for the image
-            StringBuilder result = new StringBuilder(3000);
-            result.AppendLine("        <!-- TRACKING ITEM VIEWER OUTPUT -->" );
+            Output.WriteLine("        <!-- TRACKING ITEM VIEWER OUTPUT -->" );
 
             // Start the citation table
-            result.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Tracking Information</b></span></td>");
-            result.AppendLine( "       </tr>");
-            result.AppendLine("        <tr>");
-            result.AppendLine("          <td class=\"SobekCitationDisplay\">" );
+            Output.WriteLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Tracking Information</b></span></td>");
+            Output.WriteLine( "       </tr>");
+            Output.WriteLine("        <tr>");
+            Output.WriteLine("          <td class=\"SobekCitationDisplay\">" );
 
             // Set the text
             const string MILESTONES_VIEW = "MILESTONES";
@@ -175,29 +164,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the tabs for the different citation information
             string viewer_code = CurrentMode.ViewerCode;
-            result.AppendLine("            <div class=\"SobekCitation\">");
-            result.AppendLine("              <div class=\"CitationViewSelectRow\">");
+            Output.WriteLine("            <div class=\"SobekCitation\">");
+            Output.WriteLine("              <div class=\"CitationViewSelectRow\">");
 
             if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
                     if (citationType == Tracking_Type.Milestones)
                     {
-                        result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MILESTONES_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MILESTONES_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
                     }
                     else
                     {
-                        result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("milestones") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MILESTONES_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("milestones") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MILESTONES_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
                     }
 
                 if ((citationType == Tracking_Type.History) || ((CurrentItem.Tracking.hasHistoryInformation)))
                 {
                     if (citationType == Tracking_Type.History)
                     {
-                        result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + TRACKING_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + TRACKING_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
                     }
                     else
                     {
-                        result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("tracking") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + TRACKING_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("tracking") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + TRACKING_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
                     }
                 }
 
@@ -205,11 +194,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Media)
                     {
-                        result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MEDIA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MEDIA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
                     }
                     else
                     {
-                        result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("media") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MEDIA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("media") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MEDIA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
                     }
                 }
 
@@ -217,11 +206,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Archives)
                     {
-                        result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + ARCHIVE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + ARCHIVE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
                     }
                     else
                     {
-                        result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("archive") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + ARCHIVE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("archive") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + ARCHIVE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
                     }
                 }
 
@@ -229,60 +218,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Directory_List)
                     {
-                        result.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + DIRECTORY_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + DIRECTORY_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
                     }
                     else
                     {
-                        result.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("directory") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + DIRECTORY_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("directory") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + DIRECTORY_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
                     }
                 }
             }
 
-            result.AppendLine("              </div>");
+            Output.WriteLine("              </div>");
 
             // Now, add the text
-            Literal mainLiteral = new Literal();
             switch (citationType)
             {
                 case Tracking_Type.Milestones:
-                    mainLiteral.Text = result + Environment.NewLine + Milestones_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->" + Environment.NewLine;
+                    Output.WriteLine(Milestones_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.History:
-                    mainLiteral.Text = result + Environment.NewLine + History_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->" + Environment.NewLine;
+                    Output.WriteLine(History_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.Media:
-                    mainLiteral.Text = result + Environment.NewLine + Media_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->" + Environment.NewLine;
+                    Output.WriteLine(Media_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.Archives:
-                    mainLiteral.Text = result + Environment.NewLine + Archives_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->" + Environment.NewLine;
+                    Output.WriteLine(Archives_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.Directory_List:
-                    mainLiteral.Text = result + Environment.NewLine + Directory_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->" + Environment.NewLine;
+                    Output.WriteLine(Directory_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
             }
 
             CurrentMode.ViewerCode = viewer_code;
-            placeHolder.Controls.Add(mainLiteral);
-        }
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Tracking_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
         }
 
         #region Section returns the history tab data

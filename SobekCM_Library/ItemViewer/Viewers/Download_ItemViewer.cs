@@ -1,6 +1,7 @@
 #region Using directives
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
@@ -66,48 +67,46 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Download_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Download_ItemViewer.Write_Main_Viewer_Section", "");
             }
-
-            // Build the value
-            StringBuilder builder = new StringBuilder(1500);
 
             // Start the citation table
             string explanation_text = "This item has the following downloads:";
-            switch( CurrentMode.Language )
+            switch (CurrentMode.Language)
             {
                 case Web_Language_Enum.French:
                     explanation_text = "Ce document est la suivante téléchargements:";
                     break;
 
                 case Web_Language_Enum.Spanish:
-                     explanation_text = "Este objeto tiene las siguientes descargas:";
+                    explanation_text = "Este objeto tiene las siguientes descargas:";
                     break;
 
                 default:
                     if (CurrentItem.Web.Static_PageCount == 0)
                         explanation_text = "This item is only available as the following downloads:";
-                   break;
+                    break;
             }
 
-            builder.AppendLine("          <td>");
-            builder.AppendLine("            <div class=\"SobekCitation\">");
+            Output.WriteLine("          <td>");
+            Output.WriteLine("            <div class=\"SobekCitation\">");
 
-            builder.AppendLine("              <br />" );
-            builder.AppendLine("              <blockquote>");
+            Output.WriteLine("              <br />");
+            Output.WriteLine("              <blockquote>");
             if (CurrentItem.Divisions.Download_Tree.Has_Files)
             {
                 List<abstract_TreeNode> pages = CurrentItem.Divisions.Download_Tree.Pages_PreOrder;
 
-                builder.AppendLine("                <b>" + explanation_text + "</b><br /><br />" );
-                builder.AppendLine("                <blockquote>");
+                Output.WriteLine("                <b>" + explanation_text + "</b><br /><br />");
+                Output.WriteLine("                <blockquote>");
 
                 // Step through each download in this item
                 string greenstoneLocation = CurrentItem.Web.Source_URL + "/";
@@ -123,17 +122,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             string label_upper = downloadGroup.Label.ToUpper();
                             if (label_upper.IndexOf(download.File_Extension) > 0)
                             {
-                                builder.AppendLine("                  <a href=\"" + download.System_Name + "\" target=\"_blank\">" + downloadGroup.Label + "</a><br /><br />");
+                                Output.WriteLine("                  <a href=\"" + download.System_Name + "\" target=\"_blank\">" + downloadGroup.Label + "</a><br /><br />");
                             }
                             else
                             {
-                                builder.AppendLine("                  <a href=\"" + download.System_Name + "\" target=\"_blank\">" + downloadGroup.Label + " ( " + download.File_Extension + " )</a><br /><br />");
+                                Output.WriteLine("                  <a href=\"" + download.System_Name + "\" target=\"_blank\">" + downloadGroup.Label + " ( " + download.File_Extension + " )</a><br /><br />");
                             }
                         }
                         else
                         {
                             string file_link = greenstoneLocation + download.System_Name;
-                            
+
                             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
                             if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
                                 file_link = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + download.System_Name;
@@ -143,21 +142,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             string label_upper = downloadGroup.Label.ToUpper();
                             if (label_upper.IndexOf(download.File_Extension) > 0)
                             {
-                                builder.AppendLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + downloadGroup.Label + "</a><br /><br />");
+                                Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + downloadGroup.Label + "</a><br /><br />");
                             }
                             else
                             {
-                                builder.AppendLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + downloadGroup.Label + " ( " + download.File_Extension + " )</a><br /><br />");
+                                Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + downloadGroup.Label + " ( " + download.File_Extension + " )</a><br /><br />");
                             }
                         }
                     }
                 }
 
-                builder.AppendLine("                </blockquote>" );
+                Output.WriteLine("                </blockquote>");
             }
 
             // If this was an aerial, allow each jpeg2000 page to be downloaded
-            if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial )
+            if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial)
             {
                 List<string> pageDownloads = new List<string>();
                 List<abstract_TreeNode> nodes = CurrentItem.Divisions.Physical_Tree.Divisions_PreOrder;
@@ -165,7 +164,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     foreach (SobekCM_File_Info thisFile in pageNode.Files.Where(thisFile => thisFile.System_Name.ToUpper().IndexOf(".JP2") > 0))
                     {
-                        pageDownloads.Add("<a href=\"" + (CurrentItem.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//","/").Replace("http:/","http://") + "\">" + pageNode.Label + "</a>");
+                        pageDownloads.Add("<a href=\"" + (CurrentItem.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\">" + pageNode.Label + "</a>");
                         break;
                     }
                 }
@@ -173,72 +172,52 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (pageDownloads.Count > 0)
                 {
 
-                    builder.AppendLine("                <b>The following tiles are available for download:</b><br /><br />");
-                    builder.AppendLine(CurrentMode.Browser_Type.IndexOf("FIREFOX") >= 0
+                    Output.WriteLine("                <b>The following tiles are available for download:</b><br /><br />");
+                    Output.WriteLine(CurrentMode.Browser_Type.IndexOf("FIREFOX") >= 0
                                            ? "                To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer. <br /><br />"
                                            : "                To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. <br /><br />");
-                    builder.AppendLine("                <blockquote>" );
-                    builder.AppendLine("                  <table width=\"100%\">" );
+                    Output.WriteLine("                <blockquote>");
+                    Output.WriteLine("                  <table width=\"100%\">");
 
                     int rows = pageDownloads.Count / 3;
                     if ((pageDownloads.Count % 3) != 0)
                         rows++;
 
-                    for( int i = 0 ; i < rows ; i++)
+                    for (int i = 0; i < rows; i++)
                     {
-                        builder.Append("                    <tr>");
+                        Output.Write("                    <tr>");
                         if (pageDownloads.Count > i)
                         {
-                            builder.Append("<td>" + pageDownloads[i] + "</td>");
+                            Output.Write("<td>" + pageDownloads[i] + "</td>");
                         }
                         if (pageDownloads.Count > (i + rows))
                         {
-                            builder.Append("<td>" + pageDownloads[i + rows] + "</td>");
+                            Output.Write("<td>" + pageDownloads[i + rows] + "</td>");
                         }
                         else
                         {
-                            builder.Append("<td>&nbsp;</td>");
+                            Output.Write("<td>&nbsp;</td>");
                         }
                         if (pageDownloads.Count > (i + rows + rows))
                         {
-                            builder.Append("<td>" + pageDownloads[i + rows + rows] + "</td>");
+                            Output.Write("<td>" + pageDownloads[i + rows + rows] + "</td>");
                         }
                         else
                         {
-                            builder.Append("<td>&nbsp;</td>");
+                            Output.Write("<td>&nbsp;</td>");
                         }
 
-                        builder.AppendLine("</tr>");
+                        Output.WriteLine("</tr>");
                     }
 
-                    builder.AppendLine("                  </table>");
-                    builder.AppendLine("                </blockquote>" );
+                    Output.WriteLine("                  </table>");
+                    Output.WriteLine("                </blockquote>");
                 }
             }
 
-            builder.AppendLine("              </blockquote>" );
-            builder.AppendLine("              <br />" );
-            builder.AppendLine("            </div>");
-
-            // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add(mainLiteral);
-        }
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Download_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
+            Output.WriteLine("              </blockquote>");
+            Output.WriteLine("              <br />");
+            Output.WriteLine("            </div>");
         }
     }
 }

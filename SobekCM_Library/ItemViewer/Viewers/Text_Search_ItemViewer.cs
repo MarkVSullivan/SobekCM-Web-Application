@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -50,16 +51,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This always returns the value FALSE, to suppress the standard header information </value>
-        public override bool Show_Header
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This is a single page viewer, so this property always returns NONE</value>
         public override ItemViewer_PageSelector_Type_Enum Page_Selector
@@ -70,25 +61,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            return false;
-        }
-
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Text_Search_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Text_Search_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
             string search_this_document = "Search this document";
@@ -106,8 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Save the original search string
             string originalSearchString = CurrentMode.Text_Search;
 
-            StringBuilder resultsWriter = new StringBuilder();
-            resultsWriter.AppendLine("       <!-- TEXT SEARCH ITEM VIEWER OUTPUT -->");
+            Output.WriteLine("       <!-- TEXT SEARCH ITEM VIEWER OUTPUT -->");
 
             // Determine the value without any search
             string currentSearch = CurrentMode.Text_Search;
@@ -117,23 +96,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string button_text = String.Empty;
 
             // Add the search this document portion
-            resultsWriter.AppendLine("    <td align=\"center\">");
-            resultsWriter.AppendLine("      <div style=\"padding:10px 0px 10px 0px;\" >");
-            resultsWriter.AppendLine("        <label for=\"searchTextBox\">" + search_this_document + ":</label> &nbsp;");
-            resultsWriter.AppendLine("        <input class=\"SobekSearchBox\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + CurrentMode.Text_Search.Replace(" =", " or ") + "\" onfocus=\"javascript:textbox_enter('searchTextBox', 'SobekSearchBox_focused')\" onblur=\"javascript:textbox_leave('searchTextBox', 'SobekSearchBox')\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
-            resultsWriter.AppendLine("        <button title=\"" + search_this_document + "\" class=\"go_button2\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\"></button>");
-            resultsWriter.AppendLine("      </div>");
+            Output.WriteLine("    <td align=\"center\">");
+            Output.WriteLine("      <div style=\"padding:10px 0px 10px 0px;\" >");
+            Output.WriteLine("        <label for=\"searchTextBox\">" + search_this_document + ":</label> &nbsp;");
+            Output.WriteLine("        <input class=\"SobekSearchBox\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + CurrentMode.Text_Search.Replace(" =", " or ") + "\" onfocus=\"javascript:textbox_enter('searchTextBox', 'SobekSearchBox_focused')\" onblur=\"javascript:textbox_leave('searchTextBox', 'SobekSearchBox')\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
+            Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"go_button2\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\"></button>");
+            Output.WriteLine("      </div>");
             if (results != null)
             {
                 // Display the explanation string, and possibly paging options if there are more results
-                resultsWriter.AppendLine("      <hr style=\"width:100%; color:#dddddd; background-color:#dddddd\" />");
-                resultsWriter.AppendLine("    </td>");
-                resultsWriter.AppendLine("  </tr>");
-                resultsWriter.AppendLine("  <tr>");
-                resultsWriter.AppendLine("    <td align=\"center\">");
-                resultsWriter.AppendLine("      <div style=\"width: 600px; padding:5px 0px 12px 0px\">");
-                resultsWriter.AppendLine(Compute_Search_Explanation());
-                resultsWriter.AppendLine("</div>");
+                Output.WriteLine("      <hr style=\"width:100%; color:#dddddd; background-color:#dddddd\" />");
+                Output.WriteLine("    </td>");
+                Output.WriteLine("  </tr>");
+                Output.WriteLine("  <tr>");
+                Output.WriteLine("    <td align=\"center\">");
+                Output.WriteLine("      <div style=\"width: 600px; padding:5px 0px 12px 0px\">");
+                Output.WriteLine(Compute_Search_Explanation());
+                Output.WriteLine("</div>");
 
                 if (results.TotalResults > 20)
                 {
@@ -208,12 +187,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     buttonWriter.AppendLine("            </div>");
 
                     button_text = buttonWriter.ToString();
-                    resultsWriter.AppendLine(button_text);
+                    Output.WriteLine(button_text);
                     CurrentMode.SubPage = (ushort)current_page;
                 }
             }
-            resultsWriter.AppendLine("    </td>");
-            resultsWriter.AppendLine("  </tr>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
             if ((results != null) && (results.TotalResults > 0))
             {
@@ -226,10 +205,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     hasThumbs = true;
                 }
 
-                resultsWriter.AppendLine("  <tr>");
-                resultsWriter.AppendLine("    <td class=\"SobekCitationDisplay\">");
-                resultsWriter.AppendLine("      <div style=\"background-color: White;\">");
-                resultsWriter.AppendLine("        <table align=\"center\" width=\"100%\" cellspacing=\"15px\" height=\"1px\">");
+                Output.WriteLine("  <tr>");
+                Output.WriteLine("    <td class=\"SobekCitationDisplay\">");
+                Output.WriteLine("      <div style=\"background-color: White;\">");
+                Output.WriteLine("        <table align=\"center\" width=\"100%\" cellspacing=\"15px\" height=\"1px\">");
 
                 string thumbnail_root = CurrentItem.Web.Source_URL;
                 string url_options = CurrentMode.URL_Options();
@@ -248,91 +227,87 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // If this is not the first results drawn, add a seperating line
                     if (!first)
                     {
-                        resultsWriter.AppendLine("          <tr><td bgcolor=\"#cccccc\" colspan=\"" + columns + "\"></td></tr>");
+                        Output.WriteLine("          <tr><td bgcolor=\"#cccccc\" colspan=\"" + columns + "\"></td></tr>");
                     }
                     else
                     {
                         first = false;
                     }
 
-                    resultsWriter.AppendLine("          <tr valign=\"middle\">");
-                    resultsWriter.AppendLine("            <td width=\"5px\" valign=\"top\"><b>" + current_displayed_result + "</b></td>");
+                    Output.WriteLine("          <tr valign=\"middle\">");
+                    Output.WriteLine("            <td width=\"5px\" valign=\"top\"><b>" + current_displayed_result + "</b></td>");
 
                     // Only include the thumbnail column if some exist
                     if (hasThumbs)
                     {
                         if (result.Thumbnail.Length > 0)
                         {
-                            resultsWriter.AppendLine("            <td align=\"left\" width=\"150px\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + thumbnail_root + "/" + result.Thumbnail + "\" border=\"1\" /></a></td>");
+                            Output.WriteLine("            <td align=\"left\" width=\"150px\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + thumbnail_root + "/" + result.Thumbnail + "\" border=\"1\" /></a></td>");
                         }
                         else
                         {
-                            resultsWriter.AppendLine("            <td align=\"left\" width=\"150px\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + CurrentMode.Default_Images_URL + "NoThumb.jpg\" border=\"1\" /></a></td>");
+                            Output.WriteLine("            <td align=\"left\" width=\"150px\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + CurrentMode.Default_Images_URL + "NoThumb.jpg\" border=\"1\" /></a></td>");
                         }
                     }
 
-                    resultsWriter.AppendLine("            <td align=\"left\">");
-                    resultsWriter.AppendLine("              <a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><strong>" + result.PageName + "</strong></a>");
+                    Output.WriteLine("            <td align=\"left\">");
+                    Output.WriteLine("              <a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><strong>" + result.PageName + "</strong></a>");
                     if (result.Snippet.Length > 0)
                     {
-                        resultsWriter.AppendLine("              <br /><br />");
-                        resultsWriter.AppendLine("              &ldquo;..." + result.Snippet.Replace("<em>", "<span style=\"background-color:Yellow; font-weight:bold\">").Replace("</em>", "</span>") + "...&rdquo;");
+                        Output.WriteLine("              <br /><br />");
+                        Output.WriteLine("              &ldquo;..." + result.Snippet.Replace("<em>", "<span style=\"background-color:Yellow; font-weight:bold\">").Replace("</em>", "</span>") + "...&rdquo;");
                     }
-                    resultsWriter.AppendLine("            </td>");
-                    resultsWriter.AppendLine("          </tr>");
+                    Output.WriteLine("            </td>");
+                    Output.WriteLine("          </tr>");
 
                     current_displayed_result++;
                 }
 
-                resultsWriter.AppendLine("        </table>");
-                resultsWriter.AppendLine("      </div>");
+                Output.WriteLine("        </table>");
+                Output.WriteLine("      </div>");
 
-                resultsWriter.AppendLine(button_text);
-                resultsWriter.AppendLine("    </td>");
+                Output.WriteLine(button_text);
+                Output.WriteLine("    </td>");
             }
             else
             {
-                resultsWriter.AppendLine("  <tr>");
-                resultsWriter.AppendLine("    <td class=\"SobekCitationDisplay\">");
-                resultsWriter.AppendLine("      <div style=\"background-color: White;\">");
-                resultsWriter.AppendLine("        <br />");
-                resultsWriter.AppendLine("        <h2>Quick Tips</h2>");
-                resultsWriter.AppendLine("        <div id=\"SobekQuickTips\">");
-                resultsWriter.AppendLine("          <ul>");
-                resultsWriter.AppendLine("            <li><strong>Document Searching</strong>");
-                resultsWriter.AppendLine("              <p class=\"tagline\"> This option searches the full-text of the document and returns any pages which match<br />");
-                resultsWriter.AppendLine("              the conditions of your search.</p>");
-                resultsWriter.AppendLine("            </li>");
-                resultsWriter.AppendLine("            <li><strong>Boolean Searches</strong>");
-                resultsWriter.AppendLine("              <p class=\"tagline\"> Use <b>+</b> or <i><b>and</b></i> between terms to find records with <b>all</b> the terms.<br />");
-                resultsWriter.AppendLine("              Use <b>-</b> or <i><b>or</b></i> between terms to find records with <b>any</b> of the terms.<br />");
-                resultsWriter.AppendLine("              Use <b>!</b> or <i><b>and not</b></i> between terms to exclude records with terms.<br />");
-                resultsWriter.AppendLine("              If nothing is indicated, <b><i>and</i></b> is the default.<br />");
-                resultsWriter.AppendLine("              EXAMPLE: natural and not history");
-                resultsWriter.AppendLine("              </p>");
-                resultsWriter.AppendLine("            </li>");
-                resultsWriter.AppendLine("            <li><strong>Phrase Searching</strong>");
-                resultsWriter.AppendLine("              <p class=\"tagline\"> Placing quotes around a phrase will search for the exact phrase.<br />");
-                resultsWriter.AppendLine("              EXAMPLE: &quot;natural history&quot;</p>");
-                resultsWriter.AppendLine("            </li>");
-                resultsWriter.AppendLine("            <li><strong>Capitalization</strong>");
-                resultsWriter.AppendLine("              <p class=\"tagline\"> Searches are not capitalization sensitive.<br />");
-                resultsWriter.AppendLine("              EXAMPLE: Searching for <i>NATURAL</i> will return the same results as searching for <i>natural</i></p>");
-                resultsWriter.AppendLine("            </li>");
-                resultsWriter.AppendLine("            <li><strong>Diacritics</strong>");
-                resultsWriter.AppendLine("              <p class=\"tagline\"> To search for words with diacritics, the character must be entered into the search box.<br />");
-                resultsWriter.AppendLine("              EXAMPLE: Searching <i>Précédent</i> is a different search than <i>Precedent</i></p>");
-                resultsWriter.AppendLine("            </li>");
-                resultsWriter.AppendLine("          </ul>");
-                resultsWriter.AppendLine("        </div>");
-                resultsWriter.AppendLine("        <br />");
-                resultsWriter.AppendLine("      </div>");
-                resultsWriter.AppendLine("    </td>");
+                Output.WriteLine("  <tr>");
+                Output.WriteLine("    <td class=\"SobekCitationDisplay\">");
+                Output.WriteLine("      <div style=\"background-color: White;\">");
+                Output.WriteLine("        <br />");
+                Output.WriteLine("        <h2>Quick Tips</h2>");
+                Output.WriteLine("        <div id=\"SobekQuickTips\">");
+                Output.WriteLine("          <ul>");
+                Output.WriteLine("            <li><strong>Document Searching</strong>");
+                Output.WriteLine("              <p class=\"tagline\"> This option searches the full-text of the document and returns any pages which match<br />");
+                Output.WriteLine("              the conditions of your search.</p>");
+                Output.WriteLine("            </li>");
+                Output.WriteLine("            <li><strong>Boolean Searches</strong>");
+                Output.WriteLine("              <p class=\"tagline\"> Use <b>+</b> or <i><b>and</b></i> between terms to find records with <b>all</b> the terms.<br />");
+                Output.WriteLine("              Use <b>-</b> or <i><b>or</b></i> between terms to find records with <b>any</b> of the terms.<br />");
+                Output.WriteLine("              Use <b>!</b> or <i><b>and not</b></i> between terms to exclude records with terms.<br />");
+                Output.WriteLine("              If nothing is indicated, <b><i>and</i></b> is the default.<br />");
+                Output.WriteLine("              EXAMPLE: natural and not history");
+                Output.WriteLine("              </p>");
+                Output.WriteLine("            </li>");
+                Output.WriteLine("            <li><strong>Phrase Searching</strong>");
+                Output.WriteLine("              <p class=\"tagline\"> Placing quotes around a phrase will search for the exact phrase.<br />");
+                Output.WriteLine("              EXAMPLE: &quot;natural history&quot;</p>");
+                Output.WriteLine("            </li>");
+                Output.WriteLine("            <li><strong>Capitalization</strong>");
+                Output.WriteLine("              <p class=\"tagline\"> Searches are not capitalization sensitive.<br />");
+                Output.WriteLine("              EXAMPLE: Searching for <i>NATURAL</i> will return the same results as searching for <i>natural</i></p>");
+                Output.WriteLine("            </li>");
+                Output.WriteLine("            <li><strong>Diacritics</strong>");
+                Output.WriteLine("              <p class=\"tagline\"> To search for words with diacritics, the character must be entered into the search box.<br />");
+                Output.WriteLine("              EXAMPLE: Searching <i>Précédent</i> is a different search than <i>Precedent</i></p>");
+                Output.WriteLine("            </li>");
+                Output.WriteLine("          </ul>");
+                Output.WriteLine("        </div>");
+                Output.WriteLine("        <br />");
+                Output.WriteLine("      </div>");
+                Output.WriteLine("    </td>");
             }
-
-            // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = resultsWriter.ToString()};
-            placeHolder.Controls.Add(mainLiteral);
         }
 
         /// <summary> This provides an opportunity for the viewer to perform any pre-display work
