@@ -49,16 +49,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return ItemViewer_Type_Enum.Google_Map; }
         }
 
-        /// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-        /// <value> This always returns the value FALSE, to suppress the standard header information </value>
-        public override bool Show_Header
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>
         public override int PageCount
@@ -371,39 +361,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine(mapBuilder.ToString());
         }
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Google_Map_ItemViewer.Add_Nav_Bar_Menu_Section", "Do nothing");
-            }
-
-            return false;
-        }
-
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (CurrentMode.ViewerCode == "mapsearch")
                 googleItemSearch = true;
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Google_Map_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Google_Map_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
-            // Add the HTML for the image
-            Literal mainLiteral = new Literal();
-
-            StringBuilder result = new StringBuilder("        <!-- GOOGLE MAP VIEWER OUTPUT -->" + Environment.NewLine);
+            Output.WriteLine("        <!-- GOOGLE MAP VIEWER OUTPUT -->" + Environment.NewLine);
 
             if (( allPolygons.Count > 0 ) || ( allPoints.Count > 0 ) || ( allLines.Count > 0 ))
             {
@@ -424,43 +395,43 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         const string FIND_BUTTON_TEXT = "Find Address";
                         string script_action_name = "map_item_search_sobekcm('" + redirect_stem + "');";
 
-                        result.AppendLine("    <td align=\"left\" >");
-                        result.AppendLine("      <ol>");
-                        result.AppendLine(
+                        Output.WriteLine("    <td align=\"left\" >");
+                        Output.WriteLine("      <ol>");
+                        Output.WriteLine(
                             "        <li>Use the <i>Select Area</i> button below to draw a search box on the map or enter an address and press <i>Find Address</i>.</li>");
-                        result.AppendLine("        <li>Press the <i>Search</i> button to see results</li>");
-                        result.AppendLine("      </ol>");
-                        result.AppendLine("        <div class=\"map_address_div\">");
-                        result.AppendLine("          <label for=\"AddressTextBox\">Address:</label> &nbsp; ");
-                        result.AppendLine(
+                        Output.WriteLine("        <li>Press the <i>Search</i> button to see results</li>");
+                        Output.WriteLine("      </ol>");
+                        Output.WriteLine("        <div class=\"map_address_div\">");
+                        Output.WriteLine("          <label for=\"AddressTextBox\">Address:</label> &nbsp; ");
+                        Output.WriteLine(
                             "          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"MapAddressBox_initial\" value=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onfocus=\"enter_address_box(this);\" onblur=\"leave_address_box(this);\" onkeypress=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" /> &nbsp; ");
-                        result.AppendLine("          <input type=\"button\" name=\"findButton\" value=\"" + FIND_BUTTON_TEXT +
+                        Output.WriteLine("          <input type=\"button\" name=\"findButton\" value=\"" + FIND_BUTTON_TEXT +
                                           "\" id=\"findButton\" class=\"SobekSearchButton\" onclick=\"map_address_geocode();\" /> &nbsp; ");
-                        result.AppendLine("          <input type=\"button\" name=\"searchButton\" value=\"" +
+                        Output.WriteLine("          <input type=\"button\" name=\"searchButton\" value=\"" +
                                           SEARCH_BUTTON_TEXT +
                                           "\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" +
                                           script_action_name + "\" />");
-                        result.AppendLine("        </div>");
-                        result.AppendLine("         <input name=\"Textbox1\" type=\"hidden\" id=\"Textbox1\" value=\"" +
+                        Output.WriteLine("        </div>");
+                        Output.WriteLine("         <input name=\"Textbox1\" type=\"hidden\" id=\"Textbox1\" value=\"" +
                                           providedMaxLat.ToString() + "\" />");
-                        result.AppendLine("         <input name=\"Textbox2\" type=\"hidden\" id=\"Textbox2\" value=\"" +
+                        Output.WriteLine("         <input name=\"Textbox2\" type=\"hidden\" id=\"Textbox2\" value=\"" +
                                           providedMaxLong.ToString() + "\" />");
-                        result.AppendLine("         <input name=\"Textbox3\" type=\"hidden\" id=\"Textbox3\" value=\"" +
+                        Output.WriteLine("         <input name=\"Textbox3\" type=\"hidden\" id=\"Textbox3\" value=\"" +
                                           providedMinLat.ToString() + "\" />");
-                        result.AppendLine("         <input name=\"Textbox4\" type=\"hidden\" id=\"Textbox4\" value=\"" +
+                        Output.WriteLine("         <input name=\"Textbox4\" type=\"hidden\" id=\"Textbox4\" value=\"" +
                                           providedMaxLong.ToString() + "\" />");
-                        result.AppendLine("    </td>");
+                        Output.WriteLine("    </td>");
                     }
                     else
                     {
                         if (matchingTilesList == null || matchingTilesList.Count == 0)
                         {
-                            result.AppendLine("          <td align=\"center\">");
-                            result.AppendLine(
+                            Output.WriteLine("          <td align=\"center\">");
+                            Output.WriteLine(
                                 "            There were no matches within this item for your geographic search. &nbsp; ");
                             string currentModeViewerCode = CurrentMode.ViewerCode;
                             CurrentMode.ViewerCode = "mapsearch";
-                            result.AppendLine("            ( <a href=\"" + CurrentMode.Redirect_URL() +
+                            Output.WriteLine("            ( <a href=\"" + CurrentMode.Redirect_URL() +
                                               "\">Modify item search</a> )");
                             CurrentMode.ViewerCode = currentModeViewerCode;
 
@@ -468,7 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             // or at least that map searching is allowed for that collection
                             if (CurrentMode.Aggregation.Length > 0)
                             {
-                                result.AppendLine("            <br /><br />");
+                                Output.WriteLine("            <br /><br />");
                                 CurrentMode.Mode = Display_Mode_Enum.Results;
                                 CurrentMode.Search_Type = Search_Type_Enum.Map;
                                 CurrentMode.Result_Display_Type = Result_Display_Type_Enum.Map;
@@ -482,11 +453,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     CurrentMode.Search_String = providedMaxLat.ToString() + "," + providedMaxLong;
                                 }
-                                result.AppendLine("            <a href=\"" + CurrentMode.Redirect_URL() +
+                                Output.WriteLine("            <a href=\"" + CurrentMode.Redirect_URL() +
                                                   "\">Click here to search other items in the current collection</a><br />");
                                 CurrentMode.Mode = Display_Mode_Enum.Item_Display;
                             }
-                            result.AppendLine("          </td>" + Environment.NewLine + "        </tr>");
+                            Output.WriteLine("          </td>" + Environment.NewLine + "        </tr>");
                         }
                         else
                         {
@@ -496,13 +467,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial)
                                 modify_item_search = "Modify search within flight";
 
-                            result.AppendLine("          <td align=\"left\">");
-                            result.AppendLine("            <table width=\"700px\" >");
-                            result.AppendLine("              <tr>");
-                            result.AppendLine("                <td width=\"50px\">&nbsp;</td>");
-                            result.AppendLine(
+                            Output.WriteLine("          <td align=\"left\">");
+                            Output.WriteLine("            <table width=\"700px\" >");
+                            Output.WriteLine("              <tr>");
+                            Output.WriteLine("                <td width=\"50px\">&nbsp;</td>");
+                            Output.WriteLine(
                                 "                <td colspan=\"4\">The following results match your geographic search and also appear on the navigation bar to the left:</td>");
-                            result.AppendLine("              </tr>");
+                            Output.WriteLine("              </tr>");
 
                             int column = 0;
                             bool first_row = true;
@@ -519,21 +490,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 // Start this row, as it is needed
                                 if (column == 0)
                                 {
-                                    result.AppendLine("              <tr>");
+                                    Output.WriteLine("              <tr>");
                                     if (first_row)
                                     {
-                                        result.AppendLine("                <td width=\"50px\">&nbsp;</td>");
-                                        result.AppendLine("                <td width=\"50px\">&nbsp;</td>");
+                                        Output.WriteLine("                <td width=\"50px\">&nbsp;</td>");
+                                        Output.WriteLine("                <td width=\"50px\">&nbsp;</td>");
                                         first_row = false;
                                     }
                                     else
                                     {
-                                        result.AppendLine("                <td colspan=\"2\">&nbsp;</td>");
+                                        Output.WriteLine("                <td colspan=\"2\">&nbsp;</td>");
                                     }
                                 }
 
                                 // Add the information for this tile
-                                result.AppendLine("                <td  width=\"80px\">" +
+                                Output.WriteLine("                <td  width=\"80px\">" +
                                                   thisResult.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>",
                                                                                                          urlOptions1).
                                                       Replace("<%&URLOPTS%>", urlOptions2) + "</td>");
@@ -542,7 +513,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 // If this was the last column, end it
                                 if (column >= 3)
                                 {
-                                    result.AppendLine("              </tr>");
+                                    Output.WriteLine("              </tr>");
                                     column = 0;
                                 }
                             }
@@ -552,24 +523,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 while (column < 3)
                                 {
-                                    result.AppendLine("                <td  width=\"80px\">&nbsp;</td>");
+                                    Output.WriteLine("                <td  width=\"80px\">&nbsp;</td>");
                                     column++;
                                 }
-                                result.AppendLine("              </tr>");
+                                Output.WriteLine("              </tr>");
                             }
 
                             // Add a horizontal line here
-                            result.AppendLine("              <tr><td></td><td bgcolor=\"#cccccc\" colspan=\"4\"></td></tr>");
+                            Output.WriteLine("              <tr><td></td><td bgcolor=\"#cccccc\" colspan=\"4\"></td></tr>");
 
                             // Also, add the navigation links 
-                            result.AppendLine("              <tr>");
-                            result.AppendLine("                <td>&nbsp;</td>");
-                            result.AppendLine("                <td colspan=\"4\">");
-                            result.AppendLine("                  <a href=\"\" onclick=\"return zoom_to_bounds();\">" +
+                            Output.WriteLine("              <tr>");
+                            Output.WriteLine("                <td>&nbsp;</td>");
+                            Output.WriteLine("                <td colspan=\"4\">");
+                            Output.WriteLine("                  <a href=\"\" onclick=\"return zoom_to_bounds();\">" +
                                               ZOOM_EXTENT + "</a> &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; ");
                             if (matchingTilesList.Count > 0)
                             {
-                                result.AppendLine("                  <a href=\"\" onclick=\"return zoom_to_selected();\">" +
+                                Output.WriteLine("                  <a href=\"\" onclick=\"return zoom_to_selected();\">" +
                                                   ZOOM_MATCHES + "</a> &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; ");
                             }
 
@@ -578,7 +549,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             // Add link to modify this item search
                             string currentModeViewerCode = CurrentMode.ViewerCode;
                             CurrentMode.ViewerCode = "mapsearch";
-                            result.AppendLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">" +
+                            Output.WriteLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">" +
                                               modify_item_search + "</a> &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; ");
                             CurrentMode.ViewerCode = currentModeViewerCode;
 
@@ -598,18 +569,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 }
 
                                 if (CurrentMode.Aggregation == "aerials")
-                                    result.AppendLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">Search all flights</a><br />");
+                                    Output.WriteLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">Search all flights</a><br />");
                                 else
-                                    result.AppendLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">Search entire collection</a><br />");
+                                    Output.WriteLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">Search entire collection</a><br />");
 
                                 CurrentMode.Mode = Display_Mode_Enum.Item_Display;
                             }
 
-                            result.AppendLine("                </td>");
-                            result.AppendLine("              </tr>");
-                            result.AppendLine("            </table>");
-                            result.AppendLine("          </td>");
-                            result.AppendLine("        </tr>");
+                            Output.WriteLine("                </td>");
+                            Output.WriteLine("              </tr>");
+                            Output.WriteLine("            </table>");
+                            Output.WriteLine("          </td>");
+                            Output.WriteLine("        </tr>");
                         }
                     }
                 }
@@ -624,13 +595,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
-            result.AppendLine("        <tr>" + Environment.NewLine + "          <td class=\"SobekCitationDisplay\">");
-            result.AppendLine("            <div id=\"map1\" style=\"width: 800px; height: 700px\"></div>");
-            result.AppendLine("          </td>");
-            result.AppendLine("        <!-- END GOOGLE MAP VIEWER OUTPUT -->");
+            Output.WriteLine("        <tr>" + Environment.NewLine + "          <td class=\"SobekCitationDisplay\">");
+            Output.WriteLine("            <div id=\"map1\" style=\"width: 800px; height: 700px\"></div>");
+            Output.WriteLine("          </td>");
+            Output.WriteLine("        <!-- END GOOGLE MAP VIEWER OUTPUT -->");
+        }
 
-            mainLiteral.Text = result.ToString();
-            placeHolder.Controls.Add(mainLiteral);
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        /// <param name="Body_Attributes"> List of body attributes to be included </param>
+        public virtual void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        {
+            Body_Attributes.Add(new Tuple<string, string>("onload", "load();"));
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
+        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing
         }
     }
 }

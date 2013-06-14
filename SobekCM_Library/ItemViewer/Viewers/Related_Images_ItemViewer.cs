@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -134,31 +135,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-  
-		/// <summary> Adds the main view section to the page turner </summary>
-		/// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
-		{
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        {
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Related_Images_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+				Tracer.Add_Trace("Related_Images_ItemViewer.Write_Main_Viewer_Section", "");
 			}
 
 			int images_per_page = thumbnailsPerPage;
             int size_of_thumbnails = thumbnailSize;
-
-
-			// Build the value
-			StringBuilder builder = new StringBuilder(5000);
 
 			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
 			ushort current_view_page = CurrentMode.Page;
 
 			// Start the citation table
-			builder.AppendLine( "\t\t<!-- RELATED IMAGES VIEWER OUTPUT -->" );
-			builder.AppendLine("\t\t<td>" );
+			Output.WriteLine( "\t\t<!-- RELATED IMAGES VIEWER OUTPUT -->" );
+			Output.WriteLine("\t\t<td>" );
 
 			// Start the main div for the thumbnails
 	
@@ -167,7 +163,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				page = (ushort)((CurrentItem.Web.Static_PageCount - 1) / images_per_page);
 
 			//Outer div which contains all the thumbnails
-			builder.AppendLine("<div align=\"center\" style=\"margin:5px;\"><span align=\"left\" style=\"float:left\">");
+			Output.WriteLine("<div align=\"center\" style=\"margin:5px;\"><span align=\"left\" style=\"float:left\">");
 
 
 			// Step through each page in the item
@@ -191,18 +187,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
 
           
-						//builder.Append("<span  id=\"span"+thisPage.Label+"\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\">");
-                    builder.Append("<span  id=\"span" + (page_index + 1) + "\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\">");   
+						//Output.Write("<span  id=\"span"+thisPage.Label+"\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\">");
+                    Output.Write("<span  id=\"span" + (page_index + 1) + "\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\">");   
 			      
                     if(size_of_thumbnails==2)
-                       builder.AppendLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\"  src=\"" + image_url + "\" width=\"315px\" height=\"50%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                       Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\"  src=\"" + image_url + "\" width=\"315px\" height=\"50%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
                     else if(size_of_thumbnails==3)
-                        builder.AppendLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\" src=\"" + image_url + "\" width=\"472.5px\" height=\"75%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\" src=\"" + image_url + "\" width=\"472.5px\" height=\"75%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
                     else if(size_of_thumbnails==4)
-                        builder.AppendLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
                     else
                     {
-                        builder.AppendLine("<span align=\"center\" style=\"display:inline-block;\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\" style=\"display:inline-block;\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        Output.WriteLine("<span align=\"center\" style=\"display:inline-block;\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\" style=\"display:inline-block;\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
                     }
 					break;
 				}
@@ -210,7 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			//Close the outer div
-			builder.AppendLine("</span></div>");
+			Output.WriteLine("</span></div>");
 
 			// Restore the mode
 			CurrentMode.ViewerCode = current_view_code;
@@ -218,17 +214,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Finish the citation table
-            builder.AppendLine("\t\t</td>");
-            builder.AppendLine("\t\t<!-- END RELATED IMAGES VIEWER OUTPUT -->");
+            Output.WriteLine("\t\t</td>");
+            Output.WriteLine("\t\t<!-- END RELATED IMAGES VIEWER OUTPUT -->");
 
             //If the current url has an anchor, call the javascript function to animate the corresponding span background color
-            builder.AppendLine("<script type=\"text/javascript\">window.onload=MakeSpanFlashOnPageLoad();</script>");
-		    builder.AppendLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
-
-            // Add the HTML for the images
-			Literal mainLiteral = new Literal {Text = builder.ToString()};
-			placeHolder.Controls.Add( mainLiteral );
-
+            Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSpanFlashOnPageLoad();</script>");
+		    Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
         }
 	   
 		/// <summary>
@@ -420,24 +411,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			}
 		}
- 
-
-		/// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-		/// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-		/// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		/// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-		/// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-		public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Related_Images_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-			 }
-			
-		   return false;
-		}
-
 
         /// <summary> This provides an opportunity for the viewer to perform any pre-display work
         /// which is necessary before entering any of the rendering portions </summary>

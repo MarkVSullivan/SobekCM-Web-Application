@@ -1,5 +1,6 @@
 #region Using directives
 
+using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Navigation;
@@ -163,9 +164,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the names to show in the Go To combo box </summary>
 		string[] Go_To_Names { get; }
 
-		/// <summary> Flag indicates if the header (with the title, group title, etc..) should be displayed </summary>
-		bool Show_Header { get; }
-
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
 		int Viewer_Width { get; }
 
@@ -191,10 +189,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    /// <returns> TRUE if this viewer added something to the left navigational bar, otherwise FALSE</returns>
 	    bool Add_Nav_Bar_Menu_Section( PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer );
 
+        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        void Write_Nav_Bar_Menu_Section(TextWriter Output, Custom_Tracer Tracer);
+
 	    /// <summary> Adds the main view section to the page turner </summary>
 	    /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 	    void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer);
+
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer);
 
 	    /// <summary> This provides an opportunity for the viewer to perform any pre-display work
         /// which is necessary before entering any of the rendering portions </summary>

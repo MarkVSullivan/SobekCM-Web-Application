@@ -1,9 +1,12 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -81,18 +84,34 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("JPEG_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("JPEG_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
 
             string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
+
+            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode) CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[0]).Files;
+            string first_page_jpeg = String.Empty;
+            foreach (SobekCM_File_Info thisFile in first_page_files)
+            {
+                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                    (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                {
+                    first_page_jpeg = thisFile.System_Name;
+                    break;
+                }
+            }
+
+
+            string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if (( CurrentItem.Behaviors.Dark_Flag ) || ( CurrentItem.Behaviors.IP_Restriction_Membership > 0 ))
@@ -110,25 +129,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Add the HTML for the image
-            Literal mainLiteral = new Literal { Text = "\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">" + Environment.NewLine + "\t\t\t<img src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />" + Environment.NewLine + "\t\t</td>" + Environment.NewLine };
-            placeHolder.Controls.Add(mainLiteral);
+            Output.WriteLine("\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">" + Environment.NewLine +
+                             "\t\t\t<img src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" +
+                             name_for_image + "\" />" + Environment.NewLine + "\t\t</td>");
+
         }
-
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("JPEG_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
-		}
 	}
 }

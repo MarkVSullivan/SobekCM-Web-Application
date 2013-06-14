@@ -2082,5 +2082,125 @@ namespace SobekCM.Library.HTML
         #endregion
 
         #endregion
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        public override List<Tuple<string, string>> Body_Attributes
+        {
+            get
+            {
+                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+
+                switch (currentMode.Mode)
+                {
+                    case Display_Mode_Enum.Aggregation_Browse_Info:
+                        if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                        {
+                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Search:
+                        if (currentMode.Search_Type == Search_Type_Enum.Map)
+                        {
+                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
+
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Aggregation_Browse_Map:
+                        returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                        break;
+                }
+
+                return returnValue;
+            }
+        }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get 
+            {
+                switch (currentMode.Mode)
+                {
+                    case Display_Mode_Enum.Aggregation_Home:
+                        if (Hierarchy_Object != null)
+                        {
+                            if (Hierarchy_Object.Code == "ALL")
+                            {
+                                return "{0} Home";
+                            }
+                            else
+                            {
+                                return "{0} Home - " + Hierarchy_Object.Name;
+                            }
+                        }
+                        else
+                        {
+                            return "{0} Home";
+                        }
+ 
+                    case Display_Mode_Enum.Search:
+                        if (Hierarchy_Object != null)
+                        {
+                            return "{0} Search - " + Hierarchy_Object.Name;
+                        }
+                        else
+                        {
+                            return "{0} Search";
+                        }
+
+                    case Display_Mode_Enum.Aggregation_Browse_Info:
+                        if (Hierarchy_Object != null)
+                        {
+                            return "{0} - " + Hierarchy_Object.Name;
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Aggregation_Browse_By:
+                    case Display_Mode_Enum.Aggregation_Browse_Map:
+                    case Display_Mode_Enum.Aggregation_Private_Items:
+                    case Display_Mode_Enum.Aggregation_Item_Count:
+                    case Display_Mode_Enum.Aggregation_Usage_Statistics:
+                    case Display_Mode_Enum.Aggregation_Admin_View:
+                        return "{0} - " + Hierarchy_Object.Name;
+                }
+
+                // default
+                if ( Hierarchy_Object != null )
+                    return "{0} - " + Hierarchy_Object.Name;
+                else
+                    return "{0}";                
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Based on display mode, add ROBOT instructions
+            switch (currentMode.Mode)
+            {
+                case Display_Mode_Enum.Aggregation_Home:
+                case Display_Mode_Enum.Aggregation_Browse_Info:
+                case Display_Mode_Enum.Search:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+                    break;
+
+                default:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+                    break;
+            }
+
+            // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
+            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
+            {
+                Output.WriteLine("  <link rel=\"search\" href=\"" + currentMode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + currentMode.SobekCM_Instance_Abbreviation + " Search\" />");
+            }
+        }
     }
 }

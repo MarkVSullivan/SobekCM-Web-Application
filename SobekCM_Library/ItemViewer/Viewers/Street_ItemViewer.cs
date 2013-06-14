@@ -1,5 +1,6 @@
 #region Using directives
 
+using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Database;
@@ -52,28 +53,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Street_ItemViewer.Add_Main_Viewer_Section", "Adds one literal with all the html");
+                Tracer.Add_Trace("Street_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
             // Build the value
-            StringBuilder builder = new StringBuilder(5000);
             Map_Streets_DataSet streets = SobekCM_Database.Get_All_Streets_By_Item(CurrentItem.Web.ItemID, Tracer);
 
             if (streets == null)
             {
-                builder.AppendLine("<br />");
-                builder.AppendLine("<center><b>UNABLE TO LOAD STREETS FROM DATABASE</b></center>");
-                builder.AppendLine("<br />");
+                Output.WriteLine("<br />");
+                Output.WriteLine("<center><b>UNABLE TO LOAD STREETS FROM DATABASE</b></center>");
+                Output.WriteLine("<br />");
                 CurrentMode.Mode = Display_Mode_Enum.Contact;
-                builder.AppendLine("<center>Click <a href=\"" + CurrentMode.Redirect_URL() + "\">here</a> to report this issue.</center>");
-                builder.AppendLine("<br />");
+                Output.WriteLine("<center>Click <a href=\"" + CurrentMode.Redirect_URL() + "\">here</a> to report this issue.</center>");
+                Output.WriteLine("<br />");
                 CurrentMode.Mode = Display_Mode_Enum.Item_Display;
             }
             else
@@ -82,54 +82,34 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string current_view_code = CurrentMode.ViewerCode;
 
                 // Start the citation table
-                builder.AppendLine("\t\t<!-- STREET VIEWER OUTPUT -->" );
-                builder.AppendLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>Index of Streets</b></span></td></tr>" );
-                builder.AppendLine("\t\t<tr><td class=\"SobekDocumentDisplay\">");
-                builder.AppendLine("\t\t\t<div class=\"SobekCitation\">" );
+                Output.WriteLine("\t\t<!-- STREET VIEWER OUTPUT -->" );
+                Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>Index of Streets</b></span></td></tr>" );
+                Output.WriteLine("\t\t<tr><td class=\"SobekDocumentDisplay\">");
+                Output.WriteLine("\t\t\t<div class=\"SobekCitation\">" );
 
                 // Get the list of streets from the database
-                Create_Street_Index(builder, streets);
+                Create_Street_Index(Output, streets);
 
                 // Finish the citation table
-                builder.AppendLine("\t\t\t</div>" );
-                builder.AppendLine("\t\t</td>" );
-                builder.AppendLine("\t\t<!-- END STREET VIEWER OUTPUT -->" );
+                Output.WriteLine("\t\t\t</div>" );
+                Output.WriteLine("\t\t</td>" );
+                Output.WriteLine("\t\t<!-- END STREET VIEWER OUTPUT -->" );
 
                 // Restore the mode
                 CurrentMode.ViewerCode = current_view_code;
             }
-
-            // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add( mainLiteral );
-        }
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Returns FALSE since nothing was added to the left navigational bar </returns>
-        /// <remarks> For this item viewer, this method does nothing except return FALSE </remarks>
-        public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Street_ItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
         }
 
         /// <summary> Build the HTML for the street index for this item </summary>
-        /// <param name="html"> Stringbuilder to feed the HTML into </param>
+        /// <param name="Output"> Stream to write into </param>
         /// <param name="streets"> Dataset containig all of the streets linked to this item </param>
-        protected internal void Create_Street_Index(StringBuilder html, Map_Streets_DataSet streets)
+        protected internal void Create_Street_Index(TextWriter Output, Map_Streets_DataSet streets)
         {
             string currentView = CurrentMode.ViewerCode;
 
             // This will be presented in a table, so start the table
-            html.AppendLine("\n\n<!-- Start output from GEMS_Map_Object.Street_Index -->");
-            html.AppendLine("<table width=\"100%\">");
+            Output.WriteLine("\n\n<!-- Start output from GEMS_Map_Object.Street_Index -->");
+            Output.WriteLine("<table width=\"100%\">");
 
             // Determine (roughly) how many rows for each side
             // of the column
@@ -138,49 +118,49 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 rows_per_column++;
 
             // Start the large table for each section
-            html.AppendLine("\t<tr>");
-            html.AppendLine("\t\t<td width=\"32%\" valign=\"top\">");
+            Output.WriteLine("\t<tr>");
+            Output.WriteLine("\t\t<td width=\"32%\" valign=\"top\">");
 
             // Create the first column of street information
-            Insert_One_Street_Column( html, streets, 0, rows_per_column );			
+            Insert_One_Street_Column( Output, streets, 0, rows_per_column );			
 
             // Move to second column of large table, after making a small margin column
-            html.AppendLine("\t\t</td>");
-            html.AppendLine("\t\t<td width=\"2%\"></td> <!-- Spacer Column -->");
-            html.AppendLine("\t\t<td width=\"32%\" valign=\"top\">");
+            Output.WriteLine("\t\t</td>");
+            Output.WriteLine("\t\t<td width=\"2%\"></td> <!-- Spacer Column -->");
+            Output.WriteLine("\t\t<td width=\"32%\" valign=\"top\">");
 
             // Create the second column of street information
-            Insert_One_Street_Column( html, streets, rows_per_column, (2* rows_per_column) - 1 );		
+            Insert_One_Street_Column( Output, streets, rows_per_column, (2* rows_per_column) - 1 );		
 
             // Move to third column of large table, after making a small margin column
-            html.AppendLine("\t\t</td>");
-            html.AppendLine("\t\t<td width=\"2%\"></td> <!-- Spacer Column -->");
-            html.AppendLine("\t\t<td width=\"32%\" valign=\"top\">");
+            Output.WriteLine("\t\t</td>");
+            Output.WriteLine("\t\t<td width=\"2%\"></td> <!-- Spacer Column -->");
+            Output.WriteLine("\t\t<td width=\"32%\" valign=\"top\">");
 
             // Create the third column of street information
-            Insert_One_Street_Column( html, streets, (2 * rows_per_column), streets.Streets.Count );	
+            Insert_One_Street_Column( Output, streets, (2 * rows_per_column), streets.Streets.Count );	
 
             // Finish off the large table
-            html.AppendLine("\t\t</td>");
-            html.AppendLine("\t<tr>");
-            html.AppendLine("</table>");
-            html.AppendLine("<!-- End output from GEMS_Map_Object.Street_Index -->");
+            Output.WriteLine("\t\t</td>");
+            Output.WriteLine("\t<tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("<!-- End output from GEMS_Map_Object.Street_Index -->");
 
             CurrentMode.ViewerCode = currentView;
         }
 
         /// <summary> Insert the HTML for a single street column into the Stringbuilder </summary>
         /// <param name="streets"> Dataset containig all of the streets linked to this item </param>
-        /// <param name="html"> Stringbuilder to feed the HTML into </param>
+        /// <param name="Output"> Response stream to write directly to </param>
         /// <param name="startRow"> Row of the set of streets to begin on </param>
         /// <param name="endRow"> Last row in the set of streets </param>
-        protected internal void Insert_One_Street_Column( StringBuilder html, Map_Streets_DataSet streets, int startRow, int endRow )
+        protected internal void Insert_One_Street_Column( TextWriter Output, Map_Streets_DataSet streets, int startRow, int endRow )
         {
             // Declare some variables for looping
             string lastStreetName = "%";
 
             // Start the table for this row
-            html.AppendLine("\t\t\t<table width=\"100%\"> <!-- Table to display a single column of street information -->");
+            Output.WriteLine("\t\t\t<table width=\"100%\"> <!-- Table to display a single column of street information -->");
 
             // Now, loop through all the results
             int i = startRow;
@@ -193,32 +173,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if ( thisStreet.StreetName.Trim()[0] != lastStreetName[0] )
                 {
                     // Add a row for the letter
-                    html.AppendLine("\t\t\t\t<tr> <td colspan=\"3\" class=\"bigletter\" align=\"center\">" + (thisStreet.StreetName.Trim())[0] + "</td> </tr>");
+                    Output.WriteLine("\t\t\t\t<tr> <td colspan=\"3\" class=\"bigletter\" align=\"center\">" + (thisStreet.StreetName.Trim())[0] + "</td> </tr>");
                     lastStreetName = thisStreet.StreetName.Trim();
                 }
 
                 // Start this row
-                html.AppendLine("\t\t\t\t<tr class=\"index\">");
+                Output.WriteLine("\t\t\t\t<tr class=\"index\">");
 
                 // Add the street name and direction
                 if (( !thisStreet.IsStreetDirectionNull() ) && ( thisStreet.StreetDirection.Length > 0 ))
-                    html.AppendLine("\t\t\t\t\t<td>" + thisStreet.StreetName + ", " + thisStreet.StreetDirection + "<td>");
+                    Output.WriteLine("\t\t\t\t\t<td>" + thisStreet.StreetName + ", " + thisStreet.StreetDirection + "<td>");
                 else
-                    html.AppendLine("\t\t\t\t\t<td>" + thisStreet.StreetName + "<td>");
+                    Output.WriteLine("\t\t\t\t\t<td>" + thisStreet.StreetName + "<td>");
 
                 // Determine the second column of data and add it
-                html.AppendLine("\t\t\t\t\t<td align=\"right\">" + street_display(thisStreet) + "</td>");
+                Output.WriteLine("\t\t\t\t\t<td align=\"right\">" + street_display(thisStreet) + "</td>");
 
                 // Add the link to the sheet
                 CurrentMode.ViewerCode = thisStreet.PageSequence.ToString();
-                html.AppendLine("\t\t\t\t\t<td><a href=\"" + CurrentMode.Redirect_URL() + "\">" + thisStreet.PageName.Replace("Sheet", "").Trim() + "</a></td>");				
+                Output.WriteLine("\t\t\t\t\t<td><a href=\"" + CurrentMode.Redirect_URL() + "\">" + thisStreet.PageName.Replace("Sheet", "").Trim() + "</a></td>");				
 
                 // End this row
-                html.AppendLine("\t\t\t\t</tr>");
+                Output.WriteLine("\t\t\t\t</tr>");
             }
 
             // End this table
-            html.AppendLine("\t\t\t</table>");
+            Output.WriteLine("\t\t\t</table>");
         }
 
         /// <summary> Build the information to display about the street, depending on what

@@ -20,7 +20,7 @@ namespace SobekCM.Library.HTML
         private readonly Item_Lookup_Object allItemsTable;
         private readonly Aggregation_Code_Manager codeManager;
         private readonly User_Object currentUser;
- private readonly List<iSearch_Title_Result> pagedResults;
+        private readonly List<iSearch_Title_Result> pagedResults;
         private readonly Public_User_Folder publicFolder;
         private readonly Search_Results_Statistics resultsStatistics;
         private readonly Language_Support_Info translations;
@@ -145,6 +145,24 @@ namespace SobekCM.Library.HTML
             }
 
             return true;
+        }
+
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get {
+                return publicFolder != null ? publicFolder.FolderName : "{0} Folder";
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
         }
     }
 }

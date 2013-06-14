@@ -846,7 +846,7 @@ public class SobekCM_Page_Globals
                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes, 
                 Global.Item_List, Global.Stats_Date_Range,
                 Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder, Global.Collection_Aliases, Global.Skins, Global.Checked_List,
-                Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent);
+                Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, tracer );
         }
 
         // Load the OAI writer
@@ -889,7 +889,7 @@ public class SobekCM_Page_Globals
                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes, 
                 Global.Item_List,
                 Global.Stats_Date_Range, Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder,
-                Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent);
+                Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, tracer);
         }
     }
 
