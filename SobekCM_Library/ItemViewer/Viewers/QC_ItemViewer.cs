@@ -1459,6 +1459,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			get { return false; }
 		}
 
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
+        }
+
+        #region Support for Roman Numerals
+
         /// <summary> Convert an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
         /// <param name="number">Integer number</param>
         /// <param name="isLower">Boolean value to indicate if the value should be returned in upper or lower case</param>
@@ -1613,8 +1624,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             M = 1000
 	    };
 
+        #endregion
 
-		protected class QC_Viewer_Page_Division_Info
+
+        protected class QC_Viewer_Page_Division_Info
 		{
 			public string Page_Label { get; set; }
 
