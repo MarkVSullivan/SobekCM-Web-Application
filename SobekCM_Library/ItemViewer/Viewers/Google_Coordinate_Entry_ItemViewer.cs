@@ -93,6 +93,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return ItemViewer_Type_Enum.Google_Coordinate_Entry; }
         }
 
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        /// <param name="Body_Attributes"> List of body attributes to be included </param>
+        public virtual void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        {
+            Body_Attributes.Add(new Tuple<string, string>("onload", "load();"));
+        }
+        
         /// <summary> Abstract method adds the main view section to the page turner </summary>
         /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -204,9 +212,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add all the polygons now
-                string[] polygonBounds = new string[60]; //2do chage to list
-                string[] polygonURL = new string[60]; //2do change to list
-                int[] polygonRotation = new int[60]; //2do change to list
+                List<string> polygonBounds = new List<string>();
+                List<string> polygonURL = new List<string>();
+                List<double> polygonRotation = new List<double>();
                 int it = 0;
                 if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
                 {
@@ -233,7 +241,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         bounds += bounds2 + ", " + bounds1;
                         bounds += ")";
-                        polygonBounds[it] = bounds;
+                        polygonBounds.Add(bounds);
                         mapperBuilder.AppendLine("      incomingOverlayBounds[" + it + "] = " + bounds + ";");
                         
                         //get the image url
@@ -249,11 +257,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                         }
                         string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
-                        polygonURL[it] = first_page_complete_url;
+                        //polygonURL[it] = first_page_complete_url;
+                        polygonURL.Add(first_page_complete_url);
                         mapperBuilder.AppendLine("      incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
 
                         //get and set the rotation value
-                        polygonRotation[it] = 0;
+                        polygonRotation.Add(0);
                         mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
                         
                         //setup rectangle options and bounds
