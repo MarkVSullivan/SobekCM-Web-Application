@@ -1449,7 +1449,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
 		
-				/// <summary> Flag indicates if the item viewer should add the standard item menu, or
+		/// <summary> Flag indicates if the item viewer should add the standard item menu, or
 		/// if this item viewer overrides that menu and will write its own menu </summary>
 		/// <remarks> By default, this returns TRUE.  The QC and the spatial editing itemviewers create their own custom menus
 		/// due to the complexity of the work being done in those viewers. </remarks>
@@ -1458,6 +1458,38 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get { return false; }
 		}
+
+        /// <summary> Convert an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
+        /// <param name="number">Integer number</param>
+        /// <param name="isLower">Boolean value to indicate if the value should be returned in upper or lower case</param>
+        /// <returns></returns>
+        public string NumberToRoman(int number, bool isLower)
+        {
+            string resultWithCase;
+            //Set up the key-values
+            int[] values=new int[]{1000,900,500,400,100,90,50,40,10,9,5,4,1};
+            string[] numerals = new string[]{"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+            
+
+            //Initialize the string builder
+            StringBuilder result=new StringBuilder();
+
+            for (int i = 0; i < 13; i++)
+            {
+                //If 'number' is less than the test value, append the corresponding numeral or numeral pair to the resultant string
+                while (number >= values[i])
+                {
+                    number -= values[i];
+                    result.Append(numerals[i]);
+                }
+            }
+            if (isLower == false)
+                resultWithCase = result.ToString().ToUpper();
+            else resultWithCase = result.ToString().ToLower();
+
+            return resultWithCase;
+        }
+
 
         /// <summary> Converts a roman numeral to a decimal number </summary>
         /// <param name="roman">Roman numeral (string)</param>
