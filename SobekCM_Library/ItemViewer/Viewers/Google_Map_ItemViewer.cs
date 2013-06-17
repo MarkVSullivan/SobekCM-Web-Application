@@ -608,14 +608,5 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Body_Attributes.Add(new Tuple<string, string>("onload", "load();"));
         }
-
-        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
-        /// <param name="Output"> Output stream currently within the HTML head tags </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
-        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            // Do nothing
-        }
     }
 }
