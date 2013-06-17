@@ -1127,6 +1127,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 
 
+
 					//Iterate through all the division types in this profile
 					foreach (KeyValuePair<string, bool> divisionType in qcDivisionList)
 					{
