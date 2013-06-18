@@ -166,6 +166,7 @@
     <Compile Include="Configuration\QualityControl_Configuration.cs" />
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
     <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
+    <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
     <Compile Include="ItemViewer\Fragments\AddRemove_Fragment_ItemViewer.cs" />
     <Compile Include="ItemViewer\Fragments\baseFragment_ItemViewer.cs" />
     <Compile Include="ItemViewer\Fragments\Describe_Fragment_ItemViewer.cs" />

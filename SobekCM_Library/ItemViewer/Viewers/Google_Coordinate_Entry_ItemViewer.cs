@@ -5,6 +5,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Web.UI;
+using SobekCM.Library.HTML;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -46,19 +47,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Empty for now
         }
 
-
-        /// <summary> Flag indicates if the item viewer should add the standard item menu, or
-        /// if this item viewer overrides that menu and will write its own menu </summary>
-        /// <remarks> By default, this returns TRUE.  The QC and the spatial editing itemviewers create their own custom menus
-        /// due to the complexity of the work being done in those viewers. </remarks>
-        public override bool Include_Standard_Item_Menu
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>
         public override int PageCount
@@ -96,9 +84,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
-        public virtual void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
             Body_Attributes.Add(new Tuple<string, string>("onload", "load();"));
+        }
+
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        {
+            get 
+            { 
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu
+                    };
+            }
         }
         
         /// <summary> Abstract method adds the main view section to the page turner </summary>

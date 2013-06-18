@@ -1,7 +1,9 @@
 #region Using directives
 
+using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Navigation;
 
@@ -170,11 +172,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the current page for paging purposes </summary>
         int Current_Page { get; }
 
-        /// <summary> Flag indicates if the item viewer should add the standard item menu, or
-        /// if this item viewer overrides that menu and will write its own menu </summary>
-        /// <remarks> For example, the QC and the spatial editing itemviewers create their own custom menus
-        /// due to the complexity of the work being done in those viewers. </remarks>
-        bool Include_Standard_Item_Menu { get;  }
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
+        List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors { get; }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         ItemViewer_PageSelector_Type_Enum Page_Selector { get; }

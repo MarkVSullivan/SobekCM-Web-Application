@@ -1414,7 +1414,7 @@ namespace SobekCM.Library.MainWriters
 
             // Determine the possible banner to display
             string banner = String.Empty;
-            if (((subwriter != null) && (subwriter.Include_Banner)) || ( currentMode.Mode == Display_Mode_Enum.Internal ) || ( currentMode.Mode == Display_Mode_Enum.Contact ) || ( currentMode.Mode == Display_Mode_Enum.Contact_Sent ) || ( currentMode.Mode == Display_Mode_Enum.Statistics ))
+            if (((subwriter != null) && ( !subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))) || ( currentMode.Mode == Display_Mode_Enum.Internal ) || ( currentMode.Mode == Display_Mode_Enum.Contact ) || ( currentMode.Mode == Display_Mode_Enum.Contact_Sent ) || ( currentMode.Mode == Display_Mode_Enum.Statistics ))
             {
                 if ((htmlSkin != null) && (htmlSkin.Override_Banner))
                 {

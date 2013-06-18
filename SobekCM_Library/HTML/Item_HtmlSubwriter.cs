@@ -62,6 +62,7 @@ namespace SobekCM.Library.HTML
         private TreeView treeView1;
         private readonly bool userCanEditItem;
         private string pageselectorhtml;
+        private List<HtmlSubwriter_Behaviors_Enum> behaviors;
 
         #endregion
 
@@ -441,6 +442,13 @@ namespace SobekCM.Library.HTML
 
                 // Finally, perform any necessary work before display
                 PageViewer.Perform_PreDisplay_Work(Tracer);
+
+                // Get the list of any special behaviors
+                behaviors = PageViewer.ItemViewer_Behaviors;
+            }
+            else
+            {
+                behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
             }
 
             if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
@@ -529,13 +537,19 @@ namespace SobekCM.Library.HTML
         /// <summary> Flag indicates if the naviogation bar menu section is added  </summary>
         public bool Nav_Bar_Menu_Section_Added { private get; set; }
 
-        /// <summary> Flag indicates if a banner should be included </summary>
-        /// <remarks> For this subwriter, the value FALSE is always returned </remarks>
-        public override bool Include_Banner
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get
             {
-                return false;
+                List<HtmlSubwriter_Behaviors_Enum> behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+                ;
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                    };
             }
         }
 
@@ -656,7 +670,7 @@ namespace SobekCM.Library.HTML
                 buildResponse.AppendLine();
 
                 // The item viewer can choose to override the standard item menu
-                if (PageViewer.Include_Standard_Item_Menu)
+                if ( !behaviors.Contains( HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu ))
                 {
                     // Add the item views
                     buildResponse.AppendLine("<!-- Add the different view and social options -->");
