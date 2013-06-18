@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Configuration;
+using SobekCM.Library.HTML;
 using SobekCM.Library.Items;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
@@ -1447,25 +1448,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-
-		
-		/// <summary> Flag indicates if the item viewer should add the standard item menu, or
-		/// if this item viewer overrides that menu and will write its own menu </summary>
-		/// <remarks> By default, this returns TRUE.  The QC and the spatial editing itemviewers create their own custom menus
-		/// due to the complexity of the work being done in those viewers. </remarks>
-		/// <value>This always returns FALSE since it writes its own menu </value>
-		public override bool Include_Standard_Item_Menu
-		{
-			get { return false; }
-		}
-
-
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
+        }
+
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu
+                    };
+            }
         }
 
         #region Support for Roman Numerals
