@@ -297,8 +297,16 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
        {
+	       //Set the QC form hidden variable with this mode
+		           var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
+                   hidden_autonumber_mode.value = '0';
+				   
+				   var hidden_number_system = document.getElementById('Autonumber_number_system');
+				   hidden_number_system.value='decimal';
+        
       //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
-			for(var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
+			var i;
+			for(i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			{
 			  number++;
 			 //alert(i);
@@ -308,7 +316,8 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 				 document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
 			  }//end if
 			}//end for
-           
+           	if(i>=MaxPageCount)
+			{alert(i);}
        }//end if
     }//end if
     else if(varRomanMatches==true)
@@ -469,6 +478,14 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
         if((typeof total)=="number" && (romanToNumberError=="No error"))
 		{
 		 // alert(total);
+		   //Set the QC form hidden variable with this mode
+		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
+		   hidden_autonumber_mode.value = '0';
+		   
+		   var hidden_number_system = document.getElementById('Autonumber_number_system');
+		   hidden_number_system.value='roman';
+		 
+		 
 		  //Now autonumber all the remaining textboxes of the document
 		  for(var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			{
@@ -550,6 +567,13 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
        {
+		   //Set the QC form hidden variable with this mode
+		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
+		   hidden_autonumber_mode.value = '1';
+		   
+		   var hidden_number_system = document.getElementById('Autonumber_number_system');
+		   hidden_number_system.value='decimal';
+	   
       //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
 			while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
@@ -563,6 +587,8 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 			  }//end if
 			  i++;
 			}//end while
+			//if(i>=MaxPageCount)
+			alert(i);
            
        }//end if
     }//end if
@@ -726,6 +752,14 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		
         if((typeof total)=="number" && (romanToNumberError=="No error"))
 		{
+		   //Set the QC form hidden variable with this mode
+		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
+		   hidden_autonumber_mode.value = '1';
+		   
+		   var hidden_number_system = document.getElementById('Autonumber_number_system');
+		   hidden_number_system.value='roman';
+		   
+		
 		  //Now autonumber all the remaining textboxes of this div
 		  var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
 		  while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
