@@ -29,7 +29,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private readonly string title;
 		private int thumbnailsPerPage;
 		private int thumbnailSize;
-		private int currPageNumber;
+//		private int currPageNumber;
+	    private string autonumber_mode;
+	    private string autonumber_number_system;
 		private string hidden_request;
 		private string hidden_main_thumbnail;
 		private bool autosave_option;
@@ -37,6 +39,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private string hidden_move_destination_fileName;
 		private string userInProcessDirectory;
 	    private bool makeSortable = true;
+	    private bool isLower;
 		private SobekCM_Item qc_item;
 
 		private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
@@ -114,7 +117,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
 			hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
 			hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
-		   if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
+		    autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
+		    autonumber_mode = HttpContext.Current.Request.Form["Autonumber_mode"] ?? String.Empty;
+
+            if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
 			// If the hidden more relative position is BEFORE, it is before the very first page
             if (hidden_move_relative_position == "Before")
                 hidden_move_destination_fileName = "[BEFORE FIRST]";
@@ -739,14 +745,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<ul class=\"qc-menu\">");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
-			builder.AppendLine("\t<li>View METS</li>");
-			builder.AppendLine("\t<li>View Directory</li>");
-			builder.AppendLine("\t<li>View QC History</li>");
-			builder.AppendLine("\t<li>Volume Error<ul>");
-			builder.AppendLine("\t\t<li>No volume level error</li>");
-			builder.AppendLine("\t\t<li>Invalid images</li>");
-			builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
-			builder.AppendLine("\t</ul></li>");
+            //builder.AppendLine("\t<li>Volume Error<ul>");
+            //builder.AppendLine("\t\t<li>No volume level error</li>");
+            //builder.AppendLine("\t\t<li>Invalid images</li>");
+            //builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
+            //builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("\t<li>Save</li>");
 			builder.AppendLine("\t<li>Complete</li>");
 			builder.AppendLine("\t<li>Cancel</li>");
@@ -755,25 +758,31 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<li class=\"qc-menu-item\">Edit<ul>");
 			builder.AppendLine("\t<li>Clear Pagination</li>");
 			builder.AppendLine("\t<li>Clear All &amp; Reorder Pages</li>");
-			builder.AppendLine("\t<li>Automatic Numbering<ul>");
-			builder.AppendLine("\t\t<li>No automatic numbering</li>");
-			builder.AppendLine("\t\t<li>Within same division</li>");
-			builder.AppendLine("\t\t<li>Entire document</li>");
-			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
+            builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
+            builder.AppendLine("\t<li>Thumbnail Size<ul>");
+            builder.AppendLine("\t\t<li>Small</li>");
+            builder.AppendLine("\t\t<li>Medium</li>");
+            builder.AppendLine("\t\t<li>Large</li>");
+            builder.AppendLine("\t</ul></li>");
+            builder.AppendLine("\t<li>Thumbnails per page<ul>");
+            builder.AppendLine("\t\t<li>25</li>");
+            builder.AppendLine("\t\t<li>50</li>");
+            builder.AppendLine("\t\t<li>All thumbnails</li>");
+            builder.AppendLine("\t</ul></li>");
+            builder.AppendLine("\t<li>Automatic Numbering<ul>");
+            builder.AppendLine("\t\t<li>No automatic numbering</li>");
+            builder.AppendLine("\t\t<li>Within same division</li>");
+            builder.AppendLine("\t\t<li>Entire document</li>");
+            builder.AppendLine("\t</ul></li>");
+            builder.AppendLine("</ul></li>");
+
 			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
-			builder.AppendLine("\t<li>Thumbnail Size<ul>");
-			builder.AppendLine("\t\t<li>Small</li>");
-			builder.AppendLine("\t\t<li>Medium</li>");
-			builder.AppendLine("\t\t<li>Large</li>");
-			builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Thumbnails per page<ul>");
-			builder.AppendLine("\t\t<li>25</li>");
-			builder.AppendLine("\t\t<li>50</li>");
-			builder.AppendLine("\t\t<li>All thumbnails</li>");
-			builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("</ul></li>");
+            builder.AppendLine("\t<li>View METS</li>");
+            builder.AppendLine("\t<li>View Directory</li>");
+            builder.AppendLine("\t<li>View QC History</li>");
+            builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
 			
@@ -908,8 +917,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_move_relative_position\" name=\"QC_move_relative_position\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_move_destination\" name=\"QC_move_destination\" value=\"\" />");
 		    Output.WriteLine("<input type=\"hidden\" id=\"QC_Sortable\" name=\"QC_Sortable\" value=\"\"/>");
-
-			// Start the citation table
+            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_mode\" name=\"Autonumber_mode\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_system\" name=\"Autonumber_number_system\" value=\"\"/>");
+			
+            // Start the citation table
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
 			if (qc_item.Web.Static_PageCount < 100)
 			{
@@ -1076,7 +1087,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,0," + qc_item.Web.Static_PageCount + ");\"></input></td></tr>");
+					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,1," + qc_item.Web.Static_PageCount + ");\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
@@ -1464,7 +1475,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
         }
@@ -1473,9 +1484,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Convert an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
         /// <param name="number">Integer number</param>
-        /// <param name="isLower">Boolean value to indicate if the value should be returned in upper or lower case</param>
-        /// <returns></returns>
-        public string NumberToRoman(int number, bool isLower)
+        /// <returns>Roman numeral after conversion</returns>
+        public string NumberToRoman(int number)
         {
             string resultWithCase;
             //Set up the key-values
@@ -1508,7 +1518,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns>Corresponding decimal number(integer)</returns>
         public int RomanToNumber(string roman)
         {
-            bool isLower = false;
+            isLower = false;
             try
             {
                 //Check if the roman numeral is in upper or lower case
@@ -1521,7 +1531,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (roman.Split('V').Length > 2 || roman.Split('L').Length > 2 || roman.Split('D').Length > 2)
                     throw new ArgumentException("Rule 4 violated");
 
-                //Rule 1
+                //Rule 1-single letter may be repeated upto 3 times consecutively
                 int count = 1;
                 char last = 'Z';
                 foreach (char numeral in roman)
@@ -1555,7 +1565,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     char numeral = roman[ptr];
                     int digit = (int) Enum.Parse(typeof (RomanDigit), numeral.ToString());
 
-                    //Check for Rule 3
+                    //Check for Rule 3-Subtractive combination
                     if (digit > maxDigit)
                     {
                         throw new ArgumentException("Rule 3 violated");
