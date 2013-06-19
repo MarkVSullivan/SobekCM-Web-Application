@@ -228,16 +228,22 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-        /// <summary> Flag indicates if a banner should be included </summary>
-        /// <remarks> This always returns the value FALSE, since the banner is handled seperately in thie html subwriter </remarks>
-        public override bool Include_Banner
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML writer. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public virtual List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get
+            get 
             {
                 // When editing the aggregation details, the banner should be included here
                 if (currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
-                    return true;
-                return false;
+                {
+                    return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                        };
+                }
+                return base.emptybehaviors;
             }
         }
 

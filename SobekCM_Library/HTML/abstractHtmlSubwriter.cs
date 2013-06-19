@@ -27,6 +27,10 @@ namespace SobekCM.Library.HTML
         private const string DOWN_SELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">";
         private const string DOWN_SELECTED_TAB_END_ORIG = "</span><img src=\"{0}design/skins/{1}/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
 
+        /// <summary> Empty list of behaviors, returned by default </summary>
+        /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
+        protected List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+
         /// <summary> Protected field contains the html for the end of an downard selected tab </summary>
         /// <value>Always returns the value '&lt;/span&gt;&lt;img src=&quot;design/skins/[SKIN_CODE]/tabs/cRD_s.gif&quot; border=&quot;0&quot; class=&quot;tab_image&quot; />'</value>
         protected string Down_Selected_Tab_End;
@@ -187,27 +191,13 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      </td> ");
         }
 
-        #region Method to add the banner HTML
-
-        /// <summary> Flag indicates if a banner should be included </summary>
-        /// <remarks> This defaults to TRUE, but can be overriden by the different html subwriters </remarks>
-        public virtual bool Include_Banner
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML writer. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public virtual List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get
-            {
-                return true;
-            }
+            get { return emptybehaviors; }
         }
-
-        /// <summary> A banner which should be used, rather than the default banner </summary>
-        /// <remarks> This defaults to the empty strnig, but can be overriden by the different html subwriters </remarks>
-        public virtual string Override_Banner
-        {
-            get { return String.Empty; }
-        }
-
-
-        #endregion
 
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
