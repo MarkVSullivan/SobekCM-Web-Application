@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Library.HTML;
 using SobekCM.Resource_Object.Divisions;
 
 #endregion
@@ -235,6 +236,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/bookturner.js\"></script>    ");
 
         }
+
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
+                    };
+            }
+        }
+
     }
 }
 
