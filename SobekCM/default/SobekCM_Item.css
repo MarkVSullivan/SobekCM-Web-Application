@@ -163,6 +163,12 @@ img.SobekItemWordmark
 	PADDING-RIGHT: 450px; PADDING-LEFT: 35px; FONT-SIZE: 1.3em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;
 }
 
+#SobekDocumentNonWindowed {
+	padding: 0;margin: 0;
+    font-size: 0.8em;BACKGROUND-COLOR: #eeeeee;
+    border: none;border-collapse: collapse;
+}
+
 #itemrestrictedrow 
 {
     text-align: center;background-color: #333333;height: 50px;vertical-align: middle;color: white;

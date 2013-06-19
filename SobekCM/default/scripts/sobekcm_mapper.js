@@ -13,6 +13,8 @@ var inputOverlaySourceURL = "http://ufdcimages.uflib.ufl.edu/US/AC/H0/00/04/0000
 
 //global static defines (do not change)
 var overlaysOnMap = [];                 //holds all overlays
+var csoi = 0;                           //hold current saved overlay index
+var pendingOverlaySave = false;         //hold the marker to indicate if we need to save the overlay (this prevents a save if we already saved)
 var oomCount = 0;                       //counts how many overlays are on the map
 var searchCount = 0;                    //interates how many searches
 var degree = 0;                         //initializing degree
@@ -37,6 +39,7 @@ var rectangle;                          //must define before use
 var firstDraw = 0;                      //used to increment first drawing of rectangle
 var getCoord;                           //used to store coords from marker
 var itemMarker;                         //hold current item marker
+var savingMarkerCenter;                 //holds marker coords to save
 var CustomOverlay;                      //does nothing
 var cCoordsFrozen = "no";               //used to freeze/unfreeze coordinate viewer
 var incomingOverlayBounds = [];         //defined in c# to js on page
@@ -46,9 +49,10 @@ var ghostOverlayRectangle = [];         //holds ghost overlay rectangles (IE ove
 var workingOverlayIndex = null;         //holds the index of the overlay we are working with (and saving)
 var currentlyEditing = "no";            //tells us if we are editing anything
 var currentTopZindex = 5;               //current top zindex (used in displaying overlays over overlays)
-var savingOverlayIndex;                 //holds index of the overlay we are saving
-var savingOverlayBounds;                //holds bounds of the overlay we are saving
-var savingOverlayRotation;              //holds rotation of the overlay we are saving
+var savingOverlayIndex = [];            //holds index of the overlay we are saving
+savingOverlaySourceURL = [];            //hold the source url of the overlay to save
+var savingOverlayBounds = [];           //holds bounds of the overlay we are saving
+var savingOverlayRotation = [];         //holds rotation of the overlay we are saving
 var ghosting = {                        //define options for ghosting (IE being invisible)
     strokeOpacity: 0.0,                 //make border invisible
     fillOpacity: 0.0,                   //make fill transparent
@@ -343,38 +347,49 @@ $(function () {
 
 });                               //jquery elements (tooltips)
 function buttonSaveItem() {
-    createSavedItem();
+    if (savingMarkerCenter != null) {
+        alert("saving location: " + savingMarkerCenter); //grab coords from gmaps js
+        //createSavedItem(markerCenter);
+        displayMessage("saved");
+    } else {
+        displayMessage("nothing to save");
+    }
 }                     //just calls create saved item
 function buttonSaveOverlay() {
-    createSavedOverlay();
+    if (savingOverlayIndex.length) {
+        for (var i = 0; i < savingOverlayIndex.length; i++) {
+            alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
+            //createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+        }
+        displayMessage("saved");
+    } else {
+        displayMessage("nothing to save");
+    }
+    
 }                  //just calls create saved overlay
 function buttonSavePOI() {
-    createSavedPOI();
+    if (poiObj.length > 0) {
+        createSavedPOI();
+        displayMessage("saved");
+    } else {
+        displayMessage("nothing to save");
+    }
 }                      //just calls create saved poi
-function createSavedItem() {
-    //get data
-    savedItemCoord = markerCenter; //grab coords from gmaps js
-
+function createSavedItem(coordinates) {
     var messageType = "item"; //define what message type it is
     //assign data
-    var data = messageType + "|" + savedItemCoord + "|";
+    var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
     CallServer(dataPackage);
 }                    //create a package to send to server to save item location
-function createSavedOverlay() {
-    //get data
-    savedOverlayBounds = overlayCurrent.bounds_;
-    savedOverlayRotation = preservedRotation;
-
-    var temp = overlayCurrent.image_;
+function createSavedOverlay(index, source, bounds, rotation) {
+    var temp = source;
     if (temp.contains("~") || temp.contains("|")) {
         displayMessage(L7);
-    } else {
-        savedOverlaySource = overlayCurrent.image_;
     }
 
     var messageType = "overlay"; //define what message type it is
-    var data = messageType + "|" + savedOverlayBounds + "|" + savedOverlaySource + "|" + savedOverlayRotation + "|";
+    var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
 
     var dataPackage = data + "~";
     CallServer(dataPackage);
@@ -410,8 +425,8 @@ function createSavedPOI() {
         var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
         dataPackage += data + "~";
     }
-    //alert(dataPackage);
-    CallServer(dataPackage);
+    alert("saving poi set: "+dataPackage);
+    //CallServer(dataPackage);
 }                     //create a package to send to the server to save poi
 function poiEditMe(id) {
     poiObj[id].setMap(map);
@@ -467,6 +482,7 @@ function action3() {
 function buttonClearItem() {
     itemMarker.setMap(null); //delete marker form map
     itemMarker = null;
+    savingMarkerCenter = null; //reset stored coords to save
     document.getElementById('posItem').value = ""; //reset lat/long in tab
     document.getElementById('rgItem').value = ""; //reset address in tab
     displayMessage(L9); //say all is reset
@@ -489,6 +505,7 @@ function buttonClearPOI() {
         var strg = "#poi" + i; //create <li> poi string
         $(strg).remove(); //remove <li>
     }
+    poiObj = [];
     poi_i = -1;
     displayMessage(L11);
 }                     //clear all pois
@@ -794,11 +811,13 @@ function useSearchAsItemLocation() {
     itemMarker.setMap(map);                     //set itemMarker location icon to map
     document.getElementById('posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
     codeLatLng(itemMarker.getPosition());       //get the reverse geo address for item location and put in location tab
+    savingMarkerCenter = itemMarker.getPosition(); //store coords to save
 
     //add listener for new item marker (can only add once the itemMarker is created)
     google.maps.event.addListener(itemMarker, 'dragend', function () {
         document.getElementById('posItem').value = itemMarker.getPosition(); //get lat/long
         codeLatLng(itemMarker.getPosition());   //get address
+        savingMarkerCenter = itemMarker.getPosition(); //store coords to save
     });
 
 }            //assign search location pin to item location
@@ -1077,6 +1096,7 @@ function initialize() {
                 });
                 itemMarker.setMap(map);
                 document.getElementById('posItem').value = markerCenter;
+                savingMarkerCenter = itemMarker.getPosition(); //store coords to save
             });
             
         }else {
@@ -1157,7 +1177,8 @@ function initialize() {
     });             //save Item
     google.maps.event.addDomListener(document.getElementById("saveOverlay"), 'click', function () {
         //2do: send saved overlay to db/xml
-        displayMessage("Not yet tied into an actual Sobek item.");
+        //displayMessage("Not yet tied into an actual Sobek item.");
+        //buttonSaveOverlay(); //called in default page itself
 
     });          //save and reset overlay
     google.maps.event.addDomListener(document.getElementById("savePOI"), 'click', function () {
@@ -1178,6 +1199,7 @@ function initialize() {
             }
             itemMarker = marker; //assign globally
             document.getElementById('posItem').value = itemMarker.getPosition();
+            savingMarkerCenter = itemMarker.getPosition(); //store coords to save
             codeLatLng(itemMarker.getPosition());
         }
 
@@ -1704,21 +1726,7 @@ function initialize() {
                     if (cCoordsFrozen == "no") {
                         //freeze
                         cCoordsFrozen = "yes";
-                        displayMessage("Coordinates Viewer Frozen");
-                        
-                        efun1++;
-                        switch (efun1) {
-                            case 20:
-                                displayMessage("I'm getting cold...");
-                                break;
-                            case 40:
-                                displayMessage("I'm nearly frozen...");
-                                break;
-                            case 60:
-                                displayMessage("I'm frostbitten, goodnight Zzz...");
-                                break;
-                        }
-                        
+                        displayMessage("Coordinates Viewer Frozen");                      
                     } else {
                         //unfreeze
                         cCoordsFrozen = "no";
@@ -1751,24 +1759,22 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
     
     //create listener for if clicked
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'click', function () {
-        if (currentlyEditing == "yes") {                                                        //if editing is being done, save
-            savingOverlayIndex = workingOverlayIndex;                                           //set overlay index to save
-            savingOverlayBounds = ghostOverlayRectangle[workingOverlayIndex].getBounds();       //set bounds to save
-            savingOverlayRotation = preservedRotation;                                          //set rotation to save
-            preservedRotation = 0;                                                              //reset prevserved rotation
-            ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                    //set rectangle to ghosting
-            currentlyEditing = "no";                                                            //reset editing marker
+        if (currentlyEditing == "yes") {                                                            //if editing is being done, save
+            cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
+            preservedRotation = 0;                                                                  //reset prevserved rotation
+            ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
+            currentlyEditing = "no";                                                                //reset editing marker
         }
-        if (currentlyEditing == "no") {                                                         //if editing is not being done, start editing
-            $("#toolbox").show();                                                               //show the toolbox
-            toolboxDisplayed = true;                                                            //say that the toolbox is open
-            $("#toolboxTabs").accordion({ active: 3 });                                         //open edit overlay tab in toolbox
-            currentlyEditing = "yes";                                                           //enable editing marker
-            workingOverlayIndex = ghostIndex;                                                   //set this overay as the one being edited
-            ghostOverlayRectangle[ghostIndex].setOptions(editable);                             //show ghost
-            currentTopZindex++;                                                                 //iterate top z index
-            document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex;    //bring overlay to front
-            ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex });         //bring ghost to front
+        if (currentlyEditing == "no") {                                                             //if editing is not being done, start editing
+            $("#toolbox").show();                                                                   //show the toolbox
+            toolboxDisplayed = true;                                                                //say that the toolbox is open
+            $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
+            currentlyEditing = "yes";                                                               //enable editing marker
+            workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being edited
+            ghostOverlayRectangle[ghostIndex].setOptions(editable);                                 //show ghost
+            currentTopZindex++;                                                                     //iterate top z index
+            document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex;        //bring overlay to front
+            ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex });             //bring ghost to front
         }
     });
     
@@ -1778,8 +1784,21 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
         overlaysOnMap[ghostIndex] = null;                                                                                                                                       //delete previous overlay values
         overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, ghostOverlayRectangle[ghostIndex].getBounds(), incomingOverlaySourceURL[ghostIndex], map, preservedRotation); //redraw the overlay within the new bounds
         overlaysOnMap[ghostIndex].setMap(map);                                                                                                                                  //set the overlay with new bounds to the map
+        currentlyEditing = "yes";                                                                                                                                               //enable editing marker
+        cacheSaveOverlay(ghostIndex);                                                                                                                                           //trigger a cache of current working overlay
     });
 
+}
+
+//Stores the overlays to save and their associated data
+function cacheSaveOverlay(index) {
+    savingOverlayIndex[csoi] = workingOverlayIndex;                                         //set overlay index to save
+    savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           //set source url to save
+    savingOverlayBounds[csoi] = ghostOverlayRectangle[workingOverlayIndex].getBounds();     //set bounds to save
+    savingOverlayRotation[csoi] = preservedRotation;                                        //set rotation to save
+    if (savingOverlayIndex[csoi] != index) {                                                
+        csoi++;                                                                             //iterate the current save overlay index   
+    }
 }
 
 //Starts the creation of a custom overlay div which contains a rectangular image.

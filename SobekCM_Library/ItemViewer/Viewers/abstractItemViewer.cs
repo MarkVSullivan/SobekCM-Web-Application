@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
@@ -19,6 +20,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	{
 	    /// <summary> Protected field contains the translation object for displaying an item in different languages </summary>
         protected Language_Support_Info translator;
+
+        /// <summary> Empty list of behaviors, returned by default </summary>
+        /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
+        protected List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
 	    /// <summary> Constructor for a new instance of the abstractItemViewer class </summary>
 	    protected abstractItemViewer()
@@ -258,15 +263,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return CurrentMode.Page; }
         }
 
-	    /// <summary> Flag indicates if the item viewer should add the standard item menu, or
-	    /// if this item viewer overrides that menu and will write its own menu </summary>
-	    /// <remarks> By default, this returns TRUE.  The QC and the spatial editing itemviewers create their own custom menus
-	    /// due to the complexity of the work being done in those viewers. </remarks>
-	    public virtual bool Include_Standard_Item_Menu
-	    {
-            get { return true;  }
-	    }
-
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This value is override by some of the children classes, but by default this returns TRUE </value>
         public virtual ItemViewer_PageSelector_Type_Enum Page_Selector
@@ -325,5 +321,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Do nothing
         }
+
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+	    public virtual List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+	    {
+            get { return emptybehaviors; }
+	    }
 	}
 }

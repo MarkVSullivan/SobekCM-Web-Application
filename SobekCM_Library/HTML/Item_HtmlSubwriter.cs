@@ -62,6 +62,7 @@ namespace SobekCM.Library.HTML
         private TreeView treeView1;
         private readonly bool userCanEditItem;
         private string pageselectorhtml;
+        private List<HtmlSubwriter_Behaviors_Enum> behaviors;
 
         #endregion
 
@@ -441,7 +442,17 @@ namespace SobekCM.Library.HTML
 
                 // Finally, perform any necessary work before display
                 PageViewer.Perform_PreDisplay_Work(Tracer);
+
+                // Get the list of any special behaviors
+                behaviors = PageViewer.ItemViewer_Behaviors;
             }
+            else
+            {
+                behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+            }
+
+            // ALways suppress the banner
+            behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
 
             if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
             {
@@ -464,16 +475,7 @@ namespace SobekCM.Library.HTML
                 if (!String.IsNullOrEmpty(currentMode.Fragment))
                     return false;
 
-                // The pageturner does not use the nav bar
-                if ((PageViewer != null) && (PageViewer is GnuBooks_PageTurner_ItemViewer))
-                    return false;
-
-                // The pageturner does not use the nav bar
-                if ((PageViewer != null) && (PageViewer is QC_ItemViewer))
-                    return false;
-
-                // The pageturner does not use the nav bar
-                if ((PageViewer != null) && (PageViewer is Google_Coordinate_Entry_ItemViewer))
+                if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar))
                     return false;
 
                 // If the flag eas explicitly set, return TRUE
@@ -529,13 +531,14 @@ namespace SobekCM.Library.HTML
         /// <summary> Flag indicates if the naviogation bar menu section is added  </summary>
         public bool Nav_Bar_Menu_Section_Added { private get; set; }
 
-        /// <summary> Flag indicates if a banner should be included </summary>
-        /// <remarks> For this subwriter, the value FALSE is always returned </remarks>
-        public override bool Include_Banner
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get
             {
-                return false;
+                return behaviors;
             }
         }
 
@@ -656,7 +659,7 @@ namespace SobekCM.Library.HTML
                 buildResponse.AppendLine();
 
                 // The item viewer can choose to override the standard item menu
-                if (PageViewer.Include_Standard_Item_Menu)
+                if ( !behaviors.Contains( HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu ))
                 {
                     // Add the item views
                     buildResponse.AppendLine("<!-- Add the different view and social options -->");
@@ -1519,21 +1522,22 @@ namespace SobekCM.Library.HTML
 
             // Begin the document display portion
             Output.WriteLine("<!-- Begin the main item viewing area -->");
-            if ((PageViewer == null) || (PageViewer.Viewer_Width < 0))
+            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
-                if ((PageViewer != null) && (PageViewer.Viewer_Width == -100))
+                Output.WriteLine("<table id=\"SobekDocumentNonWindowed\" >");
+            }
+            else
+            {
+                if ((PageViewer == null) || (PageViewer.Viewer_Width < 0))
                 {
                     Output.WriteLine("<table id=\"SobekDocumentDisplay2\" >");
                 }
                 else
                 {
-                    Output.WriteLine("<table id=\"SobekDocumentDisplay2\" >");
+                    Output.WriteLine("<table id=\"SobekDocumentDisplay\" style=\"width:" + PageViewer.Viewer_Width + "px;\" >");
                 }
             }
-            else
-            {
-                Output.WriteLine("<table id=\"SobekDocumentDisplay\" style=\"width:" + PageViewer.Viewer_Width + "px;\" >");
-            }
+
 
 
             // If this item is PRIVATE or DARK, show information to that affect here
@@ -1780,13 +1784,12 @@ namespace SobekCM.Library.HTML
             {
                 return;
             }
-            
 
             StringBuilder buildResult = new StringBuilder();
 
             buildResult.AppendLine("\t</tr>");
 
-            if ((PageViewer != null) && (PageViewer.PageCount != 1))
+            if ((PageViewer != null) && (PageViewer.PageCount != 1) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination)))
             {
                 buildResult.AppendLine("\t<tr>");
                 buildResult.AppendLine("\t\t<td>");

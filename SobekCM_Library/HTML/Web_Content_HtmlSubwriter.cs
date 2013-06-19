@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
@@ -60,13 +61,17 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Flag indicates if a banner should be included </summary>
-        /// <remarks> This always returns the value FALSE, since the banner is handled seperately in thie html subwriter </remarks>
-        public override bool Include_Banner
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public virtual List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get
             {
-                return false;
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                    };
             }
         }
 
