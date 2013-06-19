@@ -451,6 +451,9 @@ namespace SobekCM.Library.HTML
                 behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
             }
 
+            // ALways suppress the banner
+            behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
+
             if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
             {
                 if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
@@ -472,16 +475,7 @@ namespace SobekCM.Library.HTML
                 if (!String.IsNullOrEmpty(currentMode.Fragment))
                     return false;
 
-                // The pageturner does not use the nav bar
-                if ((PageViewer != null) && (PageViewer is GnuBooks_PageTurner_ItemViewer))
-                    return false;
-
-                // The pageturner does not use the nav bar
-                if ((PageViewer != null) && (PageViewer is QC_ItemViewer))
-                    return false;
-
-                // The pageturner does not use the nav bar
-                if ((PageViewer != null) && (PageViewer is Google_Coordinate_Entry_ItemViewer))
+                if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar))
                     return false;
 
                 // If the flag eas explicitly set, return TRUE
@@ -544,12 +538,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<HtmlSubwriter_Behaviors_Enum> behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
-                ;
-                return new List<HtmlSubwriter_Behaviors_Enum>
-                    {
-                        HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-                    };
+                return behaviors;
             }
         }
 
@@ -1533,21 +1522,22 @@ namespace SobekCM.Library.HTML
 
             // Begin the document display portion
             Output.WriteLine("<!-- Begin the main item viewing area -->");
-            if ((PageViewer == null) || (PageViewer.Viewer_Width < 0))
+            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
-                if ((PageViewer != null) && (PageViewer.Viewer_Width == -100))
+                Output.WriteLine("<table id=\"SobekDocumentNonWindowed\" >");
+            }
+            else
+            {
+                if ((PageViewer == null) || (PageViewer.Viewer_Width < 0))
                 {
                     Output.WriteLine("<table id=\"SobekDocumentDisplay2\" >");
                 }
                 else
                 {
-                    Output.WriteLine("<table id=\"SobekDocumentDisplay2\" >");
+                    Output.WriteLine("<table id=\"SobekDocumentDisplay\" style=\"width:" + PageViewer.Viewer_Width + "px;\" >");
                 }
             }
-            else
-            {
-                Output.WriteLine("<table id=\"SobekDocumentDisplay\" style=\"width:" + PageViewer.Viewer_Width + "px;\" >");
-            }
+
 
 
             // If this item is PRIVATE or DARK, show information to that affect here
@@ -1794,13 +1784,12 @@ namespace SobekCM.Library.HTML
             {
                 return;
             }
-            
 
             StringBuilder buildResult = new StringBuilder();
 
             buildResult.AppendLine("\t</tr>");
 
-            if ((PageViewer != null) && (PageViewer.PageCount != 1))
+            if ((PageViewer != null) && (PageViewer.PageCount != 1) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination)))
             {
                 buildResult.AppendLine("\t<tr>");
                 buildResult.AppendLine("\t\t<td>");

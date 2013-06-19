@@ -1103,7 +1103,7 @@ namespace SobekCM.Library.MainWriters
                     }
                 }
                 
-                if ( displayHeader )
+                if (( displayHeader ) && ( !subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = currentMode.Redirect_URL();
                     if ((HttpContext.Current != null) && (HttpContext.Current.Session["Original_URL"] != null))
@@ -1489,8 +1489,8 @@ namespace SobekCM.Library.MainWriters
         {
             Tracer.Add_Trace("Html_MainWriter.Display_Footer", "Adding footer to HTML");
 
-            // In GnuBooks page turner, this is a full-screen view.. so no footer
-            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) && (currentMode.ViewerCode == "pageturner"))
+            // Some subwriters (for example item viewer with Gnu page turning view) suppress the footer
+            if (subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
             {
                 return;
             }
