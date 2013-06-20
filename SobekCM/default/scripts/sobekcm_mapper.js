@@ -1,17 +1,28 @@
-﻿//temp js (fixes temporary padding issue)
-document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
-document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
-
-var collectionTypeToLoad = "default";               //define collection settings to load
+﻿var collectionTypeToLoad = "default";               //define collection settings to load
 setupInterface(collectionTypeToLoad);               //start the whole thing
 
 //#region Declarations
 
-//hardcodded temp values
-//var stockMarker1 = new google.maps.LatLng(29.8944, -81.3147);
-var inputOverlaySourceURL = "http://ufdcimages.uflib.ufl.edu/US/AC/H0/00/04/00002/00001.jpg";
-
-//global static defines (do not change)
+//global defines (do not change here)
+var pageMode;                           //holds the page/viewer type
+var mapCenter;                          //used to center map on load
+var mapControlsOnMap;                   //by default, are map controls displayed (true/false)
+var defaultDisplayDrawingMangerTool;    //by default, is the drawingmanger displayed (true/false)
+var toolboxDisplayed;                   //by default, is the toolbox displayed (true/false)
+var toolbarOpen;                        //by default, is the toolbar open (yes/no)
+var kmlOn;                              //by default, is kml layer on (yes/no)
+var kmlLayer;                           //must be pingable by google
+var defaultZoomLevel;                   //zoom level, starting
+var maxZoomLevel;                       //max zoom out, default (21=lowest level, 1=highest level)
+var minZoomLevel_Terrain;               //max zoom in, terrain
+var minZoomLevel_Satellite;             //max zoom in, sat + hybrid
+var minZoomLevel_Roadmap;               //max zoom in, roadmap (default)
+var minZoomLevel_BlockLot;              //max zoom in, used for special layers not having default of roadmap
+var isCustomOverlay;                    //used to determine if other overlays (block/lot etc) //unknown
+var preservedRotation;                  //rotation, default
+var knobRotationValue;                  //rotation to display by default 
+var preserveOpacity = 0.55;             //opacity, default value (0-1,1=opaque)
+var strictBounds;                       //set the bounds for this google map instance
 var overlaysOnMap = [];                 //holds all overlays
 var csoi = 0;                           //hold current saved overlay index
 var pendingOverlaySave = false;         //hold the marker to indicate if we need to save the overlay (this prevents a save if we already saved)
@@ -50,7 +61,7 @@ var workingOverlayIndex = null;         //holds the index of the overlay we are 
 var currentlyEditing = "no";            //tells us if we are editing anything
 var currentTopZindex = 5;               //current top zindex (used in displaying overlays over overlays)
 var savingOverlayIndex = [];            //holds index of the overlay we are saving
-savingOverlaySourceURL = [];            //hold the source url of the overlay to save
+var savingOverlaySourceURL = [];        //hold the source url of the overlay to save
 var savingOverlayBounds = [];           //holds bounds of the overlay we are saving
 var savingOverlayRotation = [];         //holds rotation of the overlay we are saving
 var ghosting = {                        //define options for ghosting (IE being invisible)
@@ -69,27 +80,6 @@ var editable = {                        //define options for visible and editabl
     zindex: 5                           //sobek standard
 };
 CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
-
-//global dynamic defines (do not define here)
-
-var mapCenter;                                                          //used to center map on load
-var mapControlsOnMap;                                                   //by default, are map controls displayed (true/false)
-var defaultDisplayDrawingMangerTool;                                    //by default, is the drawingmanger displayed (true/false)
-var toolboxDisplayed;                                                   //by default, is the toolbox displayed (true/false)
-var toolbarOpen;                                                        //by default, is the toolbar open (yes/no)
-var kmlOn;                                                              //by default, is kml layer on (yes/no)
-var kmlLayer;                                                           //must be pingable by google
-var defaultZoomLevel;                                                   //zoom level, starting
-var maxZoomLevel;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-var minZoomLevel_Terrain;                                               //max zoom in, terrain
-var minZoomLevel_Satellite;                                             //max zoom in, sat + hybrid
-var minZoomLevel_Roadmap;                                               //max zoom in, roadmap (default)
-var minZoomLevel_BlockLot;                                              //max zoom in, used for special layers not having default of roadmap
-var isCustomOverlay;                                                    //used to determine if other overlays (block/lot etc) //unknown
-var preservedRotation;                                                  //rotation, default
-var knobRotationValue;                                                  //rotation to display by default 
-var preserveOpacity = 0.55;                                             //opacity, default value (0-1,1=opaque)
-var strictBounds;                                                       //set the bounds for this google map instance
 
 //#endregion
 
@@ -360,6 +350,7 @@ function buttonSaveOverlay() {
         for (var i = 0; i < savingOverlayIndex.length; i++) {
             alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
             //createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+            //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
         }
         displayMessage("saved");
     } else {
@@ -1071,7 +1062,18 @@ function initialize() {
     });
     google.maps.event.addDomListener(document.getElementById("toolbox_placeOverlay"), 'click', function () {
         placerType = "overlay";
-        displayMessage("Simple click one on the map");
+        if (pageMode == "edit") {
+            pageMode = "view";
+            if (savingOverlayIndex.length > 0) {
+                for (var i = 0; i < savingOverlayIndex.length; i++) {
+                    ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
+                }
+            }
+            displayMessage("Overlay Editting Turned Off");
+        } else {
+            pageMode = "edit";
+            displayMessage("Overlay Editting Turned On");
+        }
         //toggleOverlayEditor(); 
     });
     google.maps.event.addDomListener(document.getElementById("toolbox_placePOI"), 'click', function () {
@@ -1704,7 +1706,7 @@ function initialize() {
 
     $("#footer_item_wrapper").remove(); //temp to remove footer
     
-    initOverlays(); //initialize all the incoming overlays
+    initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
     
     //keypress shortcuts/actions
     window.onkeypress = keypress;
@@ -1748,7 +1750,6 @@ function displayIncomingOverlays() {
     }
 }
 
-
 function setGhostOverlay(ghostIndex, ghostBounds) {
     
     //create ghost directly over an overlay
@@ -1759,33 +1760,36 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
     
     //create listener for if clicked
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'click', function () {
-        if (currentlyEditing == "yes") {                                                            //if editing is being done, save
-            cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
-            preservedRotation = 0;                                                                  //reset prevserved rotation
-            ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
-            currentlyEditing = "no";                                                                //reset editing marker
-        }
-        if (currentlyEditing == "no") {                                                             //if editing is not being done, start editing
-            $("#toolbox").show();                                                                   //show the toolbox
-            toolboxDisplayed = true;                                                                //say that the toolbox is open
-            $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
-            currentlyEditing = "yes";                                                               //enable editing marker
-            workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being edited
-            ghostOverlayRectangle[ghostIndex].setOptions(editable);                                 //show ghost
-            currentTopZindex++;                                                                     //iterate top z index
-            document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex;        //bring overlay to front
-            ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex });             //bring ghost to front
+        if (pageMode == "edit") {
+            if (currentlyEditing == "yes") {                                                            //if editing is being done, save
+                cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
+                ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
+                currentlyEditing = "no";                                                                //reset editing marker
+            }
+            if (currentlyEditing == "no") {                                                             //if editing is not being done, start editing
+                $("#toolbox").show();                                                                   //show the toolbox
+                toolboxDisplayed = true;                                                                //say that the toolbox is open
+                $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
+                currentlyEditing = "yes";                                                               //enable editing marker
+                workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being edited
+                ghostOverlayRectangle[ghostIndex].setOptions(editable);                                 //show ghost
+                currentTopZindex++;                                                                     //iterate top z index
+                document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex;        //bring overlay to front
+                ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex });             //bring ghost to front
+            }
         }
     });
     
     //set listener for bounds changed
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'bounds_changed', function () {
-        overlaysOnMap[ghostIndex].setMap(null);                                                                                                                                 //hide previous overlay
-        overlaysOnMap[ghostIndex] = null;                                                                                                                                       //delete previous overlay values
-        overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, ghostOverlayRectangle[ghostIndex].getBounds(), incomingOverlaySourceURL[ghostIndex], map, preservedRotation); //redraw the overlay within the new bounds
-        overlaysOnMap[ghostIndex].setMap(map);                                                                                                                                  //set the overlay with new bounds to the map
-        currentlyEditing = "yes";                                                                                                                                               //enable editing marker
-        cacheSaveOverlay(ghostIndex);                                                                                                                                           //trigger a cache of current working overlay
+        if (pageMode == "edit") {
+            overlaysOnMap[ghostIndex].setMap(null);                                                                                                                                 //hide previous overlay
+            overlaysOnMap[ghostIndex] = null;                                                                                                                                       //delete previous overlay values
+            overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, ghostOverlayRectangle[ghostIndex].getBounds(), incomingOverlaySourceURL[ghostIndex], map, preservedRotation); //redraw the overlay within the new bounds
+            overlaysOnMap[ghostIndex].setMap(map);                                                                                                                                  //set the overlay with new bounds to the map
+            currentlyEditing = "yes";                                                                                                                                               //enable editing marker
+            cacheSaveOverlay(ghostIndex);                                                                                                                                           //trigger a cache of current working overlay
+        }
     });
 
 }

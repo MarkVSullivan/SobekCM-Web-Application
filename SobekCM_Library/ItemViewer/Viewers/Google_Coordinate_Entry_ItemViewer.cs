@@ -483,6 +483,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-markerwithlabel-1.8.1.min.js\"></script>");               //must load after custom
             
             //html goodies
+            mapperBuilder.AppendLine("  ");
+            mapperBuilder.AppendLine(" <script type=\"text/javascript\"> ");
+            mapperBuilder.AppendLine("  ");
+            mapperBuilder.AppendLine(" </script> ");
+            mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine(" <div id=\"mapper_container_thebigdeal\">  ");
             mapperBuilder.AppendLine("     <div id=\"container1\"> ");
             mapperBuilder.AppendLine("         <div id=\"container2a\"> ");
@@ -595,8 +600,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                             <div style=\"clear:both;\"></div> ");
             mapperBuilder.AppendLine("                             <div id=\"search_results\"></div> ");
             mapperBuilder.AppendLine("                         </div> ");
-            mapperBuilder.AppendLine("                          ");
-            mapperBuilder.AppendLine("                          ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                      ");
             mapperBuilder.AppendLine("                     <h3 class=\"tab-title\">Manage Location Details</h3> ");
@@ -622,7 +625,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine("                     <h3 class=\"tab-title\" onclick=\"action2();\" >Manage Map Coverage</h3> ");
             mapperBuilder.AppendLine("                     <div class=\"tab\" style=\"text-align:center;\"> ");
-            mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbox_placeOverlay\" title=\"Place Overlay\"><img src=\"/sobekcm/default/images/mapper/button-action2.png\" /></a> ");
+            mapperBuilder.AppendLine("                         <a href=\"#\" id=\"toolbox_placeOverlay\" title=\"Toggle Overlay Editting\"><img src=\"/sobekcm/default/images/mapper/button-action2.png\" /></a> ");
             mapperBuilder.AppendLine("                         <a href=\"#\" id=\"overlay_getUserLocation\" title=\"Center On Your Current Position\"><img src=\"/sobekcm/default/images/mapper/getUserLocation.png\" /></a> ");
             mapperBuilder.AppendLine("                         <div style=\"clear:both;\"> ");
             mapperBuilder.AppendLine("                             <br /><br /> ");
@@ -667,7 +670,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                                         <div id=\"poiList\"></div> ");
             mapperBuilder.AppendLine("                                     </div> ");
             mapperBuilder.AppendLine("                                 </div> ");
-            mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine("                                  ");
             mapperBuilder.AppendLine("                                 <br /> ");
             mapperBuilder.AppendLine("                             </div> ");
@@ -679,11 +681,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("             </div> ");
-            mapperBuilder.AppendLine("             <!-- ");
-            mapperBuilder.AppendLine("                 <div id=\"debugger\" style=\"width:300px;position:absolute;left:50%;margin-top:940px;margin-left:-150px;min-height:50px;opacity:0.6;z-index:100000;background-color:lightskyblue;\">Debugger:<a style=\"float:right;\" onclick=\"hide('#debugger');\">X</a></div> ");
-            mapperBuilder.AppendLine("             --> ");
-            mapperBuilder.AppendLine("                 <div id=\"googleMap\"></div> ");
-            mapperBuilder.AppendLine("              ");
+            mapperBuilder.AppendLine("             <div id=\"googleMap\"></div> ");
             mapperBuilder.AppendLine("         </div> ");
             mapperBuilder.AppendLine("     </div> ");
             mapperBuilder.AppendLine(" </div> ");
