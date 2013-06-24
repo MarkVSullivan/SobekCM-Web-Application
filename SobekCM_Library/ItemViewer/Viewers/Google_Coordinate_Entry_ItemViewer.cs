@@ -27,7 +27,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
-
+            
         private bool googleItemSearch;
         private StringBuilder mapBuilder;
         private List<string> matchingTilesList;
@@ -43,8 +43,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         #region myc#
 
-        ////public class Google_Coordinate_Entry_ItemViewer : System.Web.UI.Page, System.Web.UI.ICallbackEventHandler    
-
         //protected string stockItemCoord = String.Empty;
         //protected string stockItemDesc = String.Empty;
         //protected string savedItemCoord = String.Empty;
@@ -54,35 +52,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         //public string stockOverlayBounds = String.Empty;
         //public string stockOverlaySource = String.Empty;
         //public double stockOverlayRotation = 0;
+        //protected string savedOverlayIndex = String.Empty;
         //protected string savedOverlayBounds = String.Empty;
         //protected string savedOverlaySource = String.Empty;
         //protected string savedOverlayRotation = String.Empty; //recieving 
         //protected double savedOverlayRotationSending = 0; //sending
 
         //protected string callbackMessage = "0";
-
-
-        //protected void Page_Load(object sender, EventArgs e)
-        //{
-        //    //read the goodies at get go
-        //    //ReadSavedItem();
-        //    //ReadStockItem();
-        //    //ReadSavedOverlay();
-        //    //ReadStockOverlay();
-
-        //    //Get the Page's ClientScript and assign it to a ClientScriptManger
-        //    ClientScriptManager cm = Page.ClientScript;
-
-        //    //Generate the callback reference
-        //    string cbReference = cm.GetCallbackEventReference(this, "arg", "HandleResult", "");
-
-        //    //Build the callback script block
-        //    string cbScript = "function CallServer(arg, context){" + cbReference + ";}";
-
-        //    //Register the block
-        //    cm.RegisterClientScriptBlock(this.GetType(), "CallServer", cbScript, true);
-
-        //}
 
 
         //public void RaiseCallbackEvent(string eventArgument)
@@ -96,14 +72,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         //    //This method will be called by the Client; Do your business logic here
         //    //The parameter "eventArgument" is actually the paramenter "arg" of CallServer(arg, context)
 
-        //    int packageIndex = eventArgument.LastIndexOf("~");
-        //    string[] packages = eventArgument.Substring(0, packageIndex).Split('~');
+        //    int packageIndex = eventArgument.LastIndexOf("~"); //get how long the package to parse is
+        //    string[] packages = eventArgument.Substring(0, packageIndex).Split('~'); //parse the package into array elements
 
         //    //for (var i = 0; i < ar1.length; i++) {
         //    foreach (var pack in packages)
         //    {
-        //        int packIndex = pack.LastIndexOf("|");
-        //        string[] packs = pack.Substring(0, packIndex).Split('|');
+        //        int packIndex = pack.LastIndexOf("|"); //get how long each pack is
+        //        string[] packs = pack.Substring(0, packIndex).Split('|'); //parse each pack into an indivual element
 
         //        string saveType = packs[0]; //get what type of save it is
 
@@ -116,21 +92,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
         //                output1.WriteLine(savedItemCoord);
         //                output1.Flush();
         //                output1.Close();
-        //                ReadSavedItem(); //trigger a refresh of cached saved item
+        //                //ReadSavedItem(); //trigger a refresh of cached saved item
         //                callbackMessage = "1";
         //                break;
         //            case "overlay":
-        //                savedOverlayBounds = packs[1];
-        //                savedOverlaySource = packs[2];
-        //                savedOverlayRotation = packs[3];
+        //                savedOverlayIndex = packs[1];
+        //                savedOverlayBounds = packs[2];
+        //                savedOverlaySource = packs[3];
+        //                savedOverlayRotation = packs[4];
         //                //savedItem = eventArgument; //not used
         //                StreamWriter output2 = new StreamWriter("U:/vs12_projects/m3/output/savedOverlay.txt", false);
+        //                output2.WriteLine(savedOverlayIndex);
         //                output2.WriteLine(savedOverlayBounds);
         //                output2.WriteLine(savedOverlaySource);
         //                output2.WriteLine(savedOverlayRotation);
         //                output2.Flush();
         //                output2.Close();
-        //                ReadSavedOverlay(); //trigger a refresh of cached saved overlay
+        //                //ReadSavedOverlay(); //trigger a refresh of cached saved overlay
         //                callbackMessage = "2";
         //                break;
         //            case "poi":
@@ -148,66 +126,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         //    //GetCallbackResult(); //trigger callback
         //}
-
-        //public string GetCallbackResult()
-        //{
-
-
-        //    //This is called after RaiseCallbackEvent and then sent to the client which is the
-        //    //function "HandleResult" in javascript of the page
-
-        //    //reread everything
-        //    //ReadStockItem();
-        //    //ReadSavedItem();
-        //    //ReadStockOverlay();
-        //    //ReadSavedOverlay();
-        //    //ReadStockPOI();
-        //    //ReadSavedPOI();
-
-        //    return callbackMessage;
-        //}
-
-        ////unknown if I can delete these????
-        //public string stockMarkerCoords = String.Empty;
-        //public string stockMarkerDesc = String.Empty;
-
-
-        ////read saved item from file
-        //public void ReadSavedItem()
-        //{
-        //    string[] lines = File.ReadAllLines(@"U:/vs12_projects/m3/output/savedItem.txt");
-
-        //    savedItemCoord = lines[0];
-        //}
-
-        ////read stock Item from file
-        //public void ReadStockItem()
-        //{
-        //    string[] lines = File.ReadAllLines(@"U:/vs12_projects/m3/output/stockItem.txt");
-
-        //    stockItemCoord = lines[0];
-        //}
-
-        ////read saved overlay from file
-        //public void ReadSavedOverlay()
-        //{
-        //    string[] lines = File.ReadAllLines(@"U:/vs12_projects/m3/output/savedOverlay.txt");
-
-        //    savedOverlayBounds = lines[0];
-        //    savedOverlaySource = lines[1];
-        //    savedOverlayRotationSending = Convert.ToDouble(lines[2]);
-        //}
-
-        ////read stock overlay from file
-        //public void ReadStockOverlay()
-        //{
-        //    string[] lines = File.ReadAllLines(@"U:/vs12_projects/m3/output/stockOverlay.txt");
-
-        //    stockOverlayBounds = lines[0];
-        //    stockOverlaySource = lines[1];
-        //    stockOverlayRotation = Convert.ToDouble(lines[2]);
-        //}
-
+       
         #endregion
         
         /// <summary> Constructor for a new instance of the Google_Coordinate_Entry_ItemViewer class </summary>
@@ -274,7 +193,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     };
             }
         }
-        
+
         /// <summary> Abstract method adds the main view section to the page turner </summary>
         /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -285,6 +204,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //page content
             mapperBuilder.AppendLine("<td>");
+
+            //mapperBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
             
             //css
             mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
@@ -319,7 +240,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("   var incomingOverlaySourceURL = [];"); //may not need to declare
             mapperBuilder.AppendLine("   var incomingOverlayRotation = [];");  //may not need to declare
             mapperBuilder.AppendLine("   var incomingOverlayRectangle = [];");  //may not need to declare
-            mapperBuilder.AppendLine("   function initOverlays(){");   
+            mapperBuilder.AppendLine("   function initOverlays(){");
             
             mapBuilder = new StringBuilder();
 
@@ -487,6 +408,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine(" <script type=\"text/javascript\"> ");
             mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine(" </script> ");
+            //hidden inputs
+            mapperBuilder.AppendLine("   <input type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
+
             mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine(" <div id=\"mapper_container_thebigdeal\">  ");
             mapperBuilder.AppendLine("     <div id=\"container1\"> ");
