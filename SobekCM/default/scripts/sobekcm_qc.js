@@ -305,7 +305,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 				   var hidden_number_system = document.getElementById('Autonumber_number_system');
 				   hidden_number_system.value='decimal';
         
-      //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
+      
 			var i;
 			var j='';
 			var lastIndex=0;
