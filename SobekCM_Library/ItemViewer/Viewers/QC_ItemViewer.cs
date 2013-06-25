@@ -889,7 +889,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 
-
 			if (thumbnailSize == 3)
 				builder.Append("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\"/></a></li>");
 			else
