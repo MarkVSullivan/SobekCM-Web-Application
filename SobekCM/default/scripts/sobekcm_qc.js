@@ -293,9 +293,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
        var number = matches[len-1];
 	   var nonNumber='';
 	   var val=document.getElementById(textboxID).value;
-	   
-       
-	  // alert(number);
+
        
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
