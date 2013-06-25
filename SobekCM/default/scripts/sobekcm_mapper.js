@@ -1,17 +1,26 @@
-﻿//temp js (fixes temporary padding issue)
-document.getElementById("SobekDocumentDisplay2").style.marginLeft = "-4px";
-document.getElementById("SobekDocumentDisplay2").style.marginTop = "-3px";
+﻿//#region Declarations
 
-var collectionTypeToLoad = "default";               //define collection settings to load
-setupInterface(collectionTypeToLoad);               //start the whole thing
-
-//#region Declarations
-
-//hardcodded temp values
-//var stockMarker1 = new google.maps.LatLng(29.8944, -81.3147);
-var inputOverlaySourceURL = "http://ufdcimages.uflib.ufl.edu/US/AC/H0/00/04/00002/00001.jpg";
-
-//global static defines (do not change)
+//global defines (do not change here)
+var overlaysCurrentlyDisplayed;         //holds marker for overlays on map
+var pageMode;                           //holds the page/viewer type
+var mapCenter;                          //used to center map on load
+var mapControlsOnMap;                   //by default, are map controls displayed (true/false)
+var defaultDisplayDrawingMangerTool;    //by default, is the drawingmanger displayed (true/false)
+var toolboxDisplayed;                   //by default, is the toolbox displayed (true/false)
+var toolbarOpen;                        //by default, is the toolbar open (yes/no)
+var kmlOn;                              //by default, is kml layer on (yes/no)
+var kmlLayer;                           //must be pingable by google
+var defaultZoomLevel;                   //zoom level, starting
+var maxZoomLevel;                       //max zoom out, default (21=lowest level, 1=highest level)
+var minZoomLevel_Terrain;               //max zoom in, terrain
+var minZoomLevel_Satellite;             //max zoom in, sat + hybrid
+var minZoomLevel_Roadmap;               //max zoom in, roadmap (default)
+var minZoomLevel_BlockLot;              //max zoom in, used for special layers not having default of roadmap
+var isCustomOverlay;                    //used to determine if other overlays (block/lot etc) //unknown
+var preservedRotation;                  //rotation, default
+var knobRotationValue;                  //rotation to display by default 
+var preserveOpacity;                    //opacity, default value (0-1,1=opaque)
+var strictBounds;                       //set the bounds for this google map instance
 var overlaysOnMap = [];                 //holds all overlays
 var csoi = 0;                           //hold current saved overlay index
 var pendingOverlaySave = false;         //hold the marker to indicate if we need to save the overlay (this prevents a save if we already saved)
@@ -50,7 +59,7 @@ var workingOverlayIndex = null;         //holds the index of the overlay we are 
 var currentlyEditing = "no";            //tells us if we are editing anything
 var currentTopZindex = 5;               //current top zindex (used in displaying overlays over overlays)
 var savingOverlayIndex = [];            //holds index of the overlay we are saving
-savingOverlaySourceURL = [];            //hold the source url of the overlay to save
+var savingOverlaySourceURL = [];        //hold the source url of the overlay to save
 var savingOverlayBounds = [];           //holds bounds of the overlay we are saving
 var savingOverlayRotation = [];         //holds rotation of the overlay we are saving
 var ghosting = {                        //define options for ghosting (IE being invisible)
@@ -68,30 +77,91 @@ var editable = {                        //define options for visible and editabl
     fillOpacity: 0.0,                   //sobek standard 
     zindex: 5                           //sobek standard
 };
+strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance (temp to fix unknown issue where would not set dynamicaly)
+    new google.maps.LatLng(29.78225755812941, -81.4306640625),
+    new google.maps.LatLng(29.99181288866604, -81.1917114257)
+);
 CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
 
-//global dynamic defines (do not define here)
-
-var mapCenter;                                                          //used to center map on load
-var mapControlsOnMap;                                                   //by default, are map controls displayed (true/false)
-var defaultDisplayDrawingMangerTool;                                    //by default, is the drawingmanger displayed (true/false)
-var toolboxDisplayed;                                                   //by default, is the toolbox displayed (true/false)
-var toolbarOpen;                                                        //by default, is the toolbar open (yes/no)
-var kmlOn;                                                              //by default, is kml layer on (yes/no)
-var kmlLayer;                                                           //must be pingable by google
-var defaultZoomLevel;                                                   //zoom level, starting
-var maxZoomLevel;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-var minZoomLevel_Terrain;                                               //max zoom in, terrain
-var minZoomLevel_Satellite;                                             //max zoom in, sat + hybrid
-var minZoomLevel_Roadmap;                                               //max zoom in, roadmap (default)
-var minZoomLevel_BlockLot;                                              //max zoom in, used for special layers not having default of roadmap
-var isCustomOverlay;                                                    //used to determine if other overlays (block/lot etc) //unknown
-var preservedRotation;                                                  //rotation, default
-var knobRotationValue;                                                  //rotation to display by default 
-var preserveOpacity = 0.55;                                             //opacity, default value (0-1,1=opaque)
-var strictBounds;                                                       //set the bounds for this google map instance
-
 //#endregion
+
+function setupInterface(collection) {
+
+    //displayIncomingOverlays();
+
+    switch (collection) {
+
+        case "default":
+            mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
+            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
+            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            defaultZoomLevel = 13;                                                  //zoom level, starting
+            maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            preservedRotation = 0;                                                  //rotation, default
+            knobRotationValue = 0;                                                  //rotation to display by default 
+            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            var strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
+            break;
+        case "stAugustine":
+            mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
+            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
+            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            defaultZoomLevel = 14;                                                  //zoom level, starting
+            maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            preservedRotation = 0;                                                  //rotation, default
+            knobRotationValue = 0;                                                  //rotation to display by default 
+            preserveOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
+            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+                new google.maps.LatLng(29.78225755812941, -81.4306640625),
+                new google.maps.LatLng(29.99181288866604, -81.1917114257)
+            );
+            break;
+        case "custom":
+            mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
+            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
+            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            defaultZoomLevel = 13;                                                  //zoom level, starting
+            maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            preservedRotation = 0;                                                  //rotation, default
+            knobRotationValue = 0;                                                  //rotation to display by default 
+            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+                new google.maps.LatLng(29.21570636285318, -82.87811279296875),
+                new google.maps.LatLng(30.07978967039041, -81.76300048828125)
+            );
+            break;
+    }
+}              //setup everything
+
+var collectionTypeToLoad = "stAugustine";           //define collection settings to load
+setupInterface(collectionTypeToLoad);               //start the whole thing
 
 //#region Localization library 
 var L_Marker = "Marker";
@@ -257,7 +327,6 @@ toolbarBufferZone2.style.height = '50px';
 $(function () {
     $("#toolbox").draggable({ handle: ".toolbar" });
     $("#toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
-
     $("#toolbar_toggle1").tooltip();
     $("#toolbar_toggle2").tooltip();
     $("#toolbar_reset").tooltip();
@@ -283,6 +352,7 @@ $(function () {
     $("#toolbar_managePOI").tooltip();
     $("#toolbar_find").tooltip();
     $("#toolbar_search").tooltip();
+    $("#toolbox_locate").tooltip();
     $("#toolbox_find").tooltip();
     $("#toolbox_search").tooltip();
     $("#toolbox_reset").tooltip();
@@ -359,13 +429,14 @@ function buttonSaveOverlay() {
     if (savingOverlayIndex.length) {
         for (var i = 0; i < savingOverlayIndex.length; i++) {
             alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
-            //createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+            createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+            //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
         }
         displayMessage("saved");
     } else {
         displayMessage("nothing to save");
     }
-    
+
 }                  //just calls create saved overlay
 function buttonSavePOI() {
     if (poiObj.length > 0) {
@@ -384,7 +455,7 @@ function createSavedItem(coordinates) {
 }                    //create a package to send to server to save item location
 function createSavedOverlay(index, source, bounds, rotation) {
     var temp = source;
-    if (temp.contains("~") || temp.contains("|")) {
+    if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
         displayMessage(L7);
     }
 
@@ -392,7 +463,7 @@ function createSavedOverlay(index, source, bounds, rotation) {
     var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
 
     var dataPackage = data + "~";
-    CallServer(dataPackage);
+    //CallServer(dataPackage); //not yet working
 }                 //create a package to send to server to save overlay
 function createSavedPOI() {
     var dataPackage = "";
@@ -821,80 +892,6 @@ function useSearchAsItemLocation() {
     });
 
 }            //assign search location pin to item location
-function setupInterface(collection) {
-    
-    //displayIncomingOverlays();
-
-    switch (collection) {
-
-        case "default":
-            mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
-            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
-            defaultZoomLevel = 13;                                                  //zoom level, starting
-            maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-            preservedRotation = 0;                                                  //rotation, default
-            knobRotationValue = 0;                                                  //rotation to display by default 
-            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            var strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
-            break;
-        case "stAugustine":
-            mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
-            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
-            defaultZoomLevel = 14;                                                  //zoom level, starting
-            maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
-            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-            preservedRotation = 0;                                                  //rotation, default
-            knobRotationValue = 0;                                                  //rotation to display by default 
-            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                new google.maps.LatLng(29.78225755812941, -81.4306640625),
-                new google.maps.LatLng(29.99181288866604, -81.1917114257)
-            );
-            break;
-        case "custom":
-            mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
-            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
-            defaultZoomLevel = 13;                                                  //zoom level, starting
-            maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
-            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-            preservedRotation = 0;                                                  //rotation, default
-            knobRotationValue = 0;                                                  //rotation to display by default 
-            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                new google.maps.LatLng(29.21570636285318, -82.87811279296875),
-                new google.maps.LatLng(30.07978967039041, -81.76300048828125)
-            );
-            break;
-    }
-}           //setup everything
 
 //#endregion
 
@@ -1071,7 +1068,18 @@ function initialize() {
     });
     google.maps.event.addDomListener(document.getElementById("toolbox_placeOverlay"), 'click', function () {
         placerType = "overlay";
-        displayMessage("Simple click one on the map");
+        if (pageMode == "edit") {
+            pageMode = "view";
+            if (savingOverlayIndex.length > 0) {
+                for (var i = 0; i < savingOverlayIndex.length; i++) {
+                    ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
+                }
+            }
+            displayMessage("Overlay Editting Turned Off");
+        } else {
+            pageMode = "edit";
+            displayMessage("Overlay Editting Turned On");
+        }
         //toggleOverlayEditor(); 
     });
     google.maps.event.addDomListener(document.getElementById("toolbox_placePOI"), 'click', function () {
@@ -1704,7 +1712,7 @@ function initialize() {
 
     $("#footer_item_wrapper").remove(); //temp to remove footer
     
-    initOverlays(); //initialize all the incoming overlays
+    initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
     
     //keypress shortcuts/actions
     window.onkeypress = keypress;
@@ -1734,6 +1742,24 @@ function initialize() {
                     }  
                 }
             break;
+            case 111: //o
+                if (overlaysCurrentlyDisplayed == true) {
+                    displayMessage("Hiding Overlays");
+                    for (var i = 0; i < incomingOverlayBounds.length; i++) {    //go through and display overlays as long as there is an overlay to display
+                        overlaysOnMap[i].setMap(null);                          //hide the overlay from the map
+                        ghostOverlayRectangle[i].setMap(null);                  //hide ghost from map
+                        overlaysCurrentlyDisplayed = false;                     //mark that overlays are not on the map
+                    }
+                } else {
+                    displayMessage("Showing Overlays");
+                    for (var i = 0; i < incomingOverlayBounds.length; i++) {   //go through and display overlays as long as there is an overlay to display
+                        overlaysOnMap[i].setMap(map);                          //set the overlay to the map
+                        ghostOverlayRectangle[i].setMap(map);                  //set to map
+                        overlaysCurrentlyDisplayed = true;                     //mark that overlays are on the map
+                    }
+                }
+                
+            break;
         }
     }
 
@@ -1746,8 +1772,8 @@ function displayIncomingOverlays() {
         overlaysOnMap[i].setMap(map);                                                                                                       //set the overlay to the map
         setGhostOverlay(i, incomingOverlayBounds[i]);                                                                                       //set hotspot on top of overlay
     }
+    overlaysCurrentlyDisplayed = true;
 }
-
 
 function setGhostOverlay(ghostIndex, ghostBounds) {
     
@@ -1759,33 +1785,42 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
     
     //create listener for if clicked
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'click', function () {
-        if (currentlyEditing == "yes") {                                                            //if editing is being done, save
-            cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
-            preservedRotation = 0;                                                                  //reset prevserved rotation
-            ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
-            currentlyEditing = "no";                                                                //reset editing marker
-        }
-        if (currentlyEditing == "no") {                                                             //if editing is not being done, start editing
-            $("#toolbox").show();                                                                   //show the toolbox
-            toolboxDisplayed = true;                                                                //say that the toolbox is open
-            $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
-            currentlyEditing = "yes";                                                               //enable editing marker
-            workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being edited
-            ghostOverlayRectangle[ghostIndex].setOptions(editable);                                 //show ghost
-            currentTopZindex++;                                                                     //iterate top z index
-            document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex;        //bring overlay to front
-            ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex });             //bring ghost to front
+        if (pageMode == "edit") {
+            if (currentlyEditing == "yes") {                                                            //if editing is being done, save
+                cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
+                ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
+                currentlyEditing = "no";                                                                //reset editing marker
+                preservedRotation = 0;                                                                  //reset preserved rotation
+            }
+            if (currentlyEditing == "no") {                                                             //if editing is not being done, start editing
+                $("#toolbox").show();                                                                   //show the toolbox
+                toolboxDisplayed = true;                                                                //mark that the toolbox is open
+                $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
+                currentlyEditing = "yes";                                                               //enable editing marker
+                workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being e
+                ghostOverlayRectangle[ghostIndex].setOptions(editable);                                 //show ghost
+                currentTopZindex++;                                                                     //iterate top z index
+                document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex;        //bring overlay to front
+                ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex });             //bring ghost to front
+                for (var i = 0; i < savingOverlayIndex.length; i++) {                                   //set rotation if the overlay was previously saved
+                    if (ghostIndex == savingOverlayIndex[i]) {
+                        preservedRotation = savingOverlayRotation[i];
+                    }
+                }
+            }
         }
     });
     
     //set listener for bounds changed
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'bounds_changed', function () {
-        overlaysOnMap[ghostIndex].setMap(null);                                                                                                                                 //hide previous overlay
-        overlaysOnMap[ghostIndex] = null;                                                                                                                                       //delete previous overlay values
-        overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, ghostOverlayRectangle[ghostIndex].getBounds(), incomingOverlaySourceURL[ghostIndex], map, preservedRotation); //redraw the overlay within the new bounds
-        overlaysOnMap[ghostIndex].setMap(map);                                                                                                                                  //set the overlay with new bounds to the map
-        currentlyEditing = "yes";                                                                                                                                               //enable editing marker
-        cacheSaveOverlay(ghostIndex);                                                                                                                                           //trigger a cache of current working overlay
+        if (pageMode == "edit") {
+            overlaysOnMap[ghostIndex].setMap(null);                                                                                                                                 //hide previous overlay
+            overlaysOnMap[ghostIndex] = null;                                                                                                                                       //delete previous overlay values
+            overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, ghostOverlayRectangle[ghostIndex].getBounds(), incomingOverlaySourceURL[ghostIndex], map, preservedRotation); //redraw the overlay within the new bounds
+            overlaysOnMap[ghostIndex].setMap(map);                                                                                                                                  //set the overlay with new bounds to the map
+            currentlyEditing = "yes";                                                                                                                                               //enable editing marker
+            cacheSaveOverlay(ghostIndex);                                                                                                                                           //trigger a cache of current working overlay
+        }
     });
 
 }

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
@@ -16,8 +17,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
 	/// <summary> Abstract class which implements the <see cref="iItemViewer"/> interface and which all subsequent
     /// item viewer classes must extend </summary>
-	public abstract class abstractItemViewer : iItemViewer
+    public abstract class abstractItemViewer : Page, iItemViewer
 	{
+
 	    /// <summary> Protected field contains the translation object for displaying an item in different languages </summary>
         protected Language_Support_Info translator;
 
