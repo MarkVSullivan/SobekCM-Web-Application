@@ -237,7 +237,6 @@ function DivNameTextChanged(textboxID, MaxPageCount)
 //Autonumber subsequent textboxes on changing one textbox value
 function PaginationTextChanged(textboxID,mode,MaxPageCount)
 {
-
     //get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
@@ -268,6 +267,10 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
   {
     var textboxValue = document.getElementById(textboxID).value;
 	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
+	
+	var textOnlyLastBox=document.getElementById('Autonumber_text_without_number');
+	var numberOnlyLastBox=document.getElementById('Autonumber_number_only');
+	
 //	lastNumber = lastNumber.toUpperCase().trim();
     var matches = document.getElementById(textboxID).value.match(/\d+/g);
 	var varRomanMatches = true;
@@ -306,18 +309,30 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
         
       //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			var i;
+			var j='';
+			var lastIndex=0;
 			for(i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			{
 			  number++;
 			 //alert(i);
 			  if(document.getElementById('textbox'+spanArray[i]))
 			  {
+			    lastIndex=i;
+				numberOnlyLastBox.value=number.toString();
+				textOnlyLastBox.value=document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1);
+				j=document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
 			    document.getElementById('textbox'+spanArray[i]).value = 
 				 document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
 			  }//end if
 			}//end for
-           	if(i>=MaxPageCount)
-			{alert(i);}
+          // 	if(i>=spanArray.indexOf(currPageLastIndex))
+			
+			var hidden_filename=document.getElementById('filename'+spanArray[lastIndex]);
+			alert(hidden_filename.value);
+			var hidden_filename_from_form = document.getElementById('Autonumber_last_filename');
+			hidden_filename_from_form.value=hidden_filename.value;
+			
+			{alert(j);}
        }//end if
     }//end if
     else if(varRomanMatches==true)
@@ -584,12 +599,16 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 			  {
 			    document.getElementById('textbox'+spanArray[i]).value = 
 				 document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
+				 
+//				 if(i==spanArray.indexOf(currPageLastIndex))
+//				  alert(i);
 			  }//end if
 			  i++;
 			}//end while
 			//if(i>=MaxPageCount)
-			alert(i);
-           
+		//	alert(i);
+
+		  
        }//end if
     }//end if
 
@@ -1381,7 +1400,7 @@ function qc_auto_save()
 						  minutes=minutes<10?'0'+minutes:minutes;
 						  var time = hours+":"+minutes+' '+ampm;
 						  
-                          var timeToDisplay = "Last saved at "+time;
+                          var timeToDisplay = "Saved at "+time;
 						  $("#displayTimeSaved").text(timeToDisplay);
 							
 							return false;

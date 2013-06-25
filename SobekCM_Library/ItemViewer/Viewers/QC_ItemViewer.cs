@@ -30,9 +30,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private readonly string title;
 		private int thumbnailsPerPage;
 		private int thumbnailSize;
-//		private int currPageNumber;
-	    private string autonumber_mode;
+	    private string autonumber_mode; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
 	    private string autonumber_number_system;
+	    private string autonumber_text_only;
+	    private string autonumber_number_only;
+	    private string hidden_autonumber_filename;
 		private string hidden_request;
 		private string hidden_main_thumbnail;
 		private bool autosave_option;
@@ -120,6 +122,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
 		    autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
 		    autonumber_mode = HttpContext.Current.Request.Form["Autonumber_mode"] ?? String.Empty;
+            autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
+		    autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
+		    autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
+		    hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
 
             if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
 			// If the hidden more relative position is BEFORE, it is before the very first page
@@ -128,6 +134,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
 			try
 			{
+
+                //Call the JavaScript autosave function based on the option selected
 				bool autosaveCacheValue=true;
 				bool autosaveCache = false;
 				
@@ -261,7 +269,69 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<Page_TreeNode> page_list = new List<Page_TreeNode>();
 			List<string> page_filename_list = new List<string>();
 			Division_TreeNode lastDivision = null;
-			foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+           //Autonumber the remaining pages based on the selected option
+            if (autonumber_mode == "0" || autonumber_mode == "1")
+            {
+                bool reached_last_page = false;
+                bool stop_autonumbering = false;
+                bool reached_next_div = false;
+                int number=0;
+                if (autonumber_number_system == "decimal")
+                    number = Int32.Parse(autonumber_number_only) + 1;
+                else if (autonumber_number_system == "roman")
+                    number = RomanToNumber(autonumber_number_only) +1;
+
+                //Do the autonumbering first
+                foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+                {
+                    //Is this a division or a page node?
+                    if (thisNode.Page)
+                    {
+                        Page_TreeNode thisPage = (Page_TreeNode) thisNode;
+                     
+                        //Verify the page
+                        if (thisPage.Files.Count > 0)
+                        {
+                            string filename = thisPage.Files[0].File_Name_Sans_Extension;
+
+                            if (filename == hidden_autonumber_filename)
+                            {
+                              //  bool b = true;
+                                reached_last_page = true;
+
+                            }
+                            
+                            else if (reached_last_page == true)
+                            {
+                                //Mode "0": Autonumber all pages of current division
+                                //Mode "1": Autonumber all pages of the entire document
+                                if ((autonumber_mode == "0" && reached_next_div == false) || (autonumber_mode=="1"))
+                                {
+                                    if(autonumber_number_system=="decimal")
+                                      thisPage.Label = autonumber_text_only + number.ToString();
+                                    else
+                                    {
+                                        thisPage.Label = autonumber_text_only + NumberToRoman(number);
+                                    }
+                                    number++;
+                                }
+
+                            }
+                            
+
+                   
+                        }
+                    }
+                    else if(reached_last_page==true)
+                    {
+                        reached_next_div = true;
+                    }
+
+                }
+            }
+
+           //Move/Delete Pages as appropriate 
+            foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
 			{
 				// Is this a division, or page node?
 				if (thisNode.Page)
@@ -895,6 +965,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			int images_per_page = thumbnailsPerPage;
 			int size_of_thumbnails = thumbnailSize;
 
+            //Get the current QC page number
+            int current_qc_viewer_page_num = 1;
+            if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
+                Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
+
 			// Get the links for the METS
 			string greenstoneLocation = qc_item.Web.Source_URL + "/";
 			string complete_mets = greenstoneLocation + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
@@ -920,7 +995,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    Output.WriteLine("<input type=\"hidden\" id=\"QC_Sortable\" name=\"QC_Sortable\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_mode\" name=\"Autonumber_mode\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_system\" name=\"Autonumber_number_system\" value=\"\"/>");
-			
+            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_text_without_number\" name=\"Autonumber_text_without_number\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_only\" name=\"Autonumber_number_only\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
+            
+
             // Start the citation table
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
 			if (qc_item.Web.Static_PageCount < 100)
@@ -1088,7 +1167,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,1," + qc_item.Web.Static_PageCount + ");\"></input></td></tr>");
+					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,0," + qc_item.Web.Static_PageCount +");\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
@@ -1226,7 +1305,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Display the time the form was last saved
             object timeSaved = HttpContext.Current.Session["QC_timeUpdated"];
-            string displayTimeText = (timeSaved==null) ? String.Empty : "Last saved at " + timeSaved.ToString();
+            string displayTimeText = (timeSaved==null) ? String.Empty : "Saved at " + timeSaved.ToString();
 
             Output.WriteLine("<tr><td colspan = \"100%\" style=\"float:left\"");
             Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span>");
@@ -1265,7 +1344,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			  navRowBuilder.AppendLine("<link rel=\"stylesheet\" href=\"http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css\" />");
 			  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
 
-	
+               //Include the superfish.css file for the menu
+			    navRowBuilder.AppendLine("<link rel=\"stylesheet\" media=\"screen\"  href=\"" + CurrentMode.Base_URL + "default/superfish.css\">");
+			    navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\""+CurrentMode.Base_URL+"default/scripts/superfish/superfish.js\"></script>");
+                navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\"></script>");
 			  navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
                 // shift+click checkboxes
