@@ -738,7 +738,6 @@ function polygonCenter(poly) {
     return (new google.maps.LatLng(center_x, center_y));
 }                  //get the center lat/long of a polygon
 function testBounds() {
-    alert(strictBounds);
     if (strictBounds != null) {
         if (strictBounds.contains(map.getCenter())) {
             mapInBounds = "yes";
