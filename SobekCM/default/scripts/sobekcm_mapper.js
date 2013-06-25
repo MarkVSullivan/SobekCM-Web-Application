@@ -158,7 +158,7 @@ function setupInterface(collection) {
             );
             break;
     }
-}           //setup everything
+}              //setup everything
 
 var collectionTypeToLoad = "stAugustine";           //define collection settings to load
 setupInterface(collectionTypeToLoad);               //start the whole thing
@@ -352,6 +352,7 @@ $(function () {
     $("#toolbar_managePOI").tooltip();
     $("#toolbar_find").tooltip();
     $("#toolbar_search").tooltip();
+    $("#toolbox_locate").tooltip();
     $("#toolbox_find").tooltip();
     $("#toolbox_search").tooltip();
     $("#toolbox_reset").tooltip();
