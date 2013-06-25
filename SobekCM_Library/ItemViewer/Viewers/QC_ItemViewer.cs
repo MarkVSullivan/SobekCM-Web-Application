@@ -20,7 +20,6 @@ using SobekCM.Resource_Object.Divisions;
 using System.Xml;
 
 
-
 #endregion
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -30,19 +29,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private readonly string title;
 		private int thumbnailsPerPage;
 		private int thumbnailSize;
-	    private string autonumber_mode; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
-	    private string autonumber_number_system;
-	    private string autonumber_text_only;
-	    private string autonumber_number_only;
-	    private string hidden_autonumber_filename;
+		private string autonumber_mode; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
+		private string autonumber_number_system;
+		private string autonumber_text_only;
+		private string autonumber_number_only;
+		private string hidden_autonumber_filename;
 		private string hidden_request;
 		private string hidden_main_thumbnail;
 		private bool autosave_option;
 		private string hidden_move_relative_position;
 		private string hidden_move_destination_fileName;
 		private string userInProcessDirectory;
-	    private bool makeSortable = true;
-	    private bool isLower;
+		private bool makeSortable = true;
+		private bool isLower;
 		private SobekCM_Item qc_item;
 
 		private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
@@ -56,22 +55,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			this.CurrentMode = Current_Mode;
 			this.CurrentUser = Current_User;
 
-            // If there is no user, send to the login
-            if (CurrentUser == null)
-            {
-                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
-                return;
-            }
+			// If there is no user, send to the login
+			if (CurrentUser == null)
+			{
+				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+				HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+				return;
+			}
 
-            // If the user cannot edit this item, go back
-            if (!CurrentUser.Can_Edit_This_Item(Current_Object))
-            {
-                CurrentMode.ViewerCode = String.Empty;
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
-                return;
-            }
+			// If the user cannot edit this item, go back
+			if (!CurrentUser.Can_Edit_This_Item(Current_Object))
+			{
+				CurrentMode.ViewerCode = String.Empty;
+				HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+				return;
+			}
 
 			// Get the special qc_item, which matches the passed in Current_Object, at least the first time.
 			// If the QC work is already in process, we may find a temporary METS file to read.
@@ -120,22 +119,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
 			hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
 			hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
-		    autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-		    autonumber_mode = HttpContext.Current.Request.Form["Autonumber_mode"] ?? String.Empty;
-            autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
-		    autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
-		    autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-		    hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
+			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
+			autonumber_mode = HttpContext.Current.Request.Form["Autonumber_mode"] ?? String.Empty;
+			autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
+			autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
+			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
+			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
 
-            if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
+			if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
 			// If the hidden more relative position is BEFORE, it is before the very first page
-            if (hidden_move_relative_position == "Before")
-                hidden_move_destination_fileName = "[BEFORE FIRST]";
-            
+			if (hidden_move_relative_position == "Before")
+				hidden_move_destination_fileName = "[BEFORE FIRST]";
+			
 			try
 			{
 
-                //Call the JavaScript autosave function based on the option selected
+				//Call the JavaScript autosave function based on the option selected
 				bool autosaveCacheValue=true;
 				bool autosaveCache = false;
 				
@@ -200,14 +199,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else if (hidden_request == "save")
 			{
-                ////Save the current time
-                HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
+				////Save the current time
+				HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
 
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
 				Save_From_Form_Request_To_Item( String.Empty, String.Empty );
 
-                // Save this updated information in the temporary folder's METS file for reading
+				// Save this updated information in the temporary folder's METS file for reading
 				// later if necessary.
 				string url_redirect = HttpContext.Current.Request.Url.ToString();
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
@@ -217,13 +216,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-                List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
+				List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
 
-                ////If there were multiple selected pages to be moved, move these now and save to the temporary METS file
-                //if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
-                //{
-                //    Move_Multiple_Pages(hidden_move_relative_position, hidden_move_destination_fileName, selected_pages);
-                //}
+				////If there were multiple selected pages to be moved, move these now and save to the temporary METS file
+				//if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
+				//{
+				//    Move_Multiple_Pages(hidden_move_relative_position, hidden_move_destination_fileName, selected_pages);
+				//}
 
 				string url_redirect = HttpContext.Current.Request.Url.ToString();
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
@@ -232,30 +231,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Read the data from the http form, perform all requests, and
 				// update the qc_item (also updates the session and temporary files)
-                string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
-                Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
+				string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+				Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
 
 				string url_redirect = HttpContext.Current.Request.Url.ToString();
 				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
 			}
-            else if (hidden_request == "delete_selected_page")
-            {
-                // Read the data from the http form, perform all requests, and
-                // update the qc_item (also updates the session and temporary files)
-                Save_From_Form_Request_To_Item(String.Empty, String.Empty);
+			else if (hidden_request == "delete_selected_page")
+			{
+				// Read the data from the http form, perform all requests, and
+				// update the qc_item (also updates the session and temporary files)
+				Save_From_Form_Request_To_Item(String.Empty, String.Empty);
 
-                string url_redirect = HttpContext.Current.Request.Url.ToString();
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+				string url_redirect = HttpContext.Current.Request.Url.ToString();
+				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
-            }
+			}
 		}
 
 
 		/// <summary> Save all the data from form post-back into the item in memory, and 
 		/// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
 		/// <returns> Returns the list of all selected (or checked on the checkbox) page data</returns>
-        private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item(string filename_to_move_after, string filename_to_omit )
+		private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item(string filename_to_move_after, string filename_to_omit )
 		{
 			// Get the current page number
 			int current_qc_viewer_page_num = 1;
@@ -269,69 +268,69 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<Page_TreeNode> page_list = new List<Page_TreeNode>();
 			List<string> page_filename_list = new List<string>();
 			Division_TreeNode lastDivision = null;
-           //Autonumber the remaining pages based on the selected option
-            if (autonumber_mode == "0" || autonumber_mode == "1")
-            {
-                bool reached_last_page = false;
-                bool stop_autonumbering = false;
-                bool reached_next_div = false;
-                int number=0;
-                if (autonumber_number_system == "decimal")
-                    number = Int32.Parse(autonumber_number_only) + 1;
-                else if (autonumber_number_system == "roman")
-                    number = RomanToNumber(autonumber_number_only) +1;
+		   //Autonumber the remaining pages based on the selected option
+			if (autonumber_mode == "0" || autonumber_mode == "1")
+			{
+				bool reached_last_page = false;
+				bool stop_autonumbering = false;
+				bool reached_next_div = false;
+				int number=0;
+				if (autonumber_number_system == "decimal")
+					number = Int32.Parse(autonumber_number_only) + 1;
+				else if (autonumber_number_system == "roman")
+					number = RomanToNumber(autonumber_number_only) +1;
 
-                //Do the autonumbering first
-                foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
-                {
-                    //Is this a division or a page node?
-                    if (thisNode.Page)
-                    {
-                        Page_TreeNode thisPage = (Page_TreeNode) thisNode;
-                     
-                        //Verify the page
-                        if (thisPage.Files.Count > 0)
-                        {
-                            string filename = thisPage.Files[0].File_Name_Sans_Extension;
+				//Do the autonumbering first
+				foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+				{
+					//Is this a division or a page node?
+					if (thisNode.Page)
+					{
+						Page_TreeNode thisPage = (Page_TreeNode) thisNode;
+					 
+						//Verify the page
+						if (thisPage.Files.Count > 0)
+						{
+							string filename = thisPage.Files[0].File_Name_Sans_Extension;
 
-                            if (filename == hidden_autonumber_filename)
-                            {
-                              //  bool b = true;
-                                reached_last_page = true;
+							if (filename == hidden_autonumber_filename)
+							{
+							  //  bool b = true;
+								reached_last_page = true;
 
-                            }
-                            
-                            else if (reached_last_page == true)
-                            {
-                                //Mode "0": Autonumber all pages of current division
-                                //Mode "1": Autonumber all pages of the entire document
-                                if ((autonumber_mode == "0" && reached_next_div == false) || (autonumber_mode=="1"))
-                                {
-                                    if(autonumber_number_system=="decimal")
-                                      thisPage.Label = autonumber_text_only + number.ToString();
-                                    else
-                                    {
-                                        thisPage.Label = autonumber_text_only + NumberToRoman(number);
-                                    }
-                                    number++;
-                                }
+							}
+							
+							else if (reached_last_page == true)
+							{
+								//Mode "0": Autonumber all pages of current division
+								//Mode "1": Autonumber all pages of the entire document
+								if ((autonumber_mode == "0" && reached_next_div == false) || (autonumber_mode=="1"))
+								{
+									if(autonumber_number_system=="decimal")
+									  thisPage.Label = autonumber_text_only + number.ToString();
+									else
+									{
+										thisPage.Label = autonumber_text_only + NumberToRoman(number);
+									}
+									number++;
+								}
 
-                            }
-                            
+							}
+							
 
-                   
-                        }
-                    }
-                    else if(reached_last_page==true)
-                    {
-                        reached_next_div = true;
-                    }
+				   
+						}
+					}
+					else if(reached_last_page==true)
+					{
+						reached_next_div = true;
+					}
 
-                }
-            }
+				}
+			}
 
-           //Move/Delete Pages as appropriate 
-            foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+		   //Move/Delete Pages as appropriate 
+			foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
 			{
 				// Is this a division, or page node?
 				if (thisNode.Page)
@@ -386,16 +385,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
 						// Was this page selected with the checkbox?  (for bulk delete or move)
-                        //Get this info only if the move/delete operations are explicitly triggered
-					    if (hidden_request == "delete_page" || hidden_request == "delete_selected_page" || hidden_request == "move_selected_pages")
-					    {
-					        if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == filename_to_omit))
-					        {
-					            thisInfo.Checkbox_Selected = true;
-					            selected_page_div_from_form.Add(thisInfo);
-					        }
-					    }
-					    // Is this a new division?
+						//Get this info only if the move/delete operations are explicitly triggered
+						if (hidden_request == "delete_page" || hidden_request == "delete_selected_page" || hidden_request == "move_selected_pages")
+						{
+							if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == filename_to_omit))
+							{
+								thisInfo.Checkbox_Selected = true;
+								selected_page_div_from_form.Add(thisInfo);
+							}
+						}
+						// Is this a new division?
 						if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
 						{
 							thisInfo.New_Division = true;
@@ -516,9 +515,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 			}
 
-            int move_into_division_index = -1;
-            int move_into_node_index = -1;
-          //  string filename_to_move_after = "00002";
+			int move_into_division_index = -1;
+			int move_into_node_index = -1;
+		  //  string filename_to_move_after = "00002";
 
 			// Add each page from the original form
 			Division_TreeNode last_added_division = existing_division_containing_first_page;
@@ -527,18 +526,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Is this a new division?
 				if (pageInfo.New_Division)
 				{
-                    // If there was a last division, ensure some pages were added and add to the METS
-                    if (last_added_division != null)
-                    {
-                        // Were any pages added to this last div?
-                        if (last_added_division.Nodes.Count > 0)
-                        {
-                            // Since there were pages, add this to the METS
-                            qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
-                        }
-                    }
+					// If there was a last division, ensure some pages were added and add to the METS
+					if (last_added_division != null)
+					{
+						// Were any pages added to this last div?
+						if (last_added_division.Nodes.Count > 0)
+						{
+							// Since there were pages, add this to the METS
+							qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+						}
+					}
 
-                    // Create the new division
+					// Create the new division
 					last_added_division = new Division_TreeNode(pageInfo.Division_Type, pageInfo.Division_Label);
 				}
 
@@ -547,67 +546,67 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				thisPage.Label = pageInfo.Page_Label;
 
 				// Add this page to the last division (possibly just created above) assuming it is 
-                // not marked for removal (either by mass delete or mass move)
-                if (!pageInfo.Checkbox_Selected)
-                    last_added_division.Add_Child(thisPage);
-                else
-                {
-                    // Save the built page node for later, in case they will be MOVED
-                    pageInfo.METS_STructMap_Page_Node = thisPage;
-                }
+				// not marked for removal (either by mass delete or mass move)
+				if (!pageInfo.Checkbox_Selected)
+					last_added_division.Add_Child(thisPage);
+				else
+				{
+					// Save the built page node for later, in case they will be MOVED
+					pageInfo.METS_STructMap_Page_Node = thisPage;
+				}
 
-                // Were we involved in a mass move, in which case we are looking for the insertion point?
-                if ((filename_to_move_after.Length > 0) && (move_into_division_index < 0 ) && (pageInfo.Filename == filename_to_move_after))
-                {
-                    move_into_division_index = index_within_chapter_roots_to_begin_insert;
-                    move_into_node_index = last_added_division.Nodes.Count;
-                }
+				// Were we involved in a mass move, in which case we are looking for the insertion point?
+				if ((filename_to_move_after.Length > 0) && (move_into_division_index < 0 ) && (pageInfo.Filename == filename_to_move_after))
+				{
+					move_into_division_index = index_within_chapter_roots_to_begin_insert;
+					move_into_node_index = last_added_division.Nodes.Count;
+				}
 			}
 
-            // Handle all the remnant by adding to the last division 
-            foreach (Page_TreeNode thisNode in remnant_pages)
-            {
-                last_added_division.Add_Child(thisNode);
-            }
-            
-            // Handle any unfinished divisions
-            // If there was a last division, ensure some pages were added and add to the METS
-            if (last_added_division != null)
-            {
-                // Were any pages added to this last div?
-                if (last_added_division.Nodes.Count > 0)
-                {
-                    // Since there were pages, add this to the METS
-                    qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
-                }
-            }
+			// Handle all the remnant by adding to the last division 
+			foreach (Page_TreeNode thisNode in remnant_pages)
+			{
+				last_added_division.Add_Child(thisNode);
+			}
+			
+			// Handle any unfinished divisions
+			// If there was a last division, ensure some pages were added and add to the METS
+			if (last_added_division != null)
+			{
+				// Were any pages added to this last div?
+				if (last_added_division.Nodes.Count > 0)
+				{
+					// Since there were pages, add this to the METS
+					qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+				}
+			}
 
 
-            // Insert any pages which were moved
-            if ((filename_to_move_after.Length > 0) && ( selected_page_div_from_form.Count > 0 ))
-            {
-                // TODO: Check for the lack of any divisions what-so-ever within the METS.  If so, add one.
+			// Insert any pages which were moved
+			if ((filename_to_move_after.Length > 0) && ( selected_page_div_from_form.Count > 0 ))
+			{
+				// TODO: Check for the lack of any divisions what-so-ever within the METS.  If so, add one.
 
-                Division_TreeNode divNodeToInsertWithin = null;
+				Division_TreeNode divNodeToInsertWithin = null;
 
-                 // Get the division
-                if (move_into_division_index >= 0)
-                    divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[move_into_division_index];
-                else if (filename_to_move_after == "[BEFORE FIRST]")
-                {
-                    divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[0];
-                    move_into_node_index = 0;
-                }
+				 // Get the division
+				if (move_into_division_index >= 0)
+					divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[move_into_division_index];
+				else if (filename_to_move_after == "[BEFORE FIRST]")
+				{
+					divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[0];
+					move_into_node_index = 0;
+				}
 
-                if ( divNodeToInsertWithin != null )
-                {
-                    // Insert each page in order
-                    foreach (QC_Viewer_Page_Division_Info insertPage in selected_page_div_from_form)
-                    {
-                        divNodeToInsertWithin.Nodes.Insert(move_into_node_index++, insertPage.METS_STructMap_Page_Node);
-                    }
-                }
-            }
+				if ( divNodeToInsertWithin != null )
+				{
+					// Insert each page in order
+					foreach (QC_Viewer_Page_Division_Info insertPage in selected_page_div_from_form)
+					{
+						divNodeToInsertWithin.Nodes.Insert(move_into_node_index++, insertPage.METS_STructMap_Page_Node);
+					}
+				}
+			}
 
 			// Save the updated to the session
 			HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
@@ -663,19 +662,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			 }
 		}
 
-        #region Methods and properties to allow the paging to work correctly
+		#region Methods and properties to allow the paging to work correctly
 
-        /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns NONE</value>
-        public override ItemViewer_PageSelector_Type_Enum Page_Selector
-        {
-            get
-            {
-                return ItemViewer_PageSelector_Type_Enum.PageLinks;
-            }
-        }
+		/// <summary> Gets the flag that indicates if the page selector should be shown </summary>
+		/// <value> This is a single page viewer, so this property always returns NONE</value>
+		public override ItemViewer_PageSelector_Type_Enum Page_Selector
+		{
+			get
+			{
+				return ItemViewer_PageSelector_Type_Enum.PageLinks;
+			}
+		}
  
-        /// <summary> Gets the number of pages for this viewer </summary>
+		/// <summary> Gets the number of pages for this viewer </summary>
 		/// <remarks> If there are more than 100 related images, then the thumbnails are paged at 60 a page</remarks>
 		///<remarks>Edit: The default number of items per page is 50. If a diferent number is selected by the user, this is fetched from the query string</remarks>
 		public override int PageCount
@@ -752,11 +751,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-        #endregion
+		#endregion
 
-        #region Method to add the main menu 
+		#region Method to add the main menu 
 
-        private void add_main_menu(StringBuilder builder)
+		private void add_main_menu(StringBuilder builder)
 		{
 			string Num_Of_Thumbnails = "Thumbnails per page";
 			string Size_Of_Thumbnail = "Thumbnail size";
@@ -816,11 +815,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("<ul class=\"qc-menu\">");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
-            //builder.AppendLine("\t<li>Volume Error<ul>");
-            //builder.AppendLine("\t\t<li>No volume level error</li>");
-            //builder.AppendLine("\t\t<li>Invalid images</li>");
-            //builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
-            //builder.AppendLine("\t</ul></li>");
+			//builder.AppendLine("\t<li>Volume Error<ul>");
+			//builder.AppendLine("\t\t<li>No volume level error</li>");
+			//builder.AppendLine("\t\t<li>Invalid images</li>");
+			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
+			//builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("\t<li>Save</li>");
 			builder.AppendLine("\t<li>Complete</li>");
 			builder.AppendLine("\t<li>Cancel</li>");
@@ -831,29 +830,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t<li>Clear All &amp; Reorder Pages</li>");
 			builder.AppendLine("</ul></li>");
 
-            builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
-            builder.AppendLine("\t<li>Thumbnail Size<ul>");
-            builder.AppendLine("\t\t<li>Small</li>");
-            builder.AppendLine("\t\t<li>Medium</li>");
-            builder.AppendLine("\t\t<li>Large</li>");
-            builder.AppendLine("\t</ul></li>");
-            builder.AppendLine("\t<li>Thumbnails per page<ul>");
-            builder.AppendLine("\t\t<li>25</li>");
-            builder.AppendLine("\t\t<li>50</li>");
-            builder.AppendLine("\t\t<li>All thumbnails</li>");
-            builder.AppendLine("\t</ul></li>");
-            builder.AppendLine("\t<li>Automatic Numbering<ul>");
-            builder.AppendLine("\t\t<li>No automatic numbering</li>");
-            builder.AppendLine("\t\t<li>Within same division</li>");
-            builder.AppendLine("\t\t<li>Entire document</li>");
-            builder.AppendLine("\t</ul></li>");
-            builder.AppendLine("</ul></li>");
+			builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
+			builder.AppendLine("\t<li>Thumbnail Size<ul>");
+			builder.AppendLine("\t\t<li>Small</li>");
+			builder.AppendLine("\t\t<li>Medium</li>");
+			builder.AppendLine("\t\t<li>Large</li>");
+			builder.AppendLine("\t</ul></li>");
+			builder.AppendLine("\t<li>Thumbnails per page<ul>");
+			builder.AppendLine("\t\t<li>25</li>");
+			builder.AppendLine("\t\t<li>50</li>");
+			builder.AppendLine("\t\t<li>All thumbnails</li>");
+			builder.AppendLine("\t</ul></li>");
+			builder.AppendLine("\t<li>Automatic Numbering<ul>");
+			builder.AppendLine("\t\t<li>No automatic numbering</li>");
+			builder.AppendLine("\t\t<li>Within same division</li>");
+			builder.AppendLine("\t\t<li>Entire document</li>");
+			builder.AppendLine("\t</ul></li>");
+			builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
-            builder.AppendLine("\t<li>View METS</li>");
-            builder.AppendLine("\t<li>View Directory</li>");
-            builder.AppendLine("\t<li>View QC History</li>");
-            builder.AppendLine("</ul></li>");
+			builder.AppendLine("\t<li>View METS</li>");
+			builder.AppendLine("\t<li>View Directory</li>");
+			builder.AppendLine("\t<li>View QC History</li>");
+			builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
 			
@@ -884,7 +883,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			string image_location = CurrentMode.Default_Images_URL;
 
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"></img></a></li>");
-            builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:DeletePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
+			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:DeletePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;left\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
 			builder.AppendLine("<li class=\"action-qc-menu-item\" style=\"float:right;\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\"/></a></li>");
@@ -948,14 +947,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine();
 		}
 
-        #endregion
+		#endregion
 
 
-        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
-        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
-        {
+		/// <summary> Stream to which to write the HTML for this subwriter  </summary>
+		/// <param name="Output"> Response stream for the item viewer to write directly to </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+		public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+		{
 			if (Tracer != null)
 			{
 				Tracer.Add_Trace("QC_ItemViewer.Write_Main_Viewer_Section", "");
@@ -964,10 +963,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			int images_per_page = thumbnailsPerPage;
 			int size_of_thumbnails = thumbnailSize;
 
-            //Get the current QC page number
-            int current_qc_viewer_page_num = 1;
-            if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
-                Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
+			//Get the current QC page number
+			int current_qc_viewer_page_num = 1;
+			if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
+				Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
 
 			// Get the links for the METS
 			string greenstoneLocation = qc_item.Web.Source_URL + "/";
@@ -979,7 +978,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				complete_mets = CurrentMode.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
 			}
 
-            // Save the current viewer code
+			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
 			ushort current_view_page = CurrentMode.Page;
 
@@ -991,15 +990,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<input type=\"hidden\" id=\"Autosave_Option\" name=\"Autosave_Option\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_move_relative_position\" name=\"QC_move_relative_position\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_move_destination\" name=\"QC_move_destination\" value=\"\" />");
-		    Output.WriteLine("<input type=\"hidden\" id=\"QC_Sortable\" name=\"QC_Sortable\" value=\"\"/>");
-            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_mode\" name=\"Autonumber_mode\" value=\"\"/>");
-            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_system\" name=\"Autonumber_number_system\" value=\"\"/>");
-            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_text_without_number\" name=\"Autonumber_text_without_number\" value=\"\"/>");
-            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_only\" name=\"Autonumber_number_only\" value=\"\"/>");
-            Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
-            
+			Output.WriteLine("<input type=\"hidden\" id=\"QC_Sortable\" name=\"QC_Sortable\" value=\"\"/>");
+			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_mode\" name=\"Autonumber_mode\" value=\"\"/>");
+			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_system\" name=\"Autonumber_number_system\" value=\"\"/>");
+			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_text_without_number\" name=\"Autonumber_text_without_number\" value=\"\"/>");
+			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_only\" name=\"Autonumber_number_only\" value=\"\"/>");
+			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
+			
 
-            // Start the citation table
+			// Start the citation table
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
 			if (qc_item.Web.Static_PageCount < 100)
 			{
@@ -1041,7 +1040,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
 
 					// Start the box for this thumbnail
-                    Output.WriteLine("<a name=\"" + thisPage.Label + "\" id=\"" + thisPage.Label + "\"></a>");
+					Output.WriteLine("<a name=\"" + thisPage.Label + "\" id=\"" + thisPage.Label + "\"></a>");
 					Output.WriteLine("<span id=\"span" + page_index + "\" onclick=\"PickMainThumbnail(this.id);\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'; showQcPageIcons(this.id); showErrorIcon(this.id);\" onmouseout=\"this.className='thumbnailNormal'; hideQcPageIcons(this.id); hideErrorIcon(this.id);\" >");
 					Output.WriteLine("<div class=\"qcpage\" align=\"center\" id=\"parent" + image_url + "\" >");
 					Output.WriteLine("<table>");
@@ -1293,8 +1292,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
 			Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSpanFlashOnPageLoad();</script>");
-            if(makeSortable)
-			    Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSortable1();</script>");
+			if(makeSortable)
+				Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSortable1();</script>");
 //		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
 //			Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
 
@@ -1302,13 +1301,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if(String.IsNullOrEmpty(autosave_option.ToString()) || autosave_option)
 			  Output.WriteLine("<script type=\"text/javascript\">setInterval(qc_auto_save, 180* 1000);</script>");
 
-            //Display the time the form was last saved
-            object timeSaved = HttpContext.Current.Session["QC_timeUpdated"];
-            string displayTimeText = (timeSaved==null) ? String.Empty : "Saved at " + timeSaved.ToString();
+			//Display the time the form was last saved
+			object timeSaved = HttpContext.Current.Session["QC_timeUpdated"];
+			string displayTimeText = (timeSaved==null) ? String.Empty : "Saved at " + timeSaved.ToString();
 
-            Output.WriteLine("<tr><td colspan = \"100%\" style=\"float:left\"");
-            Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span>");
-            Output.WriteLine("</td></tr>");
+			Output.WriteLine("<tr><td colspan = \"100%\" style=\"float:left\"");
+			Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span>");
+			Output.WriteLine("</td></tr>");
 
 			//Add the Complete and Cancel buttons at the end of the form
 			Output.WriteLine("</tr><tr><td colspan=\"100%\" style=\"float:right\">");
@@ -1343,21 +1342,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			  navRowBuilder.AppendLine("<link rel=\"stylesheet\" href=\"http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css\" />");
 			  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
 
-               //Include the superfish.css file for the menu
-			    navRowBuilder.AppendLine("<link rel=\"stylesheet\" media=\"screen\"  href=\"" + CurrentMode.Base_URL + "default/superfish.css\">");
-			    navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\""+CurrentMode.Base_URL+"default/scripts/superfish/superfish.js\"></script>");
-                navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\"></script>");
+			   //Include the superfish.css file for the menu
+				navRowBuilder.AppendLine("<link rel=\"stylesheet\" media=\"screen\"  href=\"" + CurrentMode.Base_URL + "default/superfish.css\">");
+				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\""+CurrentMode.Base_URL+"default/scripts/superfish/superfish.js\"></script>");
+				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\"></script>");
 			  navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
-                // shift+click checkboxes
+				// shift+click checkboxes
   
-                navRowBuilder.AppendLine("<script type=\"text/javascript\">$(document).ready(function() {$(function() {$(\"input[name^='chkMoveThumbnail']\").shiftClick();});");
-                navRowBuilder.AppendLine("(function($) {$.fn.shiftClick = function() {var lastSelected;var checkBoxes = $(this);this.each(function() {$(this).click(function(ev) {if (ev.shiftKey) {var MaxPageCount = "+qc_item.Web.Static_PageCount+";var spanArrayObjects = new Array();if(window.spanArrayGlobal!= null){ spanArrayObjects = window.spanArrayGlobal;}else{for(var j=0;j<MaxPageCount;j++){spanArrayObjects[j]='span'+j;}}var spanArray=new Array();for(var k=0;k<spanArrayObjects.length;k++){spanArray[k]=spanArrayObjects[k].split('span')[1];} var last = checkBoxes.index(lastSelected);var first = checkBoxes.index(this);var thisID = (this.id).split('chkMoveThumbnail')[1];var lastID = (lastSelected.id).split('chkMoveThumbnail')[1];var thisIndex = spanArray.indexOf(thisID);");
-                navRowBuilder.AppendLine("var lastIndex = spanArray.indexOf(lastID); var start = Math.min(thisIndex, lastIndex);var end = Math.max(thisIndex, lastIndex);var chk = lastSelected.checked;for (var i = start; i < end; i++) {document.getElementById('chkMoveThumbnail'+(spanArray[i])).checked = chk;}var atLeastOneSelected=false;if($('body').css('cursor').indexOf(\"move_pages_cursor\")>-1){for(var i=0;i<MaxPageCount; i++){if(document.getElementById('chkMoveThumbnail'+i).checked)atLeastOneSelected=true;}if(!(atLeastOneSelected)){document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';}");
-			    navRowBuilder.AppendLine("}else{document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';}}}} else {lastSelected = this;}})});};})(jQuery);});");
-                navRowBuilder.AppendLine("</script>");
+				navRowBuilder.AppendLine("<script type=\"text/javascript\">$(document).ready(function() {$(function() {$(\"input[name^='chkMoveThumbnail']\").shiftClick();});");
+				navRowBuilder.AppendLine("(function($) {$.fn.shiftClick = function() {var lastSelected;var checkBoxes = $(this);this.each(function() {$(this).click(function(ev) {if (ev.shiftKey) {var MaxPageCount = "+qc_item.Web.Static_PageCount+";var spanArrayObjects = new Array();if(window.spanArrayGlobal!= null){ spanArrayObjects = window.spanArrayGlobal;}else{for(var j=0;j<MaxPageCount;j++){spanArrayObjects[j]='span'+j;}}var spanArray=new Array();for(var k=0;k<spanArrayObjects.length;k++){spanArray[k]=spanArrayObjects[k].split('span')[1];} var last = checkBoxes.index(lastSelected);var first = checkBoxes.index(this);var thisID = (this.id).split('chkMoveThumbnail')[1];var lastID = (lastSelected.id).split('chkMoveThumbnail')[1];var thisIndex = spanArray.indexOf(thisID);");
+				navRowBuilder.AppendLine("var lastIndex = spanArray.indexOf(lastID); var start = Math.min(thisIndex, lastIndex);var end = Math.max(thisIndex, lastIndex);var chk = lastSelected.checked;for (var i = start; i < end; i++) {document.getElementById('chkMoveThumbnail'+(spanArray[i])).checked = chk;}var atLeastOneSelected=false;if($('body').css('cursor').indexOf(\"move_pages_cursor\")>-1){for(var i=0;i<MaxPageCount; i++){if(document.getElementById('chkMoveThumbnail'+i).checked)atLeastOneSelected=true;}if(!(atLeastOneSelected)){document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';}");
+				navRowBuilder.AppendLine("}else{document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';}}}} else {lastSelected = this;}})});};})(jQuery);});");
+				navRowBuilder.AppendLine("</script>");
 
-                //end shift+click checkboxes
+				//end shift+click checkboxes
 
 
 			  // Add the popup form
@@ -1422,8 +1421,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			  add_main_menu(navRowBuilder);
 
 			  navRowBuilder.AppendLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
-              //Add the button to delete pages
-			    navRowBuilder.AppendLine("<div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>" );
+			  //Add the button to delete pages
+				navRowBuilder.AppendLine("<div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>" );
 		
 				// Finish the nav row controls
 				navRowBuilder.AppendLine("\t\t<!-- END QUALITY CONTROL VIEWER NAV ROW -->");
@@ -1541,191 +1540,191 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
-        /// <param name="Output"> Output stream currently within the HTML head tags </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
-        }
+		/// <summary> Write any additional values within the HTML Head of the final served page </summary>
+		/// <param name="Output"> Output stream currently within the HTML head tags </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+		public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+		{
+			Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
+		}
 
-        /// <summary> Gets the collection of special behaviors which this item viewer
-        /// requests from the main HTML subwriter. </summary>
-        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
-        {
-            get
-            {
-                return new List<HtmlSubwriter_Behaviors_Enum>
-                    {
-                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
-                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
-                        HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
-                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination,
-                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
-                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
-                    };
-            }
-        }
+		/// <summary> Gets the collection of special behaviors which this item viewer
+		/// requests from the main HTML subwriter. </summary>
+		public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+		{
+			get
+			{
+				return new List<HtmlSubwriter_Behaviors_Enum>
+					{
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
+						HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+						HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination,
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
+					};
+			}
+		}
 
-        #region Support for Roman Numerals
+		#region Support for Roman Numerals
 
-        /// <summary> Convert an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
-        /// <param name="number">Integer number</param>
-        /// <returns>Roman numeral after conversion</returns>
-        public string NumberToRoman(int number)
-        {
-            string resultWithCase;
-            //Set up the key-values
-            int[] values=new int[]{1000,900,500,400,100,90,50,40,10,9,5,4,1};
-            string[] numerals = new string[]{"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
-            
+		/// <summary> Convert an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
+		/// <param name="number">Integer number</param>
+		/// <returns>Roman numeral after conversion</returns>
+		public string NumberToRoman(int number)
+		{
+			string resultWithCase;
+			//Set up the key-values
+			int[] values=new int[]{1000,900,500,400,100,90,50,40,10,9,5,4,1};
+			string[] numerals = new string[]{"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+			
 
-            //Initialize the string builder
-            StringBuilder result=new StringBuilder();
+			//Initialize the string builder
+			StringBuilder result=new StringBuilder();
 
-            for (int i = 0; i < 13; i++)
-            {
-                //If 'number' is less than the test value, append the corresponding numeral or numeral pair to the resultant string
-                while (number >= values[i])
-                {
-                    number -= values[i];
-                    result.Append(numerals[i]);
-                }
-            }
-            if (isLower == false)
-                resultWithCase = result.ToString().ToUpper();
-            else resultWithCase = result.ToString().ToLower();
+			for (int i = 0; i < 13; i++)
+			{
+				//If 'number' is less than the test value, append the corresponding numeral or numeral pair to the resultant string
+				while (number >= values[i])
+				{
+					number -= values[i];
+					result.Append(numerals[i]);
+				}
+			}
+			if (isLower == false)
+				resultWithCase = result.ToString().ToUpper();
+			else resultWithCase = result.ToString().ToLower();
 
-            return resultWithCase;
-        }
-
-
-        /// <summary> Converts a roman numeral to a decimal number </summary>
-        /// <param name="roman">Roman numeral (string)</param>
-        /// <returns>Corresponding decimal number(integer)</returns>
-        public int RomanToNumber(string roman)
-        {
-            isLower = false;
-            try
-            {
-                //Check if the roman numeral is in upper or lower case
-                for (int i = 0; i < roman.Length; i++)
-                {
-                    if (char.IsLower(roman[i]))
-                        isLower = true;
-                }
-                roman = roman.ToUpper().Trim();
-                if (roman.Split('V').Length > 2 || roman.Split('L').Length > 2 || roman.Split('D').Length > 2)
-                    throw new ArgumentException("Rule 4 violated");
-
-                //Rule 1-single letter may be repeated upto 3 times consecutively
-                int count = 1;
-                char last = 'Z';
-                foreach (char numeral in roman)
-                {
-                    //Valid character?
-                    if ("IVXLCDM".IndexOf(numeral) == -1)
-                        throw new ArgumentException("Invalid Roman Numeral");
-
-                    //Check if a numeral has been repeated more than thrice
-                    if (numeral == last)
-                    {
-                        count++;
-                        if (count == 4)
-                            throw new ArgumentException("Rule 1 violated - numeral repeated more than 3 times");
-                    }
-                    else
-                    {
-                        count = 1;
-                        last = numeral;
-                    }
-                }
-
-                //Create an arraylist containing the values
-                int ptr = 0;
-                ArrayList values = new ArrayList();
-                int maxDigit = 1000;
-
-                while (ptr < roman.Length)
-                {
-                    //Get the base vaue of the numeral
-                    char numeral = roman[ptr];
-                    int digit = (int) Enum.Parse(typeof (RomanDigit), numeral.ToString());
-
-                    //Check for Rule 3-Subtractive combination
-                    if (digit > maxDigit)
-                    {
-                        throw new ArgumentException("Rule 3 violated");
-                    }
-
-                    //Get the next digit
-                    int nextDigit = 0;
-                    if (ptr < roman.Length - 1)
-                    {
-                        char nextNumeral = roman[ptr + 1];
-                        nextDigit = (int) Enum.Parse(typeof (RomanDigit), nextNumeral.ToString());
-
-                        if (nextDigit > digit)
-                        {
-                            if ("IXC".IndexOf(numeral) == -1 || nextDigit > (digit*10) || roman.Split(numeral).Length > 3)
-                                throw new ArgumentException("Rule 3 violated");
-
-                            maxDigit = digit - 1;
-                            digit = nextDigit - digit;
-                            ptr++;
-                        }
-                    }
-                    values.Add(digit);
-                    //next digit
-                    ptr++;
-                }
-                //Check for rule 5
-                for (int i = 0; i < values.Count - 1; i++)
-                {
-                    if ((int) values[i] < (int) values[i + 1])
-                        throw new ArgumentException("Not a valid roman number: Rule 5 violated");
-                }
-                //Rule 2
-                int total = 0;
-
-                foreach (int digit in values)
-                {
-                    total += digit;
-                }
-
-                return total;
-
-            }
-            catch (Exception e)
-            {
-                return -1;
-            }
-
-        }
-
-	    /// <summary> Map the roman numeral digits with their integer equivalents </summary>
-	    public enum RomanDigit
-	    {
-            /// <summary> Roman numeral I </summary>
-	        I = 1,
-            /// <summary> Roman numeral V </summary>
-	        V = 5,
-            /// <summary> Roman numeral X </summary>
-	        X = 10,
-            /// <summary> Roman numeral L </summary>
-	        L = 50,
-	        /// <summary> Roman numeral C </summary>
-            C = 100,
-            /// <summary> Roman numeral D </summary>
-	        D = 500,
-	        /// <summary>Roman numeral M </summary>
-            M = 1000
-	    };
-
-        #endregion
+			return resultWithCase;
+		}
 
 
-        protected class QC_Viewer_Page_Division_Info
+		/// <summary> Converts a roman numeral to a decimal number </summary>
+		/// <param name="roman">Roman numeral (string)</param>
+		/// <returns>Corresponding decimal number(integer)</returns>
+		public int RomanToNumber(string roman)
+		{
+			isLower = false;
+			try
+			{
+				//Check if the roman numeral is in upper or lower case
+				for (int i = 0; i < roman.Length; i++)
+				{
+					if (char.IsLower(roman[i]))
+						isLower = true;
+				}
+				roman = roman.ToUpper().Trim();
+				if (roman.Split('V').Length > 2 || roman.Split('L').Length > 2 || roman.Split('D').Length > 2)
+					throw new ArgumentException("Rule 4 violated");
+
+				//Rule 1-single letter may be repeated upto 3 times consecutively
+				int count = 1;
+				char last = 'Z';
+				foreach (char numeral in roman)
+				{
+					//Valid character?
+					if ("IVXLCDM".IndexOf(numeral) == -1)
+						throw new ArgumentException("Invalid Roman Numeral");
+
+					//Check if a numeral has been repeated more than thrice
+					if (numeral == last)
+					{
+						count++;
+						if (count == 4)
+							throw new ArgumentException("Rule 1 violated - numeral repeated more than 3 times");
+					}
+					else
+					{
+						count = 1;
+						last = numeral;
+					}
+				}
+
+				//Create an arraylist containing the values
+				int ptr = 0;
+				ArrayList values = new ArrayList();
+				int maxDigit = 1000;
+
+				while (ptr < roman.Length)
+				{
+					//Get the base vaue of the numeral
+					char numeral = roman[ptr];
+					int digit = (int) Enum.Parse(typeof (RomanDigit), numeral.ToString());
+
+					//Check for Rule 3-Subtractive combination
+					if (digit > maxDigit)
+					{
+						throw new ArgumentException("Rule 3 violated");
+					}
+
+					//Get the next digit
+					int nextDigit = 0;
+					if (ptr < roman.Length - 1)
+					{
+						char nextNumeral = roman[ptr + 1];
+						nextDigit = (int) Enum.Parse(typeof (RomanDigit), nextNumeral.ToString());
+
+						if (nextDigit > digit)
+						{
+							if ("IXC".IndexOf(numeral) == -1 || nextDigit > (digit*10) || roman.Split(numeral).Length > 3)
+								throw new ArgumentException("Rule 3 violated");
+
+							maxDigit = digit - 1;
+							digit = nextDigit - digit;
+							ptr++;
+						}
+					}
+					values.Add(digit);
+					//next digit
+					ptr++;
+				}
+				//Check for rule 5
+				for (int i = 0; i < values.Count - 1; i++)
+				{
+					if ((int) values[i] < (int) values[i + 1])
+						throw new ArgumentException("Not a valid roman number: Rule 5 violated");
+				}
+				//Rule 2
+				int total = 0;
+
+				foreach (int digit in values)
+				{
+					total += digit;
+				}
+
+				return total;
+
+			}
+			catch (Exception e)
+			{
+				return -1;
+			}
+
+		}
+
+		/// <summary> Map the roman numeral digits with their integer equivalents </summary>
+		public enum RomanDigit
+		{
+			/// <summary> Roman numeral I </summary>
+			I = 1,
+			/// <summary> Roman numeral V </summary>
+			V = 5,
+			/// <summary> Roman numeral X </summary>
+			X = 10,
+			/// <summary> Roman numeral L </summary>
+			L = 50,
+			/// <summary> Roman numeral C </summary>
+			C = 100,
+			/// <summary> Roman numeral D </summary>
+			D = 500,
+			/// <summary>Roman numeral M </summary>
+			M = 1000
+		};
+
+		#endregion
+
+
+		protected class QC_Viewer_Page_Division_Info
 		{
 			public string Page_Label { get; set; }
 
@@ -1739,12 +1738,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			public Page_TreeNode METS_STructMap_Page_Node { get; set; }
 
-            public bool Checkbox_Selected { get; set;  }
+			public bool Checkbox_Selected { get; set;  }
 
-            public QC_Viewer_Page_Division_Info()
-            {
-                Checkbox_Selected = false;
-            }
+			public QC_Viewer_Page_Division_Info()
+			{
+				Checkbox_Selected = false;
+			}
 		}
 	}
 }
