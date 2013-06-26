@@ -1317,9 +1317,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("\t\t<!-- END QUALITY CONTROL VIEWER OUTPUT -->");
 
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
-			Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSpanFlashOnPageLoad();</script>");
+            Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSpanFlashOnPageLoad());</script>");
 			if(makeSortable)
-				Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSortable1();</script>");
+                Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
 
 		    //		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
 //			Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
@@ -1567,6 +1567,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 			}
 		}
+
+        public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        {
+            Body_Attributes.Add(new Tuple<string, string>("onload", "qc_set_fullscreen();"));
+            Body_Attributes.Add(new Tuple<string, string>("onresize", "qc_set_fullscreen();"));
+        }
 
 		/// <summary> Write any additional values within the HTML Head of the final served page </summary>
 		/// <param name="Output"> Output stream currently within the HTML head tags </param>

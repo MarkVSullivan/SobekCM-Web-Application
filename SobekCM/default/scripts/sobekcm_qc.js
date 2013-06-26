@@ -1641,6 +1641,8 @@ function DeleteSelectedPages()
 }
  
                 
+// Function to set the full screen mode 
+function qc_set_fullscreen() {
+}
 
 
- 
