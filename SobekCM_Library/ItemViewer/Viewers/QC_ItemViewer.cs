@@ -831,27 +831,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("\t<li>Thumbnail Size<ul>");
 			//Add the thumbnail size options
             if (thumbnailSize == 1)
-                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Small</a></li>");
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Small</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 1;
-                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Small</a></li>");
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Small</a></li>");
             }
 
             if (thumbnailSize == 2)
-                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Medium</a></li>");
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Medium</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 2;
-                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Medium</a></li>");
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Medium</a></li>");
             }
 
             if (thumbnailSize == 3)
-                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Large</a></li>");
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Large</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 3;
-                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Large</a></li>");
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Large</a></li>");
             }
 
 
@@ -863,11 +863,54 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("\t<li>Thumbnails per page<ul>");
 
             //Add the thumbnails per page options
-            builder.AppendLine("\t\t<li>25</li>");
-			builder.AppendLine("\t\t<li>50</li>");
-			builder.AppendLine("\t\t<li>All thumbnails</li>");
+		    if (thumbnailsPerPage == 25)
+		        builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*25</a></li>");
+		    else
+		    {
+		        CurrentMode.Thumbnails_Per_Page = 25;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">25</a></li>");
+		    }
+            if (thumbnailsPerPage == 50)
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*50</a></li>");
+            else
+            {
+                CurrentMode.Thumbnails_Per_Page = 50;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">50</a></li>");
+            }
+            if (thumbnailsPerPage == 100)
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*100</a></li>");
+            else
+            {
+                CurrentMode.Thumbnails_Per_Page = 100;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">100</a></li>");
+            }
+            if (thumbnailsPerPage == 500)
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*500</a></li>");
+            else
+            {
+                CurrentMode.Thumbnails_Per_Page = 500;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">500</a></li>");
+            }
+            if (thumbnailsPerPage == 1000)
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*1000</a></li>");
+            else
+            {
+                CurrentMode.Thumbnails_Per_Page = 1000;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">1000</a></li>");
+            }
+		    if (thumbnailsPerPage == qc_item.Web.Static_PageCount)
+		        builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">All thumbnails</a></li>");
+		    else
+		    {
+		        CurrentMode.Thumbnails_Per_Page = (short)qc_item.Web.Static_PageCount;
+		        builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">All thumbnails</a></li>");
+		    }
+            //Reset the current mode
+		    CurrentMode.Thumbnails_Per_Page = (short)thumbnails_per_page;
 			builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Automatic Numbering<ul>");
+
+            
+            builder.AppendLine("\t<li>Automatic Numbering<ul>");
 			builder.AppendLine("\t\t<li>No automatic numbering</li>");
 			builder.AppendLine("\t\t<li>Within same division</li>");
 			builder.AppendLine("\t\t<li>Entire document</li>");
@@ -1335,10 +1378,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Add the Complete and Cancel buttons at the end of the form
 			Output.WriteLine("</tr><tr><td colspan=\"100%\">");
             Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
-            Output.WriteLine("<span style=\"float:right\">Comments: <textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
-            Output.WriteLine("<button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button>");
-			Output.WriteLine("<button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button></span>");
-			Output.WriteLine("</td></tr>");
+            //Start inner table
+            Output.WriteLine("<span style=\"float:right\"><table style=\"width=\"100%\"><tr>");
+            Output.WriteLine("<td>Comments: </td><td><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea></td> ");
+            Output.WriteLine("<td><button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button></td>");
+			Output.WriteLine("<td><button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button></td>");
+		    //Close inner table
+		    Output.WriteLine("</tr></table></span>");
+            Output.WriteLine("</td></tr>");
 		}
 	   
 		/// <summary>
