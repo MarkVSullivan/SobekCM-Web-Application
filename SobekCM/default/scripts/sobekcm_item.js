@@ -1,6 +1,8 @@
+
+
+
 // Routines to run after the item viewer is loaded (or resized)
 function itemwriter_load() {
-
 
     // Below 1000 pixels wide, make the nav bar buttons start at the left
     var viewport_width = get_viewport().width;
