@@ -976,7 +976,7 @@ namespace SobekCM.Library.MainWriters
             }
             
             // Now, build and return the string
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder(" ");
             foreach (string thisKey in collapsedAttributes.Keys)
             {
                 builder.Append(thisKey + "=\"" + collapsedAttributes[thisKey] +"\" ");
