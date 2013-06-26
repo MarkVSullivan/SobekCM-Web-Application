@@ -1643,6 +1643,15 @@ function DeleteSelectedPages()
                 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
+    var x = $("#allThumbnailsOuterDiv1").offset().left;
+    var y = $("#allThumbnailsOuterDiv1").offset().top;
+
+    var window_height = $(window).height();
+    var new_height = window_height - y - 48;
+
+   // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
+    
+    var y = $("#allThumbnailsOuterDiv1").height(new_height);
 }
 
 
