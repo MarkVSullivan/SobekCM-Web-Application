@@ -1388,6 +1388,7 @@ function qc_auto_save()
 					async: true,
 					success: function(data)
 					{
+					     //Update the time of saving
 						  var currdate = new Date();
 						  var hours = currdate.getHours();
 						  var minutes = currdate.getMinutes();
@@ -1640,7 +1641,6 @@ function DeleteSelectedPages()
 }
  
                 
-
 
 
  
