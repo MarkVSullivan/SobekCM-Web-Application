@@ -272,7 +272,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (autonumber_mode == "0" || autonumber_mode == "1")
 			{
 				bool reached_last_page = false;
-				bool stop_autonumbering = false;
 				bool reached_next_div = false;
 				int number=0;
 				if (autonumber_number_system == "decimal")
@@ -299,7 +298,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								reached_last_page = true;
 
 							}
-							
+							//if the last page displayed on the screen has been reached
 							else if (reached_last_page == true)
 							{
 								//Mode "0": Autonumber all pages of current division
@@ -316,9 +315,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								}
 
 							}
-							
-
-				   
+	
 						}
 					}
 					else if(reached_last_page==true)
@@ -820,7 +817,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//builder.AppendLine("\t\t<li>Invalid images</li>");
 			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
 			//builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Save</li>");
+            builder.AppendLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
 			builder.AppendLine("\t<li>Complete</li>");
 			builder.AppendLine("\t<li>Cancel</li>");
 			builder.AppendLine("</ul></li>");
@@ -831,13 +828,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
-			builder.AppendLine("\t<li>Thumbnail Size<ul>");
-			builder.AppendLine("\t\t<li>Small</li>");
-			builder.AppendLine("\t\t<li>Medium</li>");
-			builder.AppendLine("\t\t<li>Large</li>");
+            builder.AppendLine("\t<li>Thumbnail Size<ul>");
+			//Add the thumbnail size options
+            if (thumbnailSize == 1)
+                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Small</a></li>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 1;
+                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Small</a></li>");
+            }
+
+            if (thumbnailSize == 2)
+                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Medium</a></li>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 2;
+                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Medium</a></li>");
+            }
+
+            if (thumbnailSize == 3)
+                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Large</a></li>");
+            else
+            {
+                CurrentMode.Size_Of_Thumbnails = 3;
+                builder.Append("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Large</a></li>");
+            }
+
+
+            //Reset the current mode
+            CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
+            
+
 			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("\t<li>Thumbnails per page<ul>");
-			builder.AppendLine("\t\t<li>25</li>");
+
+            //Add the thumbnails per page options
+            builder.AppendLine("\t\t<li>25</li>");
 			builder.AppendLine("\t\t<li>50</li>");
 			builder.AppendLine("\t\t<li>All thumbnails</li>");
 			builder.AppendLine("\t</ul></li>");
@@ -1294,7 +1320,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSpanFlashOnPageLoad();</script>");
 			if(makeSortable)
 				Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSortable1();</script>");
-//		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
+
+		    //		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
 //			Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
 
 			//If the autosave option is not set, or set to true, set the interval (3 minutes) for autosaving
@@ -1311,7 +1338,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//Add the Complete and Cancel buttons at the end of the form
 			Output.WriteLine("</tr><tr><td colspan=\"100%\" style=\"float:right\">");
-			Output.WriteLine("<button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button>");
+			Output.WriteLine("Comments: <textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
+            Output.WriteLine("<button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button>");
 			Output.WriteLine("<button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button>");
 			Output.WriteLine("</td></tr>");
 		}
