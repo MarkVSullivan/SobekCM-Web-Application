@@ -1319,9 +1319,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
             Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSpanFlashOnPageLoad());</script>");
 			if(makeSortable)
-                Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
+<<<<<<< HEAD
+				Output.WriteLine("<script type=\"text/javascript\">window.onload=MakeSortable1();</script>");
 
 		    //		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
+=======
+                Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
+//		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
+>>>>>>> 9edfa06a57586162d029b35a3027a3e16b4e57ed
 //			Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
 
 			//If the autosave option is not set, or set to true, set the interval (3 minutes) for autosaving
@@ -1332,12 +1337,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			object timeSaved = HttpContext.Current.Session["QC_timeUpdated"];
 			string displayTimeText = (timeSaved==null) ? String.Empty : "Saved at " + timeSaved.ToString();
 
+			Output.WriteLine("<tr><td colspan = \"100%\" style=\"float:left\"");
+			Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span>");
+			Output.WriteLine("</td></tr>");
+
 			//Add the Complete and Cancel buttons at the end of the form
-			Output.WriteLine("</tr><tr><td colspan=\"100%\">");
-            Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
-            Output.WriteLine("<span style=\"float:right\">Comments: <textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
+			Output.WriteLine("</tr><tr><td colspan=\"100%\" style=\"float:right\">");
+			Output.WriteLine("Comments: <textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
             Output.WriteLine("<button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button>");
-			Output.WriteLine("<button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button></span>");
+			Output.WriteLine("<button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button>");
 			Output.WriteLine("</td></tr>");
 		}
 	   
