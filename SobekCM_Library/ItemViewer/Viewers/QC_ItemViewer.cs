@@ -1305,14 +1305,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			object timeSaved = HttpContext.Current.Session["QC_timeUpdated"];
 			string displayTimeText = (timeSaved==null) ? String.Empty : "Saved at " + timeSaved.ToString();
 
-			Output.WriteLine("<tr><td colspan = \"100%\" style=\"float:left\"");
-			Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span>");
-			Output.WriteLine("</td></tr>");
+			Output.WriteLine("<tr><td>");
+			Output.WriteLine("<div style=\"float:left\"><span id=\"displayTimeSaved\" class=\"displayTimeSaved\">" + displayTimeText + "</span></div>");
 
 			//Add the Complete and Cancel buttons at the end of the form
-			Output.WriteLine("</tr><tr><td colspan=\"100%\" style=\"float:right\">");
-			Output.WriteLine("<button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button>");
-			Output.WriteLine("<button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button>");
+		    Output.WriteLine("<div style=\"float:right\">" +
+		                     "    <button type=\"button\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/check.ico\" width=\"25\" height=\"25\"/>Complete</button> " +
+		                     "    <button type=\"button\" onclick=\"behaviors_cancel_form();\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" width=\"25\" height=\"25\" />Cancel</button>" +
+		                     "</div>");
+                             
 			Output.WriteLine("</td></tr>");
 		}
 	   
