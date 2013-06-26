@@ -1,3 +1,21 @@
+
+
+// Function to add something to the onload event 
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+    if (typeof window.onload != 'function') {
+        window.onload = func;
+    } else {
+        window.onload = function() {
+            if (oldonload) {
+                oldonload();
+            }
+            func();
+        };
+    }
+}
+
+
 // Standard functions used throughout the application
 function set_subaggr_display(new_value) {
     var hidden_value = document.getElementById("show_subaggrs");
