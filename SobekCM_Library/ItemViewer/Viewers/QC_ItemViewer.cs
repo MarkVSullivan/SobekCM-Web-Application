@@ -29,7 +29,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private readonly string title;
 		private int thumbnailsPerPage;
 		private int thumbnailSize;
-		private string autonumber_mode; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
+		private int autonumber_mode_from_form; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
+	    private int autonumber_mode;
 		private string autonumber_number_system;
 		private string autonumber_text_only;
 		private string autonumber_number_only;
@@ -120,14 +121,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
 			hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
 			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-			autonumber_mode = HttpContext.Current.Request.Form["Autonumber_mode"] ?? String.Empty;
+			string temp=HttpContext.Current.Request.Form["autonumber_mode_from_form"] ?? "0";
+		    Int32.TryParse(temp, out autonumber_mode_from_form);
 			autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
 			autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
 			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
 			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
 
 			if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
-			// If the hidden more relative position is BEFORE, it is before the very first page
+			// If the hidden move relative position is BEFORE, it is before the very first page
 			if (hidden_move_relative_position == "Before")
 				hidden_move_destination_fileName = "[BEFORE FIRST]";
 			
@@ -199,7 +201,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else if (hidden_request == "save")
 			{
-				////Save the current time
+				//Save the current time
 				HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
 
 				// Read the data from the http form, perform all requests, and
@@ -250,6 +252,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
+          private void ClearPagination()
+          {
+              try
+              {
+                  foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+                  {
+                      //Is this a page node?
+                      if (thisNode.Page)
+                      {
+                          thisNode.Label = String.Empty;
+                      }
+                  }
+              }
+              catch (Exception e)
+              {
+                  throw new Exception("Error clearing all pagination names"+e.Message);
+              }
+          }
 
 		/// <summary> Save all the data from form post-back into the item in memory, and 
 		/// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
@@ -269,8 +289,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<string> page_filename_list = new List<string>();
 			Division_TreeNode lastDivision = null;
 		   //Autonumber the remaining pages based on the selected option
-			if (autonumber_mode == "0" || autonumber_mode == "1")
+			if (autonumber_mode_from_form == 0 || autonumber_mode_from_form == 1)
 			{
+	//		    autonumber_mode = autonumber_mode_from_form;
 				bool reached_last_page = false;
 				bool reached_next_div = false;
 				int number=0;
@@ -303,7 +324,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							{
 								//Mode "0": Autonumber all pages of current division
 								//Mode "1": Autonumber all pages of the entire document
-								if ((autonumber_mode == "0" && reached_next_div == false) || (autonumber_mode=="1"))
+								if ((autonumber_mode_from_form == 0 && reached_next_div == false) || (autonumber_mode_from_form==1))
 								{
 									if(autonumber_number_system=="decimal")
 									  thisPage.Label = autonumber_text_only + number.ToString();
@@ -708,7 +729,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-					 
 				return ((PageCount > 1) && ( CurrentMode.Page > 1 )) ? CurrentMode.Redirect_URL( (CurrentMode.Page - 1).ToString() + "qc" ) : String.Empty;
 			}
 		}
@@ -899,7 +919,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">1000</a></li>");
             }
 		    if (thumbnailsPerPage == qc_item.Web.Static_PageCount)
-		        builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">All thumbnails</a></li>");
+		        builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*All thumbnails</a></li>");
 		    else
 		    {
 		        CurrentMode.Thumbnails_Per_Page = (short)qc_item.Web.Static_PageCount;
@@ -911,10 +931,31 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             
             builder.AppendLine("\t<li>Automatic Numbering<ul>");
-			builder.AppendLine("\t\t<li>No automatic numbering</li>");
-			builder.AppendLine("\t\t<li>Within same division</li>");
-			builder.AppendLine("\t\t<li>Entire document</li>");
-			builder.AppendLine("\t</ul></li>");
+		    if (autonumber_mode == 2)
+		        builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc")+"\">*No automatic numbering</a></li>");
+		    else
+		    {
+		        CurrentMode.Autonumbering_Mode = 2;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">No automatic numbering</a></li>");
+		    }
+            if (autonumber_mode == 1)
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Within same division</a></li>");
+            else
+            {
+                CurrentMode.Autonumbering_Mode = 1;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Within same division</a></li>");
+            }
+            if (autonumber_mode == 0)
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Entire document</a></li>");
+            else
+            {
+                CurrentMode.Autonumbering_Mode = 0;
+                builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Entire document</a></li>");
+            }
+            //Reset the mode
+		    CurrentMode.Autonumbering_Mode = autonumber_mode;
+
+	        builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
@@ -1060,7 +1101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_move_relative_position\" name=\"QC_move_relative_position\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_move_destination\" name=\"QC_move_destination\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_Sortable\" name=\"QC_Sortable\" value=\"\"/>");
-			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_mode\" name=\"Autonumber_mode\" value=\"\"/>");
+			Output.WriteLine("<input type=\"hidden\" id=\"autonumber_mode_from_form\" name=\"autonumber_mode_from_form\" value=\"\"/>");
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_system\" name=\"Autonumber_number_system\" value=\"\"/>");
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_text_without_number\" name=\"Autonumber_text_without_number\" value=\"\"/>");
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_only\" name=\"Autonumber_number_only\" value=\"\"/>");
@@ -1234,7 +1275,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,0," + qc_item.Web.Static_PageCount +");\"></input></td></tr>");
+					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,"+autonumber_mode+"," + qc_item.Web.Static_PageCount +");\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
@@ -1517,7 +1558,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 								
 				// First, pull the thumbnails per page from the user options
-				thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", 50);
+				thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", qc_item.Web.Static_PageCount);
 
 				// Or was there a new value in the URL?
 				if (CurrentMode.Thumbnails_Per_Page >= -1)
@@ -1528,7 +1569,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else
 			{
-				int tempValue = 50;
+				int tempValue = qc_item.Web.Static_PageCount;
 				object sessionValue = HttpContext.Current.Session["QC_ItemViewer:ThumbnailsPerPage"];
 				if (sessionValue != null)
 				{
@@ -1585,6 +1626,44 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Now, reset the value in the navigation object, since we won't need to set it again
 			CurrentMode.Size_Of_Thumbnails = -1;
 
+            // Get the autonumbering mode
+            if (CurrentUser != null)
+            {
+                // First, pull the autonumbering mode from the user options
+                autonumber_mode = CurrentUser.Get_Option("QC_ItemViewer:AutonumberingMode", 0);
+
+                // Or was there a new value in the URL?
+                if (CurrentMode.Autonumbering_Mode > -1)
+                {
+                    CurrentUser.Add_Option("QC_ItemViewer:AutonumberingMode", CurrentMode.Autonumbering_Mode);
+                    autonumber_mode = CurrentMode.Autonumbering_Mode;
+                }
+            }
+            else
+            {
+                int tempValue = 0;
+                object sessionValue = HttpContext.Current.Session["QC_ItemViewer:AutonumberingMode"];
+                if (sessionValue != null)
+                {
+                    tempValue = Int32.Parse(sessionValue.ToString());
+
+                }
+                autonumber_mode = tempValue;
+
+                // Or was there a new value in the URL?
+                if (CurrentMode.Autonumbering_Mode > -1)
+                {
+                    HttpContext.Current.Session["QC_ItemViewer:AutonumberingMode"] = CurrentMode.Autonumbering_Mode;
+                    autonumber_mode = CurrentMode.Autonumbering_Mode;
+                }
+            }
+            //Now reset the current mode value since we won't need to set it again
+            CurrentMode.Autonumbering_Mode = -1;
+
+
+
+
+
 			// Now, build a list from child node to parent node
 			childToParent = new Dictionary<Page_TreeNode, Division_TreeNode>();
 			foreach (abstract_TreeNode rootNode in qc_item.Divisions.Physical_Tree.Roots)
@@ -1594,6 +1673,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					recurse_through_and_find_child_parent_relationship( (Division_TreeNode) rootNode);
 				}
 			}
+
 
 		}
 
