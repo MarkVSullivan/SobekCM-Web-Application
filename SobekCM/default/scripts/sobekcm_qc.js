@@ -1388,6 +1388,7 @@ function qc_auto_save()
 					async: true,
 					success: function(data)
 					{
+					     //Update the time of saving
 						  var currdate = new Date();
 						  var hours = currdate.getHours();
 						  var minutes = currdate.getMinutes();
@@ -1646,8 +1647,7 @@ function qc_set_fullscreen() {
     var y = $("#allThumbnailsOuterDiv1").offset().top;
 
     var window_height = $(window).height();
-    var new_height = window_height - y - 48;
-
+    var new_height = window_height - y - 58;
 
    // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
     
