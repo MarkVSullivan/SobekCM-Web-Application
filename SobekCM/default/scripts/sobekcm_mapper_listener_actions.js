@@ -8,7 +8,13 @@ function toggleVis(id) {
             //toggleAllMapControlsTool();
             break;
         case "toolbox":
-            //toggletoolbox(4);
+            if (toolboxDisplayed == true) {
+                $("#container_toolbox").hide();
+                toolboxDisplayed = false;
+            } else {
+                $("#container_toolbox").show();
+                toolboxDisplayed = true;
+            }
             break;
         case "toolbar":
             //
