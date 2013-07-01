@@ -19,22 +19,7 @@
     box-shadow: 0 0 10px whitesmoke;
     cursor: pointer;
 }
-#container_grid{
-    width: 100%;
-}
-#container_grid .x{
-	float: left;
-	width: 40px;
-	height: 40px;
-}
-#container_grid .y{
-    clear: both;
-}
-#container_grid .half{
-	float: left;
-	width: 20px;
-	height: 20px;
-}
+
 .ui-tooltip {
 	font: bold 12px "Helvetica Neue", Sans-Serif;
 }
@@ -58,11 +43,6 @@
 .button2:hover{
     -webkit-box-shadow: 0 0 10px #fff0f5;
     box-shadow: 0 0 10px #fff0f5;
-}
-
-
-#rotation {
-    text-align: center;
 }
 
 #content_toolbox_searchResults{
@@ -143,6 +123,7 @@
 }
 #rotation 
 {
+    text-align: center;
     padding-top: 5px;
 	width: 75px;
     background-color:#ededed;

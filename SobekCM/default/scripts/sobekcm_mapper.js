@@ -98,7 +98,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -118,7 +118,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -141,7 +141,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain

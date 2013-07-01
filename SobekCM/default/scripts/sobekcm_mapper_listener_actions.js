@@ -13,10 +13,10 @@ function toggleVis(id) {
         case "toolbar":
             //
             break;
-        case "toolbarMin":
+        case "":
             //
             break;
-        case "toolbarMax":
+        case "":
             //
             break;
             
