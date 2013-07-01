@@ -59,78 +59,82 @@
             <div id="container_toolboxTabs">
                 <div id="content_toolbox_tab1_header" class="tab-title"></div>
                 <div class="tab">
-                    <div id="container_toolbox_tab1" class="toolbox_tab-content">
-                        <div id="container_grid">
+                    <div class="toolbox_tab-content">
+                        <div id="container_toolbox_tab1">
+                            <div id="container_grid">
                             
-                            <div id="content_toolbox_button_layerRoadmap" class="x button"></div>
-                            <div id="content_toolbox_button_layerTerrain" class="x button"></div>
-                            <div class="x half"></div>
-                            <div class="x"></div>
-                            <div id="content_toolbox_button_panUp" class="x button"></div>
-                            <div class="x"></div>
+                                <div id="content_toolbox_button_layerRoadmap" class="x button"></div>
+                                <div id="content_toolbox_button_layerTerrain" class="x button"></div>
+                                <div class="x half"></div>
+                                <div class="x"></div>
+                                <div id="content_toolbox_button_panUp" class="x button"></div>
+                                <div class="x"></div>
 
-                            <div id="content_toolbox_button_layerSatellite" class="x y button"></div>
-                            <div id="content_toolbox_button_layerHybrid" class="x button"></div>
-                            <div class="x half"></div>
-                            <div id="content_toolbox_button_panLeft" class="x button"></div>
-                            <div id="content_toolbox_button_panReset" class="x button"></div>
-                            <div id="content_toolbox_button_panRight" class="x button"></div>
+                                <div id="content_toolbox_button_layerSatellite" class="x y button"></div>
+                                <div id="content_toolbox_button_layerHybrid" class="x button"></div>
+                                <div class="x half"></div>
+                                <div id="content_toolbox_button_panLeft" class="x button"></div>
+                                <div id="content_toolbox_button_panReset" class="x button"></div>
+                                <div id="content_toolbox_button_panRight" class="x button"></div>
                             
-                            <div id="content_toolbox_button_layerCustom" class="x button"></div>
-                            <div id="content_toolbox_button_layerReset" class="x button"></div>
-                            <div class="x half"></div>
-                            <div class="x"></div>
-                            <div id="content_toolbox_button_panDown" class="x button"></div>
-                            <div class="x"></div>
+                                <div id="content_toolbox_button_layerCustom" class="x button"></div>
+                                <div id="content_toolbox_button_layerReset" class="x button"></div>
+                                <div class="x half"></div>
+                                <div class="x"></div>
+                                <div id="content_toolbox_button_panDown" class="x button"></div>
+                                <div class="x"></div>
 							
-                            <div class="x y half"></div>
+                                <div class="x y half"></div>
 
-                            <div id="content_toolbox_button_reset" class="x y button"></div>
-                            <div id="content_toolbox_button_toggleMapControls" class="x button"></div>
-                            <div class="x half"></div>
-                            <div id="content_toolbox_button_zoomIn" class="x button"></div>
-                            <div id="content_toolbox_button_zoomReset" class="x button"></div>
-                            <div id="content_toolbox_button_zoomOut" class="x button"></div>
+                                <div id="content_toolbox_button_reset" class="x y button"></div>
+                                <div id="content_toolbox_button_toggleMapControls" class="x button"></div>
+                                <div class="x half"></div>
+                                <div id="content_toolbox_button_zoomIn" class="x button"></div>
+                                <div id="content_toolbox_button_zoomReset" class="x button"></div>
+                                <div id="content_toolbox_button_zoomOut" class="x button"></div>
                             
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div id="content_toolbox_tab2_header" class="tab-title"></div>
                 <div class="tab">
                     <div class="toolbox_tab-content">
-                        <div id="content_toolbox_button_manageItem" class="button"></div>
-                        <div id="content_toolbox_button_manageOverlay" class="button"></div>
-                        <div id="content_toolbox_button_managePOI" class="button"></div>
-                        <br/><br/>
-                        <input id="content_toolbox_searchField" class="search" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
-                        <div id="content_toolbox_searchButton"></div>
-                        <br/><br/>
-                        <div id="content_toolbox_searchResults"></div>
+                        <div id="container_toolbox_tab2">
+                            <img id="content_toolbox_button_manageItem" class="button"/>
+                            <img id="content_toolbox_button_manageOverlay" class="button"/>
+                            <img id="content_toolbox_button_managePOI" />
+                            <div class="lineBreak"></div>
+                            <input id="content_toolbox_searchField" class="search" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
+                            <div id="content_toolbox_searchButton"></div>
+                            <div class="lineBreak"></div>
+                            <div id="content_toolbox_searchResults"></div>
+                        </div>
                     </div>
                 </div>
                 <div id="content_toolbox_tab3_header" class="tab-title"></div>
                 <div class="tab">
                     <div class="toolbox_tab-content">
-                        <div id="content_toolbox_button_placeItem" class="button"></div>
-                        <div id="content_toolbox_button_itemGetUserLocation" class="button"></div>
-                        <div style="clear:both;text-align:left;">
-                            <br />
+                        <div id="container_toolbox_tab3">
+                            <img id="content_toolbox_button_placeItem"/>
+                            <img id="content_toolbox_button_itemGetUserLocation"/>    
+                            <div class="lineBreak"></div>
                             <textarea id="content_toolbox_posItem" class="tab-field" rows="2" cols="24" placeholder="Selected Lat/Long"></textarea>
-                            <br/><br/>
+                            <div class="lineBreak"></div>
                             <textarea id="content_toolbox_rgItem" class="tab-field" rows="3" cols="24" placeholder="Nearest Address"></textarea>
-                            <br/><br/>
-                        </div>
-                        <div style="clear:both;">
-                            <div id="content_toolbox_button_saveItem" class="button2"></div>
-                            <div id="content_toolbox_button_clearItem" class="button2"></div>
+                            <div class="lineBreak"></div>
+                            <div class="centerRow">
+                                <div id="content_toolbox_button_saveItem" class="button2"></div>
+                                <div id="content_toolbox_button_clearItem" class="button2"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div id="content_toolbox_tab4_header" class="tab-title"></div>
                 <div class="tab">
                     <div class="toolbox_tab-content">
-                        <div id="content_toolbox_button_placeOverlay" class="button"></div>
-                        <div id="content_toolbox_button_overlayGetUserLocation" class="button"></div>
+                        <img id="content_toolbox_button_placeOverlay" class="button"/>
+                        <img id="content_toolbox_button_overlayGetUserLocation" class="button"/>
                         <div style="clear:both;">
                             <br /><br />
                         </div>

@@ -121,7 +121,7 @@ a img {
 	border-radius: 15px;
 }
 #container_toolboxTabs{
-	font-size: 11px;   
+	font-size: 11px; 
 }
 .toolbox_tab-content{
     height:100%;
@@ -137,8 +137,43 @@ a img {
 .tab {
     height:100%;
     text-align: center;
+    overflow: hidden; 
+}
+.lineBreak {
+    clear: both;
+    height: 20px;
+}
+.centerRow {
+    text-align:center;
+
+}
+
+#container_grid{
+    width: 100%;
+}
+#container_grid .x{
+	float: left;
+	width: 40px;
+	height: 40px;
+}
+#container_grid .y{
+    clear: both;
+}
+#container_grid .half{
+	float: left;
+	width: 20px;
+	height: 20px;
 }
 
 #container_toolbox_tab1 {
-    /*margin-left: 10px;*/ 
+    margin-left: 10px;
+
+}
+#container_toolbox_tab2 {
+    margin-left: 5px;
+    text-align: center;
+}
+#container_toolbox_tab3 {
+    margin-left: 5px;
+    text-align: center;
 }
