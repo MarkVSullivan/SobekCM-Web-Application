@@ -98,7 +98,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -118,7 +118,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel.kmz");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -141,7 +141,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
             kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -325,77 +325,78 @@ toolbarBufferZone2.style.height = '50px';
 //#region Supporting JS
 
 $(function () {
-    $("#toolbox").draggable({ handle: ".toolbar" });
-    $("#toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
-    $("#toolbar_toggle1").tooltip();
-    $("#toolbar_toggle2").tooltip();
-    $("#toolbar_reset").tooltip();
-    $("#toolbar_toggleControls").tooltip();
-    $("#toolbar_toggletoolbox").tooltip();
-    $("#toolbar_layerRoadmap").tooltip();
-    $("#toolbar_layerSatellite").tooltip();
-    $("#toolbar_layerTerrain").tooltip();
-    $("#toolbar_layerControls").tooltip();
-    $("#toolbar_layerHybrid").tooltip();
-    $("#toolbar_layerCustom").tooltip();
-    $("#toolbar_layerReset").tooltip();
-    $("#toolbar_zoomIn").tooltip();
-    $("#toolbar_zoomReset").tooltip();
-    $("#toolbar_zoomOut").tooltip();
-    $("#toolbar_panUp").tooltip();
-    $("#toolbar_panDown").tooltip();
-    $("#toolbar_panReset").tooltip();
-    $("#toolbar_panLeft").tooltip();
-    $("#toolbar_panRight").tooltip();
-    $("#toolbar_manageItem").tooltip();
-    $("#toolbar_manageOverlay").tooltip();
-    $("#toolbar_managePOI").tooltip();
-    $("#toolbar_find").tooltip();
-    $("#toolbar_search").tooltip();
-    $("#toolbox_locate").tooltip();
-    $("#toolbox_find").tooltip();
-    $("#toolbox_search").tooltip();
-    $("#toolbox_reset").tooltip();
-    $("#toolbox_toggleControls").tooltip();
-    $("#toolbox_layerRoadmap").tooltip();
-    $("#toolbox_layerSatellite").tooltip();
-    $("#toolbox_layerTerrain").tooltip();
-    $("#toolbox_layerControls").tooltip();
-    $("#toolbox_layerHybrid").tooltip();
-    $("#toolbox_layerCustom").tooltip();
-    $("#toolbox_layerReset").tooltip();
-    $("#toolbox_zoomIn").tooltip();
-    $("#toolbox_zoomReset").tooltip();
-    $("#toolbox_zoomOut").tooltip();
-    $("#toolbox_panUp").tooltip();
-    $("#toolbox_panDown").tooltip();
-    $("#toolbox_panReset").tooltip();
-    $("#toolbox_panLeft").tooltip();
-    $("#toolbox_panRight").tooltip();
-    $("#toolbox_manageItem").tooltip();
-    $("#toolbox_manageOverlay").tooltip();
-    $("#toolbox_managePOI").tooltip();
-    $("#toolbox_placeItem").tooltip();
-    $("#toolbox_placeOverlay").tooltip();
-    $("#toolbox_placePOI").tooltip();
-    $("#toolbox_poiMarker").tooltip();
-    $("#toolbox_poiCircle").tooltip();
-    $("#toolbox_poiRectangle").tooltip();
-    $("#toolbox_poiPolygon").tooltip();
-    $("#toolbox_poiLine").tooltip();
+    $("#container_toolbox").draggable({ handle: ".toolbar" });
+    $("#container_toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
+    $("#content_toolbarGrabber").tooltip();
+    $("#content_toolbar_button_reset").tooltip();
+    $("#content_toolbar_button_toggleMapControls").tooltip();
+    $("#content_toolbar_button_toggleToolbox").tooltip();
+    $("#content_toolbar_button_layerRoadmap").tooltip();
+    $("#content_toolbar_button_layerSatellite").tooltip();
+    $("#content_toolbar_button_layerTerrain").tooltip();
+    $("#content_toolbar_button_layerControls").tooltip();
+    $("#content_toolbar_button_layerHybrid").tooltip();
+    $("#content_toolbar_button_layerCustom").tooltip();
+    $("#content_toolbar_button_layerReset").tooltip();
+    $("#content_toolbar_button_zoomIn").tooltip();
+    $("#content_toolbar_button_zoomReset").tooltip();
+    $("#content_toolbar_button_zoomOut").tooltip();
+    $("#content_toolbar_button_panUp").tooltip();
+    $("#content_toolbar_button_panDown").tooltip();
+    $("#content_toolbar_button_panReset").tooltip();
+    $("#content_toolbar_button_panLeft").tooltip();
+    $("#content_toolbar_button_panRight").tooltip();
+    $("#content_toolbar_button_manageItem").tooltip();
+    $("#content_toolbar_button_manageOverlay").tooltip();
+    $("#content_toolbar_button_managePOI").tooltip();
+    $("#content_toolbox_button_reset").tooltip();
+    $("#content_toolbox_button_toggleMapControls").tooltip();
+    $("#content_toolbox_button_layerRoadmap").tooltip();
+    $("#content_toolbox_button_layerSatellite").tooltip();
+    $("#content_toolbox_button_layerTerrain").tooltip();
+    $("#content_toolbox_button_layerControls").tooltip();
+    $("#content_toolbox_button_layerHybrid").tooltip();
+    $("#content_toolbox_button_layerCustom").tooltip();
+    $("#content_toolbox_button_layerReset").tooltip();
+    $("#content_toolbox_button_zoomIn").tooltip();
+    $("#content_toolbox_button_zoomReset").tooltip();
+    $("#content_toolbox_button_zoomOut").tooltip();
+    $("#content_toolbox_button_panUp").tooltip();
+    $("#content_toolbox_button_panDown").tooltip();
+    $("#content_toolbox_button_panReset").tooltip();
+    $("#content_toolbox_button_panLeft").tooltip();
+    $("#content_toolbox_button_panRight").tooltip();
+    $("#content_toolbox_button_manageItem").tooltip();
+    $("#content_toolbox_button_manageOverlay").tooltip();
+    $("#content_toolbox_button_managePOI").tooltip();
+    $("#content_toolbox_button_placeItem").tooltip();
+    $("#content_toolbox_button_placeOverlay").tooltip();
+    $("#content_toolbox_button_placePOI").tooltip();
+    $("#content_toolbox_button_poiMarker").tooltip();
+    $("#content_toolbox_button_poiCircle").tooltip();
+    $("#content_toolbox_button_poiRectangle").tooltip();
+    $("#content_toolbox_button_poiPolygon").tooltip();
+    $("#content_toolbox_button_poiLine").tooltip();
+    
+    $("#content_toolbar_button_find").tooltip();
+    $("#content_toolbar_button_search").tooltip();
+    $("#content_toolbox_button_locate").tooltip();
+    $("#content_toolbox_button_find").tooltip();
+    $("#content_toolbox_button_search").tooltip();
     $("#address1").tooltip();
     $("#address2").tooltip();
     $("#search1").tooltip();
     $("#search2").tooltip();
     $("#collectionSearchInput").tooltip();
     $("#collectionSearchImage").tooltip();
+    
     $("#rotationKnob").tooltip();
-    $("#rotationClockwise").tooltip();
-    $("#rotationReset").tooltip();
-    $("#rotationCounterClockwise").tooltip();
+    $("#content_toolbox_rotationClockwise").tooltip();
+    $("#content_toolbox_rotationReset").tooltip();
+    $("#content_toolbox_rotationCounterClockwise").tooltip();
     $("#transparency").tooltip();
-    $("#rgItem").tooltip();
-    $("#posItem").tooltip();
+    $("#content_toolbox_rgItem").tooltip();
+    $("#content_toolbox_posItem").tooltip();
     $("#placeItem").tooltip();
     $("#descItem").tooltip();
     $("#saveItem").tooltip();
@@ -407,9 +408,9 @@ $(function () {
     $("#tool2").tooltip();
     $("#tool3").tooltip();
     $("#tool4").tooltip();
-    $("#item_getUserLocation").tooltip();
-    $("#overlay_getUserLocation").tooltip();
-    $("#poi_getUserLocation").tooltip();
+    $("#content_toolbox_button_itemGetUserLocation").tooltip();
+    $("#content_toolbox_button_overlayGetUserLocation").tooltip();
+    $("#content_toolbox_button_poiGetUserLocation").tooltip();
     $("#clearItem").tooltip();
     $("#clearOverlay").tooltip();
     $("#clearPOI").tooltip();
@@ -554,7 +555,7 @@ function buttonClearItem() {
     itemMarker.setMap(null); //delete marker form map
     itemMarker = null;
     savingMarkerCenter = null; //reset stored coords to save
-    document.getElementById('posItem').value = ""; //reset lat/long in tab
+    document.getElementById('content_toolbox_posItem').value = ""; //reset lat/long in tab
     document.getElementById('rgItem').value = ""; //reset address in tab
     displayMessage(L9); //say all is reset
 }                    //clear item location
@@ -604,7 +605,7 @@ function displayMessage(message) {
     var messageText = "<p class=\"message\">";
     messageText += message; //assign incoming message to text
     messageText += "</p>";
-    document.getElementById("messageContainer").innerHTML = messageText; //assign to element
+    document.getElementById("content_message").innerHTML = messageText; //assign to element
 
     //show message
     document.getElementById("messageContainer").style.display = "block"; //display element
@@ -843,7 +844,7 @@ function codeAddress(type, geo) {
                     map: map, //add to current map
                     position: results[0].geometry.location //set position to search results
                 });
-                document.getElementById("search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div><br\>"; //add list div
+                document.getElementById("content_toolbox_search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div><br\>"; //add list div
             } else { //if location found was outside strict map bounds...
                 displayMessage("Could not find within bounds."); //say so
             }
@@ -858,11 +859,11 @@ function codeLatLng(latlng) {
         geocoder.geocode({ 'latLng': latlng }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 if (results[1]) {
-                    document.getElementById("rgItem").innerHTML = results[0].formatted_address;
+                    document.getElementById("content_toolbox_rgItem").innerHTML = results[0].formatted_address;
                 }
                 else {
-                    document.getElementById("rgItem").innerHTML = "Geocoder failed due to: " + status;
-                    document.getElementById("rgItem").innerHTML = "";
+                    document.getElementById("content_toolbox_rgItem").innerHTML = "Geocoder failed due to: " + status;
+                    document.getElementById("content_toolbox_rgItem").innerHTML = "";
                 }
             }
         });
@@ -878,15 +879,15 @@ function useSearchAsItemLocation() {
 
     firstMarker++;                              //prevent redraw
     searchResult.setMap(null);                  //delete search result from map
-    $("#searchResult").remove();                //delete search result form list
+    $("#content_toolbox_searchResult").remove();                //delete search result form list
     itemMarker.setMap(map);                     //set itemMarker location icon to map
-    document.getElementById('posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
+    document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
     codeLatLng(itemMarker.getPosition());       //get the reverse geo address for item location and put in location tab
     savingMarkerCenter = itemMarker.getPosition(); //store coords to save
 
     //add listener for new item marker (can only add once the itemMarker is created)
     google.maps.event.addListener(itemMarker, 'dragend', function () {
-        document.getElementById('posItem').value = itemMarker.getPosition(); //get lat/long
+        document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get lat/long
         codeLatLng(itemMarker.getPosition());   //get address
         savingMarkerCenter = itemMarker.getPosition(); //store coords to save
     });
@@ -904,295 +905,8 @@ function initialize() {
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toolbarBufferZone2);                               //intialize spacer
     drawingManager.setMap(map);                                                                                 //initialize drawing manager
     geocoder = new google.maps.Geocoder();                                                                      //initialize geocoder
-  
-    //#region Map Control Listeners
-
-    //zoom in/out listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_zoomIn"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom + 1);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_zoomReset"), 'click', function () {
-        map.setZoom(defaultZoomLevel);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_zoomOut"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom - 1);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_zoomIn"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom + 1);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_zoomReset"), 'click', function () {
-        map.setZoom(defaultZoomLevel);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_zoomOut"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom - 1);
-    });
-
-    //pan control listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_panUp"), 'click', function () {
-        map.panBy(0, -100);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panDown"), 'click', function () {
-        map.panBy(0, 100);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panLeft"), 'click', function () {
-        map.panBy(-100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panRight"), 'click', function () {
-        map.panBy(100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panReset"), 'click', function () {
-        map.panTo(mapCenter);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panUp"), 'click', function () {
-        map.panBy(0, -100);
-        testBounds();
-        movedBy = -100;
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panDown"), 'click', function () {
-        map.panBy(0, 100);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panLeft"), 'click', function () {
-        map.panBy(-100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panRight"), 'click', function () {
-        map.panBy(100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panReset"), 'click', function () {
-        map.panTo(mapCenter);
-    });
-
-    //map type layer listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerRoadmap"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerSatellite"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerTerrain"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerHybrid"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerCustom"), 'click', function () {
-        if (kmlOn == "no") {
-            kmlLayer.setMap(map);
-            kmlOn = "yes";
-        } else {
-            kmlLayer.setMap(null);
-            kmlOn = "no";
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerReset"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerRoadmap"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerSatellite"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerTerrain"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerHybrid"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerCustom"), 'click', function () {
-        if (kmlOn == "no") {
-            kmlLayer.setMap(map);
-            kmlOn = "yes";
-        } else {
-            kmlLayer.setMap(null);
-            kmlOn = "no";
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerReset"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
     
-    //#endregion
-    
-    //#region Other Listeners
-
-    //actions listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_manageItem"), 'click', function () {
-        show(toolbox);
-        toggletoolbox(2);
-        toolboxDisplayed = true;
-        placerType = "item";
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_manageOverlay"), 'click', function () {
-        show(toolbox);
-        toggletoolbox(2);
-        toolboxDisplayed = true;
-        placerType = "overlay";
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_managePOI"), 'click', function () {
-        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_TOP,
-            drawingModes: [
-                google.maps.drawing.OverlayType.MARKER,
-                google.maps.drawing.OverlayType.CIRCLE,
-                google.maps.drawing.OverlayType.RECTANGLE,
-                google.maps.drawing.OverlayType.POLYGON,
-                google.maps.drawing.OverlayType.POLYLINE
-            ]
-        }});
-        show(toolbox);
-        toggletoolbox(2);
-        toolboxDisplayed = true;
-        placerType = "poi";
-    });
-    
-    //place something action listeners
-    google.maps.event.addDomListener(document.getElementById("toolbox_placeItem"), 'click', function () {
-        if (searchCount > 0 && itemMarker == null) {
-            useSearchAsItemLocation();
-            displayMessage(L18);
-        } else {
-            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-            placerType = "item";
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_placeOverlay"), 'click', function () {
-        placerType = "overlay";
-        if (pageMode == "edit") {
-            pageMode = "view";
-            if (savingOverlayIndex.length > 0) {
-                for (var i = 0; i < savingOverlayIndex.length; i++) {
-                    ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
-                }
-            }
-            displayMessage("Overlay Editting Turned Off");
-        } else {
-            pageMode = "edit";
-            displayMessage("Overlay Editting Turned On");
-        }
-        //toggleOverlayEditor(); 
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_placePOI"), 'click', function () {
-        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE] } });
-        placerType = "poi";
-    });
-        
-    //geolocation buttons
-    google.maps.event.addDomListener(document.getElementById("item_getUserLocation"), 'click', function () {
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-        placerType = "item";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-                markerCenter = userLocation;
-                itemMarker = new google.maps.Marker({
-                    position: markerCenter,
-                    map: map
-                });
-                itemMarker.setMap(map);
-                document.getElementById('posItem').value = markerCenter;
-                savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-            });
-            
-        }else {
-            alert(L4);
-        }
-        drawingManager.setDrawingMode(null);
-    });
-    google.maps.event.addDomListener(document.getElementById("overlay_getUserLocation"), 'click', function () {
-        placerType = "overlay";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-            });
-
-        } else {
-            alert(L4);
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("poi_getUserLocation"), 'click', function () {
-        //drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-        placerType = "poi";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-                //var marker = new google.maps.Marker({
-                //    position: userLocation,
-                //    map: map
-                //});
-                //marker.setMap(map);
-            });
-
-        } else {
-            alert(L4);
-        }
-        //drawingManager.setDrawingMode(null);
-    });
-    
-    //tools
-    google.maps.event.addDomListener(document.getElementById("toolbar_toggleControls"), 'click', function () {
-        toggleAllMapControlsTool();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_toggleControls"), 'click', function () {
-        toggleAllMapControlsTool();
-    });
-    
-    //poi place items
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiMarker"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiCircle"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.CIRCLE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiRectangle"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiPolygon"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiLine"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYLINE);
-    });
-
-    //save modified items
-    google.maps.event.addDomListener(document.getElementById("saveItem"), 'click', function () {
-        //do something?
-        //this is done in the other js file
-    });             //save Item
-    google.maps.event.addDomListener(document.getElementById("saveOverlay"), 'click', function () {
-        //2do: send saved overlay to db/xml
-        //displayMessage("Not yet tied into an actual Sobek item.");
-        //buttonSaveOverlay(); //called in default page itself
-
-    });          //save and reset overlay
-    google.maps.event.addDomListener(document.getElementById("savePOI"), 'click', function () {
-        //do something?
-        //this is done in the other js file
-    });              //save poi
+    //#region Google Specific Listeners  
 
     //initialize drawingmanger listeners
     google.maps.event.addListener(drawingManager, 'markercomplete', function (marker) {
@@ -1206,7 +920,7 @@ function initialize() {
                 firstMarker++;
             }
             itemMarker = marker; //assign globally
-            document.getElementById('posItem').value = itemMarker.getPosition();
+            document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
             savingMarkerCenter = itemMarker.getPosition(); //store coords to save
             codeLatLng(itemMarker.getPosition());
         }
@@ -1255,7 +969,7 @@ function initialize() {
         });
         google.maps.event.addListener(marker, 'dragend', function () {
             if (placerType == "item") {
-                document.getElementById('posItem').value = marker.getPosition();
+                document.getElementById('content_toolbox_posItem').value = marker.getPosition();
                 codeLatLng(marker.getPosition());
             }
             if (placerType == "poi") {
@@ -1674,7 +1388,7 @@ function initialize() {
         });
     });
     
-    //initialize various listeners
+    //initialize map specific listeners
     google.maps.event.addListener(map, 'rightclick', function () {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
     });                                           //on right click stop drawing thing
@@ -1709,10 +1423,8 @@ function initialize() {
     });                                         //check the zoom level display message if out limits
 
     //#endregion
-
-    $("#footer_item_wrapper").remove(); //temp to remove footer
     
-    initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
+    //initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
     
     //keypress shortcuts/actions
     window.onkeypress = keypress;

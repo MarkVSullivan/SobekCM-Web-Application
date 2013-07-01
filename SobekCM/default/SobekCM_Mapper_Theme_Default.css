@@ -1,197 +1,45 @@
-﻿html {
-	margin:0;
-	padding:0;
-}
-body {
-	margin:0;
-	padding:0;
-	overflow:hidden;
-	/*margin-bottom:-18px*/
-}
-h3 {
-	font-family:'Arial Black', Gadget, sans-serif;
-	font-size:12px;
-}
-a img {
-	outline:none;
+﻿/* Mapper UI Default: Contains the default visual flavors of mapper plugin */
+/* Critera: if changed/taken out, these will not effect functionality*/
+/* Common Styles Included:
+    Font/text related
+    Text alignment (localization)
+    Visual affects beyond layout (shadows, etc)
+    Color or image related
+*/
+
+.button {
+    float: left;
+    width: 40px;
+	height: 40px;
 	border:0;
+	background-image: url("images/mapper/button-base.png");
 }
-
-#mapper_container_thebigdeal {
-    margin:0;
-	padding:0;
-	background-image:url("images/mapper/bg1.png");
-	overflow:hidden;
-    height:100%;
-    width:100%;
-    position:absolute;
-} 
-
-#container1 {
-
+.button:hover {		
+    -webkit-box-shadow: 0 0 10px whitesmoke;
+    box-shadow: 0 0 10px whitesmoke;
+    cursor: pointer;
 }
-
-/*table, th, td{
-	font-family:'Arial Narrow', 'Nimbus Sans L',monospace;
-	font-size:11px;
-	text-align:center;
-}*/
-
-#mapper-table{
-	font-family:'Arial Narrow', 'Nimbus Sans L',monospace;
-	font-size:11px;
-	text-align:center;
+#container_grid{
+    width: 100%;
 }
-
-
+#container_grid .x{
+	float: left;
+	width: 40px;
+	height: 40px;
+}
+#container_grid .y{
+    clear: both;
+}
+#container_grid .half{
+	float: left;
+	width: 20px;
+	height: 20px;
+}
 .ui-tooltip {
 	font: bold 12px "Helvetica Neue", Sans-Serif;
 }
 
-#container2a{
-	position:absolute;
-	width:100%;
-	min-height:48px;
-	text-align:center;
-	z-index:2;
-	background-image:url("images/mapper/bg1.png");
-}
-
-#container_toggle_toolbar1{
-	position:absolute;
-	left:50%;
-	margin-left:-20px;
-	margin-top:48px;
-	z-index:4;
-}
-#container_toggle_toolbar2{
-	position:absolute;
-	left:50%;
-	margin-left:-20px;
-	z-index:4;
-	display:none;
-}
-
-/* took out when placed into sobek (fixed map not displaying issue)
-#container2b{
-	position:relative;
-	width:100%;
-} */
-
-#toolbar{
-	position:absolute;
-	left: 50%;
-    width: 1190px;
-	margin-left:-545px;
-}
-
-#toolbar .grouping {
-	float:left;
-	padding-left:5px;
-	padding-right:5px;
-	margin: 4px 1px 4px 1px;
-}
-
-#googleMap {
-    width:100%;
-    height:100%;
-	z-index:0;
-    position:absolute;
-}
-
-#messageContainer {
-	position:fixed;
-	z-index:2;
-	text-align:center;
-	width:200px;
-	margin-top:50px;
-	left:50%;
-	margin-left:-100px;
-}
-#messageContainer .message{
-	background-color:#f0fe3a;
-	-webkit-box-shadow:0 1px 3px rgba(0,0,0,0.5);
-	box-shadow:0 1px 3px rgba(0,0,0,0.5);
-}
-
-.toolbar {
-	text-align:right;
-	background-color:#ededed;
-	border-radius:25px;
-	height:15px;
-	padding-right:10px;
-	padding-bottom: 3px;
-    margin-bottom: 10px;
-	padding-top: 4px;
-	margin-top:-2px;
-}
-
-/* not yet fully nice
-#toolbar_find {
-    background-image: url(images/mapper/search.png);
-    background-position: right;
-    background-repeat: no-repeat;
-
-}
-#toolbar_search {
-    background-image: url(images/mapper/search.png);
-    background-position: right;
-    background-repeat: no-repeat;
-
-}
-#toolbox_locate {
-    background-image: url(images/mapper/search.png);
-    background-position: right;
-    background-repeat: no-repeat;
-
-}
-#toolbox_search {
-    background-image: url(images/mapper/search.png);
-    background-position: right;
-    background-repeat: no-repeat;
-
-} */
-
-#toolbox {
-	max-height:530px;
-	width:250px;
-	float:left;
-	position:absolute;
-	z-index:1;
-	padding:10px;
-	margin-left:15px;
-	margin-top:200px;
-	-webkit-box-shadow:0px 1px 3px rgba(0,0,0,0.5);
-	box-shadow:0px 1px 3px rgba(0,0,0,0.5);
-	border-radius: 15px;
-        
-}
-#toolboxTabs{
-	font-size: 11px;
-    
-}
-#toolboxTabs .toolbar {
-	font-size:10px;
-	text-align:right;
-}
-#toolboxTabs .tab-title {
-	font-size:13px;
-}
-.button {
-	width:40px;
-	border:0;
-}
-.tab {
-	/*height:250px;*/
-    height:100%;
-}
-.tab-content {
-    text-align: center;
-    margin-left: -15px;
-    margin-right: -10px;
-}
 .button2 {
-
     /*background-color: #939393; 
     background-image: url(images/fallback-gradient.png); 
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2F2727), to(#FFFFFF));
@@ -205,14 +53,19 @@ a img {
     text-decoration:none;
     border-width: 1px;
     font: bold 12px Arial,Helvetica,Sans-serif;
+    width: 50px;
 }
-
 .button2:hover{
--webkit-box-shadow: 0 0 10px #fff0f5;
-box-shadow: 0 0 10px #fff0f5;
+    -webkit-box-shadow: 0 0 10px #fff0f5;
+    box-shadow: 0 0 10px #fff0f5;
 }
 
-#search_results{
+
+#rotation {
+    text-align: center;
+}
+
+#content_toolbox_searchResults{
 
     background:#fcfcfc;
 	color: #6a6f75;
