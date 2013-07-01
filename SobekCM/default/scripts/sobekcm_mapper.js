@@ -85,6 +85,34 @@ CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custo
 
 //#endregion
 
+//#region localization
+
+var L_Marker = "Marker";
+var L_Circle = "Circle";
+var L_Rectangle = "Rectangle";
+var L_Polygon = "Polygon";
+var L_Line = "Line";
+var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
+var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
+var L3 = "Description (Optional)"; //describe poi box
+var L4 = "Geolocation Service Failed."; //geolocation buttons error message
+var L5 = "Returned to Bounds!"; //tesbounds();
+var L6 = "Could not find location. Either the format you entered is invalid or the location is outside of the map bounds."; //codeAddress();
+var L7 = "Error: Overlay image source cannot contain a ~ or |"; //createSavedOverlay();
+var L8 = "Error: Description cannot contain a ~ or |"; //poiGetDesc(id);
+var L9 = "Item Cleared!"; //buttonClearItem();
+var L10 = "Overlay Cleared!"; //buttonClearOverlay();
+var L11 = "POI Set Cleared!"; //buttonClearPOI();
+var L12 = "Nothing Happened!"; //HandleResult(arg);
+var L13 = "Item Saved!"; //HandleResult(arg);
+var L14 = "Overlay Saved!"; //HandleResult(arg);
+var L15 = "POI Set Saved!"; //HandleResult(arg);
+var L16 = "Cannot Zoom Out Further"; //checkZoomLevel();
+var L17 = "Cannot Zoom In Further"; //checkZoomLevel();
+var L18 = "Using Search Results as Location"; //marker complete listener
+
+//#endregion
+
 function setupInterface(collection) {
 
     //displayIncomingOverlays();
@@ -162,32 +190,7 @@ function setupInterface(collection) {
 
 var collectionTypeToLoad = "stAugustine";           //define collection settings to load
 setupInterface(collectionTypeToLoad);               //start the whole thing
-
-//#region Localization library 
-var L_Marker = "Marker";
-var L_Circle = "Circle";
-var L_Rectangle = "Rectangle";
-var L_Polygon = "Polygon";
-var L_Line = "Line";
-var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
-var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
-var L3 = "Description (Optional)"; //describe poi box
-var L4 = "Geolocation Service Failed."; //geolocation buttons error message
-var L5 = "Returned to Bounds!"; //tesbounds();
-var L6 = "Could not find location. Either the format you entered is invalid or the location is outside of the map bounds."; //codeAddress();
-var L7 = "Error: Overlay image source cannot contain a ~ or |"; //createSavedOverlay();
-var L8 = "Error: Description cannot contain a ~ or |"; //poiGetDesc(id);
-var L9 = "Item Cleared!"; //buttonClearItem();
-var L10 = "Overlay Cleared!"; //buttonClearOverlay();
-var L11 = "POI Set Cleared!"; //buttonClearPOI();
-var L12 = "Nothing Happened!"; //HandleResult(arg);
-var L13 = "Item Saved!"; //HandleResult(arg);
-var L14 = "Overlay Saved!"; //HandleResult(arg);
-var L15 = "POI Set Saved!"; //HandleResult(arg);
-var L16 = "Cannot Zoom Out Further"; //checkZoomLevel();
-var L17 = "Cannot Zoom In Further"; //checkZoomLevel();
-var L18 = "Using Search Results as Location"; //marker complete listener
-//#endregion                                            
+                
 
 //#region Define google map objects
 
@@ -325,7 +328,7 @@ toolbarBufferZone2.style.height = '50px';
 //#region Supporting JS
 
 $(function () {
-    $("#container_toolbox").draggable({ handle: ".toolbar" });
+    $("#container_toolbox").draggable({ handle: "#container_toolboxMinibar" });
     $("#container_toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
     $("#content_toolbarGrabber").tooltip();
     $("#content_toolbar_button_reset").tooltip();
@@ -377,19 +380,6 @@ $(function () {
     $("#content_toolbox_button_poiRectangle").tooltip();
     $("#content_toolbox_button_poiPolygon").tooltip();
     $("#content_toolbox_button_poiLine").tooltip();
-    
-    $("#content_toolbar_button_find").tooltip();
-    $("#content_toolbar_button_search").tooltip();
-    $("#content_toolbox_button_locate").tooltip();
-    $("#content_toolbox_button_find").tooltip();
-    $("#content_toolbox_button_search").tooltip();
-    $("#address1").tooltip();
-    $("#address2").tooltip();
-    $("#search1").tooltip();
-    $("#search2").tooltip();
-    $("#collectionSearchInput").tooltip();
-    $("#collectionSearchImage").tooltip();
-    
     $("#rotationKnob").tooltip();
     $("#content_toolbox_rotationClockwise").tooltip();
     $("#content_toolbox_rotationReset").tooltip();
@@ -397,23 +387,23 @@ $(function () {
     $("#transparency").tooltip();
     $("#content_toolbox_rgItem").tooltip();
     $("#content_toolbox_posItem").tooltip();
-    $("#placeItem").tooltip();
+    $("#content_toolbox_button_placeItem").tooltip();
     $("#descItem").tooltip();
-    $("#saveItem").tooltip();
-    $("#placeOverlay").tooltip();
-    $("#saveOverlay").tooltip();
-    $("#placePOI").tooltip();
+    $("#content_toolbox_button_saveItem").tooltip();
+    $("#content_toolbox_button_placeOverlay").tooltip();
+    $("#content_toolbox_button_saveOverlay").tooltip();
+    $("#content_toolbox_button_placePOI").tooltip();
     $("#descPOI").tooltip();
-    $("#savePOI").tooltip();
-    $("#tool2").tooltip();
-    $("#tool3").tooltip();
-    $("#tool4").tooltip();
+    $("#content_toolbox_button_savePOI").tooltip();
     $("#content_toolbox_button_itemGetUserLocation").tooltip();
     $("#content_toolbox_button_overlayGetUserLocation").tooltip();
     $("#content_toolbox_button_poiGetUserLocation").tooltip();
-    $("#clearItem").tooltip();
-    $("#clearOverlay").tooltip();
-    $("#clearPOI").tooltip();
+    $("#content_toolbox_button_clearItem").tooltip();
+    $("#content_toolbox_button_clearOverlay").tooltip();
+    $("#content_toolbox_button_clearPOI").tooltip();
+    $("#content_toolbar_searchField").tooltip();
+    $("#content_toolbar_searchButton").tooltip();
+    $("#content_toolbox_searchResults").tooltip();
     //$(".selector").tooltip({ content: "Awesome title!" });
 
 });                               //jquery elements (tooltips)
@@ -782,13 +772,7 @@ function toggletoolbox(value) {
             toolboxDisplayed = false;
             break;
         case 4:
-            if (toolboxDisplayed == true) {
-                $("#toolbox").hide();
-                toolboxDisplayed = false;
-            } else {
-                $("#toolbox").show();
-                toolboxDisplayed = true;
-            }
+            
             break;
     }
 
@@ -948,7 +932,7 @@ function initialize() {
                 " <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a>" +
                 " <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/>" +
-                " <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+                " <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString,
                 pixelOffset: new google.maps.Size(0, 0)
@@ -1015,7 +999,7 @@ function initialize() {
             poiType[poi_i] = "circle";
             var poiDescTemp = L_Circle;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1099,7 +1083,7 @@ function initialize() {
             poiType[poi_i] = "rectangle";
             var poiDescTemp = L_Rectangle;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1200,7 +1184,7 @@ function initialize() {
             poiType[poi_i] = "polygon";
             var poiDescTemp = L_Polygon;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1287,7 +1271,7 @@ function initialize() {
             poiType[poi_i] = "polyline";
             var poiDescTemp = L_Line;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1424,7 +1408,10 @@ function initialize() {
 
     //#endregion
     
-    //initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
+    initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
+
+    toolboxDisplayed = false;
+    toggleVis("toolbox"); //display the toolbox
     
     //keypress shortcuts/actions
     window.onkeypress = keypress;
@@ -1487,6 +1474,7 @@ function displayIncomingOverlays() {
     overlaysCurrentlyDisplayed = true;
 }
 
+//Creates and sets the ghost overlays (used to tie actions with actual overlay)
 function setGhostOverlay(ghostIndex, ghostBounds) {
     
     //create ghost directly over an overlay

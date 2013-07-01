@@ -51,10 +51,10 @@
         
         <div id="container_toolbox" class="ui-widget-content">
             <div id="container_toolboxMinibar">
-                <!--<div id="content_minibar_icon"></div>--> 
-                <div id="content_minibar_button_minimize"></div> 
-                <div id="content_minibar_button_maximize"></div> 
+                <div id="content_minibar_icon"></div> 
                 <div id="content_minibar_button_close"></div> 
+                <div id="content_minibar_button_maximize"></div> 
+                <div id="content_minibar_button_minimize"></div> 
             </div>
             <div id="container_toolboxTabs">
                 <div id="content_toolbox_tab1_header" class="tab-title"></div>
@@ -101,9 +101,9 @@
                 <div class="tab">
                     <div class="toolbox_tab-content">
                         <div id="container_toolbox_tab2">
-                            <img id="content_toolbox_button_manageItem" class="button"/>
-                            <img id="content_toolbox_button_manageOverlay" class="button"/>
-                            <img id="content_toolbox_button_managePOI" />
+                            <div id="content_toolbox_button_manageItem" class="button"></div>
+                            <div id="content_toolbox_button_manageOverlay" class="button"></div>
+                            <div id="content_toolbox_button_managePOI" class="button"></div>
                             <div class="lineBreak"></div>
                             <input id="content_toolbox_searchField" class="search" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
                             <div id="content_toolbox_searchButton"></div>
@@ -116,44 +116,42 @@
                 <div class="tab">
                     <div class="toolbox_tab-content">
                         <div id="container_toolbox_tab3">
-                            <img id="content_toolbox_button_placeItem"/>
-                            <img id="content_toolbox_button_itemGetUserLocation"/>    
+                            <div id="content_toolbox_button_placeItem" class="button"></div>
+                            <div id="content_toolbox_button_itemGetUserLocation" class="button"></div>  
                             <div class="lineBreak"></div>
                             <textarea id="content_toolbox_posItem" class="tab-field" rows="2" cols="24" placeholder="Selected Lat/Long"></textarea>
                             <div class="lineBreak"></div>
                             <textarea id="content_toolbox_rgItem" class="tab-field" rows="3" cols="24" placeholder="Nearest Address"></textarea>
                             <div class="lineBreak"></div>
-                            <div class="centerRow">
-                                <div id="content_toolbox_button_saveItem" class="button2"></div>
-                                <div id="content_toolbox_button_clearItem" class="button2"></div>
-                            </div>
+                            <div id="content_toolbox_button_saveItem" class="button2"></div>
+                            <div id="content_toolbox_button_clearItem" class="button2"></div>
                         </div>
                     </div>
                 </div>
                 <div id="content_toolbox_tab4_header" class="tab-title"></div>
                 <div class="tab">
                     <div class="toolbox_tab-content">
-                        <img id="content_toolbox_button_placeOverlay" class="button"/>
-                        <img id="content_toolbox_button_overlayGetUserLocation" class="button"/>
-                        <div style="clear:both;">
-                            <br /><br />
-                        </div>
-                        <div id="rotation" style="float:left;">
-                            <div id="rotationKnob">
-                                <input class="knob" data-displayInput="false" data-width="68" data-step="1" data-min="0" data-max="360" data-cursor=true data-bgColor="#B2B2B2" data-fgColor="#111111" data-thickness="0.3" value="0">
+                        <div id="content_toolbox_button_placeOverlay" class="button"></div>
+                        <div id="content_toolbox_button_overlayGetUserLocation" class="button"></div>
+                        <div class="lineBreak"></div>
+                        <div id="container_toolbox_overlayTools">
+                            <div id="rotation">
+                                <div id="rotationKnob">
+                                    <input class="knob" data-displayInput="false" data-width="68" data-step="1" data-min="0" data-max="360" data-cursor=true data-bgColor="#B2B2B2" data-fgColor="#111111" data-thickness="0.3" value="0">
+                                </div>
+                                <div id="container_toolbox_rotationButtons">
+                                    <div id="content_toolbox_rotationCounterClockwise" class="button3"></div>
+                                    <div id="content_toolbox_rotationReset" class="button3"></div>
+                                    <div id="content_toolbox_rotationClockwise" class="button3"></div>
+                                </div>
                             </div>
-                            <div id="content_toolbox_rotationCounterClockwise"></div>
-                            <div id="content_toolbox_rotationReset"></div>
-                            <div id="content_toolbox_rotationClockwise"></div>
+                            <div id="transparency">
+                                <div id="overlayTransparencySlider"></div>
+                            </div>
                         </div>
-                        <div id="transparency">
-                            <div id="overlayTransparencySlider"></div>
-                        </div>
-                        <div style="clear:both;margin-left:-3px;">
-                            <br /><br />
-                            <div id="content_toolbox_button_saveOverlay" class="button2"></div>
-                            <div id="content_toolbox_button_clearOverlay" class="button2"></div>
-                        </div>
+                        <div class="lineBreak"></div>
+                        <div id="content_toolbox_button_saveOverlay" class="button2"></div>
+                        <div id="content_toolbox_button_clearOverlay" class="button2"></div>
                     </div>
                 </div>
                 <div id="content_toolbox_tab5_header" class="tab-title"></div>
@@ -161,26 +159,21 @@
                     <div class="toolbox_tab-content">
                         <div id="content_toolbox_button_placePOI" class="button"></div>
                         <div id="content_toolbox_button_poiGetUserLocation" class="button"></div>
-                        <br/><br/>
+                        <div class="lineBreak"></div>
                         <div id="content_toolbox_button_poiMarker" class="button"></div>
                         <div id="content_toolbox_button_poiCircle" class="button"></div>
                         <div id="content_toolbox_button_poiRectangle" class="button"></div>
                         <div id="content_toolbox_button_poiPolygon" class="button"></div>
                         <div id="content_toolbox_button_poiLine" class="button"></div>
-                        <br/>
-                        <div style="clear:both;text-align:left;">
-                            <br />
-                            <div id="poiList_Container">
-                                <div id="poiList_ScollContainer">
-                                    <div id="poiList"></div>
-                                </div>
-                            </div>  
-                            <br />
-                        </div>
-                        <div style="clear:both;">
-                            <div id="content_toolbox_button_savePOI" class="button2"></div>
-                            <div id="content_toolbox_button_clearPOI" class="button2"></div>
-                        </div>
+                        <div class="lineBreak"></div>
+                        <div id="poiList_Container">
+                            <div id="poiList_ScollContainer">
+                                <div id="poiList"></div>
+                            </div>
+                        </div>  
+                        <div class="lineBreak"></div>
+                        <div id="content_toolbox_button_savePOI" class="button2"></div>
+                        <div id="content_toolbox_button_clearPOI" class="button2"></div>
                     </div>
                 </div>
             </div>
