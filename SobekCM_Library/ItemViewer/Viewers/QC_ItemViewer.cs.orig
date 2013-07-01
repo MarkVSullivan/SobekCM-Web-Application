@@ -837,12 +837,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//builder.AppendLine("\t\t<li>Invalid images</li>");
 			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
 			//builder.AppendLine("\t</ul></li>");
+<<<<<<< HEAD
 
 
             builder.AppendLine("<li><a href=\"#\">Resource</a><ul>");
             builder.AppendLine("\t<li><a href=\"#\">Save</a></li>");
             builder.AppendLine("\t<li><a href=\"#\">Complete</a></li>");
             builder.AppendLine("\t<li><a href=\"#\">Cancel</a></li>");
+=======
+            builder.AppendLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
+			builder.AppendLine("\t<li>Complete</li>");
+			builder.AppendLine("\t<li>Cancel</li>");
+>>>>>>> fee13c1de745ffa220b6b01b6ac8a3692603e90e
 			builder.AppendLine("</ul></li>");
 
             builder.AppendLine("<li><a href=\"#\">Edit</a><ul>");
@@ -850,8 +856,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("\t<li><a href=\"#\">Clear All &amp; Reorder Pages</a></li>");
 			builder.AppendLine("</ul></li>");
 
+<<<<<<< HEAD
             builder.AppendLine("<li><a href=\"#\">Settings</a><ul>");
             builder.AppendLine("\t<li><a href=\"#\">Thumbnail Size</a><ul>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Small</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Medium</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Large</a></li>");
+			builder.AppendLine("\t</ul></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Thumbnails per page</a><ul>");
+            builder.AppendLine("\t\t<li><a href=\"#\">25</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">50</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">All thumbnails</a></li>");
+			builder.AppendLine("\t</ul></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Automatic Numbering</a><ul>");
+            builder.AppendLine("\t\t<li><a href=\"#\">No automatic numbering</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Within same division</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Entire document</a></li>");
+=======
+			builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
+            builder.AppendLine("\t<li>Thumbnail Size<ul>");
 			//Add the thumbnail size options
             if (thumbnailSize == 1)
                 builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Small</a></li>");
@@ -883,7 +906,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
 
 			builder.AppendLine("\t</ul></li>");
-            builder.AppendLine("\t<li><a href=\"#\">Thumbnails per page</a><ul>");
+			builder.AppendLine("\t<li>Thumbnails per page<ul>");
 
             //Add the thumbnails per page options
 		    if (thumbnailsPerPage == 25)
@@ -930,6 +953,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    }
             //Reset the current mode
 		    CurrentMode.Thumbnails_Per_Page = (short)thumbnails_per_page;
+>>>>>>> fee13c1de745ffa220b6b01b6ac8a3692603e90e
 			builder.AppendLine("\t</ul></li>");
 
             
