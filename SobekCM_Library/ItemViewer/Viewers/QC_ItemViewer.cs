@@ -837,7 +837,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//builder.AppendLine("\t\t<li>Invalid images</li>");
 			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
 			//builder.AppendLine("\t</ul></li>");
-
+            builder.AppendLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
 
             builder.AppendLine("<li><a href=\"#\">Resource</a><ul>");
             builder.AppendLine("\t<li><a href=\"#\">Save</a></li>");
@@ -851,7 +851,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("</ul></li>");
 
             builder.AppendLine("<li><a href=\"#\">Settings</a><ul>");
-            builder.AppendLine("\t<li><a href=\"#\">Thumbnail Size</a><ul>");
+            builder.AppendLine("\t<li>Thumbnail Size<ul>");
 			//Add the thumbnail size options
             if (thumbnailSize == 1)
                 builder.AppendLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Small</a></li>");
