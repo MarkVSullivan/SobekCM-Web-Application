@@ -812,52 +812,55 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//StringBuilder builder = new StringBuilder(4000);
 			builder.AppendLine("<div id=\"qcmenubar\">");
-			builder.AppendLine("<ul class=\"qc-menu\">");
+			builder.AppendLine("<ul id=\"qc-main-menu\" class=\"sf2-menu\">");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
+			//builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
 			//builder.AppendLine("\t<li>Volume Error<ul>");
 			//builder.AppendLine("\t\t<li>No volume level error</li>");
 			//builder.AppendLine("\t\t<li>Invalid images</li>");
 			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
 			//builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Save</li>");
-			builder.AppendLine("\t<li>Complete</li>");
-			builder.AppendLine("\t<li>Cancel</li>");
+
+
+            builder.AppendLine("<li><a href=\"#\">Resource</a><ul>");
+            builder.AppendLine("\t<li><a href=\"#\">Save</a></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Complete</a></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Cancel</a></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Edit<ul>");
-			builder.AppendLine("\t<li>Clear Pagination</li>");
-			builder.AppendLine("\t<li>Clear All &amp; Reorder Pages</li>");
+            builder.AppendLine("<li><a href=\"#\">Edit</a><ul>");
+            builder.AppendLine("\t<li><a href=\"#\">Clear Pagination</a></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Clear All &amp; Reorder Pages</a></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
-			builder.AppendLine("\t<li>Thumbnail Size<ul>");
-			builder.AppendLine("\t\t<li>Small</li>");
-			builder.AppendLine("\t\t<li>Medium</li>");
-			builder.AppendLine("\t\t<li>Large</li>");
+            builder.AppendLine("<li><a href=\"#\">Settings</a><ul>");
+            builder.AppendLine("\t<li><a href=\"#\">Thumbnail Size</a><ul>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Small</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Medium</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Large</a></li>");
 			builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Thumbnails per page<ul>");
-			builder.AppendLine("\t\t<li>25</li>");
-			builder.AppendLine("\t\t<li>50</li>");
-			builder.AppendLine("\t\t<li>All thumbnails</li>");
+            builder.AppendLine("\t<li><a href=\"#\">Thumbnails per page</a><ul>");
+            builder.AppendLine("\t\t<li><a href=\"#\">25</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">50</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">All thumbnails</a></li>");
 			builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Automatic Numbering<ul>");
-			builder.AppendLine("\t\t<li>No automatic numbering</li>");
-			builder.AppendLine("\t\t<li>Within same division</li>");
-			builder.AppendLine("\t\t<li>Entire document</li>");
+            builder.AppendLine("\t<li><a href=\"#\">Automatic Numbering</a><ul>");
+            builder.AppendLine("\t\t<li><a href=\"#\">No automatic numbering</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Within same division</a></li>");
+            builder.AppendLine("\t\t<li><a href=\"#\">Entire document</a></li>");
 			builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
+			builder.AppendLine("<li>View<ul>");
 			builder.AppendLine("\t<li>View METS</li>");
 			builder.AppendLine("\t<li>View Directory</li>");
 			builder.AppendLine("\t<li>View QC History</li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
+			builder.AppendLine("<li>Help</li>");
 			
 			// Add the option to GO TO a certain thumbnail next
-			builder.AppendLine("<li class=\"qc-menu-item\">");
+			builder.AppendLine("<li>");
 			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
 			builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
 
@@ -939,12 +942,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			builder.AppendLine("</div>");
 
-			builder.AppendLine("<script>");
-			builder.AppendLine("    jQuery(document).ready(function(){");
-			builder.AppendLine("       jQuery('ul.qc-menu').superfish();");
-			builder.AppendLine("    });");
-			builder.AppendLine("</script>");
-			builder.AppendLine();
+            builder.AppendLine("<script>");
+            builder.AppendLine("    $(function() {");
+            builder.AppendLine("       $('#qc-main-menu').superfish({ autoArrows:  true });");
+            builder.AppendLine("    });");
+            builder.AppendLine("</script>");
+            builder.AppendLine();
 		}
 
 		#endregion
@@ -1338,10 +1341,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
 				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_qc.js\"></script>");
 			   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
-			   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.min.js\"></script>");
+			//   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.min.js\"></script>");
 				
 			  navRowBuilder.AppendLine("<link rel=\"stylesheet\" href=\"http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css\" />");
-			  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
+			//  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
 
 			   //Include the superfish.css file for the menu
 				navRowBuilder.AppendLine("<link rel=\"stylesheet\" media=\"screen\"  href=\"" + CurrentMode.Base_URL + "default/superfish.css\">");
