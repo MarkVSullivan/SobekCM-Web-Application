@@ -1,14 +1,19 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
+var mapDrawingManagerDisplayed;         //holds marker for drawing manager
+var mapLayerActive;                     //holds the current map layer active
+var prevMapLayerActive;                 //holds the previous active map layer
+var actionActive;                       //holds the current active action
+var prevActionActive;                   //holds the previous active action
 var overlaysCurrentlyDisplayed;         //holds marker for overlays on map
 var pageMode;                           //holds the page/viewer type
 var mapCenter;                          //used to center map on load
-var mapControlsOnMap;                   //by default, are map controls displayed (true/false)
+var mapControlsDisplayed;               //by default, are map controls displayed (true/false)
 var defaultDisplayDrawingMangerTool;    //by default, is the drawingmanger displayed (true/false)
 var toolboxDisplayed;                   //by default, is the toolbox displayed (true/false)
-var toolbarOpen;                        //by default, is the toolbar open (yes/no)
-var kmlOn;                              //by default, is kml layer on (yes/no)
+var toolbarDisplayed;                   //by default, is the toolbar open (yes/no)
+var kmlDisplayed;                       //by default, is kml layer on (yes/no)
 var kmlLayer;                           //must be pingable by google
 var defaultZoomLevel;                   //zoom level, starting
 var maxZoomLevel;                       //max zoom out, default (21=lowest level, 1=highest level)
@@ -85,48 +90,19 @@ CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custo
 
 //#endregion
 
-//#region localization
-
-var L_Marker = "Marker";
-var L_Circle = "Circle";
-var L_Rectangle = "Rectangle";
-var L_Polygon = "Polygon";
-var L_Line = "Line";
-var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
-var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
-var L3 = "Description (Optional)"; //describe poi box
-var L4 = "Geolocation Service Failed."; //geolocation buttons error message
-var L5 = "Returned to Bounds!"; //tesbounds();
-var L6 = "Could not find location. Either the format you entered is invalid or the location is outside of the map bounds."; //codeAddress();
-var L7 = "Error: Overlay image source cannot contain a ~ or |"; //createSavedOverlay();
-var L8 = "Error: Description cannot contain a ~ or |"; //poiGetDesc(id);
-var L9 = "Item Cleared!"; //buttonClearItem();
-var L10 = "Overlay Cleared!"; //buttonClearOverlay();
-var L11 = "POI Set Cleared!"; //buttonClearPOI();
-var L12 = "Nothing Happened!"; //HandleResult(arg);
-var L13 = "Item Saved!"; //HandleResult(arg);
-var L14 = "Overlay Saved!"; //HandleResult(arg);
-var L15 = "POI Set Saved!"; //HandleResult(arg);
-var L16 = "Cannot Zoom Out Further"; //checkZoomLevel();
-var L17 = "Cannot Zoom In Further"; //checkZoomLevel();
-var L18 = "Using Search Results as Location"; //marker complete listener
-
-//#endregion
-
+//setup everything with user defined options
 function setupInterface(collection) {
-
-    //displayIncomingOverlays();
-
     switch (collection) {
-
         case "default":
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed =  false;                                                  //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAug.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -140,13 +116,16 @@ function setupInterface(collection) {
             var strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
             break;
         case "stAugustine":
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed =  false;                                                  //by default, is kml layer on (yes/no)
+            //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -163,12 +142,14 @@ function setupInterface(collection) {
             );
             break;
         case "custom":
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed =  false;                                                  //by default, is kml layer on (yes/no)
             kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
@@ -186,11 +167,10 @@ function setupInterface(collection) {
             );
             break;
     }
-}              //setup everything
+}
 
 var collectionTypeToLoad = "stAugustine";           //define collection settings to load
 setupInterface(collectionTypeToLoad);               //start the whole thing
-                
 
 //#region Define google map objects
 
@@ -280,6 +260,18 @@ var drawingManager = new google.maps.drawing.DrawingManager({
         editable: true,
         draggable: true,
         zIndex: 5
+    }
+});
+drawingManager.setOptions({
+    drawingControl: true, drawingControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_TOP,
+        drawingModes: [
+            google.maps.drawing.OverlayType.MARKER,
+            google.maps.drawing.OverlayType.CIRCLE,
+            google.maps.drawing.OverlayType.RECTANGLE,
+            google.maps.drawing.OverlayType.POLYGON,
+            google.maps.drawing.OverlayType.POLYLINE
+        ]
     }
 });
 
@@ -403,6 +395,7 @@ $(function () {
     $("#content_toolbox_button_clearPOI").tooltip();
     $("#content_toolbar_searchField").tooltip();
     $("#content_toolbar_searchButton").tooltip();
+    $("#content_toolbox_searchField").tooltip();
     $("#content_toolbox_searchResults").tooltip();
     //$(".selector").tooltip({ content: "Awesome title!" });
 
@@ -532,45 +525,6 @@ function searchResultDeleteMe() {
     searchResult.setMap(null);
     $("#searchResult").remove();
 }               //delete search results from map and list
-function action1() {
-    $("#toolboxTabs").accordion({ active: 2 }); //open edit overlay tab
-}                            //open tab 2
-function action2() {
-    $("#toolboxTabs").accordion({ active: 3 }); //open edit overlay tab
-}                            //open tab 3
-function action3() {
-    $("#toolboxTabs").accordion({ active: 4 }); //open edit overlay tab
-}                            //open tab 4
-function buttonClearItem() {
-    itemMarker.setMap(null); //delete marker form map
-    itemMarker = null;
-    savingMarkerCenter = null; //reset stored coords to save
-    document.getElementById('content_toolbox_posItem').value = ""; //reset lat/long in tab
-    document.getElementById('rgItem').value = ""; //reset address in tab
-    displayMessage(L9); //say all is reset
-}                    //clear item location
-function buttonClearOverlay() {
-    //does nothing
-    displayMessage("Nothing to clear");
-    //displayMessage(L10);
-}                 //clear overlays
-function buttonClearPOI() {
-    for (var i = 0; i < poiObj.length; i++) {
-        if (poiObj[i] != null) {
-            poiObj[i].setMap(null);
-            poiObj[i] = null;
-        }
-        infowindow[i].setMap(null);
-        infowindow[i] = null;
-        label[i].setMap(null);
-        label[i] = null;
-        var strg = "#poi" + i; //create <li> poi string
-        $(strg).remove(); //remove <li>
-    }
-    poiObj = [];
-    poi_i = -1;
-    displayMessage(L11);
-}                     //clear all pois
 function HandleResult(arg) {
     switch (arg) {
         case "0":
@@ -590,23 +544,7 @@ function HandleResult(arg) {
 function DisplayCursorCoords(arg) {
     cCoord.innerHTML = arg;
 }             //used for lat/long tool
-function displayMessage(message) {
-    //create message
-    var messageText = "<p class=\"message\">";
-    messageText += message; //assign incoming message to text
-    messageText += "</p>";
-    document.getElementById("content_message").innerHTML = messageText; //assign to element
 
-    //show message
-    document.getElementById("messageContainer").style.display = "block"; //display element
-
-    //fade message out
-    setTimeout(function () {
-        $("#messageContainer").fadeOut("slow", function () {
-            $("#messageContainer").hide();
-        });
-    }, 3000); //after 3 sec
-}              //display an inline message
 function checkZoomLevel() {
     var currentZoomLevel = map.getZoom();
     var currentMapType = map.getMapTypeId();
@@ -779,21 +717,21 @@ function toggletoolbox(value) {
 }                 //toggle toolbox
 function Toggle(what) {
     //toggle it
-    if (toolbarOpen == "yes") {
+    if (toolbarDisplayed == "yes") {
         $(what).hide();
-        toolbarOpen = "no";
+        toolbarDisplayed = "no";
         $("#container_toggle_toolbar1").hide();
         $("#container_toggle_toolbar2").show();
     } else {
         $(what).show();
-        toolbarOpen = "yes";
+        toolbarDisplayed = "yes";
         $("#container_toggle_toolbar1").show();
         $("#container_toggle_toolbar2").hide();
     }
 
 }                         //used to toggle toolbar
 function toggleAllMapControlsTool() {
-    if (mapControlsOnMap == false) { //not present
+    if (mapControlsDisplayed == false) { //not present
         map.setOptions({
             zoomControl: true,
             zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL, position: google.maps.ControlPosition.LEFT_TOP },
@@ -802,14 +740,14 @@ function toggleAllMapControlsTool() {
             mapTypeControl: true,
             mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU, position: google.maps.ControlPosition.RIGHT_TOP }
         });
-        mapControlsOnMap = true;
+        mapControlsDisplayed = true;
     } else { //present
         map.setOptions({
             zoomControl: false,
             panControl: false,
             mapTypeControl: false
         });
-        mapControlsOnMap = false;
+        mapControlsDisplayed = false;
     }
 }           //display/destroy map controls and drawing manager tool
 function codeAddress(type, geo) {
@@ -881,6 +819,7 @@ function useSearchAsItemLocation() {
 //#endregion
 
 function initialize() {
+    
     //initialize google map objects
     map = new google.maps.Map(document.getElementById(gmapPageDivId), gmapOptions);                             //initialize map    
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(copyrightNode);                                 //initialize custom copyright
@@ -888,6 +827,7 @@ function initialize() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(toolbarBufferZone1);                                //initialize spacer
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toolbarBufferZone2);                               //intialize spacer
     drawingManager.setMap(map);                                                                                 //initialize drawing manager
+    drawingManager.setMap(null);                                                                                //initialize drawing manager (hide)
     geocoder = new google.maps.Geocoder();                                                                      //initialize geocoder
     
     //#region Google Specific Listeners  
@@ -1409,9 +1349,7 @@ function initialize() {
     //#endregion
     
     initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
-
-    toolboxDisplayed = false;
-    toggleVis("toolbox"); //display the toolbox
+    initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
     
     //keypress shortcuts/actions
     window.onkeypress = keypress;

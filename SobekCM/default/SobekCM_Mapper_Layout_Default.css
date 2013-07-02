@@ -20,6 +20,7 @@ body {
     background-image:url("images/mapper/bg1.png");
 }
 #container_pane_1{
+    display: none;
 	position:absolute;
 	width:100%;
 	min-height:48px;
@@ -63,7 +64,7 @@ body {
 	left:50%;
 	margin-left:-100px;
     text-align:center;
-	background-color:#f0fe3a;
+	background-color:blanchedalmond;
 	-webkit-box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	box-shadow:0 1px 3px rgba(0,0,0,0.5);
     display:none;

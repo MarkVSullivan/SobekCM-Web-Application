@@ -70,6 +70,7 @@ try{
         toggleVis("toolbar");
     }, false);
     //toolbox
+    //minibar
     document.getElementById("content_minibar_button_minimize").addEventListener("click", function () {
         toggleVis("toolboxMin");
     }, false);
@@ -78,7 +79,23 @@ try{
      }, false);
     document.getElementById("content_minibar_button_close").addEventListener("click", function () { 
         toggleVis("toolbox");
-     }, false);
+    }, false);
+    //headers
+    document.getElementById("content_toolbox_tab1_header").addEventListener("click", function () {
+        action("other");
+    }, false);
+    document.getElementById("content_toolbox_tab2_header").addEventListener("click", function () {
+        action("other");
+    }, false);
+    document.getElementById("content_toolbox_tab3_header").addEventListener("click", function () {
+        action("manageItem");
+    }, false);
+    document.getElementById("content_toolbox_tab4_header").addEventListener("click", function () {
+        action("manageOverlay");
+    }, false);
+    document.getElementById("content_toolbox_tab5_header").addEventListener("click", function () {
+        action("managePOI");
+    }, false);
     //tab
     document.getElementById("content_toolbox_button_layerRoadmap").addEventListener("click", function () {
         changeMapLayer("roadmap");
@@ -148,82 +165,31 @@ try{
         //nothing yet
      }, false);
     //tab
-    document.getElementById("content_toolbox_button_placeItem").addEventListener("click", function () { 
-        if (searchCount > 0 && itemMarker == null) {
-            useSearchAsItemLocation();
-            displayMessage(L18);
-        } else {
-            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-            placerType = "item";
-        }
-     }, false);
-    document.getElementById("content_toolbox_button_itemGetUserLocation").addEventListener("click", function () { 
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-        placerType = "item";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-                markerCenter = userLocation;
-                itemMarker = new google.maps.Marker({
-                    position: markerCenter,
-                    map: map
-                });
-                itemMarker.setMap(map);
-                document.getElementById('content_toolbox_posItem').value = markerCenter;
-                savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-            });
-
-        } else {
-            alert(L4);
-        }
-        drawingManager.setDrawingMode(null);
-     }, false);
+    document.getElementById("content_toolbox_button_placeItem").addEventListener("click", function () {
+        place("item");
+    }, false);
+    document.getElementById("content_toolbox_button_itemGetUserLocation").addEventListener("click", function () {
+        geolocate("item");
+    }, false);
     document.getElementById("content_toolbox_posItem").addEventListener("click", function () { 
         //nothing, maybe copy?
      }, false);
     document.getElementById("content_toolbox_rgItem").addEventListener("click", function () { 
         //nothing, maybe copy?
     }, false);
-    document.getElementById("content_toolbox_button_saveItem").addEventListener("click", function () { 
-        buttonSaveItem();
-     }, false);
-    document.getElementById("content_toolbox_button_clearItem").addEventListener("click", function () { 
-        buttonClearItem();
-     }, false);
+    document.getElementById("content_toolbox_button_saveItem").addEventListener("click", function () {
+        save("item");
+    }, false);
+    document.getElementById("content_toolbox_button_clearItem").addEventListener("click", function () {
+        clear("item");
+    }, false);
     //tab
-    document.getElementById("content_toolbox_button_placeOverlay").addEventListener("click", function () { 
-        placerType = "overlay";
-        if (pageMode == "edit") {
-            pageMode = "view";
-            if (savingOverlayIndex.length > 0) {
-                for (var i = 0; i < savingOverlayIndex.length; i++) {
-                    ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
-                }
-            }
-            displayMessage("Overlay Editting Turned Off");
-        } else {
-            pageMode = "edit";
-            displayMessage("Overlay Editting Turned On");
-        }
-        //toggleOverlayEditor(); 
-     }, false);
-    document.getElementById("content_toolbox_button_overlayGetUserLocation").addEventListener("click", function () { 
-        placerType = "overlay";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-            });
-
-        } else {
-            alert(L4);
-        }
-     }, false);
+    document.getElementById("content_toolbox_button_placeOverlay").addEventListener("click", function () {
+        place("overlay");
+    }, false);
+    document.getElementById("content_toolbox_button_overlayGetUserLocation").addEventListener("click", function () {
+        geolocate("overlay");
+    }, false);
     document.getElementById("rotationKnob").addEventListener("click", function () { 
         //do nothing, (possible just container)
      }, false);
@@ -242,63 +208,39 @@ try{
     document.getElementById("overlayTransparencySlider").addEventListener("click", function () { 
         //nothing (possible just container)
      }, false);
-    document.getElementById("content_toolbox_button_saveOverlay").addEventListener("click", function () { 
-
-     }, false);
-    document.getElementById("content_toolbox_button_clearOverlay").addEventListener("click", function () { 
-
-     }, false);
+    document.getElementById("content_toolbox_button_saveOverlay").addEventListener("click", function () {
+        save("overlay");
+    }, false);
+    document.getElementById("content_toolbox_button_clearOverlay").addEventListener("click", function () {
+        clear("overlay");
+    }, false);
     //tab
-    document.getElementById("content_toolbox_button_placePOI").addEventListener("click", function () { 
-        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE] } });
-        placerType = "poi";
-     }, false);
-    document.getElementById("content_toolbox_button_poiGetUserLocation").addEventListener("click", function () { 
-        //drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-        placerType = "poi";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-                //var marker = new google.maps.Marker({
-                //    position: userLocation,
-                //    map: map
-                //});
-                //marker.setMap(map);
-            });
-
-        } else {
-            alert(L4);
-        }
-        //drawingManager.setDrawingMode(null);
-     }, false);
-    document.getElementById("content_toolbox_button_poiMarker").addEventListener("click", function () { 
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-     }, false);
+    document.getElementById("content_toolbox_button_placePOI").addEventListener("click", function () {
+        place("poi");
+    }, false);
+    document.getElementById("content_toolbox_button_poiGetUserLocation").addEventListener("click", function () {
+        geolocate("poi");
+    }, false);
+    document.getElementById("content_toolbox_button_poiMarker").addEventListener("click", function () {
+        placePOI("marker");
+    }, false);
     document.getElementById("content_toolbox_button_poiCircle").addEventListener("click", function () { 
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.CIRCLE);
+        placePOI("circle");
      }, false);
     document.getElementById("content_toolbox_button_poiRectangle").addEventListener("click", function () { 
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
+        placePOI("rectangle");
      }, false);
     document.getElementById("content_toolbox_button_poiPolygon").addEventListener("click", function () { 
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+        placePOI("polygon");
      }, false);
     document.getElementById("content_toolbox_button_poiLine").addEventListener("click", function () { 
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYLINE);
+        placePOI("line");
      }, false);
-    document.getElementById("content_toolbox_button_savePOI").addEventListener("click", function () { 
-        //this is done in the other js file
-     }, false);
+    document.getElementById("content_toolbox_button_savePOI").addEventListener("click", function () {
+        save("poi");
+    }, false);
     document.getElementById("content_toolbox_button_clearPOI").addEventListener("click", function () { 
-        
+        clear("poi");
     }, false);
 } catch(err) {
     alert("ERROR: Failed Adding Listeners");
