@@ -67,6 +67,7 @@
     /*not used yet*/
 }
 #content_toolbarGrabber {
+    display: none;
     background-image: url("images/mapper/toolbar-toggle.png");
     background-repeat: no-repeat;
     min-height: 10px;
@@ -78,6 +79,11 @@
     background-repeat: no-repeat;
     height: 15px;
     width: 28px;
+}
+#content_minibar_header {
+    float: left;
+    height: 15px;
+    font: 12px 'Arial Black', Gadget, sans-serif;
 }
 #content_minibar_button_minimize {
     float: right;

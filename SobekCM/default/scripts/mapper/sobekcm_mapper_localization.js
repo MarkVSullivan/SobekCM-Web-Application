@@ -1,5 +1,33 @@
-﻿//localization (method1)
+﻿//localization
+
+//by variables (used in fcns)
+var L_Marker = "Marker";
+var L_Circle = "Circle";
+var L_Rectangle = "Rectangle";
+var L_Polygon = "Polygon";
+var L_Line = "Line";
+var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
+var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
+var L3 = "Description (Optional)"; //describe poi box
+var L4 = "Geolocation Service Failed."; //geolocation buttons error message
+var L5 = "Returned to Bounds!"; //tesbounds();
+var L6 = "Could not find location. Either the format you entered is invalid or the location is outside of the map bounds."; //codeAddress();
+var L7 = "Error: Overlay image source cannot contain a ~ or |"; //createSavedOverlay();
+var L8 = "Error: Description cannot contain a ~ or |"; //poiGetDesc(id);
+var L9 = "Item Cleared!"; //buttonClearItem();
+var L10 = "Overlay Cleared!"; //buttonClearOverlay();
+var L11 = "POI Set Cleared!"; //buttonClearPOI();
+var L12 = "Nothing Happened!"; //HandleResult(arg);
+var L13 = "Item Saved!"; //HandleResult(arg);
+var L14 = "Overlay Saved!"; //HandleResult(arg);
+var L15 = "POI Set Saved!"; //HandleResult(arg);
+var L16 = "Cannot Zoom Out Further"; //checkZoomLevel();
+var L17 = "Cannot Zoom In Further"; //checkZoomLevel();
+var L18 = "Using Search Results as Location"; //marker complete listener
+
+//by listeners
 try {
+    //toolbar
     document.getElementById("content_toolbar_button_reset").title = "Reset: Reset Map To Defaults";
     document.getElementById("content_toolbar_button_toggleMapControls").title = "Controls: Toggle Map Controls";
     document.getElementById("content_toolbar_button_toggleToolbox").title = "Toolbox: Toggle Toolbox";
@@ -23,9 +51,7 @@ try {
     document.getElementById("content_toolbar_searchField").title = "Locate: Find A Location On The Map";
     document.getElementById("content_toolbar_searchButton").title = "Locate: Find A Location On The Map";
     document.getElementById("content_toolbarGrabber").title = "Toolbar: Toggle the Toolbar";
-    //document.getElementById("content_minibar_button_minimize").title = 
-    //document.getElementById("content_minibar_button_maximize").title = 
-    //document.getElementById("content_minibar_button_close").title = 
+    //toolbox
     document.getElementById("content_toolbox_button_layerRoadmap").title = "Roadmap: Toggle Road Map Layer";
     document.getElementById("content_toolbox_button_layerTerrain").title = "Terrain: Toggle Terrain Map Layer";
     document.getElementById("content_toolbox_button_panUp").title = "Up: Pan Map Up";
@@ -65,7 +91,6 @@ try {
     document.getElementById("content_toolbox_rotationReset").title = "Reset: Click to Reset Rotation";
     document.getElementById("content_toolbox_rotationClockwise").title = ".1&deg Right: Click to Rotate .1&deg Clockwise";
     document.getElementById("transparency").title = "Transparency: Set the transparency of this Overlay";
-    //document.getElementById("overlayTransparencySlider").title = 
     document.getElementById("content_toolbox_button_saveOverlay").title = "Save Overlay";
     document.getElementById("content_toolbox_button_clearOverlay").title = "Cancel";
     //tab
@@ -76,92 +101,16 @@ try {
     document.getElementById("content_toolbox_button_poiRectangle").title = "Rectangle: Place a Rectangle";
     document.getElementById("content_toolbox_button_poiPolygon").title = "Polygon: Place a Polygon";
     document.getElementById("content_toolbox_button_poiLine").title = "Line: Place a Line";
-    //document.getElementById("content_toolbox_button_poiList").title = 
     document.getElementById("content_toolbox_button_savePOI").title = "Save Point Of Interest Set";
     document.getElementById("content_toolbox_button_clearPOI").title = "Clear Point Of Interest Set";
-
-    ////localization (optional method)
-    ////toolbar
-    //var title1 = "Reset: Reset Map To Defaults";
-    //var title2 = "Controls: Toggle Map Controls";
-    //var title3 = "Toolbox: Toggle Toolbox";
-    //var title4 = "Roadmap: Toggle Road Map Layer";
-    //var title5 = "Terrain: Toggle Terrain Map Layer";
-    //var title6 = "Satellite: Toggle Satellite Map Layer";
-    //var title7 = "Hybrid: Toggle Hybrid Map Layer";
-    //var title8 = "Block/Lot: Toggle Block/Lot Map Layer";
-    //var title9 = "Reset: Reset Map Type";
-    //var title10 = "Up: Pan Map Up";
-    //var title11 = "Left: Pan Map Left";
-    //var title12 = "Default: Pan Map To Default";
-    //var title13 = "Right: Pan Map Right";
-    //var title14 = "Down: Pan Map Down";
-    //var title15 = "In: Zoom Map In";
-    //var title16 = "Reset: Reset Zoom Level";
-    //var title17 = "Out: Zoom Map Out";
-    //var title18 = "Manage Location Details";
-    //var title19 = "Manage Map Coverage";
-    //var title20 = "Manage Points of Interest";
-    //var title21 = "Locate: Find A Location On The Map";
-    //var title22 = "Hide: Hide the Toolbar";
-    //var title23 = "Show: Show the Toolbar";
-    ////toolbox tab1
-    //var title24 = title4;
-    //var title25 = title5;
-    //var title26 = title10;
-    //var title27 = title6;
-    //var title28 = title7;
-    //var title29 = title11;
-    //var title30 = title12;
-    //var title31 = title13;
-    //var title32 = title8;
-    //var title33 = title9;
-    //var title34 = title14;
-    //var title35 = title1;
-    //var title36 = title2;
-    //var title37 = title15;
-    //var title38 = title16;
-    //var title39 = title17;
-    ////toolbox tab2
-    //var title40 = title18;
-    //var title41 = title19;
-    //var title42 = title20;
-    ////toolbox tab3
-    //var title43 = title21;
-    ////toolbox tab4
-    //var title44 = "Place a Point";
-    //var title45 = "Center On Your Current Position";
-    //var title46 = "Coordinates: This is the selected Latitude and Longitude of the point you selected.";
-    //var title47 = "Address: This is the nearest address of the point you selected.";
-    //var title48 = "Save Location";
-    //var title49 = "Cancel";
-    ////toolbox tab5
-    //var title50 = "Toggle Overlay Editing";
-    //var title51 = title45;
-    //var title52 = "Rotate: Edit the rotation value";
-    //var title53 = ".1&deg Left: Click to Rotate .1&deg Counter-Clockwise";
-    //var title54 = "Reset: Click to Reset Rotation";
-    //var title55 = ".1&deg Right: Click to Rotate .1&deg Clockwise";
-    //var title56 = "Transparency: Set the transparency of this Overlay";
-    //var title57 = "Save Overlay";
-    //var title58 = "Cancel";
-    ////toolbox tab6
-    //var title59 = "Place Point Of Interest";
-    //var title60 = title45;
-    //var title61 = "Marker: Place a Point";
-    //var title62 = "Circle: Place a Circle";
-    //var title63 = "Rectangle: Place a Rectangle";
-    //var title64 = "Polygon: Place a Polygon";
-    //var title65 = "Line: Place a Line";
-    //var title66 = "Save Point Of Interest Set";
-    //var title67 = "Clear Point Of Interest Set";
-
+    
 } catch(err) {
     alert("ERROR: Failed Adding Titles");
 }
 
-//Textual Content
-try{
+//by textual content
+try {
+    document.getElementById("content_minibar_header").innerHTML = "Toolbox";
     document.getElementById("content_toolbox_button_saveItem").innerHTML = "Save";
     document.getElementById("content_toolbox_button_clearItem").innerHTML = "Cancel";
     document.getElementById("content_toolbox_button_saveOverlay").innerHTML = "Save";
@@ -173,6 +122,11 @@ try{
     document.getElementById("content_toolbox_tab3_header").innerHTML = "Manage Location";
     document.getElementById("content_toolbox_tab4_header").innerHTML = "Manage Overlay";
     document.getElementById("content_toolbox_tab5_header").innerHTML = "Manage POI";
+    document.getElementById("content_toolbar_searchField").setAttribute('placeholder', "Find On Map");
+    document.getElementById("content_toolbox_searchField").setAttribute('placeholder', "Find On Map");
+    document.getElementById("content_toolbox_posItem").setAttribute('placeholder', "Selected Lat/Long");
+    document.getElementById("content_toolbox_rgItem").setAttribute('placeholder', "Nearest Address");
+    
 } catch (err) {
     alert("ERROR: Failed Adding Textual Content");
 }
