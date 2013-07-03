@@ -56,6 +56,8 @@ a img {
     font: bold 12px Arial,Helvetica,Sans-serif;
     width: 50px;
     display: inline-block;
+    -webkit-box-shadow: 0 0 10px whitesmoke;
+    box-shadow: 0 0 10px whitesmoke;
 }
 .button2:hover {
     -webkit-box-shadow: 0 0 10px #fff0f5;

@@ -101,8 +101,8 @@ function setupInterface(collection) {
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            kmlDisplayed =  false;                                                  //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAug.kmz");  //must be pingable by google
+            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -123,9 +123,9 @@ function setupInterface(collection) {
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            kmlDisplayed =  false;                                                  //by default, is kml layer on (yes/no)
-            //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/stAugParcel_v6.kmz");  //must be pingable by google
+            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -149,7 +149,7 @@ function setupInterface(collection) {
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            kmlDisplayed =  false;                                                  //by default, is kml layer on (yes/no)
+            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
             kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
@@ -168,6 +168,9 @@ function setupInterface(collection) {
             break;
     }
 }
+
+
+
 
 var collectionTypeToLoad = "stAugustine";           //define collection settings to load
 setupInterface(collectionTypeToLoad);               //start the whole thing
@@ -274,6 +277,7 @@ drawingManager.setOptions({
         ]
     }
 });
+kmlLayer.setOptions({ suppressInfoWindows: true });
 
 //define custom copyright control
 //supporting url: https://developers.google.com/maps/documentation/javascript/controls#CustomControls
@@ -314,507 +318,6 @@ toolbarBufferZone1.style.height = '50px';
 toolbarBufferZone2 = document.createElement('div');
 toolbarBufferZone2.id = 'toolbarBufferZone2';
 toolbarBufferZone2.style.height = '50px';
-
-//#endregion
-
-//#region Supporting JS
-
-$(function () {
-    $("#container_toolbox").draggable({ handle: "#container_toolboxMinibar" });
-    $("#container_toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
-    $("#content_toolbarGrabber").tooltip();
-    $("#content_toolbar_button_reset").tooltip();
-    $("#content_toolbar_button_toggleMapControls").tooltip();
-    $("#content_toolbar_button_toggleToolbox").tooltip();
-    $("#content_toolbar_button_layerRoadmap").tooltip();
-    $("#content_toolbar_button_layerSatellite").tooltip();
-    $("#content_toolbar_button_layerTerrain").tooltip();
-    $("#content_toolbar_button_layerControls").tooltip();
-    $("#content_toolbar_button_layerHybrid").tooltip();
-    $("#content_toolbar_button_layerCustom").tooltip();
-    $("#content_toolbar_button_layerReset").tooltip();
-    $("#content_toolbar_button_zoomIn").tooltip();
-    $("#content_toolbar_button_zoomReset").tooltip();
-    $("#content_toolbar_button_zoomOut").tooltip();
-    $("#content_toolbar_button_panUp").tooltip();
-    $("#content_toolbar_button_panDown").tooltip();
-    $("#content_toolbar_button_panReset").tooltip();
-    $("#content_toolbar_button_panLeft").tooltip();
-    $("#content_toolbar_button_panRight").tooltip();
-    $("#content_toolbar_button_manageItem").tooltip();
-    $("#content_toolbar_button_manageOverlay").tooltip();
-    $("#content_toolbar_button_managePOI").tooltip();
-    $("#content_toolbox_button_reset").tooltip();
-    $("#content_toolbox_button_toggleMapControls").tooltip();
-    $("#content_toolbox_button_layerRoadmap").tooltip();
-    $("#content_toolbox_button_layerSatellite").tooltip();
-    $("#content_toolbox_button_layerTerrain").tooltip();
-    $("#content_toolbox_button_layerControls").tooltip();
-    $("#content_toolbox_button_layerHybrid").tooltip();
-    $("#content_toolbox_button_layerCustom").tooltip();
-    $("#content_toolbox_button_layerReset").tooltip();
-    $("#content_toolbox_button_zoomIn").tooltip();
-    $("#content_toolbox_button_zoomReset").tooltip();
-    $("#content_toolbox_button_zoomOut").tooltip();
-    $("#content_toolbox_button_panUp").tooltip();
-    $("#content_toolbox_button_panDown").tooltip();
-    $("#content_toolbox_button_panReset").tooltip();
-    $("#content_toolbox_button_panLeft").tooltip();
-    $("#content_toolbox_button_panRight").tooltip();
-    $("#content_toolbox_button_manageItem").tooltip();
-    $("#content_toolbox_button_manageOverlay").tooltip();
-    $("#content_toolbox_button_managePOI").tooltip();
-    $("#content_toolbox_button_placeItem").tooltip();
-    $("#content_toolbox_button_placeOverlay").tooltip();
-    $("#content_toolbox_button_placePOI").tooltip();
-    $("#content_toolbox_button_poiMarker").tooltip();
-    $("#content_toolbox_button_poiCircle").tooltip();
-    $("#content_toolbox_button_poiRectangle").tooltip();
-    $("#content_toolbox_button_poiPolygon").tooltip();
-    $("#content_toolbox_button_poiLine").tooltip();
-    $("#rotationKnob").tooltip();
-    $("#content_toolbox_rotationClockwise").tooltip();
-    $("#content_toolbox_rotationReset").tooltip();
-    $("#content_toolbox_rotationCounterClockwise").tooltip();
-    $("#transparency").tooltip();
-    $("#content_toolbox_rgItem").tooltip();
-    $("#content_toolbox_posItem").tooltip();
-    $("#content_toolbox_button_placeItem").tooltip();
-    $("#descItem").tooltip();
-    $("#content_toolbox_button_saveItem").tooltip();
-    $("#content_toolbox_button_placeOverlay").tooltip();
-    $("#content_toolbox_button_saveOverlay").tooltip();
-    $("#content_toolbox_button_placePOI").tooltip();
-    $("#descPOI").tooltip();
-    $("#content_toolbox_button_savePOI").tooltip();
-    $("#content_toolbox_button_itemGetUserLocation").tooltip();
-    $("#content_toolbox_button_overlayGetUserLocation").tooltip();
-    $("#content_toolbox_button_poiGetUserLocation").tooltip();
-    $("#content_toolbox_button_clearItem").tooltip();
-    $("#content_toolbox_button_clearOverlay").tooltip();
-    $("#content_toolbox_button_clearPOI").tooltip();
-    $("#content_toolbar_searchField").tooltip();
-    $("#content_toolbar_searchButton").tooltip();
-    $("#content_toolbox_searchField").tooltip();
-    $("#content_toolbox_searchResults").tooltip();
-    //$(".selector").tooltip({ content: "Awesome title!" });
-
-});                               //jquery elements (tooltips)
-function buttonSaveItem() {
-    if (savingMarkerCenter != null) {
-        alert("saving location: " + savingMarkerCenter); //grab coords from gmaps js
-        //createSavedItem(markerCenter);
-        displayMessage("saved");
-    } else {
-        displayMessage("nothing to save");
-    }
-}                     //just calls create saved item
-function buttonSaveOverlay() {
-    if (savingOverlayIndex.length) {
-        for (var i = 0; i < savingOverlayIndex.length; i++) {
-            alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
-            createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
-            //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
-        }
-        displayMessage("saved");
-    } else {
-        displayMessage("nothing to save");
-    }
-
-}                  //just calls create saved overlay
-function buttonSavePOI() {
-    if (poiObj.length > 0) {
-        createSavedPOI();
-        displayMessage("saved");
-    } else {
-        displayMessage("nothing to save");
-    }
-}                      //just calls create saved poi
-function createSavedItem(coordinates) {
-    var messageType = "item"; //define what message type it is
-    //assign data
-    var data = messageType + "|" + coordinates + "|";
-    var dataPackage = data + "~";
-    CallServer(dataPackage);
-}                    //create a package to send to server to save item location
-function createSavedOverlay(index, source, bounds, rotation) {
-    var temp = source;
-    if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
-        displayMessage(L7);
-    }
-
-    var messageType = "overlay"; //define what message type it is
-    var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
-
-    var dataPackage = data + "~";
-    //CallServer(dataPackage); //not yet working
-}                 //create a package to send to server to save overlay
-function createSavedPOI() {
-    var dataPackage = "";
-    for (var i = 0; i < poiObj.length; i++) {
-        switch (poiType[i]) {
-            case "marker":
-                poiKML[i] = poiObj[i].getPosition().toString();
-                break;
-            case "circle":
-                poiKML[i] = poiObj[i].getCenter() + ",";
-                poiKML[i] += poiObj[i].getRadius();
-                break;
-            case "rectangle":
-                poiKML[i] = poiObj[i].getBounds().toString();
-                break;
-            case "polygon":
-                poiObj[i].getPath().forEach(function (latLng) {
-                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator
-                });
-                break;
-            case "polyline":
-                poiObj[i].getPath().forEach(function (latLng) {
-                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator
-                });
-                break;
-            case "deleted":
-                //nothing to do here
-                break;
-        }
-        var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
-        dataPackage += data + "~";
-    }
-    alert("saving poi set: "+dataPackage);
-    //CallServer(dataPackage);
-}                     //create a package to send to the server to save poi
-function poiEditMe(id) {
-    poiObj[id].setMap(map);
-    if (poiType[id] == "marker") {
-        infowindow[id].open(map, poiObj[id]);
-    } else {
-        infowindow[id].setMap(map);
-    }
-}                        //open the infowindow of a poi
-function poiHideMe(id) {
-    poiObj[id].setMap(null);
-    infowindow[id].setMap(null);
-    label[id].setMap(null);
-    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + "default/images/mapper/add.png\" onclick=\"poiShowMe(" + id + ");\" />";
-}                        //hide poi on map
-function poiShowMe(id) {
-    poiObj[id].setMap(map);
-    infowindow[id].setMap(map);
-    label[id].setMap(map);
-    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
-}                        //show poi on map
-function poiDeleteMe(id) {
-    poiObj[id].setMap(null);
-    poiObj[id] = null;
-    poiType[id] = "deleted";
-    var strg = "#poi" + id; //create <li> poi string
-    $(strg).remove(); //remove <li>
-    infowindow[id].setMap(null);
-    label[id].setMap(null);
-}                      //delete poi from map and list
-function poiGetDesc(id) {
-
-    var temp = document.getElementById("poiDesc" + id).value;
-    if (temp.contains("~") || temp.contains("|")) {
-        displayMessage(L8);
-    } else {
-        poiDesc[id] = document.getElementById("poiDesc" + id).value;
-    }
-}                       //get the poi desc
-function searchResultDeleteMe() {
-    searchResult.setMap(null);
-    $("#searchResult").remove();
-}               //delete search results from map and list
-function HandleResult(arg) {
-    switch (arg) {
-        case "0":
-            displayMessage(L12);
-            break;
-        case "1":
-            displayMessage(L13);
-            break;
-        case "2":
-            displayMessage(L14);
-            break;
-        case "3":
-            displayMessage(L15);
-            break;
-    }
-}                    //callback message board
-function DisplayCursorCoords(arg) {
-    cCoord.innerHTML = arg;
-}             //used for lat/long tool
-
-function checkZoomLevel() {
-    var currentZoomLevel = map.getZoom();
-    var currentMapType = map.getMapTypeId();
-    if (currentZoomLevel == maxZoomLevel) {
-        displayMessage(L16);
-    } else {
-        switch (currentMapType) {
-            case "roadmap": //roadmap and default
-                if (currentZoomLevel == minZoomLevel_Roadmap) {
-                    displayMessage(L17);
-                }
-                break;
-            case "satellite": //sat
-                if (currentZoomLevel == minZoomLevel_Satellite) {
-                    displayMessage(L17);
-                }
-                break;
-            case "hybrid": //sat
-                if (currentZoomLevel == minZoomLevel_Satellite) {
-                    displayMessage(L17);
-                }
-                break;
-            case "terrain": //terrain only
-                if (currentZoomLevel == minZoomLevel_Terrain) {
-                    displayMessage(L17);
-                }
-                break;
-        }
-        if (isCustomOverlay == true) {
-            if (currentZoomLevel == minZoomLevel_BlockLot) {
-                displayMessage(L17);
-            }
-        }
-    }
-}                     //check the zoom level
-$(function () {
-    $("#overlayTransparencySlider").slider({
-        animate: true,
-        range: "min",
-        value: preserveOpacity,
-        orientation: "vertical",
-        min: 0.00,
-        max: 1.00,
-        step: 0.01,
-        slide: function (event, ui) {
-            var selection = $("#overlayTransparencySlider").slider("value");
-            var div = document.getElementById("overlay" + workingOverlayIndex);
-            div.style.opacity = selection;
-            preserveOpacity = selection;
-        }
-    });
-});                               //jquery transparency slider
-$(function ($) {
-    $(".knob").knob({
-        change: function (value) {
-            knobRotationValue = value; //assign knob value
-            if (value > 180) {
-                knobRotationValue = ((knobRotationValue - 360) * (1)); //used to correct for visual effect of knob error
-                //knobRotationValue = ((knobRotationValue-180)*(-1));
-            }
-            preservedRotation = knobRotationValue; //reassign
-            keepRotate(preservedRotation); //send to display fcn of rotation
-            
-        }
-    });
-
-});                              //for rotation knob
-function keepRotate(degreeIn) {
-    currentlyEditing = "yes"; //used to signify we are editing this overlay
-    $(function () {
-        $("#overlay" + workingOverlayIndex).rotate(degreeIn);
-    });
-}                 //maintain specific rotation
-function rotate(degreeIn) {
-    currentlyEditing = "yes"; //used to signify we are editing this overlay
-    degree = preservedRotation;
-    degree += degreeIn;
-    if (degreeIn != 0) {
-        $(function () {
-            $("#overlay" + workingOverlayIndex).rotate(degree); //assign overlay to defined rotation
-        });
-    } else { //if rotation is 0, reset rotation
-        $(function () {
-            degree = 0;
-            $("#overlay" + workingOverlayIndex).rotate(degree);
-        });
-    }
-    preservedRotation = degree; //preserve rotation value
-}                     //variable rotation fcn
-function hide(what) {
-    $(what).hide();
-}                           //hide somethign using jquery
-function show(what) {
-    $(what).show();
-}                           //display something using jquery
-function d(message) {
-    document.getElementById("debugger").innerHTML += "-- " + message + "<br />";
-}                           //debugger tool
-function polygonCenter(poly) {
-    var lowx,
-        highx,
-        lowy,
-        highy,
-        lats = [],
-        lngs = [],
-        vertices = poly.getPath();
-
-    for (var i = 0; i < vertices.length; i++) {
-        lngs.push(vertices.getAt(i).lng());
-        lats.push(vertices.getAt(i).lat());
-    }
-
-    lats.sort();
-    lngs.sort();
-    lowx = lats[0];
-    highx = lats[vertices.length - 1];
-    lowy = lngs[0];
-    highy = lngs[vertices.length - 1];
-    center_x = lowx + ((highx - lowx) / 2);
-    center_y = lowy + ((highy - lowy) / 2);
-    return (new google.maps.LatLng(center_x, center_y));
-}                  //get the center lat/long of a polygon
-function testBounds() {
-    if (strictBounds != null) {
-        if (strictBounds.contains(map.getCenter())) {
-            mapInBounds = "yes";
-        } else {
-            mapInBounds = "no";
-            map.panTo(mapCenter); //recenter
-            displayMessage(L5);
-        }
-    }
-}                         //test the map bounds
-function finder(stuff) {
-
-    if (stuff.length > 0) {
-        codeAddress("lookup", stuff);
-    } else {
-        //do nothing and keep quiet
-    }
-}                        //search the gmaps for a location (lat/long or address)
-function searcher(stuff) {
-
-    if (stuff.length > 0) {
-        displayMessage("No collection to search");
-    } else {
-        //do nothing and keep quiet
-    }
-}                      //search the collection for something
-function toggletoolbox(value) {
-    switch (value) {
-
-        case 1:
-            $("#toolboxTabs").hide();
-            document.getElementById("toolbox").style.height = "17px";
-            break;
-        case 2:
-            $("#toolboxTabs").show();
-            document.getElementById("toolbox").style.height = "auto";
-            break;
-        case 3:
-            $("#toolbox").hide();
-            toolboxDisplayed = false;
-            break;
-        case 4:
-            
-            break;
-    }
-
-}                 //toggle toolbox
-function Toggle(what) {
-    //toggle it
-    if (toolbarDisplayed == "yes") {
-        $(what).hide();
-        toolbarDisplayed = "no";
-        $("#container_toggle_toolbar1").hide();
-        $("#container_toggle_toolbar2").show();
-    } else {
-        $(what).show();
-        toolbarDisplayed = "yes";
-        $("#container_toggle_toolbar1").show();
-        $("#container_toggle_toolbar2").hide();
-    }
-
-}                         //used to toggle toolbar
-function toggleAllMapControlsTool() {
-    if (mapControlsDisplayed == false) { //not present
-        map.setOptions({
-            zoomControl: true,
-            zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL, position: google.maps.ControlPosition.LEFT_TOP },
-            panControl: true,
-            panControlOptions: { position: google.maps.ControlPosition.LEFT_TOP },
-            mapTypeControl: true,
-            mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU, position: google.maps.ControlPosition.RIGHT_TOP }
-        });
-        mapControlsDisplayed = true;
-    } else { //present
-        map.setOptions({
-            zoomControl: false,
-            panControl: false,
-            mapTypeControl: false
-        });
-        mapControlsDisplayed = false;
-    }
-}           //display/destroy map controls and drawing manager tool
-function codeAddress(type, geo) {
-    var bounds = map.getBounds(); //get the current map bounds (should not be greater than the bounding box)
-    geocoder.geocode({ 'address': geo, 'bounds': bounds }, function (results, status) { //geocode the lat/long of incoming with a bias towards the bounds
-        if (status == google.maps.GeocoderStatus.OK) { //if it worked
-            map.setCenter(results[0].geometry.location); //set the center of map to the results
-            testBounds(); //test to make sure we are indeed in the bounds (have to do this because gmaps only allows for a BIAS of bounds and is not strict)
-            if (mapInBounds == "yes") { //if it is inside bounds
-                if (searchCount > 0) { //check to see if this is the first time searched, if not
-                    searchResult.setMap(null); //set old search result to not display on map
-                } else { //if it is the first time
-                    searchCount++; //just interate
-                }
-                searchResult = new google.maps.Marker({ //create a new marker
-                    map: map, //add to current map
-                    position: results[0].geometry.location //set position to search results
-                });
-                document.getElementById("content_toolbox_search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div><br\>"; //add list div
-            } else { //if location found was outside strict map bounds...
-                displayMessage("Could not find within bounds."); //say so
-            }
-
-        } else { //if the entire geocode did not work
-            alert(L6); //localization...
-        }
-    });
-}               //get the location of a lat/long or address
-function codeLatLng(latlng) {
-    if (geocoder) {
-        geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                if (results[1]) {
-                    document.getElementById("content_toolbox_rgItem").innerHTML = results[0].formatted_address;
-                }
-                else {
-                    document.getElementById("content_toolbox_rgItem").innerHTML = "Geocoder failed due to: " + status;
-                    document.getElementById("content_toolbox_rgItem").innerHTML = "";
-                }
-            }
-        });
-    }
-}                   //get the nearest human reabable location from lat/long
-function useSearchAsItemLocation() {
-    placerType = "item";                        //this tells listeners what to do
-    itemMarker = new google.maps.Marker({
-        map: map,
-        position: searchResult.getPosition(),   //assign to prev search result location
-        draggable: true
-    });
-
-    firstMarker++;                              //prevent redraw
-    searchResult.setMap(null);                  //delete search result from map
-    $("#content_toolbox_searchResult").remove();                //delete search result form list
-    itemMarker.setMap(map);                     //set itemMarker location icon to map
-    document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
-    codeLatLng(itemMarker.getPosition());       //get the reverse geo address for item location and put in location tab
-    savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-
-    //add listener for new item marker (can only add once the itemMarker is created)
-    google.maps.event.addListener(itemMarker, 'dragend', function () {
-        document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get lat/long
-        codeLatLng(itemMarker.getPosition());   //get address
-        savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-    });
-
-}            //assign search location pin to item location
 
 //#endregion
 
@@ -1346,60 +849,21 @@ function initialize() {
         checkZoomLevel();
     });                                         //check the zoom level display message if out limits
 
+    google.maps.event.addListener(kmlLayer, 'click', function (kmlEvent) {
+        var name = kmlEvent.featureData.name;
+        displayMessage("ParcelID: " + name);
+    });                                           
+
     //#endregion
     
     initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
-    initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
     
-    //keypress shortcuts/actions
-    window.onkeypress = keypress;
-    function keypress(e) {
-        var keycode = null;
-        if (window.event) {
-            keycode = window.event.keyCode;
-        } else if (e) {
-            keycode = e.which;
-        }
-        switch (keycode) {
-            case 122: //z
-                if (navigator.appName == "Microsoft Internet Explorer") {
-                    var copyString = cLat.innerHTML;
-                    copyString += ", " + cLong.innerHTML;
-                    window.clipboardData.setData("Text", copyString);
-                    displayMessage("Coordinates Copied To Clipboard");
-                } else {
-                    if (cCoordsFrozen == "no") {
-                        //freeze
-                        cCoordsFrozen = "yes";
-                        displayMessage("Coordinates Viewer Frozen");                      
-                    } else {
-                        //unfreeze
-                        cCoordsFrozen = "no";
-                        displayMessage("Coordinates Viewer UnFrozen");
-                    }  
-                }
-            break;
-            case 111: //o
-                if (overlaysCurrentlyDisplayed == true) {
-                    displayMessage("Hiding Overlays");
-                    for (var i = 0; i < incomingOverlayBounds.length; i++) {    //go through and display overlays as long as there is an overlay to display
-                        overlaysOnMap[i].setMap(null);                          //hide the overlay from the map
-                        ghostOverlayRectangle[i].setMap(null);                  //hide ghost from map
-                        overlaysCurrentlyDisplayed = false;                     //mark that overlays are not on the map
-                    }
-                } else {
-                    displayMessage("Showing Overlays");
-                    for (var i = 0; i < incomingOverlayBounds.length; i++) {   //go through and display overlays as long as there is an overlay to display
-                        overlaysOnMap[i].setMap(map);                          //set the overlay to the map
-                        ghostOverlayRectangle[i].setMap(map);                  //set to map
-                        overlaysCurrentlyDisplayed = true;                     //mark that overlays are on the map
-                    }
-                }
-                
-            break;
-        }
-    }
-
+    google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+        //this part runs when the mapobject is created and rendered
+        initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
+    });
+    
+    
 }                         //on page load functions (mainly google map event listeners)
 
 //Displays all the overlays sent from the C# code. Also calls displayGhostOverlayRectangle.

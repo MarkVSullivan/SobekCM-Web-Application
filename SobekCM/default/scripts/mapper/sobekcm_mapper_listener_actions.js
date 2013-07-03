@@ -233,12 +233,14 @@ function action(id) {
 function place(id) {
     switch (id) {
         case "item":
+            placerType = "item";
             if (searchCount > 0 && itemMarker == null) {
                 useSearchAsItemLocation();
                 displayMessage(L18);
             } else {
                 drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-                placerType = "item";
+                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER] } });
+                drawingManager.setMap(map);
             }
             break;
             
@@ -266,6 +268,7 @@ function place(id) {
     }
 }
 
+//poi object placer handler
 function placePOI(type) {
     placerType = "poi";
     switch (type) {
@@ -358,15 +361,35 @@ function geolocate(id) {
 function save(id) {
     switch (id) {
         case "item":
-            //buttonSaveItem();
+            if (savingMarkerCenter != null) {
+                //alert("saving location: " + savingMarkerCenter); //grab coords from gmaps js
+                //createSavedItem(markerCenter);
+                displayMessage("saved");
+            } else {
+                displayMessage("nothing to save");
+            }
             break;
 
         case "overlay":
-
+            if (savingOverlayIndex.length) {
+                for (var i = 0; i < savingOverlayIndex.length; i++) {
+                    //alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
+                    createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+                    //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
+                }
+                displayMessage("saved");
+            } else {
+                displayMessage("nothing to save");
+            }
             break;
 
         case "poi":
-
+            if (poiObj.length > 0) {
+                createSavedPOI();
+                displayMessage("saved");
+            } else {
+                displayMessage("nothing to save");
+            }
             break;
     }
 }
@@ -379,7 +402,7 @@ function clear(id) {
             itemMarker = null;
             savingMarkerCenter = null; //reset stored coords to save
             document.getElementById('content_toolbox_posItem').value = ""; //reset lat/long in tab
-            document.getElementById('rgItem').value = ""; //reset address in tab
+            document.getElementById('content_toolbox_rgItem').value = ""; //reset address in tab
             displayMessage(L9); //say all is reset
             break;
 

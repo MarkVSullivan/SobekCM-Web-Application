@@ -1,5 +1,6 @@
-﻿    //Add Listeners
-try{
+﻿//listeners
+
+try {
     document.getElementById("content_toolbar_button_reset").addEventListener("click", function () {
         resetAll();
     }, false);
