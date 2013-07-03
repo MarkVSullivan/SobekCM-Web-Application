@@ -599,6 +599,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 #endregion
 
             //custom js files (load order does matter)
+            //mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_declarations.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_localization.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_listeners.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_listener_actions.js\"></script>"); 
