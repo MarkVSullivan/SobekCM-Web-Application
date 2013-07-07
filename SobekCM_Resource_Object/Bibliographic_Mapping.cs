@@ -1,7 +1,9 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
@@ -59,6 +61,9 @@ namespace SobekCM.Resource_Object
         /// <summary> Alternate Title </summary>
         Alternate_Title,
 
+        /// <summary> Alternate Title Language </summary>
+        Alternate_Title_Language,
+
         /// <summary> Attribution Statement </summary>
         Attribution,
 
@@ -67,6 +72,12 @@ namespace SobekCM.Resource_Object
 
         /// <summary> Born digital flag </summary>
         Born_Digital_Flag,
+
+        /// <summary> Classification </summary>
+        Classification,
+
+        /// <summary> Classification Authority </summary>
+        Classification_Authority,
 
         /// <summary> Box container </summary>
         Container_Box,
@@ -91,6 +102,18 @@ namespace SobekCM.Resource_Object
 
         /// <summary> Creator affiliation </summary>
         Creator_Affiliation,
+
+        /// <summary> Creator dates </summary>
+        Creator_Dates,
+
+        /// <summary> Creator family name </summary>
+        Creator_Family_Name,
+
+        /// <summary> Creator given name </summary>
+        Creator_Given_Name,
+
+        /// <summary> Creator role </summary>
+        Creator_Role,
 
         /// <summary> Cultural context </summary>
         Cultural_Context,
@@ -118,6 +141,9 @@ namespace SobekCM.Resource_Object
 
         /// <summary> Genre </summary>
         Genre,
+
+        /// <summary> Genre Authority </summary>
+        Genre_Authority,
 
         /// <summary> Geography.Continent </summary>
         Geography_Continent,
@@ -160,6 +186,9 @@ namespace SobekCM.Resource_Object
 
         /// <summary> Identifier </summary>
         Identifier,
+
+        /// <summary> Identifier Type</summary>
+        Identifier_Type,
 
         /// <summary> Inscription </summary>
         Inscription,
@@ -215,6 +244,15 @@ namespace SobekCM.Resource_Object
         /// <summary> Place of Publication </summary>
         Pub_Place,
 
+        /// <summary> Related URL Label </summary>
+        Related_URL_Label,
+
+        /// <summary> Related URL Link </summary>
+        Related_URL_Link,
+
+        /// <summary> Related URL Note </summary>
+        Related_URL_Note,
+
         /// <summary> Rights </summary>
         Rights,
 
@@ -242,6 +280,10 @@ namespace SobekCM.Resource_Object
         /// <summary> Subject keyword </summary>
         Subject_Keyword,
 
+        /// <summary> Subject keyword authority </summary>
+        Subject_Keyword_Authority,
+
+
         /// <summary> Sub Title </summary>
         Sub_Title,
 
@@ -257,6 +299,9 @@ namespace SobekCM.Resource_Object
         /// <summary> Title </summary>
         Title,
 
+        /// <summary> Title language </summary>
+        Title_Language,
+
         /// <summary> Tracking Box </summary>
         Tracking_Box,
 
@@ -269,11 +314,17 @@ namespace SobekCM.Resource_Object
         /// <summary> Volume identifier (VID) </summary>
         VID,
 
+        /// <summary> Viewer </summary>
+        Viewer,
+
         /// <summary> Visibility </summary>
         Visibility,
 
         /// <summary> Volume Number </summary>
         Volume,
+
+        /// <summary> Webskins </summary>
+        Webskin,
 
         /// <summary> Icon / Wordmark </summary>
         Wordmark,
@@ -375,7 +426,7 @@ namespace SobekCM.Resource_Object
         /// <returns> Enumeration value </returns>
         public static Mapped_Fields String_To_Mapped_Field(string Field_As_String)
         {
-            string correctName = Field_As_String.ToUpper().Replace("#", "").Replace(" ", "").Replace(".", "").Replace(":", "").Replace("\\", "").Replace("/", "").Trim();
+            string correctName = Field_As_String.ToUpper().Replace("#", "").Replace(" ", "").Replace(".", "").Replace(":", "").Replace("\\", "").Replace("/", "").Replace(")", "").Replace("(", "").Trim();
             if (correctName.Length == 0)
             {
                 correctName = "None";
@@ -461,6 +512,10 @@ namespace SobekCM.Resource_Object
                 case "ALTTITLE":
                     return Mapped_Fields.Alternate_Title;
 
+                case "ALTERNATETITLELANGUAGE":
+                case "ALTTITLELANGUAGE":
+                    return Mapped_Fields.Alternate_Title_Language;
+
                 case "ATTRIBUTION":
                     return Mapped_Fields.Attribution;
 
@@ -472,6 +527,13 @@ namespace SobekCM.Resource_Object
 
                 case "BORNDIGITAL":
                     return Mapped_Fields.Born_Digital_Flag;
+
+                case "CLASSIFICATION":
+                    return Mapped_Fields.Classification;
+
+                case "CLASSIFICATIONTYPE":
+                case "CLASSIFICATIONAUTHORITY":
+                    return Mapped_Fields.Classification_Authority;
 
                 case "CONTAINERBOX":
                 case "BOX":
@@ -505,6 +567,26 @@ namespace SobekCM.Resource_Object
                 case "AUTHORAFFILIATION":
                     return Mapped_Fields.Creator_Affiliation;
 
+                case "CREATORDATES":
+                case "AUTHORDATES":
+                    return Mapped_Fields.Creator_Dates;
+
+                case "CREATORFAMILYNAME":
+                case "AUTHORFAMILYNAME":
+                case "FAMILYNAME":
+                    return Mapped_Fields.Creator_Family_Name;
+
+                case "CREATORGIVENNAME":
+                case "AUTHORGIVENNAME":
+                case "GIVENNAME":
+                    return Mapped_Fields.Creator_Given_Name;
+
+                case "CREATORROLE":
+                case "AUTHORROLE":
+                case "CREATORROLES":
+                case "AUTHORROLES":
+                    return Mapped_Fields.Creator_Role;
+
                 case "CULTURALCONTEXT":
                     return Mapped_Fields.Cultural_Context;
 
@@ -533,6 +615,9 @@ namespace SobekCM.Resource_Object
 
                 case "GENRE":
                     return Mapped_Fields.Genre;
+
+                case "GENREAUTHORITY":
+                    return Mapped_Fields.Genre_Authority;
 
                 case "GEOGRAPHYCONTINENT":
                 case "CONTINENT":
@@ -592,6 +677,9 @@ namespace SobekCM.Resource_Object
 
                 case "IDENTIFIER":
                     return Mapped_Fields.Identifier;
+
+                case "IDENTIFIERTYPE":
+                    return Mapped_Fields.Identifier_Type;
 
                 case "INSCRIPTION":
                     return Mapped_Fields.Inscription;
@@ -661,6 +749,17 @@ namespace SobekCM.Resource_Object
                 case "PLACE":
                     return Mapped_Fields.Pub_Place;
 
+                case "RELATEDURLLABEL":
+                    return Mapped_Fields.Related_URL_Label;
+
+                case "RELATEDURL":
+                case "RELATEDURLLINK":
+                    return Mapped_Fields.Related_URL_Link;
+
+                case "RELATEDURLNOTE":
+                case "RELATEDURLNOTES":
+                    return Mapped_Fields.Related_URL_Note;
+
                 case "RIGHTS":
                     return Mapped_Fields.Rights;
 
@@ -698,6 +797,10 @@ namespace SobekCM.Resource_Object
                 case "SUBJECTS":
                     return Mapped_Fields.Subject_Keyword;
 
+                case "SUBJECTKEYWORDAUTHORITY":
+                case "SUBJECTAUTHORITY":
+                    return Mapped_Fields.Subject_Keyword_Authority;
+
                 case "SUBTITLE":
                     return Mapped_Fields.Sub_Title;
 
@@ -715,6 +818,9 @@ namespace SobekCM.Resource_Object
                 case "TITLE":
                     return Mapped_Fields.Title;
 
+                case "TITLELANGUAGE":
+                    return Mapped_Fields.Title_Language;
+
                 case "TRACKINGBOX":
                     return Mapped_Fields.Tracking_Box;
 
@@ -729,11 +835,21 @@ namespace SobekCM.Resource_Object
                 case "VID":
                     return Mapped_Fields.VID;
 
+                case "VIEWERS":
+                case "VIEWER":
+                    return Mapped_Fields.Viewer;
+
                 case "VISIBILITY":
                     return Mapped_Fields.Visibility;
 
                 case "VOLUME":
                     return Mapped_Fields.Volume;
+
+                case "WEBSKINS":
+                case "WEBSKIN":
+                case "SKINS":
+                case "SKIN":
+                    return Mapped_Fields.Webskin;
 
                 case "YEAR":
                     return Mapped_Fields.Year;
@@ -796,6 +912,9 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Alternate_Title:
                     return "Alternate Title";
 
+                case Mapped_Fields.Alternate_Title_Language:
+                    return "Alternate Title (Language)";
+
                 case Mapped_Fields.Attribution:
                     return "Attribution";
 
@@ -804,6 +923,12 @@ namespace SobekCM.Resource_Object
 
                 case Mapped_Fields.Born_Digital_Flag:
                     return "Born Digital";
+
+                case Mapped_Fields.Classification:
+                    return "Classification";
+
+                case Mapped_Fields.Classification_Authority:
+                    return "Classification (Authority)";
 
                 case Mapped_Fields.Container_Box:
                     return "Container.Box";
@@ -828,6 +953,18 @@ namespace SobekCM.Resource_Object
 
                 case Mapped_Fields.Creator_Affiliation:
                     return "Creator Affiliation";
+
+                case Mapped_Fields.Creator_Dates:
+                    return "Creator Dates";
+
+                case Mapped_Fields.Creator_Family_Name:
+                    return "Creator Family Name";
+
+                case Mapped_Fields.Creator_Given_Name:
+                    return "Creator Given Name";
+
+                case Mapped_Fields.Creator_Role:
+                    return "Creator Role";
 
                 case Mapped_Fields.Cultural_Context:
                     return "Cultural Context";
@@ -855,6 +992,9 @@ namespace SobekCM.Resource_Object
 
                 case Mapped_Fields.Genre:
                     return "Genre";
+
+                case Mapped_Fields.Genre_Authority:
+                    return "Genre (Authority)";
 
                 case Mapped_Fields.Geography_Continent:
                     return "Geography.Continent";
@@ -898,6 +1038,9 @@ namespace SobekCM.Resource_Object
 
                 case Mapped_Fields.Identifier:
                     return "Identifier";
+
+                case Mapped_Fields.Identifier_Type:
+                    return "Identifier (Type)";
 
                 case Mapped_Fields.Inscription:
                     return "Inscription";
@@ -953,6 +1096,15 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Pub_Place:
                     return "Publication Place";
 
+                case Mapped_Fields.Related_URL_Label:
+                    return "Related URL (Label)";
+
+                case Mapped_Fields.Related_URL_Link:
+                    return "Related URL (Link)";
+
+                case Mapped_Fields.Related_URL_Note:
+                    return "Related URL (Note)";
+
                 case Mapped_Fields.Rights:
                     return "Rights";
 
@@ -980,6 +1132,9 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Subject_Keyword:
                     return "Subject Keyword";
 
+                case Mapped_Fields.Subject_Keyword_Authority:
+                    return "Subject Keyword (Authority)";
+
                 case Mapped_Fields.Sub_Title:
                     return "SubTitle";
 
@@ -995,6 +1150,9 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Title:
                     return "Title";
 
+                case Mapped_Fields.Title_Language:
+                    return "Title (Language)";
+
                 case Mapped_Fields.Tracking_Box:
                     return "Tracking Box";
 
@@ -1007,11 +1165,17 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.VID:
                     return "VID";
 
+                case Mapped_Fields.Viewer:
+                    return "Viewer";
+
                 case Mapped_Fields.Visibility:
                     return "Visibility";
 
                 case Mapped_Fields.Volume:
                     return "Volume";
+
+                case Mapped_Fields.Webskin:
+                    return "Webskin";
 
                 case Mapped_Fields.Year:
                     return "Year";
@@ -1046,11 +1210,32 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Alternate_Title:
                     Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.alternative);
                     break;
+                case Mapped_Fields.Alternate_Title_Language:
+                    List<Title_Info> otherTitles = new List<Title_Info>();
+                    foreach (Title_Info thisTitle in Package.Bib_Info.Other_Titles)
+                    {
+                        if ( thisTitle.Title_Type == Title_Type_Enum.alternative )
+                            otherTitles.Add(thisTitle);
+                    }
+                    if (otherTitles.Count > 0)
+                    {
+                        otherTitles[otherTitles.Count - 1].Language = Data;
+                    }
+                    break;
                 case Mapped_Fields.Attribution:
                     Package.Bib_Info.Add_Note(Data, Note_Type_Enum.funding);
                     break;
                 case Mapped_Fields.Aggregation_Code:
                     Package.Behaviors.Add_Aggregation(Data.ToUpper());
+                    break;
+                case Mapped_Fields.Classification:
+                    Package.Bib_Info.Add_Classification(Data);
+                    break;
+                case Mapped_Fields.Classification_Authority:
+                    if (Package.Bib_Info.Classifications_Count > 0)
+                    {
+                        Package.Bib_Info.Classifications[Package.Bib_Info.Classifications_Count - 1].Authority = Data;
+                    }
                     break;
                 case Mapped_Fields.Contributor:
                     Package.Bib_Info.Add_Named_Entity(new Name_Info(Data, "contributor"));
@@ -1061,7 +1246,62 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Creator_Affiliation:
                     if (Package.Bib_Info.Names_Count > 0)
                     {
-                        Package.Bib_Info.Names[0].Affiliation = Data;
+                        Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Affiliation = Data;
+                    }
+                    break;
+                case Mapped_Fields.Creator_Dates:
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Dates = Data;
+                    }
+                    break;
+                case Mapped_Fields.Creator_Family_Name:
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        Name_Info lastNamedEntity = Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1];
+                        if (lastNamedEntity.Family_Name.Length == 0)
+                            lastNamedEntity.Family_Name = Data;
+                        else
+                        {
+                            Name_Info newNameEntity = new Name_Info();
+                            newNameEntity.Family_Name = Data;
+                            Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                        }
+                    }
+                    else
+                    {
+                        Name_Info newNameEntity = new Name_Info();
+                        newNameEntity.Family_Name = Data;
+                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                    }
+                    break;
+                case Mapped_Fields.Creator_Given_Name:
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        Name_Info lastNamedEntity = Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1];
+                        if (lastNamedEntity.Given_Name.Length == 0)
+                            lastNamedEntity.Given_Name = Data;
+                        else
+                        {
+                            Name_Info newNameEntity = new Name_Info();
+                            newNameEntity.Given_Name = Data;
+                            Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                        }
+                    }
+                    else
+                    {
+                        Name_Info newNameEntity = new Name_Info();
+                        newNameEntity.Given_Name = Data;
+                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                    }
+                    break;
+                case Mapped_Fields.Creator_Role:
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        Name_Info thisCreator = Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1];
+                        if ((thisCreator.Roles.Count == 1) && ((thisCreator.Roles[0].Role == "creator") || (thisCreator.Roles[1].Role == "contributor")))
+                            thisCreator.Roles.Clear();
+                        Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Add_Role(Data);
                     }
                     break;
                 case Mapped_Fields.Cultural_Context:
@@ -1077,9 +1317,13 @@ namespace SobekCM.Resource_Object
                     Package.Bib_Info.Donor.Full_Name = Data;
                     break;
                 case Mapped_Fields.Genre:
-                    Subject_Info_Standard genre = new Subject_Info_Standard();
-                    genre.Add_Genre(Data);
-                    Package.Bib_Info.Add_Subject(genre);
+                    Package.Bib_Info.Add_Genre(Data);
+                    break;
+                case Mapped_Fields.Genre_Authority:
+                    if (Package.Bib_Info.Genres_Count > 0)
+                    {
+                        Package.Bib_Info.Genres[Package.Bib_Info.Genres_Count - 1].Authority = Data;
+                    }
                     break;
                 case Mapped_Fields.Holding_Code:
                     Package.Bib_Info.Location.Holding_Code = Data;
@@ -1089,6 +1333,12 @@ namespace SobekCM.Resource_Object
                     break;
                 case Mapped_Fields.Identifier:
                     Package.Bib_Info.Add_Identifier(Data);
+                    break;
+                case Mapped_Fields.Identifier_Type:
+                    if (Package.Bib_Info.Identifiers_Count > 0)
+                    {
+                        Package.Bib_Info.Identifiers[Package.Bib_Info.Identifiers_Count - 1].Type = Data;
+                    }
                     break;
                 case Mapped_Fields.Inscription:
                     VRACore_Info vraCoreInfo8 = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
@@ -1108,6 +1358,15 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Pub_Place:
                     Package.Bib_Info.Origin_Info.Add_Place(Data);
                     break;
+                case Mapped_Fields.Related_URL_Label:
+                    Package.Bib_Info.Location.Other_URL_Display_Label = Data;
+                    break;
+                case Mapped_Fields.Related_URL_Link:
+                    Package.Bib_Info.Location.Other_URL = Data;
+                    break;
+                case Mapped_Fields.Related_URL_Note:
+                    Package.Bib_Info.Location.Other_URL_Note = Data;
+                    break;
                 case Mapped_Fields.Source_Code:
                     Package.Bib_Info.Source.Code = Data;
                     break;
@@ -1116,6 +1375,12 @@ namespace SobekCM.Resource_Object
                     break;
                 case Mapped_Fields.Subject_Keyword:
                     Package.Bib_Info.Add_Subject(Data, String.Empty);
+                    break;
+                case Mapped_Fields.Subject_Keyword_Authority:
+                    if (Package.Bib_Info.Subjects_Count > 0)
+                    {
+                        Package.Bib_Info.Subjects[Package.Bib_Info.Subjects_Count - 1].Authority = Data;
+                    }
                     break;
                 case Mapped_Fields.BibID:
                     Package.Bib_Info.BibID = Data.ToUpper();
@@ -1242,6 +1507,9 @@ namespace SobekCM.Resource_Object
                     break;
                 case Mapped_Fields.Title:
                     Package.Bib_Info.Main_Title.Title = Data;
+                    break;
+                case Mapped_Fields.Title_Language:
+                    Package.Bib_Info.Main_Title.Language = Data;
                     break;
                 case Mapped_Fields.Aleph:
                     Package.Bib_Info.Add_Identifier(Data, "ALEPH");
@@ -1397,6 +1665,9 @@ namespace SobekCM.Resource_Object
                     //    Package.Processing_Parameters.Icons.Add(Data, String.Empty);
                     Package.Behaviors.Add_Wordmark(Data);
                     break;
+                case Mapped_Fields.Webskin:
+                    Package.Behaviors.Add_Web_Skin(Data);
+                    break;
                 case Mapped_Fields.Temporal_Coverage:
                     Package.Bib_Info.Add_Temporal_Subject(-1, -1, Data);
                     break;
@@ -1486,6 +1757,29 @@ namespace SobekCM.Resource_Object
                     break;
                 case Mapped_Fields.Container_Folder:
                     Package.Bib_Info.Add_Container("Folder", Data, 3);
+                    break;
+                case Mapped_Fields.Viewer:
+                    switch (Data.ToUpper().Replace("_"," ").Replace(" ",""))
+                    {
+                        case "JPEG":
+                        case "JPG":
+                            Package.Behaviors.Add_View(View_Enum.JPEG);
+                            break;
+
+                        case "JPEG2000":
+                        case "JP2":
+                            Package.Behaviors.Add_View(View_Enum.JPEG2000);
+                            break;
+
+                        case "PAGETURNER":
+                            Package.Behaviors.Add_View(View_Enum.PAGE_TURNER);
+                            break;
+
+                        case "RELATEDIMAGES":
+                        case "THUMBNAILS":
+                            Package.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
+                            break;
+                    }
                     break;
                 case Mapped_Fields.Visibility:
                     switch (Data.ToUpper())
