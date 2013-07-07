@@ -67,10 +67,55 @@
     /*not used yet*/
 }
 #content_toolbarGrabber {
+    display: none;
     background-image: url("images/mapper/toolbar-toggle.png");
+    background-repeat: no-repeat;
     min-height: 10px;
     min-width: 40px;
 }
+#content_minibar_icon {
+    float: left;
+    background-image: url("images/mapper/toolbox-icon.png");
+    background-repeat: no-repeat;
+    height: 15px;
+    width: 28px;
+}
+#content_minibar_header {
+    float: left;
+    height: 15px;
+    font: 12px 'Arial Black', Gadget, sans-serif;
+}
+#content_minibar_button_minimize {
+    float: right;
+    background-image: url("images/mapper/toolbox-minimize2.png");
+    background-repeat: no-repeat;
+    height: 19px;
+    width: 19px;
+}
+#content_minibar_button_maximize {
+    float: right;
+    background-image: url("images/mapper/toolbox-maximize2.png");
+    background-repeat: no-repeat; 
+    height: 19px;
+    width: 19px;
+}
+#content_minibar_button_close {
+    float: right;
+    background-image: url("images/mapper/toolbox-close2.png");
+    background-repeat: no-repeat;
+    height: 19px;
+    width: 19px;
+}
+#content_minibar_button_minimize:hover {
+    cursor: pointer;
+}
+#content_minibar_button_maximize:hover {
+    cursor: pointer;
+}
+#content_minibar_button_close:hover {
+    cursor: pointer;
+}
+
 #content_toolbox_button_reset {
     background-image: url("images/mapper/button-reset.png");
 }
@@ -169,4 +214,19 @@
     height: 25px;
     width: 17px;
     float: left;
+}
+#content_toolbox_button_poiMarker {
+    background-image: url("images/mapper/button-drawMarker.png");
+}
+#content_toolbox_button_poiCircle {
+    background-image: url("images/mapper/button-drawCircle.png");
+}
+#content_toolbox_button_poiRectangle {
+    background-image: url("images/mapper/button-drawRectangle.png");
+}
+#content_toolbox_button_poiPolygon {
+    background-image: url("images/mapper/button-drawPolygon.png");
+}
+#content_toolbox_button_poiLine {
+    background-image: url("images/mapper/button-drawLine.png");
 }
