@@ -1953,10 +1953,6 @@ namespace SobekCM.Library.HTML
                 // Add the scripts needed
                 buildResult.AppendLine("<!-- Add references to the jquery and sobekcm javascript files -->");
 
-                //I took these out mainly because we updated jquery and jquery ui to include everything. (also they were interfering with google maps coordinate viewer)
-                //buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.6.2.min.js\"></script>");
-                //buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.8.16.custom.min.js\"></script>");
-
                 buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
                 buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
                 buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
