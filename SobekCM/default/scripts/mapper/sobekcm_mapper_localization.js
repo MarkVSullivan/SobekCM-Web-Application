@@ -81,7 +81,7 @@ try {
     document.getElementById("content_toolbox_posItem").title = "Coordinates: This is the selected Latitude and Longitude of the point you selected.";
     document.getElementById("content_toolbox_rgItem").title = "Address: This is the nearest address of the point you selected.";
     document.getElementById("content_toolbox_button_saveItem").title = "Save Location";
-    document.getElementById("content_toolbox_button_clearItem").title = "Cancel";
+    document.getElementById("content_toolbox_button_clearItem").title = "Clear Item";
     //tab
     document.getElementById("content_toolbox_button_placeOverlay").title = "Toggle Overlay Editing";
     document.getElementById("content_toolbox_button_overlayGetUserLocation").title = "Center On Your Current Position";
@@ -92,7 +92,7 @@ try {
     document.getElementById("content_toolbox_rotationClockwise").title = ".1&deg Right: Click to Rotate .1&deg Clockwise";
     document.getElementById("transparency").title = "Transparency: Set the transparency of this Overlay";
     document.getElementById("content_toolbox_button_saveOverlay").title = "Save Overlay";
-    document.getElementById("content_toolbox_button_clearOverlay").title = "Cancel";
+    document.getElementById("content_toolbox_button_clearOverlay").title = "Clear Overlay";
     //tab
     document.getElementById("content_toolbox_button_placePOI").title = "Place Point Of Interest";
     document.getElementById("content_toolbox_button_poiGetUserLocation").title = "Center On Your Current Position";
@@ -112,11 +112,11 @@ try {
 try {
     document.getElementById("content_minibar_header").innerHTML = "Toolbox";
     document.getElementById("content_toolbox_button_saveItem").innerHTML = "Save";
-    document.getElementById("content_toolbox_button_clearItem").innerHTML = "Cancel";
+    document.getElementById("content_toolbox_button_clearItem").innerHTML = "Clear";
     document.getElementById("content_toolbox_button_saveOverlay").innerHTML = "Save";
-    document.getElementById("content_toolbox_button_clearOverlay").innerHTML = "Cancel";
+    document.getElementById("content_toolbox_button_clearOverlay").innerHTML = "Clear";
     document.getElementById("content_toolbox_button_savePOI").innerHTML = "Save";
-    document.getElementById("content_toolbox_button_clearPOI").innerHTML = "Cancel";
+    document.getElementById("content_toolbox_button_clearPOI").innerHTML = "Clear";
     document.getElementById("content_toolbox_tab1_header").innerHTML = "Map Controls";
     document.getElementById("content_toolbox_tab2_header").innerHTML = "Actions";
     document.getElementById("content_toolbox_tab3_header").innerHTML = "Manage Location";
