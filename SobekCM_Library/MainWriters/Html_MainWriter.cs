@@ -1021,6 +1021,14 @@ namespace SobekCM.Library.MainWriters
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
+            // Always add jQuery library (changed as of 7/8/2013)
+#if DEBUG
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+#else
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+#endif
+
+
             // Add the special code for the html subwriter
             if ( subwriter != null )
                 subwriter.Write_Within_HTML_Head(Output, Tracer);

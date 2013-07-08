@@ -158,7 +158,6 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Projects_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
 
             // Add the scripts needed
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.6.2.min.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.8.16.custom.min.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 

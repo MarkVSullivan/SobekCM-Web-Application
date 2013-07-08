@@ -5,10 +5,8 @@
   <title><%Set_Page_Title();%></title>
     
   <!-- <% Repository_Title(); %> -->
-  <meta content="Microsoft Visual Studio .NET 2005" name="GENERATOR" />
-  <meta content="C#" name="CODE_LANGUAGE" />
-  <meta content="JavaScript" name="vs_defaultClientScript" />
-  <meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema" />
+    <meta content="JavaScript" name="vs_defaultClientScript" />
+
 <%Add_Style_References();%>
 </head>
 <body<%Add_Body_Attributes();%>>
@@ -21,6 +19,7 @@
 <%Add_Additional_HTML_Upload_Form();%>
 </form>
 <form id="itemNavForm" runat="server">
+
     <asp:PlaceHolder id="navigationPlaceHolder" runat="server"></asp:PlaceHolder>
     <asp:PlaceHolder id="tocPlaceHolder" runat="server"></asp:PlaceHolder>
 <%Add_Additional_HTML();%>
