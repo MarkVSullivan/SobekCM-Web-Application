@@ -190,16 +190,16 @@ var gmapOptions = {
     mapTypeId: google.maps.MapTypeId.ROADMAP,                   //default map type to display
     streetViewControl: false,                                   //is streetview active?
     tilt: 0,                                                    //set to 0 to disable 45 degree tilt
-    zoomControl: true,                                          //is zoom control active?
+    zoomControl: false,                                          //is zoom control active?
     zoomControlOptions: {
         style: google.maps.ZoomControlStyle.SMALL,              //zoom control style
         position: google.maps.ControlPosition.LEFT_TOP          //zoom control position 
     },
-    panControl: true,                                           //pan control active
+    panControl: false,                                           //pan control active
     panControlOptions: {
         position: google.maps.ControlPosition.LEFT_TOP          //pan control position
     },
-    mapTypeControl: true,                                       //map layer control active
+    mapTypeControl: false,                                       //map layer control active
     mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,   //map layer control style
         position: google.maps.ControlPosition.RIGHT_TOP         //map layer control position

@@ -437,7 +437,7 @@ function keypress(e) {
     } else if (e) {
         keycode = e.which;
     }
-    displayMessage("keycode: " + keycode);
+    //displayMessage("keycode: " + keycode);
     switch (keycode) {
         case 70: //F
             if (navigator.appName == "Microsoft Internet Explorer") {
