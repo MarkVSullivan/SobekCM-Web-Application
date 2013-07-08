@@ -24,246 +24,308 @@ using System.Xml;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
-	public class QC_ItemViewer : abstractItemViewer   
-	{
-		private readonly string title;
-		private int thumbnailsPerPage;
-		private int thumbnailSize;
-		private int autonumber_mode_from_form; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
-	    private int autonumber_mode;
-		private string autonumber_number_system;
-		private string autonumber_text_only;
-		private string autonumber_number_only;
-		private string hidden_autonumber_filename;
-		private string hidden_request;
-		private string hidden_main_thumbnail;
-		private bool autosave_option;
-		private string hidden_move_relative_position;
-		private string hidden_move_destination_fileName;
-		private string userInProcessDirectory;
-		private bool makeSortable = true;
-		private bool isLower;
-		private SobekCM_Item qc_item;
+    public class QC_ItemViewer : abstractItemViewer
+    {
+        private readonly string title;
+        private int thumbnailsPerPage;
+        private int thumbnailSize;
+        private int autonumber_mode_from_form; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
+        private int autonumber_mode;
+        private string autonumber_number_system;
+        private string autonumber_text_only;
+        private string autonumber_number_only;
+        private string hidden_autonumber_filename;
+        private string hidden_request;
+        private string hidden_main_thumbnail;
+        private bool autosave_option;
+        private string hidden_move_relative_position;
+        private string hidden_move_destination_fileName;
+        private string userInProcessDirectory;
+        private bool makeSortable = true;
+        private bool isLower;
+        private SobekCM_Item qc_item;
 
-		private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
-		private QualityControl_Profile qc_profile;
+        private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
+        private QualityControl_Profile qc_profile;
 
-		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
-		public QC_ItemViewer( SobekCM_Item Current_Object, User_Object Current_User, Navigation.SobekCM_Navigation_Object Current_Mode )
-		{
-			// Save the current user and current mode information (this is usually populated AFTER the constructor completes, 
-			// but in this case (QC viewer) we need the information for early processing
-			this.CurrentMode = Current_Mode;
-			this.CurrentUser = Current_User;
+        /// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
+        public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, Navigation.SobekCM_Navigation_Object Current_Mode)
+        {
+            // Save the current user and current mode information (this is usually populated AFTER the constructor completes, 
+            // but in this case (QC viewer) we need the information for early processing
+            this.CurrentMode = Current_Mode;
+            this.CurrentUser = Current_User;
 
-			// If there is no user, send to the login
-			if (CurrentUser == null)
-			{
-				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-				HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
-				return;
-			}
+            // If there is no user, send to the login
+            if (CurrentUser == null)
+            {
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                return;
+            }
 
-			// If the user cannot edit this item, go back
-			if (!CurrentUser.Can_Edit_This_Item(Current_Object))
-			{
-				CurrentMode.ViewerCode = String.Empty;
-				HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
-				return;
-			}
+            // If the user cannot edit this item, go back
+            if (!CurrentUser.Can_Edit_This_Item(Current_Object))
+            {
+                CurrentMode.ViewerCode = String.Empty;
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                return;
+            }
 
-			// Get the special qc_item, which matches the passed in Current_Object, at least the first time.
-			// If the QC work is already in process, we may find a temporary METS file to read.
+            // Get the special qc_item, which matches the passed in Current_Object, at least the first time.
+            // If the QC work is already in process, we may find a temporary METS file to read.
 
-			// Determine the in process directory for this
-			userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork";
-			if (Current_User.UFID.Trim().Length > 0)
-				userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork";
+            // Determine the in process directory for this
+            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork";
+            if (Current_User.UFID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork";
 
-			// Is this work in the user's SESSION state?
-			qc_item = HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] as SobekCM_Item;
-			if (qc_item == null)
-			{
-				// Is there a temporary METS for this item, which is not expired?
-				string metsInProcessFile = userInProcessDirectory + "\\" + Current_Object.BibID + "_" + Current_Object.VID + ".mets";
-				if ((File.Exists(metsInProcessFile)) &&
-					(File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
-				{
-					// Read the temporary METS file, and use that to build the qc_item
-					qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, Current_Object.BibID, Current_Object.VID, null, null);
-				}
-				else
-				{
-					// Just read the normal otherwise ( if we had the ability to deep copy a SObekCM_Item, we could skip this )
-					qc_item = SobekCM_Item_Factory.Get_Item(Current_Object.BibID, Current_Object.VID, null, null);
-				}
+            // Is this work in the user's SESSION state?
+            qc_item = HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] as SobekCM_Item;
+            if (qc_item == null)
+            {
+                // Is there a temporary METS for this item, which is not expired?
+                string metsInProcessFile = userInProcessDirectory + "\\" + Current_Object.BibID + "_" + Current_Object.VID + ".mets";
+                if ((File.Exists(metsInProcessFile)) &&
+                    (File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
+                {
+                    // Read the temporary METS file, and use that to build the qc_item
+                    qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, Current_Object.BibID, Current_Object.VID, null, null);
+                }
+                else
+                {
+                    // Just read the normal otherwise ( if we had the ability to deep copy a SObekCM_Item, we could skip this )
+                    qc_item = SobekCM_Item_Factory.Get_Item(Current_Object.BibID, Current_Object.VID, null, null);
+                }
 
-				// Save to the session, so it is easily available for next time
-				HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] = qc_item;
-			}
+                // Save to the session, so it is easily available for next time
+                HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] = qc_item;
+            }
 
-			// If no QC item, this is an error
-			if (qc_item == null)
-			{
-				throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
-			}
+            // If no QC item, this is an error
+            if (qc_item == null)
+            {
+                throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
+            }
 
-			// Get the default QC profile
-			qc_profile = QualityControl_Configuration.Default_Profile;
+            // Get the default QC profile
+            qc_profile = QualityControl_Configuration.Default_Profile;
 
-			title = "Quality Control";
+            title = "Quality Control";
 
-			
-			 // See if there were hidden requests
-			hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
-			hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
-			hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
-			hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
-			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-			string temp=HttpContext.Current.Request.Form["autonumber_mode_from_form"] ?? "0";
-		    Int32.TryParse(temp, out autonumber_mode_from_form);
-			autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
-			autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
-			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
 
-			if(!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"],out makeSortable))) makeSortable=true;
-			// If the hidden move relative position is BEFORE, it is before the very first page
-			if (hidden_move_relative_position == "Before")
-				hidden_move_destination_fileName = "[BEFORE FIRST]";
-			
-			try
-			{
+            // See if there were hidden requests
+            hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
+            hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_Index"] ?? String.Empty;
+            hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
+            hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
+            autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
+            string temp = HttpContext.Current.Request.Form["autonumber_mode_from_form"] ?? "0";
+            Int32.TryParse(temp, out autonumber_mode_from_form);
+            autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
+            autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
+            autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
+            hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
 
-				//Call the JavaScript autosave function based on the option selected
-				bool autosaveCacheValue=true;
-				bool autosaveCache = false;
-				
-				//Conversion result of autosaveCacheValue(conversion successful or not) saved in autosaveCache
-				   
-				if (HttpContext.Current.Cache.Get("autosave_option")!=null)
-				   autosaveCache=bool.TryParse(HttpContext.Current.Cache.Get("autosave_option").ToString(), out autosaveCacheValue);
-				bool convert = bool.TryParse(HttpContext.Current.Request.Form["Autosave_Option"], out autosave_option);
-				if (!convert && !autosaveCache)
-				{
-					autosave_option = true;
-				}
-				else if (!convert && autosaveCache)
-				{
-					autosave_option = autosaveCacheValue;
-				}
+            if (!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"], out makeSortable))) makeSortable = true;
+            // If the hidden move relative position is BEFORE, it is before the very first page
+            if (hidden_move_relative_position == "Before")
+                hidden_move_destination_fileName = "[BEFORE FIRST]";
 
-				else
-				{
-					HttpContext.Current.Cache.Insert("autosave_option", (object)autosave_option);
-				}
-			}
-			catch (Exception e)
-			{
-				throw new ApplicationException("Error retrieving auto save option. "+ e.Message);
-			}
+            try
+            {
 
-			//If a main thumbnail value was selected (either for assignment or removal)
-			if (!String.IsNullOrEmpty(hidden_main_thumbnail) && (hidden_request=="pick_main_thumbnail" || hidden_request=="unpick_main_thumbnail"))
-			{
-				// Save the selected page index to the cache if request_type is "pick"
-				if (hidden_request == "pick_main_thumbnail")
-					HttpContext.Current.Cache.Insert("main_thumbnail_index", (object)hidden_main_thumbnail);
+                //Call the JavaScript autosave function based on the option selected
+                bool autosaveCacheValue = true;
+                bool autosaveCache = false;
 
-				//else clear the cached value if request_type is "unpick"
-				else if(hidden_request=="unpick_main_thumbnail")
-				{
-					HttpContext.Current.Cache.Remove("main_thumbnail_index");
-				}
+                //Conversion result of autosaveCacheValue(conversion successful or not) saved in autosaveCache
 
-				//Save the request type as well
-				HttpContext.Current.Cache.Insert("main_thumbnail_action", (object) hidden_request);
+                if (HttpContext.Current.Cache.Get("autosave_option") != null)
+                    autosaveCache = bool.TryParse(HttpContext.Current.Cache.Get("autosave_option").ToString(), out autosaveCacheValue);
+                bool convert = bool.TryParse(HttpContext.Current.Request.Form["Autosave_Option"], out autosave_option);
+                if (!convert && !autosaveCache)
+                {
+                    autosave_option = true;
+                }
+                else if (!convert && autosaveCache)
+                {
+                    autosave_option = autosaveCacheValue;
+                }
 
-				string url_redirect = HttpContext.Current.Request.Url.ToString();
-				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+                else
+                {
+                    HttpContext.Current.Cache.Insert("autosave_option", (object) autosave_option);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Error retrieving auto save option. " + e.Message);
+            }
 
-			}
-			else
-			{
-				//Get the main thumbnail index value from the cache if present
-				if (HttpContext.Current.Cache.Get("main_thumbnail_index")!=null)
-				{
-					hidden_main_thumbnail = HttpContext.Current.Cache.Get("main_thumbnail_index").ToString();
+            //If a main thumbnail value was selected (either for assignment or removal)
+            if (!String.IsNullOrEmpty(hidden_main_thumbnail) && (hidden_request == "pick_main_thumbnail" || hidden_request == "unpick_main_thumbnail"))
+            {
+                // Save the selected page index to the cache if request_type is "pick"
+                if (hidden_request == "pick_main_thumbnail")
+                    HttpContext.Current.Cache.Insert("main_thumbnail_index", (object) hidden_main_thumbnail);
 
-				}
-			}
+                    //else clear the cached value if request_type is "unpick"
+                else if (hidden_request == "unpick_main_thumbnail")
+                {
+                    HttpContext.Current.Cache.Remove("main_thumbnail_index");
+                }
 
-			// If this was a cancel request do that
-			if (hidden_request == "cancel")
-			{
-				HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
-			}
-			else if (hidden_request == "save")
-			{
-				//Save the current time
-				HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
+                //Save the request type as well
+                HttpContext.Current.Cache.Insert("main_thumbnail_action", (object) hidden_request);
 
-				// Read the data from the http form, perform all requests, and
-				// update the qc_item (also updates the session and temporary files)
-				Save_From_Form_Request_To_Item( String.Empty, String.Empty );
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
-				// Save this updated information in the temporary folder's METS file for reading
-				// later if necessary.
-				string url_redirect = HttpContext.Current.Request.Url.ToString();
-				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+            }
+            else
+            {
+                //Get the main thumbnail index value from the cache if present
+                if (HttpContext.Current.Cache.Get("main_thumbnail_index") != null)
+                {
+                    hidden_main_thumbnail = HttpContext.Current.Cache.Get("main_thumbnail_index").ToString();
 
-			}
-			else if (hidden_request == "move_selected_pages")
-			{
-				// Read the data from the http form, perform all requests, and
-				// update the qc_item (also updates the session and temporary files)
-				List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
+                }
+            }
 
-				////If there were multiple selected pages to be moved, move these now and save to the temporary METS file
-				//if (!(String.IsNullOrEmpty(hidden_move_relative_position)) && !(String.IsNullOrEmpty(hidden_move_destination_fileName)))
-				//{
-				//    Move_Multiple_Pages(hidden_move_relative_position, hidden_move_destination_fileName, selected_pages);
-				//}
+            // If this was a cancel request do that
+            if (hidden_request == "cancel")
+            {
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+            }
+            else if (hidden_request == "save")
+            {
+                //Save the current time
+                HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
 
-				string url_redirect = HttpContext.Current.Request.Url.ToString();
-				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
-			}
-			else if (hidden_request == "delete_page")
-			{
-				// Read the data from the http form, perform all requests, and
-				// update the qc_item (also updates the session and temporary files)
-				string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
-				Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                Save_From_Form_Request_To_Item(String.Empty, String.Empty);
 
-				string url_redirect = HttpContext.Current.Request.Url.ToString();
-				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+                // Save this updated information in the temporary folder's METS file for reading
+                // later if necessary.
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
-			}
-			else if (hidden_request == "delete_selected_page")
-			{
-				// Read the data from the http form, perform all requests, and
-				// update the qc_item (also updates the session and temporary files)
-				Save_From_Form_Request_To_Item(String.Empty, String.Empty);
+            }
+            else if (hidden_request == "move_selected_pages")
+            {
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
 
-				string url_redirect = HttpContext.Current.Request.Url.ToString();
-				HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+            }
+            else if (hidden_request == "delete_page")
+            {
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+                Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
 
-			}
-		}
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
 
+            }
+            else if (hidden_request == "delete_selected_page")
+            {
+                // Read the data from the http form, perform all requests, and
+                // update the qc_item (also updates the session and temporary files)
+                Save_From_Form_Request_To_Item(String.Empty, String.Empty);
+
+                string url_redirect = HttpContext.Current.Request.Url.ToString();
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+
+            }
+        }
+
+
+        private void Clear_Pagination_And_Reorder_Pages()
+        {
+            SortedDictionary<Page_TreeNode,string> nodeToFilename = new SortedDictionary<Page_TreeNode, string>();
+            try
+            {
+                foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+                {
+                    
+                    //Is this a page node?
+                    if (thisNode.Page)
+                    {
+                        thisNode.Label = String.Empty;
+
+                       //nodeToFilename.Add(thisNode.GetHashCode(), ((Page_TreeNode) thisNode).Files[0].File_Name_Sans_Extension);
+
+                    }
+                    else
+                    {
+                        
+                    }
+                }
+                // Save the updated to the session
+                  HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+
+                  // Save to the temporary QC work section
+                  try
+                  {
+                      // Ensure the directory exists under the user's temporary mySobek InProcess folder
+                      if (!Directory.Exists(userInProcessDirectory))
+                          Directory.CreateDirectory(userInProcessDirectory);
+
+                      // Save the METS
+                      qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
+                  }
+                  catch (Exception)
+                  {
+                      throw;
+                  }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+
+    /// <summary> Clears the pagination names of all the pages of the qc item </summary>
           private void ClearPagination()
           {
               try
               {
                   foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
                   {
+
                       //Is this a page node?
                       if (thisNode.Page)
                       {
                           thisNode.Label = String.Empty;
                       }
                   }
+                  // Save the updated to the session
+                  HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+
+                  // Save to the temporary QC work section
+                  try
+                  {
+                      // Ensure the directory exists under the user's temporary mySobek InProcess folder
+                      if (!Directory.Exists(userInProcessDirectory))
+                          Directory.CreateDirectory(userInProcessDirectory);
+
+                      // Save the METS
+                      qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
+                  }
+                  catch (Exception)
+                  {
+                      throw;
+                  }
+
               }
               catch (Exception e)
               {
