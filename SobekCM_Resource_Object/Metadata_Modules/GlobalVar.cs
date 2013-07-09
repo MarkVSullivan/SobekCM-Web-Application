@@ -16,7 +16,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         public const string SOBEKCM_MAPS_METADATA_MODULE_KEY = "SobekMapAuthorities";
         public const string PALMM_RIGHTSMD_METADATA_MODULE_KEY = "PalmmRightsMD";
         public const string IEEE_LOM_METADATA_MODULE_KEY = "IEEE-LOM";
-
+        public const string PALMM_METADATA_MODULE_KEY = "Palmm";
 
     }
 }

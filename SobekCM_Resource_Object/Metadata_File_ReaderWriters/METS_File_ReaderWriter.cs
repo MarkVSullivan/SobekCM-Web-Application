@@ -1168,7 +1168,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
                         else
                         {
-                            Output_Stream.WriteLine("<METS:FLocat LOCTYPE=\"OTHER\" OTHERLOCTYPE=\"SYSTEM\" xlink:href=\"" + thisFile.System_Name.Replace(" ", "%20").Replace("&", "&amp;") + "\" />");
+                            Output_Stream.WriteLine("<METS:FLocat LOCTYPE=\"OTHER\" OTHERLOCTYPE=\"SYSTEM\" xlink:href=\"" + thisFile.System_Name.Replace(" ", "%20").Replace("&", "&amp;").Replace("\\", "/") + "\" />");
                         }
 
                         // Add the closing file tag
@@ -2365,9 +2365,22 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                         if (((r.Name == "METS:FLocat") || (r.Name == "FLocat")) && (r.HasAttributes))
                         {
+                            // Determine the location type ( System or URL )
+                            SobekCM_File_Info_Type_Enum locType = SobekCM_File_Info_Type_Enum.SYSTEM;
+                            if (r.MoveToAttribute("LOCTYPE"))
+                            {
+                                if ( r.Value == "URL")
+                                    locType = SobekCM_File_Info_Type_Enum.URL;
+                            }
+
                             if (r.MoveToAttribute("xlink:href"))
                             {
-                                systemName = r.Value.Replace("%20", " ");
+                                // Get and clean up the system name
+                                if ((locType == SobekCM_File_Info_Type_Enum.SYSTEM) && ( r.Value.IndexOf("http:") < 0 ))
+                                    systemName = r.Value.Replace("%20", " ").Replace("/", "\\");
+                                else
+                                    systemName = r.Value.Replace("%20", " ");
+
                                 newFile = null;
                                 if (!files_by_fileid.ContainsKey(fileID))
                                 {

@@ -20,13 +20,13 @@ namespace SobekCM.Resource_Object.Configuration
         private List<METS_Section_ReaderWriter_Config> fileLevelDmdSecWriterConfigs;
 
         /// <summary> Name associated with this profile </summary>
-        public string Profile_Name { get; internal set; }
+        public string Profile_Name { get; set; }
 
         /// <summary> Description associated with this profile </summary>
-        public string Profile_Description { get; internal set; }
+        public string Profile_Description { get; set; }
 
         /// <summary> Flag indicates if this is the default profile </summary>
-        public bool Default_Profile { get; internal set;  }
+        public bool Default_Profile { get; set;  }
 
         /// <summary> Constructor for a new instance of a METS_Writing_Profile </summary>
         public METS_Writing_Profile()
@@ -43,11 +43,25 @@ namespace SobekCM.Resource_Object.Configuration
             Profile_Description = String.Empty;
         }
 
+        /// <summary> Clears all the information about which reader/writers to use 
+        /// for this METS writing profile </summary>
+        public void Clear()
+        {
+            packageLevelAmdSecWriterConfigs.Clear();
+            packageLevelDmdSecWriterConfigs.Clear();
+            divisionLevelAmdSecWriterConfigs.Clear();
+            divisionLevelAmdSecWriterConfigs.Clear();
+            fileLevelAmdSecWriterConfigs.Clear();
+            fileLevelDmdSecWriterConfigs.Clear();
+        }
 
         /// <summary> Add a new package-level amdSec reader/writer configuration </summary>
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
         public void Add_Package_Level_AmdSec_Writer_Config( METS_Section_ReaderWriter_Config NewConfig )
         {
+            if (NewConfig == null)
+                return;
+
             if ( NewConfig.ReaderWriterObject is iPackage_amdSec_ReaderWriter )
                 packageLevelAmdSecWriterConfigs.Add(NewConfig);
         }
@@ -56,6 +70,9 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
         public void Add_Package_Level_DmdSec_Writer_Config(METS_Section_ReaderWriter_Config NewConfig)
         {
+            if (NewConfig == null)
+                return;
+
             if (NewConfig.ReaderWriterObject is iPackage_dmdSec_ReaderWriter)
                 packageLevelDmdSecWriterConfigs.Add(NewConfig);
         }
@@ -64,6 +81,9 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
         public void Add_Division_Level_AmdSec_Writer_Config(METS_Section_ReaderWriter_Config NewConfig)
         {
+            if (NewConfig == null)
+                return;
+
             if (NewConfig.ReaderWriterObject is iDivision_amdSec_ReaderWriter)
                 divisionLevelAmdSecWriterConfigs.Add(NewConfig);
         }
@@ -72,6 +92,9 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
         public void Add_Division_Level_DmdSec_Writer_Config(METS_Section_ReaderWriter_Config NewConfig)
         {
+            if (NewConfig == null)
+                return;
+
             if (NewConfig.ReaderWriterObject is iDivision_dmdSec_ReaderWriter)
                 divisionLevelDmdSecWriterConfigs.Add(NewConfig);
         }
@@ -80,6 +103,9 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
         public void Add_File_Level_AmdSec_Writer_Config(METS_Section_ReaderWriter_Config NewConfig)
         {
+            if (NewConfig == null)
+                return;
+
             if (NewConfig.ReaderWriterObject is iFile_amdSec_ReaderWriter)
                 fileLevelAmdSecWriterConfigs.Add(NewConfig);
         }
@@ -88,6 +114,9 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
         public void Add_File_Level_DmdSec_Writer_Config(METS_Section_ReaderWriter_Config NewConfig)
         {
+            if (NewConfig == null)
+                return;
+
             if (NewConfig.ReaderWriterObject is iFile_dmdSec_ReaderWriter)
                 fileLevelDmdSecWriterConfigs.Add(NewConfig);
         }

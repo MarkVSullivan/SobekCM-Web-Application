@@ -1,14 +1,19 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
+var mapDrawingManagerDisplayed;         //holds marker for drawing manager
+var mapLayerActive;                     //holds the current map layer active
+var prevMapLayerActive;                 //holds the previous active map layer
+var actionActive;                       //holds the current active action
+var prevActionActive;                   //holds the previous active action
 var overlaysCurrentlyDisplayed;         //holds marker for overlays on map
 var pageMode;                           //holds the page/viewer type
 var mapCenter;                          //used to center map on load
-var mapControlsOnMap;                   //by default, are map controls displayed (true/false)
+var mapControlsDisplayed;               //by default, are map controls displayed (true/false)
 var defaultDisplayDrawingMangerTool;    //by default, is the drawingmanger displayed (true/false)
 var toolboxDisplayed;                   //by default, is the toolbox displayed (true/false)
-var toolbarOpen;                        //by default, is the toolbar open (yes/no)
-var kmlOn;                              //by default, is kml layer on (yes/no)
+var toolbarDisplayed;                   //by default, is the toolbar open (yes/no)
+var kmlDisplayed;                       //by default, is kml layer on (yes/no)
 var kmlLayer;                           //must be pingable by google
 var defaultZoomLevel;                   //zoom level, starting
 var maxZoomLevel;                       //max zoom out, default (21=lowest level, 1=highest level)
@@ -85,20 +90,19 @@ CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custo
 
 //#endregion
 
+//setup everything with user defined options
 function setupInterface(collection) {
-
-    //displayIncomingOverlays();
-
     switch (collection) {
-
         case "default":
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -112,13 +116,16 @@ function setupInterface(collection) {
             var strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
             break;
         case "stAugustine":
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -135,13 +142,15 @@ function setupInterface(collection) {
             );
             break;
         case "custom":
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            mapControlsOnMap = true;                                                //by default, are map controls displayed (true/false)
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            toolbarOpen = "yes";                                                    //by default, is the toolbar open (yes/no)
-            kmlOn = "no";                                                           //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/5.kml");  //must be pingable by google
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -158,36 +167,13 @@ function setupInterface(collection) {
             );
             break;
     }
-}              //setup everything
+}
+
+
+
 
 var collectionTypeToLoad = "stAugustine";           //define collection settings to load
 setupInterface(collectionTypeToLoad);               //start the whole thing
-
-//#region Localization library 
-var L_Marker = "Marker";
-var L_Circle = "Circle";
-var L_Rectangle = "Rectangle";
-var L_Polygon = "Polygon";
-var L_Line = "Line";
-var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
-var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
-var L3 = "Description (Optional)"; //describe poi box
-var L4 = "Geolocation Service Failed."; //geolocation buttons error message
-var L5 = "Returned to Bounds!"; //tesbounds();
-var L6 = "Could not find location. Either the format you entered is invalid or the location is outside of the map bounds."; //codeAddress();
-var L7 = "Error: Overlay image source cannot contain a ~ or |"; //createSavedOverlay();
-var L8 = "Error: Description cannot contain a ~ or |"; //poiGetDesc(id);
-var L9 = "Item Cleared!"; //buttonClearItem();
-var L10 = "Overlay Cleared!"; //buttonClearOverlay();
-var L11 = "POI Set Cleared!"; //buttonClearPOI();
-var L12 = "Nothing Happened!"; //HandleResult(arg);
-var L13 = "Item Saved!"; //HandleResult(arg);
-var L14 = "Overlay Saved!"; //HandleResult(arg);
-var L15 = "POI Set Saved!"; //HandleResult(arg);
-var L16 = "Cannot Zoom Out Further"; //checkZoomLevel();
-var L17 = "Cannot Zoom In Further"; //checkZoomLevel();
-var L18 = "Using Search Results as Location"; //marker complete listener
-//#endregion                                            
 
 //#region Define google map objects
 
@@ -204,16 +190,16 @@ var gmapOptions = {
     mapTypeId: google.maps.MapTypeId.ROADMAP,                   //default map type to display
     streetViewControl: false,                                   //is streetview active?
     tilt: 0,                                                    //set to 0 to disable 45 degree tilt
-    zoomControl: true,                                          //is zoom control active?
+    zoomControl: false,                                          //is zoom control active?
     zoomControlOptions: {
         style: google.maps.ZoomControlStyle.SMALL,              //zoom control style
         position: google.maps.ControlPosition.LEFT_TOP          //zoom control position 
     },
-    panControl: true,                                           //pan control active
+    panControl: false,                                           //pan control active
     panControlOptions: {
         position: google.maps.ControlPosition.LEFT_TOP          //pan control position
     },
-    mapTypeControl: true,                                       //map layer control active
+    mapTypeControl: false,                                       //map layer control active
     mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,   //map layer control style
         position: google.maps.ControlPosition.RIGHT_TOP         //map layer control position
@@ -279,6 +265,19 @@ var drawingManager = new google.maps.drawing.DrawingManager({
         zIndex: 5
     }
 });
+drawingManager.setOptions({
+    drawingControl: true, drawingControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_TOP,
+        drawingModes: [
+            google.maps.drawing.OverlayType.MARKER,
+            google.maps.drawing.OverlayType.CIRCLE,
+            google.maps.drawing.OverlayType.RECTANGLE,
+            google.maps.drawing.OverlayType.POLYGON,
+            google.maps.drawing.OverlayType.POLYLINE
+        ]
+    }
+});
+kmlLayer.setOptions({ suppressInfoWindows: true });
 
 //define custom copyright control
 //supporting url: https://developers.google.com/maps/documentation/javascript/controls#CustomControls
@@ -322,580 +321,8 @@ toolbarBufferZone2.style.height = '50px';
 
 //#endregion
 
-//#region Supporting JS
-
-$(function () {
-    $("#toolbox").draggable({ handle: ".toolbar" });
-    $("#toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
-    $("#toolbar_toggle1").tooltip();
-    $("#toolbar_toggle2").tooltip();
-    $("#toolbar_reset").tooltip();
-    $("#toolbar_toggleControls").tooltip();
-    $("#toolbar_toggletoolbox").tooltip();
-    $("#toolbar_layerRoadmap").tooltip();
-    $("#toolbar_layerSatellite").tooltip();
-    $("#toolbar_layerTerrain").tooltip();
-    $("#toolbar_layerControls").tooltip();
-    $("#toolbar_layerHybrid").tooltip();
-    $("#toolbar_layerCustom").tooltip();
-    $("#toolbar_layerReset").tooltip();
-    $("#toolbar_zoomIn").tooltip();
-    $("#toolbar_zoomReset").tooltip();
-    $("#toolbar_zoomOut").tooltip();
-    $("#toolbar_panUp").tooltip();
-    $("#toolbar_panDown").tooltip();
-    $("#toolbar_panReset").tooltip();
-    $("#toolbar_panLeft").tooltip();
-    $("#toolbar_panRight").tooltip();
-    $("#toolbar_manageItem").tooltip();
-    $("#toolbar_manageOverlay").tooltip();
-    $("#toolbar_managePOI").tooltip();
-    $("#toolbar_find").tooltip();
-    $("#toolbar_search").tooltip();
-    $("#toolbox_locate").tooltip();
-    $("#toolbox_find").tooltip();
-    $("#toolbox_search").tooltip();
-    $("#toolbox_reset").tooltip();
-    $("#toolbox_toggleControls").tooltip();
-    $("#toolbox_layerRoadmap").tooltip();
-    $("#toolbox_layerSatellite").tooltip();
-    $("#toolbox_layerTerrain").tooltip();
-    $("#toolbox_layerControls").tooltip();
-    $("#toolbox_layerHybrid").tooltip();
-    $("#toolbox_layerCustom").tooltip();
-    $("#toolbox_layerReset").tooltip();
-    $("#toolbox_zoomIn").tooltip();
-    $("#toolbox_zoomReset").tooltip();
-    $("#toolbox_zoomOut").tooltip();
-    $("#toolbox_panUp").tooltip();
-    $("#toolbox_panDown").tooltip();
-    $("#toolbox_panReset").tooltip();
-    $("#toolbox_panLeft").tooltip();
-    $("#toolbox_panRight").tooltip();
-    $("#toolbox_manageItem").tooltip();
-    $("#toolbox_manageOverlay").tooltip();
-    $("#toolbox_managePOI").tooltip();
-    $("#toolbox_placeItem").tooltip();
-    $("#toolbox_placeOverlay").tooltip();
-    $("#toolbox_placePOI").tooltip();
-    $("#toolbox_poiMarker").tooltip();
-    $("#toolbox_poiCircle").tooltip();
-    $("#toolbox_poiRectangle").tooltip();
-    $("#toolbox_poiPolygon").tooltip();
-    $("#toolbox_poiLine").tooltip();
-    $("#address1").tooltip();
-    $("#address2").tooltip();
-    $("#search1").tooltip();
-    $("#search2").tooltip();
-    $("#collectionSearchInput").tooltip();
-    $("#collectionSearchImage").tooltip();
-    $("#rotationKnob").tooltip();
-    $("#rotationClockwise").tooltip();
-    $("#rotationReset").tooltip();
-    $("#rotationCounterClockwise").tooltip();
-    $("#transparency").tooltip();
-    $("#rgItem").tooltip();
-    $("#posItem").tooltip();
-    $("#placeItem").tooltip();
-    $("#descItem").tooltip();
-    $("#saveItem").tooltip();
-    $("#placeOverlay").tooltip();
-    $("#saveOverlay").tooltip();
-    $("#placePOI").tooltip();
-    $("#descPOI").tooltip();
-    $("#savePOI").tooltip();
-    $("#tool2").tooltip();
-    $("#tool3").tooltip();
-    $("#tool4").tooltip();
-    $("#item_getUserLocation").tooltip();
-    $("#overlay_getUserLocation").tooltip();
-    $("#poi_getUserLocation").tooltip();
-    $("#clearItem").tooltip();
-    $("#clearOverlay").tooltip();
-    $("#clearPOI").tooltip();
-    //$(".selector").tooltip({ content: "Awesome title!" });
-
-});                               //jquery elements (tooltips)
-function buttonSaveItem() {
-    if (savingMarkerCenter != null) {
-        alert("saving location: " + savingMarkerCenter); //grab coords from gmaps js
-        //createSavedItem(markerCenter);
-        displayMessage("saved");
-    } else {
-        displayMessage("nothing to save");
-    }
-}                     //just calls create saved item
-function buttonSaveOverlay() {
-    if (savingOverlayIndex.length) {
-        for (var i = 0; i < savingOverlayIndex.length; i++) {
-            alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
-            createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
-            //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
-        }
-        displayMessage("saved");
-    } else {
-        displayMessage("nothing to save");
-    }
-
-}                  //just calls create saved overlay
-function buttonSavePOI() {
-    if (poiObj.length > 0) {
-        createSavedPOI();
-        displayMessage("saved");
-    } else {
-        displayMessage("nothing to save");
-    }
-}                      //just calls create saved poi
-function createSavedItem(coordinates) {
-    var messageType = "item"; //define what message type it is
-    //assign data
-    var data = messageType + "|" + coordinates + "|";
-    var dataPackage = data + "~";
-    CallServer(dataPackage);
-}                    //create a package to send to server to save item location
-function createSavedOverlay(index, source, bounds, rotation) {
-    var temp = source;
-    if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
-        displayMessage(L7);
-    }
-
-    var messageType = "overlay"; //define what message type it is
-    var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
-
-    var dataPackage = data + "~";
-    //CallServer(dataPackage); //not yet working
-}                 //create a package to send to server to save overlay
-function createSavedPOI() {
-    var dataPackage = "";
-    for (var i = 0; i < poiObj.length; i++) {
-        switch (poiType[i]) {
-            case "marker":
-                poiKML[i] = poiObj[i].getPosition().toString();
-                break;
-            case "circle":
-                poiKML[i] = poiObj[i].getCenter() + ",";
-                poiKML[i] += poiObj[i].getRadius();
-                break;
-            case "rectangle":
-                poiKML[i] = poiObj[i].getBounds().toString();
-                break;
-            case "polygon":
-                poiObj[i].getPath().forEach(function (latLng) {
-                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator
-                });
-                break;
-            case "polyline":
-                poiObj[i].getPath().forEach(function (latLng) {
-                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator
-                });
-                break;
-            case "deleted":
-                //nothing to do here
-                break;
-        }
-        var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
-        dataPackage += data + "~";
-    }
-    alert("saving poi set: "+dataPackage);
-    //CallServer(dataPackage);
-}                     //create a package to send to the server to save poi
-function poiEditMe(id) {
-    poiObj[id].setMap(map);
-    if (poiType[id] == "marker") {
-        infowindow[id].open(map, poiObj[id]);
-    } else {
-        infowindow[id].setMap(map);
-    }
-}                        //open the infowindow of a poi
-function poiHideMe(id) {
-    poiObj[id].setMap(null);
-    infowindow[id].setMap(null);
-    label[id].setMap(null);
-    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + "default/images/mapper/add.png\" onclick=\"poiShowMe(" + id + ");\" />";
-}                        //hide poi on map
-function poiShowMe(id) {
-    poiObj[id].setMap(map);
-    infowindow[id].setMap(map);
-    label[id].setMap(map);
-    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
-}                        //show poi on map
-function poiDeleteMe(id) {
-    poiObj[id].setMap(null);
-    poiObj[id] = null;
-    poiType[id] = "deleted";
-    var strg = "#poi" + id; //create <li> poi string
-    $(strg).remove(); //remove <li>
-    infowindow[id].setMap(null);
-    label[id].setMap(null);
-}                      //delete poi from map and list
-function poiGetDesc(id) {
-
-    var temp = document.getElementById("poiDesc" + id).value;
-    if (temp.contains("~") || temp.contains("|")) {
-        displayMessage(L8);
-    } else {
-        poiDesc[id] = document.getElementById("poiDesc" + id).value;
-    }
-}                       //get the poi desc
-function searchResultDeleteMe() {
-    searchResult.setMap(null);
-    $("#searchResult").remove();
-}               //delete search results from map and list
-function action1() {
-    $("#toolboxTabs").accordion({ active: 2 }); //open edit overlay tab
-}                            //open tab 2
-function action2() {
-    $("#toolboxTabs").accordion({ active: 3 }); //open edit overlay tab
-}                            //open tab 3
-function action3() {
-    $("#toolboxTabs").accordion({ active: 4 }); //open edit overlay tab
-}                            //open tab 4
-function buttonClearItem() {
-    itemMarker.setMap(null); //delete marker form map
-    itemMarker = null;
-    savingMarkerCenter = null; //reset stored coords to save
-    document.getElementById('posItem').value = ""; //reset lat/long in tab
-    document.getElementById('rgItem').value = ""; //reset address in tab
-    displayMessage(L9); //say all is reset
-}                    //clear item location
-function buttonClearOverlay() {
-    //does nothing
-    displayMessage("Nothing to clear");
-    //displayMessage(L10);
-}                 //clear overlays
-function buttonClearPOI() {
-    for (var i = 0; i < poiObj.length; i++) {
-        if (poiObj[i] != null) {
-            poiObj[i].setMap(null);
-            poiObj[i] = null;
-        }
-        infowindow[i].setMap(null);
-        infowindow[i] = null;
-        label[i].setMap(null);
-        label[i] = null;
-        var strg = "#poi" + i; //create <li> poi string
-        $(strg).remove(); //remove <li>
-    }
-    poiObj = [];
-    poi_i = -1;
-    displayMessage(L11);
-}                     //clear all pois
-function HandleResult(arg) {
-    switch (arg) {
-        case "0":
-            displayMessage(L12);
-            break;
-        case "1":
-            displayMessage(L13);
-            break;
-        case "2":
-            displayMessage(L14);
-            break;
-        case "3":
-            displayMessage(L15);
-            break;
-    }
-}                    //callback message board
-function DisplayCursorCoords(arg) {
-    cCoord.innerHTML = arg;
-}             //used for lat/long tool
-function displayMessage(message) {
-    //create message
-    var messageText = "<p class=\"message\">";
-    messageText += message; //assign incoming message to text
-    messageText += "</p>";
-    document.getElementById("messageContainer").innerHTML = messageText; //assign to element
-
-    //show message
-    document.getElementById("messageContainer").style.display = "block"; //display element
-
-    //fade message out
-    setTimeout(function () {
-        $("#messageContainer").fadeOut("slow", function () {
-            $("#messageContainer").hide();
-        });
-    }, 3000); //after 3 sec
-}              //display an inline message
-function checkZoomLevel() {
-    var currentZoomLevel = map.getZoom();
-    var currentMapType = map.getMapTypeId();
-    if (currentZoomLevel == maxZoomLevel) {
-        displayMessage(L16);
-    } else {
-        switch (currentMapType) {
-            case "roadmap": //roadmap and default
-                if (currentZoomLevel == minZoomLevel_Roadmap) {
-                    displayMessage(L17);
-                }
-                break;
-            case "satellite": //sat
-                if (currentZoomLevel == minZoomLevel_Satellite) {
-                    displayMessage(L17);
-                }
-                break;
-            case "hybrid": //sat
-                if (currentZoomLevel == minZoomLevel_Satellite) {
-                    displayMessage(L17);
-                }
-                break;
-            case "terrain": //terrain only
-                if (currentZoomLevel == minZoomLevel_Terrain) {
-                    displayMessage(L17);
-                }
-                break;
-        }
-        if (isCustomOverlay == true) {
-            if (currentZoomLevel == minZoomLevel_BlockLot) {
-                displayMessage(L17);
-            }
-        }
-    }
-}                     //check the zoom level
-$(function () {
-    $("#overlayTransparencySlider").slider({
-        animate: true,
-        range: "min",
-        value: preserveOpacity,
-        orientation: "vertical",
-        min: 0.00,
-        max: 1.00,
-        step: 0.01,
-        slide: function (event, ui) {
-            var selection = $("#overlayTransparencySlider").slider("value");
-            var div = document.getElementById("overlay" + workingOverlayIndex);
-            div.style.opacity = selection;
-            preserveOpacity = selection;
-        }
-    });
-});                               //jquery transparency slider
-$(function ($) {
-    $(".knob").knob({
-        change: function (value) {
-            knobRotationValue = value; //assign knob value
-            if (value > 180) {
-                knobRotationValue = ((knobRotationValue - 360) * (1)); //used to correct for visual effect of knob error
-                //knobRotationValue = ((knobRotationValue-180)*(-1));
-            }
-            preservedRotation = knobRotationValue; //reassign
-            keepRotate(preservedRotation); //send to display fcn of rotation
-            
-        }
-    });
-
-});                              //for rotation knob
-function keepRotate(degreeIn) {
-    currentlyEditing = "yes"; //used to signify we are editing this overlay
-    $(function () {
-        $("#overlay" + workingOverlayIndex).rotate(degreeIn);
-    });
-}                 //maintain specific rotation
-function rotate(degreeIn) {
-    currentlyEditing = "yes"; //used to signify we are editing this overlay
-    degree = preservedRotation;
-    degree += degreeIn;
-    if (degreeIn != 0) {
-        $(function () {
-            $("#overlay" + workingOverlayIndex).rotate(degree); //assign overlay to defined rotation
-        });
-    } else { //if rotation is 0, reset rotation
-        $(function () {
-            degree = 0;
-            $("#overlay" + workingOverlayIndex).rotate(degree);
-        });
-    }
-    preservedRotation = degree; //preserve rotation value
-}                     //variable rotation fcn
-function hide(what) {
-    $(what).hide();
-}                           //hide somethign using jquery
-function show(what) {
-    $(what).show();
-}                           //display something using jquery
-function d(message) {
-    document.getElementById("debugger").innerHTML += "-- " + message + "<br />";
-}                           //debugger tool
-function polygonCenter(poly) {
-    var lowx,
-        highx,
-        lowy,
-        highy,
-        lats = [],
-        lngs = [],
-        vertices = poly.getPath();
-
-    for (var i = 0; i < vertices.length; i++) {
-        lngs.push(vertices.getAt(i).lng());
-        lats.push(vertices.getAt(i).lat());
-    }
-
-    lats.sort();
-    lngs.sort();
-    lowx = lats[0];
-    highx = lats[vertices.length - 1];
-    lowy = lngs[0];
-    highy = lngs[vertices.length - 1];
-    center_x = lowx + ((highx - lowx) / 2);
-    center_y = lowy + ((highy - lowy) / 2);
-    return (new google.maps.LatLng(center_x, center_y));
-}                  //get the center lat/long of a polygon
-function testBounds() {
-    if (strictBounds != null) {
-        if (strictBounds.contains(map.getCenter())) {
-            mapInBounds = "yes";
-        } else {
-            mapInBounds = "no";
-            map.panTo(mapCenter); //recenter
-            displayMessage(L5);
-        }
-    }
-}                         //test the map bounds
-function finder(stuff) {
-
-    if (stuff.length > 0) {
-        codeAddress("lookup", stuff);
-    } else {
-        //do nothing and keep quiet
-    }
-}                        //search the gmaps for a location (lat/long or address)
-function searcher(stuff) {
-
-    if (stuff.length > 0) {
-        displayMessage("No collection to search");
-    } else {
-        //do nothing and keep quiet
-    }
-}                      //search the collection for something
-function toggletoolbox(value) {
-    switch (value) {
-
-        case 1:
-            $("#toolboxTabs").hide();
-            document.getElementById("toolbox").style.height = "17px";
-            break;
-        case 2:
-            $("#toolboxTabs").show();
-            document.getElementById("toolbox").style.height = "auto";
-            break;
-        case 3:
-            $("#toolbox").hide();
-            toolboxDisplayed = false;
-            break;
-        case 4:
-            if (toolboxDisplayed == true) {
-                $("#toolbox").hide();
-                toolboxDisplayed = false;
-            } else {
-                $("#toolbox").show();
-                toolboxDisplayed = true;
-            }
-            break;
-    }
-
-}                 //toggle toolbox
-function Toggle(what) {
-    //toggle it
-    if (toolbarOpen == "yes") {
-        $(what).hide();
-        toolbarOpen = "no";
-        $("#container_toggle_toolbar1").hide();
-        $("#container_toggle_toolbar2").show();
-    } else {
-        $(what).show();
-        toolbarOpen = "yes";
-        $("#container_toggle_toolbar1").show();
-        $("#container_toggle_toolbar2").hide();
-    }
-
-}                         //used to toggle toolbar
-function toggleAllMapControlsTool() {
-    if (mapControlsOnMap == false) { //not present
-        map.setOptions({
-            zoomControl: true,
-            zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL, position: google.maps.ControlPosition.LEFT_TOP },
-            panControl: true,
-            panControlOptions: { position: google.maps.ControlPosition.LEFT_TOP },
-            mapTypeControl: true,
-            mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU, position: google.maps.ControlPosition.RIGHT_TOP }
-        });
-        mapControlsOnMap = true;
-    } else { //present
-        map.setOptions({
-            zoomControl: false,
-            panControl: false,
-            mapTypeControl: false
-        });
-        mapControlsOnMap = false;
-    }
-}           //display/destroy map controls and drawing manager tool
-function codeAddress(type, geo) {
-    var bounds = map.getBounds(); //get the current map bounds (should not be greater than the bounding box)
-    geocoder.geocode({ 'address': geo, 'bounds': bounds }, function (results, status) { //geocode the lat/long of incoming with a bias towards the bounds
-        if (status == google.maps.GeocoderStatus.OK) { //if it worked
-            map.setCenter(results[0].geometry.location); //set the center of map to the results
-            testBounds(); //test to make sure we are indeed in the bounds (have to do this because gmaps only allows for a BIAS of bounds and is not strict)
-            if (mapInBounds == "yes") { //if it is inside bounds
-                if (searchCount > 0) { //check to see if this is the first time searched, if not
-                    searchResult.setMap(null); //set old search result to not display on map
-                } else { //if it is the first time
-                    searchCount++; //just interate
-                }
-                searchResult = new google.maps.Marker({ //create a new marker
-                    map: map, //add to current map
-                    position: results[0].geometry.location //set position to search results
-                });
-                document.getElementById("search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div><br\>"; //add list div
-            } else { //if location found was outside strict map bounds...
-                displayMessage("Could not find within bounds."); //say so
-            }
-
-        } else { //if the entire geocode did not work
-            alert(L6); //localization...
-        }
-    });
-}               //get the location of a lat/long or address
-function codeLatLng(latlng) {
-    if (geocoder) {
-        geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                if (results[1]) {
-                    document.getElementById("rgItem").innerHTML = results[0].formatted_address;
-                }
-                else {
-                    document.getElementById("rgItem").innerHTML = "Geocoder failed due to: " + status;
-                    document.getElementById("rgItem").innerHTML = "";
-                }
-            }
-        });
-    }
-}                   //get the nearest human reabable location from lat/long
-function useSearchAsItemLocation() {
-    placerType = "item";                        //this tells listeners what to do
-    itemMarker = new google.maps.Marker({
-        map: map,
-        position: searchResult.getPosition(),   //assign to prev search result location
-        draggable: true
-    });
-
-    firstMarker++;                              //prevent redraw
-    searchResult.setMap(null);                  //delete search result from map
-    $("#searchResult").remove();                //delete search result form list
-    itemMarker.setMap(map);                     //set itemMarker location icon to map
-    document.getElementById('posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
-    codeLatLng(itemMarker.getPosition());       //get the reverse geo address for item location and put in location tab
-    savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-
-    //add listener for new item marker (can only add once the itemMarker is created)
-    google.maps.event.addListener(itemMarker, 'dragend', function () {
-        document.getElementById('posItem').value = itemMarker.getPosition(); //get lat/long
-        codeLatLng(itemMarker.getPosition());   //get address
-        savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-    });
-
-}            //assign search location pin to item location
-
-//#endregion
-
 function initialize() {
+    
     //initialize google map objects
     map = new google.maps.Map(document.getElementById(gmapPageDivId), gmapOptions);                             //initialize map    
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(copyrightNode);                                 //initialize custom copyright
@@ -903,296 +330,10 @@ function initialize() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(toolbarBufferZone1);                                //initialize spacer
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toolbarBufferZone2);                               //intialize spacer
     drawingManager.setMap(map);                                                                                 //initialize drawing manager
+    drawingManager.setMap(null);                                                                                //initialize drawing manager (hide)
     geocoder = new google.maps.Geocoder();                                                                      //initialize geocoder
-  
-    //#region Map Control Listeners
-
-    //zoom in/out listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_zoomIn"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom + 1);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_zoomReset"), 'click', function () {
-        map.setZoom(defaultZoomLevel);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_zoomOut"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom - 1);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_zoomIn"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom + 1);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_zoomReset"), 'click', function () {
-        map.setZoom(defaultZoomLevel);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_zoomOut"), 'click', function () {
-        var currentZoom = map.getZoom();
-        map.setZoom(currentZoom - 1);
-    });
-
-    //pan control listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_panUp"), 'click', function () {
-        map.panBy(0, -100);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panDown"), 'click', function () {
-        map.panBy(0, 100);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panLeft"), 'click', function () {
-        map.panBy(-100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panRight"), 'click', function () {
-        map.panBy(100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_panReset"), 'click', function () {
-        map.panTo(mapCenter);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panUp"), 'click', function () {
-        map.panBy(0, -100);
-        testBounds();
-        movedBy = -100;
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panDown"), 'click', function () {
-        map.panBy(0, 100);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panLeft"), 'click', function () {
-        map.panBy(-100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panRight"), 'click', function () {
-        map.panBy(100, 0);
-        testBounds();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_panReset"), 'click', function () {
-        map.panTo(mapCenter);
-    });
-
-    //map type layer listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerRoadmap"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerSatellite"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerTerrain"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerHybrid"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerCustom"), 'click', function () {
-        if (kmlOn == "no") {
-            kmlLayer.setMap(map);
-            kmlOn = "yes";
-        } else {
-            kmlLayer.setMap(null);
-            kmlOn = "no";
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_layerReset"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerRoadmap"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerSatellite"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerTerrain"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerHybrid"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerCustom"), 'click', function () {
-        if (kmlOn == "no") {
-            kmlLayer.setMap(map);
-            kmlOn = "yes";
-        } else {
-            kmlLayer.setMap(null);
-            kmlOn = "no";
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_layerReset"), 'click', function () {
-        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-    });
     
-    //#endregion
-    
-    //#region Other Listeners
-
-    //actions listeners
-    google.maps.event.addDomListener(document.getElementById("toolbar_manageItem"), 'click', function () {
-        show(toolbox);
-        toggletoolbox(2);
-        toolboxDisplayed = true;
-        placerType = "item";
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_manageOverlay"), 'click', function () {
-        show(toolbox);
-        toggletoolbox(2);
-        toolboxDisplayed = true;
-        placerType = "overlay";
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbar_managePOI"), 'click', function () {
-        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_TOP,
-            drawingModes: [
-                google.maps.drawing.OverlayType.MARKER,
-                google.maps.drawing.OverlayType.CIRCLE,
-                google.maps.drawing.OverlayType.RECTANGLE,
-                google.maps.drawing.OverlayType.POLYGON,
-                google.maps.drawing.OverlayType.POLYLINE
-            ]
-        }});
-        show(toolbox);
-        toggletoolbox(2);
-        toolboxDisplayed = true;
-        placerType = "poi";
-    });
-    
-    //place something action listeners
-    google.maps.event.addDomListener(document.getElementById("toolbox_placeItem"), 'click', function () {
-        if (searchCount > 0 && itemMarker == null) {
-            useSearchAsItemLocation();
-            displayMessage(L18);
-        } else {
-            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-            placerType = "item";
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_placeOverlay"), 'click', function () {
-        placerType = "overlay";
-        if (pageMode == "edit") {
-            pageMode = "view";
-            if (savingOverlayIndex.length > 0) {
-                for (var i = 0; i < savingOverlayIndex.length; i++) {
-                    ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
-                }
-            }
-            displayMessage("Overlay Editting Turned Off");
-        } else {
-            pageMode = "edit";
-            displayMessage("Overlay Editting Turned On");
-        }
-        //toggleOverlayEditor(); 
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_placePOI"), 'click', function () {
-        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE] } });
-        placerType = "poi";
-    });
-        
-    //geolocation buttons
-    google.maps.event.addDomListener(document.getElementById("item_getUserLocation"), 'click', function () {
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-        placerType = "item";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-                markerCenter = userLocation;
-                itemMarker = new google.maps.Marker({
-                    position: markerCenter,
-                    map: map
-                });
-                itemMarker.setMap(map);
-                document.getElementById('posItem').value = markerCenter;
-                savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-            });
-            
-        }else {
-            alert(L4);
-        }
-        drawingManager.setDrawingMode(null);
-    });
-    google.maps.event.addDomListener(document.getElementById("overlay_getUserLocation"), 'click', function () {
-        placerType = "overlay";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-            });
-
-        } else {
-            alert(L4);
-        }
-    });
-    google.maps.event.addDomListener(document.getElementById("poi_getUserLocation"), 'click', function () {
-        //drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-        placerType = "poi";
-        // Try W3C Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(userLocation);
-                testBounds();
-                //var marker = new google.maps.Marker({
-                //    position: userLocation,
-                //    map: map
-                //});
-                //marker.setMap(map);
-            });
-
-        } else {
-            alert(L4);
-        }
-        //drawingManager.setDrawingMode(null);
-    });
-    
-    //tools
-    google.maps.event.addDomListener(document.getElementById("toolbar_toggleControls"), 'click', function () {
-        toggleAllMapControlsTool();
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_toggleControls"), 'click', function () {
-        toggleAllMapControlsTool();
-    });
-    
-    //poi place items
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiMarker"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiCircle"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.CIRCLE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiRectangle"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiPolygon"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-    });
-    google.maps.event.addDomListener(document.getElementById("toolbox_poiLine"), 'click', function () {
-        placerType = "poi";
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYLINE);
-    });
-
-    //save modified items
-    google.maps.event.addDomListener(document.getElementById("saveItem"), 'click', function () {
-        //do something?
-        //this is done in the other js file
-    });             //save Item
-    google.maps.event.addDomListener(document.getElementById("saveOverlay"), 'click', function () {
-        //2do: send saved overlay to db/xml
-        //displayMessage("Not yet tied into an actual Sobek item.");
-        //buttonSaveOverlay(); //called in default page itself
-
-    });          //save and reset overlay
-    google.maps.event.addDomListener(document.getElementById("savePOI"), 'click', function () {
-        //do something?
-        //this is done in the other js file
-    });              //save poi
+    //#region Google Specific Listeners  
 
     //initialize drawingmanger listeners
     google.maps.event.addListener(drawingManager, 'markercomplete', function (marker) {
@@ -1206,7 +347,7 @@ function initialize() {
                 firstMarker++;
             }
             itemMarker = marker; //assign globally
-            document.getElementById('posItem').value = itemMarker.getPosition();
+            document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
             savingMarkerCenter = itemMarker.getPosition(); //store coords to save
             codeLatLng(itemMarker.getPosition());
         }
@@ -1234,7 +375,7 @@ function initialize() {
                 " <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a>" +
                 " <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/>" +
-                " <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+                " <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString,
                 pixelOffset: new google.maps.Size(0, 0)
@@ -1255,7 +396,7 @@ function initialize() {
         });
         google.maps.event.addListener(marker, 'dragend', function () {
             if (placerType == "item") {
-                document.getElementById('posItem').value = marker.getPosition();
+                document.getElementById('content_toolbox_posItem').value = marker.getPosition();
                 codeLatLng(marker.getPosition());
             }
             if (placerType == "poi") {
@@ -1301,7 +442,7 @@ function initialize() {
             poiType[poi_i] = "circle";
             var poiDescTemp = L_Circle;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1385,7 +526,7 @@ function initialize() {
             poiType[poi_i] = "rectangle";
             var poiDescTemp = L_Rectangle;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1486,7 +627,7 @@ function initialize() {
             poiType[poi_i] = "polygon";
             var poiDescTemp = L_Polygon;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1573,7 +714,7 @@ function initialize() {
             poiType[poi_i] = "polyline";
             var poiDescTemp = L_Line;
             document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <a href=\"#\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</a>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -1674,7 +815,7 @@ function initialize() {
         });
     });
     
-    //initialize various listeners
+    //initialize map specific listeners
     google.maps.event.addListener(map, 'rightclick', function () {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
     });                                           //on right click stop drawing thing
@@ -1708,61 +849,21 @@ function initialize() {
         checkZoomLevel();
     });                                         //check the zoom level display message if out limits
 
-    //#endregion
+    google.maps.event.addListener(kmlLayer, 'click', function (kmlEvent) {
+        var name = kmlEvent.featureData.name;
+        displayMessage("ParcelID: " + name);
+    });                                           
 
-    $("#footer_item_wrapper").remove(); //temp to remove footer
+    //#endregion
     
     initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
     
-    //keypress shortcuts/actions
-    window.onkeypress = keypress;
-    function keypress(e) {
-        var keycode = null;
-        if (window.event) {
-            keycode = window.event.keyCode;
-        } else if (e) {
-            keycode = e.which;
-        }
-        switch (keycode) {
-            case 122: //z
-                if (navigator.appName == "Microsoft Internet Explorer") {
-                    var copyString = cLat.innerHTML;
-                    copyString += ", " + cLong.innerHTML;
-                    window.clipboardData.setData("Text", copyString);
-                    displayMessage("Coordinates Copied To Clipboard");
-                } else {
-                    if (cCoordsFrozen == "no") {
-                        //freeze
-                        cCoordsFrozen = "yes";
-                        displayMessage("Coordinates Viewer Frozen");                      
-                    } else {
-                        //unfreeze
-                        cCoordsFrozen = "no";
-                        displayMessage("Coordinates Viewer UnFrozen");
-                    }  
-                }
-            break;
-            case 111: //o
-                if (overlaysCurrentlyDisplayed == true) {
-                    displayMessage("Hiding Overlays");
-                    for (var i = 0; i < incomingOverlayBounds.length; i++) {    //go through and display overlays as long as there is an overlay to display
-                        overlaysOnMap[i].setMap(null);                          //hide the overlay from the map
-                        ghostOverlayRectangle[i].setMap(null);                  //hide ghost from map
-                        overlaysCurrentlyDisplayed = false;                     //mark that overlays are not on the map
-                    }
-                } else {
-                    displayMessage("Showing Overlays");
-                    for (var i = 0; i < incomingOverlayBounds.length; i++) {   //go through and display overlays as long as there is an overlay to display
-                        overlaysOnMap[i].setMap(map);                          //set the overlay to the map
-                        ghostOverlayRectangle[i].setMap(map);                  //set to map
-                        overlaysCurrentlyDisplayed = true;                     //mark that overlays are on the map
-                    }
-                }
-                
-            break;
-        }
-    }
-
+    google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+        //this part runs when the mapobject is created and rendered
+        initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
+    });
+    
+    
 }                         //on page load functions (mainly google map event listeners)
 
 //Displays all the overlays sent from the C# code. Also calls displayGhostOverlayRectangle.
@@ -1775,6 +876,7 @@ function displayIncomingOverlays() {
     overlaysCurrentlyDisplayed = true;
 }
 
+//Creates and sets the ghost overlays (used to tie actions with actual overlay)
 function setGhostOverlay(ghostIndex, ghostBounds) {
     
     //create ghost directly over an overlay
