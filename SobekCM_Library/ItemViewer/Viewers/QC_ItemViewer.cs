@@ -41,6 +41,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private string hidden_move_relative_position;
         private string hidden_move_destination_fileName;
         private string userInProcessDirectory;
+        private string complete_mets;
         private bool makeSortable = true;
         private bool isLower;
         private SobekCM_Item qc_item;
@@ -72,6 +73,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
                 return;
             }
+
+            // Get the links for the METS
+            string greenstoneLocation = qc_item.Web.Source_URL + "/";
+            complete_mets = greenstoneLocation + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((qc_item.Behaviors.Dark_Flag) || (qc_item.Behaviors.IP_Restriction_Membership > 0))
+            {
+                complete_mets = CurrentMode.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+            }
+
 
             // Get the special qc_item, which matches the passed in Current_Object, at least the first time.
             // If the QC work is already in process, we may find a temporary METS file to read.
@@ -261,6 +273,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         thisNode.Label = String.Empty;
 
                        //nodeToFilename.Add(thisNode.GetHashCode(), ((Page_TreeNode) thisNode).Files[0].File_Name_Sans_Extension);
+                        
 
                     }
                     else
@@ -878,15 +891,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Size_Of_Thumbnails = -1;
 			}
 
-			// Get the links for the METS
-			string greenstoneLocation = qc_item.Web.Source_URL + "/";
-			string complete_mets = greenstoneLocation + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+            //// Get the links for the METS
+            //string greenstoneLocation = qc_item.Web.Source_URL + "/";
+            //string complete_mets = greenstoneLocation + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
 
-			// MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-			if ((qc_item.Behaviors.Dark_Flag) || (qc_item.Behaviors.IP_Restriction_Membership > 0))
-			{
-				complete_mets = CurrentMode.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
-			}
+            //// MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            //if ((qc_item.Behaviors.Dark_Flag) || (qc_item.Behaviors.IP_Restriction_Membership > 0))
+            //{
+            //    complete_mets = CurrentMode.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+            //}
 
 
 			//StringBuilder builder = new StringBuilder(4000);
@@ -1021,10 +1034,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
-			builder.AppendLine("\t<li>View METS</li>");
+            builder.AppendLine("\t<li><a href=\""+complete_mets+"\" target=\"_blank\">View METS</a></li>");
 			builder.AppendLine("\t<li>View Directory</li>");
-			builder.AppendLine("\t<li>View QC History</li>");
-			builder.AppendLine("</ul></li>");
+			
+            My_Sobek_Type_Enum temp_my_sobek_type = CurrentMode.My_Sobek_Type;
+		    string temp_my_sobek_submode = CurrentMode.My_Sobek_SubMode;
+
+            CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+            CurrentMode.My_Sobek_SubMode = "1";
+            builder.AppendLine("\t<li><a href=\""+CurrentMode.Redirect_URL()+">View QC History</a></li>" );
+		    
+            //Reset the current mode
+            CurrentMode.My_Sobek_Type = temp_my_sobek_type;
+		    CurrentMode.My_Sobek_SubMode = temp_my_sobek_submode;
+			
+            builder.AppendLine("</ul></li>");
 
 			builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
 			
@@ -1480,7 +1504,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//Add the Complete and Cancel buttons at the end of the form
 			Output.WriteLine("</tr><tr><td colspan=\"100%\">");
-            Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
+            //Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
             //Start inner table
             Output.WriteLine("<span style=\"float:right\"><table style=\"width=\"100%\"><tr>");
             Output.WriteLine("<td>Comments: </td><td><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea></td> ");
