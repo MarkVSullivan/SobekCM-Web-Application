@@ -1400,7 +1400,7 @@ function qc_auto_save()
 						  var time = hours+":"+minutes+' '+ampm;
 						  
                           var timeToDisplay = "Saved at "+time;
-						  $("#displayTimeSaved").text(timeToDisplay);
+				//		  $("#displayTimeSaved").text(timeToDisplay);
 							
 							return false;
 		 
