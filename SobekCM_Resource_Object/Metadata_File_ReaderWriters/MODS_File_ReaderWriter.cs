@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 #endregion
@@ -50,7 +51,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         public bool Read_Metadata(string MetadataFilePathName, SobekCM_Item Return_Package, Dictionary<string, object> Options, out string Error_Message)
         {
-            throw new NotImplementedException();
+            Stream reader = new FileStream(MetadataFilePathName, FileMode.Open, FileAccess.Read);
+            bool returnValue = Read_Metadata(reader, Return_Package, Options, out Error_Message);
+            reader.Close();
+
+            return returnValue;
         }
 
         /// <summary> Reads metadata from an open stream and saves to the provided item/package </summary>
@@ -61,7 +66,30 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         public bool Read_Metadata(Stream Input_Stream, SobekCM_Item Return_Package, Dictionary<string, object> Options, out string Error_Message)
         {
-            throw new NotImplementedException();
+            // Set default error outpt message
+            Error_Message = String.Empty;
+
+            // Create a XML reader and read the metadata
+            XmlTextReader nodeReader = null;
+            bool returnValue = true;
+            try
+            {
+                // create the node reader
+                nodeReader = new XmlTextReader(Input_Stream);
+                MODS_METS_dmdSec_ReaderWriter.Read_MODS_Info(nodeReader, Return_Package.Bib_Info, Return_Package);
+            }
+            catch (Exception ee)
+            {
+                Error_Message = "Error reading MODS from stream: " + ee.Message;
+                returnValue = false;
+            }
+            finally
+            {
+                if (nodeReader != null)
+                    nodeReader.Close();
+            }
+
+            return returnValue;
         }
 
         /// <summary> Writes the formatted metadata from the provided item to a file </summary>

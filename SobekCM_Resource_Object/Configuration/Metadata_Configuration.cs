@@ -108,6 +108,13 @@ namespace SobekCM.Resource_Object.Configuration
                 defaultWritingProfile = NewProfile;
         }
 
+        /// <summary> Clear all the METS writing profiles from this configuration </summary>
+        public static void Clear_METS_Writing_Profiles()
+        {
+            metsWritingProfiles.Clear();
+            defaultWritingProfile = null;
+        }
+
         /// <summary> Add new metadata module configuration information for a module which should always be included </summary>
         /// <param name="MetadatModuleConfig"> New metadata module to include with all new items </param>
         public static void Add_Metadata_Module_Config( Additional_Metadata_Module_Config MetadatModuleConfig )
@@ -434,8 +441,8 @@ namespace SobekCM.Resource_Object.Configuration
 
             // Add the MarcXML section reader/writer
             METS_Section_ReaderWriter_Config MarcXML_Section = new METS_Section_ReaderWriter_Config();
-            MarcXML_Section.ID = "MarcXML";
-            MarcXML_Section.Label = "MarcXML";
+            MarcXML_Section.ID = "MARCXML";
+            MarcXML_Section.Label = "MARCXML";
             MarcXML_Section.Code_Assembly = String.Empty;
             MarcXML_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
             MarcXML_Section.Code_Class = "MarcXML_METS_dmdSec_ReaderWriter";

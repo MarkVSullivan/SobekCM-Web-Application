@@ -1,0 +1,197 @@
+<!-- old -->
+<div id="mapper_container">
+        <div id="container2a">
+            <div>
+                <div id="toolbar">
+                    <div class="grouping">
+	                    <a href="./mapedit" id="toolbar_reset" title="Reset: Reset Map To Defaults"><img class="button" src="/default/images/mapper/button-reset.png" /></a>
+	                    <a href="#" id="toolbar_toggleControls" title="Controls: Toggle Map Controls"><img class="button" src="/default/images/mapper/button-controls.png" /></a>
+                        <a href="#" id="toolbar_toggletoolbox" title="Toolbox: Toggle Toolbox" onclick="toggletoolbox(4);"><img class="button" src="/default/images/mapper/button-toolbox.png" /></a>
+                    </div>
+                    <div class="grouping">
+	                    <a href="#" id="toolbar_layerRoadmap" title="Roadmap: Toggle Road Map Layer"><img class="button" src="/default/images/mapper/button-roadmap.png" /></a>
+	                    <a href="#" id="toolbar_layerTerrain" title="Terrain: Toggle Terrain Map Layer"><img class="button" src="/default/images/mapper/button-terrain.png" /></a>
+	                    <a href="#" id="toolbar_layerSatellite" title="Satellite: Toggle Satellite Map Layer"><img class="button" src="/default/images/mapper/button-satellite.png" /></a>
+	                    <a href="#" id="toolbar_layerHybrid" title="Hybrid: Toggle Hybrid Map Layer"><img class="button" src="/default/images/mapper/button-hybrid.png" /></a>
+	                    <a href="#" id="toolbar_layerCustom" title="Block/Lot: Toggle Block/Lot Map Layer"><img class="button" src="/default/images/mapper/button-blockLot.png" /></a>
+                        <a href="#" id="toolbar_layerReset" title="Reset Map Type"><img class="button" src="/default/images/mapper/button-layerReset.png" /></a>
+	                </div>
+                    <div class="grouping">
+	                    <a href="#" id="toolbar_panUp" title="Pan Map Up"><img class="button" src="/default/images/mapper/button-panUp.png" /></a>
+	                    <a href="#" id="toolbar_panLeft" title="Pan Map Left"><img class="button" src="/default/images/mapper/button-panLeft.png" /></a>
+                        <a href="#" id="toolbar_panReset" title="Pan To Default"><img class="button" src="/default/images/mapper/button-panReset.png" /></a>
+	                    <a href="#" id="toolbar_panRight" title="Pan Map Right"><img class="button" src="/default/images/mapper/button-panRight.png" /></a>
+	                    <a href="#" id="toolbar_panDown" title="Pan Map Down"><img class="button" src="/default/images/mapper/button-panDown.png" /></a>
+                    </div>
+                    <div class="grouping">
+	                    <a href="#" id="toolbar_zoomIn" title="Zoom Map In" onclick="checkZoomLevel();"><img class="button" src="/default/images/mapper/button-zoomIn.png" /></a>
+	                    <a href="#" id="toolbar_zoomReset" title="Reset Zoom Levels"><img class="button" src="/default/images/mapper/button-zoomReset2.png" /></a>
+                        <a href="#" id="toolbar_zoomOut" title="Zoom Map Out" onclick="checkZoomLevel();"><img class="button" src="/default/images/mapper/button-zoomOut.png" /></a>
+                    </div>
+                    <div class="grouping">
+                        <a href="#" id="toolbar_manageItem" title="Manage Location Details" onclick="action1();"><img class="button" src="/default/images/mapper/button-action1.png" /></a>
+                        <a href="#" id="toolbar_manageOverlay" title="Manage Map Coverage" onclick="action2();"><img class="button" src="/default/images/mapper/button-action2.png" /></a>
+                        <a href="#" id="toolbar_managePOI" title="Manage Point of Interest" onclick="action3();"><img class="button" src="/default/images/mapper/button-action3.png" /></a>
+                    </div>
+                    <div class="grouping">
+                        <input id="toolbar_find" class="search" title="Locate: Find A Location On The Map" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="container_toggle_toolbar1"><a href="#" id="toolbar_toggle1" title="Toolbar: Hide the Toolbar" onclick="Toggle('#container2a');"><img src="/default/images/mapper/toolbar-toggle.png" /></a></div>
+        <div id="container_toggle_toolbar2"><a href="#" id="toolbar_toggle2" title="Toolbar: Show the Toolbar" onclick="Toggle('#container2a');"><img src="/default/images/mapper/toolbar-toggle.png" /></a></div>
+        
+        <div id="container2b">
+
+            <div id="messageContainer" style="display:none;"></div>
+
+            <div id="toolbox" class="ui-widget-content">
+                <div class="toolbar" >
+                    <a href="#" id="tmin" onclick="toggletoolbox(1);"><img src="/default/images/mapper/toolbox-minimize2.png" /></a>
+                    <a href="#" id="tmax" onclick="toggletoolbox(2);"><img src="/default/images/mapper/toolbox-maximize2.png" /></a>
+                    <a href="#" id="tclose" onclick="toggletoolbox(3);"><img src="/default/images/mapper/toolbox-close2.png" /></a>
+                </div>
+                <div id="toolboxTabs">
+                    <h3 class="tab-title">Map Controls</h3>
+                    <div class="tab">
+                        <div class="tab-content">
+                        <table id="mapper-table">
+                            <tr>
+                                <td><a id="toolbox_layerRoadmap" title="Roadmap: Toggle Road Map Layer"><img class="button" src="/default/images/mapper/button-roadmap.png" /></a></td>
+                                <td><a href="#" id="toolbox_layerTerrain" title="Terrain: Toggle Terrain Map Layer"><img class="button" src="/default/images/mapper/button-terrain.png" /></a></td>
+                                <td>&nbsp;</td>
+                                <td></td>
+                                <td><a href="#" id="toolbox_panUp" title="Pan Map Up"><img class="button" src="/default/images/mapper/button-panUp.png" /></a></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" id="toolbox_layerSatellite" title="Satellite: Toggle Satellite Map Layer"><img class="button" src="/default/images/mapper/button-satellite.png" /></a></td>
+                                <td><a href="#" id="toolbox_layerHybrid" title="Hybrid: Toggle Hybrid Map Layer"><img class="button" src="/default/images/mapper/button-hybrid.png" /></a></td>
+                                <td>&nbsp;</td>
+                                <td><a href="#" id="toolbox_panLeft" title="Pan Map Left"><img class="button" src="/default/images/mapper/button-panLeft.png" /></a></td>
+                                <td><a href="#" id="toolbox_panReset" title="Pan To Default"><img class="button" src="/default/images/mapper/button-panReset.png" /></a></td>
+                                <td><a href="#" id="toolbox_panRight" title="Pan Map Right"><img class="button" src="/default/images/mapper/button-panRight.png" /></a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" id="toolbox_layerCustom" title="Block/Lot: Toggle Block/Lot Map Layer"><img class="button" src="/default/images/mapper/button-blockLot.png" /></a></td>
+                                <td><a href="#" id="toolbox_layerReset" title="Reset Map Type"><img class="button" src="/default/images/mapper/button-layerReset.png" /></a></td>
+                                <td>&nbsp;</td>
+                                <td></td>
+                                <td><a href="#" id="toolbox_panDown" title="Pan Map Down"><img class="button" src="/default/images/mapper/button-panDown.png" /></a></td>
+                                <td></td>
+                            </tr>
+                            <tr><td colspan="6"><br /></td></tr>
+                            <tr>
+                                <td><a href="./mapedit" id="toolbox_reset" title="Reset: Reset Map To Defaults"><img class="button" src="/default/images/mapper/button-reset.png" /></a></td>
+                                <td><a href="#" id="toolbox_toggleControls" title="Controls: Toggle Map Controls"><img class="button" src="/default/images/mapper/button-controls.png" /></a></td>
+                                <td>&nbsp;</td>
+                                <td><a href="#" id="toolbox_zoomIn" title="Zoom Map In" onclick="checkZoomLevel();"><img class="button" src="/default/images/mapper/button-zoomIn.png" /></a></td>
+                                <td><a href="#" id="toolbox_zoomReset" title="Reset Zoom Levels"><img class="button" src="/default/images/mapper/button-zoomReset2.png" /></a></td>
+                                <td><a href="#" id="toolbox_zoomOut" title="Zoom Map Out" onclick="checkZoomLevel();"><img class="button" src="/default/images/mapper/button-zoomOut.png" /></a></td>
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+
+                    <h3 class="tab-title">Actions</h3>
+                    <div class="tab" >
+                        <div class="tab-content">
+                            <a href="#" id="toolbox_manageItem" title="Manage Location Details" onclick="action1();"><img class="button" src="/default/images/mapper/button-action1.png" /></a>&nbsp
+                            <a href="#" id="toolbox_manageOverlay" title="Manage Map Coverage" onclick="action2();"><img class="button" src="/default/images/mapper/button-action2.png" /></a>&nbsp
+                            <a href="#" id="toolbox_managePOI" title="Manage Point of Interest" onclick="action3();"><img class="button" src="/default/images/mapper/button-action3.png" /></a>
+                            <br/>
+                            <br/>
+                            <input id="toolbox_locate" class="search" title="Locate: Find A Location On The Map" type="text" placeholder="Locate" onBlur="finder(this.value);" onClick="this.select();" />
+                            <br/>
+                            <br/>
+                            <div style="clear:both;"></div>
+                            <div id="search_results"></div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="tab-title">Manage Location Details</h3>
+                    <div class="tab" style="text-align:center;">
+						<div class="tab-content">
+							<a href="#" id="toolbox_placeItem" title="Place a Point"><img src="/default/images/mapper/button-action1.png" /></a>
+							<a href="#" id="item_getUserLocation" title="Center On Your Current Position"><img src="/default/images/mapper/getUserLocation.png" /></a>
+							<div style="clear:both;text-align:left;">
+								<br />
+								<textarea id="posItem" class="tab-field" title="Coordinates: This is the selected Latitude and Longitude of the point you selected." rows="2" cols="24" placeholder="Selected Lat/Long"></textarea>
+								<br/>
+								<br/>
+								<textarea id="rgItem" class="tab-field" title="Address: This is the nearest address of the point you selected." rows="3" cols="24" placeholder="Nearest Address"></textarea>
+								<br/>
+								<br/>
+							</div>
+							<div style="clear:both;">
+								<a href="#" id="saveItem" title="Save Item" onclick="buttonSaveItem();" class="button2">Save Item</a>
+								<a href="#" id="clearItem" title="Clear Item" onclick="buttonClearItem();" class="button2">Clear Item</a>
+							</div>
+						</div>
+                    </div>
+
+                    <h3 class="tab-title" onclick="action2();" >Manage Map Coverage</h3>
+                    <div class="tab" style="text-align:center;">
+                        <div class="tab-content">
+                            <a href="#" id="toolbox_placeOverlay" title="Toggle Overlay Editting"><img src="/default/images/mapper/button-action2.png" /></a>
+                            <a href="#" id="overlay_getUserLocation" title="Center On Your Current Position"><img src="/default/images/mapper/getUserLocation.png" /></a>
+                            <div style="clear:both;">
+                                <br /><br />
+                            </div>
+                            <div id="rotation" style="float:left;">
+                                <div id="rotationKnob" title="Rotate: Edit the rotation value">
+                                    <input class="knob" data-displayInput="false" data-width="68" data-step="1" data-min="0" data-max="360" data-cursor=true data-bgColor="#B2B2B2" data-fgColor="#111111" data-thickness="0.3" value="0">
+                                </div>
+                                <a id="rotationCounterClockwise" href="#" title=".1&deg Left: Click to Rotate .1&deg Counter-Clockwise" onclick="rotate(-0.1)"><img src="/default/images/mapper/rotation-counterClockwise.png" /></a>
+                                <a id="rotationReset" href="#" title="Reset: Click to Reset Rotation" onclick="rotate(0)"><img src="/default/images/mapper/rotation-reset.png" /></a>
+                                <a id="rotationClockwise" href="#" title=".1&deg Right: Click to Rotate .1&deg Clockwise" onclick="rotate(0.1)"><img src="/default/images/mapper/rotation-clockwise.png" /></a>
+                            </div>
+                            <div id="transparency" title="Transparency: Set the transparency of this Overlay">
+                                <div id="overlayTransparencySlider"></div>
+                            </div>
+                            <div style="clear:both;margin-left:-3px;">
+                                <br />
+                                <br />
+                                <a href="#" id="saveOverlay" title="Save Overlay" onclick="buttonSaveOverlay();" class="button2">Save Overlay</a>
+                                <a href="#" id="clearOverlay" title="Clear Overlay" onclick="buttonClearOverlay();" class="button2">Clear Overlay</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="tab-title">Manage POI Details</h3>
+                    <div class="tab" style="text-align:center;height:295px;">
+                        <div class="tab-content2" style="margin: 0 -20px 0 -20px;">
+                            <a href="#" id="toolbox_placePOI" title="Place Point Of Interest"><img src="/default/images/mapper/button-action3.png" /></a>
+                            <a href="#" id="poi_getUserLocation" title="Center On Your Current Position"><img src="/default/images/mapper/getUserLocation.png" /></a>
+                            <br/>
+                            <br/>
+                                <a id="toolbox_poiMarker" href="#" title="Marker: Place a Point"><img src="/default/images/mapper/button-drawMarker.png"/></a> 
+                                <a id="toolbox_poiCircle" href="#" title="Circle: Place a Circle"><img src="/default/images/mapper/button-drawCircle.png"/></a> 
+                                <a id="toolbox_poiRectangle" href="#" title="Rectangle: Place a Rectangle"><img src="/default/images/mapper/button-drawRectangle.png"/></a> 
+                                <a id="toolbox_poiPolygon" href="#" title="Polygon: Place a Polygon"><img src="/default/images/mapper/button-drawPolygon.png"/></a> 
+                                <a id="toolbox_poiLine" href="#" title="Line: Place a Line"><img src="/default/images/mapper/button-drawLine.png"/></a> 
+                            <br/>
+                            <div style="clear:both;text-align:left;">
+                                <br />
+                                
+                                <div id="poiList_Container">
+                                    <div id="poiList_ScollContainer">
+                                        <div id="poiList"></div>
+                                    </div>
+                                </div>
+                                
+                                <br />
+                            </div>
+                            <div style="clear:both;">
+                                <a href="#" id="savePOI" title="Save Point Of Interest Set" onclick="buttonSavePOI();" class="button2">Save POI(s)</a>
+                                <a href="#" id="clearPOI" title="Clear Point Of Interest Set" onclick="buttonClearPOI();" class="button2">Clear POI(s)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="googleMap"></div>
+        </div>
+    </div>

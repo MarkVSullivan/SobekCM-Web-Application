@@ -8,6 +8,14 @@ body {
 	overflow:hidden;
 	/*margin-bottom:-18px*/
 }
+h3 {
+	font-family:'Arial Black', Gadget, sans-serif;
+	font-size:12px;
+}
+a img {
+	outline:none;
+	border:0;
+}
 
 #mapper_container_thebigdeal {
     margin:0;
@@ -23,14 +31,6 @@ body {
 
 }
 
-h3 {
-	font-family:'Arial Black', Gadget, sans-serif;
-	font-size:12px;
-}
-a img {
-	outline:none;
-	border:0;
-}
 /*table, th, td{
 	font-family:'Arial Narrow', 'Nimbus Sans L',monospace;
 	font-size:11px;

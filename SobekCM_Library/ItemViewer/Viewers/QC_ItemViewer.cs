@@ -904,25 +904,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//StringBuilder builder = new StringBuilder(4000);
 			builder.AppendLine("<div id=\"qcmenubar\">");
-			builder.AppendLine("<ul class=\"qc-menu\">");
+			builder.AppendLine("<ul id=\"qc-main-menu\" class=\"sf2-menu\">");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
+			//builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
 			//builder.AppendLine("\t<li>Volume Error<ul>");
 			//builder.AppendLine("\t\t<li>No volume level error</li>");
 			//builder.AppendLine("\t\t<li>Invalid images</li>");
 			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
 			//builder.AppendLine("\t</ul></li>");
             builder.AppendLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
-			builder.AppendLine("\t<li>Complete</li>");
-			builder.AppendLine("\t<li>Cancel</li>");
+
+            builder.AppendLine("<li><a href=\"#\">Resource</a><ul>");
+            builder.AppendLine("\t<li><a href=\"#\">Save</a></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Complete</a></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Cancel</a></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Edit<ul>");
-			builder.AppendLine("\t<li>Clear Pagination</li>");
-			builder.AppendLine("\t<li>Clear All &amp; Reorder Pages</li>");
+            builder.AppendLine("<li><a href=\"#\">Edit</a><ul>");
+            builder.AppendLine("\t<li><a href=\"#\">Clear Pagination</a></li>");
+            builder.AppendLine("\t<li><a href=\"#\">Clear All &amp; Reorder Pages</a></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Settings<ul>");
+            builder.AppendLine("<li><a href=\"#\">Settings</a><ul>");
             builder.AppendLine("\t<li>Thumbnail Size<ul>");
 			//Add the thumbnail size options
             if (thumbnailSize == 1)
@@ -955,7 +958,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
 
 			builder.AppendLine("\t</ul></li>");
-			builder.AppendLine("\t<li>Thumbnails per page<ul>");
+            builder.AppendLine("\t<li><a href=\"#\">Thumbnails per page</a><ul>");
 
             //Add the thumbnails per page options
 		    if (thumbnailsPerPage == 25)
@@ -1033,7 +1036,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        builder.AppendLine("\t</ul></li>");
 			builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">View<ul>");
+			builder.AppendLine("<li>View<ul>");
             builder.AppendLine("\t<li><a href=\""+complete_mets+"\" target=\"_blank\">View METS</a></li>");
 			builder.AppendLine("\t<li>View Directory</li>");
 			
@@ -1050,10 +1053,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			
             builder.AppendLine("</ul></li>");
 
-			builder.AppendLine("<li class=\"qc-menu-item\">Help</li>");
+			builder.AppendLine("<li>Help</li>");
 			
 			// Add the option to GO TO a certain thumbnail next
-			builder.AppendLine("<li class=\"qc-menu-item\">");
+			builder.AppendLine("<li>");
 			builder.AppendLine("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>" + Go_To_Thumbnail + ":</b>");
 			builder.AppendLine("<span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
 
@@ -1135,12 +1138,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			builder.AppendLine("</div>");
 
-			builder.AppendLine("<script>");
-			builder.AppendLine("    jQuery(document).ready(function(){");
-			builder.AppendLine("       jQuery('ul.qc-menu').superfish();");
-			builder.AppendLine("    });");
-			builder.AppendLine("</script>");
-			builder.AppendLine();
+            builder.AppendLine("<script>");
+            builder.AppendLine("    $(function() {");
+            builder.AppendLine("       $('#qc-main-menu').superfish({ autoArrows:  true });");
+            builder.AppendLine("    });");
+            builder.AppendLine("</script>");
+            builder.AppendLine();
 		}
 
 		#endregion
@@ -1531,15 +1534,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				//Include the js files
 				navRowBuilder.AppendLine("<script language=\"JavaScript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_related_items.js\"></script>");
-				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-1.9.1.js\"></script>");
-				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
+	            navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
 				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
 				navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_qc.js\"></script>");
 			   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
-			   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.min.js\"></script>");
+			//   navRowBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.min.js\"></script>");
 				
 			  navRowBuilder.AppendLine("<link rel=\"stylesheet\" href=\"http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css\" />");
-			  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
+			//  navRowBuilder.AppendLine("<script src=\"http://code.jquery.com/ui/1.10.1/jquery-ui.js\"></script>");
 
 			   //Include the superfish.css file for the menu
 				navRowBuilder.AppendLine("<link rel=\"stylesheet\" media=\"screen\"  href=\"" + CurrentMode.Base_URL + "default/superfish.css\">");
