@@ -1,11 +1,14 @@
 ﻿//localization
 
 //by variables (used in fcns)
+var Lerror1 = "ERROR: Failed Adding Listeners";
 var L_Marker = "Marker";
 var L_Circle = "Circle";
 var L_Rectangle = "Rectangle";
 var L_Polygon = "Polygon";
 var L_Line = "Line";
+var L_Saved = "Saved";
+var L_NotSaved = "Nothing To Save";
 var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
 var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
 var L3 = "Description (Optional)"; //describe poi box
@@ -24,6 +27,18 @@ var L15 = "POI Set Saved!"; //HandleResult(arg);
 var L16 = "Cannot Zoom Out Further"; //checkZoomLevel();
 var L17 = "Cannot Zoom In Further"; //checkZoomLevel();
 var L18 = "Using Search Results as Location"; //marker complete listener
+var L19 = "Coordinates Copied To Clipboard"; //keypress(e);
+var L20 = "Coordinates Viewer Frozen"; //keypress(e);
+var L21 = "Coordinates Viewer UnFrozen"; //keypress(e);
+var L22 = "Hiding Overlays"; //keypress(e);
+var L23 = "Showing Overlays"; //keypress(e);
+var L24 = "Could not find within bounds.";
+var L25 = "Geocoder failed due to:";
+var L26 = "Overlay Editing Turned Off";
+var L27 = "Overlay Editing Turned On";
+var L28 = "ERROR: Failed Adding Titles";
+var L29 = "ERROR: Failed Adding Textual Content";
+var L30 = "Edit Location by Dragging Exisiting Marker";
 
 //by listeners
 try {
@@ -76,12 +91,12 @@ try {
     document.getElementById("content_toolbox_searchButton").title = "Locate: Find A Location On The Map";
     document.getElementById("content_toolbox_searchResults").title = "Locate: Find A Location On The Map";
     //tab
-    document.getElementById("content_toolbox_button_placeItem").title = "Place a Point";
+    document.getElementById("content_toolbox_button_placeItem").title = "Edit Location";
     document.getElementById("content_toolbox_button_itemGetUserLocation").title = "Center On Your Current Position";
     document.getElementById("content_toolbox_posItem").title = "Coordinates: This is the selected Latitude and Longitude of the point you selected.";
     document.getElementById("content_toolbox_rgItem").title = "Address: This is the nearest address of the point you selected.";
-    document.getElementById("content_toolbox_button_saveItem").title = "Save Location";
-    document.getElementById("content_toolbox_button_clearItem").title = "Clear Item";
+    document.getElementById("content_toolbox_button_saveItem").title = "Save Location Changes";
+    document.getElementById("content_toolbox_button_clearItem").title = "Clear Location Changes";
     //tab
     document.getElementById("content_toolbox_button_placeOverlay").title = "Toggle Overlay Editing";
     document.getElementById("content_toolbox_button_overlayGetUserLocation").title = "Center On Your Current Position";
@@ -91,10 +106,10 @@ try {
     document.getElementById("content_toolbox_rotationReset").title = "Reset: Click to Reset Rotation";
     document.getElementById("content_toolbox_rotationClockwise").title = ".1&deg Right: Click to Rotate .1&deg Clockwise";
     document.getElementById("transparency").title = "Transparency: Set the transparency of this Overlay";
-    document.getElementById("content_toolbox_button_saveOverlay").title = "Save Overlay";
-    document.getElementById("content_toolbox_button_clearOverlay").title = "Clear Overlay";
+    document.getElementById("content_toolbox_button_saveOverlay").title = "Save Overlay Changes";
+    document.getElementById("content_toolbox_button_clearOverlay").title = "Clear All Overlay Changes";
     //tab
-    document.getElementById("content_toolbox_button_placePOI").title = "Place Point Of Interest";
+    document.getElementById("content_toolbox_button_placePOI").title = "Toggle Point Of Interest Editing";
     document.getElementById("content_toolbox_button_poiGetUserLocation").title = "Center On Your Current Position";
     document.getElementById("content_toolbox_button_poiMarker").title = "Marker: Place a Point";
     document.getElementById("content_toolbox_button_poiCircle").title = "Circle: Place a Circle";
@@ -105,18 +120,18 @@ try {
     document.getElementById("content_toolbox_button_clearPOI").title = "Clear Point Of Interest Set";
     
 } catch(err) {
-    alert("ERROR: Failed Adding Titles");
+    alert(L28);
 }
 
 //by textual content
 try {
     document.getElementById("content_minibar_header").innerHTML = "Toolbox";
-    document.getElementById("content_toolbox_button_saveItem").innerHTML = "Save";
-    document.getElementById("content_toolbox_button_clearItem").innerHTML = "Clear";
-    document.getElementById("content_toolbox_button_saveOverlay").innerHTML = "Save";
-    document.getElementById("content_toolbox_button_clearOverlay").innerHTML = "Clear";
-    document.getElementById("content_toolbox_button_savePOI").innerHTML = "Save";
-    document.getElementById("content_toolbox_button_clearPOI").innerHTML = "Clear";
+    document.getElementById("content_toolbox_button_saveItem").value = "Save";
+    document.getElementById("content_toolbox_button_clearItem").value = "Clear";
+    document.getElementById("content_toolbox_button_saveOverlay").value = "Save";
+    document.getElementById("content_toolbox_button_clearOverlay").value = "Clear";
+    document.getElementById("content_toolbox_button_savePOI").value = "Save";
+    document.getElementById("content_toolbox_button_clearPOI").value = "Clear";
     document.getElementById("content_toolbox_tab1_header").innerHTML = "Map Controls";
     document.getElementById("content_toolbox_tab2_header").innerHTML = "Actions";
     document.getElementById("content_toolbox_tab3_header").innerHTML = "Manage Location";
@@ -128,5 +143,5 @@ try {
     document.getElementById("content_toolbox_rgItem").setAttribute('placeholder', "Nearest Address");
     
 } catch (err) {
-    alert("ERROR: Failed Adding Textual Content");
+    alert(L29);
 }

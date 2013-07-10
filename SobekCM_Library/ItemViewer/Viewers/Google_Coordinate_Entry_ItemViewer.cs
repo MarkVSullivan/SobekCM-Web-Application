@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Web.UI;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Users;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -41,99 +43,54 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
 
-        #region myc#
+        private string userInProcessDirectory;
 
-        //protected string stockItemCoord = String.Empty;
-        //protected string stockItemDesc = String.Empty;
-        //protected string savedItemCoord = String.Empty;
-        //protected string savedItemDesc = String.Empty;
-
-
-        //public string stockOverlayBounds = String.Empty;
-        //public string stockOverlaySource = String.Empty;
-        //public double stockOverlayRotation = 0;
-        //protected string savedOverlayIndex = String.Empty;
-        //protected string savedOverlayBounds = String.Empty;
-        //protected string savedOverlaySource = String.Empty;
-        //protected string savedOverlayRotation = String.Empty; //recieving 
-        //protected double savedOverlayRotationSending = 0; //sending
-
-        //protected string callbackMessage = "0";
-
-
-        //public void RaiseCallbackEvent(string eventArgument)
-        //{
-
-        //    //StreamWriter output3 = new StreamWriter("U:/vs12_projects/m3/output/savedPOISet.txt", true);
-        //    //output3.WriteLine(eventArgument); //poi kml
-        //    //output3.Flush();
-        //    //output3.Close();
-
-        //    //This method will be called by the Client; Do your business logic here
-        //    //The parameter "eventArgument" is actually the paramenter "arg" of CallServer(arg, context)
-
-        //    int packageIndex = eventArgument.LastIndexOf("~"); //get how long the package to parse is
-        //    string[] packages = eventArgument.Substring(0, packageIndex).Split('~'); //parse the package into array elements
-
-        //    //for (var i = 0; i < ar1.length; i++) {
-        //    foreach (var pack in packages)
-        //    {
-        //        int packIndex = pack.LastIndexOf("|"); //get how long each pack is
-        //        string[] packs = pack.Substring(0, packIndex).Split('|'); //parse each pack into an indivual element
-
-        //        string saveType = packs[0]; //get what type of save it is
-
-        //        switch (saveType)
-        //        {
-
-        //            case "item":
-        //                savedItemCoord = packs[1];
-        //                StreamWriter output1 = new StreamWriter("U:/vs12_projects/m3/output/savedItem.txt", false);
-        //                output1.WriteLine(savedItemCoord);
-        //                output1.Flush();
-        //                output1.Close();
-        //                //ReadSavedItem(); //trigger a refresh of cached saved item
-        //                callbackMessage = "1";
-        //                break;
-        //            case "overlay":
-        //                savedOverlayIndex = packs[1];
-        //                savedOverlayBounds = packs[2];
-        //                savedOverlaySource = packs[3];
-        //                savedOverlayRotation = packs[4];
-        //                //savedItem = eventArgument; //not used
-        //                StreamWriter output2 = new StreamWriter("U:/vs12_projects/m3/output/savedOverlay.txt", false);
-        //                output2.WriteLine(savedOverlayIndex);
-        //                output2.WriteLine(savedOverlayBounds);
-        //                output2.WriteLine(savedOverlaySource);
-        //                output2.WriteLine(savedOverlayRotation);
-        //                output2.Flush();
-        //                output2.Close();
-        //                //ReadSavedOverlay(); //trigger a refresh of cached saved overlay
-        //                callbackMessage = "2";
-        //                break;
-        //            case "poi":
-        //                StreamWriter output3 = new StreamWriter("U:/vs12_projects/m3/output/savedPOISet.txt", true);
-        //                string stuff = DateTime.Now + "," + packs[1] + "," + packs[2] + ",\"" + packs[3] + "\"";
-        //                output3.WriteLine(stuff); //poi kml
-        //                output3.Flush();
-        //                output3.Close();
-        //                //ReadSavedPOI(); //trigger a refresh of cached saved overlay
-        //                callbackMessage = "3";
-        //                break;
-        //        }
-
-        //    }
-
-        //    //GetCallbackResult(); //trigger callback
-        //}
-       
-        #endregion
-        
         /// <summary> Constructor for a new instance of the Google_Coordinate_Entry_ItemViewer class </summary>
-        public Google_Coordinate_Entry_ItemViewer()
+        public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item)
         {
-            // Empty for now
+            this.CurrentUser = Current_User;
+            this.CurrentItem = Current_Item;
+
+            // If there is no user, send to the login
+            if (CurrentUser == null)
+            {
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                return;
+            }
+
+            // Determine the in process directory for this
+            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork";
+            if (Current_User.UFID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork";
+
+            // Ensure the user's process directory exists
+            if (!Directory.Exists(userInProcessDirectory))
+                Directory.CreateDirectory(userInProcessDirectory);
+
+            // SAVE!
+
+            // Ensure we have a geo-spatial module in the digital resource
+            GeoSpatial_Information myGeo = Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+            if (myGeo == null)
+            {
+                myGeo = new GeoSpatial_Information();
+                Current_Item.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
+            }
+
+            double point_latitude = 12.0;
+            double point_longitude = 6.0;
+
+            myGeo.Add_Point(point_latitude, point_longitude);
+
+
+            // Save the item to the temporary location
+            Current_Item.Save_METS(userInProcessDirectory + "\\" + Current_Item.BibID + "_" + Current_Item.VID + ".xml");
+
+
         }
+
 
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>
@@ -229,20 +186,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //custom js 
             #region
             
-            mapperBuilder.AppendLine("");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\">");
-            mapperBuilder.AppendLine("");
+            mapperBuilder.AppendLine(" ");
+            mapperBuilder.AppendLine(" <script type=\"text/javascript\"> ");
+            mapperBuilder.AppendLine(" ");
             //set base url var
-            mapperBuilder.AppendLine("<!-- Add Base URL Var -->");
+            mapperBuilder.AppendLine(" <!-- Add Base URL Var -->");
             mapperBuilder.AppendLine(" var baseURL = \"" + CurrentMode.Base_URL + "\"; ");
-            mapperBuilder.AppendLine("");
+            mapperBuilder.AppendLine(" ");
             //geo objects writer section 
-            mapperBuilder.AppendLine("<!-- Begin Geo Objects Writer -->");
-            mapperBuilder.AppendLine("   var incomingOverlayBounds = [];");    //may not need to declare
-            mapperBuilder.AppendLine("   var incomingOverlaySourceURL = [];"); //may not need to declare
-            mapperBuilder.AppendLine("   var incomingOverlayRotation = [];");  //may not need to declare
-            mapperBuilder.AppendLine("   var incomingOverlayRectangle = [];");  //may not need to declare
-            mapperBuilder.AppendLine("   function initOverlays(){");
+            mapperBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
+            mapperBuilder.AppendLine(" function initGeoObjects(){ ");
+            mapperBuilder.AppendLine(" ");
             
             mapBuilder = new StringBuilder();
 
@@ -255,6 +209,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 allPolygons = new List<Coordinate_Polygon>();
                 allPoints = new List<Coordinate_Point>();
                 allLines = new List<Coordinate_Line>();
+
+
 
                      // Collect all the polygons, points, and lines
                 GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
@@ -360,12 +316,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                         //get and set the rotation value
                         polygonRotation.Add(0);
-                        mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
-                        
-                        //setup rectangle options and bounds
-                        //mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "] = new google.maps.Rectangle(); ");
-                        //mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setOptions(overlayRectangleOptions); ");
-                        //mapperBuilder.AppendLine("      incomingOverlayRectangle[" + it + "].setBounds(" + bounds + "); ");
+                        mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");                       
                                              
                         //iterate
                         it++;
@@ -382,15 +333,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //add each point
                     for (int point = 0; point < allPoints.Count; point++)
                     {
-                        //not yet completed
-                        mapperBuilder.AppendLine("      <!-- point holder: " + allPoints[point].Latitude + ", " + allPoints[point].Longitude + ", " + allPoints[point].Label + " --> ");
+                        mapperBuilder.AppendLine("      incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
+                        mapperBuilder.AppendLine("      incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
                     }
                     mapperBuilder.AppendLine(" ");
-                    //mapperBuilder.AppendLine("      displayIncomingPoints();");
+                    mapperBuilder.AppendLine("      displayIncomingPoints();");
                     mapperBuilder.AppendLine(" ");
                 }
 
-                mapperBuilder.AppendLine("   }");
+                mapperBuilder.AppendLine(" }");
                 mapperBuilder.AppendLine(" ");
                 mapperBuilder.AppendLine(" <!-- End Geo Objects Writer --> ");
                 mapperBuilder.AppendLine(" ");
@@ -407,9 +358,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine(" ");
 
             //html page literal
-            #region
+            #region html page literat
 
-            mapperBuilder.AppendLine(" <!-- new --> ");
             mapperBuilder.AppendLine(" <div id=\"container\"> ");
             mapperBuilder.AppendLine("     <div id=\"container_pane_1\"> ");
             mapperBuilder.AppendLine("             <div id=\"container_toolbar\"> ");
@@ -535,8 +485,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
             mapperBuilder.AppendLine("                             <textarea id=\"content_toolbox_rgItem\" class=\"tab-field\" rows=\"3\" cols=\"24\" placeholder=\"Nearest Address\"></textarea> ");
             mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-            mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_saveItem\" class=\"button2\"></div> ");
-            mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_clearItem\" class=\"button2\"></div> ");
+            mapperBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveItem\" > </div> ");
+            mapperBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearItem\" > </div> ");
             mapperBuilder.AppendLine("                         </div> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
@@ -562,8 +512,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                             </div> ");
             mapperBuilder.AppendLine("                         </div> ");
             mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_saveOverlay\" class=\"button2\"></div> ");
-            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_clearOverlay\" class=\"button2\"></div> ");
+            mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveOverlay\" > </div> ");
+            mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearOverlay\" > </div> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab5_header\" class=\"tab-title\"></div> ");
@@ -584,8 +534,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                             </div> ");
             mapperBuilder.AppendLine("                         </div>   ");
             mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_savePOI\" class=\"button2\"></div> ");
-            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_clearPOI\" class=\"button2\"></div> ");
+            mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_savePOI\" > </div> ");
+            mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearPOI\" > </div> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("             </div> ");
@@ -593,8 +543,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("         <div id=\"googleMap\"></div> ");
             mapperBuilder.AppendLine("     </div> ");
             mapperBuilder.AppendLine(" </div> ");
-
-
+            
 #endregion
 
             //custom js files (load order does matter)

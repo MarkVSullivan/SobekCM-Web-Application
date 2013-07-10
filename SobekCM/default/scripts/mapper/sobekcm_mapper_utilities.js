@@ -95,7 +95,7 @@ function createSavedItem(coordinates) {
     //assign data
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
-    alert("saving item: " + dataPackage);
+    alert("saving item: " + dataPackage); //temp
     //CallServer(dataPackage);
 }
 
@@ -110,7 +110,7 @@ function createSavedOverlay(index, source, bounds, rotation) {
     var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
 
     var dataPackage = data + "~";
-    alert("saving overlay set: " + dataPackage);
+    alert("saving overlay set: " + dataPackage); //temp
     //CallServer(dataPackage); //not yet working
 }
 
@@ -146,7 +146,7 @@ function createSavedPOI() {
         var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
         dataPackage += data + "~";
     }
-    alert("saving poi set: " + dataPackage);
+    alert("saving poi set: " + dataPackage); //temp
     //CallServer(dataPackage);
 }
 
@@ -164,13 +164,13 @@ function poiHideMe(id) {
     poiObj[id].setMap(null);
     infowindow[id].setMap(null);
     label[id].setMap(null);
-    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + "default/images/mapper/add.png\" onclick=\"poiShowMe(" + id + ");\" />";
+    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "add.png\" onclick=\"poiShowMe(" + id + ");\" />";
 }                        //hide poi on map
 function poiShowMe(id) {
     poiObj[id].setMap(map);
     infowindow[id].setMap(map);
     label[id].setMap(map);
-    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
+    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }                        //show poi on map
 function poiDeleteMe(id) {
     poiObj[id].setMap(null);
@@ -334,7 +334,10 @@ function polygonCenter(poly) {
     center_y = lowy + ((highy - lowy) / 2);
     return (new google.maps.LatLng(center_x, center_y));
 }                  //get the center lat/long of a polygon
+
 function testBounds() {
+    alert(strictBounds.contains(map.getCenter()));
+    alert(map.getCenter());
     if (strictBounds != null) {
         if (strictBounds.contains(map.getCenter())) {
             mapInBounds = "yes";
@@ -344,7 +347,9 @@ function testBounds() {
             displayMessage(L5);
         }
     }
-}                         //test the map bounds
+}
+
+//test the map bounds
 function finder(stuff) {
 
     if (stuff.length > 0) {
@@ -356,7 +361,7 @@ function finder(stuff) {
 function searcher(stuff) {
 
     if (stuff.length > 0) {
-        displayMessage("No collection to search");
+        displayMessage("No collection to search"); //temp
     } else {
         //do nothing and keep quiet
     }
@@ -378,9 +383,9 @@ function codeAddress(type, geo) {
                     map: map, //add to current map
                     position: results[0].geometry.location //set position to search results
                 });
-                document.getElementById("content_toolbox_search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div><br\>"; //add list div
+                document.getElementById("content_toolbox_search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div><br\>"; //add list div
             } else { //if location found was outside strict map bounds...
-                displayMessage("Could not find within bounds."); //say so
+                displayMessage(L24); //say so
             }
 
         } else { //if the entire geocode did not work
@@ -393,11 +398,11 @@ function codeLatLng(latlng) {
         geocoder.geocode({ 'latLng': latlng }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 if (results[1]) {
-                    document.getElementById("content_toolbox_rgItem").innerHTML = results[0].formatted_address;
+                    document.getElementById("content_toolbox_rgItem").value = results[0].formatted_address;                   
                 }
                 else {
-                    document.getElementById("content_toolbox_rgItem").innerHTML = "Geocoder failed due to: " + status;
-                    document.getElementById("content_toolbox_rgItem").innerHTML = "";
+                    displayMessage(L25 + " " + status);
+                    document.getElementById("content_toolbox_rgItem").value = "";
                 }
             }
         });
@@ -444,29 +449,29 @@ function keypress(e) {
                 var copyString = cLat.innerHTML;
                 copyString += ", " + cLong.innerHTML;
                 window.clipboardData.setData("Text", copyString);
-                displayMessage("Coordinates Copied To Clipboard");
+                displayMessage(L19);
             } else {
                 if (cCoordsFrozen == "no") {
                     //freeze
                     cCoordsFrozen = "yes";
-                    displayMessage("Coordinates Viewer Frozen");
+                    displayMessage(L20);
                 } else {
                     //unfreeze
                     cCoordsFrozen = "no";
-                    displayMessage("Coordinates Viewer UnFrozen");
+                    displayMessage(L21);
                 }
             }
             break;
         case 79: //O
             if (overlaysCurrentlyDisplayed == true) {
-                displayMessage("Hiding Overlays");
+                displayMessage(L22);
                 for (var i = 0; i < incomingOverlayBounds.length; i++) {    //go through and display overlays as long as there is an overlay to display
                     overlaysOnMap[i].setMap(null);                          //hide the overlay from the map
                     ghostOverlayRectangle[i].setMap(null);                  //hide ghost from map
                     overlaysCurrentlyDisplayed = false;                     //mark that overlays are not on the map
                 }
             } else {
-                displayMessage("Showing Overlays");
+                displayMessage(L23);
                 for (var i = 0; i < incomingOverlayBounds.length; i++) {   //go through and display overlays as long as there is an overlay to display
                     overlaysOnMap[i].setMap(map);                          //set the overlay to the map
                     ghostOverlayRectangle[i].setMap(map);                  //set to map
