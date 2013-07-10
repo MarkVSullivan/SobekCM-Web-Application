@@ -244,6 +244,6 @@ try {
         clear("poi");
     }, false);
 } catch(err) {
-    alert("ERROR: Failed Adding Listeners");
+    alert(Lerror1);
 }
 
