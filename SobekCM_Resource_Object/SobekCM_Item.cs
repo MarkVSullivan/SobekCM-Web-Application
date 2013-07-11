@@ -414,10 +414,6 @@ namespace SobekCM.Resource_Object
             Bib_Info.Series_Part_Info = serialHierarchyObject;
         }
 
-        public void QC_Update_Item_DB(int ItemID, )
-        {
-            
-        }
 
         #region Public Properties
 
