@@ -177,9 +177,11 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.YOUTUBE_VIDEO:
                     return new string[] {"youtube"};
 
-
                 case View_Enum.EMBEDDED_VIDEO:
                     return new string[] { "video" };
+
+                case View_Enum.TEST:
+                    return new string[] { "test" };
             }
 
             return new string[] {""};

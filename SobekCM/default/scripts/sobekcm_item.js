@@ -7,7 +7,7 @@ function itemwriter_load() {
     // Below 1000 pixels wide, make the nav bar buttons start at the left
     var viewport_width = get_viewport().width;
     if (viewport_width < 1000) {
-        $('.sf-menu').css('margin-left', '25px');
+        $('.sf-menu').css('margin-left', '5px');
     }
     else {
         $('.sf-menu').css('margin-left', '150px');
@@ -29,13 +29,11 @@ function itemwriter_load() {
         $('#printbuttonspan').hide();
         $('#addbuttonspan').hide();
         $('#sendbuttonspan').hide();
-        $('.sf-menu li').css("margin-right", "0px");
     }
     else {
         $('#printbuttonspan').show();
         $('#addbuttonspan').show();
         $('#sendbuttonspan').show();
-        $('.sf-menu li').css("margin-right", "12px");
     }
 
     if ($('#itemviewleftnavbar').length) {
@@ -45,8 +43,10 @@ function itemwriter_load() {
             if (viewport_width < 30 + column_width + main_view_width) {
                 
                 $('#itemviewleftnavbar').hide();
+                $('#ShowTocRow').hide();
             } else {
                 $('#itemviewleftnavbar').show();
+                $('#ShowTocRow').show();
             }
         }
 
@@ -64,10 +64,12 @@ function itemwriter_load() {
         if (document.URL.indexOf('thumbs') < 0) {
             var column_width = $('#itemviewleftnavbar_hack').width();
             if (viewport_width < 30 + column_width + main_view_width) {
-                alert('viewport_width=' + viewport_width + ', column_width=' + column_width + ', main_view_width=' + main_view_height);
+               // alert('viewport_width=' + viewport_width + ', column_width=' + column_width + ', main_view_width=' + main_view_height);
                 $('#itemviewleftnavbar_hack').hide();
+                $('#ShowTocRow').hide();
             } else {
                 $('#itemviewleftnavbar_hack').show();
+                $('#ShowTocRow').show();
             }
         }
 
