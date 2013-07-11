@@ -44,6 +44,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private string complete_mets;
         private bool makeSortable = true;
         private bool isLower;
+        private string mainThumbnailFileName;
+        private string mainJPGFileName;
         private SobekCM_Item qc_item;
 
         private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
@@ -126,6 +128,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             title = "Quality Control";
 
+            //TODO: Get the item main thumbnail info from the db
+            //mainThumbnailFileName = qc_item.
 
             // See if there were hidden requests
             hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
@@ -258,7 +262,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-
+      //TODO: Complete this method
         private void Clear_Pagination_And_Reorder_Pages()
         {
             SortedDictionary<Page_TreeNode,string> nodeToFilename = new SortedDictionary<Page_TreeNode, string>();
@@ -306,7 +310,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
 
-
+//TODO:Test if this function is working correctly
     /// <summary> Clears the pagination names of all the pages of the qc item </summary>
           private void ClearPagination()
           {
@@ -713,6 +717,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				// Save the METS
 				qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
+
+                //TODO: Save changes to the DB
+                //// Determine the total size of the package before saving
+                //string[] all_files_final = Directory.GetFiles(userInProcessDirectory);
+                //double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length) / 1024));
+                //Item_To_Complete.DiskSize_MB = size;
+                //SobekCM.Resource_Object.Database.SobekCM_Database.QC_Update_Item_Info(CurrentItem.VID, CurrentUser.UserName, mainThumbnailFileName, mainJPGFileName, PageCount, FileCount, disksize_mb);
 			}
 			catch (Exception)
 			{

@@ -2952,7 +2952,51 @@ namespace SobekCM.Resource_Object.Database
 
 		#region Methods to change one or two elements about an single digital resource or title
 
-		/// <summary> Saves the IP Restriction mask which determines public, private, or restricted by IP </summary>
+
+        /// <summary>
+        /// Updates the relevant item info in the database after QC (main thumbnail info, pagecount, filecount, disksize)
+        /// </summary>
+        /// <param name="ItemID"></param>ItemID for the item
+        /// <param name="MainThumbnailFileName"></param>Filename of the main thumbnail image (.thm extension)
+        /// <param name="MainJPGFileName"></param>Filename of the main thumbnail JPEG image (.jpg extension)
+        /// <param name="PageCount"></param>Updated count of the pages for this item
+        /// <param name="FileCount"></param>Total count of all the files for the pages of this item
+        /// <param name="Disksize_mb"></param>Total disk space occupied by all the files of this item
+        /// <param name="Notes"></param>Notes/Comments entered by the user through the QC interface
+        /// <param name="User"></param>Logged in user info
+        /// <returns></returns>
+		public static bool QC_Update_Item_Info(int ItemID, string User, string MainThumbnailFileName, string MainJPGFileName, int PageCount, int FileCount, int Disksize_mb, string Notes)
+		{
+		    try
+		    {
+                //Build the parameter list
+                SqlParameter[] param_list = new SqlParameter[8];
+                param_list[0] =new SqlParameter("@itemid", ItemID);
+                param_list[1] = new SqlParameter("@notes", Notes); 
+		        param_list[2] = new SqlParameter("@onlineuser", User);
+                param_list[3] = new SqlParameter("@mainthumbnailfilename", MainThumbnailFileName);
+                param_list[4] = new SqlParameter("@mainjpgfilename", MainJPGFileName); 
+                param_list[5] = new SqlParameter("@pagecount", PageCount); 
+                param_list[6] = new SqlParameter("@filecount", FileCount);
+                param_list[7] = new SqlParameter("@disksize_mb", Disksize_mb);
+
+
+                //Execute this non-query stored procedure
+		        SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Submit_Online_Page_Division", param_list);
+
+		        return true;
+                
+		    }
+		    catch (Exception e)
+		    {
+		        //Pass this exception onto the method to handle it
+                exception_caught("Tracking_Submit_Online_Page_Division",e);
+		        return false;
+		    }
+		}
+        
+        
+        /// <summary> Saves the IP Restriction mask which determines public, private, or restricted by IP </summary>
 		/// <param name="ItemID">Item ID for the item to save the new visibility for </param>
 		/// <param name="New_Restriction_Mask"> New value for the visibility of this item </param>
 		/// <param name="UserName"> Username that performed the change </param>

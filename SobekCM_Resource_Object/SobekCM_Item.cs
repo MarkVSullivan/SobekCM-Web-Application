@@ -33,6 +33,7 @@ namespace SobekCM.Resource_Object
 
         private int total_order;
         private double size_mb;
+ //       private string main_thumbnail;
 
         // Flags used while editing a resource in the online SobekCM digital repository 
         private bool using_complex_template;
@@ -55,7 +56,8 @@ namespace SobekCM.Resource_Object
             contains_complex_content = false;
             using_complex_template = false;
             size_mb = 0;
-
+  //          main_thumbnail = String.Empty;
+            
             // If there is a metadata configuration which calls for a metadata
             // extension module to always be used, add it now
             if (Metadata_Configuration.Metadata_Modules_To_Include.Count > 0)
@@ -243,7 +245,6 @@ namespace SobekCM.Resource_Object
             set { size_mb = value; }
         }
 
- 
 
         /// <summary> Gets a flag that indicates if the data in this item contains complex content
         /// which appears to be derived from a MARC record or otherwise have faceted elements
@@ -411,6 +412,11 @@ namespace SobekCM.Resource_Object
         {
             behaviorInfo.Set_Serial_Info(SerialInfo);
             Bib_Info.Series_Part_Info = serialHierarchyObject;
+        }
+
+        public void QC_Update_Item_DB(int ItemID, )
+        {
+            
         }
 
         #region Public Properties
