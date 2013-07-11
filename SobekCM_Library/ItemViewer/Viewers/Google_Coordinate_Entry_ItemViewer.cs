@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Web.UI;
+using System.Windows.Forms;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object.Bib_Info;
@@ -29,7 +30,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
-            
+
+        public delegate bool MyCallback(string Text);
+        public MyCallback OnCallBack { get; set; }
+
         private bool googleItemSearch;
         private StringBuilder mapBuilder;
         private List<string> matchingTilesList;
@@ -44,12 +48,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Line> allLines;
 
         private string userInProcessDirectory;
+        System.Windows.Forms.WebBrowser webBrowser;
 
         /// <summary> Constructor for a new instance of the Google_Coordinate_Entry_ItemViewer class </summary>
-        public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item)
+        public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
+            bool rval = false;
+            if (OnCallBack != null) rval = OnCallBack("Hello World!");
+            if (rval == true)
+                Console.WriteLine("Returned True");
+            else
+                Console.WriteLine("Returned False");
+
+
+
             this.CurrentUser = Current_User;
             this.CurrentItem = Current_Item;
+            this.CurrentMode = Current_Mode;
 
             // If there is no user, send to the login
             if (CurrentUser == null)
@@ -79,10 +94,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Current_Item.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
             }
 
-            double point_latitude = 12.0;
-            double point_longitude = 6.0;
 
-            myGeo.Add_Point(point_latitude, point_longitude);
+            //HtmlDocument document = webBrowser.Document;
+            //string me = document.GetElementById("saveTest").GetAttribute("value");
+
+
+            //if (this.IsPostBack)
+            //{
+
+            //    string saveTest = this.Request.Form["saveTest"];
+
+
+            //    //double point_latitude = 12.0;
+            //    //double point_longitude = 6.0;
+
+            //    //myGeo.Add_Point(point_latitude, point_longitude);
+
+            //    //ClientScript.RegisterHiddenField("saveTest", "");
+            //}
+
+            
 
 
             // Save the item to the temporary location

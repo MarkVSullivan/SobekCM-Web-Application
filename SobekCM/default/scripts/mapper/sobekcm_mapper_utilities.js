@@ -96,6 +96,8 @@ function createSavedItem(coordinates) {
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
     alert("saving item: " + dataPackage); //temp
+    document.getElementById("saveTest").value = dataPackage;
+    //document.location.reload(); //refresh page
     //CallServer(dataPackage);
 }
 
@@ -111,6 +113,7 @@ function createSavedOverlay(index, source, bounds, rotation) {
 
     var dataPackage = data + "~";
     alert("saving overlay set: " + dataPackage); //temp
+    document.getElementById("saveTest").value = dataPackage;
     //CallServer(dataPackage); //not yet working
 }
 
@@ -336,8 +339,6 @@ function polygonCenter(poly) {
 }                  //get the center lat/long of a polygon
 
 function testBounds() {
-    alert(strictBounds.contains(map.getCenter()));
-    alert(map.getCenter());
     if (strictBounds != null) {
         if (strictBounds.contains(map.getCenter())) {
             mapInBounds = "yes";
