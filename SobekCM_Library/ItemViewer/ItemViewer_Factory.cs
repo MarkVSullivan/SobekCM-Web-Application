@@ -43,7 +43,7 @@ namespace SobekCM.Library.ItemViewer
                     return new Flash_ItemViewer(viewObject.Label, 0);
 
                 case View_Enum.GOOGLE_COORDINATE_ENTRY:
-                    return new Google_Coordinate_Entry_ItemViewer(Current_User, Current_Object);
+                    return new Google_Coordinate_Entry_ItemViewer(Current_User, Current_Object, Current_Mode);
 
                 case View_Enum.GOOGLE_MAP:
                     return new Google_Map_ItemViewer();
