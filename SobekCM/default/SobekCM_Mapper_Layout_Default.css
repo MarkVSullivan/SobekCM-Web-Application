@@ -11,13 +11,12 @@ body {
 	
 }
 #container {
-	margin:0;
-	padding:0;
+    margin: 0;
+	padding: 0;
 	overflow:hidden;
-	height:100%;
 	width:100%;
 	position:absolute;
-	background-image:url("images/mapper/bg1.png");
+    background-image:url("images/mapper/bg1.png");
 }
 #container_pane_1{
 	display: none;
