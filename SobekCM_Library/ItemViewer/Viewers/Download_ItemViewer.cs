@@ -97,7 +97,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             Output.WriteLine("          <td>");
-            Output.WriteLine("            <div class=\"SobekCitation\">");
+            Output.WriteLine("            <div class=\"SobekCitation\" id=\"SobekCitation\">");
 
             Output.WriteLine("              <br />");
             Output.WriteLine("              <blockquote>");

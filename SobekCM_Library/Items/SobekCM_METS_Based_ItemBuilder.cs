@@ -650,6 +650,7 @@ namespace SobekCM.Library.Items
             thisPackage.Behaviors.Add_View(View_Enum.CITATION);
             thisPackage.Behaviors.Add_View(View_Enum.TRACKING);
             thisPackage.Behaviors.Add_View(View_Enum.GOOGLE_COORDINATE_ENTRY);
+            thisPackage.Behaviors.Add_View(View_Enum.TEST);
 
             // Add the full text 
             if ( thisPackage.Behaviors.Text_Searchable )
