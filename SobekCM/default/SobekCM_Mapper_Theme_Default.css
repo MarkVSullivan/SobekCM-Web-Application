@@ -57,7 +57,8 @@ a img {
     -webkit-border-radius:10px;
     border-radius:10px;
     border-bottom:1px solid #9f9f9f;
-    
+    -webkit-box-shadow: 0 0 5px whitesmoke;
+	box-shadow: 0 0 5px whitesmoke;
     }
 
 .button2:hover input[type="button"]{
@@ -182,7 +183,7 @@ a img {
 	color: #6a6f75;
 	border: 0 none;
 	font: bold 12px Arial,Helvetica,Sans-serif;
-	width:74px;
+	width:120px;
 	padding: 6px 15px 6px 15px;
 	-webkit-border-radius: 20px;
 	-moz-border-radius: 20px;
