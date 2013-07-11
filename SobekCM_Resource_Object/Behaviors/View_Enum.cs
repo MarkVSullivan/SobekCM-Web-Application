@@ -81,6 +81,9 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Text Encoding Initiative display </summary>
         TEI,
 
+        /// <summary> Test viewer used during development for different things </summary>
+        TEST,
+
         /// <summary> Text page viewer </summary>
         TEXT,
 

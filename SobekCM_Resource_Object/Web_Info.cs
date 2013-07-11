@@ -326,6 +326,12 @@ namespace SobekCM.Resource_Object
                 return new View_Object(View_Enum.CITATION);
             }
 
+            // If this was for the full citation, jsut return that
+            if (lower_code == "test" )
+            {
+                return new View_Object(View_Enum.TEST);
+            }
+
             // Is this in the item level viewer list?
             if ( behaviors.Views_Count > 0 )
             {

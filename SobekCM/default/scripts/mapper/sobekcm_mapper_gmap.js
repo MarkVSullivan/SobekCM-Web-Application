@@ -1,6 +1,7 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
+var baseImagesDirURL;                   //holds the base image directory url
 var mapDrawingManagerDisplayed;         //holds marker for drawing manager
 var mapLayerActive;                     //holds the current map layer active
 var prevMapLayerActive;                 //holds the previous active map layer
@@ -25,7 +26,6 @@ var isCustomOverlay;                    //used to determine if other overlays (b
 var preservedRotation;                  //rotation, default
 var knobRotationValue;                  //rotation to display by default 
 var preserveOpacity;                    //opacity, default value (0-1,1=opaque)
-var strictBounds;                       //set the bounds for this google map instance
 var overlaysOnMap = [];                 //holds all overlays
 var csoi = 0;                           //hold current saved overlay index
 var pendingOverlaySave = false;         //hold the marker to indicate if we need to save the overlay (this prevents a save if we already saved)
@@ -56,6 +56,8 @@ var itemMarker;                         //hold current item marker
 var savingMarkerCenter;                 //holds marker coords to save
 var CustomOverlay;                      //does nothing
 var cCoordsFrozen = "no";               //used to freeze/unfreeze coordinate viewer
+var incomingPointCenter = [];           //defined in c# to js on page
+var incomingPointLabel = [];            //defined in c# to js on page
 var incomingOverlayBounds = [];         //defined in c# to js on page
 var incomingOverlaySourceURL = [];      //defined in c# to js on page
 var incomingOverlayRotation = [];       //defined in c# to js on page
@@ -82,11 +84,8 @@ var editable = {                        //define options for visible and editabl
     fillOpacity: 0.0,                   //sobek standard 
     zindex: 5                           //sobek standard
 };
-strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance (temp to fix unknown issue where would not set dynamicaly)
-    new google.maps.LatLng(29.78225755812941, -81.4306640625),
-    new google.maps.LatLng(29.99181288866604, -81.1917114257)
-);
 CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
+var strictBounds;
 
 //#endregion
 
@@ -94,6 +93,7 @@ CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custo
 function setupInterface(collection) {
     switch (collection) {
         case "default":
+            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
@@ -101,7 +101,7 @@ function setupInterface(collection) {
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
             kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
@@ -113,9 +113,10 @@ function setupInterface(collection) {
             preservedRotation = 0;                                                  //rotation, default
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            var strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
+            strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
             break;
         case "stAugustine":
+            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
@@ -123,7 +124,7 @@ function setupInterface(collection) {
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
             //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
             kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
@@ -142,6 +143,7 @@ function setupInterface(collection) {
             );
             break;
         case "custom":
+            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
@@ -149,7 +151,7 @@ function setupInterface(collection) {
             defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            kmlDisplayed = false;                                                  //by default, is kml layer on (yes/no)
+            kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
             kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
@@ -166,14 +168,49 @@ function setupInterface(collection) {
                 new google.maps.LatLng(30.07978967039041, -81.76300048828125)
             );
             break;
+        case "florida":
+            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
+            mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
+            mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
+            defaultZoomLevel = 13;                                                  //zoom level, starting
+            maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+            minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            preservedRotation = 0;                                                  //rotation, default
+            knobRotationValue = 0;                                                  //rotation to display by default 
+            preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            
+            strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+                //new google.maps.LatLng(30.69420636285318, -88.04311279296875), //fl nw
+                //new google.maps.LatLng(25.06678967039041, -77.33330048828125) //fl se
+                //new google.maps.LatLng(24.55531738915811, -81.78283295288095), //fl sw
+                //new google.maps.LatLng(30.79109834517092, -81.53709923706058) //fl ne
+                //new google.maps.LatLng(29.5862, -82.4146), //gville
+                //new google.maps.LatLng(29.7490, -82.2106)
+                new google.maps.LatLng(22.053908635225607, -86.18838838405613), //east coast
+                new google.maps.LatLng(36.06512404320089, -76.72320000000003)
+            );
+
+            //strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+            //    new google.maps.LatLng(30.69420636285318, -88.04311279296875),
+            //    new google.maps.LatLng(25.06678967039041, -77.33330048828125)
+            //);
+            break;
     }
 }
 
-
-
-
-var collectionTypeToLoad = "stAugustine";           //define collection settings to load
-setupInterface(collectionTypeToLoad);               //start the whole thing
+var collectionTypeToLoad = "florida"; //define collection settings to load
+setupInterface(collectionTypeToLoad); //start the whole thing
 
 //#region Define google map objects
 
@@ -322,7 +359,8 @@ toolbarBufferZone2.style.height = '50px';
 //#endregion
 
 function initialize() {
-    
+ 
+
     //initialize google map objects
     map = new google.maps.Map(document.getElementById(gmapPageDivId), gmapOptions);                             //initialize map    
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(copyrightNode);                                 //initialize custom copyright
@@ -370,12 +408,8 @@ function initialize() {
             poiType[poi_i] = "marker";
             var poiId = poi_i + 1;
             var poiDescTemp = L_Marker;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp +
-                " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a>" +
-                " <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a>" +
-                " <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/>" +
-                " <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
+            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a>" + " <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a>" + " <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
+            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/>" + " <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString,
                 pixelOffset: new google.maps.Size(0, 0)
@@ -441,7 +475,7 @@ function initialize() {
             poiObj[poi_i] = circle;
             poiType[poi_i] = "circle";
             var poiDescTemp = L_Circle;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
+            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
@@ -525,7 +559,7 @@ function initialize() {
             poiObj[poi_i] = rectangle;
             poiType[poi_i] = "rectangle";
             var poiDescTemp = L_Rectangle;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
+            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
@@ -626,7 +660,7 @@ function initialize() {
             poiObj[poi_i] = polygon;
             poiType[poi_i] = "polygon";
             var poiDescTemp = L_Polygon;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
+            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
@@ -713,7 +747,7 @@ function initialize() {
             poiObj[poi_i] = polyline;
             poiType[poi_i] = "polyline";
             var poiDescTemp = L_Line;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + "default/images/mapper/sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + "default/images/mapper/delete.png\"/></a></div></div>";
+            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
@@ -816,9 +850,13 @@ function initialize() {
     });
     
     //initialize map specific listeners
+    
+    //on right click stop drawing thing
     google.maps.event.addListener(map, 'rightclick', function () {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
-    });                                           //on right click stop drawing thing
+    });                                           
+    
+    //used to process lat/long points
     google.maps.event.addDomListener(map, 'mousemove', function (point) {
 
         if (cCoordsFrozen == "no") {
@@ -849,14 +887,15 @@ function initialize() {
         checkZoomLevel();
     });                                         //check the zoom level display message if out limits
 
+    //when kml layer is clicked, get feature that was clicked
     google.maps.event.addListener(kmlLayer, 'click', function (kmlEvent) {
         var name = kmlEvent.featureData.name;
-        displayMessage("ParcelID: " + name);
+        displayMessage("ParcelID: " + name); //temp
     });                                           
 
     //#endregion
     
-    initOverlays(); //initialize all the incoming overlays (the fcn is written via c#)
+    initGeoObjects(); //initialize all the incoming geo obejects (the fcn is written via c#)
     
     google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
         //this part runs when the mapobject is created and rendered
@@ -865,6 +904,27 @@ function initialize() {
     
     
 }                         //on page load functions (mainly google map event listeners)
+
+//Displays all the points sent from the C# code.
+function displayIncomingPoints() {
+    //go through and display points as long as there is a point to display (note, currently only supports one point)
+    for (var i = 0; i < incomingPointCenter.length; i++) {
+        firstMarker++;
+        itemMarker = new google.maps.Marker({
+            position: incomingPointCenter[i],
+            map: map,
+            draggable: true,
+            title: incomingPointLabel[i]
+        });
+        document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
+        codeLatLng(itemMarker.getPosition());
+        google.maps.event.addListener(itemMarker, 'dragend', function () {
+            savingMarkerCenter = itemMarker.getPosition(); //store coords to save
+            document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
+            codeLatLng(itemMarker.getPosition());
+        });
+    }
+}
 
 //Displays all the overlays sent from the C# code. Also calls displayGhostOverlayRectangle.
 function displayIncomingOverlays() {

@@ -194,6 +194,9 @@
     <Compile Include="ItemViewer\Viewers\Google_Coordinate_Callback.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="ItemViewer\Viewers\Test_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
