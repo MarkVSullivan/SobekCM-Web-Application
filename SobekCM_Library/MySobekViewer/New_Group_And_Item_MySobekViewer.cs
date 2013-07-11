@@ -1124,7 +1124,7 @@ namespace SobekCM.Library.MySobekViewer
 
             if ((currentProcessStep >= 2) && (currentProcessStep <= (template.InputPages_Count + 1)))
             {
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.8.16.custom.min.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
                 Output.WriteLine("<div class=\"SobekHomeText\">");

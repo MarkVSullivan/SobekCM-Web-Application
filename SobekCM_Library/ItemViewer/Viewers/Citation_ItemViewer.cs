@@ -173,67 +173,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->" );
 			Output.WriteLine("        <td class=\"SobekCitationDisplay\">" );
 
-			// Set the text
-			const string STANDARD_VIEW = "STANDARD VIEW";
-			const string MARC_VIEW = "MARC VIEW";
-			const string METADATA_VIEW = "METADATA";
-			const string STATISTICS_VIEW = "USAGE STATISTICS";
-
 			// Get  the robot flag (if this is rendering for robots, the other citation views are not available)
 			bool isRobot = CurrentMode.Is_Robot;
 
 			// Add the tabs for the different citation information
 			string viewer_code = CurrentMode.ViewerCode;
-            Output.WriteLine("            <div class=\"SobekCitation\">");
-            Output.WriteLine("              <div class=\"CitationViewSelectRow\">");
-			if (citationType == Citation_Type.Standard)
-			{
-                Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + STANDARD_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-			}
-			else
-			{
-                Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("citation") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + STANDARD_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-			}
-
-			if (citationType == Citation_Type.MARC)
-			{
-                Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-			}
-			else
-			{
-				if ( !isRobot )
-                    Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("marc") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-				else
-                    Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MARC_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" />");
-			}
-
-			// If this item is an external link item (i.e. has related URL, but no pages or downloads) skip the next parts
-			bool external_link_only = false;
-			if ((CurrentItem.Bib_Info.Location.Other_URL.Length > 0) && (!CurrentItem.Divisions.Has_Files))
-				external_link_only = true;
-
-			if ((CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL) && (!external_link_only) && ( !isRobot ))
-			{
-				if (citationType == Citation_Type.Metadata)
-				{
-					Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + METADATA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-				}
-				else
-				{
-					Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("metadata") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + METADATA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-				}
-
-				if (citationType == Citation_Type.Statistics)
-				{
-					Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + STATISTICS_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-				}
-				else
-				{
-					Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("usage") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + STATISTICS_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-				}
-			}
-
-			Output.WriteLine("              </div>");
+            Output.WriteLine("            <div class=\"SobekCitation\" id=\"SobekCitation\">");
 
 			// Get any search terms
 			List<string> terms = new List<string>();

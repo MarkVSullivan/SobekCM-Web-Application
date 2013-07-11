@@ -228,7 +228,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
-        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_BookTurner.css\" /> ");
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/jquery-1.2.6.min.js\"></script> ");

@@ -215,47 +215,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 issues_type = AERIAL_TEXT;
             }
 
-            const string TREE_VIEW = "VOLUME TREE";
-            const string THUMBNAIL_VIEW = "VOLUME THUMBNAILS";
-            const string LIST_VIEW = "VOLUME LIST";
-
-            builder.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\">" + issues_type + "</span></td>");
+ builder.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\">" + issues_type + "</span></td>");
             builder.AppendLine("        </tr>");
             builder.AppendLine("        <tr>");
             builder.AppendLine("          <td>");
-            builder.AppendLine("            <div class=\"SobekCitation\">" );
-            builder.AppendLine("              <div class=\"CitationViewSelectRow\">");
-            if (viewType == View_Type.Tree)
-            {
-                builder.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + TREE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-            }
-            else
-            {
-                builder.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("allvolumes1") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + TREE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-            }
-
-            if (viewType == View_Type.Thumbnail)
-            {
-                builder.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + THUMBNAIL_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-            }
-            else
-            {
-                builder.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("allvolumes2") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + THUMBNAIL_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-            }
-
-            if ((viewType == View_Type.List) || (CurrentMode.Internal_User))
-            {
-                if ( viewType == View_Type.List )
-                {
-                    builder.AppendLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + LIST_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
-                }
-                else
-                {
-                    builder.AppendLine("                <a href=\"" + CurrentMode.Redirect_URL("allvolumes3") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + LIST_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
-                }
-            }
-            builder.AppendLine("              </div>");
-
+            builder.AppendLine("            <div class=\"SobekCitation\" id=\"SobekCitation\">");
+ 
             // Add the HTML for the image
             Literal mainLiteral = new Literal {Text = builder.ToString()};
             placeHolder.Controls.Add(mainLiteral);

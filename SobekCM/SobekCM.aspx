@@ -5,7 +5,8 @@
   <title><%Set_Page_Title();%></title>
     
   <!-- <% Repository_Title(); %> -->
-    <meta content="JavaScript" name="vs_defaultClientScript" />
+    <meta content="JavaScript" name="vs_defaultClientScript" />
+
 
 <%Add_Style_References();%>
 </head>
