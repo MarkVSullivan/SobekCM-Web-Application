@@ -1212,7 +1212,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
 			if (qc_item.Web.Static_PageCount < 100)
 			{
-				Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + translator.Get_Translation(title, CurrentMode.Language) + "</b></span></td></tr>");
+                Output.WriteLine("\t\t<td></td></tr>");
+				//Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + translator.Get_Translation(title, CurrentMode.Language) + "</b></span></td></tr>");
 				Output.WriteLine("\t<tr>") ;
 			}
 			Output.WriteLine("\t\t<td>" );
