@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Web.UI;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Users;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -128,11 +130,53 @@ namespace SobekCM.Library.ItemViewer.Viewers
         //}
        
         #endregion
+
+        private string userInProcessDirectory;
         
         /// <summary> Constructor for a new instance of the Google_Coordinate_Entry_ItemViewer class </summary>
-        public Google_Coordinate_Entry_ItemViewer()
+        public Google_Coordinate_Entry_ItemViewer( User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item)
         {
-            // Empty for now
+            this.CurrentUser = Current_User;
+            this.CurrentItem = Current_Item;
+
+            // If there is no user, send to the login
+            if (CurrentUser == null)
+            {
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                return;
+            }
+
+            // Determine the in process directory for this
+            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork";
+            if (Current_User.UFID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork";
+
+            // Ensure the user's process directory exists
+            if (!Directory.Exists(userInProcessDirectory))
+                Directory.CreateDirectory(userInProcessDirectory);
+
+            // SAVE!
+
+            // Ensure we have a geo-spatial module in the digital resource
+            GeoSpatial_Information myGeo = Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+            if (myGeo == null)
+            {
+                myGeo = new GeoSpatial_Information();
+                Current_Item.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
+            }
+
+            double point_latitude = 12.0;
+            double point_longitude = 6.0;
+
+            myGeo.Add_Point(point_latitude, point_longitude);
+
+
+            // Save the item to the temporary location
+            Current_Item.Save_METS(userInProcessDirectory + "\\" + Current_Item.BibID + "_" + Current_Item.VID + ".xml");
+
+
         }
 
         /// <summary> Gets the number of pages for this viewer </summary>

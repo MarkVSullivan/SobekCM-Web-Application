@@ -117,6 +117,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> List of streets associated with this resource, from the authority portion of the database</summary>
         Streets,
 
+        /// <summary> Used for special tests on item viewer dynamics </summary>
+        Test,
+
         /// <summary> Plain text view shows any text file associated with this digital resource, including OCR'd text </summary>
         Text,
 
