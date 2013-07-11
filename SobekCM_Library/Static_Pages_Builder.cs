@@ -879,11 +879,11 @@ namespace SobekCM.Library
 
 
             itemWriter.Write_Additional_HTML(writer, tracer);
-            PlaceHolder placeHolder = new PlaceHolder();
-            itemWriter.PageViewer.Add_Main_Viewer_Section(placeHolder, tracer);
-            Literal citationLiteral = (Literal)placeHolder.Controls[0];
-            writer.WriteLine(citationLiteral.Text);
-            placeHolder.Controls.Clear();
+            //PlaceHolder placeHolder = new PlaceHolder();
+            itemWriter.PageViewer.Write_Main_Viewer_Section(writer, tracer);
+            //Literal citationLiteral = (Literal)placeHolder.Controls[0];
+            //writer.WriteLine(citationLiteral.Text);
+            //placeHolder.Controls.Clear();
 
             writer.WriteLine("<!-- COMMENT HERE -->");
 
@@ -899,9 +899,7 @@ namespace SobekCM.Library
                                                          {CurrentItem = currentItem, CurrentMode = currentMode};
 
                 // Add the HTML for this now
-                downloadViewer.Add_Main_Viewer_Section(placeHolder, tracer);
-                Literal downloadLiteral = (Literal)placeHolder.Controls[0];
-                writer.WriteLine(downloadLiteral.Text);
+                downloadViewer.Write_Main_Viewer_Section(writer, tracer);
                 writer.WriteLine("       </tr>");
             }
 
