@@ -2,13 +2,19 @@
 
 //#region Supporting JS
 
-//jquery elements
+//jquery UI elements
 $(function () {
-    //draggable
-    $("#container_toolbox").draggable({ handle: "#container_toolboxMinibar" });
-    //accordian
-    $("#container_toolboxTabs").accordion({ active: 0, icons: false, heightStyle: "content" });
-    //tooltips
+    //draggable content settings
+    $("#container_toolbox").draggable({
+         handle: "#container_toolboxMinibar" //div used as handle
+    });
+    //accordian settings
+    $("#container_toolboxTabs").accordion({
+        active: 0, //which tab is active
+        icons: false, //default icons?
+        heightStyle: "content" //set hieght to?
+    });
+    //tooltips (the tooltip text is the title of the element defined in localization js)
     $("#content_toolbarGrabber").tooltip();
     $("#content_toolbar_button_reset").tooltip();
     $("#content_toolbar_button_toggleMapControls").tooltip();

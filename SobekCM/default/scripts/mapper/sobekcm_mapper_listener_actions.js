@@ -34,6 +34,7 @@ function toggleVis(id) {
             if (toolboxDisplayed == true) {
                 document.getElementById("container_toolbox").style.display = "none";
                 document.getElementById("container_toolboxTabs").style.display = "none";
+                //$("#container_toolbox").effect("slide", 500);
                 toolboxDisplayed = false;
             } else {
                 document.getElementById("container_toolbox").style.display = "block";
@@ -234,13 +235,17 @@ function place(id) {
     switch (id) {
         case "item":
             placerType = "item";
-            if (searchCount > 0 && itemMarker == null) {
-                useSearchAsItemLocation();
-                displayMessage(L18);
+            if (itemMarker != null) {
+                displayMessage(L30);
             } else {
-                drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER] } });
-                drawingManager.setMap(map);
+                if (searchCount > 0 && itemMarker == null) {
+                    useSearchAsItemLocation();
+                    displayMessage(L18);
+                } else {
+                    drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
+                    drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER] } });
+                    drawingManager.setMap(map);
+                }
             }
             break;
             
@@ -253,10 +258,10 @@ function place(id) {
                         ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
                     }
                 }
-                displayMessage("Overlay Editting Turned Off");
+                displayMessage(L26);
             } else {
                 pageMode = "edit";
-                displayMessage("Overlay Editting Turned On");
+                displayMessage(L27);
             }
             //toggleOverlayEditor(); 
             break;
@@ -363,10 +368,10 @@ function save(id) {
         case "item":
             if (savingMarkerCenter != null) {
                 //alert("saving location: " + savingMarkerCenter); //grab coords from gmaps js
-                //createSavedItem(markerCenter);
-                displayMessage("saved");
+                createSavedItem(savingMarkerCenter);
+                displayMessage(L_Saved);
             } else {
-                displayMessage("nothing to save");
+                displayMessage(L_NotSaved);
             }
             break;
 
@@ -377,18 +382,18 @@ function save(id) {
                     createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
                     //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
                 }
-                displayMessage("saved");
+                displayMessage(L_Saved);
             } else {
-                displayMessage("nothing to save");
+                displayMessage(L_NotSaved);
             }
             break;
 
         case "poi":
             if (poiObj.length > 0) {
-                createSavedPOI();
-                displayMessage("saved");
+                //createSavedPOI();
+                displayMessage(L_Saved);
             } else {
-                displayMessage("nothing to save");
+                displayMessage(L_NotSaved);
             }
             break;
     }
@@ -408,7 +413,7 @@ function clear(id) {
 
         case "overlay":
             //does nothing
-            displayMessage("Nothing to clear");
+            displayMessage("Nothing to clear"); //temp
             //displayMessage(L10);
             break;
 
