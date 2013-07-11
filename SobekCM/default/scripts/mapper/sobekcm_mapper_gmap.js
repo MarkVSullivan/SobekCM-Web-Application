@@ -126,7 +126,7 @@ function setupInterface(collection) {
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
             kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
             //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
-            kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -209,7 +209,7 @@ function setupInterface(collection) {
     }
 }
 
-var collectionTypeToLoad = "florida"; //define collection settings to load
+var collectionTypeToLoad = "stAugustine"; //define collection settings to load
 setupInterface(collectionTypeToLoad); //start the whole thing
 
 //#region Define google map objects
@@ -359,7 +359,19 @@ toolbarBufferZone2.style.height = '50px';
 //#endregion
 
 function initialize() {
- 
+
+    //alert(document.documentElement.clientHeight);
+
+    var totalPX = document.documentElement.clientHeight;
+    var headerPX = 83;
+    var bodyPX = totalPX - headerPX;
+
+    var percentOfHeight = Math.round((bodyPX / totalPX)*100);
+
+    document.getElementById("container").style.height = percentOfHeight +"%";
+
+    //alert(percentOfHeight);
+    
 
     //initialize google map objects
     map = new google.maps.Map(document.getElementById(gmapPageDivId), gmapOptions);                             //initialize map    
