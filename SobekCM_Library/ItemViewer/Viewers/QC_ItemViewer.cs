@@ -59,6 +59,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             this.CurrentMode = Current_Mode;
             this.CurrentUser = Current_User;
 
+            qc_item = Current_Object;
+
             // If there is no user, send to the login
             if (CurrentUser == null)
             {
@@ -1212,8 +1214,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
 			if (qc_item.Web.Static_PageCount < 100)
 			{
-                Output.WriteLine("\t\t<td></td></tr>");
-				//Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + translator.Get_Translation(title, CurrentMode.Language) + "</b></span></td></tr>");
+                
+				Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + translator.Get_Translation(title, CurrentMode.Language) + "</b></span></td></tr>");
 				Output.WriteLine("\t<tr>") ;
 			}
 			Output.WriteLine("\t\t<td>" );
@@ -1312,7 +1314,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
 
 					//Add the error icon
-					Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
+		//			Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
 					int main_thumbnail_index = -1;
 					if (!String.IsNullOrEmpty(hidden_main_thumbnail))
 						Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
@@ -1506,8 +1508,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if(makeSortable)
                 Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
 
-		    //		    Output.WriteLine("<script type=\"text/javascript\">window.onload=MoveOnScroll();</script>");
-//			Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
 
 			//If the autosave option is not set, or set to true, set the interval (3 minutes) for autosaving
 			if(String.IsNullOrEmpty(autosave_option.ToString()) || autosave_option)
@@ -1826,7 +1826,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 		#region Support for Roman Numerals
 
-		/// <summary> Convert an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
+		/// <summary> Converts an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>
 		/// <param name="number">Integer number</param>
 		/// <returns>Roman numeral after conversion</returns>
 		public string NumberToRoman(int number)
@@ -1936,7 +1936,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					//next digit
 					ptr++;
 				}
-				//Check for rule 5
+				//Check for rule 5 (Going left to right, the value must increase from one letter to the next)
 				for (int i = 0; i < values.Count - 1; i++)
 				{
 					if ((int) values[i] < (int) values[i + 1])
