@@ -12,6 +12,17 @@
     display: inline-block;
 }
 
+#qc-menubar
+{
+    width: 100%; 
+    background-color: #7d90d5;  
+    height: 33px;  
+    font-size: 0.95em; 
+    color:#FFFFFF; 
+    vertical-align: top;
+    display: inline-block;
+}
+
 
 /*** ESSENTIAL STYLES ***/
 .sf-menu {
@@ -25,7 +36,24 @@
     font-weight:bold;
 }
 
+.qc-menu {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+    background-color: #7d90d5;
+    margin-left: 20px;
+	color: white;
+	text-transform:uppercase;
+    font-weight:bold;
+}
+
 .sf-menu * {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.qc-menu * {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -35,6 +63,12 @@
 	position: relative;
     
 }
+
+.qc-menu li {
+	position: relative;
+    
+}
+
 .sf-menu ul {
 	position: absolute;
 	display: none;
@@ -42,26 +76,40 @@
 	left: 0;
 	z-index: 1099;
 }
+
+.qc-menu ul {
+	position: absolute;
+	display: none;
+	top: 100%;
+	left: 0;
+	z-index: 1099;
+}
+
 .sf-menu > li {
 	float: left;
 }
+.qc-menu > li {
+	float: left;
+}
 .sf-menu li:hover > ul,
-.sf-menu li.sfHover > ul {
+.sf-menu li.sfHover > ul,
+.qc-menu li:hover > ul,
+.qc-menu li.sfHover > ul {
 	display: block;
 }
 
-.sf-menu a {
+.sf-menu a, .qc-menu a {
 	display: block;
 	position: relative;
 }
-.sf-menu ul ul {
+.sf-menu ul ul, .qc-menu ul ul {
 	top: 0;
 	left: 100%;
 }
 
 
 /*** DEMO SKIN ***/
-.sf-menu {
+.sf-menu, .qc-menu {
 	float: left;
 	margin-bottom: 1em;
 
@@ -79,10 +127,39 @@
 	text-decoration: none;
 	zoom: 1; /* IE7 */
 }
+
+.qc-menu ul {
+	box-shadow: 2px 2px 6px rgba(0,0,0,.2);
+	min-width: 12em; /* allow long menu items to determine submenu width */
+	*width: 12em; /* no auto sub width for IE7, see white-space comment below */
+}
+
+.qc-menu a {
+	border-left: 1px solid #fff;
+	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
+	border-top: 1px solid rgba(255,255,255,.5);
+	padding: .75em 1em;
+	text-decoration: none;
+	zoom: 1; /* IE7 */
+}
+
 .sf-menu a {
 	color: #13a;
 }
+
+.qc-menu a {
+	color: #13a;
+}
+
 .sf-menu li {
+	background: #7d90d5;
+	white-space: nowrap; /* no need for Supersubs plugin */
+	*white-space: normal; /* ...unless you support IE7 (let it wrap) */
+	-webkit-transition: background .2s;
+	transition: background .2s;
+}
+
+.qc-menu li {
 	background: #7d90d5;
 	white-space: nowrap; /* no need for Supersubs plugin */
 	*white-space: normal; /* ...unless you support IE7 (let it wrap) */
@@ -96,29 +173,42 @@
     border-top: none;
 }
 
+.qc-menu li a {
+    padding: .75em 1em;
+    color: white;
+    border-top: none;
+}
+
 .sf-menu ul li {
 	background: #444444;
 }
 
-.sf-menu ul li a {
+.qc-menu ul li {
+	background: #444444;
+}
+
+
+.sf-menu ul li a, .qc-menu ul li a {
     padding: .75em 1em;
     color: white;
     border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
 	border-top: 1px solid rgba(255,255,255,.5);
 }
 
-.sf-menu ul ul li {
+.sf-menu ul ul li, .qc-menu ul ul li {
 	background: #333333;
 }
 
-.sf-menu ul ul li a {
+.sf-menu ul ul li a, .qc-menu ul ul li a {
     padding: .75em 1em;
     color: white;
     border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
 	border-top: 1px solid rgba(255,255,255,.5);
 }
 .sf-menu li:hover,
-.sf-menu li.sfHover {
+.sf-menu li.sfHover,
+.qc-menu li:hover,
+.qc-menu li.sfHover {
 	background: #888888;
 	/* only transition out, not in */
 	-webkit-transition: none;
@@ -126,12 +216,14 @@
 }
 
 /*** arrows (for all except IE7) **/
-.sf-arrows .sf-with-ul {
+.sf-arrows .sf-with-ul, .qc-arrows .qc-with-ul {
 	padding-right: 2.5em;
 	*padding-right: 1em; /* no CSS arrows for IE7 (lack pseudo-elements) */
 }
+
+
 /* styling for both css and generated arrows */
-.sf-arrows .sf-with-ul:after {
+.sf-arrows .sf-with-ul:after, .qc-arrows .qc-with-ul:after {
 	content: '';
 	position: absolute;
 	top: 50%;
@@ -146,11 +238,14 @@
 }
 .sf-arrows > li > .sf-with-ul:focus:after,
 .sf-arrows > li:hover > .sf-with-ul:after,
-.sf-arrows > .sfHover > .sf-with-ul:after {
+.sf-arrows > .sfHover > .sf-with-ul:after,
+.qc-arrows > li > .qc-with-ul:focus:after,
+.qc-arrows > li:hover > .qc-with-ul:after,
+.qc-arrows > .sfHover > .qc-with-ul:after {
 	border-top-color: white; /* IE8 fallback colour */
 }
 /* styling for right-facing arrows */
-.sf-arrows ul .sf-with-ul:after {
+.sf-arrows ul .sf-with-ul:after, .qc-arrows ul .qc-with-ul:after {
 	margin-top: -5px;
 	margin-right: -3px;
 	border-color: transparent;
@@ -159,7 +254,10 @@
 }
 .sf-arrows ul li > .sf-with-ul:focus:after,
 .sf-arrows ul li:hover > .sf-with-ul:after,
-.sf-arrows ul .sfHover > .sf-with-ul:after {
+.sf-arrows ul .sfHover > .sf-with-ul:after,
+.qc-arrows ul li > .qc-with-ul:focus:after,
+.qc-arrows ul li:hover > .qc-with-ul:after,
+.qc-arrows ul .sfHover > .qc-with-ul:after {
 	border-left-color: white;
 }
 
@@ -190,6 +288,16 @@
 	text-transform:uppercase;
     font-weight:bold;
     padding-top: 6px;
+}
+
+
+#menu-right-actions-qc {
+    float: right;
+    color: white;
+	text-transform:uppercase;
+    font-weight:bold;
+    width: 550px;
+    height: 33px;
 }
 
 #selected-sf-menu-item
