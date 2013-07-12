@@ -15,7 +15,38 @@
 **                                                                 
 **************************************************************************/    
 
-.qcContainerDivClass{ overflow: scroll;height: 650px;}
+.qcContainerDivClass {
+     overflow: scroll; 
+     height: 650px;
+     border-bottom: 1px white solid;
+     background-color: #333333;
+    -ms-scrollbar-track-color: #888888;
+    -ms-scrollbar-face-color: #7d90d5;
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+    height: 0px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+    background-color: #888888;
+}
+
+::-webkit-scrollbar-track:horizontal {
+    background-color: #333333;
+    border: none;
+    -webkit-box-shadow: none;
+    height: 1px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background-color: #7d90d5;
+}
 
   .qcpage { background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;}
   .qcfilename { color: #3c3c3c;font-size: 1.15em;font-weight: bold;}
@@ -102,163 +133,7 @@
 /*** ESSENTIAL STYLES ***/
 
   
-        #qcmenubar
-      {
-       width: 100%; background-color: #7d90d5;  height: 30px;  
-       color:#FFFFFF; vertical-align: top;
-            padding: 0; margin: 0;
-       
-      }
-
-.qc-menu, .qc-menu * {
-	margin:			0;
-	padding:		0;
-	list-style:		none;
-	z-index: 10;
-}
-.qc-menu {
-	line-height:	1.6em;
-}
-.qc-menu ul {
-	position:		absolute;
-	top:			-999em;
-	width:			25em; /* left offset of submenus need to match (see below) */
-}
-.qc-menu ul li {
-	width:			100%;
-    padding-bottom: 4px;
-    padding-top: 4px;
-}
-.qc-menu li:hover {
-	visibility:		inherit; /* fixes IE7 'sticky bug' */
-}
-.qc-menu li {
-	float:			left;
-	position:		relative;
-}
-.qc-menu a {
-	display:		block;
-	position:		relative;
-}
-.qc-menu li:hover ul,
-.qc-menu li.sfHover ul {
-	left:			0;
-	top:			20px; /* match top ul list item height */
-	z-index:		99;
-}
-ul.qc-menu li:hover li ul,
-ul.qc-menu li.sfHover li ul {
-	top:			-999em;
-}
-ul.qc-menu li li:hover ul,
-ul.qc-menu li li.sfHover ul {
-	left:			25em; /* match ul width */
-	top:			0;
-}
-ul.qc-menu li li:hover li ul,
-ul.qc-menu li li.sfHover li ul {
-	top:			-999em;
-}
-ul.qc-menu li li li:hover ul,
-ul.qc-menu li li li.sfHover ul {
-	left:			14em; /* match ul width */
-	top:			0;
-}
-
-/*** DEMO SKIN ***/
-.qc-menu 
-{
-    margin-left: 25px;
-	background-color: #7d90d5;
-	color: white;
-	text-transform:uppercase;
-    font-weight:bold;
-    padding-bottom: 8px;
-}
-
-.qc-menu a {
-	padding-top: 4px;
-	padding-bottom: 4px;
-	padding-left: 5px;
-	padding-right: 5px;
-	text-decoration:none;
-}
-.qc-menu a, .qc-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color:			White;
-}
-
-.qc-menu li 
-{
-    margin-top: 1px;  
-	background:		#7d90d5;
-	padding-bottom: 1px;
-	margin-right: 12px;
-
-}
-.qc-menu li li {
-	background:		#7d90d5;
-    margin-top: 0px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	border-left:	0px solid #fff;
-	text-align: left;
-}
-
-.qc-menu li li a {
-	border-left:	0px solid #fff;
-}
-
-.qc-menu li li li {
-	background:		#7d90d5;
-}
-.qc-menu li:hover, .qc-menu li.sfHover,
-.qc-menu a:focus, .qc-menu a:hover, .qc-menu a:active {
-	background:		#cccccc;
-	outline:		0;
-}
-
-/*** arrows **/
-.qc-menu a.sf-with-ul {
-	padding-right: 	2.25em;
-	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
-}
-.sf-sub-indicator {
-	position:		absolute;
-	display:		block;
-	right:			.75em;
-	top:			1.05em; /* IE6 only */
-	width:			10px;
-	height:			10px;
-	text-indent: 	-999em;
-	overflow:		hidden;
-	background:		url('../images/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
-}
-a > .sf-sub-indicator {  /* give all except IE6 the correct values */
-	top:			.8em;
-	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
-}
-/* apply hovers to modern browsers */
-a:focus > .sf-sub-indicator,
-a:hover > .sf-sub-indicator,
-a:active > .sf-sub-indicator,
-li:hover > a > .sf-sub-indicator,
-li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px -100px; /* arrow hovers for modern browsers*/
-}
-
-/* point right for anchors in subs */
-.qc-menu ul .sf-sub-indicator { background-position:  -10px 0; }
-.qc-menu ul a > .sf-sub-indicator { background-position:  0 0; }
-/* apply hovers to modern browsers */
-.qc-menu ul a:focus > .sf-sub-indicator,
-.qc-menu ul a:hover > .sf-sub-indicator,
-.qc-menu ul a:active > .sf-sub-indicator,
-.qc-menu ul li:hover > a > .sf-sub-indicator,
-.qc-menu ul li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px 0; /* arrow hovers for modern browsers*/
-}
-
-
+ 
 #selected-qc-menu-item 
 {
     padding-top: 7px;
@@ -273,14 +148,49 @@ li.sfHover > a > .sf-sub-indicator {
 
 .action-qc-menu-item
 {
-    float:right;
-	padding-bottom: 5px;
+	padding-bottom: 10px;
 	text-decoration:none;
-	height: 16px;
+	height: 33px;
 	cursor: pointer;
 	cursor: hand; 
-    margin-right: 5px;
+    padding-right: 6px;
+    padding-left: 6px;
+    padding-top: 8px;
+
 }
+
+.action-qc-menu-item:hover
+{
+    background-color: #888888;
+}
+
+
+.action-qc-menu-item img {
+    vertical-align:bottom; 
+} 
+
+.action-qc-menu-item2
+{
+	padding-bottom: 10px;
+	text-decoration:none;
+	height: 33px;
+	cursor: pointer;
+	cursor: hand; 
+    padding-right: 6px;
+    padding-left: 6px;
+    padding-top: 8px;
+}
+
+.action-qc-menu-item2:hover
+{
+    background-color: #888888;
+;
+}
+
+.action-qc-menu-item2 img {
+    vertical-align: bottom;
+    margin-top: 10px;
+} 
 
 .qc-menu-item {
     padding-top: 3px;
@@ -292,118 +202,24 @@ li.sfHover > a > .sf-sub-indicator {
 }
 
 
-
-
-/*** ESSENTIAL STYLES ***/
-.sf2-menu, .sf2-menu * {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-.sf2-menu li {
-	position: relative;
-}
-.sf2-menu ul {
-	position: absolute;
-	display: none;
-	top: 100%;
-	left: 0;
-	z-index: 99;
-}
-.sf2-menu > li {
-	float: left;
-}
-.sf2-menu li:hover > ul,
-.sf2-menu li.sfHover > ul {
-	display: block;
+.qc_mainbuttons {
+    background-color: #7d90d5;
+    color: white;
+    text-transform:uppercase;
+    font-weight:bold;
+    border-radius:25px;
+    border: none;
+    padding: 5px 15px 5px 15px;
+    cursor: pointer;
+	cursor: hand;
+    font-size: 1.2em;
+    letter-spacing: 0.5px;
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
-.sf2-menu a {
-	display: block;
-	position: relative;
-}
-.sf2-menu ul ul {
-	top: 0;
-	left: 100%;
-}
-
-
-/*** DEMO SKIN ***/
-.sf2-menu {
-	float: left;
-	margin-bottom: 1em;
-}
-.sf2-menu ul {
-	box-shadow: 2px 2px 6px rgba(0,0,0,.2);
-	min-width: 12em; /* allow long menu items to determine submenu width */
-	*width: 12em; /* no auto sub width for IE7, see white-space comment below */
-}
-.sf2-menu a {
-	border-left: 1px solid #fff;
-	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
-	border-top: 1px solid rgba(255,255,255,.5);
-	padding: .75em 1em;
-	text-decoration: none;
-	zoom: 1; /* IE7 */
-}
-.sf2-menu a {
-	color: #13a;
-}
-.sf2-menu li {
-	background: #BDD2FF;
-	white-space: nowrap; /* no need for Supersubs plugin */
-	*white-space: normal; /* ...unless you support IE7 (let it wrap) */
-	-webkit-transition: background .2s;
-	transition: background .2s;
-}
-.sf2-menu ul li {
-	background: #AABDE6;
-}
-.sf2-menu ul ul li {
-	background: #9AAEDB;
-}
-.sf2-menu li:hover,
-.sf2-menu li.sfHover {
-	background: #CFDEFF;
-	/* only transition out, not in */
-	-webkit-transition: none;
-	transition: none;
-}
-
-/*** arrows (for all except IE7) **/
-.sf2-arrows .sf2-with-ul {
-	padding-right: 2.5em;
-	*padding-right: 1em; /* no CSS arrows for IE7 (lack pseudo-elements) */
-}
-/* styling for both css and generated arrows */
-.sf2-arrows .sf2-with-ul:after {
-	content: '';
-	position: absolute;
-	top: 50%;
-	right: 1em;
-	margin-top: -3px;
-	height: 0;
-	width: 0;
-	/* order of following 3 rules important for fallbacks to work */
-	border: 5px solid transparent;
-	border-top-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
-	border-top-color: rgba(255,255,255,.5);
-}
-.sf2-arrows > li > .sf2-with-ul:focus:after,
-.sf2-arrows > li:hover > .sf2-with-ul:after,
-.sf2-arrows > .sfHover > .sf2-with-ul:after {
-	border-top-color: white; /* IE8 fallback colour */
-}
-/* styling for right-facing arrows */
-.sf2-arrows ul .sf2-with-ul:after {
-	margin-top: -5px;
-	margin-right: -3px;
-	border-color: transparent;
-	border-left-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
-	border-left-color: rgba(255,255,255,.5);
-}
-.sf2-arrows ul li > .sf2-with-ul:focus:after,
-.sf2-arrows ul li:hover > .sf2-with-ul:after,
-.sf2-arrows ul .sfHover > .sf2-with-ul:after {
-	border-left-color: white;
+.qc_mainbuttons:hover {
+    background-color: #888888;
+    -webkit-box-shadow: inset 0 0 9px 6px #6a6f75;
+	box-shadow: inset 0 0 9px 6px #6a6f75;
 }
