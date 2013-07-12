@@ -259,13 +259,21 @@ img.SobekItemWordmark
 #SobekCitation a:link { color: blue; }
 
 #SobekDocumentNonWindowed {
-	padding: 0;margin: 0;
-    font-size: 0.8em;BACKGROUND-COLOR: #eeeeee;
-    border: none;border-collapse: collapse;
+    font-size: 0.8em;
+    background-color: #333333;
+    color: white;
+    padding: 0;
+    margin: 0;
 }
 
 #SobekGoToSpan {
     color: white;
+}
+
+#SelectGoToThumbnailSpan {
+    display: inline;
+    padding-right: 40px;
+    font-weight: bold;
 }
 
 #itemrestrictedrow 

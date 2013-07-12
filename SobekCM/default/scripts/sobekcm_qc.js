@@ -1647,11 +1647,14 @@ function qc_set_fullscreen() {
     var y = $("#allThumbnailsOuterDiv1").offset().top;
 
     var window_height = $(window).height();
-    var new_height = window_height - y - 58;
+    var new_height = window_height - y - 63;
 
+  //  var window_width = $(window).width();
+  //  var new_width = window_width - x - 5;
    // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
     
-    var y = $("#allThumbnailsOuterDiv1").height(new_height);
+    $("#allThumbnailsOuterDiv1").height(new_height);
+   // $("#allThumbnailsOuterDiv1").width(new_width);
 }
 
 

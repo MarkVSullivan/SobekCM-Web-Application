@@ -868,7 +868,7 @@ namespace SobekCM.Library.MainWriters
             if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (subwriter is Admin_HtmlSubwriter) && ( ((Admin_HtmlSubwriter) subwriter).Contains_Popup_Forms))
                 return;
 
-            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && (subwriter is PagedResults_HtmlSubwriter) && ( currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
+            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && ((subwriter is PagedResults_HtmlSubwriter) || currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info )  && ( currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
             {
                 if (finishPageInAddFinalHtmlMethod)
                 {
