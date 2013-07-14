@@ -29,9 +29,7 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        //SobekCM.Library.MARC_Record_Z3950_Retriever.Test();
-
-        Page_Globals.tracer.Add_Trace("System.Web.UI.Page.Page_Load (ufdc.Page_Load)", String.Empty);
+        Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", String.Empty);
 
          try
         {
@@ -100,8 +98,6 @@ public partial class UFDC : System.Web.UI.Page
                         mainPlaceHolder.Visible = false;
                     if (!Page_Globals.mainWriter.Include_TOC_Place_Holder)
                         tocPlaceHolder.Visible = false;
-                    if (!Page_Globals.mainWriter.Include_Navigation_Place_Holder)
-                        navigationPlaceHolder.Visible = false;
                 }
 
                 // The file upload form is only shown in ONE case
@@ -121,20 +117,20 @@ public partial class UFDC : System.Web.UI.Page
                 }
 
                 // Add the controls now
-                Page_Globals.mainWriter.Add_Controls(navigationPlaceHolder, tocPlaceHolder, mainPlaceHolder, myUfdcUploadPlaceHolder, Page_Globals.tracer);
+                Page_Globals.mainWriter.Add_Controls( tocPlaceHolder, mainPlaceHolder, myUfdcUploadPlaceHolder, Page_Globals.tracer);
             }
         }
         catch (OutOfMemoryException ee)
         {
-            Page_Globals.tracer.Add_Trace("System.Web.UI.Page.Page_Load (ufdc.Page_Load)", "OutOfMemoryException caught!");
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", "OutOfMemoryException caught!");
 
-            Page_Globals.Email_Information("UFDC Out of Memory Exception", ee);
+            Page_Globals.Email_Information("SobekCM Out of Memory Exception", ee);
         }
         catch (Exception ee)
         {
-            Page_Globals.tracer.Add_Trace("System.Web.UI.Page.Page_Load (ufdc.Page_Load)", "Exception caught!", SobekCM.Library.Custom_Trace_Type_Enum.Error);
-            Page_Globals.tracer.Add_Trace("System.Web.UI.Page.Page_Load (ufdc.Page_Load)", ee.Message, SobekCM.Library.Custom_Trace_Type_Enum.Error);
-            Page_Globals.tracer.Add_Trace("System.Web.UI.Page.Page_Load (ufdc.Page_Load)", ee.StackTrace, SobekCM.Library.Custom_Trace_Type_Enum.Error);
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", "Exception caught!", SobekCM.Library.Custom_Trace_Type_Enum.Error);
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", ee.Message, SobekCM.Library.Custom_Trace_Type_Enum.Error);
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", ee.StackTrace, SobekCM.Library.Custom_Trace_Type_Enum.Error);
 
             Page_Globals.currentMode.Mode = Display_Mode_Enum.Error;
             Page_Globals.currentMode.Error_Message = "Unknown error caught while executing your request";
@@ -147,21 +143,12 @@ public partial class UFDC : System.Web.UI.Page
 
     #region Methods called during execution of the HTML from UFDC.aspx
 
-    public void Add_Body_Attributes()
+    protected void Write_Page_Title()
     {
         if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
             return;
 
-        if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-        {
-            Response.Output.Write(((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Get_Body_Attributes(Page_Globals.tracer));
-        }
-    }
-
-    public void Set_Page_Title()
-    {
-        if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
-            return;
+        Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Page_Title", String.Empty);
 
         if (Page_Globals.mainWriter == null)
         {
@@ -176,17 +163,12 @@ public partial class UFDC : System.Web.UI.Page
         // For robot crawlers using the HTML ECHO writer, the title is alway in the info browse mode
         if (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo)
         {
-            Response.Output.Write( Page_Globals.currentMode.Info_Browse_Mode );
+            Response.Output.Write(Page_Globals.currentMode.Info_Browse_Mode);
         }
     }
 
-    public void Add_Style_References()
+    protected void Write_Within_HTML_Head()
     {
-        //Response.Output.WriteLine("
-        //Response.Output.WriteLine("    <style type=\"text/css\" media=\"screen\">");
-        //Response.Output.WriteLine("        @import url( " + Global.Application_Settings.Base_URL + "default/SobekCM.css );");
-        //Response.Output.WriteLine("    </style>");
-
         // This statement returns if this is a postback and EITHER: current mode is null or this is not a My UFDC return value
         // My UFDC takes advantage of a lot of postbacks with the editing and self-submittal form, so the styles and
         // scripts SHOULD be added in that case.  And if the current mode is null for some reason (error) then there
@@ -195,59 +177,69 @@ public partial class UFDC : System.Web.UI.Page
         if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
             return;
 
+        Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Within_HTML_Head", String.Empty);
+
         // Only bother writing the style references if this is writing HTML (either logged out or logged in via myUFDC)
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
-            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Add_Style_References(Response.Output, Page_Globals.tracer);
+            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Write_Within_HTML_Head(Response.Output, Page_Globals.tracer);
         }
 
         // If this is for the robots, add some generic style statements
         if (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo)
         {
-            ((SobekCM.Library.MainWriters.Html_Echo_MainWriter)Page_Globals.mainWriter).Add_Style_References(Response.Output, Page_Globals.tracer);
+            ((SobekCM.Library.MainWriters.Html_Echo_MainWriter)Page_Globals.mainWriter).Write_Within_HTML_Head(Response.Output, Page_Globals.tracer);
         }
     }
 
-    protected void Add_Html()
+    protected void Write_Body_Attributes()
     {
-
-        //Response.Output.WriteLine("128.227.58.79 &nbsp; &nbsp; &nbsp; " + Global.IP_Restrictions.Restrictive_Range_Membership("128.227.58.79") + "<br />");
-        //Response.Output.WriteLine("128.227.103.116 &nbsp; &nbsp; &nbsp; " + Global.IP_Restrictions.Restrictive_Range_Membership("128.227.103.116") + "<br />");
-        //Response.Output.WriteLine("128.227.83.43 &nbsp; &nbsp; &nbsp; " + Global.IP_Restrictions.Restrictive_Range_Membership("128.227.83.43") + "<br />");
-
-
-
         if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
             return;
 
-        // Add the HTML and controls to start this off
-        Page_Globals.mainWriter.Add_Text_To_Page(Response.Output, Page_Globals.tracer);
-    }
+        Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Body_Attributes", String.Empty);
 
-    protected void Add_Additional_HTML_Upload_Form()
-    {
+
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
-            Page_Globals.tracer.Add_Trace("ufdc.Add_Additional_HTML", String.Empty);
-            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Add_Additional_HTML(Response.Output, Page_Globals.tracer);
+            Response.Output.Write(((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Get_Body_Attributes(Page_Globals.tracer));
         }
     }
 
-    protected void Add_Additional_HTML()
+    protected void Write_Html()
+    {
+        if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
+            return;
+
+        // Add the HTML to the main section (which sits outside any of the standard fors)
+        Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_HTML", String.Empty);
+        Page_Globals.mainWriter.Write_Html(Response.Output, Page_Globals.tracer);
+    }
+
+    protected void Write_Additional_HTML_Upload_Form()
     {
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
-            Page_Globals.tracer.Add_Trace("ufdc.Add_Additional_HTML", String.Empty);
-            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Add_Additional_HTML(Response.Output, Page_Globals.tracer);
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML_Upload_Form", String.Empty);
+            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Write_Additional_HTML(Response.Output, Page_Globals.tracer);
         }
     }
 
-    protected void Add_Final_HTML()
+    protected void Write_Additional_HTML()
     {
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
-            Page_Globals.tracer.Add_Trace("ufdc.Add_Final_HTML", String.Empty);
-            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Add_Final_HTML(Response.Output, Page_Globals.tracer);
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML", String.Empty);
+            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Write_Additional_HTML(Response.Output, Page_Globals.tracer);
+        }
+    }
+
+    protected void Write_Final_HTML()
+    {
+        if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+        {
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Final_HTML", String.Empty);
+            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Write_Final_HTML(Response.Output, Page_Globals.tracer);
         }
     }
 

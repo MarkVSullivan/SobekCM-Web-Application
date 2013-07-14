@@ -50,7 +50,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Text_To_Page(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//Dtd XHTML 1.0 Transitional//EN\" \"http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd\">");
             Output.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" >");
@@ -94,22 +94,6 @@ namespace SobekCM.Library.MainWriters
 
             Output.WriteLine("</body>");
             Output.WriteLine("</html>");
-        }
-
-        /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="Navigation_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="myUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls(PlaceHolder Navigation_Place_Holder,
-            PlaceHolder TOC_Place_Holder,
-            PlaceHolder Main_Place_Holder,
-            PlaceHolder myUfdcUploadPlaceHolder,
-            Custom_Tracer Tracer)
-        {
-            return;
         }
 
         /// <summary> Displays search results in plain text  </summary>

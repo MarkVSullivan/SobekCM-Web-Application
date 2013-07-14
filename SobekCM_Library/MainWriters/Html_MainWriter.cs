@@ -383,16 +383,6 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Returns a flag indicating whether the additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form will be utilized 
-        /// for the current request, or if it can be hidden. </summary>
-        /// <value> This property always returns TRUE for the Html_MainWriter </value>
-        public override bool Include_Navigation_Place_Holder
-        {
-            get
-            {
-                return true;
-            }
-        }
 
         /// <summary> Returns a flag indicating whether the additional table of contents place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden. </summary>
@@ -423,229 +413,42 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Text_To_Page( TextWriter Output,  Custom_Tracer Tracer)
+        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
         {
+            Tracer.Add_Trace("Html_MainWriter.Write_Html", String.Empty);
 
+            // If the subwriter is null, this is an ERROR, but do nothing for now
+            if (subwriter == null) return;
+            
             // Always add the link to the main, small SobekCM.js
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
 
             // Start with the basic html at the beginning of the page
-            if (( currentMode.Mode != Display_Mode_Enum.Item_Print ) && 
-                ((currentMode.Mode != Display_Mode_Enum.My_Sobek) || (( subwriter is MySobek_HtmlSubwriter) && ( !((MySobek_HtmlSubwriter)subwriter).Contains_Popup_Forms ))) &&
-                ((currentMode.Mode != Display_Mode_Enum.Administrative) || (( subwriter is MySobek_HtmlSubwriter) && ( !((MySobek_HtmlSubwriter)subwriter).Contains_Popup_Forms ))))
+            if ( !subwriter.Subwriter_Behaviors.Contains( HtmlSubwriter_Behaviors_Enum.Suppress_Header)) 
             {
                 Display_Header(Output, Tracer);
             }
 
             try
             {
-                // Render HTML and add controls depending on the current mode
-                bool finish_page = false;
-                bool draw_footer = true;
-                switch (currentMode.Mode)
-                {
-                    #region Start adding HTML and controls for My SOBEK mode
-
-                    case Display_Mode_Enum.My_Sobek:
-
-                        // Add HTML
-                        finish_page = subwriter.Write_HTML(Output, Tracer);
-                        break;
-
-                    #endregion
-
-                    #region Start adding HTML and controls for ADMINISTRATIVE mode
-
-                    case Display_Mode_Enum.Administrative:
-
-                        // Add HTML
-                        finish_page = subwriter.Write_HTML(Output, Tracer);
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for SIMPLE WEB CONTENT TEXT mode
-                    case Display_Mode_Enum.Simple_HTML_CMS:
-
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Adding the html from the prebuilt Simple Text HTML Subwriter");
-
-                        // Add the pure HTML for this case and the page can be finished right here
-                        finish_page = subwriter.Write_HTML(Output, Tracer);
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for INTERNAL mode
-
-                    case Display_Mode_Enum.Internal:
-
-                        // Add the pure HTML for this case and the page can be finished right here
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for STATISTICS mode
-
-                    case Display_Mode_Enum.Statistics:
-                        // Add the pure HTML for this case and the page can be finished right here
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for the PREFERENCES mode
-
-                    case Display_Mode_Enum.Preferences:
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for ERROR mode
-
-                    case Display_Mode_Enum.Error:
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for LEGACY URL mode
-
-                    case Display_Mode_Enum.Legacy_URL:
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        break;
-
-                    #endregion
-
-                    #region Start adding HTML and add controls for RESULTS mode
-
-                    case Display_Mode_Enum.Results:
-                        // Write the pure HTML for this
-                        subwriter.Write_HTML(Output, Tracer);
-                        break;
-
-                    #endregion
-
-                    #region Add HTML and controls for PUBLIC FOLDER mode
-
-                    case Display_Mode_Enum.Public_Folder:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Writing HTML from public folder html subwriter");
-
-                        // Add the pure HTML for this case, and the page can be finished right here
-                        subwriter.Write_HTML(Output, Tracer);
-
-                        break;
-
-                    #endregion
-
-                    #region Add HTML and controls for COLLECTION VIEWS
-
-                    case Display_Mode_Enum.Search:
-                    case Display_Mode_Enum.Aggregation_Home:
-                    case Display_Mode_Enum.Aggregation_Browse_Info:
-                    case Display_Mode_Enum.Aggregation_Browse_By:
-                    case Display_Mode_Enum.Aggregation_Browse_Map:
-                    case Display_Mode_Enum.Aggregation_Private_Items:
-                    case Display_Mode_Enum.Aggregation_Item_Count:
-                    case Display_Mode_Enum.Aggregation_Usage_Statistics:
-                    case Display_Mode_Enum.Aggregation_Admin_View:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Writing HTML from collection html subwriter");
-
-                        // Add the pure HTML for this case, and the page can be finished right here
-                        finish_page = subwriter.Write_HTML(Output, Tracer);
-
-                        break;
-
-                    #endregion
-
-                    #region Start adding HTML and add controls for ITEM DISPLAY mode
-
-                    case Display_Mode_Enum.Item_Display:
-                        if (currentMode.Invalid_Item)
-                        {
-                            subwriter.Write_HTML(Output, Tracer);
-                            finish_page = true;
-                        }
-                        else
-                        {
-                            if (subwriter != null)
-                            {
-                                subwriter.Write_HTML(Output, Tracer);
-                            }
-                        }
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for ITEM PRINT mode
-
-                    case Display_Mode_Enum.Item_Print:
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        draw_footer = false;
-                        break;
-
-                    #endregion
-
-                    #region Add HTML and controls for CONTACT mode
-
-                    case Display_Mode_Enum.Contact:
-                        // Add the HTML for this case
-                        subwriter.Write_HTML(Output, Tracer);
-                        break;
-
-                    #endregion
-
-                    #region Add HTML only and finish the page for CONTACT SENT mode
-
-                    case Display_Mode_Enum.Contact_Sent:
-                        subwriter.Write_HTML(Output, Tracer);
-                        finish_page = true;
-                        break;
-
-                    #endregion
-
-                    default:
-                        Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "No controls or html added to page");
-                        break;
-                }
-
-                if (finish_page)
-                {
-                    Tracer.Add_Trace("Html_MainWriter.Add_Text_To_Page", "Finishing the html page");
-                    if ( draw_footer )
-                        Display_Footer(Output, Tracer);
-                }
-
-                // Save the flag to indicate if this still needs finishing
-                finishPageInAddFinalHtmlMethod = !finish_page;
+                subwriter.Write_HTML(Output, Tracer);
             }
             catch (Exception ee)
             {
                 Email_Information("Error caught in Html_MainWriter", ee, Tracer, true);
-                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Add_Text_To_Page", ee, Tracer);
+                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Html", ee, Tracer);
             }
         }
 
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="Navigation_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="myUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls(PlaceHolder Navigation_Place_Holder,
-            PlaceHolder TOC_Place_Holder,
-            PlaceHolder Main_Place_Holder,
-            PlaceHolder myUfdcUploadPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder myUfdcUploadPlaceHolder, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Rendering the requested data in html format");
+            Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Adding any necessary controls to the placeholders on the page");
 
             // Render HTML and add controls depending on the current mode
             switch (currentMode.Mode)
@@ -653,8 +456,6 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and controls for SIMPLE WEB CONTENT TEXT mode
 
                 case Display_Mode_Enum.Simple_HTML_CMS:
-                    subwriter = new Web_Content_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, htmlBasedContent, siteMap);
-
                     // Add any necessary controls
                     if (siteMap != null)
                     {
@@ -794,12 +595,6 @@ namespace SobekCM.Library.MainWriters
                     {
                         Item_HtmlSubwriter itemWriter = (Item_HtmlSubwriter) subwriter;
 
-                        // Determine the browser
-                        bool ie = (currentMode.Browser_Type.IndexOf("IE") >= 0);
-
-                        // Add the navigation part to this form
-                        itemWriter.Add_Nav_Bar_Menu_Section(Navigation_Place_Holder, ie, Tracer);
-
                         // Add the TOC section
                         Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add table of contents to <i>tocPlaceHolder</i>");
                         itemWriter.Add_Standard_TOC(TOC_Place_Holder, Tracer);
@@ -817,112 +612,115 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Adds additional HTML needed just before the main place holder but after the other place holders.  </summary>
+        /// <summary> Writes additional HTML needed just before the main place holder but after the other place holders.  </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Add_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (subwriter == null) return;
-
-            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ( subwriter is MySobek_HtmlSubwriter ))
-            {
-                ((MySobek_HtmlSubwriter) subwriter).Add_Additional_HTML(Output, Tracer);
-                return;
-            }
-
-            if ((currentMode.Mode == Display_Mode_Enum.Administrative) && ( subwriter is Admin_HtmlSubwriter ))
-            {
-                ((Admin_HtmlSubwriter) subwriter).Add_Additional_HTML(Output, Tracer);
-                return;
-            }
-
-            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && !((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item)))
-            {
-                Tracer.Add_Trace("Html_MainWriter.Add_Additional_HTML", "No html rendered");
-                return;
-            }
-
-            if ( subwriter is Item_HtmlSubwriter )
-            {
-                Tracer.Add_Trace("Html_MainWriter.Add_Additional_HTML", "Rendering HTML");
-                ((Item_HtmlSubwriter) subwriter).Write_Additional_HTML(Output, Tracer);
-                return;
-            }
-
-
-
-            Tracer.Add_Trace("Html_MainWriter.Add_Additional_HTML", "No html rendered");
+            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
+ 
+            subwriter.Write_Additional_HTML(Output, Tracer);
         }
 
-        /// <summary> Adds any final HTML needed after the main place holder</summary>
+        /// <summary> Writes any final HTML needed after the main place holder directly to the output stream</summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Add_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if ( currentMode.isPostBack) return;
             if (subwriter == null) return;
 
-            // The my Sobek viewer closes its own footer since it must be in the form as well.
-            if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ( subwriter is MySobek_HtmlSubwriter ) && ( ((MySobek_HtmlSubwriter)subwriter).Contains_Popup_Forms ))
-                return;
-            if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (subwriter is Admin_HtmlSubwriter) && ( ((Admin_HtmlSubwriter) subwriter).Contains_Popup_Forms))
-                return;
+            Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
 
-            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) && ((subwriter is PagedResults_HtmlSubwriter) || currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info )  && ( currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
+            // Allow the html subwriter to write some final HTML
+            subwriter.Write_Final_HTML(Output, Tracer);
+
+            // Add the footer if necessary
+            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
             {
-                if (finishPageInAddFinalHtmlMethod)
-                {
-                    Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Adding footer and finishing HTML");
-                    Display_Footer(Output, Tracer);
-
-                }
-                else
-                {
-                    Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "No html rendered");
-                    return;
-                }
-            }
-
-            if (currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS)
-            {
-                Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Rendering HTML");
-                ((Web_Content_HtmlSubwriter)subwriter).Write_Final_HTML(Output, Tracer);
-
-                Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Adding footer and finishing HTML");
                 Display_Footer(Output, Tracer);
-
-                return;
             }
-
-            if ( subwriter is PagedResults_HtmlSubwriter ) 
-            {
-                Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Rendering HTML");
-                ((PagedResults_HtmlSubwriter)subwriter).Write_Final_HTML(Output, Tracer);
-
-                Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Adding footer and finishing HTML");
-                Display_Footer(Output, Tracer);
-
-                return;
-            }
-
-            if (subwriter is Item_HtmlSubwriter )
-            {
-                Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Rendering HTML");
-                ((Item_HtmlSubwriter) subwriter).Write_Final_HTML(Output, Tracer);
-
-                Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "Adding footer and finishing HTML");
-                Display_Footer(Output, Tracer);
-
-                return;
-            }
-
-            Tracer.Add_Trace("Html_MainWriter.Add_Final_HTML", "No html rendered");
         }
 
         #region Methods used to add style references, headers, and footers
 
-    
-        
+        /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Title to use in the HTML result document </returns>
+        public string Get_Page_Title(Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
+
+            string thisTitle = null;
+            if (subwriter != null)
+                thisTitle = subwriter.WebPage_Title;
+            if ( String.IsNullOrEmpty(thisTitle))
+                thisTitle = "{0}";
+
+            return String.Format(thisTitle, currentMode.SobekCM_Instance_Abbreviation);
+        }
+
+        /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
+
+            // A couple extraordinary cases
+            switch (currentMode.Mode)
+            {
+                case Display_Mode_Enum.Reset:
+                case Display_Mode_Enum.Item_Cache_Reload:
+                case Display_Mode_Enum.None:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+                    break;
+            }
+
+            // Write the style sheet to use 
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Menus.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
+            // Always add jQuery library (changed as of 7/8/2013)
+            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
+            {
+#if DEBUG
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+#else
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+#endif
+            }
+
+            // Add the special code for the html subwriter
+            if (subwriter != null)
+                subwriter.Write_Within_HTML_Head(Output, Tracer);
+
+            // Special CSS when printing an item from the selection menu
+            if (currentMode.Mode == Display_Mode_Enum.Item_Print)
+            {
+                return;
+            }
+
+            // Include the interface's style sheet if it has one
+            if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
+            {
+                Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
+                Output.WriteLine("    @import url( " + currentMode.Base_URL + htmlSkin.CSS_Style + " );");
+                Output.WriteLine("  </style>");
+            }
+
+            // Add a printer friendly CSS
+            Output.WriteLine("  <style type=\"text/css\" media=\"printer\">");
+            Output.WriteLine("    @import url( " + currentMode.Base_URL + "default/print.css );");
+            Output.WriteLine("  </style>");
+            Output.WriteLine("  <link rel=\"stylesheet\" rev=\"stylesheet\" href=\"" + currentMode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" charset=\"utf-8\" /> ");
+
+            // Add the apple touch icon
+            Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Skin + "/iphone-icon.png\" />");
+        }
+
+
         /// <summary> Gets the body attributes to include within the BODY tag of the main HTML response document </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Body attributes to include in the BODY tag </returns>
@@ -940,7 +738,7 @@ namespace SobekCM.Library.MainWriters
                 if ((HttpContext.Current.Session["ON_LOAD_MESSAGE"] != null) || (HttpContext.Current.Session["ON_LOAD_WINDOW"] != null))
                 {
                     // ENsure the body attributes list is not null
-                    if ( bodyAttributes == null )
+                    if (bodyAttributes == null)
                         bodyAttributes = new List<Tuple<string, string>>();
 
                     // Handle the previously saved actions
@@ -974,92 +772,15 @@ namespace SobekCM.Library.MainWriters
                 else
                     collapsedAttributes.Add(thisAttr.Item1, thisAttr.Item2);
             }
-            
+
             // Now, build and return the string
             StringBuilder builder = new StringBuilder(" ");
             foreach (string thisKey in collapsedAttributes.Keys)
             {
-                builder.Append(thisKey + "=\"" + collapsedAttributes[thisKey] +"\" ");
+                builder.Append(thisKey + "=\"" + collapsedAttributes[thisKey] + "\" ");
             }
 
             return builder.ToString();
-        }
-
-        /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Title to use in the HTML result document </returns>
-        public string Get_Page_Title(Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
-
-            string thisTitle = null;
-            if (subwriter != null)
-                thisTitle = subwriter.WebPage_Title;
-            if ( String.IsNullOrEmpty(thisTitle))
-                thisTitle = "{0}";
-
-            return String.Format(thisTitle, currentMode.SobekCM_Instance_Abbreviation);
-        }
-
-        /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Add_Style_References(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
-
-            // A couple extraordinary cases
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Reset:
-                case Display_Mode_Enum.Item_Cache_Reload:
-                case Display_Mode_Enum.None:
-                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
-                    break;
-            }
-
-            // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Menus.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-
-            // Always add jQuery library (changed as of 7/8/2013)
-            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
-            {
-#if DEBUG
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
-#else
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-#endif
-            }
-
-            // Add the special code for the html subwriter
-            if ( subwriter != null )
-                subwriter.Write_Within_HTML_Head(Output, Tracer);
-
-            // Special CSS when printing an item from the selection menu
-            if (currentMode.Mode == Display_Mode_Enum.Item_Print)
-            {
-                return;
-            }
-
-            // Include the interface's style sheet if it has one
-            if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
-            {
-                Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-                Output.WriteLine("    @import url( " + currentMode.Base_URL + htmlSkin.CSS_Style + " );");
-                Output.WriteLine("  </style>");
-            }
-            
-            // Add a printer friendly CSS
-            Output.WriteLine("  <style type=\"text/css\" media=\"printer\">");
-            Output.WriteLine("    @import url( " + currentMode.Base_URL + "default/print.css );");
-            Output.WriteLine("  </style>");
-            Output.WriteLine("  <link rel=\"stylesheet\" rev=\"stylesheet\" href=\"" + currentMode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" charset=\"utf-8\" /> ");
-
-            // Add the apple touch icon
-            Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Skin + "/iphone-icon.png\" />");
-
-
         }
 
         /// <summary> Writes the header directly to the output stream writer </summary>
@@ -1140,7 +861,7 @@ namespace SobekCM.Library.MainWriters
                     }
                     else
                     {
-                        subwriter.Add_Internal_Header_HTML(Output, currentUser);
+                        subwriter.Write_Internal_Header_HTML(Output, currentUser);
                     }
 
                     Output.WriteLine("</form>");
@@ -1425,7 +1146,7 @@ namespace SobekCM.Library.MainWriters
 
             // Determine the possible banner to display
             string banner = String.Empty;
-            if (((subwriter != null) && ( !subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))) || ( currentMode.Mode == Display_Mode_Enum.Internal ) || ( currentMode.Mode == Display_Mode_Enum.Contact ) || ( currentMode.Mode == Display_Mode_Enum.Contact_Sent ) || ( currentMode.Mode == Display_Mode_Enum.Statistics ))
+            if ((subwriter != null) && ( !subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
             {
                 if ((htmlSkin != null) && (htmlSkin.Override_Banner))
                 {

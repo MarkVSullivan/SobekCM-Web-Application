@@ -18,11 +18,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	public class JPEG_ItemViewer : abstractItemViewer
 	{
 		private int width;
+        private int height;
 
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer class </summary>
 		public JPEG_ItemViewer()
 		{
 			width = -1;
+            height = -1;
 		}
 
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer class </summary>
@@ -30,6 +32,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		public JPEG_ItemViewer( string Attributes )
 		{
 			width = -1;
+            height = -1;
 
             // Parse if there were attributes
             if (Attributes.Length <= 0) return;
@@ -38,6 +41,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("WIDTH") >= 0))
             {
                 Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out width);
+            }
+            foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("HEIGHT") >= 0))
+            {
+                Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out height);
             }
 		}
 
@@ -129,9 +136,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Add the HTML for the image
-            Output.WriteLine("\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">" + Environment.NewLine +
-                             "\t\t\t<img src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" +
-                             name_for_image + "\" />" + Environment.NewLine + "\t\t</td>");
+            Output.WriteLine("\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">");
+            Output.Write("\t\t\t<img ");
+            if (( height > 0 ) && ( width > 0 ))
+                Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
+            Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />");
+            Output.WriteLine("\t\t</td>");
 
         }
 	}

@@ -227,10 +227,18 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum>
+                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum>
                     {
                         HtmlSubwriter_Behaviors_Enum.Suppress_Banner
                     };
+
+                if (Contains_Popup_Forms)
+                {
+                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Header);
+                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Footer);
+                }
+
+                return returnVal;
             }
         }
 
@@ -245,10 +253,10 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Adds additional HTML needed just before the main place holder but after the other place holders.  </summary>
+        /// <summary> Writes additional HTML needed in the main form before the main place holder but after the other place holders.  </summary>
         /// <param name="Output">Stream to directly write to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Add_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Additional_HTML", "Adding any form elements popup divs");
             if (( currentMode.Logon_Required ) || ( mySobekViewer.Contains_Popup_Forms ))
@@ -486,6 +494,6 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-
+ 
     }
 }

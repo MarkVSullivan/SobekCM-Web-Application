@@ -41,6 +41,9 @@ namespace SobekCM.URL_Rewriter
                 return;
             }
 
+            // Since the user may be using IIPimage server, skip .fgci extensions
+            if (appRelative.IndexOf(".fcgi") > 0)
+                return;
 
             // If this is a direct request for a valid file, skip out immediately
             if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || ( appRelative.IndexOf(".html") > 0 ) || ( appRelative.IndexOf(".htm") > 0 ))

@@ -61,38 +61,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Sets the current user, in case there are any user options to include </summary>
         public virtual User_Object CurrentUser { protected get; set; }
 
-	    /// <summary> Abstract method adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-	    /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-	    /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    /// <returns> TRUE if this viewer added something to the left navigational bar, otherwise FALSE</returns>
-	    public virtual bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-	    {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractItemViewer.Add_Nav_Bar_Menu_Section", "Nothing added to placeholder");
-            }
-
-            return false;
-	    }
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section  </summary>
+        /// <summary> Adds any viewer_specific information to the left Navigation Bar Menu Section  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public virtual void Write_Nav_Bar_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
+        public virtual void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing by default
         }
 
-		/// <summary> Gets any HTML for a Navigation Row above the image or text </summary>
-        /// <value> This value can be override by child classes, but by default this returns an empty string </value>
-		public virtual string NavigationRow
-		{
-			get
-			{
-				return string.Empty;
-			}
-		}
+        /// <summary> Adds any viewer_specific information to the item viewer above the standard pagination buttons </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public virtual void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing by default
+        }
 
         /// <summary> Abstract method adds the main view section to the page turner </summary>
         /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
@@ -100,7 +83,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
             // Do nothing by default
-
         }
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
@@ -110,8 +92,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Do nothing by default
         }
-		
-		/// <summary> Gets the number of pages for this viewer </summary>
+
+        #region Paging related properties
+        
+        /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This value is override by many of the children classes, but by default this returns the number of pages within the digital resource </value>
 		public virtual int PageCount		
 		{
@@ -248,6 +232,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
+        #endregion
+
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
         /// <value> This value is override by many of the children classes, but by default this returns the value -1 </value>
 		public virtual int Viewer_Width
@@ -289,24 +275,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    #endregion
 
-        protected static string Convert_String_To_XML_Safe(string element)
-        {
-            string xml_safe = element;
-            int i = xml_safe.IndexOf("&");
-            while (i >= 0)
-            {
-                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
-                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
-                {
-                    xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
-                }
-
-                i = xml_safe.IndexOf("&", i + 1);
-            }
-            return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("[", "").Replace("]", "");
-        }
-
-
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
@@ -331,5 +299,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    {
             get { return emptybehaviors; }
 	    }
+
+        protected static string Convert_String_To_XML_Safe(string element)
+        {
+           // System.Xml.Linq .Xml.Linq .Linq.XElement  newElement = new XmlElement()
+            string xml_safe = element;
+            int i = xml_safe.IndexOf("&");
+            while (i >= 0)
+            {
+                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
+                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
+                {
+                    xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
+                }
+
+                i = xml_safe.IndexOf("&", i + 1);
+            }
+            return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("[", "").Replace("]", "");
+        }
 	}
 }

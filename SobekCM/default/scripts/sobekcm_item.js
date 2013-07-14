@@ -36,11 +36,12 @@ function itemwriter_load() {
         $('#sendbuttonspan').show();
     }
 
+   
     if ($('#itemviewleftnavbar').length) {
         // Hide the left column if the size is small enough
         if (document.URL.indexOf('thumbs') < 0) {
             var column_width = $('#itemviewleftnavbar').width();
-            if (viewport_width < 30 + column_width + main_view_width) {
+            if ((viewport_width < 30 + column_width + main_view_width) && ( main_view_width < 800 )) {
                 
                 $('#itemviewleftnavbar').hide();
                 $('#ShowTocRow').hide();
@@ -61,7 +62,7 @@ function itemwriter_load() {
 
     if ($('#itemviewleftnavbar_hack').length) {
         // Hide the left column if the size is small enough
-        if (document.URL.indexOf('thumbs') < 0) {
+        if ((document.URL.indexOf('thumbs') < 0) && ( main_view_width < 800 )) {
             var column_width = $('#itemviewleftnavbar_hack').width();
             if (viewport_width < 30 + column_width + main_view_width) {
                // alert('viewport_width=' + viewport_width + ', column_width=' + column_width + ', main_view_width=' + main_view_height);
@@ -348,3 +349,20 @@ function close_share_form() {
     var el = document.getElementById('share_form');
     if (el.style.display == 'block') { el.style.display = 'none'; }
 }
+
+
+
+// Function to set the full screen mode 
+function jp2_set_fullscreen() {
+    var x = $("#openseadragon_container").offset().left;
+    var y = $("#openseadragon_container").offset().top;
+
+    var window_height = $(window).height();
+    var new_height = window_height - y - 10;
+    $("#openseadragon_container").height(new_height);
+
+    var window_width = $(window).width();
+    var new_width = window_width - x - 10;   
+    $("#openseadragon_container").width(new_width);
+}
+

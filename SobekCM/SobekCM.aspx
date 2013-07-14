@@ -2,32 +2,30 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-  <title><%Set_Page_Title();%></title>
+  <title><%Write_Page_Title();%></title>
     
   <!-- <% Repository_Title(); %> -->
-    <meta content="JavaScript" name="vs_defaultClientScript" />
+  <meta content="JavaScript" name="vs_defaultClientScript" />
 
 
-<%Add_Style_References();%>
+<%Write_Within_HTML_Head();%>
 </head>
-<body<%Add_Body_Attributes();%>>
+<body <%Write_Body_Attributes();%>>
 
-
-<%Add_Html();%>
+<%Write_Html();%>
 
 <form id="fileUploadForm" runat="server" >
     <asp:PlaceHolder id="myUfdcUploadPlaceHolder" runat="server"></asp:PlaceHolder>
-<%Add_Additional_HTML_Upload_Form();%>
+<%Write_Additional_HTML_Upload_Form();%>
 </form>
-<form id="itemNavForm" runat="server">
 
-    <asp:PlaceHolder id="navigationPlaceHolder" runat="server"></asp:PlaceHolder>
+<form id="itemNavForm" runat="server">
     <asp:PlaceHolder id="tocPlaceHolder" runat="server"></asp:PlaceHolder>
-<%Add_Additional_HTML();%>
+<%Write_Additional_HTML();%>
     <asp:PlaceHolder id="mainPlaceHolder" runat="server"></asp:PlaceHolder>
 </form>
 
-
-<%Add_Final_HTML();%>
+<%Write_Final_HTML();%>
+    
 </body>
 </html>

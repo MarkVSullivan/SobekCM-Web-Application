@@ -99,7 +99,6 @@ namespace SobekCM.Library.HTML
             showToc = Show_TOC;
             showZoomable = Show_Zoomable;
             Hierarchy_Object = Current_Collection;
-            Nav_Bar_Menu_Section_Added = false;
             itemCheckedOutByOtherUser = false;
             userCanEditItem = false;
             searchResultsCount = 0;
@@ -391,16 +390,6 @@ namespace SobekCM.Library.HTML
                     ((Citation_ItemViewer)PageViewer).Item_Restricted = itemRestrictedFromUserByIp;
                 }
 
-                // The JPEG2000 viewer should always include the nav bar to include the navigation thumbnail image
-                if (PageViewer is Aware_JP2_ItemViewer)
-                {
-                    Nav_Bar_Menu_Section_Added = true;
-                }
-
-                //if (page_viewer is ItemViewer.Viewers.Google_Map_ItemViewer)
-                //{
-                //    ((ItemViewer.Viewers.Google_Map_ItemViewer)page_viewer).Matching_Tiles_List = search_results_string;
-                //}
 
                 if (PageViewer is MultiVolumes_ItemViewer)
                 {
@@ -454,15 +443,15 @@ namespace SobekCM.Library.HTML
             // ALways suppress the banner
             behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
 
-            if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
-            {
-                if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
-                {
-                    Aware_JP2_ItemViewer jp2_viewer = (Aware_JP2_ItemViewer)PageViewer;
-                    jp2_viewer.Add_Feature("Red", "DrawEllipse", ((int)(featureXRatioLocation * jp2_viewer.Width)), ((int)(featureYRatioLocation * jp2_viewer.Height)), 800, 800);
-                }
+            //if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
+            //{
+            //    if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
+            //    {
+            //        Aware_JP2_ItemViewer jp2_viewer = (Aware_JP2_ItemViewer) PageViewer;
+            //        jp2_viewer.Add_Feature("Red", "DrawEllipse", ((int) (featureXRatioLocation*jp2_viewer.Width)), ((int) (featureYRatioLocation*jp2_viewer.Height)), 800, 800);
 
-            }
+            //    }
+            //}
         }
 
         #endregion
@@ -478,10 +467,9 @@ namespace SobekCM.Library.HTML
                 if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar))
                     return false;
 
-                // If the flag eas explicitly set, return TRUE
-                if (Nav_Bar_Menu_Section_Added)
+                if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar))
                     return true;
-               
+
                 // If there are any icons, need to show the bar
                 if (currentItem.Behaviors.Wordmark_Count > 0)
                     return true;
@@ -496,14 +484,6 @@ namespace SobekCM.Library.HTML
                 
                 // Search results are also included in the left navigation bar
                 if (searchResultsCount > 0)
-                    return true;
-
-                // EAD type items almost always have tables of contents programmatically generated
-                if (isEadTypeItem)
-                    return true;
-
-                // JPEG2000's should always show the nav bar for the navigational thumbnail
-                if ((PageViewer != null) && (PageViewer is Aware_JP2_ItemViewer))
                     return true;
 
                 return false;
@@ -528,9 +508,6 @@ namespace SobekCM.Library.HTML
             get { return itemCheckedOutByOtherUser; }
         }
 
-        /// <summary> Flag indicates if the naviogation bar menu section is added  </summary>
-        public bool Nav_Bar_Menu_Section_Added { private get; set; }
-
         /// <summary> Gets the collection of special behaviors which this subwriter
         /// requests from the main HTML subwriter. </summary>
         /// <remarks> By default, this returns an empty list </remarks>
@@ -544,453 +521,12 @@ namespace SobekCM.Library.HTML
 
         #region Code to add the table of contents tree as a control into the left navigation bar
 
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-        /// <param name="Navigation_Place_Holder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-        /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> For this item viewer, a small thumbnail of the entire image showing the current viewport location is placed in the left navigation bar </remarks>
-        public void Add_Nav_Bar_Menu_Section(PlaceHolder Navigation_Place_Holder, bool Internet_Explorer, Custom_Tracer Tracer)
-        {
-            // If this is for a fragment, do nothing
-            if ( !String.IsNullOrEmpty(currentMode.Fragment))
-                return;
-            
-            StringBuilder buildResponse = new StringBuilder(2000);
-            buildResponse.AppendLine();
-
-
-            // Add the divs for loading the pop-up forms
-            buildResponse.AppendLine("<!-- Place holders for pop-up forms which load dynamically if required -->");
-            buildResponse.AppendLine("<div class=\"print_popup_div\" id=\"form_print\" style=\"display:none;\"></div>");
-            buildResponse.AppendLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\"></div>");
-            buildResponse.AppendLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\"></div>");
-            buildResponse.AppendLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\"></div>");
-            buildResponse.AppendLine();
-
-            if (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.GnuBooks_PageTurner)
-            {
-                buildResponse.AppendLine("<!-- Show the title and any other important item information -->");
-                buildResponse.AppendLine("<div id=\"itemtitlebar\">");
-                if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
-                {
-                    string grouptitle = currentItem.Behaviors.GroupTitle;
-                    if (grouptitle.Length > 125)
-                    {
-                        buildResponse.AppendLine("\t<h1><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
-                    }
-                    else
-                    {
-                        buildResponse.AppendLine("\t<h1>" + grouptitle + "</h1>");
-                    }
-                }
-                else
-                {
-                    string final_title = currentItem.Bib_Info.Main_Title.Title;
-                    if (currentItem.Bib_Info.Main_Title.NonSort.Length > 0)
-                    {
-                        if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
-                            final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
-                        else
-                        {
-                            if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
-                            {
-                                final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
-                            }
-                            else
-                            {
-                                final_title = currentItem.Bib_Info.Main_Title.NonSort + " " + currentItem.Bib_Info.Main_Title.Title;
-                            }
-                        }
-                    }
-
-                    // Add the Title if there is one
-                    if (final_title.Length > 0)
-                    {
-                        if (final_title.Length > 125)
-                        {
-                            buildResponse.AppendLine("\t<h1><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
-                        }
-                        else
-                        {
-                            buildResponse.AppendLine("\t<h1>" + final_title + "</h1>");
-                        }
-                    }
-
-                    // Add the link if there is one
-                    if ((currentItem.Bib_Info.hasLocationInformation) && (currentItem.Bib_Info.Location.Other_URL.Length > 0))
-                    {
-                        if (currentItem.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
-                        {
-
-                            // Determine the type of link
-                            string type = translations.Get_Translation("Related Link", currentMode.Language);
-                            if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
-                            {
-                                type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, currentMode.Language);
-                            }
-
-                            // Determine the display value
-                            string note = currentItem.Bib_Info.Location.Other_URL;
-                            if (currentItem.Bib_Info.Location.Other_URL_Note.Length > 0)
-                            {
-                                note = currentItem.Bib_Info.Location.Other_URL_Note;
-                            }
-
-                            // Add the link
-                            buildResponse.AppendLine("\t<a href=\"" + currentItem.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
-                        }
-                    }
-
-                    // If there is an ACCESSION number and this is an ARTIFACT, include that at the top
-                    if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
-                    {
-                        foreach (Identifier_Info thisIdentifier in currentItem.Bib_Info.Identifiers)
-                        {
-                            if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
-                            {
-                                buildResponse.AppendLine("\t" + translations.Get_Translation("Accession number", currentMode.Language) + " " + thisIdentifier.Identifier + "<br />");
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                buildResponse.AppendLine("</div>");
-                buildResponse.AppendLine();
-
-                // The item viewer can choose to override the standard item menu
-                if ( !behaviors.Contains( HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu ))
-                {
-                    // Add the item views
-                    buildResponse.AppendLine("<!-- Add the different view and social options -->");
-                    buildResponse.AppendLine("<div id=\"sf-menubar\">");
-
-                    // Add the sharing buttons if this is not restricted by IP address or checked out
-                    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
-                    {
-                        buildResponse.AppendLine("<div id=\"menu-right-actions\">");
-                        buildResponse.AppendLine(
-                            "\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
-
-
-                        //if (currentItem.Behaviors.Can_Be_Described)
-                        //{
-                        //    if (currentUser != null)
-                        //    {
-                        //        Output.Write("<a href=\"?m=hmh\" onmouseover=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button_h.gif'\" onmouseout=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif'\"  onclick=\"return describe_item_form_open( 'describe_button' );\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"describe_button\" id=\"describe_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif\" title=\"Add a description to this item\" alt=\"DESCRIBE\" /></a>");
-                        //    }
-                        //    else
-                        //    {
-                        //        Output.Write("<a href=\"?m=hmh\" onmouseover=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button_h.gif'\" onmouseout=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"describe_button\" id=\"describe_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif\" title=\"Add a description to this item\" alt=\"DESCRIBE\" /></a>");
-                        //    }
-                        //}
-
-
-                        if ((currentUser != null))
-                        {
-                            if (currentItem.Web.ItemID > 0)
-                            {
-                                if (currentUser.Is_In_Bookshelf(currentItem.BibID, currentItem.VID))
-                                {
-                                    buildResponse.AppendLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + currentMode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Remove</span></span>");
-                                }
-                                else
-                                {
-                                    buildResponse.AppendLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Add</span></span>");
-                                }
-                            }
-
-                            buildResponse.AppendLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">Send</span></span>");
-                        }
-                        else
-                        {
-                            if (currentItem.Web.ItemID > 0)
-                                buildResponse.AppendLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Add</span></span>");
-
-                            buildResponse.AppendLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">Send</span></span>");
-                        }
-
-                        if (currentItem.Web.ItemID > 0)
-                        {
-                            buildResponse.AppendLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">Print</span></span>");
-                        }
-                        else
-                        {
-                            buildResponse.AppendLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">Print</span></span>");
-                        }
-
-                        buildResponse.AppendLine("</div>");
-                    }
-
-                    buildResponse.AppendLine(" <script>");
-                    buildResponse.AppendLine();
-                    buildResponse.AppendLine("jQuery(document).ready(function () {");
-                    buildResponse.AppendLine("     jQuery('ul.sf-menu').superfish();");
-                    buildResponse.AppendLine("  });");
-                    buildResponse.AppendLine();
-                    buildResponse.AppendLine("</script>");
-                    buildResponse.AppendLine();
-                    buildResponse.AppendLine("<ul id=\"sample-menu-1\" class=\"sf-menu\">");
-
-                    // Save the current view type
-                    ushort page = currentMode.Page;
-
-                    // Add the item level views
-                    foreach (View_Object thisView in currentItem.Behaviors.Views)
-                    {
-                        if ((!itemRestrictedFromUserByIp) || (thisView.View_Type == View_Enum.CITATION) ||
-                            (thisView.View_Type == View_Enum.ALL_VOLUMES) ||
-                            (thisView.View_Type == View_Enum.RELATED_IMAGES))
-                        {
-                            // Special code for the CITATION view (TEMPORARY - v.3.2)
-                            if (thisView.View_Type == View_Enum.CITATION)
-                            {
-                                string viewerCode = currentMode.ViewerCode;
-                                currentMode.ViewerCode = "citation";
-                                if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
-                                    (viewerCode == "usage"))
-                                {
-                                    buildResponse.Append("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Citation</a>");
-                                }
-                                else
-                                {
-                                    buildResponse.Append("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Citation</a>");
-                                }
-                                buildResponse.AppendLine("<ul>");
-
-                                buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
-
-                                currentMode.ViewerCode = "marc";
-                                buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">MARC View</a></li>");
-
-                                currentMode.ViewerCode = "metadata";
-                                buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Metadata</a></li>");
-
-                                currentMode.ViewerCode = "usage";
-                                buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Usage Statistics</a></li>");
-
-                                buildResponse.AppendLine("\t\t</ul></li>");
-                                currentMode.ViewerCode = viewerCode;
-                            }
-                            else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
-                            {
-                                string viewerCode = currentMode.ViewerCode;
-                                string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
-                                string all_volumes = "All Volumes";
-                                if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
-                                {
-                                    all_volumes = "All Issues";
-                                }
-                                else if (resource_type_upper.IndexOf("MAP") >= 0)
-                                {
-                                    all_volumes = "Related Maps";
-                                }
-                                else if (resource_type_upper.IndexOf("AERIAL") >= 0)
-                                {
-                                    all_volumes = "Related Flights";
-                                }
-
-                                currentMode.ViewerCode = "allvolumes";
-                                if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
-                                    (viewerCode == "allvolumes3"))
-                                {
-                                    buildResponse.Append("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
-                                }
-                                else
-                                {
-                                    buildResponse.Append("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
-                                }
-                                buildResponse.AppendLine("<ul>");
-
-                                currentMode.ViewerCode = "allvolumes";
-                                buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Tree View</a></li>");
-
-
-                                currentMode.ViewerCode = "allvolumes2";
-                                buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Thumbnails</a></li>");
-
-                                if (currentMode.Internal_User)
-                                {
-                                    currentMode.ViewerCode = "allvolumes3";
-                                    buildResponse.AppendLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">List View</a></li>");
-                                }
-
-                                buildResponse.AppendLine("\t\t</ul></li>");
-                                currentMode.ViewerCode = viewerCode;
-                            }
-                            else
-                            {
-                                List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, htmlSkin.Base_Skin_Code, currentMode, -1, translations, showZoomable, currentItem);
-
-                                // Add each nav bar link
-                                foreach (string this_link in item_nav_bar_link)
-                                {
-                                    buildResponse.AppendLine("\t\t" + this_link + "");
-                                }
-                            }
-                        }
-                    }
-
-                    // If this is citation or index mode, the number may be an invalid page sequence
-                    if ((page <= 0) ||
-                        (currentMode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
-                    {
-                        currentMode.Page = 1;
-
-                    }
-
-                    if ((currentItem.Web.Static_PageCount > 0) && (currentPage == null))
-                    {
-                        currentPage = currentItem.Web.Pages_By_Sequence[0];
-                    }
-
-                    // Add each page display type
-                    if ((currentPage != null) && (!itemRestrictedFromUserByIp))
-                    {
-                        int page_seq = currentMode.Page;
-                        if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
-                        {
-                            foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
-                            {
-                                View_Enum thisViewType = thisPageView.View_Type;
-                                foreach (List<string> page_nav_bar_link in from thisFile in currentPage.Files let fileObject = thisFile.Get_Viewer() where fileObject != null where fileObject.View_Type == thisViewType select Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem))
-                                {
-                                    foreach (string nav_link in page_nav_bar_link)
-                                    {
-                                        buildResponse.AppendLine("\t\t" + nav_link + "");
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (itemRestrictedFromUserByIp)
-                    {
-                        List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), htmlSkin.Base_Skin_Code, currentMode, 0, translations, showZoomable, currentItem); 
-                        buildResponse.AppendLine("\t\t" + restricted_nav_bar_link[0] + "");
-                    }
-
-                    // Set current submode back
-                    currentMode.Page = page;
-
-
-
-
-                    buildResponse.AppendLine("\t</ul>");
-                    buildResponse.AppendLine();
-                    
-                    buildResponse.AppendLine("</div>");
-                    buildResponse.AppendLine();
-                }
-
-            }
-
-
-            if (should_left_navigation_bar_be_shown)
-            {
-                // Start the item viewer
-                buildResponse.AppendLine("<!-- Begin the left navigational bar -->");
-                if ( PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000 )
-                    buildResponse.AppendLine("<div id=\"itemviewleftnavbar_hack\">");
-                else
-                    buildResponse.AppendLine("<div id=\"itemviewleftnavbar\">");
-
-                // Compute the URL options which may be needed
-                string url_options = currentMode.URL_Options();
-                string urlOptions1 = String.Empty;
-                string urlOptions2 = String.Empty;
-                if (url_options.Length > 0)
-                {
-                    urlOptions1 = "?" + url_options;
-                    urlOptions2 = "&" + url_options;
-                }
-
-                // Show search results if there is a saved result
-                if (searchResultsCount > 0)
-                {
-                    buildResponse.AppendLine("\t<ul class=\"SobekNavBarMenu\">");
-                    buildResponse.AppendLine(currentMode.Text_Search.Length > 0
-                                                 ? "\t\t<li class=\"SobekNavBarHeader\">MATCHING PAGES</li>"
-                                                 : "\t\t<li class=\"SobekNavBarHeader\">MATCHING TILES</li>");
-
-                    foreach (string thisMatch in searchResultsString)
-                    {
-                        buildResponse.AppendLine("\t\t<li>" + thisMatch.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2) + "</li>");
-                    }
-                    buildResponse.AppendLine("\t</ul>");
-                    buildResponse.AppendLine();
-                }
-
-                // Provide way to expand TOC
-                if ((!showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
-                {
-                    string show_toc_text = "SHOW TABLE OF CONTENTS";
-                    int width = 180;
-
-                    if (currentMode.Language == Web_Language_Enum.French)
-                    {
-                        show_toc_text = "VOIR L'INDEX";
-                        width = 120;
-                    }
-                    if (currentMode.Language == Web_Language_Enum.Spanish)
-                    {
-                        show_toc_text = "MOSTRAR INDICE";
-                        width = 140;
-                    }
-
-                    buildResponse.AppendLine("\t<div class=\"ShowTocRow\">");
-                    string redirect_url = currentMode.Redirect_URL().Replace("&", "&amp;");
-                    if (redirect_url.IndexOf("?") < 0)
-                        redirect_url = redirect_url + "?toc=y";
-                    else
-                        redirect_url = redirect_url + "&toc=y";
-                    buildResponse.AppendLine("\t\t<div class=\"SobekDownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_down_arrow.png\" class=\"opaque_button_img\" alt=\"\" /></a></div>");
-                   // buildResponse.AppendLine("\t\t<a href=\"" + redirect_url + "\">" + show_toc_text + "<div class=\"downarrow\"></div></a>");
-                    buildResponse.AppendLine("\t</div>");
-                }
-
-                // Anything to add?
-                if (buildResponse.Length > 0)
-                {
-                    Literal newLiteral = new Literal {Text = buildResponse.ToString()};
-                    Navigation_Place_Holder.Controls.Add(newLiteral);
-                }
-
-
-                // Add the navigation part to this form
-                if (PageViewer != null)
-                {
-                    Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing page viewer to add left navigation bar section to <i>navigationPlaceHolder</i>");
-                    Nav_Bar_Menu_Section_Added = PageViewer.Add_Nav_Bar_Menu_Section(Navigation_Place_Holder, Internet_Explorer, Tracer);
-                }
-            }
-            else
-            {
-                // Anything to add?
-                if (buildResponse.Length > 0)
-                {
-                    Literal newLiteral = new Literal { Text = buildResponse.ToString() };
-                    Navigation_Place_Holder.Controls.Add(newLiteral);
-                }
-            }
-        }
-
         /// <summary> Adds the table of contents as a control in the left navigation bar </summary>
         /// <param name="placeHolder"> TOC place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Add_Standard_TOC(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
-            // If this is for a fragment, do nothing
-            if (!String.IsNullOrEmpty(currentMode.Fragment))
-                return;
-
-            // EAD type items do not display the TOC like this, as a control
-            if (isEadTypeItem)
-                return;
-
-            // QC and GNU Page turner doesn't show this either
-            if ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.Quality_Control))
+            if (!should_left_navigation_bar_be_shown)
                 return;
 
             if ((showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
@@ -1035,9 +571,6 @@ namespace SobekCM.Library.HTML
 
                 // Add the tree view to the placeholder
                 placeHolder.Controls.Add(treeView1);
-
-                // Set flag that something was added to the nav bar
-                Nav_Bar_Menu_Section_Added = true;
             }
             else
             {
@@ -1075,7 +608,7 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds the internal header HTML for this specific HTML writer </summary>
         /// <param name="Output"> Stream to which to write the HTML for the internal header information </param>
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
-        public override void Add_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
+        public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
             // If this is for a fragment, do nothing
             if (!String.IsNullOrEmpty(currentMode.Fragment))
@@ -1095,7 +628,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      <td><center><h2><a href=\"" + currentMode.Base_URL + currentItem.BibID + "/00000\">" + currentItem.BibID + "</a> : " + currentItem.VID + "</h2></center></td>");
             }
 
-            Add_Internal_Header_Search_Box(Output);
+            Write_Internal_Header_Search_Box(Output);
             Output.WriteLine("    </tr>");
 
             if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
@@ -1382,20 +915,424 @@ namespace SobekCM.Library.HTML
         /// <remarks> This begins writing this page, starting with the left navigation bar up to the (possible) Table of Contents tree control</remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Begin writing the item viewer, all the way up to the TOC place holder");
+
+            // If this is for a fragment, do nothing
+            if (!String.IsNullOrEmpty(currentMode.Fragment))
+                return false;
+
+            Output.WriteLine();
+
+
+            // Add the divs for loading the pop-up forms
+            Output.WriteLine("<!-- Place holders for pop-up forms which load dynamically if required -->");
+            Output.WriteLine("<div class=\"print_popup_div\" id=\"form_print\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\"></div>");
+            Output.WriteLine();
+
+            if (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.GnuBooks_PageTurner)
+            {
+                Output.WriteLine("<!-- Show the title and any other important item information -->");
+                Output.WriteLine("<div id=\"itemtitlebar\">");
+                if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
+                {
+                    string grouptitle = currentItem.Behaviors.GroupTitle;
+                    if (grouptitle.Length > 125)
+                    {
+                        Output.WriteLine("\t<h1><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("\t<h1>" + grouptitle + "</h1>");
+                    }
+                }
+                else
+                {
+                    string final_title = currentItem.Bib_Info.Main_Title.Title;
+                    if (currentItem.Bib_Info.Main_Title.NonSort.Length > 0)
+                    {
+                        if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+                            final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
+                        else
+                        {
+                            if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+                            {
+                                final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
+                            }
+                            else
+                            {
+                                final_title = currentItem.Bib_Info.Main_Title.NonSort + " " + currentItem.Bib_Info.Main_Title.Title;
+                            }
+                        }
+                    }
+
+                    // Add the Title if there is one
+                    if (final_title.Length > 0)
+                    {
+                        if (final_title.Length > 125)
+                        {
+                            Output.WriteLine("\t<h1><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("\t<h1>" + final_title + "</h1>");
+                        }
+                    }
+
+                    // Add the link if there is one
+                    if ((currentItem.Bib_Info.hasLocationInformation) && (currentItem.Bib_Info.Location.Other_URL.Length > 0))
+                    {
+                        if (currentItem.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
+                        {
+
+                            // Determine the type of link
+                            string type = translations.Get_Translation("Related Link", currentMode.Language);
+                            if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
+                            {
+                                type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, currentMode.Language);
+                            }
+
+                            // Determine the display value
+                            string note = currentItem.Bib_Info.Location.Other_URL;
+                            if (currentItem.Bib_Info.Location.Other_URL_Note.Length > 0)
+                            {
+                                note = currentItem.Bib_Info.Location.Other_URL_Note;
+                            }
+
+                            // Add the link
+                            Output.WriteLine("\t<a href=\"" + currentItem.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
+                        }
+                    }
+
+                    // If there is an ACCESSION number and this is an ARTIFACT, include that at the top
+                    if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
+                    {
+                        foreach (Identifier_Info thisIdentifier in currentItem.Bib_Info.Identifiers)
+                        {
+                            if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
+                            {
+                                Output.WriteLine("\t" + translations.Get_Translation("Accession number", currentMode.Language) + " " + thisIdentifier.Identifier + "<br />");
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+
+                // The item viewer can choose to override the standard item menu
+                if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu))
+                {
+                    // Add the item views
+                    Output.WriteLine("<!-- Add the different view and social options -->");
+                    Output.WriteLine("<div id=\"sf-menubar\">");
+
+                    // Add the sharing buttons if this is not restricted by IP address or checked out
+                    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
+                    {
+                        Output.WriteLine("<div id=\"menu-right-actions\">");
+                        Output.WriteLine(
+                            "\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
+
+
+                        //if (currentItem.Behaviors.Can_Be_Described)
+                        //{
+                        //    if (currentUser != null)
+                        //    {
+                        //        Output.Write("<a href=\"?m=hmh\" onmouseover=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button_h.gif'\" onmouseout=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif'\"  onclick=\"return describe_item_form_open( 'describe_button' );\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"describe_button\" id=\"describe_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif\" title=\"Add a description to this item\" alt=\"DESCRIBE\" /></a>");
+                        //    }
+                        //    else
+                        //    {
+                        //        Output.Write("<a href=\"?m=hmh\" onmouseover=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button_h.gif'\" onmouseout=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"describe_button\" id=\"describe_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif\" title=\"Add a description to this item\" alt=\"DESCRIBE\" /></a>");
+                        //    }
+                        //}
+
+
+                        if ((currentUser != null))
+                        {
+                            if (currentItem.Web.ItemID > 0)
+                            {
+                                if (currentUser.Is_In_Bookshelf(currentItem.BibID, currentItem.VID))
+                                {
+                                    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + currentMode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Remove</span></span>");
+                                }
+                                else
+                                {
+                                    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Add</span></span>");
+                                }
+                            }
+
+                            Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">Send</span></span>");
+                        }
+                        else
+                        {
+                            if (currentItem.Web.ItemID > 0)
+                                Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Add</span></span>");
+
+                            Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">Send</span></span>");
+                        }
+
+                        if (currentItem.Web.ItemID > 0)
+                        {
+                            Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">Print</span></span>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">Print</span></span>");
+                        }
+
+                        Output.WriteLine("</div>");
+                    }
+
+                    Output.WriteLine(" <script>");
+                    Output.WriteLine();
+                    Output.WriteLine("jQuery(document).ready(function () {");
+                    Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
+                    Output.WriteLine("  });");
+                    Output.WriteLine();
+                    Output.WriteLine("</script>");
+                    Output.WriteLine();
+                    Output.WriteLine("<ul id=\"sample-menu-1\" class=\"sf-menu\">");
+
+                    // Save the current view type
+                    ushort page = currentMode.Page;
+
+                    // Add the item level views
+                    foreach (View_Object thisView in currentItem.Behaviors.Views)
+                    {
+                        if ((!itemRestrictedFromUserByIp) || (thisView.View_Type == View_Enum.CITATION) ||
+                            (thisView.View_Type == View_Enum.ALL_VOLUMES) ||
+                            (thisView.View_Type == View_Enum.RELATED_IMAGES))
+                        {
+                            // Special code for the CITATION view (TEMPORARY - v.3.2)
+                            if (thisView.View_Type == View_Enum.CITATION)
+                            {
+                                string viewerCode = currentMode.ViewerCode;
+                                currentMode.ViewerCode = "citation";
+                                if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
+                                    (viewerCode == "usage"))
+                                {
+                                    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Citation</a>");
+                                }
+                                else
+                                {
+                                    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Citation</a>");
+                                }
+                                Output.WriteLine("<ul>");
+
+                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
+
+                                currentMode.ViewerCode = "marc";
+                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">MARC View</a></li>");
+
+                                currentMode.ViewerCode = "metadata";
+                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Metadata</a></li>");
+
+                                currentMode.ViewerCode = "usage";
+                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Usage Statistics</a></li>");
+
+                                Output.WriteLine("\t\t</ul></li>");
+                                currentMode.ViewerCode = viewerCode;
+                            }
+                            else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
+                            {
+                                string viewerCode = currentMode.ViewerCode;
+                                string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
+                                string all_volumes = "All Volumes";
+                                if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
+                                {
+                                    all_volumes = "All Issues";
+                                }
+                                else if (resource_type_upper.IndexOf("MAP") >= 0)
+                                {
+                                    all_volumes = "Related Maps";
+                                }
+                                else if (resource_type_upper.IndexOf("AERIAL") >= 0)
+                                {
+                                    all_volumes = "Related Flights";
+                                }
+
+                                currentMode.ViewerCode = "allvolumes";
+                                if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
+                                    (viewerCode == "allvolumes3"))
+                                {
+                                    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+                                }
+                                else
+                                {
+                                    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+                                }
+                                Output.WriteLine("<ul>");
+
+                                currentMode.ViewerCode = "allvolumes";
+                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Tree View</a></li>");
+
+
+                                currentMode.ViewerCode = "allvolumes2";
+                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Thumbnails</a></li>");
+
+                                if (currentMode.Internal_User)
+                                {
+                                    currentMode.ViewerCode = "allvolumes3";
+                                    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">List View</a></li>");
+                                }
+
+                                Output.WriteLine("\t\t</ul></li>");
+                                currentMode.ViewerCode = viewerCode;
+                            }
+                            else
+                            {
+                                List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, htmlSkin.Base_Skin_Code, currentMode, -1, translations, showZoomable, currentItem);
+
+                                // Add each nav bar link
+                                foreach (string this_link in item_nav_bar_link)
+                                {
+                                    Output.WriteLine("\t\t" + this_link + "");
+                                }
+                            }
+                        }
+                    }
+
+                    // If this is citation or index mode, the number may be an invalid page sequence
+                    if ((page <= 0) ||
+                        (currentMode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
+                    {
+                        currentMode.Page = 1;
+
+                    }
+
+                    if ((currentItem.Web.Static_PageCount > 0) && (currentPage == null))
+                    {
+                        currentPage = currentItem.Web.Pages_By_Sequence[0];
+                    }
+
+                    // Add each page display type
+                    if ((currentPage != null) && (!itemRestrictedFromUserByIp))
+                    {
+                        int page_seq = currentMode.Page;
+                        if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
+                        {
+                            foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
+                            {
+                                View_Enum thisViewType = thisPageView.View_Type;
+                                foreach (List<string> page_nav_bar_link in from thisFile in currentPage.Files let fileObject = thisFile.Get_Viewer() where fileObject != null where fileObject.View_Type == thisViewType select Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem))
+                                {
+                                    foreach (string nav_link in page_nav_bar_link)
+                                    {
+                                        Output.WriteLine("\t\t" + nav_link + "");
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (itemRestrictedFromUserByIp)
+                    {
+                        List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), htmlSkin.Base_Skin_Code, currentMode, 0, translations, showZoomable, currentItem);
+                        Output.WriteLine("\t\t" + restricted_nav_bar_link[0] + "");
+                    }
+
+                    // Set current submode back
+                    currentMode.Page = page;
+
+
+
+
+                    Output.WriteLine("\t</ul>");
+                    Output.WriteLine();
+
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+            }
+
+
+            if (should_left_navigation_bar_be_shown)
+            {
+                // Start the item viewer
+                Output.WriteLine("<!-- Begin the left navigational bar -->");
+                if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
+                    Output.WriteLine("<div id=\"itemviewleftnavbar_hack\">");
+                else
+                    Output.WriteLine("<div id=\"itemviewleftnavbar\">");
+
+                // Compute the URL options which may be needed
+                string url_options = currentMode.URL_Options();
+                string urlOptions1 = String.Empty;
+                string urlOptions2 = String.Empty;
+                if (url_options.Length > 0)
+                {
+                    urlOptions1 = "?" + url_options;
+                    urlOptions2 = "&" + url_options;
+                }
+
+                // Show search results if there is a saved result
+                if (searchResultsCount > 0)
+                {
+                    Output.WriteLine("\t<ul class=\"SobekNavBarMenu\">");
+                    Output.WriteLine(currentMode.Text_Search.Length > 0
+                                                 ? "\t\t<li class=\"SobekNavBarHeader\">MATCHING PAGES</li>"
+                                                 : "\t\t<li class=\"SobekNavBarHeader\">MATCHING TILES</li>");
+
+                    foreach (string thisMatch in searchResultsString)
+                    {
+                        Output.WriteLine("\t\t<li>" + thisMatch.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2) + "</li>");
+                    }
+                    Output.WriteLine("\t</ul>");
+                    Output.WriteLine();
+                }
+
+                // Provide way to expand TOC
+                if ((!showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
+                {
+                    string show_toc_text = "SHOW TABLE OF CONTENTS";
+                    int width = 180;
+
+                    if (currentMode.Language == Web_Language_Enum.French)
+                    {
+                        show_toc_text = "VOIR L'INDEX";
+                        width = 120;
+                    }
+                    if (currentMode.Language == Web_Language_Enum.Spanish)
+                    {
+                        show_toc_text = "MOSTRAR INDICE";
+                        width = 140;
+                    }
+
+                    Output.WriteLine("\t<div class=\"ShowTocRow\">");
+                    string redirect_url = currentMode.Redirect_URL().Replace("&", "&amp;");
+                    if (redirect_url.IndexOf("?") < 0)
+                        redirect_url = redirect_url + "?toc=y";
+                    else
+                        redirect_url = redirect_url + "&toc=y";
+                    Output.WriteLine("\t\t<div class=\"SobekDownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_down_arrow.png\" class=\"opaque_button_img\" alt=\"\" /></a></div>");
+                    // Output.WriteLine("\t\t<a href=\"" + redirect_url + "\">" + show_toc_text + "<div class=\"downarrow\"></div></a>");
+                    Output.WriteLine("\t</div>");
+                }
+
+                // Allow the item/page viewer to show anything in the left navigational menu
+                if (PageViewer != null)
+                    PageViewer.Write_Left_Nav_Menu_Section(Output, Tracer);
+            }
+
             return true;
-        }
+        } 
 
         /// <summary> Writes the HTML generated by this item html subwriter directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
         /// <remarks> This continues writing this item from finishing the left navigation bar to the popup forms to the page navigation controls at the top of the item viewer's main area</remarks>
-        public bool Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // If this is for a fragment, do nothing
             if (!String.IsNullOrEmpty(currentMode.Fragment))
-                return false;
+                return;
 
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_Additional_HTML", "Rendering HTML ( finish left navigation bar, begin main viewer section )");
 
@@ -1442,27 +1379,36 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                Output.WriteLine("\t<div id=\"itemwordmarks\">");
-
-                // Compute the URL options which may be needed
-                string url_options = currentMode.URL_Options();
-                string urlOptions1 = String.Empty;
-                string urlOptions2 = String.Empty;
-                if (url_options.Length > 0)
-                {
-                    urlOptions1 = "?" + url_options;
-                    urlOptions2 = "&" + url_options;
-                }
-
                 if (currentItem.Behaviors.Wordmark_Count > 0)
                 {
-                    foreach (Wordmark_Info thisIcon in currentItem.Behaviors.Wordmarks)
+                    Output.WriteLine("\t<div id=\"itemwordmarks\">");
+
+                    // Compute the URL options which may be needed
+                    string url_options = currentMode.URL_Options();
+                    string urlOptions1 = String.Empty;
+                    string urlOptions2 = String.Empty;
+                    if (url_options.Length > 0)
                     {
-                        Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                        urlOptions1 = "?" + url_options;
+                        urlOptions2 = "&" + url_options;
                     }
+
+                    if (currentItem.Behaviors.Wordmark_Count > 0)
+                    {
+                        foreach (Wordmark_Info thisIcon in currentItem.Behaviors.Wordmarks)
+                        {
+                            Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                        }
+                    }
+
+                    Output.WriteLine("\t</div>");
+                }
+                else
+                {
+                    Output.WriteLine("\t<div id=\"noitemwordmarks\">&nbsp;</div>");
                 }
 
-                Output.WriteLine("\t</div>");
+
                 Output.WriteLine("</div>");
                 Output.WriteLine();
             }
@@ -1510,17 +1456,15 @@ namespace SobekCM.Library.HTML
             // Add navigation row here (buttons and viewer specific)
             if (PageViewer != null)
             {
-                string navigation_row = PageViewer.NavigationRow;
-                if ((PageViewer.PageCount != 1) || (navigation_row.Length > 0))
+                // Allow the pageviewer to add any special elements to the main 
+                // item viewer above the pagination
+                PageViewer.Write_Top_Additional_Navigation_Row(Output, Tracer );
+
+                // Should buttons be included here?
+                if (PageViewer.PageCount != 1) 
                 {
                     Output.WriteLine("\t<tr>");
                     Output.WriteLine("\t\t<td>");
-
-                    // ADD THE Viewer Nav Bar part from the viewer
-                    if (navigation_row.Length > 0)
-                    {
-                        Output.WriteLine(navigation_row);
-                    }
 
                     // ADD NAVIGATION BUTTONS
                     if (PageViewer.PageCount != 1)
@@ -1658,24 +1602,11 @@ namespace SobekCM.Library.HTML
 
             // Add the HTML from the pageviewer
             // Add the main viewer section
-            if (PageViewer != null)
+            if ((PageViewer != null) && (String.IsNullOrEmpty(currentMode.Fragment)))
             {
-                // Was this to draw a fragment?
-                if (String.IsNullOrEmpty(currentMode.Fragment))
-                {
-                    Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing page viewer to add main viewer section to <i>mainPlaceHolder</i>");
-                    PageViewer.Write_Main_Viewer_Section(Output, Tracer);
-
-                    //if (PageViewer is Citation_ItemViewer)
-                    //    ((Citation_ItemViewer) PageViewer).Write_Main_Viewer_Section(Output, Tracer);
-                    //else
-                    //{
-                    //    PageViewer.Write_Main_Viewer_Section(Output, Tracer);
-                    //}
-                }
+                Tracer.Add_Trace("Item_MainWriter.Write_Additional_HTML", "Allowing page viewer to write directly to the output to add main viewer section");
+                PageViewer.Write_Main_Viewer_Section(Output, Tracer);
             }
-
-            return true;
         }
 
         /// <summary> Performs the final HTML writing which completes the item table and adds the final page navigation buttons at the bottom of the page </summary>
@@ -1683,7 +1614,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Rendering HTML ( add page view and finish the main viewer section )");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Rendering HTML ( add any controls which the item viewer needs to add )");
 
             // Add the main viewer section
             if ( PageViewer != null)
@@ -1728,8 +1659,6 @@ namespace SobekCM.Library.HTML
                             send_viewer.CurrentUser = currentUser;
                             send_viewer.Add_Main_Viewer_Section(placeHolder, Tracer);
                             break;
-
-
                     }
 
                     return;
@@ -1740,6 +1669,14 @@ namespace SobekCM.Library.HTML
                     PageViewer.Add_Main_Viewer_Section(placeHolder, Tracer);
                 }
             }
+        }
+
+        /// <summary> Spot to write any final HTML to the response stream  </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer )
+        {
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Close the item viewer and add final pagination");
 
             // If this is the page turner viewer, don't draw anything else
             if ((PageViewer != null) && (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
@@ -1747,14 +1684,12 @@ namespace SobekCM.Library.HTML
                 return;
             }
 
-            StringBuilder buildResult = new StringBuilder();
-
-            buildResult.AppendLine("\t</tr>");
+            Output.WriteLine("\t</tr>");
 
             if ((PageViewer != null) && (PageViewer.PageCount != 1) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination)))
             {
-                buildResult.AppendLine("\t<tr>");
-                buildResult.AppendLine("\t\t<td>");
+                Output.WriteLine("\t<tr>");
+                Output.WriteLine("\t\t<td>");
 
                 // ADD NAVIGATION BUTTONS
                 if (PageViewer.PageCount != 1)
@@ -1799,7 +1734,7 @@ namespace SobekCM.Library.HTML
                     if (language_suffix.Length > 0)
                         language_suffix = "_" + language_suffix;
 
-                    buildResult.AppendLine("\t\t\t<div class=\"SobekPageNavBar\">");
+                    Output.WriteLine("\t\t\t<div class=\"SobekPageNavBar\">");
 
                     // Get the URL for the first and previous buttons
                     string firstButtonURL = PageViewer.First_Page_URL;
@@ -1808,10 +1743,10 @@ namespace SobekCM.Library.HTML
                     // Only continue if there is an item and mode, and there is previous pages to go to
                     if ((PageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
                     {
-                        buildResult.AppendLine("\t\t\t\t<span class=\"leftButtons\">");
-                        buildResult.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                        buildResult.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-                        buildResult.AppendLine("\t\t\t\t</span>");
+                        Output.WriteLine("\t\t\t\t<span class=\"leftButtons\">");
+                        Output.WriteLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                        Output.WriteLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                        Output.WriteLine("\t\t\t\t</span>");
                     }
 
                     // Get the URL for the first and previous buttons
@@ -1821,10 +1756,10 @@ namespace SobekCM.Library.HTML
                     // Only continue if there is an item and mode, and there is previous pages to go to
                     if ((PageViewer.Current_Page < PageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
                     {
-                        buildResult.AppendLine("\t\t\t\t<span class=\"rightButtons\">");
-                        buildResult.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                        buildResult.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-                        buildResult.AppendLine("\t\t\t\t</span>");
+                        Output.WriteLine("\t\t\t\t<span class=\"rightButtons\">");
+                        Output.WriteLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                        Output.WriteLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        Output.WriteLine("\t\t\t\t</span>");
                     }
 
                     // Create the page selection if that is the type to display.  This is where it is actually
@@ -1894,66 +1829,53 @@ namespace SobekCM.Library.HTML
                         pageLinkBuilder.AppendLine("\t\t\t\t</div>");
 
                         pageselectorhtml = pageLinkBuilder.ToString();
-                        buildResult.AppendLine(pageselectorhtml);
+                        Output.WriteLine(pageselectorhtml);
 
                     }
 
 
-                    buildResult.AppendLine("\t\t\t</div>");
+                    Output.WriteLine("\t\t\t</div>");
                 }
 
-                buildResult.AppendLine("\t\t</td>");
-                buildResult.AppendLine("\t</tr>");
+                Output.WriteLine("\t\t</td>");
+                Output.WriteLine("\t</tr>");
             }
 
             if (PageViewer != null && ((currentItem.Behaviors.CheckOut_Required) && (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
             {
-                buildResult.AppendLine("<tr><td><span style=\"color:gray; font-size: 0.8em\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
+                Output.WriteLine("<tr><td><span style=\"color:gray; font-size: 0.8em\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
             }
-            buildResult.AppendLine("</table>");
+            Output.WriteLine("</table>");
 
             // Add a spot for padding
-            buildResult.AppendLine();
-            buildResult.AppendLine("<!-- Division is used to add extra bottom padding, if the left nav bar is taller than the item viewer -->");
-            buildResult.AppendLine("<div id=\"itemviewerbottompadding\"></div>");
-            buildResult.AppendLine();
+            Output.WriteLine();
+            Output.WriteLine("<!-- Division is used to add extra bottom padding, if the left nav bar is taller than the item viewer -->");
+            Output.WriteLine("<div id=\"itemviewerbottompadding\"></div>");
+            Output.WriteLine();
 
             // None of the sharing options are available if the user is restricted from this item
             // or if we are generating this as a static page source for robots
             if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
             {
                 // Add the hidden field
-                buildResult.AppendLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-                buildResult.AppendLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
-                buildResult.AppendLine();
+                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+                Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+                Output.WriteLine();
 
                 // Add the scripts needed
-                buildResult.AppendLine("<!-- Add references to the jquery and sobekcm javascript files -->");
+                Output.WriteLine("<!-- Add references to the jquery and sobekcm javascript files -->");
 
-                buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
-                buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
-                buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
-                buildResult.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
-                buildResult.AppendLine();
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
+                Output.WriteLine();
 
                 // Initialize the navigation menu
 
             }
 
-
-            Literal closeTableLiteral = new Literal {Text = buildResult.ToString()};
-            placeHolder.Controls.Add(closeTableLiteral);
-
-        }
-
-        /// <summary> [DEPRECATED] Spot to write any final HTML to the response stream (currently unused) </summary>
-        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Always returns TRUE</returns>
-        public bool Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer )
-        {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Do nothing");
-            return true;
+            return;
         }
 
         private void recurse_through_tree( Division_TreeNode parentNode, TreeNode parentViewNode, List<TreeNode> nodes, List<TreeNode> selectedNodes, List<TreeNode> pathNodes, ref int sequence )
@@ -2070,10 +1992,10 @@ namespace SobekCM.Library.HTML
             // ROBOTS SHOULD BE SENT TO THE CMS PAGE FOR THIS
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 
-            // Write the style sheet to use 
+            // Write the main SobekCM item style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
-            // Add code for the GnuBooks page turner if that is the valid viewer
+            // Add any viewer specific tags that need to reside within the HTML head
             if (PageViewer != null)
                 PageViewer.Write_Within_HTML_Head(Output, Tracer);
 
