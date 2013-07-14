@@ -185,6 +185,9 @@
     <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="ItemViewer\Viewers\Aware_JP2_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -192,6 +195,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\Google_Coordinate_Callback.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ItemViewer\Viewers\JPEG2000_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\Test_ItemViewer.cs">
@@ -391,7 +397,6 @@
     <Compile Include="Settings\SobekCM_Library_Settings.cs" />
     <Compile Include="Custom_Tracer.cs" />
     <Compile Include="Database\SobekCM_Database.cs" />
-    <Compile Include="HTML\button_html_writer.cs" />
     <Compile Include="HTML\Aggregation_HtmlSubwriter.cs" />
     <Compile Include="HTML\MySobek_HtmlSubwriter.cs" />
     <Compile Include="HTML\Web_Content_HtmlSubwriter.cs" />
@@ -457,9 +462,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\iItemViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\Aware_JP2_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="ItemViewer\Viewers\JPEG_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

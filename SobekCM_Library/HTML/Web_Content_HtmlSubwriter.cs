@@ -80,63 +80,63 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
+            if ((siteMap == null) || (currentMode.Is_Robot))
+                return;
+
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Add_Controls", "Adding site map tree nav view");
 
-            if ((siteMap != null) && ( !currentMode.Is_Robot ))
+            // Create the treeview
+            TreeView treeView1 = new TreeView
+                {
+                    CssClass = "SobekSiteMapTreeView",
+                    ExpandDepth = 0,
+                    NodeIndent = 15,
+                    ShowLines = true,
+                    EnableClientScript = true,
+                    PopulateNodesFromClient = true
+                };
+
+            // Set some tree view properties
+            treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
+
+
+            // Determine the base URL
+            string base_url = currentMode.Base_URL;
+            if (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
             {
-                // Create the treeview
-                TreeView treeView1 = new TreeView
-                                         {
-                                             CssClass = "SobekSiteMapTreeView",
-                                             ExpandDepth = 0,
-                                             NodeIndent = 15,
-                                             ShowLines = true,
-                                             EnableClientScript = true,
-                                             PopulateNodesFromClient = true
-                                         };
-
-                // Set some tree view properties
-                treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
-
-
-                // Determine the base URL
-                string base_url = currentMode.Base_URL;
-                if (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                {
-                    base_url = base_url + "l/";
-                }
-
-                // Find the selected node
-                int selected_node = siteMap.Selected_NodeValue(currentMode.Info_Browse_Mode);
-
-                foreach (SobekCM_SiteMap_Node rootSiteMapNode in siteMap.RootNodes)
-                {
-                    // Add the sitemaps root node first
-                    TreeNode rootNode = new TreeNode
-                                            {
-                                                SelectAction = TreeNodeSelectAction.None,
-                                                Text = string.Format("<a href='{0}{1}' title='{2}'>{3}</a>", base_url, rootSiteMapNode.URL, rootSiteMapNode.Description, rootSiteMapNode.Title)
-                                            };
-                    treeView1.Nodes.Add(rootNode);
-
-                    // Was this node currently selected?
-                    if (rootSiteMapNode.URL == currentMode.Info_Browse_Mode)
-                    {
-                        rootNode.Text = string.Format("<span Title='{0}'>{1}</span>", rootSiteMapNode.Description, rootSiteMapNode.Title);
-                        rootNode.Expand();
-                    }
-
-                    // Now add all the children recursively
-                    add_child_nodes(rootNode, rootSiteMapNode, base_url, selected_node);
-                }
-
-                // Always expand the top node
-                //rootNode.Expand();
-
-                // Add the tree to the view
-                placeHolder.Controls.Add(treeView1);
-
+                base_url = base_url + "l/";
             }
+
+            // Find the selected node
+            int selected_node = siteMap.Selected_NodeValue(currentMode.Info_Browse_Mode);
+
+            foreach (SobekCM_SiteMap_Node rootSiteMapNode in siteMap.RootNodes)
+            {
+                // Add the sitemaps root node first
+                TreeNode rootNode = new TreeNode
+                    {
+                        SelectAction = TreeNodeSelectAction.None,
+                        Text = string.Format("<a href='{0}{1}' title='{2}'>{3}</a>", base_url, rootSiteMapNode.URL, rootSiteMapNode.Description, rootSiteMapNode.Title)
+                    };
+                treeView1.Nodes.Add(rootNode);
+
+                // Was this node currently selected?
+                if (rootSiteMapNode.URL == currentMode.Info_Browse_Mode)
+                {
+                    rootNode.Text = string.Format("<span Title='{0}'>{1}</span>", rootSiteMapNode.Description, rootSiteMapNode.Title);
+                    rootNode.Expand();
+                }
+
+                // Now add all the children recursively
+                add_child_nodes(rootNode, rootSiteMapNode, base_url, selected_node);
+            }
+
+            // Always expand the top node
+            //rootNode.Expand();
+
+            // Add the tree to the view
+            placeHolder.Controls.Add(treeView1);
+
         }
 
         private void add_child_nodes(TreeNode treeNode, SobekCM_SiteMap_Node siteNode, string base_url, int selected_node )

@@ -21,7 +21,11 @@ namespace SobekCM.Library.HTML
 
         Item_Subwriter_Suppress_Item_Menu,
 
-        Item_Subwriter_Suppress_Left_Navigation_Bar
+        Item_Subwriter_Suppress_Left_Navigation_Bar,
+
+        Item_Subwriter_Requires_Left_Navigation_Bar
+
+
 
     }
 }
