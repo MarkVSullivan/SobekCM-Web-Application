@@ -82,6 +82,22 @@ img.SobekItemWordmark
     font-size: 1.25em; padding: 0px 0px 4px 0px; margin: 0px; line-height: 1.25em;font-weight: bold;
 }
 
+#itemtitlebar a:link
+{
+    color: cornflowerblue;
+}
+
+#itemtitlebar a:visited
+{
+    color: cornflowerblue;
+}
+
+#itemtitlebar a:hover
+{
+    color: cornflowerblue;
+    text-decoration: underline;
+}
+
 #itemviewleftnavbar {
      background-color: #333333;
 
@@ -205,7 +221,13 @@ img.SobekItemWordmark
 
 
 
-#SobekDocumentDisplay a { color: cornflowerblue;}
+#SobekDocumentDisplay a:link { color: cornflowerblue;}
+#SobekDocumentDisplay a:visited { color: cornflowerblue;}
+#SobekDocumentDisplay a:hover { color: cornflowerblue;text-decoration: underline; }
+
+#SobekDocumentDisplay2 a:link { color: cornflowerblue;}
+#SobekDocumentDisplay2 a:visited { color: cornflowerblue;}
+#SobekDocumentDisplay2 a:hover { color: cornflowerblue;text-decoration: underline; }
 
 .SobekCitationDisplay  { color: black; }
 
@@ -535,7 +557,26 @@ hr {
 
 .show_intheader_button:hover { background-position: 0 -18px; }
 
-#printedimage { text-align: center; }
+#printedimage 
+{ 
+    text-align: center;
+}
+
+#jpegimage_zoomable
+{ 
+    text-align: center;
+    cursor:url(http://ufdc.ufl.edu/default/images/zoom_tool.gif), pointer;
+    border: none;
+    font-size: 0.90em;
+    color: #aaaaaa;
+}
+
+#jpegimage_zoomable img
+{ 
+    text-align: center;
+    cursor:url(http://ufdc.ufl.edu/default/images/zoom_tool.gif), pointer;
+    border: none;
+}
 
 #itemwordmarks { margin-top: 30px; }
 

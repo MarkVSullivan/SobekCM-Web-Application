@@ -1213,19 +1213,60 @@ namespace SobekCM.Library.HTML
                     if ((currentPage != null) && (!itemRestrictedFromUserByIp))
                     {
                         int page_seq = currentMode.Page;
+                        string resourceType = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
                         if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
                         {
+                            List<string> pageViewLinks = new List<string>();
                             foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
                             {
                                 View_Enum thisViewType = thisPageView.View_Type;
-                                foreach (List<string> page_nav_bar_link in from thisFile in currentPage.Files let fileObject = thisFile.Get_Viewer() where fileObject != null where fileObject.View_Type == thisViewType select Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem))
+                                foreach (SobekCM_File_Info thisFile in currentPage.Files)
                                 {
-                                    foreach (string nav_link in page_nav_bar_link)
+                                    View_Object fileObject = thisFile.Get_Viewer();
+                                    if (( fileObject != null ) && ( fileObject.View_Type == thisViewType))
                                     {
-                                        Output.WriteLine("\t\t" + nav_link + "");
+                                        pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem));
                                     }
-                                    break;
                                 }
+                            }
+
+                            // Only continue if there were views
+                            if (pageViewLinks.Count > 0)
+                            {
+                                // Determine the name for this menu item
+                                string menu_title = "Page Image";
+                                if (resourceType.IndexOf("MAP") >= 0)
+                                {
+                                    menu_title = "Map Image";
+                                }
+                                else if ((resourceType.IndexOf("AERIAL") >= 0) || (resourceType.IndexOf("PHOTOGRAPH") >= 0))
+                                {
+                                    menu_title = "Image";
+                                }
+                                if (currentItem.Web.Static_PageCount > 1)
+                                    menu_title = menu_title + "s";
+
+                                // Get the link for the first page view
+                                string link = pageViewLinks[0].Substring(pageViewLinks[0].IndexOf("href=\"") + 6);
+                                link = link.Substring(0, link.IndexOf("\""));
+
+                                // Was this a match?
+                                if (( currentMode.ViewerCode == page_seq + "t" ) || ( currentMode.ViewerCode == page_seq + "x" ) || ( currentMode.ViewerCode == page_seq + "j" ))
+                                {
+                                    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
+                                }
+                                else
+                                {
+                                    Output.Write("\t\t<li><a href=\"" + link + "\">" + menu_title + "</a>");
+                                }
+                                Output.WriteLine("<ul>");
+
+                                foreach (string pageLink in pageViewLinks)
+                                {
+                                    Output.WriteLine("\t\t\t<li>" + pageLink + "</li>");
+                                }
+
+                                Output.WriteLine("\t\t</ul></li>");
                             }
                         }
                     }

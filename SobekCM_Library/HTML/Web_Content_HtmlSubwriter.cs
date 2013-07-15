@@ -33,9 +33,7 @@ namespace SobekCM.Library.HTML
         /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
         /// <param name="Static_Web_Content"> Object contains all the basic information about this info display </param>
         /// <param name="Site_Map"> Optional site map object used to render a navigational tree-view on left side of page</param>
-        public Web_Content_HtmlSubwriter(Item_Aggregation Hierarchy_Object,
-            SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, HTML_Based_Content Static_Web_Content,
-            SobekCM_SiteMap Site_Map)
+        public Web_Content_HtmlSubwriter(Item_Aggregation Hierarchy_Object, SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, HTML_Based_Content Static_Web_Content, SobekCM_SiteMap Site_Map)
         {
             base.Hierarchy_Object = Hierarchy_Object;
             currentMode = Current_Mode;
@@ -64,7 +62,7 @@ namespace SobekCM.Library.HTML
         /// <summary> Gets the collection of special behaviors which this subwriter
         /// requests from the main HTML subwriter. </summary>
         /// <remarks> By default, this returns an empty list </remarks>
-        public virtual List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get
             {
@@ -330,7 +328,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> This finishes out the page and includes all the static content in this static web content file </remarks>
-        public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Write_Final_HTML", "Rendering HTML");
 

@@ -121,15 +121,13 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.JPEG:
-                    returnVal.Add(Resource_Type.ToUpper().IndexOf("MAP") >= 0
-                                      ? HTML_Helper(Skin_Code, Page_Sequence.ToString() + "j", Translator.Get_Translation("MAP IMAGE", Current_Mode.Language), Current_Mode)
-                                      : HTML_Helper(Skin_Code, Page_Sequence.ToString() + "j",  Translator.Get_Translation("PAGE IMAGE", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "j", Translator.Get_Translation("STANDARD", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.JPEG2000:
                     if (Show_Zoomable)
                     {
-                        returnVal.Add(HTML_Helper(Skin_Code, Page_Sequence.ToString() + "x", Translator.Get_Translation("ZOOMABLE", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "x", Translator.Get_Translation("ZOOMABLE", Current_Mode.Language), Current_Mode));
                     }
                     break;
 
@@ -148,7 +146,7 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.TEXT:
-                    returnVal.Add(HTML_Helper(Skin_Code, (Page_Sequence + 1).ToString() + "T", Translator.Get_Translation("PAGE TEXT", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "t", Translator.Get_Translation("PAGE TEXT", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.TOC:
@@ -193,6 +191,15 @@ namespace SobekCM.Library.ItemViewer
             }
 
             return returnVal;
+        }
+
+        private static string HTML_Helper_PageView(string interface_code, string Viewer_Code, string Display_Text, SobekCM_Navigation_Object Current_Mode)
+        {
+            string previousViewerCode = Current_Mode.ViewerCode;
+            Current_Mode.ViewerCode = Viewer_Code;
+            string returnValue = "<a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a>";
+            Current_Mode.ViewerCode = previousViewerCode;
+            return returnValue;
         }
 
         private static string HTML_Helper(string interface_code, string Viewer_Code, string Display_Text, SobekCM_Navigation_Object Current_Mode)
