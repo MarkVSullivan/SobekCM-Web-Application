@@ -1,8 +1,11 @@
 ﻿#region Using directives
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Library.HTML;
 
 #endregion
 
@@ -43,7 +46,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				return 800;
+				return -1;
 			}
 		}
 
@@ -104,14 +107,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<td align=\"right\"><a href=\"http://get.adobe.com/reader/\"><img src=\"" + CurrentMode.Base_URL + "default/images/get_adobe_reader.png\" /></a></td>" );
             Output.WriteLine("</tr></table>");
             Output.WriteLine("</td></tr>");
-            Output.WriteLine("\t\t<tr><td>");
+            Output.WriteLine("\t\t<tr><td align=\"left\">");
 
 			if (CurrentMode.Text_Search.Length > 0)
 			{
 				displayFileName = displayFileName + "#search=&quot;" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "&quot;";
 			}
 
-            Output.WriteLine("                  <embed src=\"" + displayFileName + "\" width=\"100%\" height=\"700px\" href=\"" + FileName + "\"></embed>");
+            Output.WriteLine("                  <embed id=\"pdfdocument\" src=\"" + displayFileName + "\" width=\"600px\" height=\"700px\" href=\"" + FileName + "\"></embed>");
             
 			// Finish the table
             Output.WriteLine("\t\t</td>");
@@ -120,5 +123,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Restore the mode
 			CurrentMode.ViewerCode = current_view_code;
 		}
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        /// <param name="Body_Attributes"> List of body attributes to be included </param>
+        public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        {
+            Body_Attributes.Add(new Tuple<string, string>("onload", "pdf_set_fullscreen();"));
+            Body_Attributes.Add(new Tuple<string, string>("onresize", "pdf_set_fullscreen();"));
+        }
+
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HTML.HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Footer };
+            }
+        }
 	}
 }
