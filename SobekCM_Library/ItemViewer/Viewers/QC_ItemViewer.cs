@@ -1549,7 +1549,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// Add the Viewer specific information to the top navigation row
 		/// This nav row adds the different thumbnail viewing options(# of thumbnails, size of thumbnails, list of all related item thumbnails)
 		/// </summary>
-		public override string NavigationRow
+		public string NavigationRow
 		{
 			get
 			{

@@ -82,9 +82,24 @@ img.SobekItemWordmark
     font-size: 1.25em; padding: 0px 0px 4px 0px; margin: 0px; line-height: 1.25em;font-weight: bold;
 }
 
+#itemtitlebar a:link
+{
+    color: cornflowerblue;
+}
+
+#itemtitlebar a:visited
+{
+    color: cornflowerblue;
+}
+
+#itemtitlebar a:hover
+{
+    color: cornflowerblue;
+    text-decoration: underline;
+}
+
 #itemviewleftnavbar {
-	 border: solid 1px #cccccc; 
-     background-color: #eeeeee;
+     background-color: #333333;
 
      MARGIN-RIGHT: 5px; 
      text-align: left; width: 185px;
@@ -93,8 +108,7 @@ img.SobekItemWordmark
 }
 
 #itemviewleftnavbar_hack {
-	 border: solid 1px #cccccc; 
-     background-color: #eeeeee;
+     background-color: #333333;
 
      MARGIN-RIGHT: 5px; 
      text-align: left; width: 210px;
@@ -207,7 +221,13 @@ img.SobekItemWordmark
 
 
 
-#SobekDocumentDisplay a { color: cornflowerblue;}
+#SobekDocumentDisplay a:link { color: cornflowerblue;}
+#SobekDocumentDisplay a:visited { color: cornflowerblue;}
+#SobekDocumentDisplay a:hover { color: cornflowerblue;text-decoration: underline; }
+
+#SobekDocumentDisplay2 a:link { color: cornflowerblue;}
+#SobekDocumentDisplay2 a:visited { color: cornflowerblue;}
+#SobekDocumentDisplay2 a:hover { color: cornflowerblue;text-decoration: underline; }
 
 .SobekCitationDisplay  { color: black; }
 
@@ -308,37 +328,40 @@ input.SobekSearchBox_focused  {  color: #0000a8;  width: 220px;  background-colo
 
 
 .SobekNavBarHeader {
- background-color: #eeeeee; 
- padding: 5px 10px 5px 5px; 
+ padding: 5px 10px 0px 5px; 
  FONT-WEIGHT: bold; 
  FONT-SIZE: 0.9em; 
- COLOR: #222; 
+ COLOR: White; 
  FONT-FAMILY: Arial, Helvetica, sans-serif; 
  WHITE-SPACE: nowrap; 
  LETTER-SPACING: 1px; 
+ background-color: #333333;
 }
 
-.SobekNavBarHeader A:link { display:inline; background: #eeeeee;  }
-.SobekNavBarHeader A:hover { display:inline; background: #eeeeee; }
-.SobekNavBarHeader A:visited { display:inline; background: #eeeeee;  }
+.SobekNavBarHeader A:link { display:inline;  }
+.SobekNavBarHeader A:hover { display:inline;  }
+.SobekNavBarHeader A:visited { display:inline;   }
 
 .SobekNavBarMenuNonLink 
 {
 	FONT-SIZE: 0.7em; text-align: center; 
 	PADDING-BOTTOM: 0px; WIDTH: 100%; 
-	COLOR: #444; FONT-FAMILY: Arial, Helvetica, sans-serif; 
-	BACKGROUND-COLOR: #ffffff; TEXT-DECORATION: none
+	COLOR: White; FONT-FAMILY: Arial, Helvetica, sans-serif; 
+	TEXT-DECORATION: none; BACKGROUND-COLOR: #333333;
 }
 
 .SobekNavBarMenuNonLink_ie
 {
-	FONT-SIZE: 0.7em; text-align: center; PADDING-BOTTOM: 0px; WIDTH: 100%; COLOR: #444; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; TEXT-DECORATION: none
+	FONT-SIZE: 0.7em; text-align: center; PADDING-BOTTOM: 0px; WIDTH: 100%; 
+    COLOR: White; FONT-FAMILY: Arial, Helvetica, sans-serif; 
+    BACKGROUND-COLOR: #333333; TEXT-DECORATION: none
 }
 
 UL.SobekNavBarMenu {
 	PADDING: 0px 0px 0px 0px; 
 	MARGIN: 0px 0px 0px 0px; 
 	WIDTH: 100%; WHITE-SPACE: nowrap; LIST-STYLE-TYPE: none;
+    background-color: #333333;
 }
 
 UL.SobekNavBarMenu LI A {
@@ -349,10 +372,11 @@ UL.SobekNavBarMenu LI A {
 	FONT-WEIGHT: bold;
 	 FONT-SIZE: 0.85em;  
 	 WIDTH: 100%; 
-	 COLOR: #666;
+	 COLOR: White;
 	  TEXT-INDENT: 15px; 
 	  FONT-FAMILY: Arial, Helvetica, sans-serif; 
-	  WHITE-SPACE: nowrap; BACKGROUND-COLOR: #ffffff; TEXT-DECORATION: none
+	  WHITE-SPACE: nowrap; TEXT-DECORATION: none;
+          background-color: #333333;
 }
 
 UL.SobekNavBarMenu LI A:hover {
@@ -533,13 +557,34 @@ hr {
 
 .show_intheader_button:hover { background-position: 0 -18px; }
 
-#printedimage { text-align: center; }
+#printedimage 
+{ 
+    text-align: center;
+}
 
-#itemwordmarks { margin-top: 30px;margin-bottom: 100px; }
+#jpegimage_zoomable
+{ 
+    text-align: center;
+    cursor:url(http://ufdc.ufl.edu/default/images/zoom_tool.gif), pointer;
+    border: none;
+    font-size: 0.90em;
+    color: #aaaaaa;
+}
+
+#jpegimage_zoomable img
+{ 
+    text-align: center;
+    cursor:url(http://ufdc.ufl.edu/default/images/zoom_tool.gif), pointer;
+    border: none;
+}
+
+#itemwordmarks { margin-top: 30px; }
+
+#noitemwordmarks { margin-top: 30px;height: 250px; }
 
 
 #itemviewerbottompadding {
-    background:#777777;height: 0px;
+    background:#555555;height: 0px;
 }
 
 #page_select {
@@ -559,4 +604,9 @@ hr {
     background-color: #777777;
     color: white;
     border: none;
+}
+
+#openseadragon_navigator {
+    width:145px; 
+    height: 95px; 
 }

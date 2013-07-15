@@ -287,5 +287,11 @@ namespace SobekCM.Library.HTML
                     break;
             }
         }
+
+
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        {
+            get { return new List<HtmlSubwriter_Behaviors_Enum>() { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
+        }
     }
 }

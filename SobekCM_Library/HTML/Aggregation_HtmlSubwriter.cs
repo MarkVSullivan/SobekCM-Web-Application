@@ -283,7 +283,7 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds the internal header HTML for this specific HTML writer </summary>
         /// <param name="Output"> Stream to which to write the HTML for the internal header information </param>
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
-        public override void Add_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
+        public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
             if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
             {
@@ -333,7 +333,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("        <span class=\"intheader_help\"><a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/aggrheader\" title=\"Help regarding this header\" ><img src=\"" + currentMode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
                 Output.WriteLine("      </td>");
 
-                Add_Internal_Header_Search_Box(Output);
+                Write_Internal_Header_Search_Box(Output);
 
                 Output.WriteLine("    </tr>");
                 
@@ -341,7 +341,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                base.Add_Internal_Header_HTML(Output, Current_User);
+                base.Write_Internal_Header_HTML(Output, Current_User);
             }
         }
 

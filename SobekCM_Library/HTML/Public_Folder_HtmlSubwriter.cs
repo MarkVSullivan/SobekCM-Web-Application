@@ -82,9 +82,8 @@ namespace SobekCM.Library.HTML
         /// <summary> Writes the final output to close this public folder browse, including the results page navigation buttons </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> TRUE is always returned </returns>
         /// <remarks> This calls the <see cref="PagedResults_HtmlSubwriter.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlSubwriter"/> object. </remarks>
-        public bool Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
 
@@ -92,7 +91,7 @@ namespace SobekCM.Library.HTML
             {
                 writeResult.Write_Final_HTML(Output, Tracer);
             }
-            return true;
+
         }
 
         /// <summary> Writes the HTML generated to browse a public folder  directly to the response stream </summary>

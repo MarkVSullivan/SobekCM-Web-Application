@@ -46,10 +46,10 @@ public partial class SobekCM_data : System.Web.UI.Page
 
     #region Methods called during execution of the HTML from UFDC.aspx
 
-    protected void Add_Html()
+    protected void Write_Html()
     {
         // Add the HTML and controls to start this off
-        Page_Globals.mainWriter.Add_Text_To_Page(Response.Output, Page_Globals.tracer);
+        Page_Globals.mainWriter.Write_Html(Response.Output, Page_Globals.tracer);
     }
 
     #endregion

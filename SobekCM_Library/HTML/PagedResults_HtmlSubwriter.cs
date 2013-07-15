@@ -527,8 +527,7 @@ namespace SobekCM.Library.HTML
         /// <summary> Writes the final output to close this result view, including the results page navigation buttons </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> TRUE is always returned </returns>
-        public bool Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("paged_result_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
 
@@ -539,7 +538,6 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  " + Showing_Text);
                 Output.WriteLine("</div>" + Environment.NewLine + "<br />" + Environment.NewLine );
             }
-            return true;
         }
 
         /// <summary> Writes the HTML generated to browse the list of titles/itemsr  directly to the response stream </summary>

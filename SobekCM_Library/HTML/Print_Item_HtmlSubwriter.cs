@@ -342,7 +342,13 @@ namespace SobekCM.Library.HTML
 
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+        }
 
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML writer. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        {
+            get { return new List<HtmlSubwriter_Behaviors_Enum>() {HtmlSubwriter_Behaviors_Enum.Suppress_Footer}; }
         }
     }
 }

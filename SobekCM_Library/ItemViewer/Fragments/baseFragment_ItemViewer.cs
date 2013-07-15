@@ -12,16 +12,6 @@ namespace SobekCM.Library.ItemViewer.Fragments
     /// load these forms as needed. </summary>
     public abstract class baseFragment_ItemViewer : abstractItemViewer
     {
-        /// <summary> Gets any HTML for a Navigation Row above the image or text </summary>
-        /// <value> Always returns the empty string </value>
-        public override string NavigationRow
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
-
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This always returns 1, to suppress any pagination from occurring </value>
         public override int PageCount

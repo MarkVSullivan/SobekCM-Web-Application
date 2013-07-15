@@ -304,11 +304,10 @@
 {
     text-decoration:none;
     background-color: #0021a6;
-    margin-top: -2px;
     border-left: 1px solid #fff;
 	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
 	border-top: 1px solid rgba(255,255,255,.5);
-    height: 17px;
+    height: 15px;
 	text-decoration: none;
 	zoom: 1; /* IE7 */
     padding: .50em .75em;
@@ -319,6 +318,5 @@
 
 #selected-sf-menu-item-link {
     background-color: #0021a6;
-    margin-top: -2px;
-    height: 29px;
+    height: 27px;
 }
