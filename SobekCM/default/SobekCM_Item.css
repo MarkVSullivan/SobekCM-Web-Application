@@ -284,6 +284,7 @@ img.SobekItemWordmark
     color: white;
     padding: 0;
     margin: 0;
+    border-collapse: collapse;
 }
 
 #SobekGoToSpan {

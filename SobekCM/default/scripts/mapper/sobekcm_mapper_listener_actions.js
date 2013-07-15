@@ -32,14 +32,14 @@ function toggleVis(id) {
             
         case "toolbox":
             if (toolboxDisplayed == true) {
-                document.getElementById("container_toolbox").style.display = "none";
-                document.getElementById("container_toolboxTabs").style.display = "none";
-                //$("#container_toolbox").effect("slide", 500);
+                document.getElementById("mapper_container_toolbox").style.display = "none";
+                document.getElementById("mapper_container_toolboxTabs").style.display = "none";
+                //$("#mapper_container_toolbox").effect("slide", 500);
                 toolboxDisplayed = false;
             } else {
-                document.getElementById("container_toolbox").style.display = "block";
-                document.getElementById("container_toolboxTabs").style.display = "block";
-                document.getElementById("container_toolbox").style.height = "auto";
+                document.getElementById("mapper_container_toolbox").style.display = "block";
+                document.getElementById("mapper_container_toolboxTabs").style.display = "block";
+                document.getElementById("mapper_container_toolbox").style.height = "auto";
                 toolboxDisplayed = true;
             }
             buttonActive("toolbox"); //set the is active glow for button
@@ -47,12 +47,12 @@ function toggleVis(id) {
             
         case "toolbar":
             if (toolbarDisplayed == true) {
-                $("#container_pane_1").hide();
-                document.getElementById("container_toolbarGrabber").style.marginTop = "0";
+                $("#mapper_container_pane_1").hide();
+                document.getElementById("mapper_container_toolbarGrabber").style.marginTop = "0";
                 toolbarDisplayed = false;
             } else {
-                $("#container_pane_1").show();
-                document.getElementById("container_toolbarGrabber").style.marginTop = "48px";
+                $("#mapper_container_pane_1").show();
+                document.getElementById("mapper_container_toolbarGrabber").style.marginTop = "48px";
                 toolbarDisplayed = true;
             }
             buttonActive("toolbar"); //set the is active glow for button
@@ -70,13 +70,13 @@ function toggleVis(id) {
             break;
             
         case "toolboxMin":
-            $("#container_toolboxTabs").hide();
-            document.getElementById("container_toolbox").style.height = "17px";
+            $("#mapper_container_toolboxTabs").hide();
+            document.getElementById("mapper_container_toolbox").style.height = "17px";
             break;
             
         case "toolboxMax":
-            $("#container_toolboxTabs").show();
-            document.getElementById("container_toolbox").style.height = "auto";
+            $("#mapper_container_toolboxTabs").show();
+            document.getElementById("mapper_container_toolbox").style.height = "auto";
             break;
             
         case "mapDrawingManager":
@@ -167,6 +167,12 @@ function zoomMap(direction) {
     }
 }
 
+//open a specific tab
+function openToolboxTab(id)
+{
+    $("#mapper_container_toolboxTabs").accordion({ active: id });
+}
+
 //user initiated action handler
 function action(id) {
     switch (id) {
@@ -176,14 +182,14 @@ function action(id) {
             if (toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
-            $("#container_toolboxTabs").accordion({ active: 2 });
+            openToolboxTab(2);
             
             //force a suppression dm
             if (mapDrawingManagerDisplayed == true) {
                 mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-            
+
             placerType = "item";
             break;
             
@@ -193,7 +199,8 @@ function action(id) {
             if (toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
-            $("#container_toolboxTabs").accordion({ active: 3 });
+            
+            openToolboxTab(3);
             
             //force a suppression dm
             if (mapDrawingManagerDisplayed == true) {
@@ -210,7 +217,7 @@ function action(id) {
             if (toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
-            $("#container_toolboxTabs").accordion({ active: 4 });
+            openToolboxTab(4);
             toggleVis("mapDrawingManager");
             placerType = "poi";
             break;

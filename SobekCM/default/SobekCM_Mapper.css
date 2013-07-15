@@ -17,7 +17,7 @@ a img {
 	border:0;
 }
 
-#mapper_container_thebigdeal {
+#mapper_mapper_container_thebigdeal {
     margin:0;
 	padding:0;
 	background-image:url("images/mapper/bg1.png");
@@ -27,7 +27,7 @@ a img {
     position:absolute;
 } 
 
-#container1 {
+#mapper_container1 {
 
 }
 
@@ -48,7 +48,7 @@ a img {
 	font: bold 12px "Helvetica Neue", Sans-Serif;
 }
 
-#container2a{
+#mapper_container2a{
 	position:absolute;
 	width:100%;
 	min-height:48px;
@@ -57,14 +57,14 @@ a img {
 	background-image:url("images/mapper/bg1.png");
 }
 
-#container_toggle_toolbar1{
+#mapper_container_toggle_toolbar1{
 	position:absolute;
 	left:50%;
 	margin-left:-20px;
 	margin-top:48px;
 	z-index:4;
 }
-#container_toggle_toolbar2{
+#mapper_container_toggle_toolbar2{
 	position:absolute;
 	left:50%;
 	margin-left:-20px;
@@ -73,7 +73,7 @@ a img {
 }
 
 /* took out when placed into sobek (fixed map not displaying issue)
-#container2b{
+#mapper_container2b{
 	position:relative;
 	width:100%;
 } */
@@ -99,7 +99,7 @@ a img {
     position:absolute;
 }
 
-#messageContainer {
+#messagemapper_container {
 	position:fixed;
 	z-index:2;
 	text-align:center;
@@ -108,7 +108,7 @@ a img {
 	left:50%;
 	margin-left:-100px;
 }
-#messageContainer .message{
+#messagemapper_container .message{
 	background-color:#f0fe3a;
 	-webkit-box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	box-shadow:0 1px 3px rgba(0,0,0,0.5);
@@ -233,7 +233,7 @@ box-shadow: 0 0 10px #fff0f5;
 }
 
 
-#poiList_Container {
+#poiList_mapper_container {
     background:#fcfcfc;
 	color: #6a6f75;
 	border: 0 none;
@@ -252,7 +252,7 @@ box-shadow: 0 0 10px #fff0f5;
     overflow: hidden;
 
 }
-#poiList_ScollContainer {
+#poiList_Scollmapper_container {
     overflow-x:hidden;
     height:140px;
     margin-right: -5px;
