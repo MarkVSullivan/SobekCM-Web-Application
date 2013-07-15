@@ -137,8 +137,8 @@ try {
     document.getElementById("content_toolbox_tab3_header").innerHTML = "Manage Location";
     document.getElementById("content_toolbox_tab4_header").innerHTML = "Manage Overlay";
     document.getElementById("content_toolbox_tab5_header").innerHTML = "Manage POI";
-    document.getElementById("content_toolbar_searchField").setAttribute('placeholder', "Find On Map");
-    document.getElementById("content_toolbox_searchField").setAttribute('placeholder', "Find On Map");
+    document.getElementById("content_toolbar_searchField").setAttribute('placeholder', "Find a Location");
+    document.getElementById("content_toolbox_searchField").setAttribute('placeholder', "Find a Location");
     document.getElementById("content_toolbox_posItem").setAttribute('placeholder', "Selected Lat/Long");
     document.getElementById("content_toolbox_rgItem").setAttribute('placeholder', "Nearest Address");
     

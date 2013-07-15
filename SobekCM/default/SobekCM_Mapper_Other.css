@@ -64,7 +64,7 @@
 
 }
 #content_toolbar_searchButton {
-    /*not used yet*/
+    background-image: url("images/mapper/search.png");
 }
 #content_toolbarGrabber {
     display: none;
@@ -175,6 +175,9 @@
 }
 #content_toolbox_button_managePOI {
     background-image: url("images/mapper/button-action3.png");
+}
+#content_toolbox_searchButton {
+    background-image: url("images/mapper/search.png");
 }
 #content_message {
     /*something*/
