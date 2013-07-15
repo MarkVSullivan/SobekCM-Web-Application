@@ -605,7 +605,9 @@ namespace SobekCM.Library.Items
                 string image = iconRow[0].ToString();
                 string link = iconRow[1].ToString().Replace("&", "&amp;").Replace("\"", "&quot;");
                 string code = iconRow[2].ToString();
-                string name = code.Replace("&", "&amp;").Replace("\"", "&quot;"); 
+                string name = iconRow[3].ToString();
+                if ( name.Length == 0 )
+                    name = code.Replace("&", "&amp;").Replace("\"", "&quot;"); 
 
                 string html;
                 if (link.Length == 0)

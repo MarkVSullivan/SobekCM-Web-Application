@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 
 #endregion
@@ -18,11 +19,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	public class JPEG_ItemViewer : abstractItemViewer
 	{
 		private int width;
+        private int height;
 
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer class </summary>
 		public JPEG_ItemViewer()
 		{
 			width = -1;
+            height = -1;
 		}
 
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer class </summary>
@@ -30,6 +33,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		public JPEG_ItemViewer( string Attributes )
 		{
 			width = -1;
+            height = -1;
 
             // Parse if there were attributes
             if (Attributes.Length <= 0) return;
@@ -38,6 +42,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("WIDTH") >= 0))
             {
                 Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out width);
+            }
+            foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("HEIGHT") >= 0))
+            {
+                Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out height);
             }
 		}
 
@@ -94,25 +102,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("JPEG_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
-
-            string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
-
-            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode) CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[0]).Files;
-            string first_page_jpeg = String.Empty;
-            foreach (SobekCM_File_Info thisFile in first_page_files)
+            // Determine if there is a zoomable version of this page
+            bool isZoomable = false;
+            Page_TreeNode page = CurrentItem.Web.Pages_By_Sequence[CurrentMode.Page];
+            foreach (SobekCM_File_Info thisFile in page.Files)
             {
-                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
-                    (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                if (thisFile.Get_Viewer().View_Type == View_Enum.JPEG2000)
                 {
-                    first_page_jpeg = thisFile.System_Name;
+                    isZoomable = true;
                     break;
                 }
             }
 
-
-            string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
-
-
+            string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if (( CurrentItem.Behaviors.Dark_Flag ) || ( CurrentItem.Behaviors.IP_Restriction_Membership > 0 ))
                 displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
@@ -129,9 +131,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Add the HTML for the image
-            Output.WriteLine("\t\t<td align=\"center\" colspan=\"3\" id=\"printedimage\">" + Environment.NewLine +
-                             "\t\t\t<img src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" +
-                             name_for_image + "\" />" + Environment.NewLine + "\t\t</td>");
+            if (isZoomable)
+            {
+                string currViewer = CurrentMode.ViewerCode;
+                CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";
+                string toZoomable = CurrentMode.Redirect_URL();
+                CurrentMode.ViewerCode = currViewer;
+                Output.WriteLine("\t\t<td align=\"center\" id=\"jpegimage_zoomable\">");
+                Output.WriteLine("Click on image below to switch to zoomable version<br />");
+                Output.WriteLine("<a href=\"" + toZoomable + "\">");
+            }
+            else
+                Output.WriteLine("\t\t<td align=\"center\" id=\"printedimage\">");
+
+            Output.Write("\t\t\t<img ");
+            if (( height > 0 ) && ( width > 0 ))
+                Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
+            Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />");
+
+            if ( isZoomable )
+                Output.WriteLine("</a>");
+
+            Output.WriteLine("\t\t</td>");
 
         }
 	}

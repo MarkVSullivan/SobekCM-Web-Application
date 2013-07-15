@@ -56,7 +56,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Text_To_Page(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
         {
             switch (currentMode.Mode)
             {
@@ -72,22 +72,6 @@ namespace SobekCM.Library.MainWriters
                     Output.Write("JSON Writer - Unknown Mode");
                     break;
             }
-        }
-
-        /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="Navigation_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="myUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls(PlaceHolder Navigation_Place_Holder,
-            PlaceHolder TOC_Place_Holder,
-            PlaceHolder Main_Place_Holder,
-            PlaceHolder myUfdcUploadPlaceHolder,
-            Custom_Tracer Tracer)
-        {
-            return;
         }
 
         /// <summary> Writes the item information in JSON format directly to the output stream  </summary>

@@ -315,7 +315,7 @@ BODY
     PADDING: 0px 0px 0px 0px; MARGIN: 0px; font-family:Arial, Helvetica, sans-serif;
     width: 100%;
    /* background:#a4a4a4; */
-    background: #777777;
+    background: #555555;
     color:#000000;
     
     }
@@ -372,7 +372,8 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 .SobekSiteMapTreeView td div {height: 20px !important }
 
 .SobekTocTreeView {
-    FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  WIDTH: 100%; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; text-decoration:none;
+    FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  
+    WIDTH: 100%; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #444444; text-decoration:none;
 }
 
 .SobekTOC {
@@ -380,19 +381,28 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 }
 
 .SobekTocTreeView A:link {
-    TEXT-DECORATION: none; color:#555; 
+    TEXT-DECORATION: none; color:White; 
 }
 
 .SobekTocTreeView A:visited {
-    TEXT-DECORATION: none; color:#555; 
+    TEXT-DECORATION: none; color:White; 
 }
 
+
 .SobekSelectedTocTreeViewItem  {
-    TEXT-DECORATION: none; color:Blue; 
+    TEXT-DECORATION: none; color: #FFD700; 
 }
 
 .SobekTocTreeViewItem  {
-    TEXT-DECORATION: none; color:#555; 
+    TEXT-DECORATION: none; color:White; 
+}
+
+.SobekTocTreeViewItem A:hover {
+    TEXT-DECORATION: underline; color:White; 
+}
+
+.SobekTocTreeView A:hover {
+    TEXT-DECORATION: underline; color:White; 
 }
 
 .SobekPageViewerButton {

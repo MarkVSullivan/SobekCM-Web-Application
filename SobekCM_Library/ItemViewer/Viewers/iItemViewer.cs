@@ -148,9 +148,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <summary> Sets the attributes for this viewer (from the database) </summary>
 		string Attributes { set; }
 
-	    /// <summary> Gets any HTML for a Navigation Row above the image or text </summary>
-		string NavigationRow { get; }
-
 	    /// <summary> Gets the number of pages for this viewer </summary>
 		int PageCount { get; }
 
@@ -185,17 +182,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the type of item viewer </summary>
         ItemViewer_Type_Enum ItemViewer_Type { get; }
 
-	    /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-	    /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-	    /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    /// <returns> TRUE if this viewer added something to the left navigational bar, otherwise FALSE</returns>
-	    bool Add_Nav_Bar_Menu_Section( PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer );
-
-        /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section  </summary>
+        /// <summary> Adds any viewer_specific information to the left Navigation Bar Menu Section  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        void Write_Nav_Bar_Menu_Section(TextWriter Output, Custom_Tracer Tracer);
+        void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer);
+
+        /// <summary> Adds any viewer_specific information to the item viewer above the standard pagination buttons </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer);
 
 	    /// <summary> Adds the main view section to the page turner </summary>
 	    /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>

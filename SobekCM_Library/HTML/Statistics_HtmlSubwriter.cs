@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using SobekCM.Library.Aggregations;
@@ -2865,6 +2866,11 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + currentMode.Base_URL + "default/jsDatePick_ltr.css\" />");
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datepicker/jsDatePick.full.1.3.js\"></script>");
             }
+        }
+
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        {
+            get { return new List<HtmlSubwriter_Behaviors_Enum>() {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }
         }
     }
 }

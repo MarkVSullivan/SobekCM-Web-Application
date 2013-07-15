@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -9,6 +10,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
+using SobekCM.Library.HTML;
+using SobekCM.Library.Navigation;
 using Image = System.Web.UI.WebControls.Image;
 
 #endregion
@@ -34,19 +37,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private int width;
 	    private ushort zoomlevels;
 
+	    private int thumbnailClickX;
+	    private int thumbnailClickY;
+
 		/// <summary> Constructor for a new instance of the Aware_JP2_ItemViewer class </summary>
-		public Aware_JP2_ItemViewer(  )
+        public Aware_JP2_ItemViewer(SobekCM_Navigation_Object Current_Mode)
 		{
 			width = 0;
 			height = 0;
 			zoomlevels = 0;
 			resourceType = String.Empty;
+
+		    this.CurrentMode = Current_Mode;
+
+            handle_postback();
 		}
 
 		/// <summary> Constructor for a new instance of the Aware_JP2_ItemViewer class </summary>
 		/// <param name="Attributes"> Attributes for the JPEG2000 file to display, including width and height</param>
 		/// <param name="Resource_Type"> Resource type for the item being displayed; this affects the overall rendering style </param>
-		public Aware_JP2_ItemViewer( string Resource_Type, string Attributes )
+		public Aware_JP2_ItemViewer( string Resource_Type, string Attributes, SobekCM_Navigation_Object Current_Mode )
 		{
 			resourceType = Resource_Type;
 			width = 0;
@@ -69,7 +79,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		            Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out height);
 		        }
 		    }
+
+            this.CurrentMode = Current_Mode;
+            handle_postback();
 		}
+
+        private void handle_postback()
+        {
+            thumbnailClickX = -100;
+            thumbnailClickY = -100;
+
+            if (CurrentMode.isPostBack)
+            {
+                string x_click = HttpContext.Current.Request.Form["thumbnail_click_x"];
+                string y_click = HttpContext.Current.Request.Form["thumbnail_click_y"];
+
+                if ((x_click != "-100") && (y_click != "-100"))
+                {
+                    Int32.TryParse(x_click, out thumbnailClickX);
+                    Int32.TryParse(y_click, out thumbnailClickY);
+                }
+            }
+        }
 
 	    /// <summary> Gets the type of item viewer this object represents </summary>
 		/// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.JPEG2000"/>. </value>
@@ -127,7 +158,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    /// <summary> Gets any HTML for a Navigation Row above the image or text </summary>
 		/// <value> This returns the HTML including buttons for zooming in and changing the viewport size </value>
-		public override string NavigationRow
+		private string NavigationRow
 		{
 			get
 			{
@@ -387,6 +418,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					navRow.Append("</map>" + Environment.NewLine );
 				}
 
+                navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_x\" name=\"thumbnail_click_x\" value=\"-100\"/>");
+                navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_y\" name=\"thumbnail_click_y\" value=\"-100\"/>");
+
+                navRow.AppendLine("<script type=\"text/javascript\">");
+                navRow.AppendLine("  $('#awareThumbImg').click(function(e){");
+                navRow.AppendLine("    var x = e.pageX - e.target.offsetLeft;");
+                navRow.AppendLine("    var y = e.pageY - e.target.offsetTop;");
+			    navRow.AppendLine("    $('#thumbnail_click_x').val(x);");
+                navRow.AppendLine("    $('#thumbnail_click_y').val(y);");
+			    navRow.AppendLine("    document.itemNavForm.submit();");
+                navRow.AppendLine("  });");
+                navRow.AppendLine("</script>");
+
 				return navRow.ToString();
 			}
 		}
@@ -516,7 +560,59 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        // Determine the zoom levels
 	        zoomlevels = zoom_levels();
 	        actualZoomLevel = (zoomlevels - CurrentMode.Viewport_Zoom + 1);
+
+	        // Now, handle a post back from the thumbnail being clicked
+            if ((thumbnailClickX != -100) && (thumbnailClickY != -100))
+            {
+                long x_value = thumbnailClickX;
+                long y_value = thumbnailClickY;
+
+                // Determine the "real" x and y (in terms of large image
+                float image_scale = (height) / ((float)width);
+                const float THUMBNAIL_SCALE = 300F / 200F;
+                if (image_scale < THUMBNAIL_SCALE)
+                {
+                    // Width restricted
+                    float width_scale = (float)width / 200;
+                    x_value = (long)(x_value * width_scale);
+                    y_value = (long)(y_value * width_scale);
+                }
+                else
+                {
+                    // Height restricted
+                    float height_scale = (float)height / 300;
+                    x_value = (long)(x_value * height_scale);
+                    y_value = (long)(y_value * height_scale);
+                }
+
+                // Determine the size of the current portal
+                long size_pixels = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
+
+
+                // Subtract one half of that from the x and y value, so the image is centered
+                // on the spot that was clicked upon
+                x_value = (long)(x_value - ((0.5F) * (size_pixels)));
+                y_value = (long)(y_value - ((0.5F) * (size_pixels)));
+                if (x_value < 0)
+                    x_value = 0;
+                if (y_value < 0)
+                    y_value = 0;
+                if (x_value > (width) - size_pixels)
+                    x_value = ((width) - size_pixels);
+                if (y_value > (height) - size_pixels)
+                    y_value = ((height) - size_pixels);
+
+
+                // Assign the computed x and y
+                CurrentMode.Viewport_Point_X = (int)x_value;
+                CurrentMode.Viewport_Point_Y = (int)y_value;
+
+                // Call the base method
+                string url = CurrentMode.Redirect_URL();
+                HttpContext.Current.Response.Redirect(url);
+            }
 	    }
+
 
 	    /// <summary> Adds a graphical feature above the image, used for highlighting a portion of the served image </summary>
 	    /// <param name="Color"> Color to use for this feature (i.e., Red, Yellow, Blue, White, or Black ) </param>
@@ -535,17 +631,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        featureHeight = FeatureHeight;
 	    }
 
-	    /// <summary> Adds any viewer_specific information to the Navigation Bar Menu Section </summary>
-	    /// <param name="placeHolder"> Additional place holder ( &quot;navigationPlaceHolder&quot; ) in the itemNavForm form allows item-viewer-specific controls to be added to the left navigation bar</param>
-	    /// <param name="Internet_Explorer"> Flag indicates if the current browser is internet explorer </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    /// <returns> Returns TRUE since a small thumbnail is displayed in the left navigation bar</returns>
-	    /// <remarks> For this item viewer, a small thumbnail of the entire image showing the current viewport location is placed in the left navigation bar </remarks>
-	    public override bool Add_Nav_Bar_Menu_Section(PlaceHolder placeHolder, bool Internet_Explorer, Custom_Tracer Tracer)
-	    {
+	    public override void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
+        {
 	        if (Tracer != null)
 	        {
-	            Tracer.Add_Trace("Aware_JP2_ItemViewer.Add_Nav_Bar_Menu_Section", "Adds small thumbnail for image navigation");
+                Tracer.Add_Trace("Aware_JP2_ItemViewer.Write_Left_Nav_Menu_Section", "Adds small thumbnail for image navigation");
 	        }
 
 	        string thumnbnail_text = "THUMBNAIL";
@@ -564,16 +654,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        }
 
 	        // Add the HTML to start this menu section
-	        Literal menuStartLiteral = new Literal();
-	        if ( Internet_Explorer )
-	        {
-	            menuStartLiteral.Text = "        <ul class=\"SobekNavBarMenu\">" + Environment.NewLine + "          <li class=\"SobekNavBarHeader\"> " + thumnbnail_text + " </li>" + Environment.NewLine + "          <li class=\"SobekNavBarMenuNonLink_ie\">" + Environment.NewLine ;
-	        }
+            Output.WriteLine("        <ul class=\"SobekNavBarMenu\">");
+            Output.WriteLine("          <li class=\"SobekNavBarHeader\"> " + thumnbnail_text + " </li>");
+
+            if (CurrentMode.Browser_Type.IndexOf("IE", System.StringComparison.Ordinal) >= 0)
+            {
+                Output.WriteLine("          <li class=\"SobekNavBarMenuNonLink_ie\">");
+            }
 	        else
-	        {
-	            menuStartLiteral.Text = "        <ul class=\"SobekNavBarMenu\">" + Environment.NewLine + "          <li class=\"SobekNavBarHeader\"> " + thumnbnail_text + " </li>" + Environment.NewLine + "          <li class=\"SobekNavBarMenuNonLink\">" + Environment.NewLine ;
-	        }
-	        placeHolder.Controls.Add( menuStartLiteral );
+            {
+                Output.WriteLine("          <li class=\"SobekNavBarMenuNonLink\">");
+            }
+	        
 
 	        // Compute the values needed to create the thumbnail
 	        int size_pixels = 512 + ( CurrentMode.Viewport_Size * 256 );
@@ -611,34 +703,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
 	        // Create the image object
-	        ImageButton thumbnailImage = new ImageButton {AlternateText = "Navigational Thumbnail"};
+            Output.Write("<img id=\"awareThumbImg\" src=\"" + url_builder.ToString() + "\" alt=\"Navigational Thumbnail\" ");
 	        if ( CurrentMode.Viewport_Zoom == 1 )
 	        {
-	            thumbnailImage.Style.Add("border-width","2px");
-	            thumbnailImage.Style.Add("border-color", "Blue");
-	            thumbnailImage.BorderWidth = 2;
+                Output.Write("style=\"border-width:2px;border-color:Blue; cursor: pointer; cursor: hand; \"" );
 	        }
 	        else
 	        {
-	            thumbnailImage.Style.Add("border-width", "0");
-	            thumbnailImage.BorderWidth = 0;
+                Output.Write("style=\"border:none;\"");
 	        }
-	        thumbnailImage.ImageUrl = url_builder.ToString();
-	        thumbnailImage.Click +=thumbnailImage_Click;
-	        placeHolder.Controls.Add( thumbnailImage );
+	        Output.WriteLine(" />");
 		
 	        // Add the HTML to end this menu section
-	        Literal menuEndLiteral = new Literal();
-	        if ( CurrentMode.Viewport_Zoom == 1 )
+	        if ( CurrentMode.Viewport_Zoom != 1 )
 	        {
-	            menuEndLiteral.Text = "          </li>" + Environment.NewLine + "        </ul>" + Environment.NewLine ;
+                Output.WriteLine("          <br />");
+	            Output.WriteLine("          " + click_on_thumbnail_text);
+
 	        }
-	        else
-	        {
-	            menuEndLiteral.Text = "          <br />" + Environment.NewLine + "          " + click_on_thumbnail_text  + Environment.NewLine + "          </li>" + Environment.NewLine + "        </ul>" + Environment.NewLine ;
-	        }
-			
-	        placeHolder.Controls.Add( menuEndLiteral );
+
+            Output.WriteLine("          </li>");
+            Output.WriteLine("        </ul>");
+
 
 	        //// If this is an aerial index and has latitude and longitude, add it now
 	        //if (currentItem.Bib_Info.Type.Type.ToUpper().IndexOf("AERIAL") >= 0)
@@ -669,8 +755,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        //    }
 				
 	        //}
-
-	        return true;
 	    }
 
 	    private int get_jp2_viewport_size( int size_scale,  int zoom_scale )
@@ -761,7 +845,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        else
 	        {			
 	            // Add the HTML to start this
-	            Literal startLiteral = new Literal { Text = "\t\t<td align=\"center\" colspan=\"3\"  id=\"printedimage\">" + Environment.NewLine };
+	            Literal startLiteral = new Literal { Text = "<td>" + NavigationRow + "</td></tr><tr>\t\t<td align=\"center\" colspan=\"3\"  id=\"printedimage\">" + Environment.NewLine };
 	            placeHolder.Controls.Add( startLiteral );
 
                 // Build the filename
@@ -1014,5 +1098,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    }
 
 	    #endregion
+
+        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>() { HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar };
+            }
+        }
 	}
 }

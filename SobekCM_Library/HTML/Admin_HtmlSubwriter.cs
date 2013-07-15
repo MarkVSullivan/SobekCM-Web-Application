@@ -231,19 +231,22 @@ namespace SobekCM.Library.HTML
         /// <summary> Gets the collection of special behaviors which this subwriter
         /// requests from the main HTML writer. </summary>
         /// <remarks> By default, this returns an empty list </remarks>
-        public virtual List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get 
+            get
             {
-                // When editing the aggregation details, the banner should be included here
-                if (currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
+                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum>();
+
+
+                returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
+
+                if (Contains_Popup_Forms)
                 {
-                    return new List<HtmlSubwriter_Behaviors_Enum>
-                        {
-                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-                        };
+                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Header);
+                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Footer);
                 }
-                return base.emptybehaviors;
+
+                return returnVal;
             }
         }
 
@@ -258,10 +261,10 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Adds additional HTML needed just before the main place holder but after the other place holders.  </summary>
+        /// <summary> Writes additional HTML needed in the main form before the main place holder but after the other place holders.  </summary>
         /// <param name="Output">Stream to directly write to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Add_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Additional_HTML", "Adding any form elements popup divs");
             if ((currentMode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
