@@ -1653,68 +1653,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				//end shift+click checkboxes
 
 
-            //// Add the popup form
-            ////      navRowBuilder.AppendLine();
-            //Output.WriteLine("<!-- Pop-up form for moving page(s) by selecting the checkbox in image -->");
-            //Output.WriteLine("<div class=\"qcmove_popup_div\" id=\"form_qcmove\" style=\"display:none;\">");
-            //Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">MOVE SELECTED PAGES</td><td align=\"right\"><a href=\"" + CurrentMode.Base_URL + "logon/help\" target=\"_FORM_QCMOVE_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcmove' ); \">X</a> &nbsp; </td></tr></table></div>");
-            //Output.WriteLine("  <br />");
-            //Output.WriteLine("  <table class=\"popup_table\">");
-
-            //// Add the rows of data
-            //Output.WriteLine("<tr><td>Move selected pages:</td>");
-            //Output.WriteLine("<td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages1\" value=\"After\" checked=\"true\" onclick=\"rbMovePagesChanged(this.value);\">After");
-            //Output.WriteLine("&nbsp;&nbsp;&nbsp;&nbsp;</td>");
-            //Output.WriteLine("<td><select id=\"selectDestinationPageList1\" name=\"selectDestinationPageList1\">");
-            ////Add the select options
-
-            ////iterate through the page items
-            //if (qc_item.Web.Static_PageCount > 0)
-            //{
-            //    int page_index = 0;
-            //    foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-            //    {
-            //        page_index++;
-
-            //        Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
-
-            //    }
-            //}
-
-            //Output.WriteLine("</td></tr>");
-            //Output.WriteLine("<tr><td></td><td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages2\" value=\"Before\" onclick=\"rbMovePagesChanged(this.value);\">Before</td>");
-
-            //Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  disabled=\"true\">");
-
-            ////iterate through the page items
-            //if (qc_item.Web.Static_PageCount > 0)
-            //{
-            //    int page_index = 0;
-            //    foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-            //    {
-            //        page_index++;
-
-            //        Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
-
-            //    }
-            //}
-            //Output.WriteLine("</select></td></tr>");
-
-            ////Add the Cancel & Move buttons
-            //Output.WriteLine("    <tr><td colspan=\"2\"><center>");
-            //Output.WriteLine("      <br><a href=\"\" onclick=\"move_pages_submit();\"><input type=\"image\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/move_big_button.gif\" value=\"Submit\" alt=\"Submit\" /></a>&nbsp;");
-            //Output.WriteLine("      <a href=\"#template\" onclick=\" popdown( 'form_qcmove' );\"><img border=\"0\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel1_big_button.gif\" alt=\"CANCEL\" /></a><br> ");
-            //Output.WriteLine("    </center></td></tr>");
-
-            //// Finish the popup form
-            //Output.WriteLine("  </table>");
-            //Output.WriteLine("  <br />");
-            //Output.WriteLine("</div>");
-            //Output.WriteLine();
-
-       //       navRowBuilder.AppendLine(Output.ToString());
-              
-
+     
               Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
               //Add the button to delete pages
               Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>");
