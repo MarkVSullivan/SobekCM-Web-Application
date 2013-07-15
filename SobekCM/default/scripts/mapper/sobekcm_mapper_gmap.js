@@ -113,7 +113,7 @@ function setupInterface(collection) {
             preservedRotation = 0;                                                  //rotation, default
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            strictBounds = null;                                                //set the bounds for this google map instance (set to null for no bounds)
+            strictBounds = null;                                                    //set the bounds for this google map instance (set to null for no bounds)
             break;
         case "stAugustine":
             baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
@@ -360,18 +360,7 @@ toolbarBufferZone2.style.height = '50px';
 
 function initialize() {
 
-    //alert(document.documentElement.clientHeight);
-
-    var totalPX = document.documentElement.clientHeight;
-    var headerPX = 83;
-    var bodyPX = totalPX - headerPX;
-
-    var percentOfHeight = Math.round((bodyPX / totalPX)*100);
-
-    document.getElementById("container").style.height = percentOfHeight +"%";
-
-    //alert(percentOfHeight);
-    
+    resizeView();
 
     //initialize google map objects
     map = new google.maps.Map(document.getElementById(gmapPageDivId), gmapOptions);                             //initialize map    

@@ -5,11 +5,12 @@
 //jquery UI elements
 $(function () {
     //draggable content settings
-    $("#container_toolbox").draggable({
-         handle: "#container_toolboxMinibar" //div used as handle
+    $("#mapper_container_toolbox").draggable({
+        handle: "#mapper_container_toolboxMinibar" //div used as handle
+        //containment: "#mapper_container" //does not work error with map objects
     });
     //accordian settings
-    $("#container_toolboxTabs").accordion({
+    $("#mapper_container_toolboxTabs").accordion({
         active: 0, //which tab is active
         icons: false, //default icons?
         heightStyle: "content" //set hieght to?

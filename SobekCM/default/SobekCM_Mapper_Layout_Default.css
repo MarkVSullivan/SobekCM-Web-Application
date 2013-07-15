@@ -1,24 +1,19 @@
 ﻿/* Mapper UI Layout: Contains structure of mapper plugin. */
 
-html {
-	margin:0;
-	padding:0;
-}
 body {
-	margin:0;
-	padding:0;
 	overflow:hidden;
-	
 }
-#container {
+#mapper_container {
+    color: #000000;
     margin: 0;
 	padding: 0;
 	overflow:hidden;
-	width:100%;
+	width: 100%;
+    height: 100%;
 	position:absolute;
     background-image:url("images/mapper/bg1.png");
 }
-#container_pane_1{
+#mapper_container_pane_1{
 	display: none;
 	position:absolute;
 	width:100%;
@@ -27,7 +22,7 @@ body {
 	z-index:2;
 	background-image:url("images/mapper/bg1.png");
 }
-#container_toolbar{
+#mapper_container_toolbar{
 	position:absolute;
 	left: 50%;
 	width: 1190px;
@@ -39,23 +34,26 @@ body {
 	padding-right:5px;
 	margin: 4px 1px 4px 1px;
 }
+.mapper_container_search {
+    display: inline-block;
+}
 #googleMap {
 	width:100%;
 	height:100%;
 	z-index:0;
 	position:absolute;
 }
-#container_toolbarGrabber {
+#mapper_container_toolbarGrabber {
 	position:absolute;
 	left:50%;
 	margin-left:-20px;
 	margin-top:48px;
 	z-index:4;
 }
-#container_toolbarGrabber:hover{
+#mapper_container_toolbarGrabber:hover{
 	cursor: pointer;
 }
-#container_message {
+#mapper_container_message {
 	position:fixed;
 	z-index:2;
 	width:200px;
@@ -68,24 +66,10 @@ body {
 	box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	display:none;
 }
-#container_pane_2{
+#mapper_container_pane_2{
 	background-image:url("images/mapper/bg1.png");
 }
-/*#container_toggle_toolbar1{
-	position:absolute;
-	left:50%;
-	margin-left:-20px;
-	margin-top:48px;
-	z-index:4;
-}
-#container_toggle_toolbar2{
-	position:absolute;
-	left:50%;
-	margin-left:-20px;
-	z-index:4;
-	display:none;
-}*/
-#container_toolboxMinibar {
+#mapper_container_toolboxMinibar {
 	height:15px;
 	padding-right:10px;
 	padding-bottom: 3px;
@@ -96,7 +80,7 @@ body {
 	background-color:#ededed;
 	border-radius:25px;
 }
-#container_toolbox {
+#mapper_container_toolbox {
 	display: none;
 	max-height:560px;
 	width:250px;
@@ -110,7 +94,7 @@ body {
 	box-shadow:0px 1px 3px rgba(0,0,0,0.5);
 	border-radius: 15px;
 }
-#container_toolboxTabs{
+#mapper_container_toolboxTabs{
 	font-size: 11px; 
 }
 .toolbox_tab-content{
@@ -133,34 +117,31 @@ body {
 	clear: both;
 	height: 20px;
 }
-
-
-#container_grid{
+#mapper_container_grid{
 	width: 100%;
 }
-#container_grid .x{
+#mapper_container_grid .x{
 	float: left;
 	width: 40px;
 	height: 40px;
 }
-#container_grid .y{
+#mapper_container_grid .y{
 	clear: both;
 }
-#container_grid .half{
+#mapper_container_grid .half{
 	float: left;
 	width: 20px;
 	height: 20px;
 }
-
-#container_toolbox_tab1 {
+#mapper_container_toolbox_tab1 {
 	margin-left: 10px;
 }
 
-#container_toolbox_overlayTools {
+#mapper_container_toolbox_overlayTools {
 	display: inline-block;
 	width: 150px;
 
 }
-#container_toolbox_rotationButtons {
+#mapper_container_toolbox_rotationButtons {
 	margin-left: 7px;
 }
