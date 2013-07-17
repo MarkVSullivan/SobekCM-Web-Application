@@ -114,7 +114,10 @@ namespace SobekCM.Library.HTML
                 Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
 
                 HttpContext.Current.Session["user"] = null;
-                HttpContext.Current.Response.Redirect("?");
+                HttpContext.Current.Response.Redirect("?", false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                Current_Mode.Request_Completed = true;
+                return;
             }
 
             if ((Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (user != null) && (user.Is_Temporary_Password))

@@ -258,7 +258,6 @@ namespace SobekCM.Library.ResultsViewer
 
 
                     case 3:
-                        HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.ContentType = "application/vnd.ms-excel";
                         HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xls");
                         excelFile.SaveXls(HttpContext.Current.Response.OutputStream);

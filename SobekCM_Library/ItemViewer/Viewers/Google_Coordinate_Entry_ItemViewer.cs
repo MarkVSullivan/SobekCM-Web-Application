@@ -70,7 +70,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL(), true );
+                CurrentMode.Redirect();
                 return;
             }
 
@@ -161,6 +161,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
+            Body_Attributes.Clear();
             Body_Attributes.Add(new Tuple<string, string>("onload", "load();"));
         }
 

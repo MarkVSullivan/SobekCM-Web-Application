@@ -125,7 +125,9 @@ public class SobekCM_Page_Globals
 
                 // Save this to the session state, and then forward to the dashboard
                 HttpContext.Current.Session["Last_Exception"] = newException;
-                HttpContext.Current.Response.Redirect("dashboard.aspx", true);
+                HttpContext.Current.Response.Redirect("dashboard.aspx", false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                return;
             }
             else
             {
@@ -146,21 +148,11 @@ public class SobekCM_Page_Globals
         }
         catch
         {
-            HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.Status = "301 Moved Permanently";
             HttpContext.Current.Response.AddHeader("Location", base_url);
-            HttpContext.Current.Response.End();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            return;
         }
-
-        //// Perform some redirects
-        //if ((currentMode.Writer_Type == Writer_Type_Enum.OAI) && ( page_name != "SOBEKCM_OAI"))
-        //{
-        //    HttpContext.Current.Response.Redirect("sobekcm_oai.aspx?" + request.QueryString);
-        //}
-        //if (((currentMode.Writer_Type == Writer_Type_Enum.XML) || (currentMode.Writer_Type == Writer_Type_Enum.DataSet) || (currentMode.Writer_Type == Writer_Type_Enum.Text) || ( currentMode.Writer_Type == Writer_Type_Enum.JSON)) && ( page_name != "SOBEKCM_DATA" ))
-        //{
-        //    HttpContext.Current.Response.Redirect("sobekcm_data.aspx?" + request.QueryString);
-        //}
 
         // If this was for HTML, but was at the data, just convert to XML 
         if (( page_name == "SOBEKCM_DATA" ) && (currentMode.Writer_Type != Writer_Type_Enum.XML) && (currentMode.Writer_Type != Writer_Type_Enum.JSON) && (currentMode.Writer_Type != Writer_Type_Enum.DataSet))
@@ -188,7 +180,10 @@ public class SobekCM_Page_Globals
         {
             if (currentMode.Aggregation.ToUpper() == "EPCSANB")
             {
-                HttpContext.Current.Response.Redirect(@"http://www.uflib.ufl.edu/epc/");
+                HttpContext.Current.Response.Redirect(@"http://www.uflib.ufl.edu/epc/", false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                currentMode.Request_Completed = true;
+                return;
             }
 
             // If this was an error, redirect now
@@ -339,20 +334,22 @@ public class SobekCM_Page_Globals
         // Some writers should not be selected yet
         if ((currentModeCheck.Writer_Type != Writer_Type_Enum.HTML) && (currentModeCheck.Writer_Type != Writer_Type_Enum.HTML_Echo) && (currentModeCheck.Writer_Type != Writer_Type_Enum.OAI))
         {
-            HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.Status = "301 Moved Permanently";
             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Base_URL);
-            HttpContext.Current.Response.End();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
+            return;
         }
 
         // There are some spots which robots are never allowed to go, just
         // by virtue of the fact they don't logon
         if ((currentModeCheck.Mode == Display_Mode_Enum.Internal) || (currentModeCheck.Mode == Display_Mode_Enum.My_Sobek) || (currentModeCheck.Mode == Display_Mode_Enum.Reset) || (currentModeCheck.Mode == Display_Mode_Enum.Item_Cache_Reload) || (currentModeCheck.Mode == Display_Mode_Enum.Results) || (currentModeCheck.Mode == Display_Mode_Enum.Public_Folder) || (currentModeCheck.Mode == Display_Mode_Enum.Aggregation_Browse_By) || (currentModeCheck.Mode == Display_Mode_Enum.Item_Print))
         {
-            HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.Status = "301 Moved Permanently";
             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Base_URL);
-            HttpContext.Current.Response.End();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
+            return;
         }
 
         // Browse are okay, except when it is the NEW
@@ -360,29 +357,32 @@ public class SobekCM_Page_Globals
         {
             currentModeCheck.Info_Browse_Mode = "all";
 
-            HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.Status = "301 Moved Permanently";
             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-            HttpContext.Current.Response.End();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
+            return;
         }
 
         // Going to the search page is okay, except for ADVANCED searches ( results aren't okay, but going to the search page is okay )
         if ((currentModeCheck.Mode == Display_Mode_Enum.Search) && (currentModeCheck.Search_Type == Search_Type_Enum.Advanced))
         {
             currentModeCheck.Mode = Display_Mode_Enum.Aggregation_Home;
-            HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.Status = "301 Moved Permanently";
             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-            HttpContext.Current.Response.End();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
+            return;
         }
 
         // If this was a legacy type request, forward to the new URL
         if ((QueryString["b"] != null) || (QueryString["m"] != null) || (QueryString["g"] != null) || (QueryString["c"] != null) || (QueryString["s"] != null) || (QueryString["a"] != null))
         {
-            HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.Status = "301 Moved Permanently";
             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-            HttpContext.Current.Response.End();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
+            return;
         }
 
         // Get the depth of the url relative 
@@ -407,10 +407,11 @@ public class SobekCM_Page_Globals
             if ((currentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Growth_View) && (currentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Standard_View) && (currentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Text) && (currentModeCheck.Statistics_Type != Statistics_Type_Enum.Usage_Definitions) && (currentModeCheck.Statistics_Type != Statistics_Type_Enum.Usage_Overall))
             {
                 currentModeCheck.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
-                HttpContext.Current.Response.Clear();
                 HttpContext.Current.Response.Status = "301 Moved Permanently";
                 HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                HttpContext.Current.Response.End();
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                currentMode.Request_Completed = true;
+                return;
             }
 
             // Ensure the URL behaved correctly
@@ -421,39 +422,43 @@ public class SobekCM_Page_Globals
                 case Statistics_Type_Enum.Usage_Definitions:
                     if (url_relative_depth > 3)
                     {
-                        HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.Status = "301 Moved Permanently";
                         HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                        HttpContext.Current.Response.End();
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        currentMode.Request_Completed = true;
+                        return;
                     }
                     break;
 
                 case Statistics_Type_Enum.Usage_Overall:
                     if (url_relative_depth > 2)
                     {
-                        HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.Status = "301 Moved Permanently";
                         HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                        HttpContext.Current.Response.End();
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        currentMode.Request_Completed = true;
+                        return;
                     }
                     break;
 
                 case Statistics_Type_Enum.Item_Count_Standard_View:
                     if (url_relative_depth > 2)
                     {
-                        HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.Status = "301 Moved Permanently";
                         HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                        HttpContext.Current.Response.End();
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        currentMode.Request_Completed = true;
+                        return;
                     }
                     else if (url_relative_depth == 2)
                     {
                         if (url_relative_info[1] != "itemcount")
                         {
-                            HttpContext.Current.Response.Clear();
                             HttpContext.Current.Response.Status = "301 Moved Permanently";
                             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                            HttpContext.Current.Response.End();
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            currentMode.Request_Completed = true;
+                            return;
                         }
                     }
                     break;
@@ -471,10 +476,11 @@ public class SobekCM_Page_Globals
                     case Home_Type_Enum.List:
                         if (url_relative_depth > 0)
                         {
-                            HttpContext.Current.Response.Clear();
                             HttpContext.Current.Response.Status = "301 Moved Permanently";
                             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                            HttpContext.Current.Response.End();
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            currentMode.Request_Completed = true;
+                            return;
                         }
                         break;
 
@@ -483,10 +489,11 @@ public class SobekCM_Page_Globals
                     case Home_Type_Enum.Partners_List:
                         if (url_relative_depth > 1)
                         {
-                            HttpContext.Current.Response.Clear();
                             HttpContext.Current.Response.Status = "301 Moved Permanently";
                             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                            HttpContext.Current.Response.End();
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            currentMode.Request_Completed = true;
+                            return;
                         }
                         break;
 
@@ -494,19 +501,20 @@ public class SobekCM_Page_Globals
                     case Home_Type_Enum.Partners_Thumbnails:
                         if (url_relative_depth > 2)
                         {
-                            HttpContext.Current.Response.Clear();
                             HttpContext.Current.Response.Status = "301 Moved Permanently";
                             HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                            HttpContext.Current.Response.End();
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            currentMode.Request_Completed = true;
+                            return;
                         }
                         break;
 
                     case Home_Type_Enum.Personalized:
-                        HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.Status = "301 Moved Permanently";
                         HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                        HttpContext.Current.Response.End();
-                        break;
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        currentMode.Request_Completed = true;
+                        return; 
                 }
             }
         }
@@ -518,10 +526,11 @@ public class SobekCM_Page_Globals
             {
                 currentModeCheck.ViewerCode = String.Empty;
 
-                HttpContext.Current.Response.Clear();
                 HttpContext.Current.Response.Status = "301 Moved Permanently";
                 HttpContext.Current.Response.AddHeader("Location", currentModeCheck.Redirect_URL());
-                HttpContext.Current.Response.End();
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                currentMode.Request_Completed = true;
+                return;
             }
         }
     }
@@ -532,6 +541,10 @@ public class SobekCM_Page_Globals
 
     private void perform_user_checks( bool isPostBack )
     {
+        // If the mode is NULL or the request was already completed, do nothing
+        if ((currentMode == null) || (currentMode.Request_Completed))
+            return;
+
         tracer.Add_Trace("SobekCM_Page_Globals.Perform_User_Checks", "In user checks portion");
 
         // If this is to log out of my sobekcm, clear user id and forward back to sobekcm
@@ -550,7 +563,10 @@ public class SobekCM_Page_Globals
             HttpContext.Current.Session["userid"] = 0;
             HttpContext.Current.Session["user"] = null;
 
-            HttpContext.Current.Response.Redirect( currentMode.Base_URL + currentMode.Return_URL);
+            HttpContext.Current.Response.Redirect( currentMode.Base_URL + currentMode.Return_URL, false);
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
+            return;
         }
 
         // If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
@@ -644,8 +660,7 @@ public class SobekCM_Page_Globals
                     currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
                     currentMode.Aggregation = String.Empty;
                 }
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
-
+                currentMode.Redirect();
             }
         }
 
@@ -694,7 +709,8 @@ public class SobekCM_Page_Globals
                     if (( currentMode.Mode != Display_Mode_Enum.Item_Display ) || (currentMode.BibID.Length > 0) || (currentMode.ItemID_DEPRECATED <= 0))
                     {
                         currentMode.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
                 }
                 else
@@ -720,14 +736,15 @@ public class SobekCM_Page_Globals
                             // If this is really a deprecated URL, don't try to forwaard
                             if (( currentMode.BibID.Length > 0 ) || (currentMode.ItemID_DEPRECATED <= 0))
                             {
-                                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                                currentMode.Redirect();
+                                return;
                             }
                             break;
 
                         default:
                             currentMode.Writer_Type = Writer_Type_Enum.HTML;
-                            HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
-                            break;
+                            currentMode.Redirect();
+                            return;
 
                     }
                 }
@@ -750,18 +767,6 @@ public class SobekCM_Page_Globals
                 currentMode.My_Sobek_Type =My_Sobek_Type_Enum.Logon;
             }
         }
-
-        //// Also, if this is a robot not doing postback and requests a search, forward to the collection home
-        //if (currentModeCheck.Is_Robot)
-        //{
-        //    if (currentModeCheck.Mode == Display_Mode_Enum.Results)
-        //    {
-        //        currentModeCheck.Mode = Display_Mode_Enum.Home;
-        //        currentModeCheck.Search_Terms.Clear();
-        //        currentModeCheck.Search_String = String.Empty;
-        //        System.Web.HttpContext.Current.Response.Redirect(currentModeCheck.Redirect_URL());
-        //    }
-        //}
 
         // Set the internal DLC flag
         if (HttpContext.Current.Session["user"] != null)
@@ -840,7 +845,33 @@ public class SobekCM_Page_Globals
             }
 
             SobekCM_Assistant assistant = new SobekCM_Assistant();
+
+            // Try to get the web skin from the cache or skin collection, otherwise build it
             htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, Global.Skins, tracer);
+
+            // If there was no web skin returned, forward user to URL with no web skin. 
+            // This happens if the web skin code is invalid.  If a robot, just return a bad request 
+            // value though.
+            if (htmlSkin == null) 
+            {
+                if (( currentMode == null ) || (currentMode.Is_Robot))
+                {
+                    HttpContext.Current.Response.StatusCode = 404;
+                    HttpContext.Current.Response.Output.WriteLine("404 - INVALID URL");
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    currentMode.Request_Completed = true;
+                }
+                else
+                {
+                    currentMode.Skin = String.Empty;
+                    currentMode.Redirect();
+                    return;
+                }
+
+                return;
+            }
+
+
 
             mainWriter = new Html_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject,
                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes, 
@@ -917,20 +948,6 @@ public class SobekCM_Page_Globals
     {
         tracer.Add_Trace("SobekCM_Page_Globals.Display_Item", "Retrieving item or group information");
 
-        //// If the current request is from a robot, forward them to the appropriate static page
-        //if ((( currentModeCheck.Writer_Type == Writer_Type_Enum.HTML ) || ( currentModeCheck.Writer_Type == Writer_Type_Enum.HTML_LoggedIn )) && (currentModeCheck.Is_Robot))
-        //{
-        //    if ((currentModeCheck.BibID.Length >= 10) && (currentModeCheck.VID.Length >= 5))
-        //    {
-        //        string bibid= currentModeCheck.BibID;
-        //        string vid = currentModeCheck.VID;
-        //        System.Web.HttpContext.Current.Response.Redirect("http://www.uflib.ufl.edu/ufdc2/items/" + bibid.Substring(0,2) + "/" + bibid.Substring(2,2) + "/" + bibid.Substring(4,2) + "/" + bibid.Substring(6,2) + "/" + bibid.Substring(8,2) + "/" + bibid + "_" + vid + ".html" );
-        //    }
-
-        //    // Send them to the robots entrance page
-        //    System.Web.HttpContext.Current.Response.Redirect("http://www.uflib.ufl.edu/ufdc2/robot_entrance.html");
-        //}
-
         // Build the SobekCM assistant
         SobekCM_Assistant assistant = new SobekCM_Assistant();
 
@@ -957,7 +974,8 @@ public class SobekCM_Page_Globals
                 {
                     Email_Information("Unable to find metadata for valid item", null);
                     currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
             }
         }
@@ -1012,11 +1030,6 @@ public class SobekCM_Page_Globals
             {
                 currentMode.Mode = Display_Mode_Enum.Error;
             }
-
-            //if ((currentModeCheck.Result_Display_Type == Result_Display_Type_Enum.Default) && (pagedSearchResults != null))
-            //{
-            //    currentModeCheck.Result_Display_Type = hierarchyObject.Default_Result_View;
-            //}
         }
     }
 
@@ -1034,7 +1047,8 @@ public class SobekCM_Page_Globals
             if ((currentMode.Search_String.Length == 0) && ( currentMode.Coordinates.Length == 0 ))
             {
                 currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-                HttpContext.Current.Response.Redirect( currentMode.Redirect_URL() );
+                currentMode.Redirect();
+                return;
             }
 
             SobekCM_Assistant assistant = new SobekCM_Assistant();
@@ -1091,6 +1105,10 @@ public class SobekCM_Page_Globals
 
     private void Get_Entire_Collection_Hierarchy()
     {
+        // If the mode is NULL or the request was already completed, do nothing
+        if ((currentMode == null) || (currentMode.Request_Completed))
+            return;
+
         tracer.Add_Trace("SobekCM_Page_Globals.Get_Entire_Collection_Hierarchy", "Retrieving hierarchy information");
 
         // Check that the current aggregation code is valid
@@ -1216,6 +1234,7 @@ public class SobekCM_Page_Globals
         if (redirect)
         {
             HttpContext.Current.Response.Redirect(ConfigurationManager.AppSettings["Error_HTML_Page"]);
+
         }
     }
 

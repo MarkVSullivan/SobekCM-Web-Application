@@ -433,7 +433,6 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Now, forward back to the My Sobek home page
                         currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                        string redirect_url = currentMode.Redirect_URL();
 
                         // If this is the first user to register (who would have been set to admin), send to the 
                         // system-wide settings screen
@@ -441,9 +440,9 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             currentMode.Mode = Display_Mode_Enum.Administrative;
                             currentMode.Admin_Type = Admin_Type_Enum.Settings;
-                            redirect_url = currentMode.Redirect_URL();
                         }
-                        HttpContext.Current.Response.Redirect(redirect_url);
+                        currentMode.Redirect();
+                        return;
                     }
                     else
                     {
@@ -452,8 +451,8 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Now, forward back to the My Sobek home page
                         currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                        string redirect_url = currentMode.Redirect_URL();
-                        HttpContext.Current.Response.Redirect(redirect_url);
+                        currentMode.Redirect();
+                        return;
                     }
                 }
             }

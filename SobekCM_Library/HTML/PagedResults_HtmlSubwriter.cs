@@ -120,6 +120,10 @@ namespace SobekCM.Library.HTML
                                 HttpContext.Current.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond, false);
                             else
                                 HttpContext.Current.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond, false);
+
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Current_Mode.Request_Completed = true;
+                            return;
                         }
                     }
 
@@ -154,8 +158,10 @@ namespace SobekCM.Library.HTML
                         else
                         {
                             HttpContext.Current.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond, false);
-
                         }
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Current_Mode.Request_Completed = true;
+                        return;
                     }
                 }
             }

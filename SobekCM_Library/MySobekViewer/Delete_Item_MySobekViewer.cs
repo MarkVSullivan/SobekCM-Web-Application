@@ -106,7 +106,9 @@ namespace SobekCM.Library.MySobekViewer
                 // Better say "DELETE", or just send back to the item
                 if (( save_value == null ) || ( save_value.ToUpper() != "DELETE" ) || ( text_value.ToUpper() != "DELETE"))
                 {
-                    HttpContext.Current.Response.Redirect(Current_Mode.Base_URL + currentMode.BibID + "/" + currentMode.VID);
+                    HttpContext.Current.Response.Redirect(Current_Mode.Base_URL + currentMode.BibID + "/" + currentMode.VID, false);
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    currentMode.Request_Completed = true;
                 }
                 else
                 {

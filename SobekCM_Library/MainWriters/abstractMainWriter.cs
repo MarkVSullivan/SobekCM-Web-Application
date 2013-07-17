@@ -82,6 +82,7 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
+
         /// <summary> Returns a flag indicating whether the additional table of contents place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden. </summary>
         /// <value> This value can be override by child classes, but by default this returns FALSE </value>

@@ -74,8 +74,10 @@ namespace SobekCM.Library.AdminViewer
             // If the user cannot edit this, go back
             if (!user.Is_Aggregation_Curator(code))
             {
+                Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // Load the item aggregation, either currenlty from the session (if already editing this aggregation )
@@ -91,7 +93,8 @@ namespace SobekCM.Library.AdminViewer
             if (itemAggregation == null)
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // Determine the page
@@ -128,7 +131,7 @@ namespace SobekCM.Library.AdminViewer
                         HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = null;
                         // Redirect the user
                         currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                        currentMode.Redirect();
                         return;
                     }
 
@@ -190,7 +193,7 @@ namespace SobekCM.Library.AdminViewer
 
                             // Redirect the user
                             currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-                            HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                            currentMode.Redirect();
                         }
                     }
                     else
@@ -199,6 +202,8 @@ namespace SobekCM.Library.AdminViewer
                         HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
                         currentMode.My_Sobek_SubMode = action;
                         HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        currentMode.Request_Completed = true;
                     }
                 }
                 catch
