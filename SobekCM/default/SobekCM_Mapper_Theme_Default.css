@@ -95,7 +95,7 @@ a img {
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
 	overflow: hidden;
 }
-#poiList_Container {
+#poiList_mapper_container {
 	background:#fcfcfc;
 	color: #6a6f75;
 	border: 0 none;
@@ -114,7 +114,7 @@ a img {
 	overflow: hidden;
 
 }
-#poiList_ScollContainer {
+#poiList_Scollmapper_container {
 	overflow-x:hidden;
 	height:140px;
 	margin-right: -5px;
@@ -209,6 +209,12 @@ a img {
 	-webkit-text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 	text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 	outline: none;
+}
+.searchActionHandle {
+    width: 18px;
+    height: 18px;
+    margin: -28px 0 0 130px;
+    position:absolute;
 }
 .descPOI {
 	background:#fcfcfc;

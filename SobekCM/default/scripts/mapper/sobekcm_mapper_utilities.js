@@ -79,12 +79,12 @@ function displayMessage(message) {
     document.getElementById("content_message").innerHTML = messageText; //assign to element
 
     //show message
-    document.getElementById("container_message").style.display = "block"; //display element
+    document.getElementById("mapper_container_message").style.display = "block"; //display element
 
     //fade message out
     setTimeout(function () {
-        $("#container_message").fadeOut("slow", function () {
-            $("#container_message").hide();
+        $("#mapper_container_message").fadeOut("slow", function () {
+            $("#mapper_container_message").hide();
         });
     }, 3000); //after 3 sec
 }
@@ -196,6 +196,8 @@ function poiGetDesc(id) {
 function searchResultDeleteMe() {
     searchResult.setMap(null);
     $("#searchResult").remove();
+    document.getElementById("content_toolbar_searchField").value = "";
+    document.getElementById("content_toolbox_searchField").value = "";
 }               //delete search results from map and list
 function HandleResult(arg) {
     switch (arg) {
@@ -355,6 +357,9 @@ function finder(stuff) {
 
     if (stuff.length > 0) {
         codeAddress("lookup", stuff);
+        document.getElementById("content_toolbar_searchField").value = stuff;
+        document.getElementById("content_toolbox_searchField").value = stuff;
+        openToolboxTab(1); //open the actions tab
     } else {
         //do nothing and keep quiet
     }
@@ -384,7 +389,7 @@ function codeAddress(type, geo) {
                     map: map, //add to current map
                     position: results[0].geometry.location //set position to search results
                 });
-                document.getElementById("content_toolbox_search_results").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div><br\>"; //add list div
+                document.getElementById("content_toolbox_searchResults").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div><br\>"; //add list div
             } else { //if location found was outside strict map bounds...
                 displayMessage(L24); //say so
             }
@@ -482,4 +487,17 @@ function keypress(e) {
 
             break;
     }
+}
+
+//Resizes container based on the viewport
+function resizeView() {
+    //alert(document.documentElement.clientHeight);
+
+    var totalPX = document.documentElement.clientHeight;
+    var headerPX = $("#mapper_container").offset().top;
+    var bodyPX = totalPX - headerPX;
+    var percentOfHeight = Math.round((bodyPX / totalPX) * 100);
+    document.getElementById("mapper_container").style.height = percentOfHeight + "%";
+
+    //alert(percentOfHeight);
 }
