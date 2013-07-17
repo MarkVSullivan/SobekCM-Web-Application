@@ -200,10 +200,26 @@ namespace SobekCM.Library.HTML
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
         public abstract bool Write_HTML(TextWriter Output, Custom_Tracer Tracer );
 
-        /// <summary> Writes additional HTML needed in the main form before the main place holder but after the other place holders.  </summary>
+        /// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
+        /// <param name="Output">Stream to directly write to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing by default
+        }
+
+        /// <summary> Writes additional HTML to the output stream just before the main place holder but after the TocPlaceHolder in the itemNavForm form.  </summary>
         /// <param name="Output">Stream to directly write to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public virtual void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing by default
+        }
+
+        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public virtual void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing by default
         }

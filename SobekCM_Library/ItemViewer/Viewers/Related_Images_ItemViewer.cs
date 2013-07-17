@@ -354,45 +354,69 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
 			// Step through each page in the item
-		    for (int page_index = page * images_per_page; (page_index < (page + 1) * images_per_page) && (page_index < CurrentItem.Web.Static_PageCount); page_index++)
-			{
-				Page_TreeNode thisPage = CurrentItem.Web.Pages_By_Sequence[page_index];
-				
-				// Find the jpeg image
-				foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.System_Name.IndexOf(".jpg") > 0))
-				{
-					// Get the image URL
-					CurrentMode.Page = (ushort)(page_index + 1);
-					CurrentMode.ViewerCode = (page_index + 1).ToString();
-					
-                    //set the image url to fetch the small thumbnail .thm image
-                    string image_url = (CurrentItem.Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg")).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-					
-                    //If thumbnail size selected is large, get the full-size jpg image
-                    if(size_of_thumbnails==2 || size_of_thumbnails==3 || size_of_thumbnails==4)
-						image_url = (CurrentItem.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
+            for (int page_index = page*images_per_page; (page_index < (page + 1)*images_per_page) && (page_index < CurrentItem.Web.Static_PageCount); page_index++)
+            {
+                // Get this page
+                Page_TreeNode thisPage = CurrentItem.Web.Pages_By_Sequence[page_index];
 
-          
-						//Output.Write("<span  id=\"span"+thisPage.Label+"\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\">");
-                    Output.Write("<span  id=\"span" + (page_index + 1) + "\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'\" onmouseout=\"this.className='thumbnailNormal'\" onmousedown=\"window.location.href='" + url + "';\">");   
-			      
-                    if(size_of_thumbnails==2)
-                       Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\"  src=\"" + image_url + "\" width=\"315px\" height=\"50%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
-                    else if(size_of_thumbnails==3)
-                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\" src=\"" + image_url + "\" width=\"472.5px\" height=\"75%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
-                    else if(size_of_thumbnails==4)
-                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
-                    else
+                // Find the jpeg and thumbnail images
+                string jpeg = String.Empty;
+                string thumbnail = String.Empty;
+
+                foreach (SobekCM_File_Info thisFile in thisPage.Files)
+                {
+                    if (thisFile.System_Name.ToLower().IndexOf(".jpg") > 0)
                     {
-                        Output.WriteLine("<span align=\"center\" style=\"display:inline-block;\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\" style=\"display:inline-block;\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        if (thisFile.System_Name.ToLower().IndexOf("thm.jpg") > 0)
+                            thumbnail = thisFile.System_Name;
+                        else
+                            jpeg = thisFile.System_Name;
                     }
-					break;
-				}
-			 
-			}
+                }
 
-			//Close the outer div
+                // If the thumbnail is not in the METS, just guess it's existence
+                if (thumbnail.Length == 0)
+                    thumbnail = jpeg.ToLower().Replace(".jpg", "thm.jpg");
+
+                // Get the image URL
+                CurrentMode.Page = (ushort) (page_index + 1);
+                CurrentMode.ViewerCode = (page_index + 1).ToString();
+                string url = CurrentMode.Redirect_URL();
+
+                // Start the span
+                switch (size_of_thumbnails)
+                {
+                    case 2:
+                        string image_url2 = (CurrentItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url2 + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url2 + "\"  src=\"" + image_url2 + "\" width=\"315px\" height=\"50%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        break;
+
+                    case 3:
+                        string image_url3 = (CurrentItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url3 + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url3 + "\" src=\"" + image_url3 + "\" width=\"472.5px\" height=\"75%\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        break;
+
+                    case 4:
+                        string image_url4 = (CurrentItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        Output.WriteLine("<span style=\"display:inline-block;\" align=\"center\" id=\"parent" + image_url4 + "\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img id=\"child" + image_url4 + "\" src=\"" + image_url4 + "\"  alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        break;
+
+                    default:
+                        if (thumbnail.Length == 0)
+                        {
+                            string image_url = (CurrentItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                            Output.WriteLine("<span align=\"center\" style=\"display:inline-block;\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\" style=\"display:inline-block;\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        }
+                        else
+                        {
+                            string image_url = (CurrentItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                            Output.WriteLine("<span align=\"center\" style=\"display:inline-block;\"><table style=\"display:inline-block;\"><tr><td><a id=\"" + thisPage.Label + "\" href=\"" + url + "\"><img src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"itemThumbnails\" /></a></td></tr><tr><td><span align=\"center\" style=\"display:inline-block;\"><span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span></span></td></tr></table></span></span>");
+                        }
+                        break;
+                }
+            }
+
+            //Close the outer div
 			Output.WriteLine("</span></div>");
 
 			// Restore the mode

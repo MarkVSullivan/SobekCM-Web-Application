@@ -81,7 +81,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!user.Can_Edit_This_Item(item))
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // If this is post-back, handle it
@@ -123,7 +124,8 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(digitalResourceDirectory + "\\" + filename);
 
                         // Forward
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
                     catch
                     {
@@ -151,7 +153,7 @@ namespace SobekCM.Library.MySobekViewer
 
                             // Redirect to the item
                             currentMode.Mode = Display_Mode_Enum.Item_Display;
-                            HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                            currentMode.Redirect();
                             break;
 
                         case 9:
@@ -174,7 +176,7 @@ namespace SobekCM.Library.MySobekViewer
 
                                 // Redirect to the item
                                 currentMode.Mode = Display_Mode_Enum.Item_Display;
-                                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                                currentMode.Redirect();
                             }
                             break;                         
                     }

@@ -159,6 +159,10 @@ namespace SobekCM.Library.HTML
                             HttpContext.Current.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond, false);
                         else
                             HttpContext.Current.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond, false);
+
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Current_Mode.Request_Completed = true;
+                        return;
                     }
                 }
             }
@@ -250,6 +254,9 @@ namespace SobekCM.Library.HTML
                 collectionViewer = new Admin_AggregationViewer(Hierarchy_Object);
             }
 
+            // If execution should end, do it now
+            if (currentMode.Request_Completed)
+                return;
 
             if (collectionViewer != null)
             {

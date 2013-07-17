@@ -210,7 +210,9 @@ namespace SobekCM.Library.MySobekViewer
         {
             item.Using_Complex_Template = true;
 
-            HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString);
+            HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
         }
 
         void simplifyButton_Click(object sender, EventArgs e)
@@ -218,7 +220,9 @@ namespace SobekCM.Library.MySobekViewer
             if (!item.Contains_Complex_Content)
                 item.Using_Complex_Template = false;
 
-            HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString);
+            HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            currentMode.Request_Completed = true;
         }
 
         void linkButton_Click(object sender, EventArgs e)
@@ -239,14 +243,14 @@ namespace SobekCM.Library.MySobekViewer
                     currentMode.Mode = Display_Mode_Enum.Administrative;
                     currentMode.Admin_Type = Admin_Type_Enum.Projects;
                     currentMode.My_Sobek_SubMode = String.Empty;
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
-                }
+                    currentMode.Redirect();
+ }
                 else
                 {
                     Cached_Data_Manager.Remove_Digital_Resource_Object(user.UserID, item.BibID, item.VID, null);
 
                     currentMode.Mode = Display_Mode_Enum.Item_Display;
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                    currentMode.Redirect();
                 }
             }
             else
@@ -295,15 +299,16 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (page_requested.ToString() != currentMode.My_Sobek_SubMode)
                 {
-                // forward to requested page
-                currentMode.My_Sobek_SubMode = page_requested.ToString();
-                if (currentMode.My_Sobek_SubMode == "0")
-                    currentMode.My_Sobek_SubMode = "preview";
-                if (isProject)
-                    currentMode.My_Sobek_SubMode = page_requested.ToString() + item.BibID;
-                
-                HttpContext.Current.Response.Redirect( currentMode.Redirect_URL() + "#template");
+                    // forward to requested page
+                    currentMode.My_Sobek_SubMode = page_requested.ToString();
+                    if (currentMode.My_Sobek_SubMode == "0")
+                        currentMode.My_Sobek_SubMode = "preview";
+                    if (isProject)
+                        currentMode.My_Sobek_SubMode = page_requested.ToString() + item.BibID;
 
+                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL() + "#template", false);
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    currentMode.Request_Completed = true;
                 }
             }
         }
@@ -324,8 +329,7 @@ namespace SobekCM.Library.MySobekViewer
                 currentMode.Mode = Display_Mode_Enum.Administrative;
                 currentMode.Admin_Type = Admin_Type_Enum.Projects;
                 currentMode.My_Sobek_SubMode = String.Empty;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
-
+                currentMode.Redirect();
             }
             else
             {
@@ -472,7 +476,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Forward to the display item again
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
                 currentMode.ViewerCode = "citation";
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
             }
         }
 

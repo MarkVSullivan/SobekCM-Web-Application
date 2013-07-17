@@ -96,7 +96,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!user.Can_Submit)
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
             itemList = Item_List;
 
@@ -195,7 +196,8 @@ namespace SobekCM.Library.MySobekViewer
             {
                 // For now, just forward to the next phase
                 currentMode.My_Sobek_SubMode = "9";
-                HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // Look for the item in the session, then directory, then just create a new one
@@ -315,7 +317,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to my Sobek home
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                    currentMode.Redirect();
                 }
 
                 if ( action == "delete" )
@@ -327,7 +329,8 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(userInProcessDirectory + "\\" + filename);
 
                         // Forward
-                        HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
                     catch (Exception)
                     {
@@ -348,7 +351,8 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to the same URL
                     currentMode.My_Sobek_SubMode = "2";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
 
                 if (action == "next_phase")
@@ -444,7 +448,8 @@ namespace SobekCM.Library.MySobekViewer
 
                     // For now, just forward to the next phase
                     currentMode.My_Sobek_SubMode = next_phase;
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
             }
 
@@ -459,7 +464,8 @@ namespace SobekCM.Library.MySobekViewer
                 if (( template.Permissions_Agreement.Length > 0 ) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
                 {
                     currentMode.My_Sobek_SubMode = "1";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
 
                 // Get the validation errors
@@ -474,7 +480,8 @@ namespace SobekCM.Library.MySobekViewer
                 if (Directory.GetFiles( userInProcessDirectory, "*.mets*").Length == 0 )
                 {
                     currentMode.My_Sobek_SubMode = "2";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
 
                 // Get the validation errors
@@ -484,7 +491,8 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     item.Web.Show_Validation_Errors = true;
                     currentMode.My_Sobek_SubMode = "2";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
             }
 
@@ -492,7 +500,8 @@ namespace SobekCM.Library.MySobekViewer
             if (( currentProcessStep == 8 ) && ( template.Upload_Types == Template.Template_Upload_Types.None ))
             {
                 currentMode.My_Sobek_SubMode = "9";
-                HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // If this is going into the last process step, check that any mandatory info (file, url, .. ) 
@@ -531,7 +540,8 @@ namespace SobekCM.Library.MySobekViewer
                     if (( !required_file_present ) && ( !required_url_present ))
                     {
                         currentMode.My_Sobek_SubMode = "8";
-                        HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
                 }
 

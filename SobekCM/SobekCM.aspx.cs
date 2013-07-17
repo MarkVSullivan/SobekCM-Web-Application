@@ -31,9 +31,19 @@ public partial class UFDC : System.Web.UI.Page
     {
         Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", String.Empty);
 
-         try
+        try
         {
+            // Process this page request by building the main writer and 
+            // analyzing the request's URL
             Page_Globals.On_Page_Load();
+
+            // Is the response completed already?
+            if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            {
+                fileUploadForm.Visible = false;
+                return;
+            }
+
 
             if (HttpContext.Current.Items.Contains("Original_URL"))
             {
@@ -82,52 +92,49 @@ public partial class UFDC : System.Web.UI.Page
                 }
             }
 
-          
-
-            // If there is maintenance, load nothing into the place holder
-            if (Page_Globals.currentMode != null)
+            // Check if the item nav form should be shown
+            if (!Page_Globals.mainWriter.Include_Navigation_Form)
             {
-                // Check if the item nav form should be shown
-                if (!Page_Globals.mainWriter.Include_Navigation_Form)
-                {
-                    itemNavForm.Visible = false;
-                }
-                else
-                {
-                    if (!Page_Globals.mainWriter.Include_Main_Place_Holder)
-                        mainPlaceHolder.Visible = false;
-                    if (!Page_Globals.mainWriter.Include_TOC_Place_Holder)
-                        tocPlaceHolder.Visible = false;
-                }
-
-                // The file upload form is only shown in ONE case
-                if ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) || 
-                    ((Page_Globals.currentMode.Writer_Type != Writer_Type_Enum.HTML) && (Page_Globals.currentMode.Writer_Type != Writer_Type_Enum.HTML_LoggedIn)) || 
-                    (((Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.New_Item) || (Page_Globals.currentMode.My_Sobek_SubMode.Length == 0) || (Page_Globals.currentMode.My_Sobek_SubMode[0] != '8')) && ( Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.File_Management ))  || 
-                    (Session["user"] == null))
-                {
-                    fileUploadForm.Visible = false;
-                }
-                else
-                {
-                    itemNavForm.Visible = false;
-                    fileUploadForm.Visible = true;
-                    fileUploadForm.Enctype = "multipart/form-data";                        
-
-                }
-
-                // Add the controls now
-                Page_Globals.mainWriter.Add_Controls( tocPlaceHolder, mainPlaceHolder, myUfdcUploadPlaceHolder, Page_Globals.tracer);
+                itemNavForm.Visible = false;
             }
+            else
+            {
+                if (!Page_Globals.mainWriter.Include_Main_Place_Holder)
+                    mainPlaceHolder.Visible = false;
+                if (!Page_Globals.mainWriter.Include_TOC_Place_Holder)
+                    tocPlaceHolder.Visible = false;
+            }
+
+            // The file upload form is only shown in ONE case
+            if ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) ||
+                ((Page_Globals.currentMode.Writer_Type != Writer_Type_Enum.HTML) && (Page_Globals.currentMode.Writer_Type != Writer_Type_Enum.HTML_LoggedIn)) ||
+                (((Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.New_Item) || (Page_Globals.currentMode.My_Sobek_SubMode.Length == 0) || (Page_Globals.currentMode.My_Sobek_SubMode[0] != '8')) && (Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.File_Management)) ||
+                (Session["user"] == null))
+            {
+                fileUploadForm.Visible = false;
+            }
+            else
+            {
+                itemNavForm.Visible = false;
+                fileUploadForm.Visible = true;
+                fileUploadForm.Enctype = "multipart/form-data";
+
+            }
+
+            // Add the controls now
+            Page_Globals.mainWriter.Add_Controls(tocPlaceHolder, mainPlaceHolder, myUfdcUploadPlaceHolder, Page_Globals.tracer);
         }
         catch (OutOfMemoryException ee)
         {
+            fileUploadForm.Visible = false;
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", "OutOfMemoryException caught!");
 
             Page_Globals.Email_Information("SobekCM Out of Memory Exception", ee);
         }
         catch (Exception ee)
         {
+            fileUploadForm.Visible = false;
+
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", "Exception caught!", SobekCM.Library.Custom_Trace_Type_Enum.Error);
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", ee.Message, SobekCM.Library.Custom_Trace_Type_Enum.Error);
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Page_Load", ee.StackTrace, SobekCM.Library.Custom_Trace_Type_Enum.Error);
@@ -145,16 +152,13 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Write_Page_Title()
     {
-        if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed ))
             return;
 
         Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Page_Title", String.Empty);
 
-        if (Page_Globals.mainWriter == null)
-        {
-            Page_Globals.Set_Main_Writer();
-        }
-
+        // Allow the html writer to add its own title 
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
             Response.Output.Write(((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Get_Page_Title(Page_Globals.tracer));
@@ -169,12 +173,8 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Write_Within_HTML_Head()
     {
-        // This statement returns if this is a postback and EITHER: current mode is null or this is not a My UFDC return value
-        // My UFDC takes advantage of a lot of postbacks with the editing and self-submittal form, so the styles and
-        // scripts SHOULD be added in that case.  And if the current mode is null for some reason (error) then there
-        // is no main writer to write the style reference.
-
-        if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
             return;
 
         Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Within_HTML_Head", String.Empty);
@@ -194,7 +194,8 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Write_Body_Attributes()
     {
-        if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
             return;
 
         Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Body_Attributes", String.Empty);
@@ -208,7 +209,8 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Write_Html()
     {
-        if ((Page_Globals.currentMode.isPostBack) && ((Page_Globals.currentMode == null) || ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Info) && (Page_Globals.currentMode.Mode != Display_Mode_Enum.Results))))
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
             return;
 
         // Add the HTML to the main section (which sits outside any of the standard fors)
@@ -216,8 +218,12 @@ public partial class UFDC : System.Web.UI.Page
         Page_Globals.mainWriter.Write_Html(Response.Output, Page_Globals.tracer);
     }
 
-    protected void Write_Additional_HTML_Upload_Form()
+    protected void Write_UploadForm_Additional_HTML()
     {
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            return;
+
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML_Upload_Form", String.Empty);
@@ -225,8 +231,25 @@ public partial class UFDC : System.Web.UI.Page
         }
     }
 
-    protected void Write_Additional_HTML()
+    protected void Write_ItemNavForm_Opening()
     {
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            return;
+
+        if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+        {
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML", String.Empty);
+            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Write_ItemNavForm_Opening(Response.Output, Page_Globals.tracer);
+        }
+    }
+
+    protected void Write_ItemNavForm_Additional_HTML()
+    {
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            return;
+
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML", String.Empty);
@@ -234,8 +257,25 @@ public partial class UFDC : System.Web.UI.Page
         }
     }
 
+    protected void Write_ItemNavForm_Closing()
+    {
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            return;
+
+        if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+        {
+            Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML", String.Empty);
+            ((SobekCM.Library.MainWriters.Html_MainWriter)Page_Globals.mainWriter).Write_ItemNavForm_Closing(Response.Output, Page_Globals.tracer);
+        }
+    }
+
     protected void Write_Final_HTML()
     {
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            return;
+
         if ((Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (Page_Globals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
         {
             Page_Globals.tracer.Add_Trace("sobekcm(.aspx).Write_Final_HTML", String.Empty);
@@ -265,6 +305,10 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Repository_Title()
     {
+        // If the was a very basic error, or the request was complete, do nothing here
+        if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
+            return;
+
         if ( !String.IsNullOrEmpty( SobekCM.Library.SobekCM_Library_Settings.System_Name))
             Response.Output.Write(SobekCM.Library.SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository");
         else

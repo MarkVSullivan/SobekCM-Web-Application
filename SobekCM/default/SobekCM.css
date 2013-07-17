@@ -317,8 +317,8 @@ BODY
    /* background:#a4a4a4; */
     background: #555555;
     color:#000000;
-    
-    }
+}
+
 A:link { COLOR: #00a; TEXT-DECORATION: none; }
 A:visited { COLOR: #00a; TEXT-DECORATION: none; }
 A:hover { COLOR: #00a; TEXT-DECORATION: underline; }

@@ -104,7 +104,10 @@ namespace SobekCM.Library.HTML
                 Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Performing logout");
 
                 HttpContext.Current.Session["user"] = null;
-                HttpContext.Current.Response.Redirect("?");
+                HttpContext.Current.Response.Redirect("?", false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                Current_Mode.Request_Completed = true;
+                return;
             }
 
             if ((Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (user != null) && (user.Is_Temporary_Password))
@@ -121,7 +124,8 @@ namespace SobekCM.Library.HTML
                 Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 Current_Mode.My_Sobek_SubMode = String.Empty;
-                HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL());
+                Current_Mode.Redirect();
+                return;
             }
 
             Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Building the my sobek viewer object");

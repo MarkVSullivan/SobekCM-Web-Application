@@ -890,7 +890,8 @@ namespace SobekCM.Library
                     if (terms.Length < 2)
                     {
                         Current_Mode.Mode = Display_Mode_Enum.Search;
-                        HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL());
+                        Current_Mode.Redirect();
+                        return;
                     }
                     if (terms.Length < 4)
                     {
@@ -915,7 +916,8 @@ namespace SobekCM.Library
                     if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
                     {
                         Current_Mode.Mode = Display_Mode_Enum.Search;
-                        HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL());
+                        Current_Mode.Redirect();
+                        return;
                     }
 
                     // If just the first point is valid, use that
@@ -960,7 +962,7 @@ namespace SobekCM.Library
                 catch
                 {
                     Current_Mode.Mode = Display_Mode_Enum.Search;
-                    HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL());
+                    Current_Mode.Redirect();
                 }
             }
             else
@@ -1273,7 +1275,11 @@ namespace SobekCM.Library
                                 string redirect_url = Current_Mode.Base_URL + bibid + "/" + vid;
                                 if ( Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn )
                                     redirect_url = Current_Mode.Base_URL + "l/" + bibid + "/" + vid;
-                                HttpContext.Current.Response.Redirect(redirect_url);
+                                HttpContext.Current.Response.Redirect(redirect_url, false);
+                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Current_Mode.Request_Completed = true;
+                                Paged_Results = null;
+                                return;
                             }
                         }
                         else
@@ -1283,7 +1289,11 @@ namespace SobekCM.Library
                                 string redirect_url = Current_Mode.Base_URL + bibid;
                                 if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                                     redirect_url = Current_Mode.Base_URL + "l/" + bibid;
-                                HttpContext.Current.Response.Redirect(redirect_url);
+                                HttpContext.Current.Response.Redirect(redirect_url, false);
+                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Current_Mode.Request_Completed = true;
+                                Paged_Results = null;
+                                return;
                             }
                         }
                     }
@@ -1798,12 +1808,7 @@ namespace SobekCM.Library
             }
 
             // If there is still no interface, this is an ERROR
-            if (htmlSkin == null)
-            {
-                Current_Mode.Mode = Display_Mode_Enum.Error;
-                Current_Mode.Error_Message = "Invalid web skin '" + Web_Skin_Code + "' requested.";
-            }
-            else
+            if (htmlSkin != null)
             {
                 Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
             }
