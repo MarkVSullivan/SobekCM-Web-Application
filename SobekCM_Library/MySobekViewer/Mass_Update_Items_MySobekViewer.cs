@@ -63,7 +63,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!user.Can_Edit_This_Item(Current_Item))
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             const string TEMPLATE_CODE = "massupdate";
@@ -95,7 +96,7 @@ namespace SobekCM.Library.MySobekViewer
             if (hidden_request == "cancel")
             {
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
             }
             else if (hidden_request == "save")
             {
@@ -110,7 +111,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Forward
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
             }
         }
 

@@ -37,71 +37,73 @@ namespace SobekCM.Library.MySobekViewer
         public Logon_MySobekViewer(SobekCM_Navigation_Object currentMode, Custom_Tracer Tracer)
             : base(null)
         {
-                Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
+            Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
 
-                CurrentMode = currentMode;
+            CurrentMode = currentMode;
 
-                errorMessage = String.Empty;
+            errorMessage = String.Empty;
 
-                // If this is a postback, check to see if the user is valid
-                if (currentMode.isPostBack)
+            // If this is a postback, check to see if the user is valid
+            if (currentMode.isPostBack)
+            {
+                string possible_username = String.Empty;
+                string possible_password = String.Empty;
+                bool remember_me = false;
+
+                string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                foreach (string thisKey in getKeys)
                 {
-                    string possible_username = String.Empty;
-                    string possible_password = String.Empty;
-                    bool remember_me = false;
-
-                    string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-                    foreach (string thisKey in getKeys)
+                    switch (thisKey)
                     {
-                        switch (thisKey)
-                        {
-                            case "logon_username":
-                                possible_username = HttpContext.Current.Request.Form[thisKey].Trim();
-                                break;
+                        case "logon_username":
+                            possible_username = HttpContext.Current.Request.Form[thisKey].Trim();
+                            break;
 
-                            case "logon_password":
-                                possible_password = HttpContext.Current.Request.Form[thisKey].Trim();
-                                break;
+                        case "logon_password":
+                            possible_password = HttpContext.Current.Request.Form[thisKey].Trim();
+                            break;
 
-                            case "rememberme":
-                                if (HttpContext.Current.Request.Form[thisKey].Trim() == "rememberme")
-                                    remember_me = true;
-                                break;
-                        }
+                        case "rememberme":
+                            if (HttpContext.Current.Request.Form[thisKey].Trim() == "rememberme")
+                                remember_me = true;
+                            break;
                     }
+                }
 
-                    if (( !String.IsNullOrEmpty(possible_password) ) && ( !String.IsNullOrEmpty(possible_username)))
+                if ((!String.IsNullOrEmpty(possible_password)) && (!String.IsNullOrEmpty(possible_username)))
+                {
+                    user = SobekCM_Database.Get_User(possible_username, possible_password, Tracer);
+                    if (user != null)
                     {
-                        user = SobekCM_Database.Get_User(possible_username, possible_password, Tracer);
-                        if (user != null)
+                        // The user was valid here, so save this user information
+                        HttpContext.Current.Session["user"] = user;
+
+                        // Should we remember this user via cookies?
+                        if (remember_me)
                         {
-                            // The user was valid here, so save this user information
-                            HttpContext.Current.Session["user"] = user;
+                            HttpCookie userCookie = new HttpCookie("SobekUser");
+                            userCookie.Values["userid"] = user.UserID.ToString();
+                            userCookie.Values["security_hash"] = user.Security_Hash(HttpContext.Current.Request.UserHostAddress);
+                            userCookie.Expires = DateTime.Now.AddDays(14);
+                            HttpContext.Current.Response.Cookies.Add(userCookie);
+                        }
 
-                            // Should we remember this user via cookies?
-                            if (remember_me)
-                            {
-                                HttpCookie userCookie = new HttpCookie("SobekUser");
-                                userCookie.Values["userid"] = user.UserID.ToString();
-                                userCookie.Values["security_hash"] = user.Security_Hash(HttpContext.Current.Request.UserHostAddress);
-                                userCookie.Expires = DateTime.Now.AddDays(14);
-                                HttpContext.Current.Response.Cookies.Add(userCookie);
-                            }
-
-                            // Forward back to their original URL (unless the original URL was this logon page)
-                            string raw_url = HttpContext.Current.Items["Original_URL"].ToString();
-                            if (raw_url.ToLower().IndexOf("my/logon") > 0)
-                            {
-                                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
-                            }
-                            else
-                            {
-                                HttpContext.Current.Response.Redirect(raw_url);
-                            }
+                        // Forward back to their original URL (unless the original URL was this logon page)
+                        string raw_url = HttpContext.Current.Items["Original_URL"].ToString();
+                        if (raw_url.ToLower().IndexOf("my/logon") > 0)
+                        {
+                            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                            currentMode.Redirect();
+                        }
+                        else
+                        {
+                            HttpContext.Current.Response.Redirect(raw_url, false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            currentMode.Request_Completed = true;
                         }
                     }
                 }
+            }
         }
 
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>

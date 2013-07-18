@@ -69,7 +69,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                CurrentMode.Redirect();
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!CurrentUser.Can_Edit_This_Item(Current_Object))
             {
                 CurrentMode.ViewerCode = String.Empty;
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                CurrentMode.Redirect();
                 return;
             }
 
@@ -206,9 +206,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //Save the request type as well
                 HttpContext.Current.Cache.Insert("main_thumbnail_action", (object) hidden_request);
 
-                string url_redirect = HttpContext.Current.Request.Url.ToString();
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
-
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                CurrentMode.Request_Completed = true;
+                return;
             }
             else
             {
@@ -223,7 +224,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this was a cancel request do that
             if (hidden_request == "cancel")
             {
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL());
+                CurrentMode.Redirect();
             }
             else if (hidden_request == "save")
             {
@@ -236,18 +237,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Save this updated information in the temporary folder's METS file for reading
                 // later if necessary.
-                string url_redirect = HttpContext.Current.Request.Url.ToString();
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
-
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                CurrentMode.Request_Completed = true;
             }
             else if (hidden_request == "move_selected_pages")
             {
                 // Read the data from the http form, perform all requests, and
                 // update the qc_item (also updates the session and temporary files)
-                List<QC_Viewer_Page_Division_Info> selected_pages = Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
+                Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
 
-                string url_redirect = HttpContext.Current.Request.Url.ToString();
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                CurrentMode.Request_Completed = true;
             }
             else if (hidden_request == "delete_page")
             {
@@ -256,9 +258,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
                 Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
 
-                string url_redirect = HttpContext.Current.Request.Url.ToString();
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
-
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                CurrentMode.Request_Completed = true;
             }
             else if (hidden_request == "delete_selected_page")
             {
@@ -266,9 +268,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // update the qc_item (also updates the session and temporary files)
                 Save_From_Form_Request_To_Item(String.Empty, String.Empty);
 
-                string url_redirect = HttpContext.Current.Request.Url.ToString();
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl.ToString());
-
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                CurrentMode.Request_Completed = true;
             }
         }
 
@@ -1211,15 +1213,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
     		// Start the citation table
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );
-			if (qc_item.Web.Static_PageCount < 100)
-			{
+
                 
 			//	Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>" + translator.Get_Translation(title, CurrentMode.Language) + "</b></span></td></tr>");
 				Output.WriteLine("\t</tr><tr>") ;
-			}
 			Output.WriteLine("\t\t<td>" );
 
-            //Output.WriteLine(NavigationRow);
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_behaviors_request\" name=\"QC_behaviors_request\" value=\"\" />");

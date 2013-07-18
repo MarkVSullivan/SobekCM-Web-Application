@@ -814,8 +814,10 @@ namespace SobekCM.Library.AdminViewer
             // Ensure the user is the system admin
             if ((User == null) || (!User.Is_System_Admin))
             {
+                currentMode.Mode = Display_Mode_Enum.My_Sobek;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), false);
+                currentMode.Redirect();
+                return;
             }
 
             // Set the action message to clear initially
@@ -910,7 +912,7 @@ namespace SobekCM.Library.AdminViewer
                             else
                             {
 
-                                if (SobekCM_Database.Send_Database_Email(reset_user.Email, "my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + SobekCM_Library_Settings.System_Email + ", or reply to this email.\n\n" + currentMode.Base_URL + "my/home\n", false, false, -1))
+                                if (SobekCM_Database.Send_Database_Email(reset_user.Email, "my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + SobekCM_Library_Settings.System_Email + ", or reply to this email.\n\n" + currentMode.Base_URL + "my/home\n", false, false, -1, -1))
                                 {
                                     if ((user.UserID == 1) || (user.UserID == 2))
                                         actionMessage = "Reset of password (" + password + ") for '" + reset_user.Full_Name + "' complete";
@@ -1274,15 +1276,15 @@ namespace SobekCM.Library.AdminViewer
 
                             // Redirect the user
                             currentMode.My_Sobek_SubMode = String.Empty;
-                            HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
-                        }
+                            currentMode.Redirect();
+        }
                     }
                     else
                     {
                         // Save to the admins session
                         HttpContext.Current.Session["Edit_User_" + editUser.UserID] = editUser;
                         currentMode.My_Sobek_SubMode = action;
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), false);
+                        currentMode.Redirect();
                     }
                 }
             }

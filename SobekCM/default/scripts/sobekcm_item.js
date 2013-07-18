@@ -362,7 +362,7 @@ function jp2_set_fullscreen() {
     $("#openseadragon_container").height(new_height);
 
     var window_width = $(window).width();
-    var new_width = window_width - x - 10;   
+    var new_width = window_width - x - 20;   
     $("#openseadragon_container").width(new_width);
 }
 
@@ -376,6 +376,6 @@ function pdf_set_fullscreen() {
     $("#pdfdocument").height(new_height);
 
     var window_width = $(window).width();
-    var new_width = window_width - x - 10;
+    var new_width = window_width - x - 20;
     $("#pdfdocument").width(new_width);
 }

@@ -86,7 +86,8 @@ namespace SobekCM.Library.AdminViewer
             {
                 currentMode.My_Sobek_SubMode = String.Empty;
                 currentMode.Admin_Type = Admin_Type_Enum.Users;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // Set an empty user group object for a new item
@@ -329,7 +330,7 @@ namespace SobekCM.Library.AdminViewer
                     if (successful_save)
                     {
                         currentMode.My_Sobek_SubMode = String.Empty;
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                        currentMode.Redirect();
                     }
                 }
             }

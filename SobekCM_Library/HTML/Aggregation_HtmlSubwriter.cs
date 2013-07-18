@@ -148,7 +148,7 @@ namespace SobekCM.Library.HTML
                             cc_list = String.Empty;
 
                         // Send the email
-                        string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name, currentMode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), base.Hierarchy_Object.Name, "home");
+                        string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name, currentMode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), base.Hierarchy_Object.Name, "home", currentUser.UserID);
                         HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
 
                         currentMode.isPostBack = true;
@@ -159,6 +159,10 @@ namespace SobekCM.Library.HTML
                             HttpContext.Current.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond, false);
                         else
                             HttpContext.Current.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond, false);
+
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Current_Mode.Request_Completed = true;
+                        return;
                     }
                 }
             }
@@ -250,6 +254,9 @@ namespace SobekCM.Library.HTML
                 collectionViewer = new Admin_AggregationViewer(Hierarchy_Object);
             }
 
+            // If execution should end, do it now
+            if (currentMode.Request_Completed)
+                return;
 
             if (collectionViewer != null)
             {

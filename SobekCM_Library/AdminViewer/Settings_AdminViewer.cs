@@ -52,8 +52,9 @@ namespace SobekCM.Library.AdminViewer
             // If the user cannot edit this, go back
             if (!User.Is_System_Admin)
             {
+                currentMode.Mode = Display_Mode_Enum.My_Sobek;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
             }
 
             // Establish some default, starting values

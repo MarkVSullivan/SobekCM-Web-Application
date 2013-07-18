@@ -104,10 +104,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Determine if there is a zoomable version of this page
             bool isZoomable = false;
-            Page_TreeNode page = CurrentItem.Web.Pages_By_Sequence[CurrentMode.Page];
+            Page_TreeNode page = CurrentItem.Web.Pages_By_Sequence[CurrentMode.Page-1];
             foreach (SobekCM_File_Info thisFile in page.Files)
             {
-                if (thisFile.Get_Viewer().View_Type == View_Enum.JPEG2000)
+                if ((thisFile.Get_Viewer() != null ) && ( thisFile.Get_Viewer().View_Type == View_Enum.JPEG2000))
                 {
                     isZoomable = true;
                     break;

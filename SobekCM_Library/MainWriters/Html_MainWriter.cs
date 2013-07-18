@@ -150,12 +150,14 @@ namespace SobekCM.Library.MainWriters
                     if ((internalHeaderAction == "hide") && (shown))
                     {
                         HttpContext.Current.Session["internal_header"] = "hidden";
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), true);
+                        currentMode.Redirect();
+                        return;
                     }
                     if ((internalHeaderAction == "show") && (!shown))
                     {
                         HttpContext.Current.Session["internal_header"] = "shown";
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), true);
+                        currentMode.Redirect();
+                        return;
                     }
                 }
             }
@@ -163,8 +165,6 @@ namespace SobekCM.Library.MainWriters
             // Create the html sub writer now
             switch (Current_Mode.Mode)
             {
-
-
                 case Display_Mode_Enum.Internal:
                     subwriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager);
                     break;
@@ -344,8 +344,8 @@ namespace SobekCM.Library.MainWriters
                 subwriter.Skin = htmlSkin;
                 subwriter.Hierarchy_Object = hierarchyObject;
             }
-
         }
+
 
         /// <summary> Returns a flag indicating if the current request requires the navigation form in the main ASPX
         /// application page, or whether all the html is served directly to the output stream, without the need of this form
@@ -410,36 +410,6 @@ namespace SobekCM.Library.MainWriters
         /// <value> This property always returns the enumerational value <see cref="SobekCM.Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
 
-        /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Html_MainWriter.Write_Html", String.Empty);
-
-            // If the subwriter is null, this is an ERROR, but do nothing for now
-            if (subwriter == null) return;
-            
-            // Always add the link to the main, small SobekCM.js
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
-
-            // Start with the basic html at the beginning of the page
-            if ( !subwriter.Subwriter_Behaviors.Contains( HtmlSubwriter_Behaviors_Enum.Suppress_Header)) 
-            {
-                Display_Header(Output, Tracer);
-            }
-
-            try
-            {
-                subwriter.Write_HTML(Output, Tracer);
-            }
-            catch (Exception ee)
-            {
-                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true);
-                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Html", ee, Tracer);
-            }
-        }
-
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
         /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
@@ -448,6 +418,10 @@ namespace SobekCM.Library.MainWriters
         /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
         public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder myUfdcUploadPlaceHolder, Custom_Tracer Tracer)
         {
+            // If execution should end, do it now
+            if (currentMode.Request_Completed)
+                return;
+
             Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Adding any necessary controls to the placeholders on the page");
 
             // Render HTML and add controls depending on the current mode
@@ -612,39 +586,7 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Writes additional HTML needed just before the main place holder but after the other place holders.  </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (subwriter == null) return;
-            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
- 
-            subwriter.Write_Additional_HTML(Output, Tracer);
-        }
-
-        /// <summary> Writes any final HTML needed after the main place holder directly to the output stream</summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if ( currentMode.isPostBack) return;
-            if (subwriter == null) return;
-
-            Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
-
-            // Allow the html subwriter to write some final HTML
-            subwriter.Write_Final_HTML(Output, Tracer);
-
-            // Add the footer if necessary
-            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
-            {
-                Display_Footer(Output, Tracer);
-            }
-        }
-
-        #region Methods used to add style references, headers, and footers
-
+        
         /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Title to use in the HTML result document </returns>
@@ -782,6 +724,91 @@ namespace SobekCM.Library.MainWriters
 
             return builder.ToString();
         }
+
+        /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Html_MainWriter.Write_Html", String.Empty);
+
+            // If the subwriter is null, this is an ERROR, but do nothing for now
+            if (subwriter == null) return;
+
+            // Always add the link to the main, small SobekCM.js
+            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
+
+            // Start with the basic html at the beginning of the page
+            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
+            {
+                Display_Header(Output, Tracer);
+            }
+
+            try
+            {
+                subwriter.Write_HTML(Output, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true);
+                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Html", ee, Tracer);
+            }
+        }
+
+        /// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if (subwriter == null) return;
+            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
+
+            subwriter.Write_ItemNavForm_Opening(Output, Tracer);
+        }
+
+        /// <summary> Writes additional HTML to the output stream just before the main place holder but after the TocPlaceHolder in the itemNavForm form.  </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if (subwriter == null) return;
+            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
+ 
+            subwriter.Write_Additional_HTML(Output, Tracer);
+        }
+
+        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if (subwriter == null) return;
+            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
+
+            subwriter.Write_ItemNavForm_Closing(Output, Tracer);
+        }
+
+        /// <summary> Writes any final HTML needed after the main place holder directly to the output stream</summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if ( currentMode.isPostBack) return;
+            if (subwriter == null) return;
+
+            Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
+
+            // Allow the html subwriter to write some final HTML
+            subwriter.Write_Final_HTML(Output, Tracer);
+
+            // Add the footer if necessary
+            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
+            {
+                Display_Footer(Output, Tracer);
+            }
+        }
+
+        #region Protected internal methods to write the header and footer to the stream
 
         /// <summary> Writes the header directly to the output stream writer </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
@@ -1330,7 +1357,7 @@ namespace SobekCM.Library.MainWriters
                         if (objErr.InnerException != null)
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + objErr.Message + "<br /><br />" +
                                   "Inner Exception: " + objErr.InnerException.Message + "<br /><br />" +
                                   "Stack Trace: " + objErr.InnerException.StackTrace + "<br /><br />";
@@ -1338,7 +1365,7 @@ namespace SobekCM.Library.MainWriters
                         else
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + objErr.Message + "<br /><br />" +
                                   "Stack Trace: " + objErr.StackTrace + "<br /><br />";
 
@@ -1355,11 +1382,11 @@ namespace SobekCM.Library.MainWriters
                     // Email the error message
                     if (Tracer != null)
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1);
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
                     }
                     else
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1);
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1, -1);
                     }
                 }
                 catch (Exception)
@@ -1371,7 +1398,8 @@ namespace SobekCM.Library.MainWriters
             // Forward to our error message
             if (Redirect)
             {
-                HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL);
+                HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
             }
         }
 

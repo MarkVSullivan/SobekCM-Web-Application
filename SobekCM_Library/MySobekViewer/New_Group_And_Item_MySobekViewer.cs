@@ -96,7 +96,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!user.Can_Submit)
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
             itemList = Item_List;
 
@@ -195,7 +196,8 @@ namespace SobekCM.Library.MySobekViewer
             {
                 // For now, just forward to the next phase
                 currentMode.My_Sobek_SubMode = "9";
-                HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // Look for the item in the session, then directory, then just create a new one
@@ -315,7 +317,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to my Sobek home
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                    currentMode.Redirect();
                 }
 
                 if ( action == "delete" )
@@ -327,7 +329,8 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(userInProcessDirectory + "\\" + filename);
 
                         // Forward
-                        HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
                     catch (Exception)
                     {
@@ -348,7 +351,8 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to the same URL
                     currentMode.My_Sobek_SubMode = "2";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
 
                 if (action == "next_phase")
@@ -444,7 +448,8 @@ namespace SobekCM.Library.MySobekViewer
 
                     // For now, just forward to the next phase
                     currentMode.My_Sobek_SubMode = next_phase;
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
             }
 
@@ -459,7 +464,8 @@ namespace SobekCM.Library.MySobekViewer
                 if (( template.Permissions_Agreement.Length > 0 ) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
                 {
                     currentMode.My_Sobek_SubMode = "1";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
 
                 // Get the validation errors
@@ -474,7 +480,8 @@ namespace SobekCM.Library.MySobekViewer
                 if (Directory.GetFiles( userInProcessDirectory, "*.mets*").Length == 0 )
                 {
                     currentMode.My_Sobek_SubMode = "2";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
 
                 // Get the validation errors
@@ -484,7 +491,8 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     item.Web.Show_Validation_Errors = true;
                     currentMode.My_Sobek_SubMode = "2";
-                    HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                    currentMode.Redirect();
+                    return;
                 }
             }
 
@@ -492,7 +500,8 @@ namespace SobekCM.Library.MySobekViewer
             if (( currentProcessStep == 8 ) && ( template.Upload_Types == Template.Template_Upload_Types.None ))
             {
                 currentMode.My_Sobek_SubMode = "9";
-                HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // If this is going into the last process step, check that any mandatory info (file, url, .. ) 
@@ -531,7 +540,8 @@ namespace SobekCM.Library.MySobekViewer
                     if (( !required_file_present ) && ( !required_url_present ))
                     {
                         currentMode.My_Sobek_SubMode = "8";
-                        HttpContext.Current.Response.Redirect( currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
                 }
 
@@ -885,7 +895,7 @@ namespace SobekCM.Library.MySobekViewer
                 string email_to = SobekCM_Library_Settings.System_Error_Email;
                 if (email_to.Length == 0)
                     email_to = SobekCM_Library_Settings.System_Email;
-                Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1);
+                Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
             }
 
             if (!criticalErrorEncountered)
@@ -896,7 +906,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     string body = "New item submission complete!<br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + user.Full_Name + " ( " + user.Email + " )<br />Link: <a href=\"" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>";
                     string subject = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    Database.SobekCM_Database.Send_Database_Email(template.Email_Upon_Receipt, subject, body, true, false, -1);
+                    Database.SobekCM_Database.Send_Database_Email(template.Email_Upon_Receipt, subject, body, true, false, -1, -1);
                 }
 
                 // If the user wants to have a message sent, send one
@@ -905,7 +915,7 @@ namespace SobekCM.Library.MySobekViewer
                     // Create the mail message
                     string body2 = "<strong>CONGRATULATIONS!</strong><br /><br />Your item has been successfully added to the digital library and will appear immediately.  Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface. <br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a></blockquote>";
                     string subject2 = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    Database.SobekCM_Database.Send_Database_Email(user.Email, subject2, body2, true, false, -1 );
+                    Database.SobekCM_Database.Send_Database_Email(user.Email, subject2, body2, true, false, -1, -1 );
                 }
             }
 

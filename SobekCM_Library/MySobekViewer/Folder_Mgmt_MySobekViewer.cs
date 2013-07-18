@@ -109,13 +109,15 @@ namespace SobekCM.Library.MySobekViewer
                     if (userFolder == null)
                     {
                         // Invalid folder.. should not have gotten this far though
-                        HttpContext.Current.Response.Redirect(currentMode.Base_URL);
+                        HttpContext.Current.Response.Redirect(currentMode.Base_URL, false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        currentMode.Request_Completed = true;
+                        return;
                     }
-                    else
-                    {
-                        // Save this to the user so this does not have to happen again
-                        user.Add_Folder(userFolder);
-                    }
+
+
+                    // Save this to the user so this does not have to happen again
+                    user.Add_Folder(userFolder);
                 }
 
                 // Get the proper name and folder id
@@ -257,7 +259,7 @@ namespace SobekCM.Library.MySobekViewer
                                 bool is_html_format = (format != "TEXT");
 
                                 // Send this email
-                                Item_Email_Helper.Send_Email(email, String.Empty, comments, user.Full_Name, currentMode.SobekCM_Instance_Abbreviation, newItem, is_html_format, currentMode.Base_URL + newItem.BibID + "/" + newItem.VID);
+                                Item_Email_Helper.Send_Email(email, String.Empty, comments, user.Full_Name, currentMode.SobekCM_Instance_Abbreviation, newItem, is_html_format, currentMode.Base_URL + newItem.BibID + "/" + newItem.VID, user.UserID);
                             }
                     }
 
@@ -282,7 +284,8 @@ namespace SobekCM.Library.MySobekViewer
 
                 string return_url = HttpContext.Current.Items["Original_URL"].ToString();
                 HttpContext.Current.Response.Redirect(return_url, false);
-
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                currentMode.Request_Completed = true;
             }
         }
 
@@ -680,16 +683,14 @@ namespace SobekCM.Library.MySobekViewer
                     currentMode.My_Sobek_SubMode = String.Empty;
                     if (folder_name.Length == 0)
                     {
-                        HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                        currentMode.Redirect();
+                        return;
                     }
+                    
+                    if (properFolderName != "Submitted Items")
+                        literal.Text = "<br /><br /><div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div>";
                     else
-                    {
-                        if (properFolderName != "Submitted Items")
-                            literal.Text = "<br /><br /><div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div>";
-                        else
-                            literal.Text = "<div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div>";
-
-                    }
+                        literal.Text = "<div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div>";
                     placeHolder.Controls.Add(literal);
 
                 }
