@@ -47,18 +47,17 @@ a img {
 }
 
 .button2 input[type="button"]{
-    color: #333333;
+    color: #666666;
     font: bold 12px Arial,Helvetica,Sans-serif;
     padding: 4px 10px 4px 10px;
-    background:url(overlay.png) repeat-x center #9f9f9f;
-    background-color:#9f9f9f;
-    border:1px solid #9f9f9f;
-    -moz-border-radius:10px;
-    -webkit-border-radius:10px;
-    border-radius:10px;
+    background:url(overlay.png) repeat-x center #CCCCCC;
+    background-color:#CCCCCC;
+    border:1px solid #CCCCCC;
+    -moz-border-radius:12px;
+    -webkit-border-radius:12px;
+    border-radius:12px;
     border-bottom:1px solid #9f9f9f;
-    -webkit-box-shadow: 0 0 5px whitesmoke;
-	box-shadow: 0 0 5px whitesmoke;
+
     }
 
 .button2:hover input[type="button"]{
@@ -76,7 +75,7 @@ a img {
 	box-shadow: 0 0 10px whitesmoke;
 	cursor: pointer;
 }
-#content_toolbox_searchResults{
+#searchResults_container{
     background:#fcfcfc;
 	color: #6a6f75;
 	border: 0 none;
@@ -95,7 +94,25 @@ a img {
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
 	overflow: hidden;
 }
-#poiList_mapper_container {
+#searchResults_scoll_container {
+	/*overflow-x:hidden;
+	height:20px;
+	margin-right: -5px;*/
+}
+#searchResults_list {
+	padding-left:5px;
+	text-align: left;
+}
+.searchResults_listItem {
+	height: 16px;
+}
+.searchResults_actionButton {
+	float: right;
+	clear: both;
+	padding-right: 5px;
+	height: 16px;
+}
+#poiList_container {
 	background:#fcfcfc;
 	color: #6a6f75;
 	border: 0 none;
@@ -114,7 +131,7 @@ a img {
 	overflow: hidden;
 
 }
-#poiList_Scollmapper_container {
+#poiList_scoll_container {
 	overflow-x:hidden;
 	height:140px;
 	margin-right: -5px;
@@ -178,6 +195,9 @@ a img {
 .hidden{
 	display: none;
 }
+.mapper_container_search {
+
+}
 .search {
 	background:#fcfcfc;
 	color: #6a6f75;
@@ -214,7 +234,10 @@ a img {
     width: 18px;
     height: 18px;
     margin: -28px 0 0 130px;
-    position:absolute;
+    position: absolute;
+}
+.searchActionHandle:hover {
+    cursor: pointer;
 }
 .descPOI {
 	background:#fcfcfc;
@@ -268,3 +291,4 @@ a img {
 	margin:0;
 	overflow: hidden;
 }
+

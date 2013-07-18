@@ -167,52 +167,41 @@ function zoomMap(direction) {
     }
 }
 
-//open a specific tab
-function openToolboxTab(id)
-{
-    $("#mapper_container_toolboxTabs").accordion({ active: id });
-}
-
 //user initiated action handler
 function action(id) {
     switch (id) {
         case "manageItem":
-            actionActive = "Item";
+            actionActive = "Item"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
             if (toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
             openToolboxTab(2);
-            
             //force a suppression dm
             if (mapDrawingManagerDisplayed == true) {
                 mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-
             placerType = "item";
             break;
             
         case "manageOverlay":
-            actionActive = "Overlay";
+            actionActive = "Overlay"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
             if (toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
-            
             openToolboxTab(3);
-            
             //force a suppression dm
             if (mapDrawingManagerDisplayed == true) {
                 mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-            
             placerType = "overlay";
             break;
             
         case "managePOI":
-            actionActive = "POI";
+            actionActive = "POI"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
             if (toolboxDisplayed != true) {
                 toggleVis("toolbox");
@@ -225,13 +214,12 @@ function action(id) {
         case "other":
             actionActive = "Other";
             buttonActive("action");
-
+            //openToolboxTab(); //not called here, called in listerner
             //force a suppression dm
             if (mapDrawingManagerDisplayed == true) {
                 mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-
             placerType = "none";
             break;
     }
@@ -411,7 +399,7 @@ function clear(id) {
     switch (id) {
         case "item":
             itemMarker.setMap(null); //delete marker form map
-            itemMarker = null;
+            itemMarker = null; //delete reference to marker
             savingMarkerCenter = null; //reset stored coords to save
             document.getElementById('content_toolbox_posItem').value = ""; //reset lat/long in tab
             document.getElementById('content_toolbox_rgItem').value = ""; //reset address in tab

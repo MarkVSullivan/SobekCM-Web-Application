@@ -16,6 +16,18 @@ function initOptions() {
     document.getElementById("content_toolbarGrabber").style.display = "block";
 }
 
+//open a specific tab
+function openToolboxTab(id) {
+    ////START WORKAROUND
+    //if (id == 1) {
+    //    setTimeout(function () { document.getElementById("content_toolbox_searchButton").style.display = "block"; }, 100);
+    //} else {
+    //    document.getElementById("content_toolbox_searchButton").style.display = "none";
+    //}
+    ////END WORKAROUND
+    $("#mapper_container_toolboxTabs").accordion({ active: id });
+}
+
 //facilitates button sticky effect
 function buttonActive(id) {
     switch (id) {
@@ -54,7 +66,8 @@ function buttonActive(id) {
             }
             break;
         case "action":
-            if (actionActive == "other") {
+            de("aa: " + actionActive + "<br>" + "paa: " + prevActionActive);
+            if (actionActive == "Other") {
                 document.getElementById("content_toolbar_button_manage" + prevActionActive).className = document.getElementById("content_toolbar_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                 document.getElementById("content_toolbox_button_manage" + prevActionActive).className = document.getElementById("content_toolbox_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
             } else {
@@ -72,6 +85,9 @@ function buttonActive(id) {
 
 //display an inline message
 function displayMessage(message) {
+
+    de(message); //send to debugger for logging
+
     //create message
     var messageText = "<p class=\"message\">";
     messageText += message; //assign incoming message to text
@@ -95,7 +111,7 @@ function createSavedItem(coordinates) {
     //assign data
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
-    alert("saving item: " + dataPackage); //temp
+    de("saving item: " + dataPackage); //temp
     document.getElementById("saveTest").value = dataPackage;
     //document.location.reload(); //refresh page
     //CallServer(dataPackage);
@@ -112,7 +128,7 @@ function createSavedOverlay(index, source, bounds, rotation) {
     var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
 
     var dataPackage = data + "~";
-    alert("saving overlay set: " + dataPackage); //temp
+    de("saving overlay set: " + dataPackage); //temp
     document.getElementById("saveTest").value = dataPackage;
     //CallServer(dataPackage); //not yet working
 }
@@ -149,12 +165,11 @@ function createSavedPOI() {
         var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
         dataPackage += data + "~";
     }
-    alert("saving poi set: " + dataPackage); //temp
+    de("saving poi set: " + dataPackage); //temp
     //CallServer(dataPackage);
 }
 
-//non changed fcns
-
+//open the infowindow of a poi
 function poiEditMe(id) {
     poiObj[id].setMap(map);
     if (poiType[id] == "marker") {
@@ -162,19 +177,25 @@ function poiEditMe(id) {
     } else {
         infowindow[id].setMap(map);
     }
-}                        //open the infowindow of a poi
+}
+
+//hide poi on map
 function poiHideMe(id) {
     poiObj[id].setMap(null);
     infowindow[id].setMap(null);
     label[id].setMap(null);
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "add.png\" onclick=\"poiShowMe(" + id + ");\" />";
-}                        //hide poi on map
+}
+
+//show poi on map
 function poiShowMe(id) {
     poiObj[id].setMap(map);
     infowindow[id].setMap(map);
     label[id].setMap(map);
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
-}                        //show poi on map
+}
+
+//delete poi from map and list
 function poiDeleteMe(id) {
     poiObj[id].setMap(null);
     poiObj[id] = null;
@@ -183,7 +204,9 @@ function poiDeleteMe(id) {
     $(strg).remove(); //remove <li>
     infowindow[id].setMap(null);
     label[id].setMap(null);
-}                      //delete poi from map and list
+}
+
+//get the poi desc
 function poiGetDesc(id) {
 
     var temp = document.getElementById("poiDesc" + id).value;
@@ -192,13 +215,22 @@ function poiGetDesc(id) {
     } else {
         poiDesc[id] = document.getElementById("poiDesc" + id).value;
     }
-}                       //get the poi desc
+}                       
+
+//delete search results from map and list
 function searchResultDeleteMe() {
-    searchResult.setMap(null);
-    $("#searchResult").remove();
-    document.getElementById("content_toolbar_searchField").value = "";
-    document.getElementById("content_toolbox_searchField").value = "";
-}               //delete search results from map and list
+    //remove visually
+    searchResult.setMap(null); //remove from map
+    $("#searchResult_1").remove(); //remove the first result div from result list box in toolbox
+    document.getElementById("content_toolbar_searchField").value = ""; //clear searchbar
+    document.getElementById("content_toolbox_searchField").value = ""; //clear searchbox
+
+    //remove references to 
+    searchResult = null; //reset search result map item
+    searchCount = 0; //reset search count
+}
+
+//callback message board [currently not used]
 function HandleResult(arg) {
     switch (arg) {
         case "0":
@@ -214,11 +246,14 @@ function HandleResult(arg) {
             displayMessage(L15);
             break;
     }
-}                    //callback message board
+}
+
+//used for lat/long tool
 function DisplayCursorCoords(arg) {
     cCoord.innerHTML = arg;
-}             //used for lat/long tool
+}             
 
+//check the zoom level
 function checkZoomLevel() {
     var currentZoomLevel = map.getZoom();
     var currentMapType = map.getMapTypeId();
@@ -253,7 +288,9 @@ function checkZoomLevel() {
             }
         }
     }
-}                     //check the zoom level
+}
+
+//jquery transparency slider
 $(function () {
     $("#overlayTransparencySlider").slider({
         animate: true,
@@ -270,7 +307,9 @@ $(function () {
             preserveOpacity = selection;
         }
     });
-});                               //jquery transparency slider
+});
+
+//jquery rotation knob
 $(function ($) {
     $(".knob").knob({
         change: function (value) {
@@ -285,13 +324,17 @@ $(function ($) {
         }
     });
 
-});                              //for rotation knob
+});
+
+//used to maintain specific rotation of overlay
 function keepRotate(degreeIn) {
     currentlyEditing = "yes"; //used to signify we are editing this overlay
     $(function () {
         $("#overlay" + workingOverlayIndex).rotate(degreeIn);
     });
-}                 //maintain specific rotation
+}
+
+//used to specify a variable rotation
 function rotate(degreeIn) {
     currentlyEditing = "yes"; //used to signify we are editing this overlay
     degree = preservedRotation;
@@ -307,14 +350,9 @@ function rotate(degreeIn) {
         });
     }
     preservedRotation = degree; //preserve rotation value
-}                     //variable rotation fcn
-function hide(what) {
-    $(what).hide();
-}                           //hide somethign using jquery
-function show(what) {
-    $(what).show();
-}                           //display something using jquery
+}
 
+//get the center lat/long of a polygon
 function polygonCenter(poly) {
     var lowx,
         highx,
@@ -338,8 +376,9 @@ function polygonCenter(poly) {
     center_x = lowx + ((highx - lowx) / 2);
     center_y = lowy + ((highy - lowy) / 2);
     return (new google.maps.LatLng(center_x, center_y));
-}                  //get the center lat/long of a polygon
+}                  
 
+//test the map bounds
 function testBounds() {
     if (strictBounds != null) {
         if (strictBounds.contains(map.getCenter())) {
@@ -352,18 +391,19 @@ function testBounds() {
     }
 }
 
-//test the map bounds
+//search the gmaps for a location (lat/long or address)
 function finder(stuff) {
-
     if (stuff.length > 0) {
-        codeAddress("lookup", stuff);
-        document.getElementById("content_toolbar_searchField").value = stuff;
-        document.getElementById("content_toolbox_searchField").value = stuff;
+        codeAddress("lookup", stuff); //find the thing
+        document.getElementById("content_toolbar_searchField").value = stuff; //sync toolbar
+        document.getElementById("content_toolbox_searchField").value = stuff; //sync toolbox
         openToolboxTab(1); //open the actions tab
     } else {
         //do nothing and keep quiet
     }
-}                        //search the gmaps for a location (lat/long or address)
+}
+
+//placeholder to search the collection [currently not used]
 function searcher(stuff) {
 
     if (stuff.length > 0) {
@@ -371,8 +411,9 @@ function searcher(stuff) {
     } else {
         //do nothing and keep quiet
     }
-}                      //search the collection for something
+}
 
+//get the location of a lat/long or address
 function codeAddress(type, geo) {
     var bounds = map.getBounds(); //get the current map bounds (should not be greater than the bounding box)
     geocoder.geocode({ 'address': geo, 'bounds': bounds }, function (results, status) { //geocode the lat/long of incoming with a bias towards the bounds
@@ -389,7 +430,8 @@ function codeAddress(type, geo) {
                     map: map, //add to current map
                     position: results[0].geometry.location //set position to search results
                 });
-                document.getElementById("content_toolbox_searchResults").innerHTML = "<div id=\"searchResult\">" + geo + " <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div><br\>"; //add list div
+                var searchResult_i = 1; //temp, placeholder for later multi search result support
+                document.getElementById("searchResults_list").innerHTML = "<div id=\"searchResult_" + searchResult_i + "\" class=\"searchResults_listItem\">" + geo + " <div class=\"searchResults_actionButton\"> <a href=\"#\" onclick=\"searchResultDeleteMe();\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div><br\>"; //add list div
             } else { //if location found was outside strict map bounds...
                 displayMessage(L24); //say so
             }
@@ -398,7 +440,9 @@ function codeAddress(type, geo) {
             alert(L6); //localization...
         }
     });
-}               //get the location of a lat/long or address
+}
+
+//get the nearest human reabable location from lat/long
 function codeLatLng(latlng) {
     if (geocoder) {
         geocoder.geocode({ 'latLng': latlng }, function (results, status) {
@@ -413,7 +457,9 @@ function codeLatLng(latlng) {
             }
         });
     }
-}                   //get the nearest human reabable location from lat/long
+}
+
+//assign search location pin to item location
 function useSearchAsItemLocation() {
     placerType = "item";                        //this tells listeners what to do
     itemMarker = new google.maps.Marker({
@@ -423,8 +469,10 @@ function useSearchAsItemLocation() {
     });
 
     firstMarker++;                              //prevent redraw
+    
     searchResult.setMap(null);                  //delete search result from map
-    $("#content_toolbox_searchResult").remove();                //delete search result form list
+    $("#searchResult_1").remove();              //delete search result from list
+    
     itemMarker.setMap(map);                     //set itemMarker location icon to map
     document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
     codeLatLng(itemMarker.getPosition());       //get the reverse geo address for item location and put in location tab
@@ -437,7 +485,7 @@ function useSearchAsItemLocation() {
         savingMarkerCenter = itemMarker.getPosition(); //store coords to save
     });
 
-}            //assign search location pin to item location
+}            
 
 //keypress shortcuts/actions
 window.onkeypress = keypress;
@@ -448,7 +496,7 @@ function keypress(e) {
     } else if (e) {
         keycode = e.which;
     }
-    //displayMessage("keycode: " + keycode);
+    de("keycode: " + keycode);
     switch (keycode) {
         case 70: //F
             if (navigator.appName == "Microsoft Internet Explorer") {
@@ -486,10 +534,29 @@ function keypress(e) {
             }
 
             break;
+        case 13: //enter
+            if ( document.getElementById("content_toolbox_searchField").value != null) {
+                var stuff = document.getElementById("content_toolbox_searchField").value;
+                finder(stuff);
+            }
+            if (document.getElementById("content_toolbar_searchField").value != null) {
+                var stuff = document.getElementById("content_toolbar_searchField").value;
+                finder(stuff);
+            }
+
+            break;
+        case 68: //D (for debuggin)
+            debugs++;
+            if (debugs % 2 == 0) {
+                document.getElementById("debugs").style.display = "none";
+            } else {
+                document.getElementById("debugs").style.display = "block";
+            }
+            break;
     }
 }
 
-//Resizes container based on the viewport
+//resizes container based on the viewport
 function resizeView() {
     //alert(document.documentElement.clientHeight);
 
@@ -500,4 +567,15 @@ function resizeView() {
     document.getElementById("mapper_container").style.height = percentOfHeight + "%";
 
     //alert(percentOfHeight);
+}
+
+//debugging 
+var debugString = "<strong>Debug Panel:</strong><br><br>";
+var debugs = 0; //used for keycode debugging
+function de(message) {
+    //create debug string
+    var currentdate = new Date();
+    var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
+    debugString += "[" + time + "] " + message + "<br><hr>";
+    document.getElementById("debugs").innerHTML = debugString;
 }
