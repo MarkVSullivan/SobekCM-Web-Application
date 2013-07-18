@@ -1219,9 +1219,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("\t</tr><tr>") ;
 			Output.WriteLine("\t\t<td>" );
 
-            Output.WriteLine(NavigationRow);
-
-            //Output.WriteLine(NavigationRow);
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_behaviors_request\" name=\"QC_behaviors_request\" value=\"\" />");

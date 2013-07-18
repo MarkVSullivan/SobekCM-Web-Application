@@ -418,17 +418,17 @@ namespace SobekCM.Library.MySobekViewer
                         // If they want to be able to contribue, send an email
                         if (desire_to_upload)
                         {
-                            SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, false, -1);
+                            SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, false, -1, -1);
                         }
 
                         // Email the user their registation information
                         if (desire_to_upload)
                         {
-                            SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + currentMode.Base_URL + "/my\">" + currentMode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, false, -1);
+                            SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + currentMode.Base_URL + "/my\">" + currentMode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, false, -1, -1);
                         }
                         else
                         {
-                            SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + currentMode.Base_URL + "/my\">" + currentMode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, false, -1);
+                            SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + currentMode.Base_URL + "/my\">" + currentMode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, false, -1, -1);
                         }
 
                         // Now, forward back to the My Sobek home page

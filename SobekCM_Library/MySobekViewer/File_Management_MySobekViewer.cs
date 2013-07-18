@@ -414,7 +414,7 @@ namespace SobekCM.Library.MySobekViewer
                 string email_to = SobekCM_Library_Settings.System_Error_Email;
                 if (email_to.Length == 0)
                     email_to = SobekCM_Library_Settings.System_Email;
-                Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1);
+                Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
             }
 
 

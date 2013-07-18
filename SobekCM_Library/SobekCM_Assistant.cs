@@ -1629,9 +1629,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache. </remarks>
-        public bool Get_Entire_Collection_Hierarchy(SobekCM_Navigation_Object Current_Mode, 
-                                                    Aggregation_Code_Manager Code_Manager,
-                                                    Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
+        public bool Get_Entire_Collection_Hierarchy(SobekCM_Navigation_Object Current_Mode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
         {
             if (Tracer != null)
             {

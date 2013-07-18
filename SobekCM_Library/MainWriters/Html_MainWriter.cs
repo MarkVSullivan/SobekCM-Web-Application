@@ -1357,7 +1357,7 @@ namespace SobekCM.Library.MainWriters
                         if (objErr.InnerException != null)
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + objErr.Message + "<br /><br />" +
                                   "Inner Exception: " + objErr.InnerException.Message + "<br /><br />" +
                                   "Stack Trace: " + objErr.InnerException.StackTrace + "<br /><br />";
@@ -1365,7 +1365,7 @@ namespace SobekCM.Library.MainWriters
                         else
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + objErr.Message + "<br /><br />" +
                                   "Stack Trace: " + objErr.StackTrace + "<br /><br />";
 
@@ -1382,11 +1382,11 @@ namespace SobekCM.Library.MainWriters
                     // Email the error message
                     if (Tracer != null)
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1);
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
                     }
                     else
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1);
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1, -1);
                     }
                 }
                 catch (Exception)

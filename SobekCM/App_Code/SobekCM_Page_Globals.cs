@@ -1025,8 +1025,7 @@ public class SobekCM_Page_Globals
         }
         else
         {
-            if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, SobekCM_Library_Settings.Base_Directory, tracer,
-                                           out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
+            if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, SobekCM_Library_Settings.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
             {
                 currentMode.Mode = Display_Mode_Enum.Error;
             }
@@ -1052,8 +1051,7 @@ public class SobekCM_Page_Globals
             }
 
             SobekCM_Assistant assistant = new SobekCM_Assistant();
-            assistant.Get_Search_Results(currentMode, Global.Item_List, hierarchyObject,
-                                         tracer, out searchResultStatistics, out pagedSearchResults);
+            assistant.Get_Search_Results(currentMode, Global.Item_List, hierarchyObject, tracer, out searchResultStatistics, out pagedSearchResults);
 
             if ((!currentMode.isPostBack) && (Global.Search_History != null))
             {
@@ -1063,7 +1061,9 @@ public class SobekCM_Page_Globals
         catch (Exception ee)
         {
             currentMode.Mode = Display_Mode_Enum.Error;
-            currentMode.Error_Message = "Unable to perform search at this time";
+            currentMode.Error_Message = "Unable to perform search at this time ";
+            if (hierarchyObject == null)
+                currentMode.Error_Message = "Unlable to perform search - hierarchyObject = null";
             currentMode.Caught_Exception = ee;
         }
     }
@@ -1210,7 +1210,7 @@ public class SobekCM_Page_Globals
                 err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
                       "Error in: " + HttpContext.Current.Request.Url + "<br />" +
                       "Error Message: " + objErr.Message + "<br /><br />" +
-                      "Stack Trace: " + objErr.StackTrace + "<br /><br />";
+                      "Stack Trace: " + objErr.StackTrace.Replace("\r","<br />") + "<br /><br />";
 
                 if (objErr.Message.IndexOf("Timeout expired") >= 0)
                     email_title = "Database Timeout Expired";
@@ -1222,7 +1222,7 @@ public class SobekCM_Page_Globals
                       "Error Message: " + email_title;
             }
 
-            SobekCM_Database.Send_Database_Email(ConfigurationManager.AppSettings["Error_Emails"], email_title, err, true, false, -1);
+            SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1, -1);
 
         }
         catch (Exception)
@@ -1233,8 +1233,11 @@ public class SobekCM_Page_Globals
         // Forward to our error message
         if (redirect)
         {
-            HttpContext.Current.Response.Redirect(ConfigurationManager.AppSettings["Error_HTML_Page"]);
-
+            // Forward to our error message
+            HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            if (currentMode != null)
+                currentMode.Request_Completed = true;   
         }
     }
 
@@ -1285,7 +1288,7 @@ public class SobekCM_Page_Globals
             // Send this email
             try
             {
-                SobekCM_Database.Send_Database_Email(ConfigurationManager.AppSettings["Error_Emails"], "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1);
+                SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1, -1);
             }
             catch (Exception)
             {
@@ -1299,7 +1302,10 @@ public class SobekCM_Page_Globals
         }
 
         // Forward to our error message
-        HttpContext.Current.Response.Redirect(ConfigurationManager.AppSettings["Error_HTML_Page"]);
+        HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+        HttpContext.Current.ApplicationInstance.CompleteRequest();
+        if ( currentMode != null )
+            currentMode.Request_Completed = true;   
     }
 
     #endregion

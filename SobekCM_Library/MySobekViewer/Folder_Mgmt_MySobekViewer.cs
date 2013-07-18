@@ -259,7 +259,7 @@ namespace SobekCM.Library.MySobekViewer
                                 bool is_html_format = (format != "TEXT");
 
                                 // Send this email
-                                Item_Email_Helper.Send_Email(email, String.Empty, comments, user.Full_Name, currentMode.SobekCM_Instance_Abbreviation, newItem, is_html_format, currentMode.Base_URL + newItem.BibID + "/" + newItem.VID);
+                                Item_Email_Helper.Send_Email(email, String.Empty, comments, user.Full_Name, currentMode.SobekCM_Instance_Abbreviation, newItem, is_html_format, currentMode.Base_URL + newItem.BibID + "/" + newItem.VID, user.UserID);
                             }
                     }
 
