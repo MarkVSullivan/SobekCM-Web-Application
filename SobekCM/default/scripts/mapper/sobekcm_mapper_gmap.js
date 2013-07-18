@@ -755,14 +755,31 @@ function initialize() {
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
-            var bounds = new google.maps.LatLngBounds;
-            polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
-            var polylineCenter = bounds.getCenter();
-            infowindow[poi_i].setPosition(polylineCenter);
+            //var bounds = new google.maps.LatLngBounds;
+            //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+            //var polylineCenter = bounds.getCenter();
+            //var bounds = new google.maps.LatLngBounds; //spatial center, bounds holder
+            var polylinePoints = [];
+            var polylinePointCount = 0;
+            polyline.getPath().forEach(function (latLng) {
+                polylinePoints[polylinePointCount] = latLng;
+                de("polylinePoints[" + polylinePointCount + "] = " + latLng);
+                polylinePointCount++;
+            });
+            de("polylinePointCount: " + polylinePointCount);
+            de("polylinePoints.length: " + polylinePoints.length);
+            de("Math.round((polylinePoints.length / 2)): " + Math.round((polylinePoints.length / 2)));
+            var polylineCenterPoint = polylinePoints[Math.round((polylinePoints.length / 2))];
+            de("polylineCenterPoint: " + polylineCenterPoint);
+            var polylineStartPoint = polylinePoints[0];
+            de("polylineStartPoint: " + polylineStartPoint);
+            infowindow[poi_i].setPosition(polylineStartPoint);
             infowindow[poi_i].open(map);
 
             label[poi_i] = new MarkerWithLabel({
-                position: polylineCenter, //position of real marker
+                //position: polylineCenter, //position of real marker
+                //position: polylineCenterPoint, //position of real marker
+                position: polylineStartPoint, //position at start of polyline
                 zIndex: 2,
                 map: map,
                 labelContent: poiId, //the current user count
@@ -774,16 +791,30 @@ function initialize() {
 
         }
         google.maps.event.addListener(polyline.getPath(), 'set_at', function () { //what is path?
-            if (placerType == "poi") {
+            if (placerType == "poi") {             
+                de("is poi");
                 for (var i = 0; i < poiObj.length; i++) {
-                    if (poiObj[i] == this) {
-                        var bounds = new google.maps.LatLngBounds;
-                        polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
-                        var polylineCenter = bounds.getCenter();
-                        infowindow[i].setPosition(polylineCenter);
-                        infowindow[i].setMap(map);
-                        label[i].setPosition(polylineCenter);
+                    de("inside loop1");
+                    if (poiObj[i].getPath() == this) {
+                        //var bounds = new google.maps.LatLngBounds;
+                        //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+                        //var polylineCenter = bounds.getCenter();
+                        //var bounds = new google.maps.LatLngBounds; //spatial center, bounds holder
+                        var polylinePoints = [];
+                        var polylinePointCount = 0;
+                        de("here1");
+                        polyline.getPath().forEach(function (latLng) {
+                            polylinePoints[polylinePointCount] = latLng;
+                            polylinePointCount++;
+                        });
+                        de("here2");
+                        var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
+                        var polylineStartPoint = polylinePoints[0];
+                        infowindow[poi_i].setPosition(polylineStartPoint);
+                        infowindow[poi_i].open(map);
+                        label[i].setPosition(polylineStartPoint);
                         label[i].setMap(map);
+                        de("here3");
                     }
                 }
                 
@@ -822,14 +853,24 @@ function initialize() {
         });
         google.maps.event.addListener(polyline, 'dragend', function () {
             if (placerType == "poi") {
-                var bounds = new google.maps.LatLngBounds;
-                polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
-                var polylineCenter = bounds.getCenter();
+                //var bounds = new google.maps.LatLngBounds;
+                //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+                //var polylineCenter = bounds.getCenter();
+                //var bounds = new google.maps.LatLngBounds; //spatial center, bounds holder
+                
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
-                        infowindow[i].setPosition(polylineCenter);
+                        var polylinePoints = [];
+                        var polylinePointCount = 0;
+                        polyline.getPath().forEach(function (latLng) {
+                            polylinePoints[polylinePointCount] = latLng;
+                            polylinePointCount++;
+                        });
+                        var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
+                        var polylineStartPoint = polylinePoints[0];
+                        infowindow[i].setPosition(polylineStartPoint);
                         infowindow[i].open(map);
-                        label[i].setPosition(polylineCenter);
+                        label[i].setPosition(polylineStartPoint);
                         label[i].setMap(map);
                     }
                 }
@@ -838,12 +879,21 @@ function initialize() {
         });
         google.maps.event.addListener(polyline, 'click', function () {
             if (placerType == "poi") {
-                var bounds = new google.maps.LatLngBounds;
-                polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
-                var polylineCenter = bounds.getCenter();
+                //var bounds = new google.maps.LatLngBounds;
+                //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+                //var polylineCenter = bounds.getCenter();
+                
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
-                        infowindow[i].setPosition(polylineCenter);
+                        var polylinePoints = [];
+                        var polylinePointCount = 0;
+                        polyline.getPath().forEach(function (latLng) {
+                            polylinePoints[polylinePointCount] = latLng;
+                            polylinePointCount++;
+                        });
+                        var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
+                        var polylineStartPoint = polylinePoints[0];
+                        infowindow[i].setPosition(polylineStartPoint);
                         infowindow[i].open(map);
                     }
                 }
