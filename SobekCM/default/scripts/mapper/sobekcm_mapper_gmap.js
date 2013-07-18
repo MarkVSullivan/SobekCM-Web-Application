@@ -6,7 +6,7 @@ var mapDrawingManagerDisplayed;         //holds marker for drawing manager
 var mapLayerActive;                     //holds the current map layer active
 var prevMapLayerActive;                 //holds the previous active map layer
 var actionActive;                       //holds the current active action
-var prevActionActive;                   //holds the previous active action
+var prevActionActive = null;            //holds the previous active action
 var overlaysCurrentlyDisplayed;         //holds marker for overlays on map
 var pageMode;                           //holds the page/viewer type
 var mapCenter;                          //used to center map on load
@@ -360,6 +360,7 @@ toolbarBufferZone2.style.height = '50px';
 
 function initialize() {
 
+    //as map is loading, fit to screen
     resizeView();
 
     //initialize google map objects
@@ -380,12 +381,13 @@ function initialize() {
         if (placerType == "item") {
             //used to prevent multi markers
             if (firstMarker > 0) {
-                itemMarker.setMap(null);
                 drawingManager.setDrawingMode(null); //only place one at a time
             } else {
                 firstMarker++;
+                drawingManager.setDrawingMode(null); //only place one at a time
             }
             itemMarker = marker; //assign globally
+            de("marker placed");
             document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
             savingMarkerCenter = itemMarker.getPosition(); //store coords to save
             codeLatLng(itemMarker.getPosition());
