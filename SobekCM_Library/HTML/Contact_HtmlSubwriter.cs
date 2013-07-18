@@ -91,7 +91,7 @@ namespace SobekCM.Library.HTML
                     }
                     catch
                     {
-                        bool email_error = SobekCM_Database.Send_Database_Email(base.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1);
+                        bool email_error = SobekCM_Database.Send_Database_Email(base.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1, -1 );
 
                         // Send back to the home for this collection, sub, or group
                         if (email_error)

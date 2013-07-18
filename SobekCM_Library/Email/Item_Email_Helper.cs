@@ -24,20 +24,18 @@ namespace SobekCM.Library.Email
         /// <param name="HTML_Format"> Tells if this should be sent as HMTL, otherwise it will be plain text </param>
         /// <param name="URL"> Direct URL for this item </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Send_Email( string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, bool HTML_Format, string URL )
+        public static bool Send_Email( string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, bool HTML_Format, string URL, int UserID )
         {
-            return false;
-
             if (HTML_Format)
             {
-                return HTML_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL) || Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL);
+                return HTML_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID) || Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
             }
             
-            return Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL);
+            return Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
         }
 
 
-        private static bool HTML_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL)
+        private static bool HTML_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
         {
             try
             {
@@ -295,7 +293,7 @@ namespace SobekCM.Library.Email
                 {
                     subject = Item.Bib_Info.Main_Title.ToString().Substring(0, 35).Replace("&quot;", "\"") + "...";
                 }
-                int error_count = email_recepients.Count(thisEmailRecepient => !SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), true, false, -1));
+                int error_count = email_recepients.Count(thisEmailRecepient => !SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), true, false, -1, UserID ));
 
                 return error_count <= 0;
             }
@@ -305,7 +303,7 @@ namespace SobekCM.Library.Email
             }
         }
 
-        private static bool Text_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL)
+        private static bool Text_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
         {
             try
             {
@@ -558,7 +556,7 @@ namespace SobekCM.Library.Email
                 {
                     subject = Item.Bib_Info.Main_Title.ToString().Substring(0, 35).Replace("&quot;", "\"") + "...";
                 }
-                int error_count = email_recepients.Count(thisEmailRecepient => !SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), false, false, -1));
+                int error_count = email_recepients.Count(thisEmailRecepient => !SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), false, false, -1, UserID));
 
                 return error_count <= 0;
             }
