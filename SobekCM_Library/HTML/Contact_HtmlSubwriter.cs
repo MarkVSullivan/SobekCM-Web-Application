@@ -86,22 +86,26 @@ namespace SobekCM.Library.HTML
 
                         // Send back to the home for this collection, sub, or group
                         Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
-                        HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL(), false);
+                        Current_Mode.Redirect();
+                        return;
                     }
                     catch
                     {
-                        bool email_error = SobekCM_Database.Send_Database_Email(base.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1);
+                        bool email_error = SobekCM_Database.Send_Database_Email(base.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1, -1 );
 
                         // Send back to the home for this collection, sub, or group
                         if (email_error)
                         {
                             HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            return;
                         }
                         else
                         {
                             // Send back to the home for this collection, sub, or group
                             Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
-                            HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL(), false);
+                            Current_Mode.Redirect();
+                            return;
                         }
                     }
                 }

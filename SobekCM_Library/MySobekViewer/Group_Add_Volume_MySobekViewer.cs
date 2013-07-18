@@ -120,7 +120,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!user.Can_Edit_This_Item(item))
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
+                return;
             }
 
             // Determine the default template code 
@@ -157,7 +158,7 @@ namespace SobekCM.Library.MySobekViewer
             if (hidden_request == "cancel")
             {
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
             }
             else if (hidden_request.IndexOf("save") == 0 )
             {
@@ -199,7 +200,7 @@ namespace SobekCM.Library.MySobekViewer
                                 currentMode.Mode = Display_Mode_Enum.My_Sobek;
                                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
                                 currentMode.VID = saveItem.VID;
-                                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                                currentMode.Redirect();
                                 break;
 
                             case "save_again":
@@ -239,7 +240,7 @@ namespace SobekCM.Library.MySobekViewer
                             default:
                                 currentMode.Mode = Display_Mode_Enum.Item_Display;
                                 currentMode.VID = saveItem.VID;
-                                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                                currentMode.Redirect();
                                 break;
                         }
 

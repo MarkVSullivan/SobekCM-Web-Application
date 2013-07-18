@@ -70,7 +70,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                HttpContext.Current.Response.Redirect(CurrentMode.Redirect_URL(), true);
+                CurrentMode.Redirect();
                 return;
             }
 

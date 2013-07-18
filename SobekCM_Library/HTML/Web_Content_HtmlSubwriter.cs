@@ -51,10 +51,11 @@ namespace SobekCM.Library.HTML
                     currentMode.Base_URL = siteMap.Restricted_Robot_URL;
                     string redirect_url = currentMode.Redirect_URL();
 
-                    HttpContext.Current.Response.Clear();
                     HttpContext.Current.Response.Status = "301 Moved Permanently";
                     HttpContext.Current.Response.AddHeader("Location", redirect_url);
-                    HttpContext.Current.Response.End();
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    currentMode.Request_Completed = true;
+                    return;
                 }
             }
         }

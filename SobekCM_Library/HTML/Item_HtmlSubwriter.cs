@@ -202,10 +202,13 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name,currentMode.SobekCM_Instance_Abbreviation,currentItem,is_html_format,HttpContext.Current.Items["Original_URL"].ToString())
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name,currentMode.SobekCM_Instance_Abbreviation,currentItem,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), currentUser.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 HttpContext.Current.Response.Redirect( HttpContext.Current.Items["Original_URL"].ToString(), false);
+                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Current_Mode.Request_Completed = true;
+                                return;
                             }
                         }
 
@@ -235,6 +238,9 @@ namespace SobekCM.Library.HTML
                             }
 
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Current_Mode.Request_Completed = true;
+                            return;
                         }
 
                         if (action == "remove")
@@ -251,6 +257,9 @@ namespace SobekCM.Library.HTML
                             }
 
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Current_Mode.Request_Completed = true;
+                            return;
                         }
 
                         if (action.IndexOf("add_tag") == 0)
@@ -269,6 +278,9 @@ namespace SobekCM.Library.HTML
                             }
 
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Current_Mode.Request_Completed = true;
+                            return;
                         }
 
                         if (action.IndexOf("delete_tag") == 0)
@@ -282,6 +294,9 @@ namespace SobekCM.Library.HTML
                                 }
                             }
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Current_Mode.Request_Completed = true;
+                            return;
                         }
                     }
                 }
@@ -371,6 +386,10 @@ namespace SobekCM.Library.HTML
                     currentMode.ViewerCode = "res";
                 }
             }
+
+            // If execution should end, do it now
+            if (currentMode.Request_Completed)
+                return;
 
             Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + PageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
 
@@ -599,7 +618,7 @@ namespace SobekCM.Library.HTML
 
                 // Redirect
                 if (HttpContext.Current != null)
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                    currentMode.Redirect();
             }
         }
 
@@ -912,10 +931,10 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
-        /// <remarks> This begins writing this page, starting with the left navigation bar up to the (possible) Table of Contents tree control</remarks>
+        /// <remarks> This begins writing this page, up to the item-level main menu</remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Begin writing the item viewer, all the way up to the TOC place holder");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Begin writing the item viewer, up to the item-level main menu");
 
             // If this is for a fragment, do nothing
             if (!String.IsNullOrEmpty(currentMode.Fragment))
@@ -923,14 +942,6 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine();
 
-
-            // Add the divs for loading the pop-up forms
-            Output.WriteLine("<!-- Place holders for pop-up forms which load dynamically if required -->");
-            Output.WriteLine("<div class=\"print_popup_div\" id=\"form_print\" style=\"display:none;\"></div>");
-            Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\"></div>");
-            Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\"></div>");
-            Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\"></div>");
-            Output.WriteLine();
 
             if (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.GnuBooks_PageTurner)
             {
@@ -1293,6 +1304,24 @@ namespace SobekCM.Library.HTML
             }
 
 
+            return true;
+        }
+
+        /// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
+        /// <param name="Output">Stream to directly write to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Start the left navigational bar");
+
+            // Add the divs for loading the pop-up forms
+            Output.WriteLine("<!-- Place holders for pop-up forms which load dynamically if required -->");
+            Output.WriteLine("<div class=\"print_popup_div\" id=\"form_print\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\"></div>");
+            Output.WriteLine();
+
             if (should_left_navigation_bar_be_shown)
             {
                 // Start the item viewer
@@ -1360,9 +1389,7 @@ namespace SobekCM.Library.HTML
                 if (PageViewer != null)
                     PageViewer.Write_Left_Nav_Menu_Section(Output, Tracer);
             }
-
-            return true;
-        } 
+        }
 
         /// <summary> Writes the HTML generated by this item html subwriter directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
@@ -1712,12 +1739,18 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Spot to write any final HTML to the response stream  </summary>
-        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer )
+        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Close the item viewer and add final pagination");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Close the item viewer and add final pagination");
+
+            // If this is the page turner viewer, don't draw anything else
+            if ((PageViewer != null) && (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
+            {
+                return;
+            }
 
             // If this is the page turner viewer, don't draw anything else
             if ((PageViewer != null) && (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
@@ -1911,12 +1944,15 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
                 Output.WriteLine();
-
-                // Initialize the navigation menu
-
             }
+        }
 
-            return;
+        /// <summary> Spot to write any final HTML to the response stream  </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer )
+        {
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Do nothing");
         }
 
         private void recurse_through_tree( Division_TreeNode parentNode, TreeNode parentViewNode, List<TreeNode> nodes, List<TreeNode> selectedNodes, List<TreeNode> pathNodes, ref int sequence )
@@ -2003,14 +2039,13 @@ namespace SobekCM.Library.HTML
             {
                 List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
 
-                // Add any viewer specific body attributes
-                if (PageViewer != null)
-                    PageViewer.Add_ViewerSpecific_Body_Attributes(returnValue);
-
                 // Add default script attachments
                 returnValue.Add(new Tuple<string, string>("onload", "itemwriter_load();"));
                 returnValue.Add(new Tuple<string, string>("onresize", "itemwriter_load();"));
 
+                // Add any viewer specific body attributes
+                if (PageViewer != null)
+                    PageViewer.Add_ViewerSpecific_Body_Attributes(returnValue);
                 return returnValue;
             }
         }

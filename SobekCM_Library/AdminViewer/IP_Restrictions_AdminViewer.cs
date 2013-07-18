@@ -52,8 +52,10 @@ namespace SobekCM.Library.AdminViewer
             // Ensure the user is the system admin
             if ((User == null) || (!User.Is_System_Admin))
             {
+                currentMode.Mode = Display_Mode_Enum.My_Sobek;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), false);
+                currentMode.Redirect();
+                return;
             }
 
             // Determine if there is an specific IP address range for editing
@@ -170,7 +172,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Forward back to the main form
                 currentMode.My_Sobek_SubMode = String.Empty;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                currentMode.Redirect();
             }
         }
 

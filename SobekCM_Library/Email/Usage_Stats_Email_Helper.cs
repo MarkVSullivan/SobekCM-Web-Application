@@ -86,7 +86,7 @@ namespace SobekCM.Library.Email
                     if (total_month_hits > 0)
                     {
                         // Send this email
-                        return SobekCM_Database.Send_Database_Email(User_Email, EMAIL_SUBJECT.Replace("<%DATE%>", Month_From_Int(Month) + " " + Year), email_body_user, true, false, -1);
+                        return SobekCM_Database.Send_Database_Email(User_Email, EMAIL_SUBJECT.Replace("<%DATE%>", Month_From_Int(Month) + " " + Year), email_body_user, true, false, -1, -1);
                     }
                 }
 

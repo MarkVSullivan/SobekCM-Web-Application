@@ -64,7 +64,9 @@ namespace SobekCM.Library.MySobekViewer
                         SobekCM_Database.Delete_User_Search(folder_id_int, Tracer);
                 }
 
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString());
+                HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                currentMode.Request_Completed = true;
             }
         }
 
