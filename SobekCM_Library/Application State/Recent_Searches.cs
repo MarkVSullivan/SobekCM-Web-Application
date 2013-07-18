@@ -98,9 +98,9 @@ namespace SobekCM.Library.Application_State
 			{
 				builder.Append("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>" + Environment.NewLine );
 				builder.Append("  <tr align=\"left\">" + Environment.NewLine );
-				builder.Append("    <td>" + thisSearch.Aggregation.Replace("&","&amp;").Replace("\"","&quot;") + "</td>" + Environment.NewLine );
+				builder.Append("    <td>" + thisSearch.Aggregation + "</td>" + Environment.NewLine );
 				builder.Append("    <td>" + thisSearch.Search_Type + "</td>" + Environment.NewLine );
-				builder.Append("    <td>" + thisSearch.Search_Terms.Replace("&", "&amp;").Replace("\"", "&quot;") + "</td>" + Environment.NewLine );
+				builder.Append("    <td>" + thisSearch.Search_Terms + "</td>" + Environment.NewLine );
 				builder.Append("    <td>" + thisSearch.Time + "</td>" + Environment.NewLine );
 				builder.Append("  </tr>" + Environment.NewLine );
 			}
@@ -173,11 +173,11 @@ namespace SobekCM.Library.Application_State
 				// Save the collection as a link
 				Display_Mode_Enum lastMode = currentMode.Mode;
 				currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-				this.Aggregation = "<a href=\"" +  currentMode.Redirect_URL() + "\">" + Aggregation + "</a>";
+                this.Aggregation = "<a href=\"" + currentMode.Redirect_URL() + "\">" + Aggregation.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>";
 
 				// Save the search terms as a link to the search
 				currentMode.Mode = lastMode;
-				this.Search_Terms = "<a href=\"" + currentMode.Redirect_URL() + "\">" + Search_Terms + "</a>";
+                this.Search_Terms = "<a href=\"" + currentMode.Redirect_URL() + "\">" + Search_Terms.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>";
 			}
 
 			#region IEquatable<Search> Members

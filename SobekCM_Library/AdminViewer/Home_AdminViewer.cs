@@ -37,8 +37,9 @@ namespace SobekCM.Library.AdminViewer
 
             if ((User == null) || ((!User.Is_Portal_Admin) && (!User.Is_System_Admin)))
             {
+                Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(Current_Mode.Redirect_URL(), false);                   
+                currentMode.Redirect();                 
             }
         }
 

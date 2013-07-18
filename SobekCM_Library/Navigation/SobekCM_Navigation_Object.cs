@@ -162,6 +162,7 @@ namespace SobekCM.Library.Navigation
 			Is_Robot = false;
 			Internal_User = false;
 			Logon_Required = false;
+		    Request_Completed = false;
 		}
 
 		#endregion
@@ -536,6 +537,10 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Flag which determines if the selection panel is shown
 		/// for an aggregation search </summary>
 		public bool Show_Selection_Panel { get; set; }
+
+        /// <summary> Flag indicates if the request was completed, so no further
+        /// operations should occur </summary>
+        public bool Request_Completed { get; set; }
 
 		#endregion
 
@@ -1641,5 +1646,31 @@ namespace SobekCM.Library.Navigation
 		{
 			return Redirect_URL(Item_View_Code, true);
 		}
+
+        /// <summary> Redirect the user to the current mode's URL </summary>
+        /// <remarks> This does not stop execution immediately (which would raise a ThreadAbortedException
+        /// and be costly in terms of performance) but it does set the 
+        /// Request_Completed flag, which should be checked and will effectively stop any 
+        /// further actions. </remarks>
+        public void Redirect()
+        {
+            HttpContext.Current.Response.Redirect(Redirect_URL(), false);
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            Request_Completed = true;
+        }
+
+        /// <summary> Redirect the user to the current mode's URL </summary>
+        /// <param name="Flush_Response">Flag indicates if the response should be flushed</param>
+        /// <remarks> This does not stop execution immediately (which would raise a ThreadAbortedException
+        /// and be costly in terms of performance) but it does set the 
+        /// Request_Completed flag, which should be checked and will effectively stop any 
+        /// further actions. </remarks>
+        public void Redirect( bool Flush_Response )
+        {
+            if (Flush_Response)
+                HttpContext.Current.Response.Flush();
+            HttpContext.Current.Response.Redirect(Redirect_URL(), false);
+            Request_Completed = true;
+        }
 	}
 }

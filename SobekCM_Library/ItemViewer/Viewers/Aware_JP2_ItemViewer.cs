@@ -608,8 +608,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Viewport_Point_Y = (int)y_value;
 
                 // Call the base method
-                string url = CurrentMode.Redirect_URL();
-                HttpContext.Current.Response.Redirect(url);
+                CurrentMode.Redirect();
             }
 	    }
 
@@ -880,8 +879,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            if ( CurrentMode.Viewport_Zoom != 1 )
 	            {
 	                // Create the image object
-	                ImageButton mainImage = new ImageButton
-	                                            { BorderColor = Color.Black, BorderWidth = 1, ImageUrl = url_builder.ToString() };
+	                ImageButton mainImage = new ImageButton   { BorderColor = Color.Black, BorderWidth = 1, ImageUrl = url_builder.ToString() };
+	                mainImage.Height = size_pixels;
+	                mainImage.BackColor = Color.White;
 	                mainImage.Click +=mainImage_Click;
 	                mainImage.AlternateText = "Main Image";
 	                switch( CurrentMode.Language )
@@ -975,9 +975,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.Viewport_Point_Y = (int) y_value;
 
 			// Call the base method
-			string url = CurrentMode.Redirect_URL();
-			HttpContext.Current.Response.Redirect(url);
-
+			CurrentMode.Redirect();
 		}
 
 		private ushort zoom_levels()
@@ -1039,8 +1037,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.Viewport_Point_Y = y_value;
 
 			// Call the base method
-			string url = CurrentMode.Redirect_URL();
-			HttpContext.Current.Response.Redirect(url); 
+            CurrentMode.Redirect();
 		}
 
 	    #region Method to actually compute the JPEG2000 attributes by reading the file 

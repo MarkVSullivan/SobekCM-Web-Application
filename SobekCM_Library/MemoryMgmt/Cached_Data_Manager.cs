@@ -1644,7 +1644,7 @@ namespace SobekCM.Library.MemoryMgmt
                 key = key + "_" + Language_Code;
 
             // See if this is in the local cache first
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            Item_Aggregation returnValue = HttpContext.Current.Cache.Get(key) as Item_Aggregation;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1652,7 +1652,7 @@ namespace SobekCM.Library.MemoryMgmt
                     Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "Found item aggregation on local cache");
                 }
 
-                return (Item_Aggregation)returnValue;
+                return returnValue;
             }
 
             // Try to get this from the caching server, if enabled

@@ -8149,12 +8149,12 @@ namespace SobekCM.Library.Database
 		/// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Send_Email' stored procedure to send and log this email. </remarks>
-		public static bool Send_Database_Email(string Recipient_List, string Subject_Line, string Email_Body, bool isHTML, bool isContactUs, int ReplyToEmailID )
+		public static bool Send_Database_Email(string Recipient_List, string Subject_Line, string Email_Body, bool isHTML, bool isContactUs, int ReplyToEmailID, int UserID )
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[6];
+				SqlParameter[] paramList = new SqlParameter[7];
 				paramList[0] = new SqlParameter("@recipients_list", Recipient_List);
 				paramList[1] = new SqlParameter("@subject_line", Subject_Line);
 				paramList[2] = new SqlParameter("@email_body", Email_Body);
@@ -8168,6 +8168,7 @@ namespace SobekCM.Library.Database
 				{
 					paramList[5] = new SqlParameter("@replytoemailid", DBNull.Value);
 				}
+                paramList[6] = new SqlParameter("@userid", UserID);
 
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Send_Email", paramList);

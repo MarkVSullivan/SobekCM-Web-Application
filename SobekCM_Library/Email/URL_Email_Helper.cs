@@ -22,18 +22,18 @@ namespace SobekCM.Library.Email
         /// <param name="HTML_Format"> Tells if this should be sent as HMTL, otherwise it will be plain text </param>
         /// <param name="URL_Short_Type"> Short term which explains the type of URL being emailed (i.e., 'browse', 'search', etc..)</param>
         /// <returns> Any caught error message </returns>
-        public static string Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, bool HTML_Format, string URL, string URL_Title, string URL_Short_Type )
+        public static string Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, bool HTML_Format, string URL, string URL_Title, string URL_Short_Type, int UserID )
         {
             if (HTML_Format)
             {
-                return HTML_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, URL, URL_Title, URL_Short_Type).Length > 0 ? Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, URL, URL_Title, URL_Short_Type) : String.Empty;
+                return HTML_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, URL, URL_Title, URL_Short_Type, UserID).Length > 0 ? Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, URL, URL_Title, URL_Short_Type, UserID) : String.Empty;
             }
 
-            return Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, URL, URL_Title, URL_Short_Type);
+            return Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, URL, URL_Title, URL_Short_Type, UserID);
         }
 
 
-        private static string HTML_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, string URL, string URL_Title, string URL_Short_Type )
+        private static string HTML_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, string URL, string URL_Title, string URL_Short_Type,  int UserID )
         {
             try
             {
@@ -56,7 +56,7 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
-                    SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1);
+                    SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1, UserID );
                 }
                 return String.Empty;
             }
@@ -66,7 +66,7 @@ namespace SobekCM.Library.Email
             }
         }
 
-        private static string Text_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, string URL, string URL_Title, string URL_Short_Type)
+        private static string Text_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, string URL, string URL_Title, string URL_Short_Type, int UserID)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
-                    SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1);
+                    SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1, UserID);
                 }
                 return String.Empty;
 

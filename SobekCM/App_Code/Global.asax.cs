@@ -110,18 +110,18 @@ public class Global : HttpApplication
             {
                 if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || ( HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"] ) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
                 {
-                    Response.Redirect("error_echo.html?text=" + error_message.Replace(" ", "_").Replace("&", "and").Replace("?", ""), true);
+                    Response.Redirect("error_echo.html?text=" + error_message.Replace(" ", "_").Replace("&", "and").Replace("?", ""), false);
                 }
                 else
                 {
                     // Forward if there is a place to forward to.
                     if ( !String.IsNullOrEmpty(SobekCM_Library_Settings.System_Error_URL))
                     {
-                        Response.Redirect(SobekCM_Library_Settings.System_Error_URL, true);
+                        Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
                     }
                     else
                     {
-                        Response.Redirect("http://ufdc.ufl.edu/sobekcm/missing_config", true);
+                        Response.Redirect("http://ufdc.ufl.edu/sobekcm/missing_config", false);
                     }
                 }
             }

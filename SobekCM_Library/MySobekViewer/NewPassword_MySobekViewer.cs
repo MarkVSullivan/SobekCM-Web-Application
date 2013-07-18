@@ -134,11 +134,15 @@ namespace SobekCM.Library.MySobekViewer
                         if (raw_url.ToUpper().IndexOf("M=HML") > 0)
                         {
                             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                            HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                            currentMode.Redirect();
+                            return;
                         }
                         else
                         {
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl);
+                            HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            currentMode.Request_Completed = true;
+                            return;
                         }
                     }
                     else

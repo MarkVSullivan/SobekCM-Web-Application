@@ -233,7 +233,7 @@ box-shadow: 0 0 10px #fff0f5;
 }
 
 
-#poiList_mapper_container {
+#poiList_container {
     background:#fcfcfc;
 	color: #6a6f75;
 	border: 0 none;
@@ -252,7 +252,7 @@ box-shadow: 0 0 10px #fff0f5;
     overflow: hidden;
 
 }
-#poiList_Scollmapper_container {
+#poiList_scoll_container {
     overflow-x:hidden;
     height:140px;
     margin-right: -5px;
