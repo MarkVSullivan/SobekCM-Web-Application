@@ -16,13 +16,15 @@
 
 <form id="fileUploadForm" runat="server" >
     <asp:PlaceHolder id="myUfdcUploadPlaceHolder" runat="server"></asp:PlaceHolder>
-<%Write_Additional_HTML_Upload_Form();%>
+<%Write_UploadForm_Additional_HTML();%>
 </form>
 
 <form id="itemNavForm" runat="server">
+<%Write_ItemNavForm_Opening();%>
     <asp:PlaceHolder id="tocPlaceHolder" runat="server"></asp:PlaceHolder>
-<%Write_Additional_HTML();%>
+<%Write_ItemNavForm_Additional_HTML();%>
     <asp:PlaceHolder id="mainPlaceHolder" runat="server"></asp:PlaceHolder>
+<%Write_ItemNavForm_Closing();%>
 </form>
 
 <%Write_Final_HTML();%>

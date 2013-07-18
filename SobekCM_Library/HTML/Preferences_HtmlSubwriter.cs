@@ -54,7 +54,7 @@ namespace SobekCM.Library.HTML
                 HttpContext.Current.Session["User_Default_Sort"] = user_sort;
 
                 currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL(), false);
+                currentMode.Redirect();
 
             }
         }

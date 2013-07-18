@@ -285,7 +285,10 @@ img.SobekItemWordmark
     padding: 0;
     margin: 0;
     border-collapse: collapse;
+<<<<<<< HEAD
     border: none;
+=======
+>>>>>>> d51ff05a0e67e7c196ed986f3d2bab6e5ed4e739
 }
 
 #SobekGoToSpan {

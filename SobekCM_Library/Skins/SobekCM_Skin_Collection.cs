@@ -90,7 +90,7 @@ namespace SobekCM.Library.Skins
         public void Add(SobekCM_Skin_Object NewSkin)
 		{
 			// Add to the hashtable
-            if ((NewSkin.Language_Code.Length == 0) || (NewSkin.Language_Code == "en"))
+            if (NewSkin.Language_Code.Length == 0)
             {
                 defaultSkins[NewSkin.Skin_Code.ToLower()] = NewSkin;
             }

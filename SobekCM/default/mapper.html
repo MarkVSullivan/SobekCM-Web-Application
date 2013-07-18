@@ -34,7 +34,7 @@
                 </div>
                 <div class="toolbar_grouping">
                     <div class="mapper_container_search">
-                        <input id="content_toolbar_searchField" class="search" type="text" placeholder="" onBlur="finder(this.value);" onClick="this.select();" />
+                        <input id="content_toolbar_searchField" class="search" type="text" placeholder="" onClick="this.select();" />
                         <div id="content_toolbar_searchButton" class="searchActionHandle"></div>
                     </div>
                 </div>
@@ -109,11 +109,15 @@
                             <div id="content_toolbox_button_managePOI" class="button"></div>
                             <div class="lineBreak"></div>
                             <div class="mapper_container_search">
-                                <input id="content_toolbox_searchField" class="search" type="text" placeholder="" onBlur="finder(this.value);" onClick="this.select();" />
+                                <input id="content_toolbox_searchField" class="search" type="text" placeholder="" onClick="this.select();" />
                                 <div id="content_toolbox_searchButton" class="searchActionHandle"></div>
                             </div>
                             <div class="lineBreak"></div>
-                            <div id="content_toolbox_searchResults"></div>
+                            <div id="searchResults_container">
+                                <div id="searchResults_scoll_container">
+                                    <div id="searchResults_list"></div>
+                                </div>
+                            </div> 
                         </div>
                     </div>
                 </div>
@@ -171,8 +175,8 @@
                         <div id="content_toolbox_button_poiPolygon" class="button"></div>
                         <div id="content_toolbox_button_poiLine" class="button"></div>
                         <div class="lineBreak"></div>
-                        <div id="poiList_mapper_container">
-                            <div id="poiList_Scollmapper_container">
+                        <div id="poiList_container">
+                            <div id="poiList_scoll_container">
                                 <div id="poiList"></div>
                             </div>
                         </div>  
@@ -186,3 +190,4 @@
         <div id="googleMap"></div>
     </div>
 </div>
+<div id="debugs"></div>
