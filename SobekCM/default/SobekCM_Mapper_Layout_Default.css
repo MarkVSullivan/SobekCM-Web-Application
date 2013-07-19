@@ -54,6 +54,24 @@ body {
 	cursor: pointer;
 }
 #mapper_container_message {
+    color: black;
+    font-size: 11px;
+    font-weight: bold;
+	position:absolute;
+    width: 200px;
+    top: 5px;
+    left: 50%;
+    margin-left: -100px;
+    text-align: center;
+    z-index:99999;
+    padding: 2px 2px 2px 2px;
+	background-color:peachpuff;
+	-webkit-box-shadow:0 2px 3px rgba(0,0,0,0.5);
+	box-shadow:0 2px 3px rgba(0,0,0,0.5);
+	display:none;
+}
+/*#mapper_container_message {
+    color: #000000;
 	position:fixed;
 	z-index:2;
 	width:200px;
@@ -65,7 +83,7 @@ body {
 	-webkit-box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	display:none;
-}
+}*/
 #mapper_container_pane_2{
 	background-image:url("images/mapper/bg1.png");
 }

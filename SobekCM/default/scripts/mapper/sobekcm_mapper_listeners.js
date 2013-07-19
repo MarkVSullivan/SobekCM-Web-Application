@@ -1,6 +1,25 @@
 ﻿//listeners
 
 try {
+    
+        var thisURL = window.location.href.toString();
+        $("#Result").click(function() {
+            try {
+                    $.ajax({
+                        type: "POST",
+                        url: thisURL+"/GetDate",
+                        data: "{}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function() {
+                            alert("success");
+                        }
+                    });
+                } catch(err) {
+                    alert("error: " + err);
+                }
+        });
+
     document.getElementById("content_toolbar_button_reset").addEventListener("click", function () {
         resetAll();
     }, false);
