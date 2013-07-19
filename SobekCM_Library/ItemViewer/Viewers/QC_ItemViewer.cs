@@ -1518,6 +1518,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.Page = current_view_page;
 
             // Add the popup form
+
             //      navRowBuilder.AppendLine();
             Output.WriteLine("<!-- Pop-up form for moving page(s) by selecting the checkbox in image -->");
             Output.WriteLine("<div class=\"qcmove_popup_div\" id=\"form_qcmove\" style=\"display:none;\">");
