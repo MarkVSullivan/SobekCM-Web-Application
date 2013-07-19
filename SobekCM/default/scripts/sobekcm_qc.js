@@ -191,7 +191,6 @@ function DivisionTypeChanged(selectID,MaxPageCount)
 	  j++;
 	 }
 	}
-	
 
 }
 
@@ -251,7 +250,6 @@ function DivNameTextChanged(textboxID, MaxPageCount)
   
 
 }
-
 
 //Autonumber subsequent textboxes on changing one textbox value
 function PaginationTextChanged(textboxID,mode,MaxPageCount)
