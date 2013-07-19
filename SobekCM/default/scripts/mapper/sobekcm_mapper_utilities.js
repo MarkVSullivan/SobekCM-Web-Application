@@ -470,8 +470,7 @@ function useSearchAsItemLocation() {
 
     firstMarker++;                              //prevent redraw
     
-    searchResult.setMap(null);                  //delete search result from map
-    $("#searchResult_1").remove();              //delete search result from list
+    searchResultDeleteMe(); //delete search result
     
     itemMarker.setMap(map);                     //set itemMarker location icon to map
     document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
@@ -570,7 +569,7 @@ function resizeView() {
 }
 
 //debugging 
-var debugString = "<strong>Debug Panel:</strong><br><br>";
+var debugString = "<strong>Debug Panel:</strong><br><br>"; //starting debug string
 var debugs = 0; //used for keycode debugging
 function de(message) {
     //create debug string
