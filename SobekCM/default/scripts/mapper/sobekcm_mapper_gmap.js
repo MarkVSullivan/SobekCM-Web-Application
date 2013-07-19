@@ -358,6 +358,7 @@ toolbarBufferZone2.style.height = '50px';
 
 //#endregion
 
+//on page load functions (mainly google map event listeners)
 function initialize() {
 
     //as map is loading, fit to screen
@@ -415,7 +416,7 @@ function initialize() {
             var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/>" + " <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString,
-                pixelOffset: new google.maps.Size(0, 0)
+                pixelOffset: new google.maps.Size(0, -1)
             });
             infowindow[poi_i].open(map, poiObj[poi_i]);
         }
@@ -956,7 +957,7 @@ function initialize() {
     });
     
     
-}                         //on page load functions (mainly google map event listeners)
+}                         
 
 //Displays all the points sent from the C# code.
 function displayIncomingPoints() {

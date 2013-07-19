@@ -89,10 +89,10 @@ function displayMessage(message) {
     de(message); //send to debugger for logging
 
     //create message
-    var messageText = "<p class=\"message\">";
-    messageText += message; //assign incoming message to text
-    messageText += "</p>";
-    document.getElementById("content_message").innerHTML = messageText; //assign to element
+    //var messageText = "<p class=\"message\">";
+    //messageText += message; //assign incoming message to text
+    //messageText += "</p>";
+    document.getElementById("content_message").innerHTML = message; //assign to element
 
     //show message
     document.getElementById("mapper_container_message").style.display = "block"; //display element
