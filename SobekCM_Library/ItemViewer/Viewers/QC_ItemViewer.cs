@@ -48,6 +48,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private string mainThumbnailFileName_from_db;
         private string mainJPGFileName_from_db;
         private string notes;
+        private bool clear_pagination;
+        private bool clear_and_reorder_pagination;
         private SobekCM_Item qc_item;
         private DataRow Item_Detail;
 
@@ -134,12 +136,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             qc_profile = QualityControl_Configuration.Default_Profile;
 
             title = "Quality Control";
-
-            //TODO: Get the item main thumbnail info from the db
-            //mainThumbnailFileName = qc_item.
-
-
-            //mainThumbnailFileName = qc_item.
 
             // See if there were hidden requests
             hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
@@ -328,7 +324,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
 
-//TODO:Test if this function is working correctly
     /// <summary> Clears the pagination names of all the pages of the qc item </summary>
           private void ClearPagination()
           {
@@ -1401,7 +1396,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,"+autonumber_mode+"," + qc_item.Web.Static_PageCount +");\"></input></td></tr>");
+					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,1," + qc_item.Web.Static_PageCount +");\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
