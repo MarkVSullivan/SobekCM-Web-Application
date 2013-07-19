@@ -1,3 +1,22 @@
+// Function to set the full screen mode 
+function qc_set_fullscreen() {
+alert('in qc set fullscreen');
+    var x = $("#allThumbnailsOuterDiv1").offset().left;
+    var y = $("#allThumbnailsOuterDiv1").offset().top;
+
+    var window_height = $(window).height();
+    var new_height = window_height - y - 63;
+
+  //  var window_width = $(window).width();
+  //  var new_width = window_width - x - 5;
+   // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
+    
+    $("#allThumbnailsOuterDiv1").height(new_height);
+   // $("#allThumbnailsOuterDiv1").width(new_width);
+}
+
+
+
 //Update the division types when a division checkbox is checked/unchecked
 function UpdateDivDropdown(CheckBoxID, MaxPageCount)
 {
@@ -237,6 +256,7 @@ function DivNameTextChanged(textboxID, MaxPageCount)
 //Autonumber subsequent textboxes on changing one textbox value
 function PaginationTextChanged(textboxID,mode,MaxPageCount)
 {
+ alert("in the main function");
     //get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
@@ -551,6 +571,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
  //Mode '1': Autonumber all the thumbnail pages till the start of the next div
    if(mode=='1')
   {
+   alert("mode="+mode+"textboxID="+textboxID);
     var textboxValue = document.getElementById(textboxID).value;
 	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
 //	lastNumber = lastNumber.toUpperCase().trim();
@@ -567,7 +588,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	  }
 
 	}
-
+	
     if (matches != null) 
     {
        // the id attribute contains a digit
@@ -575,11 +596,13 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
        var number = matches[len-1];
 	   var nonNumber='';
 	   var val=document.getElementById(textboxID).value;
-      // alert(number);
-       
+       alert(number);
+       alert(val);
+	   
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
        {
+		   alert('spance before number');
 		   //Set the QC form hidden variable with this mode
 		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
 		   hidden_autonumber_mode.value = '1';
@@ -589,6 +612,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	   
       //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
+			alert i;
 			while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
 			{
 			  number++;
@@ -1641,20 +1665,5 @@ function DeleteSelectedPages()
 }
  
                 
-// Function to set the full screen mode 
-function qc_set_fullscreen() {
-    var x = $("#allThumbnailsOuterDiv1").offset().left;
-    var y = $("#allThumbnailsOuterDiv1").offset().top;
-
-    var window_height = $(window).height();
-    var new_height = window_height - y - 63;
-
-  //  var window_width = $(window).width();
-  //  var new_width = window_width - x - 5;
-   // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
-    
-    $("#allThumbnailsOuterDiv1").height(new_height);
-   // $("#allThumbnailsOuterDiv1").width(new_width);
-}
 
 
