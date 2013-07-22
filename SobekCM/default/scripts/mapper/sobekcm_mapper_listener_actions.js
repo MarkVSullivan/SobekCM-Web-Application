@@ -362,9 +362,9 @@ function save(id) {
     switch (id) {
         case "item":
             if (savingMarkerCenter != null) {
-                //alert("saving location: " + savingMarkerCenter); //grab coords from gmaps js
+                de("saving location: " + savingMarkerCenter); //grab coords from gmaps js
                 createSavedItem(savingMarkerCenter);
-                displayMessage(L_Saved);
+                //displayMessage(L_Saved); //not used here
             } else {
                 displayMessage(L_NotSaved);
             }
@@ -373,11 +373,11 @@ function save(id) {
         case "overlay":
             if (savingOverlayIndex.length) {
                 for (var i = 0; i < savingOverlayIndex.length; i++) {
-                    //alert("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
+                    de("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
                     createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
                     //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
                 }
-                displayMessage(L_Saved);
+                //displayMessage(L_Saved); //not used here
             } else {
                 displayMessage(L_NotSaved);
             }
@@ -385,8 +385,9 @@ function save(id) {
 
         case "poi":
             if (poiObj.length > 0) {
-                //createSavedPOI();
-                displayMessage(L_Saved);
+                de("saving " + poiObj.length + " POIs...");
+                createSavedPOI();
+                //displayMessage(L_Saved); //not used here
             } else {
                 displayMessage(L_NotSaved);
             }

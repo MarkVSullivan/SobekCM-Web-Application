@@ -112,9 +112,10 @@ function createSavedItem(coordinates) {
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
     de("saving item: " + dataPackage); //temp
-    document.getElementById("saveTest").value = dataPackage;
-    //document.location.reload(); //refresh page
-    //CallServer(dataPackage);
+    //document.getElementById("saveTest").value = dataPackage; //not used
+    //document.location.reload(); //refresh page //not used
+    //CallServer(dataPackage); //not used (for callbacks)
+    toServer(dataPackage);
 }
 
 //create a package to send to server to save overlay
@@ -123,14 +124,11 @@ function createSavedOverlay(index, source, bounds, rotation) {
     if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
         displayMessage(L7);
     }
-
     var messageType = "overlay"; //define what message type it is
     var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
-
     var dataPackage = data + "~";
     de("saving overlay set: " + dataPackage); //temp
-    document.getElementById("saveTest").value = dataPackage;
-    //CallServer(dataPackage); //not yet working
+    toServer(dataPackage);
 }
 
 //create a package to send to the server to save poi
@@ -165,8 +163,23 @@ function createSavedPOI() {
         var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
         dataPackage += data + "~";
     }
-    de("saving poi set: " + dataPackage); //temp
-    //CallServer(dataPackage);
+    toServer(dataPackage);
+}
+
+//sends save dataPackages to the server via json
+function toServer(dataPackage) {
+    var scriptURL = "default/scripts/serverside/Scripts.aspx";
+    $.ajax({
+        type: "POST",
+        url: baseURL + scriptURL + "/SaveItem",
+        data: JSON.stringify({ sendData: dataPackage }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (result) {
+            de("server result:" + result);
+            displayMessage("Saved");
+        }
+    });
 }
 
 //open the infowindow of a poi
