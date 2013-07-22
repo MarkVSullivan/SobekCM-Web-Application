@@ -61,19 +61,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
 
 
-            if (IsPostBack)
-            {
-                string test = Request.Form["saveTest"];
-                Response.Write("test postback: "+test);
-            }
+            //if (IsPostBack)
+            //{
+            //    string test = Request.Form["saveTest"];
+            //    Response.Write("test postback: "+test);
+            //}
 
 
-            bool rval = false;
-            if (OnCallBack != null) rval = OnCallBack("Hello World!");
-            if (rval == true)
-                Console.WriteLine("Returned True");
-            else
-                Console.WriteLine("Returned False");
+            //bool rval = false;
+            //if (OnCallBack != null) rval = OnCallBack("Hello World!");
+            //if (rval == true)
+            //    Console.WriteLine("Returned True");
+            //else
+            //    Console.WriteLine("Returned False");
 
 
 
@@ -226,10 +226,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-migrate-1.1.1.min.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-rotate.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-knob.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-json-2.4.min\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-infobox.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
-
+            
             //custom js 
             #region
 
@@ -399,16 +400,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            //hidden inputs
-            mapperBuilder.AppendLine(" ");
-            mapperBuilder.AppendLine(" <input type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
-            mapperBuilder.AppendLine(" ");
+            //callback support (not used)
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine(" <!-- Begin Callback Support --> ");
+            //mapperBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_load.js\"></script>");
+            //mapperBuilder.AppendLine(" <input type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
+            //mapperBuilder.AppendLine(" <!-- End Callback Support --> ");
+            //mapperBuilder.AppendLine(" ");
 
             //html page literal
             #region html page literat
 
-            mapperBuilder.AppendLine(" <!-- new --> ");
-            //mapperBuilder.AppendLine(" <div id=\"Result\"> Time? </div>");
             mapperBuilder.AppendLine(" <div id=\"mapper_container_message\"> ");
             mapperBuilder.AppendLine("     <div id=\"content_message\"></div> ");
             mapperBuilder.AppendLine(" </div> ");
@@ -604,6 +606,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("     </div> ");
             mapperBuilder.AppendLine(" </div> ");
             mapperBuilder.AppendLine(" <div id=\"debugs\"></div> ");
+
 
             #endregion
 
