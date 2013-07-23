@@ -89,7 +89,7 @@ try {
     document.getElementById("content_toolbox_button_managePOI").title = "Manage Points of Interest";
     document.getElementById("content_toolbox_searchField").title = "Locate: Find A Location On The Map";
     document.getElementById("content_toolbox_searchButton").title = "Locate: Find A Location On The Map";
-    document.getElementById("content_toolbox_searchResults").title = "Locate: Find A Location On The Map";
+    document.getElementById("searchResults_container").title = "Locate: Find A Location On The Map";
     //tab
     document.getElementById("content_toolbox_button_placeItem").title = "Edit Location";
     document.getElementById("content_toolbox_button_itemGetUserLocation").title = "Center On Your Current Position";

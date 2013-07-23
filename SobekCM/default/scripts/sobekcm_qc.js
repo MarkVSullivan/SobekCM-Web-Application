@@ -1,6 +1,6 @@
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
-alert('in qc set fullscreen');
+//alert('in qc set fullscreen');
     var x = $("#allThumbnailsOuterDiv1").offset().left;
     var y = $("#allThumbnailsOuterDiv1").offset().top;
 
@@ -191,7 +191,6 @@ function DivisionTypeChanged(selectID,MaxPageCount)
 	  j++;
 	 }
 	}
-	
 
 }
 
@@ -252,12 +251,16 @@ function DivNameTextChanged(textboxID, MaxPageCount)
 
 }
 
-
 //Autonumber subsequent textboxes on changing one textbox value
+//parameter textboxID = the ID of the pagination textbox changed by the user
+//parameter mode: the autonumbering mode passed in from the qc itemviewer. 0:auto number all the pages of the entire item, 1: all the pages of the current division only, 
+//2: No auto numbering
+//parameter MaxPageCount: the max number of pages for the current item in qc. This refers to all the pages, not just the ones displayed on the screen (though this makes no difference from the javascript point of view.)
+
 function PaginationTextChanged(textboxID,mode,MaxPageCount)
 {
  alert("in the main function");
-    //get the list of all the thumbnail spans on the page
+     //get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
 	if(window.spanArrayGlobal!= null)
@@ -602,8 +605,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
        {
-		   alert('spance before number');
-		   //Set the QC form hidden variable with this mode
+		   //Set the QC form hidden variable with this mode, i.e. mode '1'
 		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
 		   hidden_autonumber_mode.value = '1';
 		   
@@ -612,7 +614,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	   
       //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
-			alert i;
+	//		alert(i);
 			while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
 			{
 			  number++;
@@ -627,10 +629,8 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 			  }//end if
 			  i++;
 			}//end while
-			//if(i>=MaxPageCount)
-		//	alert(i);
-
-		  
+			
+				  
        }//end if
     }//end if
 
@@ -1434,7 +1434,7 @@ function qc_auto_save()
 }
 
 
-//When any 'move page' checkbox is is checked/unchecked
+//When any 'move page' checkbox is checked/unchecked
 function chkMoveThumbnailChanged(chkBoxID, MaxPageCount)
 {
 

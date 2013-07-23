@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Services;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Web.UI;
@@ -31,6 +32,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
 
+        [WebMethod]
+        public static string GetDate()
+        {
+            return DateTime.Now.ToString();
+        }
+
         public delegate bool MyCallback(string Text);
         public MyCallback OnCallBack { get; set; }
 
@@ -52,12 +59,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
-            bool rval = false;
-            if (OnCallBack != null) rval = OnCallBack("Hello World!");
-            if (rval == true)
-                Console.WriteLine("Returned True");
-            else
-                Console.WriteLine("Returned False");
+
+
+            //if (IsPostBack)
+            //{
+            //    string test = Request.Form["saveTest"];
+            //    Response.Write("test postback: "+test);
+            //}
+
+
+            //bool rval = false;
+            //if (OnCallBack != null) rval = OnCallBack("Hello World!");
+            //if (rval == true)
+            //    Console.WriteLine("Returned True");
+            //else
+            //    Console.WriteLine("Returned False");
 
 
 
@@ -162,7 +178,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
             Body_Attributes.Clear();
-            Body_Attributes.Add(new Tuple<string, string>("onload", "load();"));
             Body_Attributes.Add(new Tuple<string, string>("onresize", "resizeView();"));
         }
 
@@ -211,10 +226,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-migrate-1.1.1.min.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-rotate.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-knob.js\"></script>");
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-json-2.4.min\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-infobox.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
-
+            
             //custom js 
             #region
 
@@ -384,15 +400,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            //hidden inputs
-            mapperBuilder.AppendLine(" ");
-            mapperBuilder.AppendLine(" <input type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
-            mapperBuilder.AppendLine(" ");
+            //callback support (not used)
+            //mapperBuilder.AppendLine(" ");
+            //mapperBuilder.AppendLine(" <!-- Begin Callback Support --> ");
+            //mapperBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_load.js\"></script>");
+            //mapperBuilder.AppendLine(" <input type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
+            //mapperBuilder.AppendLine(" <!-- End Callback Support --> ");
+            //mapperBuilder.AppendLine(" ");
 
             //html page literal
             #region html page literat
 
-            mapperBuilder.AppendLine(" <!-- new --> ");
+            mapperBuilder.AppendLine(" <div id=\"mapper_container_message\"> ");
+            mapperBuilder.AppendLine("     <div id=\"content_message\"></div> ");
+            mapperBuilder.AppendLine(" </div> ");
             mapperBuilder.AppendLine(" <div id=\"mapper_container\"> ");
             mapperBuilder.AppendLine("     <div id=\"mapper_container_pane_1\"> ");
             mapperBuilder.AppendLine("             <div id=\"mapper_container_toolbar\"> ");
@@ -428,7 +449,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("                 <div class=\"toolbar_grouping\"> ");
             mapperBuilder.AppendLine("                     <div class=\"mapper_container_search\"> ");
-            mapperBuilder.AppendLine("                         <input id=\"content_toolbar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onBlur=\"finder(this.value);\" onClick=\"this.select();\" /> ");
+            mapperBuilder.AppendLine("                         <input id=\"content_toolbar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbar_searchButton\" class=\"searchActionHandle\"></div> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
@@ -441,9 +462,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine("     <div id=\"mapper_container_pane_2\"> ");
             mapperBuilder.AppendLine("          ");
-            mapperBuilder.AppendLine("         <div id=\"mapper_container_message\"> ");
+            mapperBuilder.AppendLine("         <!--<div id=\"mapper_container_message\"> ");
             mapperBuilder.AppendLine("             <div id=\"content_message\"></div> ");
-            mapperBuilder.AppendLine("         </div> ");
+            mapperBuilder.AppendLine("         </div>--> ");
             mapperBuilder.AppendLine("          ");
             mapperBuilder.AppendLine("         <div id=\"mapper_container_toolbox\" class=\"ui-widget-content\"> ");
             mapperBuilder.AppendLine("             <div id=\"mapper_container_toolboxMinibar\"> ");
@@ -503,11 +524,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_managePOI\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
             mapperBuilder.AppendLine("                             <div class=\"mapper_container_search\"> ");
-            mapperBuilder.AppendLine("                                 <input id=\"content_toolbox_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onBlur=\"finder(this.value);\" onClick=\"this.select();\" /> ");
+            mapperBuilder.AppendLine("                                 <input id=\"content_toolbox_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
             mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_searchButton\" class=\"searchActionHandle\"></div> ");
             mapperBuilder.AppendLine("                             </div> ");
             mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-            mapperBuilder.AppendLine("                             <div id=\"content_toolbox_searchResults\"></div> ");
+            mapperBuilder.AppendLine("                             <div id=\"searchResults_container\"> ");
+            mapperBuilder.AppendLine("                                 <div id=\"searchResults_scoll_container\"> ");
+            mapperBuilder.AppendLine("                                     <div id=\"searchResults_list\"></div> ");
+            mapperBuilder.AppendLine("                                 </div> ");
+            mapperBuilder.AppendLine("                             </div>  ");
             mapperBuilder.AppendLine("                         </div> ");
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
@@ -565,8 +590,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiPolygon\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiLine\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-            mapperBuilder.AppendLine("                         <div id=\"poiList_mapper_container\"> ");
-            mapperBuilder.AppendLine("                             <div id=\"poiList_Scollmapper_container\"> ");
+            mapperBuilder.AppendLine("                         <div id=\"poiList_container\"> ");
+            mapperBuilder.AppendLine("                             <div id=\"poiList_scoll_container\"> ");
             mapperBuilder.AppendLine("                                 <div id=\"poiList\"></div> ");
             mapperBuilder.AppendLine("                             </div> ");
             mapperBuilder.AppendLine("                         </div>   ");
@@ -580,6 +605,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("         <div id=\"googleMap\"></div> ");
             mapperBuilder.AppendLine("     </div> ");
             mapperBuilder.AppendLine(" </div> ");
+            mapperBuilder.AppendLine(" <div id=\"debugs\"></div> ");
 
 
             #endregion
