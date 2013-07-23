@@ -419,6 +419,12 @@ function clear(id) {
                     poiObj[i].setMap(null);
                     poiObj[i] = null;
                 }
+                if (poiDesc[i] != null) {
+                    poiDesc[i] = null;
+                }
+                if (poiKML[i] != null) {
+                    poiKML[i] = null;
+                }
                 infowindow[i].setMap(null);
                 infowindow[i] = null;
                 label[i].setMap(null);
