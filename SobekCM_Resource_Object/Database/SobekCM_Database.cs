@@ -2956,7 +2956,8 @@ namespace SobekCM.Resource_Object.Database
         /// <summary>
         /// Updates the relevant item info in the database after QC (main thumbnail info, pagecount, filecount, disksize)
         /// </summary>
-        /// <param name="ItemID"></param>ItemID for the item
+        /// <param name="BibID"></param>BibID for the item
+        /// <param name="VID"></param>VID for this item
         /// <param name="MainThumbnailFileName"></param>Filename of the main thumbnail image (.thm extension)
         /// <param name="MainJPGFileName"></param>Filename of the main thumbnail JPEG image (.jpg extension)
         /// <param name="PageCount"></param>Updated count of the pages for this item
@@ -2965,10 +2966,11 @@ namespace SobekCM.Resource_Object.Database
         /// <param name="Notes"></param>Notes/Comments entered by the user through the QC interface
         /// <param name="User"></param>Logged in user info
         /// <returns></returns>
-		public static bool QC_Update_Item_Info(int ItemID, string User, string MainThumbnailFileName, string MainJPGFileName, int PageCount, int FileCount, int Disksize_mb, string Notes)
+		public static bool QC_Update_Item_Info(string BibID, string VID, string User, string MainThumbnailFileName, string MainJPGFileName, int PageCount, int FileCount, double Disksize_mb, string Notes)
 		{
 		    try
 		    {
+		        int ItemID = Get_ItemID(BibID, VID);
                 //Build the parameter list
                 SqlParameter[] param_list = new SqlParameter[8];
                 param_list[0] =new SqlParameter("@itemid", ItemID);

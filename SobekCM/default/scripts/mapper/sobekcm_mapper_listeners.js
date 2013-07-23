@@ -1,6 +1,6 @@
 ﻿//listeners
 
-try {
+try {   
     document.getElementById("content_toolbar_button_reset").addEventListener("click", function () {
         resetAll();
     }, false);
@@ -65,7 +65,10 @@ try {
         //currently in js
      }, false);
     document.getElementById("content_toolbar_searchButton").addEventListener("click", function () { 
-        //currently not used
+        if (document.getElementById("content_toolbar_searchField").value != null) {
+            var stuff = document.getElementById("content_toolbar_searchField").value;
+            finder(stuff);
+        }
      }, false);
     document.getElementById("content_toolbarGrabber").addEventListener("click", function () {
         toggleVis("toolbar");
@@ -84,18 +87,23 @@ try {
     //headers
     document.getElementById("content_toolbox_tab1_header").addEventListener("click", function () {
         action("other");
+        openToolboxTab(0);
     }, false);
     document.getElementById("content_toolbox_tab2_header").addEventListener("click", function () {
         action("other");
+        openToolboxTab(1);
     }, false);
     document.getElementById("content_toolbox_tab3_header").addEventListener("click", function () {
         action("manageItem");
+        //openToolboxTab(2); //called in action
     }, false);
     document.getElementById("content_toolbox_tab4_header").addEventListener("click", function () {
         action("manageOverlay");
+        //openToolboxTab(3); //called in action
     }, false);
     document.getElementById("content_toolbox_tab5_header").addEventListener("click", function () {
         action("managePOI");
+        //openToolboxTab(4); //called in action
     }, false);
     //tab
     document.getElementById("content_toolbox_button_layerRoadmap").addEventListener("click", function () {
@@ -160,10 +168,10 @@ try {
         //nothing yet
      }, false);
     document.getElementById("content_toolbox_searchButton").addEventListener("click", function () { 
-        //nothing yet
-     }, false);
-    document.getElementById("content_toolbox_searchResults").addEventListener("click", function () { 
-        //nothing yet
+        if (document.getElementById("content_toolbox_searchField").value != null) {
+            var stuff = document.getElementById("content_toolbox_searchField").value;
+            finder(stuff);
+        }
      }, false);
     //tab
     document.getElementById("content_toolbox_button_placeItem").addEventListener("click", function () {
