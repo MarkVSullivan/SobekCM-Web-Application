@@ -8,7 +8,7 @@ using SobekCM.Resource_Object.Behaviors;
 
 #endregion
 
-namespace SobekCM.Resource_Object
+namespace SobekCM.Resource_Object.Utilities
 {
     /// <summary> Class is used to perform some basic validation on a <see cref="SobekCM_Item" />. </summary>
     public class SobekCM_Item_Validator

@@ -7,7 +7,7 @@ using System.Text;
 
 #endregion
 
-namespace SobekCM.Resource_Object
+namespace SobekCM.Resource_Object.Utilities
 {
     /// <summary> METS finder looks for the most current METS file in a variety of workflow and service
     /// locations, pulling the latest file or eventually building the file from database information 

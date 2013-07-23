@@ -150,31 +150,7 @@ fieldset { -moz-border-radius: 8px; border-radius: 8px; }
     color:#555555;
 }
 
-#internalheader_item 
-{ 
-    font-family: Arial, Helvetica, sans-serif;	
-    margin: 0;	
-    padding: 0;	
-    width: 100%; 
-    FONT-SIZE: small; 
-    text-align:left;
-    background-color: #C0C0C0;
-    color:#555555;
-}	
 
-#internalheader_item h2
-{
-    color: White;
-    font-size: 1.5em;
-    font-weight: bold;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-}
-
-#internalheader_item h2 a
-{
-    color: White;
-}
 
 
 #internalHeaderForm
@@ -1314,12 +1290,6 @@ div.floating-toc
 
 .intheader_cancel_button:hover { background-position: 0 -21px; }
 
-
-
-
-textarea.intheader_comments_input  {  color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
-textarea.intheader_comments_input_focused  {  color:#0000a8; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
-
 .intheader_label { color: White; font-weight:bolder; margin-right: 10px; }
 
 .intheader_help
@@ -1362,7 +1332,22 @@ textarea.intheader_comments_input_focused  {  color:#0000a8; background-color: #
     vertical-align: bottom; padding-right: 3px;
 } 
 
-.opaque_button_img {
-    vertical-align: bottom; padding-left: 3px;
-    opacity: 0.50;
-} 
+.internalheader_button {
+    background-color: #7d90d5;
+    color: white;
+    text-transform:uppercase;
+    font-weight:bold;
+    border-radius:25px;
+    border: none;
+    padding: 3px 10px 3px 10px;
+    cursor: pointer;
+	cursor: hand;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+.internalheader_button:hover {
+    background-color: #888888;
+    -webkit-box-shadow: inset 0 0 9px 6px #6a6f75;
+	box-shadow: inset 0 0 9px 6px #6a6f75;
+}

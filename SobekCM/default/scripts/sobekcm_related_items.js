@@ -5,10 +5,10 @@ function SetParentSpanWidth(imageID, parentID)
 	$=document;
 	$parent=$.getElementById(parentID);
 	$child = $.getElementById(imageID);
-	$child.style.width = $child.offsetWidth+'px'
+    $child.style.width = $child.offsetWidth + 'px';
 	$child.style.display = 'block';
 
-	$parent.style.width = ($child.offsetWidth+5)+'px'
+    $parent.style.width = ($child.offsetWidth + 5) + 'px';
 	$parent.style.overflow = 'hidden';
 	$parent.style.display = 'inline-block';
 
@@ -22,63 +22,57 @@ document.getElementById('selectNumOfThumbnails').options[ntIndex].selected='true
 //Make the span change color and fadeout over 4 seconds
 function AddAnchorDivEffect(urlWithAnchor)
 {
-	var spanID = 'span'+ urlWithAnchor.substring(urlWithAnchor.indexOf('#')+1);
+    var spanID = 'span' + urlWithAnchor.substring(urlWithAnchor.indexOf('#') + 1);
+    
+    var color = $('.thumbnailspan').css('backgroundColor');
+
+
+    
 	//document.getElementById(spanID).style.background="#FFFF00";
 			document.getElementById(spanID).className='fadeEffect';
 	
-		$(".fadeEffect").animate({backgroundColor:'#eeeeee'},4000);
-	
-									
-																
-		document.getElementById(spanID).onmouseover=function(){
-																document.getElementById(spanID).style.background="#cccccc";
-															  };
-		document.getElementById(spanID).onmouseout=function(){
-																document.getElementById(spanID).style.background="#eeeeee";
+			$(".fadeEffect").animate({ backgroundColor: color }, 4000,
+			    function () {
+                    document.getElementById(spanID).className = 'thumbnailspan';
+			        alert(spanID);
+			});
 
-}
+	
 }
 
 //Make the appropriate span change color on pageload, if anchor present in the url
 function MakeSpanFlashOnPageLoad()
 {
 		
-       //Make page numbers at the bottom of the screen visible only if there is a scrollbar
-		// Check if body height is higher than window height 
-		if ($("body").height() > $(window).height()) { 
+    //   //Make page numbers at the bottom of the screen visible only if there is a scrollbar
+	//	// Check if body height is higher than window height 
+	//	if ($("body").height() > $(window).height()) { 
 
-		//   var pageSpanID=document.getElementById('pageNumbersBottom');
-		 //  pageSpanID.style.visibility='visible'; 
+	//	//   var pageSpanID=document.getElementById('pageNumbersBottom');
+	//	 //  pageSpanID.style.visibility='visible'; 
 		
-		} 
-		else
-		{
-		// var pageSpanID=document.getElementById('pageNumbersBottom');
-		// pageSpanID.style.visibility='hidden'; 
+	//	} 
+	//	else
+	//	{
+	//	// var pageSpanID=document.getElementById('pageNumbersBottom');
+	//	// pageSpanID.style.visibility='hidden'; 
 		
-		}
+	//	}
 
 
-		//Change span color and fadeout over 4 seconds
-		var spanID = 'span'+ window.location.hash.substring(1);
-		
-		document.getElementById(spanID).className='fadeEffect';
-	
-		$(".fadeEffect").animate({backgroundColor:'#eeeeee'},4000);
-	
-					
-																
-		document.getElementById(spanID).onmouseover=function(){
-																document.getElementById(spanID).style.background="#cccccc";
-															  };
-		document.getElementById(spanID).onmouseout=function(){
-																document.getElementById(spanID).style.background="#eeeeee";
-																};
-		//set the selected value of the "Go to thumbnail:" dropdown list
-		$('#selectGoToThumbnail').val(window.location.href);
+    ////Change span color and fadeout over 4 seconds
+    //if (window.location.hash.length > 0) {
+    //    var spanID = 'span' + window.location.hash.substring(1);
 
+    //    var color = $('.thumbnailspan').css('backgroundColor');
+    //    document.getElementById(spanID).className = 'fadeEffect';        
+       
 
-
+    //    $(".fadeEffect").animate({ backgroundColor: color }, 4000, function() { document.getElementById(spanID).className = 'thumbnailspan'; });
+            
+    //    //set the selected value of the "Go to thumbnail:" dropdown list
+    //    $('#selectGoToThumbnail').val(window.location.href);
+    //}
 }
 
 

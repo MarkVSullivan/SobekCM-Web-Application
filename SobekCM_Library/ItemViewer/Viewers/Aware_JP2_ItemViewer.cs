@@ -207,7 +207,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				StringBuilder navRow = new StringBuilder(1000);
 				navRow.Append("<table>" + Environment.NewLine );
 				navRow.Append("<tr>" + Environment.NewLine );
-				navRow.Append("<td width=\"30\">&nbsp;</td>" + Environment.NewLine );
+				navRow.Append("<td style=\"width:30px;\">&nbsp;</td>" + Environment.NewLine );
 				navRow.Append("<td>" + Environment.NewLine );
 
 				// Calculate the number of zooms
@@ -263,7 +263,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Return to regular zoom
 				CurrentMode.Viewport_Zoom = zoom;
 				navRow.Append("</td>" + Environment.NewLine );
-				navRow.Append("<td width=\"30\">&nbsp;</td>" + Environment.NewLine );
+                navRow.Append("<td style=\"width:30px;\">&nbsp;</td>" + Environment.NewLine);
 				navRow.Append("<td>" + Environment.NewLine );
 
 				// Only show this if there is an X or Y
@@ -276,7 +276,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					navRow.Append("&nbsp;");
 				}
 				navRow.Append("</td>" + Environment.NewLine );
-				navRow.Append("<td width=\"30\">&nbsp;</td>" + Environment.NewLine );
+                navRow.Append("<td style=\"width:30px;\">&nbsp;</td>" + Environment.NewLine);
 				navRow.Append("<td>" + Environment.NewLine );
 
 				// Do the rotate buttons
@@ -312,7 +312,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Viewport_Point_Y = y;
 
 				navRow.Append("</td>" + Environment.NewLine );
-				navRow.Append("<td width=\"30\">&nbsp;</td>" + Environment.NewLine );
+                navRow.Append("<td style=\"width:30px;\">&nbsp;</td>" + Environment.NewLine);
 				navRow.Append("<td>" + Environment.NewLine );
 
 				// Smallest screen button (512 x 512)
@@ -374,7 +374,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// If this is an aerial, add a download link
 				if (resourceType.IndexOf("AERIAL") >= 0)
 				{
-					navRow.Append("<td width=\"50\">&nbsp;</td>" + Environment.NewLine );
+                    navRow.Append("<td style=\"width:50px;\">&nbsp;</td>" + Environment.NewLine);
 					navRow.Append("<td>" + Environment.NewLine );
 					navRow.Append("<a title=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" href=\"" + CurrentItem.Web.Source_URL + "/" + FileName + "\" target=\"jp2_downlad\" ><img border=\"0px\" alt=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/zoom_controls/save.gif\"></a></td>");
 					navRow.Append("<td><a title=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" href=\"" + CurrentItem.Web.Source_URL + "/" + FileName + "\" target=\"jp2_downlad\" >Download<br />this tile</a>");
@@ -418,20 +418,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					navRow.Append("</map>" + Environment.NewLine );
 				}
 
-                navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_x\" name=\"thumbnail_click_x\" value=\"-100\"/>");
-                navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_y\" name=\"thumbnail_click_y\" value=\"-100\"/>");
 
-                navRow.AppendLine("<script type=\"text/javascript\">");
-                navRow.AppendLine("  $('#awareThumbImg').click(function(e){");
-                navRow.AppendLine("    var x = e.pageX - e.target.offsetLeft;");
-                navRow.AppendLine("    var y = e.pageY - e.target.offsetTop;");
-			    navRow.AppendLine("    $('#thumbnail_click_x').val(x);");
-                navRow.AppendLine("    $('#thumbnail_click_y').val(y);");
-			    navRow.AppendLine("    document.itemNavForm.submit();");
-                navRow.AppendLine("  });");
-                navRow.AppendLine("</script>");
+			    if (CurrentMode.Viewport_Zoom != 1)
+			    {
+                    navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_x\" name=\"thumbnail_click_x\" value=\"-100\"/>");
+                    navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_y\" name=\"thumbnail_click_y\" value=\"-100\"/>");
 
-				return navRow.ToString();
+			        navRow.AppendLine("<script type=\"text/javascript\">");
+			        navRow.AppendLine("  $('#sbk_Aj2_ThumbZoomedIn').click(function(e){");
+			        navRow.AppendLine("    var x = e.pageX - e.target.offsetLeft;");
+			        navRow.AppendLine("    var y = e.pageY - e.target.offsetTop;");
+			        navRow.AppendLine("    $('#thumbnail_click_x').val(x);");
+			        navRow.AppendLine("    $('#thumbnail_click_y').val(y);");
+			        navRow.AppendLine("    document.itemNavForm.submit();");
+			        navRow.AppendLine("  });");
+			        navRow.AppendLine("</script>");
+			    }
+			    return navRow.ToString();
 			}
 		}
 
@@ -653,18 +656,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        }
 
 	        // Add the HTML to start this menu section
-            Output.WriteLine("        <ul class=\"SobekNavBarMenu\">");
-            Output.WriteLine("          <li class=\"SobekNavBarHeader\"> " + thumnbnail_text + " </li>");
-
-            if (CurrentMode.Browser_Type.IndexOf("IE", System.StringComparison.Ordinal) >= 0)
-            {
-                Output.WriteLine("          <li class=\"SobekNavBarMenuNonLink_ie\">");
-            }
-	        else
-            {
-                Output.WriteLine("          <li class=\"SobekNavBarMenuNonLink\">");
-            }
-	        
+            Output.WriteLine("        <ul class=\"sbkIsw_NavBarMenu\">");
+            Output.WriteLine("          <li class=\"sbkIsw_NavBarHeader\"> " + thumnbnail_text + " </li>");
+            Output.WriteLine("          <li class=\"sbkIsw_NavBarMenuNonLink\">");
 
 	        // Compute the values needed to create the thumbnail
 	        int size_pixels = 512 + ( CurrentMode.Viewport_Size * 256 );
@@ -699,19 +693,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            url_builder.Append("&ax=" + featureX + "&ay=" + featureY + "&at=FillEllipse&ac=" + featureColor + "&aw=12&ah=12");
 	            url_builder.Append("&tw=" + width + "&th=" + height + "&type=thumb");
 	        }
-
-
+            
 	        // Create the image object
-            Output.Write("<img id=\"awareThumbImg\" src=\"" + url_builder.ToString() + "\" alt=\"Navigational Thumbnail\" ");
 	        if ( CurrentMode.Viewport_Zoom == 1 )
-	        {
-                Output.Write("style=\"border-width:2px;border-color:Blue; cursor: pointer; cursor: hand; \"" );
-	        }
+            {
+                Output.WriteLine("<img id=\"sbk_Aj2_Thumb\" src=\"" + url_builder.ToString() + "\" alt=\"Navigational Thumbnail\" />");
+            }
 	        else
 	        {
-                Output.Write("style=\"border:none;\"");
+                Output.WriteLine("<img id=\"sbk_Aj2_ThumbZoomedIn\" src=\"" + url_builder.ToString() + "\" alt=\"Navigational Thumbnail\" />");
 	        }
-	        Output.WriteLine(" />");
 		
 	        // Add the HTML to end this menu section
 	        if ( CurrentMode.Viewport_Zoom != 1 )
@@ -838,13 +829,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        {
 	            // Add the HTML for the error
 	            Literal errorLiteral = new Literal
-	                                       { Text ="\t\t<td align=\"center\" colspan=\"3\" >" + Environment.NewLine +"<strong>JPEG2000 IMAGE NOT FOUND IN DATABASE!</strong>" +Environment.NewLine + "\t\t</td>" + Environment.NewLine };
+	                                       { Text ="\t\t<td style=\"text-align:center;\" colspan=\"3\" >" + Environment.NewLine +"<strong>JPEG2000 IMAGE NOT FOUND IN DATABASE!</strong>" +Environment.NewLine + "\t\t</td>" + Environment.NewLine };
 	            placeHolder.Controls.Add( errorLiteral );
 	        }
 	        else
 	        {			
 	            // Add the HTML to start this
-	            Literal startLiteral = new Literal { Text = "<td>" + NavigationRow + "</td></tr><tr>\t\t<td align=\"center\" colspan=\"3\"  id=\"printedimage\">" + Environment.NewLine };
+                Literal startLiteral = new Literal { Text = "<td>" + NavigationRow + "</td></tr><tr>\t\t<td style=\"text-align:center;\" colspan=\"3\" id=\"sbk_Aj2_Image\">" + Environment.NewLine };
 	            placeHolder.Controls.Add( startLiteral );
 
                 // Build the filename
@@ -914,69 +905,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            placeHolder.Controls.Add( endLiteral );
 	        }
 	    }
-
-	    /// <summary> Writes the google map script to display the spatial coordinates and zoom correctly upon page load </summary>
-	    /// <param name="Output"> Output stream to write the script to </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    public void Add_OnLoad_Scripts(TextWriter Output, Custom_Tracer Tracer)
-	    {
-	        Tracer.Add_Trace("Aware_JP2_ItemViewer.Write_HTML", "Adding google map instructions as script");
-
-	        Output.WriteLine("<script type=\"text/javascript\">");
-	        Output.WriteLine(" //<![CDATA[");
-	        Output.WriteLine(" function load() { }");
-	        Output.WriteLine("  //]]>");
-	        Output.WriteLine("</script>");
-	    }
-
-	    private void thumbnailImage_Click(object sender, ImageClickEventArgs e)
-		{
-			long x_value = e.X;
-			long y_value = e.Y;
-
-			// Determine the "real" x and y (in terms of large image
-			float image_scale = (height) / ((float)width);
-			const float THUMBNAIL_SCALE = 300F / 200F;
-	        if ( image_scale < THUMBNAIL_SCALE )
-			{
-				// Width restricted
-				float width_scale = (float) width / 200;
-			    x_value = (long) (x_value * width_scale);
-				y_value = (long) (y_value * width_scale);
-			}
-			else
-			{	
-				// Height restricted
-				float height_scale = (float) height / 300;
-			    x_value = (long) (x_value * height_scale);
-				y_value = (long) (y_value * height_scale);
-			}
-
-			// Determine the size of the current portal
-			long size_pixels = get_jp2_viewport_size( CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom );
-
-
-			// Subtract one half of that from the x and y value, so the image is centered
-			// on the spot that was clicked upon
-			x_value = (long) (x_value - ((0.5F)*(size_pixels)));
-			y_value = (long) (y_value - ((0.5F)*(size_pixels)));
-			if ( x_value < 0 )
-				x_value = 0;
-			if ( y_value < 0 )
-				y_value = 0;
-			if ( x_value > ( width ) - size_pixels )
-				x_value = (( width ) - size_pixels);
-			if ( y_value > ( height )- size_pixels )
-				y_value = (( height ) - size_pixels);
-
-
-			// Assign the computed x and y
-			CurrentMode.Viewport_Point_X = (int) x_value;
-			CurrentMode.Viewport_Point_Y = (int) y_value;
-
-			// Call the base method
-			CurrentMode.Redirect();
-		}
 
 		private ushort zoom_levels()
 		{

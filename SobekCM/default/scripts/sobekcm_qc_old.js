@@ -1,22 +1,3 @@
-// Function to set the full screen mode 
-function qc_set_fullscreen() {
-alert('in qc set fullscreen');
-    var x = $("#allThumbnailsOuterDiv1").offset().left;
-    var y = $("#allThumbnailsOuterDiv1").offset().top;
-
-    var window_height = $(window).height();
-    var new_height = window_height - y - 63;
-
-  //  var window_width = $(window).width();
-  //  var new_width = window_width - x - 5;
-   // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
-    
-    $("#allThumbnailsOuterDiv1").height(new_height);
-   // $("#allThumbnailsOuterDiv1").width(new_width);
-}
-
-
-
 //Update the division types when a division checkbox is checked/unchecked
 function UpdateDivDropdown(CheckBoxID, MaxPageCount)
 {
@@ -66,49 +47,40 @@ function UpdateDivDropdown(CheckBoxID, MaxPageCount)
 	 var index=CheckBoxID.split('newdiv')[1];
 	 var i = spanArray.indexOf(index);
 
-	  if(i==0)
-	  {
-		document.getElementById('selectDivType'+index).value='Main';
-		
-//		while(document.getElementById('selectDivType'+spanArray[i]).disabled==true)
-       while(i<spanArray.length)
-		{
-          i++;
-		  if(document.getElementById('selectDivType'+spanArray[i]))
-			{
-			  document.getElementById('selectDivType'+spanArray[i]).value = 'Main';
-			  document.getElementById('newDivType'+spanArray[i]).checked=false;
-              document.getElementById('newDivType'+spanArray[i]).disabled=true;
+	    if (i == 0) {
+	        document.getElementById('selectDivType' + index).value = 'Main';
 
-			}
-		
-		}
-	
-	  }
-	  else
-	  {
-		var j=i-1;
-		var valToSet = 'Main';
+	        //		while(document.getElementById('selectDivType'+spanArray[i]).disabled==true)
+	        while (i < spanArray.length) {
+	            i++;
+	            if (document.getElementById('selectDivType' + spanArray[i])) {
+	                document.getElementById('selectDivType' + spanArray[i]).value = 'Main';
+	                document.getElementById('newDivType' + spanArray[i]).checked = false;
+	                document.getElementById('newDivType' + spanArray[i]).disabled = true;
 
-		while(!(document.getElementById('selectDivType'+spanArray[j])))
-		{
-		 j--;
-		}
+	            }
 
-		valToSet = document.getElementById('selectDivType'+spanArray[j]).value;
+	        }
 
-		var k=i;
-		  
-		//set the page division type of all pages till the start of the next div
-		while(document.getElementById('selectDivType'+spanArray[k]).disabled==true && k<spanArray.length)
-		{
-		  if(document.getElementById('selectDivType'+spanArray[k]))
-			document.getElementById('selectDivType'+spanArray[k]).value = valToSet;
-		  k++;
-		}
-		
-	  }
-	  
+	    } else {
+	        var j = i - 1;
+	        var valToSet = 'Main';
+
+	        while (!(document.getElementById('selectDivType' + spanArray[j]))) {
+	            j--;
+	        }
+
+	        valToSet = document.getElementById('selectDivType' + spanArray[j]).value;
+
+	        var k = i;
+
+	        //set the page division type of all pages till the start of the next div
+	        while (document.getElementById('selectDivType' + spanArray[k]).disabled == true && k < spanArray.length) {
+	            if (document.getElementById('selectDivType' + spanArray[k]))
+	                document.getElementById('selectDivType' + spanArray[k]).value = valToSet;
+	            k++;
+	        }
+	    }
 	}
 
 }
@@ -256,7 +228,6 @@ function DivNameTextChanged(textboxID, MaxPageCount)
 //Autonumber subsequent textboxes on changing one textbox value
 function PaginationTextChanged(textboxID,mode,MaxPageCount)
 {
- alert("in the main function");
     //get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
@@ -571,7 +542,6 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
  //Mode '1': Autonumber all the thumbnail pages till the start of the next div
    if(mode=='1')
   {
-   alert("mode="+mode+"textboxID="+textboxID);
     var textboxValue = document.getElementById(textboxID).value;
 	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
 //	lastNumber = lastNumber.toUpperCase().trim();
@@ -588,7 +558,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	  }
 
 	}
-	
+
     if (matches != null) 
     {
        // the id attribute contains a digit
@@ -596,13 +566,11 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
        var number = matches[len-1];
 	   var nonNumber='';
 	   var val=document.getElementById(textboxID).value;
-       alert(number);
-       alert(val);
-	   
+      // alert(number);
+       
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
        {
-		   alert('spance before number');
 		   //Set the QC form hidden variable with this mode
 		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
 		   hidden_autonumber_mode.value = '1';
@@ -612,7 +580,6 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 	   
       //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
-			alert i;
 			while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
 			{
 			  number++;
@@ -952,7 +919,7 @@ function showErrorIcon(spanID)
 {
   var pageIndex = spanID.split('span')[1];
   var qcErrorIconSpan = 'error'+pageIndex;
-  document.getElementById(qcErrorIconSpan).className = "errorIconSpanHover";
+  //document.getElementById(qcErrorIconSpan).className = "errorIconSpanHover";
 }
 
 //Hide the error icon on mouseout
@@ -960,7 +927,7 @@ function hideErrorIcon(spanID)
 {
   var pageIndex = spanID.split('span')[1];
   var qcErrorIconSpan = 'error'+pageIndex;
-  document.getElementById(qcErrorIconSpan).className = "errorIconSpan";
+  //document.getElementById(qcErrorIconSpan).className = "errorIconSpan";
 
 }
 
@@ -1255,7 +1222,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													        document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value = document.getElementById('selectDivType' + pageIndex).value;
 
 													        //Update the division name textbox
-													        if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.index('!')==0)
+													        if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.indexOf('!')==0)
 													        {
 													            document.getElementById('divNameTableRow' + (spanArray[startPosition].split('span')[1])).className = 'txtNamedDivVisible';
 													            document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = false;
@@ -1665,5 +1632,20 @@ function DeleteSelectedPages()
 }
  
                 
+// Function to set the full screen mode 
+function qc_set_fullscreen() {
+    var x = $("#allThumbnailsOuterDiv1").offset().left;
+    var y = $("#allThumbnailsOuterDiv1").offset().top;
+
+    var window_height = $(window).height();
+    var new_height = window_height - y - 63;
+
+  //  var window_width = $(window).width();
+  //  var new_width = window_width - x - 5;
+   // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
+    
+    $("#allThumbnailsOuterDiv1").height(new_height);
+   // $("#allThumbnailsOuterDiv1").width(new_width);
+}
 
 

@@ -16,12 +16,12 @@ function itemwriter_load() {
     // Get the width and height of the main area
     var main_view_width = 0;
     var main_view_height = 0;
-    if ($('#SobekDocumentDisplay').length == 0) {
-        main_view_width = $('#SobekDocumentDisplay2').width();
-        main_view_height = $('#SobekDocumentDisplay2').height();
+    if ($('#sbkIsw_DocumentDisplay').length == 0) {
+        main_view_width = $('#sbkIsw_DocumentDisplay2').width();
+        main_view_height = $('#sbkIsw_DocumentDisplay2').height();
     } else {
-        main_view_width = $('#SobekDocumentDisplay').width();
-        main_view_height = $('#SobekDocumentDisplay').height();
+        main_view_width = $('#sbkIsw_DocumentDisplay').width();
+        main_view_height = $('#sbkIsw_DocumentDisplay').height();
     }
 
     // If the viewport is less than 800 wide, make the nav bar tighter
@@ -37,49 +37,49 @@ function itemwriter_load() {
     }
 
    
-    if ($('#itemviewleftnavbar').length) {
+    if ($('#sbkIsw_Leftnavbar').length) {
         // Hide the left column if the size is small enough
         if (document.URL.indexOf('thumbs') < 0) {
-            var column_width = $('#itemviewleftnavbar').width();
+            var column_width = $('#sbkIsw_Leftnavbar').width();
             if ((viewport_width < 30 + column_width + main_view_width) && ( main_view_width < 800 )) {
                 
-                $('#itemviewleftnavbar').hide();
-                $('#ShowTocRow').hide();
+                $('#sbkIsw_Leftnavbar').hide();
+                $('#sbkIsw_ShowTocRow').hide();
             } else {
-                $('#itemviewleftnavbar').show();
-                $('#ShowTocRow').show();
+                $('#sbkIsw_Leftnavbar').show();
+                $('#sbkIsw_ShowTocRow').show();
             }
         }
 
         // Set the height of the left nav bar
-        if (main_view_height > $('#itemviewleftnavbar').height())
-            $('#itemviewleftnavbar').css("height", main_view_height);
+        if (main_view_height > $('#sbkIsw_Leftnavbar').height())
+            $('#sbkIsw_Leftnavbar').css("height", main_view_height);
         else {
-            var padding_height = $('#itemviewleftnavbar').height() - main_view_height;
-            $('#itemviewerbottompadding').css("height", padding_height);
+            var padding_height = $('#sbkIsw_Leftnavbar').height() - main_view_height;
+            $('#sbkIsw_BottomPadding').css("height", padding_height);
         }
     }
 
-    if ($('#itemviewleftnavbar_hack').length) {
+    if ($('#sbkIsw_Leftnavbar_hack').length) {
         // Hide the left column if the size is small enough
         if ((document.URL.indexOf('thumbs') < 0) && ( main_view_width < 800 )) {
-            var column_width = $('#itemviewleftnavbar_hack').width();
+            var column_width = $('#sbkIsw_Leftnavbar_hack').width();
             if (viewport_width < 30 + column_width + main_view_width) {
                // alert('viewport_width=' + viewport_width + ', column_width=' + column_width + ', main_view_width=' + main_view_height);
-                $('#itemviewleftnavbar_hack').hide();
-                $('#ShowTocRow').hide();
+                $('#sbkIsw_Leftnavbar_hack').hide();
+                $('#sbkIsw_ShowTocRow').hide();
             } else {
-                $('#itemviewleftnavbar_hack').show();
-                $('#ShowTocRow').show();
+                $('#sbkIsw_Leftnavbar_hack').show();
+                $('#sbkIsw_ShowTocRow').show();
             }
         }
 
         // Set the height of the left nav bar
-        if (main_view_height > $('#itemviewleftnavbar_hack').height())
-            $('#itemviewleftnavbar_hack').css("height", main_view_height);
+        if (main_view_height > $('#sbkIsw_Leftnavbar_hack').height())
+            $('#sbkIsw_Leftnavbar_hack').css("height", main_view_height);
         else {
-            var padding_height = $('#itemviewleftnavbar_hack').height() - main_view_height;
-            $('#itemviewerbottompadding').css("height", padding_height);
+            var padding_height = $('#sbkIsw_Leftnavbar_hack').height() - main_view_height;
+            $('#sbkIsw_BottomPadding').css("height", padding_height);
         }
     }
 }

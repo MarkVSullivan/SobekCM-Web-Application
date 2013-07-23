@@ -569,130 +569,134 @@ public class SobekCM_Page_Globals
             return;
         }
 
-        // If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
-        string shibboleth_id = HttpContext.Current.Request.ServerVariables["HTTP_UFID"];
-        if (shibboleth_id == null)
+        // If there is already a user logged on, do nothing here
+        if (HttpContext.Current.Session["user"] == null)
         {
-            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable NOT found");
-        }
-        else
-            //if ((currentModeCheck.Mode == Display_Mode_Enum.My_Sobek) && (currentModeCheck.My_Sobek_Type ==My_Sobek_Type_Enum.Gatorlink_Landing) && (System.Web.HttpContext.Current.Session["user"] == null) && (ufid != null))
-        {
-            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable found");
-            // string ufid = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_UFID"].ToString();
-
-            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable = '" + shibboleth_id + "'");
-
-            if (shibboleth_id.Length == 8)
+            // If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
+            string shibboleth_id = HttpContext.Current.Request.ServerVariables["HTTP_UFID"];
+            if (shibboleth_id == null)
             {
-                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by ufid");
-
-                User_Object possible_user_by_shibboleth_id = SobekCM_Database.Get_User(shibboleth_id, tracer);
-
-                // Check to see if we got a valid user back
-                if (possible_user_by_shibboleth_id != null)
-                {
-                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from ufid");
-                    HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
-                }
-                else
-                {
-                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from ufid was null.. adding user");
-
-                    // First pull the data from the Shibboleth session
-                    string email = String.Empty;
-                    string lastname = String.Empty;
-                    string firstname = String.Empty;
-                    if (HttpContext.Current.Request.ServerVariables["HTTP_EPPN"] != null)
-                        email = HttpContext.Current.Request.ServerVariables["HTTP_EPPN"];
-                    if (HttpContext.Current.Request.ServerVariables["HTTP_SN"] != null)
-                        lastname = HttpContext.Current.Request.ServerVariables["HTTP_SN"];
-                    if (HttpContext.Current.Request.ServerVariables["HTTP_GIVENNAME"] != null)
-                        firstname = HttpContext.Current.Request.ServerVariables["HTTP_GIVENNAME"];
-
-                    // Now build the user object
-                    User_Object newUser = new User_Object();
-                    if ((HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"] != null) && (HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"].IndexOf("F") >= 0))
-                        newUser.Can_Submit = true;
-                    else
-                        newUser.Can_Submit = false;
-                    newUser.Send_Email_On_Submission = true;
-                    newUser.Email = email;
-                    newUser.Family_Name = lastname;
-                    newUser.Given_Name = firstname;
-                    newUser.Organization = "University of Florida";
-                    newUser.UFID = shibboleth_id;
-                    newUser.UserID = -1;
-                    if (email.Length > 0)
-                        newUser.UserName = email;
-                    else
-                        newUser.UserName = newUser.Family_Name + shibboleth_id;
-
-                    // Set a random password
-                    StringBuilder passwordBuilder = new StringBuilder();
-                    Random randomGenerator = new Random(DateTime.Now.Millisecond);
-                    for (int i = 0; i < 5; i++)
-                    {
-                        int randomNumber = randomGenerator.Next(97, 122);
-                        passwordBuilder.Append((char)randomNumber);
-
-                        int randomNumber2 = randomGenerator.Next(65, 90);
-                        passwordBuilder.Append((char)randomNumber2);
-                    }
-                    string password = passwordBuilder.ToString();
-
-                    // Now, save this user
-                    SobekCM_Database.Save_User(newUser, password, tracer);
-
-                    // Now, pull back out of the database
-                    User_Object possible_user_by_ufid2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
-                    possible_user_by_ufid2.Is_Just_Registered = true;
-                    HttpContext.Current.Session["user"] = possible_user_by_ufid2;
-                }
-
-                if (HttpContext.Current.Session["user"] != null)
-                {
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type =My_Sobek_Type_Enum.Home;
-                }
-                else
-                {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-                    currentMode.Aggregation = String.Empty;
-                }
-                currentMode.Redirect();
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable NOT found");
             }
-        }
+            else
+                //if ((currentModeCheck.Mode == Display_Mode_Enum.My_Sobek) && (currentModeCheck.My_Sobek_Type ==My_Sobek_Type_Enum.Gatorlink_Landing) && (System.Web.HttpContext.Current.Session["user"] == null) && (ufid != null))
+            {
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable found");
+                // string ufid = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_UFID"].ToString();
 
-        // If the user information is still missing , but the UfdcUser cookie exists, then pull 
-        // the user information from the UfdcUser cookie in the current requests
-        if ((HttpContext.Current.Session["user"] == null) && (HttpContext.Current.Request.Cookies["SobekUser"] != null))
-        {
-            string userid_string = HttpContext.Current.Request.Cookies["SobekUser"]["userid"];
-            int userid = -1;
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable = '" + shibboleth_id + "'");
+
+                if (shibboleth_id.Length == 8)
+                {
+                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by ufid");
+
+                    User_Object possible_user_by_shibboleth_id = SobekCM_Database.Get_User(shibboleth_id, tracer);
+
+                    // Check to see if we got a valid user back
+                    if (possible_user_by_shibboleth_id != null)
+                    {
+                        tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from ufid");
+                        HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from ufid was null.. adding user");
+
+                        // First pull the data from the Shibboleth session
+                        string email = String.Empty;
+                        string lastname = String.Empty;
+                        string firstname = String.Empty;
+                        if (HttpContext.Current.Request.ServerVariables["HTTP_EPPN"] != null)
+                            email = HttpContext.Current.Request.ServerVariables["HTTP_EPPN"];
+                        if (HttpContext.Current.Request.ServerVariables["HTTP_SN"] != null)
+                            lastname = HttpContext.Current.Request.ServerVariables["HTTP_SN"];
+                        if (HttpContext.Current.Request.ServerVariables["HTTP_GIVENNAME"] != null)
+                            firstname = HttpContext.Current.Request.ServerVariables["HTTP_GIVENNAME"];
+
+                        // Now build the user object
+                        User_Object newUser = new User_Object();
+                        if ((HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"] != null) && (HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"].IndexOf("F") >= 0))
+                            newUser.Can_Submit = true;
+                        else
+                            newUser.Can_Submit = false;
+                        newUser.Send_Email_On_Submission = true;
+                        newUser.Email = email;
+                        newUser.Family_Name = lastname;
+                        newUser.Given_Name = firstname;
+                        newUser.Organization = "University of Florida";
+                        newUser.UFID = shibboleth_id;
+                        newUser.UserID = -1;
+                        if (email.Length > 0)
+                            newUser.UserName = email;
+                        else
+                            newUser.UserName = newUser.Family_Name + shibboleth_id;
+
+                        // Set a random password
+                        StringBuilder passwordBuilder = new StringBuilder();
+                        Random randomGenerator = new Random(DateTime.Now.Millisecond);
+                        for (int i = 0; i < 5; i++)
+                        {
+                            int randomNumber = randomGenerator.Next(97, 122);
+                            passwordBuilder.Append((char) randomNumber);
+
+                            int randomNumber2 = randomGenerator.Next(65, 90);
+                            passwordBuilder.Append((char) randomNumber2);
+                        }
+                        string password = passwordBuilder.ToString();
+
+                        // Now, save this user
+                        SobekCM_Database.Save_User(newUser, password, tracer);
+
+                        // Now, pull back out of the database
+                        User_Object possible_user_by_ufid2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
+                        possible_user_by_ufid2.Is_Just_Registered = true;
+                        HttpContext.Current.Session["user"] = possible_user_by_ufid2;
+                    }
+
+                    if (HttpContext.Current.Session["user"] != null)
+                    {
+                        currentMode.Mode = Display_Mode_Enum.My_Sobek;
+                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                    }
+                    else
+                    {
+                        currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                        currentMode.Aggregation = String.Empty;
+                    }
+                    currentMode.Redirect();
+                }
+            }
+
+            // If the user information is still missing , but the UfdcUser cookie exists, then pull 
+            // the user information from the UfdcUser cookie in the current requests
+            if ((HttpContext.Current.Session["user"] == null) && (HttpContext.Current.Request.Cookies["SobekUser"] != null))
+            {
+                string userid_string = HttpContext.Current.Request.Cookies["SobekUser"]["userid"];
+                int userid = -1;
 
                 bool valid_perhaps = userid_string.All(Char.IsNumber);
                 if (valid_perhaps)
                     Int32.TryParse(userid_string, out userid);
 
-            if (userid > 0)
-            {
-                User_Object possible_user = SobekCM_Database.Get_User(userid, tracer);
-                if (possible_user != null)
+                if (userid > 0)
                 {
-                    string cookie_security_hash = HttpContext.Current.Request.Cookies["SobekUser"]["security_hash"];
-                    if (cookie_security_hash == possible_user.Security_Hash(HttpContext.Current.Request.UserHostAddress))
+                    User_Object possible_user = SobekCM_Database.Get_User(userid, tracer);
+                    if (possible_user != null)
                     {
-                        HttpContext.Current.Session["user"] = possible_user;
-                    }
-                    else
-                    {
-                        // Security hash did not match, so clear the cookie
-                        HttpCookie userCookie = new HttpCookie("SobekUser");
-                        userCookie.Values["userid"] = String.Empty;
-                        userCookie.Values["security_hash"] = String.Empty;
-                        userCookie.Expires = DateTime.Now.AddDays(-1);
-                        HttpContext.Current.Response.Cookies.Add(userCookie);
+                        string cookie_security_hash = HttpContext.Current.Request.Cookies["SobekUser"]["security_hash"];
+                        if (cookie_security_hash == possible_user.Security_Hash(HttpContext.Current.Request.UserHostAddress))
+                        {
+                            HttpContext.Current.Session["user"] = possible_user;
+                        }
+                        else
+                        {
+                            // Security hash did not match, so clear the cookie
+                            HttpCookie userCookie = new HttpCookie("SobekUser");
+                            userCookie.Values["userid"] = String.Empty;
+                            userCookie.Values["security_hash"] = String.Empty;
+                            userCookie.Expires = DateTime.Now.AddDays(-1);
+                            HttpContext.Current.Response.Cookies.Add(userCookie);
+                        }
                     }
                 }
             }

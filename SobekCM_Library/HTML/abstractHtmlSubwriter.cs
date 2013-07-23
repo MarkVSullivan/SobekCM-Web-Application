@@ -253,6 +253,5 @@ namespace SobekCM.Library.HTML
         {
             get { return "{0}"; }
         }
-
     }
 }

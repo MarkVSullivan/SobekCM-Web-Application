@@ -12,7 +12,7 @@ using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
-namespace SobekCM.Resource_Object
+namespace SobekCM.Resource_Object.Utilities
 {
     /// <summary> Delegate is used for the event which fires when a new wordmark is added 
     /// while loading an item into the library </summary>
