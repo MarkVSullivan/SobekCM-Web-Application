@@ -32,15 +32,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
 
-        [WebMethod]
-        public static string GetDate()
-        {
-            return DateTime.Now.ToString();
-        }
-
-        public delegate bool MyCallback(string Text);
-        public MyCallback OnCallBack { get; set; }
-
         private bool googleItemSearch;
         private StringBuilder mapBuilder;
         private List<string> matchingTilesList;
@@ -54,29 +45,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
 
-        private string userInProcessDirectory;
-        System.Windows.Forms.WebBrowser webBrowser;
-
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
-
-
-            //if (IsPostBack)
-            //{
-            //    string test = Request.Form["saveTest"];
-            //    Response.Write("test postback: "+test);
-            //}
-
-
-            //bool rval = false;
-            //if (OnCallBack != null) rval = OnCallBack("Hello World!");
-            //if (rval == true)
-            //    Console.WriteLine("Returned True");
-            //else
-            //    Console.WriteLine("Returned False");
-
-
-
             this.CurrentUser = Current_User;
             this.CurrentItem = Current_Item;
             this.CurrentMode = Current_Mode;
@@ -90,53 +60,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
-            // Determine the in process directory for this
-            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork";
-            if (Current_User.UFID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork";
+            //string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
 
-            // Ensure the user's process directory exists
-            if (!Directory.Exists(userInProcessDirectory))
-                Directory.CreateDirectory(userInProcessDirectory);
+            //// Ensure the user's process directory exists
+            //if (!Directory.Exists(userInProcessDirectory))
+            //    Directory.CreateDirectory(userInProcessDirectory);
 
-            // SAVE!
+            //// SAVE!
 
-            // Ensure we have a geo-spatial module in the digital resource
-            GeoSpatial_Information myGeo = Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-            if (myGeo == null)
-            {
-                myGeo = new GeoSpatial_Information();
-                Current_Item.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
-            }
-
-
-            //HtmlDocument document = webBrowser.Document;
-            //string me = document.GetElementById("saveTest").GetAttribute("value");
-
-
-            //if (this.IsPostBack)
+            //// Ensure we have a geo-spatial module in the digital resource
+            //GeoSpatial_Information myGeo = Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+            //if (myGeo == null)
             //{
-
-            //    string saveTest = this.Request.Form["saveTest"];
-
-
-            //    //double point_latitude = 12.0;
-            //    //double point_longitude = 6.0;
-
-            //    //myGeo.Add_Point(point_latitude, point_longitude);
-
-            //    //ClientScript.RegisterHiddenField("saveTest", "");
+            //    myGeo = new GeoSpatial_Information();
+            //    Current_Item.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
             //}
 
-
-
-
-            // Save the item to the temporary location
-            Current_Item.Save_METS(userInProcessDirectory + "\\" + Current_Item.BibID + "_" + Current_Item.VID + ".xml");
-
+            //// Save the item to the temporary location
+            //Current_Item.Save_METS(userInProcessDirectory + "\\" + Current_Item.BibID + "_" + Current_Item.VID + ".xml");
 
         }
-
 
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>

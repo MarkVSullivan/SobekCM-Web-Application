@@ -598,9 +598,7 @@ namespace SobekCM.Library.Users
 
         #endregion
 
-
-
-
+        
         /// <summary> Determines if this user can edit this item, based on several different criteria </summary>
         /// <param name="Item">SobekCM Item to check</param>
         /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
@@ -644,5 +642,17 @@ namespace SobekCM.Library.Users
         {
             return SecurityInfo.DES_EncryptString(Given_Name + "sobekh" + Family_Name, IP.Replace(".", "").PadRight(8, '%').Substring(0, 8), Email.Length > 8 ? Email.Substring(0, 8) : Email.PadLeft(8, 'd'));
         }
+
+        public string User_InProcess_Directory(string Directory_Name)
+        {
+            // Determine the in process directory for this
+            string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
+            if (UFID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UFID + "\\" + Directory_Name;
+            
+            return userInProcessDirectory; 
+        }
+    
+        
     }
 }
