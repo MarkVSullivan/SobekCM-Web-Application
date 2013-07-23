@@ -47,7 +47,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<td align=\"center\" colspan=\"3\"><br /><br /><b>The item you have requested contains copyright material and is reserved for single-use.  <br /><br />Someone has currently checked out this digital copy for viewing.  <br /><br />Please try again in several minutes.</b><br /><br /><br /></td>");
+            Output.WriteLine("<td style=\"text-align:center;font-weight:bold;\" colspan=\"3\"><br /><br />The item you have requested contains copyright material and is reserved for single-use.  <br /><br />Someone has currently checked out this digital copy for viewing.  <br /><br />Please try again in several minutes.<br /><br /><br /></td>");
         }
     }
 }

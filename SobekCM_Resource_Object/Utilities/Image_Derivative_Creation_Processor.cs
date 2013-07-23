@@ -7,7 +7,7 @@ using System.Threading;
 
 #endregion
 
-namespace SobekCM.Resource_Object
+namespace SobekCM.Resource_Object.Utilities
 {
 
     #region Definitions of delegates

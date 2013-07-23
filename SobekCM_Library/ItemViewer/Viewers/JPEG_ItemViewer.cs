@@ -137,12 +137,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";
                 string toZoomable = CurrentMode.Redirect_URL();
                 CurrentMode.ViewerCode = currViewer;
-                Output.WriteLine("\t\t<td align=\"center\" id=\"jpegimage_zoomable\">");
+                Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
                 Output.WriteLine("Click on image below to switch to zoomable version<br />");
                 Output.WriteLine("<a href=\"" + toZoomable + "\">");
             }
             else
-                Output.WriteLine("\t\t<td align=\"center\" id=\"printedimage\">");
+                Output.WriteLine("\t\t<td align=\"center\" id=\"sbkJiv_Image\">");
 
             Output.Write("\t\t\t<img ");
             if (( height > 0 ) && ( width > 0 ))

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,6 @@ using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.EAD;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -42,27 +40,20 @@ namespace SobekCM.Library.HTML
         private readonly SobekCM_Item currentItem;
         private Page_TreeNode currentPage;
         private readonly User_Object currentUser;
-        private readonly double featureXRatioLocation = -1D;
-        private readonly double featureYRatioLocation = -1D;
         private readonly bool isEadTypeItem;
         private bool itemCheckedOutByOtherUser;
         private readonly bool itemRestrictedFromUserByIp;
         private readonly SobekCM_Items_In_Title itemsInTitle;
-        private readonly double providedMaxLat;
-        private readonly double providedMaxLong;
-        private readonly double providedMinLat;
-        private readonly double providedMinLong;
-        private readonly bool searchMatchOnThisPage;
         private readonly int searchResultsCount;
-        private readonly List<string> searchResultsString;
         private readonly bool showToc;
         private readonly bool showZoomable;
         private bool tocSelectedComplete;
         private readonly Language_Support_Info translations;
         private TreeView treeView1;
         private readonly bool userCanEditItem;
-        private string pageselectorhtml;
-        private List<HtmlSubwriter_Behaviors_Enum> behaviors;
+        private readonly List<HtmlSubwriter_Behaviors_Enum> behaviors;
+        private string buttonsHtml;
+        private string pageLinksHtml;
 
         #endregion
 
@@ -107,70 +98,72 @@ namespace SobekCM.Library.HTML
             isEadTypeItem = (currentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY) != null);
 
             // Determine if this item is actually restricted 
-            itemRestrictedFromUserByIp = false;
-            if (Item_Restricted_Message.Length > 0)
-                itemRestrictedFromUserByIp = true;
+            itemRestrictedFromUserByIp = Item_Restricted_Message.Length > 0;
 
             // If this item is restricted by IP than alot of the upcoming code is unnecessary
             if (!itemRestrictedFromUserByIp)
             {
-                // Searching for EAD/EAC type items is different from others
-                if (!isEadTypeItem)
-                {
-                    // If there is a coordinate search, and polygons, do that
-                    // GEt the geospatial metadata module
-                    GeoSpatial_Information geoInfo = currentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                    if ((geoInfo != null) && (geoInfo.hasData))
-                    {
-                        if ((currentMode.Coordinates.Length > 0) && (geoInfo.Polygon_Count > 1))
-                        {
-                            // Determine the coordinates in this search
-                            string[] splitter = currentMode.Coordinates.Split(",".ToCharArray());
+                #region Region suppressed currently - was for adding feature to a map image?
 
-                            if (((splitter.Length > 1) && (splitter.Length < 4)) || ((splitter.Length == 4) && (splitter[2].Length == 0) && (splitter[3].Length == 0)))
-                            {
-                                Double.TryParse(splitter[0], out providedMaxLat);
-                                Double.TryParse(splitter[1], out providedMaxLong);
-                                providedMinLat = providedMaxLat;
-                                providedMinLong = providedMaxLong;
-                            }
-                            else if (splitter.Length >= 4)
-                            {
-                                Double.TryParse(splitter[0], out providedMaxLat);
-                                Double.TryParse(splitter[1], out providedMaxLong);
-                                Double.TryParse(splitter[2], out providedMinLat);
-                                Double.TryParse(splitter[3], out providedMinLong);
-                            }
+                //// Searching for EAD/EAC type items is different from others
+                //if (!isEadTypeItem)
+                //{
+                //    // If there is a coordinate search, and polygons, do that
+                //    // GEt the geospatial metadata module
+                //    GeoSpatial_Information geoInfo = currentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                //    if ((geoInfo != null) && (geoInfo.hasData))
+                //    {
+                //        if ((currentMode.Coordinates.Length > 0) && (geoInfo.Polygon_Count > 1))
+                //        {
+                //            // Determine the coordinates in this search
+                //            string[] splitter = currentMode.Coordinates.Split(",".ToCharArray());
+
+                //            if (((splitter.Length > 1) && (splitter.Length < 4)) || ((splitter.Length == 4) && (splitter[2].Length == 0) && (splitter[3].Length == 0)))
+                //            {
+                //                Double.TryParse(splitter[0], out providedMaxLat);
+                //                Double.TryParse(splitter[1], out providedMaxLong);
+                //                providedMinLat = providedMaxLat;
+                //                providedMinLong = providedMaxLong;
+                //            }
+                //            else if (splitter.Length >= 4)
+                //            {
+                //                Double.TryParse(splitter[0], out providedMaxLat);
+                //                Double.TryParse(splitter[1], out providedMaxLong);
+                //                Double.TryParse(splitter[2], out providedMinLat);
+                //                Double.TryParse(splitter[3], out providedMinLong);
+                //            }
 
 
-                            // Now, if there is length, determine the count of results
-                            searchResultsString = new List<string>();
-                            if (searchResultsString.Count > 0)
-                            {
-                                searchResultsCount = searchResultsString.Count;
+                //            // Now, if there is length, determine the count of results
+                //            searchResultsString = new List<string>();
+                //            if (searchResultsString.Count > 0)
+                //            {
+                //                searchResultsCount = searchResultsString.Count;
 
-                                // Also, look to see where the current point lies in the matching, current polygon
-                                if ((providedMaxLong == providedMinLong) && (providedMaxLat == providedMinLat))
-                                {
-                                    foreach (Coordinate_Polygon itemPolygon in geoInfo.Polygons)
-                                    {
-                                        // Is this the current page?
-                                        if (itemPolygon.Page_Sequence == currentMode.Page)
-                                        {
-                                            if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong))
-                                            {
-                                                searchMatchOnThisPage = true;
-                                                ReadOnlyCollection<Coordinate_Point> boundingBox = itemPolygon.Bounding_Box;
-                                                featureYRatioLocation = Math.Abs(((providedMaxLat - boundingBox[0].Latitude)/(boundingBox[0].Latitude - boundingBox[1].Latitude)));
-                                                featureXRatioLocation = Math.Abs(((providedMaxLong - boundingBox[0].Longitude)/(boundingBox[0].Longitude - boundingBox[1].Longitude)));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                //                // Also, look to see where the current point lies in the matching, current polygon
+                //                if ((providedMaxLong == providedMinLong) && (providedMaxLat == providedMinLat))
+                //                {
+                //                    foreach (Coordinate_Polygon itemPolygon in geoInfo.Polygons)
+                //                    {
+                //                        // Is this the current page?
+                //                        if (itemPolygon.Page_Sequence == currentMode.Page)
+                //                        {
+                //                            if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong))
+                //                            {
+                //                                searchMatchOnThisPage = true;
+                //                                ReadOnlyCollection<Coordinate_Point> boundingBox = itemPolygon.Bounding_Box;
+                //                                featureYRatioLocation = Math.Abs(((providedMaxLat - boundingBox[0].Latitude)/(boundingBox[0].Latitude - boundingBox[1].Latitude)));
+                //                                featureXRatioLocation = Math.Abs(((providedMaxLong - boundingBox[0].Longitude)/(boundingBox[0].Longitude - boundingBox[1].Longitude)));
+                //                            }
+                //                        }
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+
+                #endregion
 
                 // Determine if this user can edit this item
                 if (currentUser != null)
@@ -194,7 +187,7 @@ namespace SobekCM.Library.HTML
                             if (address.Length > 0)
                             {
                                 // Determine the email format
-                                bool is_html_format = !(format == "TEXT");
+                                bool is_html_format = format != "TEXT";
 
                                 // CC: the user, unless they are already on the list
                                 string cc_list = currentUser.Email;
@@ -401,16 +394,17 @@ namespace SobekCM.Library.HTML
                 PageViewer.Translator = Translator;
                 PageViewer.CurrentUser = currentUser;
 
-                if (PageViewer is Citation_ItemViewer)
+                // Special code if this is the citation viewer
+                Citation_ItemViewer viewer = PageViewer as Citation_ItemViewer;
+                if (viewer != null)
                 {
-                        
-                    ((Citation_ItemViewer)PageViewer).Code_Manager = Code_Manager;
-                    ((Citation_ItemViewer)PageViewer).Current_User = Current_User;
-                    ((Citation_ItemViewer)PageViewer).Item_Restricted = itemRestrictedFromUserByIp;
+                    viewer.Code_Manager = Code_Manager;
+                    viewer.Item_Restricted = itemRestrictedFromUserByIp;
                 }
 
-
-                if (PageViewer is MultiVolumes_ItemViewer)
+                // Special code if this is the multi-volumes viewer
+                var itemViewer = PageViewer as MultiVolumes_ItemViewer;
+                if (itemViewer != null)
                 {
                     if (itemsInTitle == null)
                     {
@@ -445,7 +439,7 @@ namespace SobekCM.Library.HTML
                         }
                     }
 
-                    ((MultiVolumes_ItemViewer)PageViewer).Item_List = itemsInTitle;
+                    itemViewer.Item_List = itemsInTitle;
                 }
 
                 // Finally, perform any necessary work before display
@@ -541,16 +535,16 @@ namespace SobekCM.Library.HTML
         #region Code to add the table of contents tree as a control into the left navigation bar
 
         /// <summary> Adds the table of contents as a control in the left navigation bar </summary>
-        /// <param name="placeHolder"> TOC place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="TOC_PlaceHolder"> TOC place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Standard_TOC(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public void Add_Standard_TOC(PlaceHolder TOC_PlaceHolder, Custom_Tracer Tracer)
         {
             if (!should_left_navigation_bar_be_shown)
                 return;
 
             if ((showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
             {
-                Tracer.Add_Trace("Item_HtmlSubwriter.Add_Standard_TOC", "Adding Table of Contents control to <i>placeHolder</i>");
+                Tracer.Add_Trace("Item_HtmlSubwriter.Add_Standard_TOC", "Adding Table of Contents control to <i>TOC_PlaceHolder</i>");
 
                 string table_of_contents = "TABLE OF CONTENTS";
                 string hide_toc = "HIDE TABLE OF CONTENTS";
@@ -576,20 +570,20 @@ namespace SobekCM.Library.HTML
                     redirect_url = redirect_url + "&toc=n";
 
                 
-                menuStartLiteral.Text = string.Format("        <div class=\"ShowTocRow\">" + Environment.NewLine +
-                    "          <a href=\"{1}\"><div class=\"SobekUpToc\">{4}<img src=\"" + currentMode.Base_URL + "default/images/button_up_arrow.png\" class=\"opaque_button_img\" alt=\"\" /></div></a>" + Environment.NewLine + 
+                menuStartLiteral.Text = string.Format("        <div class=\"sbkIsw_ShowTocRow\">" + Environment.NewLine +
+                    "          <a href=\"{1}\"><div class=\"sbkIsw_UpToc\">{4}<img src=\"" + currentMode.Base_URL + "default/images/button_up_arrow.png\" alt=\"\" /></div></a>" + Environment.NewLine + 
                     "        </div>", table_of_contents, redirect_url, currentMode.Base_URL, htmlSkin.Base_Skin_Code, hide_toc);
-                placeHolder.Controls.Add(menuStartLiteral);
+                TOC_PlaceHolder.Controls.Add(menuStartLiteral);
 
                 // Create the treeview
-                treeView1 = new TreeView {CssClass = "SobekTocTreeView", ExpandDepth = 0, NodeIndent = 15};
+                treeView1 = new TreeView { CssClass = "sbkIsw_TocTreeView", ExpandDepth = 0, NodeIndent = 15 };
                 treeView1.SelectedNodeChanged += treeView1_SelectedNodeChanged;
 
                 // load the table of contents in the tree
                 Create_TreeView_From_Divisions(treeView1);
 
                 // Add the tree view to the placeholder
-                placeHolder.Controls.Add(treeView1);
+                TOC_PlaceHolder.Controls.Add(treeView1);
             }
             else
             {
@@ -633,18 +627,18 @@ namespace SobekCM.Library.HTML
             if (!String.IsNullOrEmpty(currentMode.Fragment))
                 return;
 
-            Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader_item\">");
+            Output.WriteLine("  <table cellspacing=\"0\" id=\"sbkIsw_Internalheader\">");
             Output.WriteLine("    <tr height=\"30px\">");
             Output.WriteLine("      <td align=\"left\">");
-            Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button hide_intheader_button2\" onclick=\"return hide_internal_header();\"></button>");
+            Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"sbkIsw_intheader_button hide_intheader_button2\" onclick=\"return hide_internal_header();\"></button>");
             Output.WriteLine("      </td>");
             if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
             {
-                Output.WriteLine("      <td><center><h2>" + currentItem.BibID + "</h2></center></td>");
+                Output.WriteLine("      <td style=\"text-align:center;\"><h2>" + currentItem.BibID + "</h2></td>");
             }
             else
             {
-                Output.WriteLine("      <td><center><h2><a href=\"" + currentMode.Base_URL + currentItem.BibID + "/00000\">" + currentItem.BibID + "</a> : " + currentItem.VID + "</h2></center></td>");
+                Output.WriteLine("      <td style=\"text-align:center;\"><h2><a href=\"" + currentMode.Base_URL + currentItem.BibID + "/00000\">" + currentItem.BibID + "</a> : " + currentItem.VID + "</h2></td>");
             }
 
             Write_Internal_Header_Search_Box(Output);
@@ -652,8 +646,8 @@ namespace SobekCM.Library.HTML
 
             if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
-                Output.WriteLine("    <tr height=\"40px\">");
-                Output.WriteLine("      <td colspan=\"3\" align=\"center\" valign=\"middle\">");
+                Output.WriteLine("    <tr style=\"height:40px;\">");
+                Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
 
                 // Should we add ability to edit this item to the quick links?
                 bool allow_access_change = false;
@@ -663,26 +657,26 @@ namespace SobekCM.Library.HTML
                     currentMode.Mode = Display_Mode_Enum.My_Sobek;
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
                     currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"intheader_button edit_metadata_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to edit behaviors for this item
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
                     currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                     currentMode.Mode = Display_Mode_Enum.Item_Display;
 
 
                     // Add ability to edit behaviors for this item
                     string currentViewerCode = currentMode.ViewerCode;
                     currentMode.ViewerCode = "qc";
-                    Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                     currentMode.Mode = Display_Mode_Enum.Item_Display;
                     currentMode.ViewerCode = currentViewerCode;
 
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"intheader_button dark_resource_button_fixed\" onclick=\"return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"return false;\"></button>");
                     }
                     else
                     {
@@ -693,20 +687,20 @@ namespace SobekCM.Library.HTML
                             {
                                 allow_access_change = true;
                                 Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Change Access Restriction\" class=\"intheader_button public_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>"
-                                                     : "          <button title=\"Change Access Restriction\" class=\"intheader_button restricted_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
+                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>"
+                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
                             }
                             else
                             {
                                 Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Public Resource\" class=\"intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>"
-                                                     : "          <button title=\"IP Restriced Resource\" class=\"intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
+                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>"
+                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
                             }
                         }
                         else
                         {
                             allow_access_change = true;
-                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"intheader_button private_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
+                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
                         }
                     }
                 }
@@ -715,29 +709,29 @@ namespace SobekCM.Library.HTML
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"intheader_button dark_resource_button_fixed\" onclick=\"return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"return false;\"></button>");
                     }
                     else
                     {
                         // Still show that the item is public, private, restricted
                         if (currentItem.Behaviors.IP_Restriction_Membership > 0)
                         {
-                            Output.WriteLine("          <button title=\"IP Restriced Resource\" class=\"intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
+                            Output.WriteLine("          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
                         }
                         if (currentItem.Behaviors.IP_Restriction_Membership == 0)
                         {
-                            Output.WriteLine("          <button title=\"Public Resource\" class=\"intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>");
+                            Output.WriteLine("          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>");
                         }
                         if (currentItem.Behaviors.IP_Restriction_Membership < 0)
                         {
-                            Output.WriteLine("          <button title=\"Private Resource\" class=\"intheader_button private_resource_button_fixed\" onclick=\"return false;\"></button>");
+                            Output.WriteLine("          <button title=\"Private Resource\" class=\"sbkIsw_intheader_button private_resource_button_fixed\" onclick=\"return false;\"></button>");
                         }
                     }
                 }
 
                 string currentViewCode = currentMode.ViewerCode;
                 currentMode.ViewerCode = "milestones";
-                Output.WriteLine("          <button title=\"View Work Log\" class=\"intheader_button view_worklog_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                 currentMode.ViewerCode = currentViewCode;
 
                 // Add ability to edit behaviors for this item
@@ -745,7 +739,7 @@ namespace SobekCM.Library.HTML
                 {
                     currentMode.Mode = Display_Mode_Enum.My_Sobek;
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-                    Output.WriteLine("          <button title=\"Manage Files\" class=\"intheader_button manage_files_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                     currentMode.Mode = Display_Mode_Enum.Item_Display;
                 }
 
@@ -772,7 +766,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("              <textarea rows=\"" + rows + "\" cols=\"" + actualCols + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("            <td>");
-                    Output.WriteLine("              <button title=\"Save new internal comments\" class=\"intheader_button intheader_save_button\" onclick=\"save_internal_notes(); return false;\"></button>");
+                    Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
@@ -813,9 +807,9 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <tr align=\"left\">");
                     Output.WriteLine("            <td valign=\"top\" class=\"intheader_label\">SET ACCESS RESTRICTIONS: </td>");
                     Output.WriteLine("            <td>");
-                    Output.WriteLine("              <button title=\"Make item public\" class=\"intheader_button public_resource_button\" onclick=\"set_item_access('public'); return false;\"></button>");
-                    Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"intheader_button restricted_resource_button\" onclick=\"set_item_access('restricted'); return false;\"></button>");
-                    Output.WriteLine("              <button title=\"Make item private\" class=\"intheader_button private_resource_button\" onclick=\"set_item_access('private'); return false;\"></button>");
+                    Output.WriteLine("              <button title=\"Make item public\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"set_item_access('public'); return false;\"></button>");
+                    Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"set_item_access('restricted'); return false;\"></button>");
+                    Output.WriteLine("              <button title=\"Make item private\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"set_item_access('private'); return false;\"></button>");
 
                     // Should we add ability to delete this item?
                     if ((currentUser.Is_System_Admin) || ( currentUser.UserName.ToLower() == "neldamaxs"))
@@ -825,12 +819,12 @@ namespace SobekCM.Library.HTML
                         currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Delete_Item;
                         string delete_url = currentMode.Redirect_URL();
                         currentMode.Mode = Display_Mode_Enum.Item_Display;
-                        Output.WriteLine("              <button title=\"Delete this item\" class=\"intheader_button delete_button\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\"></button>");
+                        Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkIsw_intheader_button delete_button\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\"></button>");
                     }
 
                     Output.WriteLine("            </td>");
                     Output.WriteLine("            <td valign=\"top\">");
-                    Output.WriteLine("              <button title=\"Cancel changes\" class=\"intheader_button intheader_cancel_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
+                    Output.WriteLine("              <button title=\"Cancel changes\" class=\"sbkIsw_intheader_button intheader_cancel_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
@@ -851,23 +845,23 @@ namespace SobekCM.Library.HTML
                     currentMode.Mode = Display_Mode_Enum.My_Sobek;
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
                     currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to add a new item/volume to this title
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
-                    Output.WriteLine("          <button title=\"Add Volume\" class=\"intheader_button add_volume_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to auto-fill a number of new items/volumes to this title
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
-                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to edit the serial hierarchy online
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
-                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to mass update the items behaviors under this title
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"intheader_button mass_update_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                     currentMode.Mode = Display_Mode_Enum.Item_Display;
 
@@ -946,7 +940,7 @@ namespace SobekCM.Library.HTML
             if (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.GnuBooks_PageTurner)
             {
                 Output.WriteLine("<!-- Show the title and any other important item information -->");
-                Output.WriteLine("<div id=\"itemtitlebar\">");
+                Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
                 if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
                 {
                     string grouptitle = currentItem.Behaviors.GroupTitle;
@@ -1326,61 +1320,55 @@ namespace SobekCM.Library.HTML
             {
                 // Start the item viewer
                 Output.WriteLine("<!-- Begin the left navigational bar -->");
-                if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
-                    Output.WriteLine("<div id=\"itemviewleftnavbar_hack\">");
-                else
-                    Output.WriteLine("<div id=\"itemviewleftnavbar\">");
+                Output.WriteLine(PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000 ? "<div id=\"sbkIsw_Leftnavbar_hack\">" : "<div id=\"sbkIsw_Leftnavbar\">");
 
-                // Compute the URL options which may be needed
-                string url_options = currentMode.URL_Options();
-                string urlOptions1 = String.Empty;
-                string urlOptions2 = String.Empty;
-                if (url_options.Length > 0)
-                {
-                    urlOptions1 = "?" + url_options;
-                    urlOptions2 = "&" + url_options;
-                }
+                //// Compute the URL options which may be needed
+                //string url_options = currentMode.URL_Options();
+                //string urlOptions1 = String.Empty;
+                //string urlOptions2 = String.Empty;
+                //if (url_options.Length > 0)
+                //{
+                //    urlOptions1 = "?" + url_options;
+                //    urlOptions2 = "&" + url_options;
+                //}
 
-                // Show search results if there is a saved result
-                if (searchResultsCount > 0)
-                {
-                    Output.WriteLine("\t<ul class=\"SobekNavBarMenu\">");
-                    Output.WriteLine(currentMode.Text_Search.Length > 0
-                                                 ? "\t\t<li class=\"SobekNavBarHeader\">MATCHING PAGES</li>"
-                                                 : "\t\t<li class=\"SobekNavBarHeader\">MATCHING TILES</li>");
+                //// Show search results if there is a saved result
+                //if (searchResultsCount > 0)
+                //{
+                //    Output.WriteLine("\t<ul class=\"SobekNavBarMenu\">");
+                //    Output.WriteLine(currentMode.Text_Search.Length > 0
+                //                                 ? "\t\t<li class=\"SobekNavBarHeader\">MATCHING PAGES</li>"
+                //                                 : "\t\t<li class=\"SobekNavBarHeader\">MATCHING TILES</li>");
 
-                    foreach (string thisMatch in searchResultsString)
-                    {
-                        Output.WriteLine("\t\t<li>" + thisMatch.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2) + "</li>");
-                    }
-                    Output.WriteLine("\t</ul>");
-                    Output.WriteLine();
-                }
+                //    foreach (string thisMatch in searchResultsString)
+                //    {
+                //        Output.WriteLine("\t\t<li>" + thisMatch.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2) + "</li>");
+                //    }
+                //    Output.WriteLine("\t</ul>");
+                //    Output.WriteLine();
+                //}
 
                 // Provide way to expand TOC
                 if ((!showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
                 {
                     string show_toc_text = "SHOW TABLE OF CONTENTS";
-                    int width = 180;
 
                     if (currentMode.Language == Web_Language_Enum.French)
                     {
                         show_toc_text = "VOIR L'INDEX";
-                        width = 120;
                     }
                     if (currentMode.Language == Web_Language_Enum.Spanish)
                     {
                         show_toc_text = "MOSTRAR INDICE";
-                        width = 140;
                     }
 
-                    Output.WriteLine("\t<div class=\"ShowTocRow\">");
+                    Output.WriteLine("\t<div class=\"sbkIsw_ShowTocRow\">");
                     string redirect_url = currentMode.Redirect_URL().Replace("&", "&amp;");
                     if (redirect_url.IndexOf("?") < 0)
                         redirect_url = redirect_url + "?toc=y";
                     else
                         redirect_url = redirect_url + "&toc=y";
-                    Output.WriteLine("\t\t<div class=\"SobekDownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_down_arrow.png\" class=\"opaque_button_img\" alt=\"\" /></a></div>");
+                    Output.WriteLine("\t\t<div class=\"sbkIsw_DownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_down_arrow.png\" alt=\"\" /></a></div>");
                     // Output.WriteLine("\t\t<a href=\"" + redirect_url + "\">" + show_toc_text + "<div class=\"downarrow\"></div></a>");
                     Output.WriteLine("\t</div>");
                 }
@@ -1449,7 +1437,7 @@ namespace SobekCM.Library.HTML
 
                 if (currentItem.Behaviors.Wordmark_Count > 0)
                 {
-                    Output.WriteLine("\t<div id=\"itemwordmarks\">");
+                    Output.WriteLine("\t<div id=\"sbkIsw_Wordmarks\">");
 
                     // Compute the URL options which may be needed
                     string url_options = currentMode.URL_Options();
@@ -1473,7 +1461,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Output.WriteLine("\t<div id=\"noitemwordmarks\">&nbsp;</div>");
+                    Output.WriteLine("\t<div id=\"sbkIsw_NoWordmarks\">&nbsp;</div>");
                 }
 
 
@@ -1486,23 +1474,23 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<!-- Begin the main item viewing area -->");
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
-                Output.WriteLine("<table id=\"SobekDocumentNonWindowed\" >");
+                Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" >");
             }
             else
             {
                 if ((PageViewer == null) || (PageViewer.Viewer_Width < 0))
                 {
-                    Output.WriteLine("<table id=\"SobekDocumentDisplay2\" >");
+                    Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay2\" >");
                 }
                 else
                 {
-                    Output.WriteLine("<table id=\"SobekDocumentDisplay\" style=\"width:" + PageViewer.Viewer_Width + "px;\" >");
+                    Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay\" style=\"width:" + PageViewer.Viewer_Width + "px;\" >");
                 }
 
                 // In this format, add the DARK and RESTRICTED information
                 if (currentItem.Behaviors.Dark_Flag)
                 {
-                    Output.WriteLine("\t<tr id=\"itemrestrictedrow\">");
+                    Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
                     Output.WriteLine("\t\t<td>");
                     Output.WriteLine("\t\t\t<span style=\"font-size:larger; font-weight: bold;\">DARK ITEM</span>");
                     Output.WriteLine("\t\t</td>");
@@ -1510,7 +1498,7 @@ namespace SobekCM.Library.HTML
                 }
                 else if (currentItem.Behaviors.IP_Restriction_Membership < 0)
                 {
-                    Output.WriteLine("\t<tr id=\"itemrestrictedrow\">");
+                    Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
                     Output.WriteLine("\t\t<td>");
                     Output.WriteLine("\t\t\t<span style=\"font-size:larger; font-weight: bold;\">PRIVATE ITEM</span>");
                     Output.WriteLine("\t\t\tDigitization of this item is currently in progress.");
@@ -1573,11 +1561,8 @@ namespace SobekCM.Library.HTML
                             last_page_text = "Derniere";
                         }
 
-                        string language_suffix = currentMode.Language_Code;
-                        if (language_suffix.Length > 0)
-                            language_suffix = "_" + language_suffix;
-
-                        Output.WriteLine("\t\t\t<div class=\"SobekPageNavBar\">");
+                        Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar\">");
+                        StringBuilder buttonsHtmlBuilder = new StringBuilder(1000);
 
                         // Get the URL for the first and previous buttons
                         string firstButtonURL = PageViewer.First_Page_URL;
@@ -1586,10 +1571,10 @@ namespace SobekCM.Library.HTML
                         // Only continue if there is an item and mode, and there is previous pages to go to
                         if ((PageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
                         {
-                            Output.WriteLine("\t\t\t\t<span class=\"leftButtons\">");
-                            Output.WriteLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                            Output.WriteLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-                            Output.WriteLine("\t\t\t\t</span>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_LeftPaginationButtons\">");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
                          
                         // Get the URL for the first and previous buttons
@@ -1599,11 +1584,15 @@ namespace SobekCM.Library.HTML
                         // Only continue if there is an item and mode, and there is previous pages to go to
                         if ((PageViewer.Current_Page < PageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
                         {
-                            Output.WriteLine("\t\t\t\t<span class=\"rightButtons\">");
-                            Output.WriteLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                            Output.WriteLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-                            Output.WriteLine("\t\t\t\t</span>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_RightPaginationButtons\">");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
+
+                        // Write the buttons and save the HTML for the bottom of the page
+                        buttonsHtml = buttonsHtmlBuilder.ToString();
+                        Output.WriteLine(buttonsHtml);
 
                         // Show a pageselector, if one was selected
                         switch ( PageViewer.Page_Selector )
@@ -1612,23 +1601,22 @@ namespace SobekCM.Library.HTML
                                 string[] pageNames = PageViewer.Go_To_Names;
                                 if (pageNames.Length > 0)
                                 {
-
                                     // Determine if these page names are very long at all
-                                    if (pageNames.Any(thisName => thisName.Length > 25))
+                                    if (pageNames.Any(ThisName => ThisName.Length > 25))
                                     {
                                         // Long page names, so move the Go To: to the next line (new div)
                                         Output.WriteLine("\t\t\t</div>");
-                                        Output.WriteLine("\t\t\t<div class=\"SobekPageNavBar2\">");
+                                        Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar2\">");
                                     }
 
-                                    Output.WriteLine("\t\t\t\t<span id=\"SobekGoToSpan\">" + go_to + "</span>");
+                                    Output.WriteLine("\t\t\t\t<span id=\"sbkIsw_GoToSpan\">" + go_to + "</span>");
                                     string orig_viewercode = currentMode.ViewerCode;
                                     string viewercode_only = currentMode.ViewerCode.Replace(currentMode.Page.ToString(), "");
                                     currentMode.ViewerCode = "XX1234567890XX";
                                     string url = currentMode.Redirect_URL();
                                     currentMode.ViewerCode = orig_viewercode;
 
-                                    Output.WriteLine("\t\t\t\t<select id=\"page_select\" onchange=\"javascript:item_jump_sobekcm('" + url + "')\" name=\"page_select\">");
+                                    Output.WriteLine("\t\t\t\t<select id=\"page_select\" name=\"page_select\" onchange=\"javascript:item_jump_sobekcm('" + url + "')\">");
 
                                     // Add all the page selection items to the combo box
                                     int page_index = 1;
@@ -1650,8 +1638,75 @@ namespace SobekCM.Library.HTML
                                 break;
 
                             case ItemViewer_PageSelector_Type_Enum.PageLinks:
-                                if (!String.IsNullOrEmpty(pageselectorhtml))
-                                    Output.WriteLine(pageselectorhtml);
+                                // Create the page selection if that is the type to display.  This is where it is actually
+                                // built as well, althouogh it is subsequently used further up the page
+                                if (PageViewer.Page_Selector == ItemViewer_PageSelector_Type_Enum.PageLinks)
+                                {
+                                    StringBuilder pageLinkBuilder = new StringBuilder();
+
+                                    //Get the total page count
+                                    int num_of_pages = PageViewer.PageCount;
+                                    string[] page_urls = PageViewer.Go_To_Names;
+
+                                    pageLinkBuilder.AppendLine("\t\t\t\t<div class=\"sbkIsw_PageLinks\">");
+
+                                    //Display the first, last, current page numbers, and 2 pages before and after the current page
+                                    if (num_of_pages <= 7 && num_of_pages > 1)
+                                    {
+                                        for (int i = 1; i <= num_of_pages; i++)
+                                        {
+                                            if (i == PageViewer.Current_Page)
+                                                pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                            else
+                                                pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                        }
+                                    }
+                                    else if (num_of_pages > 7)
+                                    {
+                                        if (PageViewer.Current_Page > 4 && PageViewer.Current_Page < num_of_pages - 3)
+                                        {
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "...");
+                                            for (int i = PageViewer.Current_Page - 2; i <= PageViewer.Current_Page + 2; i++)
+                                            {
+                                                if (i == PageViewer.Current_Page)
+                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                                else
+                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                            }
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t..." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
+                                        }
+
+                                        else if (PageViewer.Current_Page <= 4 && PageViewer.Current_Page < num_of_pages - 3)
+                                        {
+                                            for (int i = 1; i <= (PageViewer.Current_Page + 2); i++)
+                                            {
+                                                if (i == PageViewer.Current_Page)
+                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                                else
+                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                            }
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t..." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
+                                        }
+
+                                        else if (PageViewer.Current_Page > 4 && PageViewer.Current_Page >= num_of_pages - 3)
+                                        {
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "...");
+                                            for (int i = PageViewer.Current_Page - 2; i <= num_of_pages; i++)
+                                            {
+                                                if (i == PageViewer.Current_Page)
+                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                                else
+                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                            }
+
+                                        }
+                                    }
+
+                                    pageLinkBuilder.AppendLine("\t\t\t\t</div>");
+
+                                    pageLinksHtml = pageLinkBuilder.ToString();
+                                    Output.WriteLine(pageLinksHtml);
+                                }
                                 break;
                         }
 
@@ -1678,9 +1733,9 @@ namespace SobekCM.Library.HTML
         }
 
         /// <summary> Performs the final HTML writing which completes the item table and adds the final page navigation buttons at the bottom of the page </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="Main_PlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public void Add_Main_Viewer_Section(PlaceHolder Main_PlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Rendering HTML ( add any controls which the item viewer needs to add )");
 
@@ -1693,48 +1748,30 @@ namespace SobekCM.Library.HTML
                     switch( currentMode.Fragment )
                     {
                         case "printform":
-                            PrintForm_Fragment_ItemViewer printform_viewer = new PrintForm_Fragment_ItemViewer(currentPage, PageViewer);
-                            printform_viewer.CurrentItem = currentItem;
-                            printform_viewer.CurrentMode = currentMode;
-                            printform_viewer.Translator = PageViewer.Translator;
-                            printform_viewer.CurrentUser = currentUser;
-                            printform_viewer.Add_Main_Viewer_Section(placeHolder, Tracer);
+                            PrintForm_Fragment_ItemViewer printform_viewer = new PrintForm_Fragment_ItemViewer(currentPage, PageViewer) {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            printform_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "shareform":
-                            Share_Fragment_ItemViewer share_viewer = new Share_Fragment_ItemViewer();
-                            share_viewer.CurrentItem = currentItem;
-                            share_viewer.CurrentMode = currentMode;
-                            share_viewer.Translator = PageViewer.Translator;
-                            share_viewer.CurrentUser = currentUser;
-                            share_viewer.Add_Main_Viewer_Section(placeHolder, Tracer);
+                            Share_Fragment_ItemViewer share_viewer = new Share_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            share_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "addform":
-                            AddRemove_Fragment_ItemViewer add_viewer = new AddRemove_Fragment_ItemViewer();
-                            add_viewer.CurrentItem = currentItem;
-                            add_viewer.CurrentMode = currentMode;
-                            add_viewer.Translator = PageViewer.Translator;
-                            add_viewer.CurrentUser = currentUser;
-                            add_viewer.Add_Main_Viewer_Section(placeHolder, Tracer);
+                            AddRemove_Fragment_ItemViewer add_viewer = new AddRemove_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            add_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "sendform":
-                            Send_Fragment_ItemViewer send_viewer = new Send_Fragment_ItemViewer();
-                            send_viewer.CurrentItem = currentItem;
-                            send_viewer.CurrentMode = currentMode;
-                            send_viewer.Translator = PageViewer.Translator;
-                            send_viewer.CurrentUser = currentUser;
-                            send_viewer.Add_Main_Viewer_Section(placeHolder, Tracer);
+                            Send_Fragment_ItemViewer send_viewer = new Send_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            send_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
                     }
-
-                    return;
                 }
                 else
                 {
                     Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing page viewer to add main viewer section to <i>mainPlaceHolder</i>");
-                    PageViewer.Add_Main_Viewer_Section(placeHolder, Tracer);
+                    PageViewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                 }
             }
         }
@@ -1768,145 +1805,15 @@ namespace SobekCM.Library.HTML
                 // ADD NAVIGATION BUTTONS
                 if (PageViewer.PageCount != 1)
                 {
-                    string go_to = "Go To:";
-                    string first_page = "First Page";
-                    string previous_page = "Previous Page";
-                    string next_page = "Next Page";
-                    string last_page = "Last Page";
-                    string first_page_text = "First";
-                    string previous_page_text = "Previous";
-                    string next_page_text = "Next";
-                    string last_page_text = "Last";
-
-                    if (currentMode.Language == Web_Language_Enum.Spanish)
-                    {
-                        go_to = "Ir a:";
-                        first_page = "Primera Página";
-                        previous_page = "Página Anterior";
-                        next_page = "Página Siguiente";
-                        last_page = "Última Página";
-                        first_page_text = "Primero";
-                        previous_page_text = "Anterior";
-                        next_page_text = "Proximo";
-                        last_page_text = "Último";
-                    }
-
-                    if (currentMode.Language == Web_Language_Enum.French)
-                    {
-                        go_to = "Aller à:";
-                        first_page = "Première Page";
-                        previous_page = "Page Précédente";
-                        next_page = "Page Suivante";
-                        last_page = "Dernière Page";
-                        first_page_text = "Première";
-                        previous_page_text = "Précédente";
-                        next_page_text = "Suivante";
-                        last_page_text = "Derniere";
-                    }
-
-                    string language_suffix = currentMode.Language_Code;
-                    if (language_suffix.Length > 0)
-                        language_suffix = "_" + language_suffix;
-
-                    Output.WriteLine("\t\t\t<div class=\"SobekPageNavBar\">");
-
-                    // Get the URL for the first and previous buttons
-                    string firstButtonURL = PageViewer.First_Page_URL;
-                    string prevButtonURL = PageViewer.Previous_Page_URL;
-
-                    // Only continue if there is an item and mode, and there is previous pages to go to
-                    if ((PageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
-                    {
-                        Output.WriteLine("\t\t\t\t<span class=\"leftButtons\">");
-                        Output.WriteLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                        Output.WriteLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-                        Output.WriteLine("\t\t\t\t</span>");
-                    }
-
-                    // Get the URL for the first and previous buttons
-                    string lastButtonURL = PageViewer.Last_Page_URL;
-                    string nextButtonURL = PageViewer.Next_Page_URL;
-
-                    // Only continue if there is an item and mode, and there is previous pages to go to
-                    if ((PageViewer.Current_Page < PageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
-                    {
-                        Output.WriteLine("\t\t\t\t<span class=\"rightButtons\">");
-                        Output.WriteLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                        Output.WriteLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-                        Output.WriteLine("\t\t\t\t</span>");
-                    }
+                    Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar\">");
+                    Output.WriteLine(buttonsHtml);
 
                     // Create the page selection if that is the type to display.  This is where it is actually
                     // built as well, althouogh it is subsequently used further up the page
                     if (PageViewer.Page_Selector == ItemViewer_PageSelector_Type_Enum.PageLinks)
                     {
-                        StringBuilder pageLinkBuilder = new StringBuilder();
-
-                        //Get the total page count
-                        int num_of_pages = PageViewer.PageCount;
-                        string[] page_urls = PageViewer.Go_To_Names;
-
-                        pageLinkBuilder.AppendLine("\t\t\t\t<div id=\"pageNumbersBottom\" style=\"float:center; font-weight: bold\">");
-
-                        //Display the first, last, current page numbers, and 2 pages before and after the current page
-                        if (num_of_pages <= 7 && num_of_pages > 1)
-                        {
-                            for (int i = 1; i <= num_of_pages; i++)
-                            {
-                                if (i == PageViewer.Current_Page)
-                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumberCurrent\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                else
-                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumber\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                            }
-                        }
-                        else if (num_of_pages > 7)
-                        {
-                            if (PageViewer.Current_Page > 4 && PageViewer.Current_Page < num_of_pages - 3)
-                            {
-                                pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumber\" href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "...");
-                                for (int i = PageViewer.Current_Page - 2; i <= PageViewer.Current_Page + 2; i++)
-                                {
-                                    if (i == PageViewer.Current_Page)
-                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumberCurrent\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                    else
-                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumber\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                }
-                                pageLinkBuilder.AppendLine("\t\t\t\t\t..." + "<a class=\"thumbnailPageNumber\" href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
-                            }
-
-                            else if (PageViewer.Current_Page <= 4 && PageViewer.Current_Page < num_of_pages - 3)
-                            {
-                                for (int i = 1; i <= (PageViewer.Current_Page + 2); i++)
-                                {
-                                    if (i == PageViewer.Current_Page)
-                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumberCurrent\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                    else
-                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumber\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                }
-                                pageLinkBuilder.AppendLine("\t\t\t\t\t..." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
-                            }
-
-                            else if (PageViewer.Current_Page > 4 && PageViewer.Current_Page >= num_of_pages - 3)
-                            {
-                                pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumber\" href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "...");
-                                for (int i = PageViewer.Current_Page - 2; i <= num_of_pages; i++)
-                                {
-                                    if (i == PageViewer.Current_Page)
-                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumberCurrent\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                    else
-                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a class=\"thumbnailPageNumber\" href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                }
-
-                            }
-                        }
-
-                        pageLinkBuilder.AppendLine("\t\t\t\t</div>");
-
-                        pageselectorhtml = pageLinkBuilder.ToString();
-                        Output.WriteLine(pageselectorhtml);
-
+                        Output.WriteLine(pageLinksHtml);
                     }
-
 
                     Output.WriteLine("\t\t\t</div>");
                 }
@@ -1917,14 +1824,14 @@ namespace SobekCM.Library.HTML
 
             if (PageViewer != null && ((currentItem.Behaviors.CheckOut_Required) && (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
             {
-                Output.WriteLine("<tr><td><span style=\"color:gray; font-size: 0.8em\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
+                Output.WriteLine("<tr><td><span id=\"sbkIsw_CheckOutRequired\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
             }
             Output.WriteLine("</table>");
 
             // Add a spot for padding
             Output.WriteLine();
             Output.WriteLine("<!-- Division is used to add extra bottom padding, if the left nav bar is taller than the item viewer -->");
-            Output.WriteLine("<div id=\"itemviewerbottompadding\"></div>");
+            Output.WriteLine("<div id=\"sbkIsw_BottomPadding\"></div>");
             Output.WriteLine();
 
             // None of the sharing options are available if the user is restricted from this item
@@ -1955,15 +1862,50 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Do nothing");
         }
 
-        private void recurse_through_tree( Division_TreeNode parentNode, TreeNode parentViewNode, List<TreeNode> nodes, List<TreeNode> selectedNodes, List<TreeNode> pathNodes, ref int sequence )
+        #region Methods to create the treeview control for the table of contents
+
+        /// <summary> Populates the tree view with the divisions from the current digital resource item </summary>
+        /// <param name="TreeViewArg"> Tree view control to populate </param>
+        public void Create_TreeView_From_Divisions(TreeView TreeViewArg )
         {
-            foreach (abstract_TreeNode absNode in parentNode.Nodes )
+            tocSelectedComplete = false;
+
+            // Get the current mode page
+            List<TreeNode> nodes = new List<TreeNode>();
+            List<TreeNode> selectedNodes = new List<TreeNode>();
+
+            int sequence = 0;
+            foreach (abstract_TreeNode absNode in currentItem.Divisions.Physical_Tree.Roots)
             {
-                if ( absNode.Page )
+                Division_TreeNode divNode = (Division_TreeNode) absNode;
+                TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"sbkIsw_TocTreeViewItem\" Title=\"{0}\">{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
+                TreeViewArg.Nodes.Add( treeViewNode );
+                nodes.Add(treeViewNode);
+                List<TreeNode> pathNodes = new List<TreeNode> {treeViewNode};
+                recurse_through_tree(divNode, treeViewNode, nodes, selectedNodes, pathNodes, ref sequence );
+            }
+
+            foreach (TreeNode selectedNode in selectedNodes)
+            {
+                selectedNode.Text = selectedNode.Text.Replace("sbkIsw_TocTreeViewItem", "sbkIsw_SelectedTocTreeViewItem");
+                TreeNode selectedNodeExpander = selectedNode;
+                while (selectedNodeExpander.Parent != null) 
+                {
+                    (selectedNodeExpander.Parent).Expand();
+                    selectedNodeExpander = selectedNodeExpander.Parent;
+                }
+            }
+        }
+
+        private void recurse_through_tree(Division_TreeNode parentNode, TreeNode parentViewNode, List<TreeNode> nodes, List<TreeNode> selectedNodes, List<TreeNode> pathNodes, ref int sequence)
+        {
+            foreach (abstract_TreeNode absNode in parentNode.Nodes)
+            {
+                if (absNode.Page)
                 {
                     sequence++;
 
-                    foreach( TreeNode thisNode in nodes )
+                    foreach (TreeNode thisNode in nodes)
                     {
                         thisNode.Value = sequence.ToString();
                     }
@@ -1986,50 +1928,17 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Division_TreeNode divNode = (Division_TreeNode) absNode;
-                    TreeNode treeViewNode = new TreeNode
-                                                { Text = string.Format("<span class=\"SobekTocTreeViewItem\" Title='{0}'>{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
-                    parentViewNode.ChildNodes.Add( treeViewNode );
+                    Division_TreeNode divNode = (Division_TreeNode)absNode;
+                    TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"SobekTocTreeViewItem\" Title='{0}'>{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
+                    parentViewNode.ChildNodes.Add(treeViewNode);
                     nodes.Add(treeViewNode);
-                    List<TreeNode> pathNodes2 = new List<TreeNode> {treeViewNode};
-                    recurse_through_tree(divNode, treeViewNode, nodes, selectedNodes, pathNodes2, ref sequence );
+                    List<TreeNode> pathNodes2 = new List<TreeNode> { treeViewNode };
+                    recurse_through_tree(divNode, treeViewNode, nodes, selectedNodes, pathNodes2, ref sequence);
                 }
             }
         }
 
-        /// <summary> Populates the tree view with the divisions from the current digital resource item </summary>
-        /// <param name="treeViewArg"> Tree view control to populate </param>
-        public void Create_TreeView_From_Divisions(TreeView treeViewArg )
-        {
-            tocSelectedComplete = false;
-
-            // Get the current mode page
-            List<TreeNode> nodes = new List<TreeNode>();
-            List<TreeNode> selectedNodes = new List<TreeNode>();
-
-            int sequence = 0;
-            foreach (abstract_TreeNode absNode in currentItem.Divisions.Physical_Tree.Roots)
-            {
-                Division_TreeNode divNode = (Division_TreeNode) absNode;
-                TreeNode treeViewNode = new TreeNode
-                                            { Text =string.Format( "<span class=\"SobekTocTreeViewItem\" Title=\"{0}\">{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
-                treeViewArg.Nodes.Add( treeViewNode );
-                nodes.Add(treeViewNode);
-                List<TreeNode> pathNodes = new List<TreeNode> {treeViewNode};
-                recurse_through_tree(divNode, treeViewNode, nodes, selectedNodes, pathNodes, ref sequence );
-            }
-
-            foreach (TreeNode selectedNode in selectedNodes)
-            {
-                selectedNode.Text = selectedNode.Text.Replace("SobekTocTreeViewItem", "SobekSelectedTocTreeViewItem");
-                TreeNode selectedNodeExpander = selectedNode;
-                while (selectedNodeExpander.Parent != null) 
-                {
-                    (selectedNodeExpander.Parent).Expand();
-                    selectedNodeExpander = selectedNodeExpander.Parent;
-                }
-            }
-        }
+        #endregion
 
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
@@ -2037,11 +1946,13 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>
+                    {
+                        new Tuple<string, string>("onload", "itemwriter_load();"), 
+                        new Tuple<string, string>("onresize", "itemwriter_load();")
+                    };
 
                 // Add default script attachments
-                returnValue.Add(new Tuple<string, string>("onload", "itemwriter_load();"));
-                returnValue.Add(new Tuple<string, string>("onresize", "itemwriter_load();"));
 
                 // Add any viewer specific body attributes
                 if (PageViewer != null)

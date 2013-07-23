@@ -157,7 +157,7 @@
     </Compile>
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="Generic_Reader.cs" />
-    <Compile Include="Image_Derivative_Creation_Processor.cs" />
+    <Compile Include="Utilities\Image_Derivative_Creation_Processor.cs" />
     <Compile Include="iMetadataDescribable.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Warning.cs" />
@@ -252,6 +252,7 @@
     <Compile Include="Metadata_Modules\Zoological_Taxonomy_Info.cs" />
     <Compile Include="Tracking\Tracking_Info.cs" />
     <Compile Include="Behaviors\Behaviors_Info.cs" />
+    <Compile Include="Utilities\SobekCM_Item_Mover.cs" />
     <Compile Include="Web_Info.cs" />
     <Compile Include="XML_Node_Base_Type.cs" />
     <Compile Include="Download_Info_DEPRECATED.cs" />
@@ -364,7 +365,7 @@
     <Compile Include="Metadata_File_ReaderWriters\MARC\MARC_Record.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="METS_Validator_Object.cs">
+    <Compile Include="Utilities\METS_Validator_Object.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SobekCM_Item.cs">
@@ -388,11 +389,11 @@
     <Compile Include="Behaviors\Serial_Info.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SobekCM_METS_Validator.cs">
+    <Compile Include="Utilities\SobekCM_METS_Validator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SobekCM_Item_Validator.cs" />
-    <Compile Include="SobekCM_METS_Finder.cs" />
+    <Compile Include="Utilities\SobekCM_Item_Validator.cs" />
+    <Compile Include="Utilities\SobekCM_METS_Finder.cs" />
     <Compile Include="MARC_HTML_Writer.cs" />
     <Compile Include="Database\SobekCM_Database.cs">
       <SubType>Code</SubType>

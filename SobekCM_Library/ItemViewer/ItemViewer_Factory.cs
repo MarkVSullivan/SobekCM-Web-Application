@@ -83,7 +83,7 @@ namespace SobekCM.Library.ItemViewer
  
 
                 case View_Enum.RELATED_IMAGES:
-                    return new Related_Images_ItemViewer(viewObject.Label);
+                    return new Related_Images_ItemViewer();
 
                 case View_Enum.SEARCH:
                     return new Text_Search_ItemViewer();

@@ -254,6 +254,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        /// <param name="Body_Attributes"> List of body attributes to be included </param>
+        public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        {
+            Body_Attributes.Clear();
+        }
+
     }
 }
 

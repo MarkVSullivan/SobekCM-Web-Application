@@ -6,7 +6,7 @@ using System.Xml.Schema;
 
 #endregion
 
-namespace SobekCM.Resource_Object
+namespace SobekCM.Resource_Object.Utilities
 {
     /// <summary> Validates a METS file with references to the SobekCM custom schema </summary>
     /// <remarks> Written by Gus Clifton and Mark Sullivan ( 2005 ). </remarks>
