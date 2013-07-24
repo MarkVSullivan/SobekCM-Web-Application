@@ -80,11 +80,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the HTML for the image
             StringBuilder result = new StringBuilder(500);
             Output.WriteLine("        <!-- YOU TUBE VIEWER OUTPUT -->");
-            Output.WriteLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Streaming Video</b></span></td>");
+            Output.WriteLine("          <td><div id=\"sbkEmv_ViewerTitle\">Streaming Video</div></td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("        <tr>");
-            Output.WriteLine("          <td class=\"SobekCitationDisplay\">");
-            Output.WriteLine("            <object width=\"" + width + "\" height=\"" + height + "\">");
+            Output.WriteLine("          <td id=\"sbkEmv_MainArea\">");
+            Output.WriteLine("            <object style=\"width:" + width + ";height:" + height + "\">");
             Output.WriteLine("              <param name=\"allowscriptaccess\" value=\"always\" />");
             Output.WriteLine("              <param name=\"movie\" value=\"" + youtube_url + "\" />");
             Output.WriteLine("              <param name=\"allowFullScreen\" value=\"true\"></param>");

@@ -707,10 +707,6 @@ namespace SobekCM.Library.Items
                             viewTypeEnum = View_Enum.HTML;
                             break;
 
-                        case "HTML Map Viewer":
-                            viewTypeEnum = View_Enum.HTML_MAP;
-                            break;
-
                         case "Related Images":
                             viewTypeEnum = View_Enum.RELATED_IMAGES;
                             break;
@@ -911,14 +907,6 @@ namespace SobekCM.Library.Items
                     viewsFromDb.Remove(View_Enum.HTML);
                 }
 
-                // Look for the HTML MAP type views next, and possible set some defaults
-                if (viewsFromDb.ContainsKey(View_Enum.HTML_MAP))
-                {
-                    thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.HTML_MAP]);
-                    thisPackage.Behaviors.Default_View = viewsFromDb[View_Enum.HTML_MAP];
-                    viewsFromDb.Remove(View_Enum.HTML_MAP);
-                }
-
                 // Copy the TEI flag
                 if (viewsFromDb.ContainsKey(View_Enum.TEI))
                 {
@@ -930,14 +918,6 @@ namespace SobekCM.Library.Items
                 Map_Info mapInfo = (Map_Info) thisPackage.Get_Metadata_Module(GlobalVar.SOBEKCM_MAPS_METADATA_MODULE_KEY);
                 if (mapInfo != null)
                 {
-                    // Was there a HTML map here?
-                    if (mapInfo.Index_Count > 0)
-                    {
-                        Map_Index thisIndex = mapInfo.Get_Index(0);
-                        View_Object newMapSanbView = thisPackage.Behaviors.Add_View(View_Enum.HTML_MAP, thisIndex.Title, thisIndex.Image_File + ";" + thisIndex.HTML_File);
-                        thisPackage.Behaviors.Default_View = newMapSanbView;
-                    }
-
                     //// Were there streets?
                     //if (thisPackage.Map.Streets.Count > 0)
                     //{

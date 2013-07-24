@@ -101,10 +101,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Start the citation table
 			Output.WriteLine("\t\t<!-- PDF ITEM VIEWER OUTPUT -->" );
-            Output.WriteLine("\t\t<td align=\"left\">" );
+            Output.WriteLine("\t\t<td id=\"sbkPdf_MainArea\">" );
             Output.WriteLine("<table width=\"95%\"><tr>" );
-            Output.WriteLine("<td align=\"left\"> &nbsp; &nbsp; <a href=\"" + displayFileName + "\">Download this PDF</a></td>");
-            Output.WriteLine("<td align=\"right\"><a href=\"http://get.adobe.com/reader/\"><img src=\"" + CurrentMode.Base_URL + "default/images/get_adobe_reader.png\" /></a></td>" );
+            Output.WriteLine("<td style=\"text-align:left\"><a id=\"sbkPdf_DownloadFileLink\" href=\"" + displayFileName + "\">Download this PDF</a></td>");
+            Output.WriteLine("<td style=\"text-align:right\"><a id=\"sbkPdf_DownloadAdobeReaderLink\" href=\"" + displayFileName + "\"><a href=\"http://get.adobe.com/reader/\"><img src=\"" + CurrentMode.Base_URL + "default/images/get_adobe_reader.png\" /></a></td>");
             Output.WriteLine("</tr></table>");
             Output.WriteLine("</td></tr>");
             Output.WriteLine("\t\t<tr><td align=\"left\">");
@@ -114,7 +114,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				displayFileName = displayFileName + "#search=&quot;" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "&quot;";
 			}
 
-            Output.WriteLine("                  <embed id=\"pdfdocument\" src=\"" + displayFileName + "\" width=\"600px\" height=\"700px\" href=\"" + FileName + "\"></embed>");
+            Output.WriteLine("                  <embed id=\"sbkPdf_Container\" src=\"" + displayFileName + "\" href=\"" + FileName + "\"></embed>");
             
 			// Finish the table
             Output.WriteLine("\t\t</td>");

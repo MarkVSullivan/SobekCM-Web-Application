@@ -376,12 +376,6 @@ namespace SobekCM.Resource_Object.Database
 						view_attributes.Add(thisView.Attributes);
 						break;
 
-					case View_Enum.HTML_MAP:
-						view_type_ids.Add(7);
-						view_labels.Add(thisView.Label);
-						view_attributes.Add(thisView.Attributes);
-						break;
-
 					case View_Enum.TOC:
 						view_type_ids.Add(9);
 						view_labels.Add(String.Empty);
@@ -1773,12 +1767,6 @@ namespace SobekCM.Resource_Object.Database
 
 					case View_Enum.HTML:
 						view_type_ids.Add(6);
-						view_labels.Add(thisView.Label);
-						view_attributes.Add(thisView.Attributes);
-						break;
-
-					case View_Enum.HTML_MAP:
-						view_type_ids.Add(7);
 						view_labels.Add(thisView.Label);
 						view_attributes.Add(thisView.Attributes);
 						break;
