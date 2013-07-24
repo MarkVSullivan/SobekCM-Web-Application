@@ -97,17 +97,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             Output.WriteLine("          <td>");
-            Output.WriteLine("            <div class=\"SobekCitation\" id=\"SobekCitation\">");
+            Output.WriteLine("            <div id=\"sbkDiv_MainArea\">");
 
             Output.WriteLine("              <br />");
-            Output.WriteLine("              <blockquote>");
             if (CurrentItem.Divisions.Download_Tree.Has_Files)
             {
                 List<abstract_TreeNode> pages = CurrentItem.Divisions.Download_Tree.Pages_PreOrder;
 
-                Output.WriteLine("                <b>" + explanation_text + "</b><br /><br />");
-                Output.WriteLine("                <blockquote>");
-
+                Output.WriteLine("                <h2>" + explanation_text + "</h2>");
+                Output.WriteLine("                  <div id=\"sbkDiv_Downloads\">");
                 // Step through each download in this item
                 string greenstoneLocation = CurrentItem.Web.Source_URL + "/";
                 foreach (Page_TreeNode downloadGroup in pages)
@@ -152,7 +150,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
-                Output.WriteLine("                </blockquote>");
+                Output.WriteLine("                  </div>");
             }
 
             // If this was an aerial, allow each jpeg2000 page to be downloaded
@@ -172,12 +170,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (pageDownloads.Count > 0)
                 {
 
-                    Output.WriteLine("                <b>The following tiles are available for download:</b><br /><br />");
+                    Output.WriteLine("                <h2>The following tiles are available for download:</h2>");
                     Output.WriteLine(CurrentMode.Browser_Type.IndexOf("FIREFOX") >= 0
-                                           ? "                To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer. <br /><br />"
-                                           : "                To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. <br /><br />");
-                    Output.WriteLine("                <blockquote>");
-                    Output.WriteLine("                  <table width=\"100%\">");
+                                           ? "                <p>To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer.</p>"
+                                           : "                <p>To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. </p>");
+                    Output.WriteLine("                  <table id=\"sbkDiv_Aerials\">");
 
                     int rows = pageDownloads.Count / 3;
                     if ((pageDownloads.Count % 3) != 0)
@@ -211,11 +208,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
 
                     Output.WriteLine("                  </table>");
-                    Output.WriteLine("                </blockquote>");
                 }
             }
 
-            Output.WriteLine("              </blockquote>");
             Output.WriteLine("              <br />");
             Output.WriteLine("            </div>");
         }
