@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using SobekCM.Resource_Object;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -31,7 +32,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
-
         private bool googleItemSearch;
         private StringBuilder mapBuilder;
         private List<string> matchingTilesList;
@@ -41,14 +41,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private double providedMinLong;
         private bool validCoordinateSearchFound;
 
+        private static User_Object CurrentUser;
+        private static SobekCM_Item CurrentItem;
+
         List<Coordinate_Polygon> allPolygons;
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
 
-        public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM.Resource_Object.SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
+        public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
-            this.CurrentUser = Current_User;
-            this.CurrentItem = Current_Item;
+            CurrentUser = Current_User;
+            CurrentItem = Current_Item;
             this.CurrentMode = Current_Mode;
 
             // If there is no user, send to the login
@@ -58,26 +61,83 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 CurrentMode.Redirect();
                 return;
+            }           
+
+        }
+
+        //parse and save incoming message 
+        public static void SaveContent(String sendData)
+        {
+            //ensure we have a geo-spatial module in the digital resource
+            GeoSpatial_Information myGeo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+            //if there was no geo-spatial module
+            if (myGeo == null)
+            {
+                //create new geo-spatial module
+                myGeo = new GeoSpatial_Information();
+                CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
             }
-
-            //string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
-
-            //// Ensure the user's process directory exists
-            //if (!Directory.Exists(userInProcessDirectory))
-            //    Directory.CreateDirectory(userInProcessDirectory);
-
-            //// SAVE!
-
-            //// Ensure we have a geo-spatial module in the digital resource
-            //GeoSpatial_Information myGeo = Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-            //if (myGeo == null)
-            //{
-            //    myGeo = new GeoSpatial_Information();
-            //    Current_Item.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, myGeo);
-            //}
-
-            //// Save the item to the temporary location
-            //Current_Item.Save_METS(userInProcessDirectory + "\\" + Current_Item.BibID + "_" + Current_Item.VID + ".xml");
+            //get the length of incoming message
+            int index = sendData.LastIndexOf("|");
+            //split into array base on vertical pipes
+            string[] ar = sendData.Substring(0, index).Split('|');
+            //determine the save type (position 0 in array)
+            string saveType = ar[0];
+            //based on saveType, parse into objects
+            switch (saveType)
+            {
+                case "item":
+                    string[] temp = ar[1].Split(',');
+                    double tempLat = Convert.ToDouble(temp[0].Replace("(", ""));
+                    double tempLong = Convert.ToDouble(temp[1].Replace(")", ""));
+                    myGeo.Add_Point(tempLat, tempLong, CurrentItem.METS_Header.ObjectID);
+                    break;
+                case "overlay":
+                    string savedOverlayIndex = ar[1];
+                    string savedOverlayBounds = ar[2];
+                    string savedOverlaySource = ar[3];
+                    string savedOverlayRotation = ar[4];
+                    break;
+                case "poi":
+                    string savedPOIType = ar[1];
+                    string savedPOIDesc = ar[2];
+                    string savedPOIKML = ar[3];
+                    //get specific geometry  KML Standard (not used)
+                    //switch (ar[1]) {
+                    //    case "marker":
+                    //        string savedMarkerDesc = ar[1];
+                    //        string savedMarkerCoords = ar[2];
+                    //        //save
+                    //        break;
+                    //    case "circle":
+                    //        string savedCircleDesc = ar[1];
+                    //        string savedCircleCenter = ar[2];
+                    //        string savedCircleRadius = ar[3];
+                    //        break;
+                    //    case "rectangle":
+                    //        string savedRectangleDesc = ar[1];
+                    //        string savedRectangleBounds = ar[2];
+                    //        break;
+                    //    case "polygon":
+                    //        string savedPolygonDesc = ar[1];
+                    //        string savedPolygonPoints = ar[2];
+                    //        break;
+                    //    case "polyline":
+                    //        string savedPolyLineDesc = ar[1];
+                    //        string savedPolyLinePoints = ar[2];
+                    //        break;
+                    //}
+                    break;
+            }
+            //create inprocessing directory
+            string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
+            //ensure the user's process directory exists
+            if (!Directory.Exists(userInProcessDirectory))
+            {
+                Directory.CreateDirectory(userInProcessDirectory);
+            }
+            //save the item to the temporary location
+            CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".xml");
 
         }
 
@@ -347,7 +407,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //mapperBuilder.AppendLine(" ");
             //mapperBuilder.AppendLine(" <!-- Begin Callback Support --> ");
             //mapperBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_load.js\"></script>");
-            //mapperBuilder.AppendLine(" <input type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
+            mapperBuilder.AppendLine(" <input runat=\"server\" type=\"hidden\" id=\"saveTest\" name=\"saveTest\" value=\"\" />");
             //mapperBuilder.AppendLine(" <!-- End Callback Support --> ");
             //mapperBuilder.AppendLine(" ");
 
