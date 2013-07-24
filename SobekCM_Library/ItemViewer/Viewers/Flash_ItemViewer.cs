@@ -111,14 +111,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             Output.WriteLine("        <!-- FLASH VIEWER OUTPUT -->" );
-            Output.WriteLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>" + label +"</b></span></td>");
+            Output.WriteLine("          <td><div id=\"sbkFiv_ViewerTitle\">" + label +"</div></td>");
             Output.WriteLine("        </tr>") ;
             Output.WriteLine("        <tr>");
-            Output.WriteLine("          <td class=\"SobekCitationDisplay\">");
-            Output.WriteLine("            <object width=\"630\" height=\"630\">" );
+            Output.WriteLine("          <td id=\"sbkFiv_MainArea\">");
+            Output.WriteLine("            <object style=\"width:630px;height:630px;\">" );
             Output.WriteLine("            <param name=\"allowScriptAccess\" value=\"always\" />" );
             Output.WriteLine("            <param name=\"movie\" value=\"" + flash_file + "\">");
-            Output.WriteLine("            <embed src=\"" + flash_file + "\" AllowScriptAccess=\"always\" width=\"630\" height=\"630\">" );
+            Output.WriteLine("            <embed src=\"" + flash_file + "\" AllowScriptAccess=\"always\" style=\"width:630px;height:630px;\">");
             Output.WriteLine("            </embed>" );
             Output.WriteLine("            </object>");
             Output.WriteLine("          </td>" );

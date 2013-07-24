@@ -48,14 +48,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             Output.WriteLine("<td>");
-            Output.WriteLine("<div id=\"openseadragon_container\" style=\"width: 800px;height: 600px;background-color: black;border: 1px solid black;color: white;\"></div>");
+            Output.WriteLine("<div id=\"sbkJp2_Container\" ></div>");
             Output.WriteLine();
             Output.WriteLine("<script type=\"text/javascript\">");
             Output.WriteLine("   viewer = OpenSeadragon({");
-            Output.WriteLine("      id: \"openseadragon_container\",");
+            Output.WriteLine("      id: \"sbkJp2_Container\",");
             Output.WriteLine("      prefixUrl : \"/iipimage/openseadragon/images/\",");
             Output.WriteLine("      showNavigator:  true,");
-            Output.WriteLine("      navigatorId:  \"openseadragon_navigator\"");
+            Output.WriteLine("      navigatorId:  \"sbkJp2_Navigator\"");
             Output.WriteLine("   });");
             Output.WriteLine();
             Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=//fcla-sobekfs/ufdc/resources/" + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
@@ -88,16 +88,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 click_on_thumbnail_text = "Haga Clic en la Miniatura para centralizar la Imagen";
             }
 
-            Output.WriteLine("        <ul class=\"SobekNavBarMenu\">");
-            Output.WriteLine("          <li class=\"SobekNavBarHeader\"> " + thumnbnail_text + " </li>");
-            
-            // Determine the browser
-            if (CurrentMode.Browser_Type.IndexOf("IE", System.StringComparison.Ordinal) >= 0)
-                Output.WriteLine("          <li class=\"SobekNavBarMenuNonLink_ie\">");
-            else
-                Output.WriteLine("          <li class=\"SobekNavBarMenuNonLink\">");
-
-            Output.WriteLine("            <div id=\"openseadragon_navigator\"></div>");
+            Output.WriteLine("        <ul class=\"sbkIsw_NavBarMenu\">");
+            Output.WriteLine("          <li class=\"sbkIsw_NavBarHeader\"> " + thumnbnail_text + " </li>");
+            Output.WriteLine("          <li class=\"sbkIsw_NavBarMenuNonLink\">");
+            Output.WriteLine("            <div id=\"sbkJp2_Navigator\"></div>");
             Output.WriteLine("            <br />");
             Output.WriteLine("          </li>");
             Output.WriteLine("        </ul>");

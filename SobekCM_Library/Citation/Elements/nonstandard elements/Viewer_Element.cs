@@ -149,10 +149,6 @@ namespace SobekCM.Library.Citation.Elements
                                      ? "<option value=\"html\" selected=\"selected\" >HTML</option>"
                                      : "<option value=\"html\" >HTML</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.HTML_MAP
-                                     ? "<option value=\"htmlmap\" selected=\"selected\" >HTML Map</option>"
-                                     : "<option value=\"htmlmap\" >HTML Map</option>");
-
                     Output.Write(views[i - 1].View_Type == View_Enum.JPEG
                                      ? "<option value=\"jpeg\" selected=\"selected\" >JPEG</option>"
                                      : "<option value=\"jpeg\" >JPEG</option>");
@@ -262,10 +258,6 @@ namespace SobekCM.Library.Citation.Elements
                             viewType = View_Enum.HTML;
                             break;
 
-                        case "htmlmap":
-                            viewType = View_Enum.HTML_MAP;
-                            break;
-
                         case "jpeg":
                             viewType = View_Enum.JPEG;
                             break;
@@ -296,7 +288,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
 
                     // Get the details information for html and html map
-                    if ((viewType == View_Enum.HTML_MAP) || (viewType == View_Enum.HTML))
+                    if (viewType == View_Enum.HTML)
                     {
                         if (HttpContext.Current.Request.Form[file_key] != null)
                         {

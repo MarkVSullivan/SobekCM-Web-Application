@@ -89,15 +89,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Start the citation table
             Output.WriteLine("\t\t<!-- HTML VIEWER OUTPUT -->" );
-            Output.WriteLine("\t\t<td align=\"left\"><span class=\"SobekViewerTitle\"><b>" + title + "</b></span></td></tr>");
-            Output.WriteLine("\t\t<tr><td class=\"SobekDocumentDisplay\">" );
-            Output.WriteLine("\t\t\t<div class=\"SobekCitation\">");
+            Output.WriteLine("\t\t<td style=\"align:left;\">");
+
 
             // Determine the string for the item URL
             string itemURL = SobekCM_Library_Settings.Image_URL + CurrentItem.Web.File_Root + "/";
 
 			// Try to get the HTML for this
             string map = Get_Html_Page(CurrentItem.Web.Source_URL + "/" + htmlFile, Tracer);
+
+            // Get the link for this item
+            string itemLink = CurrentMode.Base_URL + "/" + CurrentItem.BibID + "/" + CurrentItem.VID;
 
             string url_options = CurrentMode.URL_Options();
             string urlOptions1 = String.Empty;
@@ -107,9 +109,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 urlOptions1 = "?" + url_options;
                 urlOptions2 = "&" + url_options;
             }
-            Output.WriteLine(map.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%ITEMURL%>", itemURL));
-
-            Output.WriteLine("\t\t\t</div>" );
+            Output.WriteLine(map.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%ITEMURL%>", itemURL).Replace("<%ITEM_LINK%>", itemLink));
 
 			// Finish the table
 			Output.WriteLine( "\t\t</td>"  );
@@ -145,21 +145,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             catch 
             {
                 StringBuilder builder = new StringBuilder();
-                builder.AppendLine("<div class=\"SobekHomeText\">");
-                builder.AppendLine("<br /><br />");
-                builder.AppendLine("<table width=\"630\" border=\"0\" align=\"center\">");
-                builder.AppendLine("  <tr>");
-                builder.AppendLine("    <td align=\"center\" >");
-
-                builder.AppendLine("      <b><h4>Unable to pull html view for item</h4></b>");
-                builder.AppendLine("      <h5>We apologize for the inconvenience.</h5>");
+                builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
+                builder.AppendLine("  <br /><br />");
+                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item</span><br /><br />");
+                builder.AppendLine("  <span style=\"font-size:1.2em\">We apologize for the inconvenience.</span><br /><br />");
                 string error_message = "Unable to pull html view for item " + CurrentItem.Web.ItemID;
-                string returnurl = "?m=hc&em=" + error_message.Replace(" ", "%20");
-                builder.AppendLine("      <h5>Click <a href=\"" + returnurl + "\">here</a> to report the problem.</h5>");
-                builder.AppendLine("    </td>");
-                builder.AppendLine("  </tr>");
-                builder.AppendLine("</table>");
-                builder.AppendLine("<br /><br />");
+                string returnurl = CurrentMode.Base_URL + "/contact";
+                builder.AppendLine("  <span style=\"font-size:1.2em\">Click <a href=\"" + returnurl + "\">here</a> to report the problem.</span>");
+                builder.AppendLine("  <br /><br />");
                 builder.AppendLine("</div>");
                 return builder.ToString();
             }

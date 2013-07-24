@@ -145,6 +145,34 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 .sbkCiv_CitationSection h2 { color: #999999;font-size: 1.0em; }
 .sbkCiv_Label { vertical-align:top;font-weight:bold;padding-left: 20px; }
 
+/** DOWNLOAD_ITEMVIEWER (For any downloads related to the resource) */
+#sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;}
+#sbkDiv_MainArea h2 { font-size: 1.1em;font-weight: bold;padding: 15px 0 0 50px;  }
+#sbkDiv_MainArea p { padding-left: 75px;padding-right: 50px; }
+#sbkDiv_Downloads { padding: 25px 0 100px 100px; }
+#sbkDiv_Aerials { padding-left: 100px;width: 100%; }
+
+/** EMBEDDEDVIDEO_ITEMVIEWER */
+#sbkEmv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+#sbkEmv_MainArea { text-align: center; background-color: #333333; }
+
+/** FLASH_ITEMVIEWER */
+#sbkFiv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+#sbkFiv_MainArea { text-align: center; background-color: #333333; }
+
+/* JPEG2000_ITEMVIEWER */
+#sbkJp2_Container { width: 800px;height: 600px;background-color: black;border: 1px solid black;color: white; }
+#sbkJp2_Navigator { width:145px; height: 95px; }
+
+/* PDF_ITEMVIEWER */
+#sbkPdf_MainArea { text-align: left; }
+#sbkPdf_MainArea a:link { text-decoration: none; color: cornflowerblue; }
+#sbkPdf_MainArea a:visited { text-decoration: none; color: cornflowerblue; }
+#sbkPdf_MainArea a:hover { text-decoration: underline; color: white; }
+#sbkPdf_DownloadFileLink { margin-left: 50px; }
+#sbkPdf_Container {width: 600px;height: 700px; }
+
+
 
 .SobekCitation_METS {
     BORDER-WIDTH: 0; COLOR: black; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 1.1em; font-family: Courier New, Courier, Arial; width:950px;
@@ -169,7 +197,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 .SobekCitationSection1
 {
-    BACKGROUND-COLOR: White; /*#F8FFBB*/
+    BACKGROUND-COLOR: White; 
 }
 
 .SobekCitationSectionTitle2
@@ -186,7 +214,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 #SobekCitation a:link { color: blue; }
 
-
+  
 
 
 
@@ -213,8 +241,6 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
   
   
 
-  /* Current in test */
-  
 
       
 
@@ -244,7 +270,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 
 
-/** END IN TEST **/
+
 
 	
 
@@ -293,7 +319,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 
 
-/** Styles used for the item viewer portion of SobekCM **/
+
 
 
 .SobekSearch { margin: 0; margin-top:1px; padding: 8px 0 8px 0; width: 100%;
@@ -342,7 +368,3 @@ hr {
     border: none;
 }
 
-#openseadragon_navigator {
-    width:145px; 
-    height: 95px; 
-}

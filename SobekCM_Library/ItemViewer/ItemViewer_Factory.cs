@@ -51,14 +51,6 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.HTML:
                     return new HTML_ItemViewer(viewObject.Attributes, viewObject.Label);
 
-                case View_Enum.HTML_MAP:
-                    string[] html_map_splitter = viewObject.Attributes.Split(";".ToCharArray());
-                    if (html_map_splitter.Length >= 2)
-                    {
-                        return new HTML_Map_ItemViewer(html_map_splitter[0], html_map_splitter[1], viewObject.Label);
-                    }
-                    break;
-
                 case View_Enum.JPEG:
                     abstractItemViewer jpegViewer = new JPEG_ItemViewer( viewObject.Attributes );
                     jpegViewer.FileName = viewObject.FileName;

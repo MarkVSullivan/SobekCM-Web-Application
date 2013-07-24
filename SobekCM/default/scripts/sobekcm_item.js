@@ -368,14 +368,14 @@ function jp2_set_fullscreen() {
 
 // Function to set the full screen mode 
 function pdf_set_fullscreen() {
-    var x = $("#pdfdocument").offset().left;
-    var y = $("#pdfdocument").offset().top;
+    var x = $("#sbkPdf_Container").offset().left;
+    var y = $("#sbkPdf_Container").offset().top;
 
     var window_height = $(window).height();
     var new_height = window_height - y - 10;
-    $("#pdfdocument").height(new_height);
+    $("#sbkPdf_Container").height(new_height);
 
     var window_width = $(window).width();
     var new_width = window_width - x - 20;
-    $("#pdfdocument").width(new_width);
+    $("#sbkPdf_Container").width(new_width);
 }

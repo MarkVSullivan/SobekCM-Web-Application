@@ -116,10 +116,6 @@ namespace SobekCM.Library.ItemViewer
                                       : HTML_Helper(Skin_Code, "html", "HTML LINK", Current_Mode));
                     break;
 
-                case View_Enum.HTML_MAP:
-                    returnVal.Add(HTML_Helper(Skin_Code, "htmlmap", Translator.Get_Translation(Item_View.Label.ToUpper(), Current_Mode.Language), Current_Mode));
-                    break;
-
                 case View_Enum.JPEG:
                     returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "j", Translator.Get_Translation("STANDARD", Current_Mode.Language), Current_Mode));
                     break;
