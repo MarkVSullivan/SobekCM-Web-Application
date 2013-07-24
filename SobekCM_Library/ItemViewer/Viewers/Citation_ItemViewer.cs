@@ -171,14 +171,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Add the HTML for the citation
             Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->" );
-			Output.WriteLine("        <td class=\"SobekCitationDisplay\">" );
+			Output.WriteLine("        <td>" );
 
 			// Get  the robot flag (if this is rendering for robots, the other citation views are not available)
 			bool isRobot = CurrentMode.Is_Robot;
 
 			// Add the tabs for the different citation information
 			string viewer_code = CurrentMode.ViewerCode;
-            Output.WriteLine("            <div class=\"SobekCitation\" id=\"SobekCitation\">");
+            Output.WriteLine("            <div id=\"sbkCiv_Citation\">");
 
 			// Get any search terms
 			List<string> terms = new List<string>();
@@ -257,20 +257,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			builder.AppendLine("<blockquote>This item was has been viewed <%HITS%> times within <%SESSIONS%> visits.  Below are the details for overall usage for this item within this library.<br /><br />For definitions of these terms, see the <a href=\"" + CurrentMode.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</blockquote>");
 
-			builder.AppendLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-			builder.AppendLine("    <tr align=\"right\" bgcolor=\"#0022a7\" >");
-			builder.AppendLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\">DATE</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">VISITS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">JPEG<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">ZOOMABLE<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">CITATION<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">THUMBNAIL<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">TEXT<br />SEARCHES</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">FLASH<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">MAP<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">DOWNLOAD<br />VIEWS</span></th>");
-			builder.AppendLine("      <th width=\"90px\"><span style=\"color: White\">STATIC<br />VIEWS</span></th>");
+            builder.AppendLine("  <table class=\"sbkCiv_StatsTable\">");
+			builder.AppendLine("    <tr class=\"sbkCiv_StatsTableHeaderRow\">");
+			builder.AppendLine("      <th style=\"width:120px\">Date</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Views</th>");
+			builder.AppendLine("      <th style=\"width:90px\">Visits</th>");
+            builder.AppendLine("      <th style=\"width:90px\">JPEG<br />Views</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Zoomable<br />Views</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Citation<br />Views</th>");
+			builder.AppendLine("      <th style=\"width:90px\">Thumbnail<br />Views</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Text<br />Searches</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Flash<br />Views</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Map<br />Views</th>");
+            builder.AppendLine("      <th style=\"width:90px\">Download<br />Views</th>");
+			builder.AppendLine("      <th style=\"width:90px\">Static<br />Views</th>");
 			builder.AppendLine("    </tr>");
 
 			const int columns = 12;
@@ -281,15 +281,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					if (thisRow["Year"].ToString() != last_year)
 					{
-						builder.AppendLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow["Year"] + " STATISTICS</b></span></td></tr>");
+                        builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableYearRow\" colspan=\"" + columns + "\">" + thisRow["Year"] + " STATISTICS</td></tr>");
 						last_year = thisRow["Year"].ToString();
 					}
 					else
 					{
-						builder.AppendLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
+						builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableRowSeperator\" colspan=\"" + columns + "\"></td></tr>");
 					}
-					builder.AppendLine("    <tr align=\"center\" >");
-					builder.AppendLine("      <td align=\"left\">" + Month_From_Int(Convert.ToInt32(thisRow["Month"])) + " " + thisRow["Year"] + "</td>");
+					builder.AppendLine("    <tr>");
+					builder.AppendLine("      <td style=\"text-align: left\">" + Month_From_Int(Convert.ToInt32(thisRow["Month"])) + " " + thisRow["Year"] + "</td>");
 
 					if (thisRow[5] != DBNull.Value)
 					{
@@ -395,9 +395,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					builder.AppendLine("    </tr>");
 				}
 
-				builder.AppendLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
-				builder.AppendLine("    <tr align=\"center\" style=\"font-weight:bold\" >");
-				builder.AppendLine("      <td align=\"left\">TOTAL</td>");
+                builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableFinalSeperator\" colspan=\"" + columns + "\"></td></tr>");
+                builder.AppendLine("    <tr id=\"sbkCiv_StatsTableTotalRow\" >");
+				builder.AppendLine("      <td style=\"text-align:left\">TOTAL</td>");
 				builder.AppendLine("      <td>" + hits + "</td>");
 				builder.AppendLine("      <td>" + sessions + "</td>");
 				builder.AppendLine("      <td>" + jpeg_views + "</td>");
@@ -598,7 +598,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");
-            builder.AppendLine("<div style=\"color:green; text-align:center;\">The record above was auto-generated from the METS file.</div>");
+            builder.AppendLine("<div id=\"sbkCiv_MarcAutoGenerated\">The record above was auto-generated from the METS file.</div>");
 		    builder.AppendLine();
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");
@@ -676,8 +676,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			StringBuilder result = new StringBuilder();
 
 			// Start this table
-			result.Append(indent + "<table width=\"100%\" cellpadding=\"5px\" class=\"SobekCitationSection1\">\n");
-			result.Append(indent + "  <tr> <td colspan=\"3\"> </td> </tr>\n");
+            result.Append(indent + "<table class=\"sbkCiv_CitationSection\">\n");
+			result.Append(indent + "  <tr> <td colspan=\"2\"> </td> </tr>\n");
 
 			// If this item is an external link item (i.e. has related URL, but no pages or downloads) the PURL should display as the Other URL
 			bool external_link_only = false;
@@ -752,10 +752,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             result.AppendLine(indent + "</table>");
 
-			result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection2\">");
-		    result.AppendLine(indent + "<tr>");
-		    result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle2\"><b>&nbsp;" + biblio_info + "</b></td>");
-            result.AppendLine( indent + "</tr>");
+			result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+		    result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + biblio_info + "</h2></td></tr>");
 
 			// Collect the titles
 			List<string> uniform_titles = new List<string>();
@@ -1237,10 +1235,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Add the taxonomic data if it exists
 			if (( taxonInfo != null ) && ( taxonInfo.hasData ))
 			{
-                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
-                result.AppendLine(indent + "<tr>");
-                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + zoological_taxonomy + "</b></td>");
-                result.AppendLine(indent + "</tr>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+                result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + zoological_taxonomy + "</h2></td></tr>");
 
                 result.Append(Single_Citation_HTML_Row("Scientific Name", taxonInfo.Scientific_Name, indent));
                 result.Append(Single_Citation_HTML_Row("Kingdom", taxonInfo.Kingdom, indent));
@@ -1259,10 +1255,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the learning object metadata if it exists
             if ((lomInfo != null) && (lomInfo.hasData))
             {
-                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
-                result.AppendLine(indent + "<tr>");
-                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + learningobject_title + "</b></td>");
-                result.AppendLine(indent + "</tr>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+                result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + learningobject_title + "</h2></td></tr>");
 
                 // Add the LOM Aggregation level
                 if (lomInfo.AggregationLevel != AggregationLevelEnum.UNDEFINED)
@@ -1540,10 +1534,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if ((subjects.Count > 0) || (genres.Count > 0) || (CurrentItem.Bib_Info.TemporalSubjects_Count > 0) || (hierGeo.Count > 0) ||
                 ((geoInfo != null) && (geoInfo.hasData) && ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))))
 			{
-                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
-                result.AppendLine(indent + "<tr>");
-                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + subject_info + "</b></td>");
-                result.AppendLine(indent + "</tr>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+                result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + subject_info + "</h2></td></tr>");
 
 				Add_Citation_HTML_Rows("Subjects / Keywords", subjects, indent, result);
 				Add_Citation_HTML_Rows("Genre", genres, indent, result);
@@ -1671,8 +1663,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				if ((valid_notes_exist) || (CurrentItem.Bib_Info.Abstracts_Count > 0) || (CurrentItem.Behaviors.User_Tags_Count > 0) || (( vraInfo != null ) && ( vraInfo.Inscription_Count > 0)))
 				{
-					result.Append(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">\n");
-					result.Append(indent + "<tr>\n" + indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + notes_info + "</b></td>\n" + indent + "</tr>\n");
+                    result.Append(indent + "<table class=\"sbkCiv_CitationSection\">\n");
+					result.Append(indent + "<tr><td colspan=\"2\"><h2>" + notes_info + "</h2></td></tr>\n");
 
 					if (CurrentItem.Bib_Info.Abstracts_Count > 0)
 					{
@@ -1730,10 +1722,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 			}
 
-            result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection2\">");
-            result.AppendLine(indent + "<tr>");
-            result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle2\"><b>&nbsp;" + institutional_info + "</b></td>");
-            result.AppendLine(indent + "</tr>");
+            result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+            result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + institutional_info + "</h2></td></tr>");
 
 			// Add the SOURCE INSTITUTION information
 			if (CurrentItem.Bib_Info.Source.Statement.Length > 0)
@@ -1816,7 +1806,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				rights_statement = CurrentItem.Bib_Info.Access_Condition.Text;
 			}
-			result.Append(indent + "    <tr>\n" + indent + "      <td width=\"15\"> </td>\n" + indent + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_Translation("Rights Management", CurrentMode.Language) + ": </b></td>\n" + indent + "      <td>");
+            result.Append(indent + "    <tr>\n" + indent + "      <td style=\"width:" + width + "px\" class=\"sbkCiv_Label\">" + Translator.Get_Translation("Rights Management", CurrentMode.Language) + ": </td>\n" + indent + "      <td>");
 			const string SEE_TEXT = "See License Deed";
 			if (rights_statement.IndexOf("http://") == 0)
 			{
@@ -1902,10 +1892,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Add the RELATED ITEMS
 			if (CurrentItem.Bib_Info.RelatedItems_Count > 0)
 			{
-                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection2\">");
-                result.AppendLine(indent + "<tr>");
-                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle2\"><b>&nbsp;" + related_items + "</b></td>");
-                result.AppendLine(indent + "</tr>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+                result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + related_items + "</h2></td></tr>");
 
 				foreach (Related_Item_Info relatedItem in CurrentItem.Bib_Info.RelatedItems)
 				{
@@ -1975,7 +1963,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 
 				// Finish out the table
-				result.Append(indent + "\t\t<tr height=\"5\"> <td> </td> </tr>\n");
                 result.AppendLine(indent + "</table>");
 			}
 
@@ -1983,10 +1970,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				List<string> codeList = new List<string>();
 
-                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection2\">");
-                result.AppendLine(indent + "<tr>");
-                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle2\"><b>&nbsp;" + internal_info + "</b></td>");
-                result.AppendLine(indent + "</tr>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+                result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + internal_info + "</h2></td></tr>");
 
 				if (Code_Manager != null)
 				{
@@ -2013,9 +1998,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (CurrentMode.Internal_User)
 			{
 
-				result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection1\">");
-			    result.AppendLine(indent + "<tr>");
-			    result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + mets_info + "</b></td>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+			    result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + mets_info + "</h2></td>");
 			    result.AppendLine(indent + "</tr>");
 				result.Append(Single_Citation_HTML_Row("Format", CurrentItem.Bib_Info.SobekCM_Type_String, indent));
 				result.Append(Single_Citation_HTML_Row("Creation Date", CurrentItem.METS_Header.Create_Date.ToShortDateString(), indent));
@@ -2029,9 +2013,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			if ((currentUser != null) && (currentUser.Is_System_Admin))
 			{
-                result.AppendLine(indent + "<table width=\"650px\" cellpadding=\"5px\" class=\"SobekCitationSection2\">");
-                result.AppendLine(indent + "<tr>");
-                result.AppendLine(indent + "<td colspan=\"3\" class=\"SobekCitationSectionTitle2\"><b>&nbsp;" + system_info + "</b></td>");
+                result.AppendLine(indent + "<table class=\"sbkCiv_CitationSection\">");
+                result.AppendLine(indent + "<tr><td colspan=\"2\"><h2>" + system_info + "</h2></td>");
                 result.AppendLine(indent + "</tr>");
 
                 result.Append(Single_Citation_HTML_Row("Item Primary Key", CurrentItem.Web.ItemID.ToString(), indent));
@@ -2054,8 +2037,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    if (Values.Count <= 0) return;
 
 		    results.AppendLine(indent + "    <tr>");
-		    results.AppendLine(indent + "      <td width=\"15\"> </td>");
-		    results.Append(indent + "      <td width=\"" + width + "\" valign=\"top\"><b>");
+            results.Append(indent + "      <td class=\"sbkCiv_Label\" style=\"width:" + width + "px;\">");
 
 		    // Add with proper language
 		    switch (CurrentMode.Language)
@@ -2073,7 +2055,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		            break;
 		    }
 
-		    results.AppendLine(": </b></td>");
+		    results.AppendLine(": </td>");
 		    results.Append( indent + "      <td>");
 		    bool first = true;
 		    foreach (string thisValue in Values.Where(thisValue => thisValue.Length > 0))
@@ -2100,8 +2082,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    if (Values.Count <= 0) return;
 
 		    results.AppendLine(indent + "    <tr>");
-		    results.AppendLine(indent + "      <td width=\"15\"> </td>");
-		    results.Append(indent + "      <td width=\"" + width + "\" valign=\"top\"><b>");
+            results.Append(indent + "      <td class=\"sbkCiv_Label\" style=\"width:" + width + "px;\">");
+
 
 		    // Add with proper language
 		    switch (CurrentMode.Language)
@@ -2119,7 +2101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		            break;
 		    }
 
-		    results.AppendLine(": </b></td>");
+		    results.AppendLine(": </td>");
 		    results.Append( indent + "      <td>");
 		    bool first = true;
 		    foreach (string thisValue in Values.Where(thisValue => thisValue.Length > 0))
@@ -2146,13 +2128,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				switch (CurrentMode.Language)
 				{
 					case Web_Language_Enum.French:
-                        return indent + "    <tr>" + Environment.NewLine + indent + "      <td width=\"15\"> </td>" + Environment.NewLine + indent + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_French(Row_Name) + ": </b></td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "    </tr>" + Environment.NewLine;
+                        return indent + "    <tr>" + Environment.NewLine + indent + "      <td class=\"sbkCiv_Label\" style=\"width:" + width + "px;\">" + Translator.Get_French(Row_Name) + ": </td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "    </tr>" + Environment.NewLine;
 
 					case Web_Language_Enum.Spanish:
-                        return indent + "    <tr>" + Environment.NewLine + indent + "      <td width=\"15\"> </td>" + Environment.NewLine + indent + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_Spanish(Row_Name) + ": </b></td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "    </tr>" + Environment.NewLine;
+                        return indent + "    <tr>" + Environment.NewLine + indent + "      <td class=\"sbkCiv_Label\" style=\"width:" + width + "px;\">" + Translator.Get_Spanish(Row_Name) + ": </td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "    </tr>" + Environment.NewLine;
 
 					default:
-                        return indent + "    <tr>" + Environment.NewLine + indent + "      <td width=\"15\"> </td>" + Environment.NewLine + indent + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Row_Name + ": </b></td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "   </tr>" + Environment.NewLine;
+                        return indent + "    <tr>" + Environment.NewLine + indent + "      <td class=\"sbkCiv_Label\" style=\"width:" + width + "px;\">" + Row_Name + ": </td>" + Environment.NewLine + indent + "      <td>" + Value + "</td>" + Environment.NewLine + indent + "   </tr>" + Environment.NewLine;
 				}                    
 			}
 		    return String.Empty;

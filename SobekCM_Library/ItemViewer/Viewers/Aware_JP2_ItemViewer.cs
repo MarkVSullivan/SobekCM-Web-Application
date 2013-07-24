@@ -425,7 +425,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     navRow.AppendLine("<input type=\"hidden\" id=\"thumbnail_click_y\" name=\"thumbnail_click_y\" value=\"-100\"/>");
 
 			        navRow.AppendLine("<script type=\"text/javascript\">");
-			        navRow.AppendLine("  $('#sbk_Aj2_ThumbZoomedIn').click(function(e){");
+			        navRow.AppendLine("  $('#sbkAj2_ThumbZoomedIn').click(function(e){");
 			        navRow.AppendLine("    var x = e.pageX - e.target.offsetLeft;");
 			        navRow.AppendLine("    var y = e.pageY - e.target.offsetTop;");
 			        navRow.AppendLine("    $('#thumbnail_click_x').val(x);");
@@ -697,11 +697,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        // Create the image object
 	        if ( CurrentMode.Viewport_Zoom == 1 )
             {
-                Output.WriteLine("<img id=\"sbk_Aj2_Thumb\" src=\"" + url_builder.ToString() + "\" alt=\"Navigational Thumbnail\" />");
+                Output.WriteLine("<img id=\"sbkAj2_Thumb\" src=\"" + url_builder.ToString().Replace("&","&amp;") + "\" alt=\"Navigational Thumbnail\" />");
             }
 	        else
 	        {
-                Output.WriteLine("<img id=\"sbk_Aj2_ThumbZoomedIn\" src=\"" + url_builder.ToString() + "\" alt=\"Navigational Thumbnail\" />");
+                Output.WriteLine("<img id=\"sbkAj2_ThumbZoomedIn\" src=\"" + url_builder.ToString().Replace("&", "&amp;") + "\" alt=\"Navigational Thumbnail\" />");
 	        }
 		
 	        // Add the HTML to end this menu section
@@ -829,13 +829,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        {
 	            // Add the HTML for the error
 	            Literal errorLiteral = new Literal
-	                                       { Text ="\t\t<td style=\"text-align:center;\" colspan=\"3\" >" + Environment.NewLine +"<strong>JPEG2000 IMAGE NOT FOUND IN DATABASE!</strong>" +Environment.NewLine + "\t\t</td>" + Environment.NewLine };
+	                                       { Text ="\t\t<td style=\"text-align:center;\">" + Environment.NewLine +"<strong>JPEG2000 IMAGE NOT FOUND IN DATABASE!</strong>" +Environment.NewLine + "\t\t</td>" + Environment.NewLine };
 	            placeHolder.Controls.Add( errorLiteral );
 	        }
 	        else
 	        {			
 	            // Add the HTML to start this
-                Literal startLiteral = new Literal { Text = "<td>" + NavigationRow + "</td></tr><tr>\t\t<td style=\"text-align:center;\" colspan=\"3\" id=\"sbk_Aj2_Image\">" + Environment.NewLine };
+                Literal startLiteral = new Literal { Text = "<td>" + NavigationRow + "</td></tr><tr>\t\t<td style=\"text-align:center;\" id=\"sbkAj2_ImageTd\">" + Environment.NewLine };
 	            placeHolder.Controls.Add( startLiteral );
 
                 // Build the filename
@@ -870,7 +870,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            if ( CurrentMode.Viewport_Zoom != 1 )
 	            {
 	                // Create the image object
-	                ImageButton mainImage = new ImageButton   { BorderColor = Color.Black, BorderWidth = 1, ImageUrl = url_builder.ToString() };
+                    ImageButton mainImage = new ImageButton { CssClass = "sbkAj2_Image", ImageUrl = url_builder.ToString() };
 	                mainImage.Height = size_pixels;
 	                mainImage.BackColor = Color.White;
 	                mainImage.Click +=mainImage_Click;
@@ -895,7 +895,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            {
 	                // Create the image object
 	                Image mainImage2 = new Image
-	                                       { BorderColor = Color.Black, BorderWidth = 1, ImageUrl = url_builder.ToString(), AlternateText = "Main Image" };
+	                                       { CssClass="sbkAj2_Image", ImageUrl = url_builder.ToString(), AlternateText = "Main Image" };
 	                placeHolder.Controls.Add( mainImage2 );
 	            }
 

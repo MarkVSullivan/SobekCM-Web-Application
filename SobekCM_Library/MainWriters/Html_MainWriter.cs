@@ -653,10 +653,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Add a printer friendly CSS
-            Output.WriteLine("  <style type=\"text/css\" media=\"printer\">");
-            Output.WriteLine("    @import url( " + currentMode.Base_URL + "default/print.css );");
-            Output.WriteLine("  </style>");
-            Output.WriteLine("  <link rel=\"stylesheet\" rev=\"stylesheet\" href=\"" + currentMode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" charset=\"utf-8\" /> ");
+            Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + currentMode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" /> ");
 
             // Add the apple touch icon
             Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Skin + "/iphone-icon.png\" />");
@@ -822,9 +819,6 @@ namespace SobekCM.Library.MainWriters
             {
                 return;
             }
-
-            // Add a top tag
-            Output.WriteLine("<a name=\"top\"></a>");
 
             // Should the internal header be added?
             if ((subwriter != null) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative) && (currentUser != null))

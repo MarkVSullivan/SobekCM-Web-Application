@@ -627,9 +627,9 @@ namespace SobekCM.Library.HTML
             if (!String.IsNullOrEmpty(currentMode.Fragment))
                 return;
 
-            Output.WriteLine("  <table cellspacing=\"0\" id=\"sbkIsw_Internalheader\">");
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("      <td align=\"left\">");
+            Output.WriteLine("  <table id=\"sbkIsw_Internalheader\">");
+            Output.WriteLine("    <tr style=\"height:30px;\">");
+            Output.WriteLine("      <td style=\"text-align:left\">");
             Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"sbkIsw_intheader_button hide_intheader_button2\" onclick=\"return hide_internal_header();\"></button>");
             Output.WriteLine("      </td>");
             if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
@@ -756,11 +756,11 @@ namespace SobekCM.Library.HTML
                     const int actualCols = 70;
 
                     // Add the internal comments row ( hidden content initially )
-                    Output.WriteLine("    <tr align=\"center\" height=\"14px\">");
+                    Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
                     Output.WriteLine("      <td colspan=\"3\">");
                     Output.WriteLine("        <center>");
                     Output.WriteLine("        <table id=\"internal_notes_div\">");
-                    Output.WriteLine("          <tr align=\"left\" height=\"14px\">");
+                    Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <textarea rows=\"" + rows + "\" cols=\"" + actualCols + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
@@ -780,11 +780,11 @@ namespace SobekCM.Library.HTML
                     const int actualCols = 80;
 
                     // Add the internal comments row ( hidden content initially )
-                    Output.WriteLine("    <tr align=\"center\" height=\"14px\">");
+                    Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
                     Output.WriteLine("      <td colspan=\"2\">");
                     Output.WriteLine("        <center>");
                     Output.WriteLine("        <table id=\"internal_notes_div\">");
-                    Output.WriteLine("          <tr align=\"left\" height=\"14px\">");
+                    Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + rows + "\" cols=\"" + actualCols + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
@@ -800,12 +800,11 @@ namespace SobekCM.Library.HTML
                 if (allow_access_change)
                 {
                     // Add the access restriction row ( hidden content initially )
-                    Output.WriteLine("    <tr align=\"center\">");
+                    Output.WriteLine("    <tr style=\"text-align:center;\">");
                     Output.WriteLine("      <td colspan=\"3\">");
-                    Output.WriteLine("        <center>");
                     Output.WriteLine("        <table id=\"access_restrictions_div\" style=\"display:none;\">");
-                    Output.WriteLine("          <tr align=\"left\">");
-                    Output.WriteLine("            <td valign=\"top\" class=\"intheader_label\">SET ACCESS RESTRICTIONS: </td>");
+                    Output.WriteLine("          <tr style=\"text-align:left;\">");
+                    Output.WriteLine("            <td style=\"vertical-align:top\" class=\"intheader_label\">SET ACCESS RESTRICTIONS: </td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <button title=\"Make item public\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"set_item_access('public'); return false;\"></button>");
                     Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"set_item_access('restricted'); return false;\"></button>");
@@ -823,12 +822,11 @@ namespace SobekCM.Library.HTML
                     }
 
                     Output.WriteLine("            </td>");
-                    Output.WriteLine("            <td valign=\"top\">");
+                    Output.WriteLine("            <td style=\"vertical-align:top\">");
                     Output.WriteLine("              <button title=\"Cancel changes\" class=\"sbkIsw_intheader_button intheader_cancel_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
-                    Output.WriteLine("        </center>");
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
                 }
@@ -838,8 +836,8 @@ namespace SobekCM.Library.HTML
 
                 if (userCanEditItem)
                 {
-                    Output.WriteLine("    <tr height=\"45px\">");
-                    Output.WriteLine("      <td colspan=\"3\" align=\"center\" valign=\"middle\">");
+                    Output.WriteLine("    <tr style=\"height:45px;\">");
+                    Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
 
                     // Add ability to edit behaviors for this item group
                     currentMode.Mode = Display_Mode_Enum.My_Sobek;
@@ -1417,7 +1415,7 @@ namespace SobekCM.Library.HTML
                         // Add the TOC as a floating DIV
                         Output.WriteLine("      <div class=\"floating-toc\">");
                         Output.WriteLine("      <ul class=\"SobekNavBarMenu\">");
-                        Output.WriteLine("        <li class=\"SobekNavBarHeader\">TABLE OF CONTENTS &nbsp; &nbsp; &nbsp; <span style=\"color:#eeeeee\"><a href=\"#top\" title=\"Return to the top of this document\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
+                        Output.WriteLine("        <li class=\"SobekNavBarHeader\">TABLE OF CONTENTS &nbsp; &nbsp; &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
 
                         foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
                         {
@@ -1991,7 +1989,7 @@ namespace SobekCM.Library.HTML
             {
                 string image_src = currentMode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
 
-                Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/") + "\" />");
+                Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }
         }
     }

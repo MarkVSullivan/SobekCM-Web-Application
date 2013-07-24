@@ -164,7 +164,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<td>");
 			 
 			//Include the js files
-			Output.WriteLine("<script language=\"JavaScript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_related_items.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_related_items.js\"></script>");
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
 		    Output.WriteLine("<table style=\"width: 100%\">");
@@ -231,28 +231,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Get the icons for the thumbnail sizes
 			string image_location = CurrentMode.Default_Images_URL;
 
-			Output.WriteLine("\t\t<td style=\"valign:top;text-align:center;\" id=\"thumbnailsizeselect\">");
+            Output.WriteLine("\t\t<td id=\"sbkRi_Thumbnailsizeselect\">");
 			if (thumbnailSize == 1)
-                Output.Write("\t\t\t<img src=\"" + image_location + "thumbs3_selected.gif\"/>");
+                Output.Write("\t\t\t<img src=\"" + image_location + "thumbs3_selected.gif\" alt=\"Small\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Small_Thumbnails + "\"><img src=\"" + image_location + "thumbs3.gif\"/></a>");
+                Output.Write("\t\t\t<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Small_Thumbnails + "\"><img src=\"" + image_location + "thumbs3.gif\" alt=\"Small\" /></a>");
 			}
 
 			if (thumbnailSize == 2)
-                Output.Write("<img src=\"" + image_location + "thumbs2_selected.gif\"/>");
+                Output.Write("<img src=\"" + image_location + "thumbs2_selected.gif\" alt=\"Medium\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Medium_Thumbnails + "\"><img src=\"" + image_location + "thumbs2.gif\"/></a>");
+                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Medium_Thumbnails + "\"><img src=\"" + image_location + "thumbs2.gif\" alt=\"Medium\" /></a>");
 			}
 			if (thumbnailSize == 3)
-                Output.Write("<img src=\"" + image_location + "thumbs1_selected.gif\"/>");
+                Output.Write("<img src=\"" + image_location + "thumbs1_selected.gif\" alt=\"Large\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Large_Thumbnails + "\"><img src=\"" + image_location + "thumbs1.gif\"/></a>");
+                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Large_Thumbnails + "\"><img src=\"" + image_location + "thumbs1.gif\" alt=\"Large\" /></a>");
 			}
 			//Reset the current mode
 			CurrentMode.Size_Of_Thumbnails = -1;
@@ -262,7 +262,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Add the dropdown for the thumbnail anchor within the page to directly navigate to
             Output.WriteLine("\t\t<td style=\"valign:top;text-align:right;font-weight:bold;padding-right: 20px;\">");
 			Output.WriteLine(goToThumbnail + ":");
-			Output.WriteLine("\t\t\t<select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
+			Output.WriteLine("\t\t\t<select onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect(this.options[this.selectedIndex].value);\" >");
 
 			//iterate through the page items
 			if (CurrentItem.Web.Static_PageCount > 0)
@@ -314,9 +314,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			ushort current_view_page = CurrentMode.Page;
 
 			// Start the citation table
-			Output.WriteLine( "\t\t<!-- RELATED IMAGES VIEWER OUTPUT -->" );
 			Output.WriteLine("\t<tr>");
 			Output.WriteLine("\t\t<td>" );
+            Output.WriteLine("\t\t<!-- RELATED IMAGES VIEWER OUTPUT -->");
 
 			// Start the main div for the thumbnails
 	
@@ -383,8 +383,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 }
 
-                Output.WriteLine("<span style=\"display:inline-block;text-align:center;padding:4px;\" class=\"thumbnailspan\" id=\"span" + page_index + "\">");
-                Output.WriteLine("  <table style=\"display:inline-block;\">");
+                Output.WriteLine("  <table class=\"sbkRi_Thumbnail\" id=\"span" + page_index + "\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a id=\"" + page_index + "\" href=\"" + url + "\" title=\"" + thisPage.Label + "\">");
@@ -396,12 +395,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td style=\"align:center\">");
-                Output.WriteLine("        <span class=\"SobekThumbnailText\" style=\"display:inline-block;\">" + thisPage.Label + "</span>");
-                Output.WriteLine("      </td>");
+                Output.WriteLine("      <td style=\"align:center\">" + thisPage.Label + "</td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </table>");
-                Output.WriteLine("</span>");
                 Output.WriteLine();
 			}
 
