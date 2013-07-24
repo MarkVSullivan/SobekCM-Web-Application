@@ -41,9 +41,6 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Resource views shows a static HTML page </summary>
         HTML,
 
-        /// <summary> Resource viewer shows a static HTML page which also includes an HTML map for linking to other pages </summary>
-        HTML_MAP,
-
         /// <summary> Static JPEG page viewer </summary>
         JPEG,
 

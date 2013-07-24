@@ -132,9 +132,6 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.HTML:
                     return new string[] {"html"};
 
-                case View_Enum.HTML_MAP:
-                    return new string[] {"htmlmap"};
-
                 case View_Enum.JPEG:
                     return new string[] {"j"};
 

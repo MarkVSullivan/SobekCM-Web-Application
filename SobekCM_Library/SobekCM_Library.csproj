@@ -441,9 +441,6 @@
     <Compile Include="ItemViewer\Viewers\Citation_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ItemViewer\Viewers\Download_Only_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="ItemViewer\Viewers\Download_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -454,9 +451,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\Google_Map_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\HTML_Map_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\HTML_ItemViewer.cs">
