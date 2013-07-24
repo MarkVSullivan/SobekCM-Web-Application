@@ -5,8 +5,6 @@
   <title><%Write_Page_Title();%></title>
     
   <!-- <% Repository_Title(); %> -->
-  <meta content="JavaScript" name="vs_defaultClientScript" />
-
 
 <%Write_Within_HTML_Head();%>
 </head>
