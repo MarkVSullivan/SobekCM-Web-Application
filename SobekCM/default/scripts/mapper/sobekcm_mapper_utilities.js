@@ -134,7 +134,9 @@ function createSavedOverlay(index, source, bounds, rotation) {
 //create a package to send to the server to save poi
 function createSavedPOI() {
     var dataPackage = "";
+    //cycle through all pois
     for (var i = 0; i < poiObj.length; i++) {
+        //get specific geometry 
         switch (poiType[i]) {
             case "marker":
                 poiKML[i] = poiObj[i].getPosition().toString();
@@ -148,22 +150,24 @@ function createSavedPOI() {
                 break;
             case "polygon":
                 poiObj[i].getPath().forEach(function (latLng) {
-                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator
+                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator    
                 });
                 break;
             case "polyline":
                 poiObj[i].getPath().forEach(function (latLng) {
-                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator
+                    poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator    
                 });
                 break;
             case "deleted":
                 //nothing to do here
                 break;
         }
+        //compile message
         var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
         dataPackage += data + "~";
     }
-    toServer(dataPackage);
+    de("saving overlay set: " + dataPackage); //temp
+    toServer(dataPackage); //send to server to save
 }
 
 //sends save dataPackages to the server via json
@@ -582,7 +586,8 @@ function resizeView() {
 }
 
 //debugging 
-var debugString = "<strong>Debug Panel:</strong><br><br>"; //starting debug string
+var debugStringDefault = "<strong>Debug Panel:</strong> <a onclick=\"debugClear()\">(clear)</a><br><br>"; //starting debug string
+var debugString = debugStringDefault;
 var debugs = 0; //used for keycode debugging
 function de(message) {
     //create debug string
@@ -590,4 +595,9 @@ function de(message) {
     var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
     debugString += "[" + time + "] " + message + "<br><hr>";
     document.getElementById("debugs").innerHTML = debugString;
+}
+function debugClear() {
+    debugString = debugStringDefault;
+    document.getElementById("debugs").innerHTML = debugString;
+    
 }
