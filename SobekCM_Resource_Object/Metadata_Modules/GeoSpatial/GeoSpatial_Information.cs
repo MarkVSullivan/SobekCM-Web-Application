@@ -33,8 +33,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             sobekcm_main_spatial_distance = -1;
             sobekcm_main_spatial_string = String.Empty;
         }
-
-
+        
         #region Methods/Properties to implement the iMetadata_Module interface
 
         /// <summary> Name for this metadata module </summary>

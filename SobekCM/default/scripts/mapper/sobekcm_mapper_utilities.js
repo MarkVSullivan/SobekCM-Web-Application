@@ -166,7 +166,7 @@ function createSavedPOI() {
         var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
         dataPackage += data + "~";
     }
-    de("saving overlay set: " + dataPackage); //temp
+    de("saving overlay set: " + dataPackage); //temp  
     toServer(dataPackage); //send to server to save
 }
 
@@ -574,7 +574,7 @@ function keypress(e) {
 
 //resizes container based on the viewport
 function resizeView() {
-    //alert(document.documentElement.clientHeight);
+    //de(document.documentElement.clientHeight);
 
     var totalPX = document.documentElement.clientHeight;
     var headerPX = $("#mapper_container").offset().top;
@@ -582,7 +582,7 @@ function resizeView() {
     var percentOfHeight = Math.round((bodyPX / totalPX) * 100);
     document.getElementById("mapper_container").style.height = percentOfHeight + "%";
 
-    //alert(percentOfHeight);
+    //de(percentOfHeight);
 }
 
 //debugging 
