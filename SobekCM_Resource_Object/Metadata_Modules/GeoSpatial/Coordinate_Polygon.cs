@@ -332,6 +332,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 }
                 results.Write("</" + sobekcm_namespace + ":Internal>\r\n");
             }
+            //if (rotation.Count > 0)
+            //{
+            //    results.Write("<" + sobekcm_namespace + ":Rotation> "+ rotation +" </" + sobekcm_namespace + ":Rotation>\r\n");
+            //    results.Write("");
+            //}
             results.Write("</" + sobekcm_namespace + ":Polygon>\r\n");
         }
     }

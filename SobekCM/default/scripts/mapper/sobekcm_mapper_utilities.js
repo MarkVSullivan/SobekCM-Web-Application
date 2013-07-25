@@ -119,13 +119,14 @@ function createSavedItem(coordinates) {
 }
 
 //create a package to send to server to save overlay
-function createSavedOverlay(index, source, bounds, rotation) {
+function createSavedOverlay(label, source, bounds, rotation) {
     var temp = source;
     if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
         displayMessage(L7);
     }
+    //var formattedBounds = 
     var messageType = "overlay"; //define what message type it is
-    var data = messageType + "|" + index + "|" + bounds + "|" + source + "|" + rotation + "|";
+    var data = messageType + "|" + label + "|" + bounds + "|" + source + "|" + rotation + "|";
     var dataPackage = data + "~";
     de("saving overlay set: " + dataPackage); //temp
     toServer(dataPackage);
