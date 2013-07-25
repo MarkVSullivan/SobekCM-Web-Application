@@ -373,8 +373,8 @@ function save(id) {
         case "overlay":
             if (savingOverlayIndex.length) {
                 for (var i = 0; i < savingOverlayIndex.length; i++) {
-                    de("saving overlay: " + savingOverlayIndex[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
-                    createSavedOverlay(savingOverlayIndex[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+                    de("saving overlay: " + savingOverlayLabel[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
+                    createSavedOverlay(savingOverlayLabel[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
                     //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
                 }
                 //displayMessage(L_Saved); //not used here
