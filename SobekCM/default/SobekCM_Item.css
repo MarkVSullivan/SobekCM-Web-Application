@@ -63,7 +63,7 @@ textarea.intheader_comments_input_focused  {  color:#0000a8; background-color: #
 .mass_update_button:hover { background-position: 0 -39px; }
 
 /** title bar ( Item_HtmlSubwriter ) */
-#sbkIsw_Titlebar { width: 100%; background-color: #333333; padding: 4px 0 0 0; font-weight:bold; text-align:center; color:White; }
+#sbkIsw_Titlebar { width: 100%; background-color: #333333; padding: 4px 0 0 0; font-weight:bold; text-align:center; color:White;font-size: 0.90em; }
 #sbkIsw_Titlebar h1  { font-size: 1.25em; padding: 0 0 4px 0; margin: 0; line-height: 1.25em;font-weight: bold; }
 #sbkIsw_Titlebar a:link { color: cornflowerblue; }
 #sbkIsw_Titlebar a:visited { color: cornflowerblue; }
@@ -111,6 +111,8 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 .sbkIsw_PageLinks a:hover { color: #FF0000; font-size: 0.80em; }
 .sbkIsw_CheckOutRequired { color: gray; font-size: 0.8em; }
 #sbkIsw_BottomPadding { background:#555555;height: 0; }
+.sbkIsw_RoundButton { background-color: #7d90d5; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; font-size: 0.85em; letter-spacing: 0.5px; }
+.sbkIsw_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
 /* RELATED_IMAGES_ITEMVIEWER (Thumbnails) */
 #sbkRi_Thumbnailsizeselect img { vertical-align:top;text-align:center; padding: 2px; margin: 2px; }
@@ -144,6 +146,9 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 .sbkCiv_CitationSection td { padding-top: 5px;padding-bottom: 5px; }
 .sbkCiv_CitationSection h2 { color: #999999;font-size: 1.0em; }
 .sbkCiv_Label { vertical-align:top;font-weight:bold;padding-left: 20px; }
+.sbkCiv_TextHighlight { background:yellow; font-weight:bold; }
+.sbCiv_DownloadSection { padding-bottom: 25px; }
+.sbCiv_DownloadSection p { padding-left: 40px;padding-right: 30px; }
 
 /** DOWNLOAD_ITEMVIEWER (For any downloads related to the resource) */
 #sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;}
@@ -172,199 +177,57 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkPdf_DownloadFileLink { margin-left: 50px; }
 #sbkPdf_Container {width: 600px;height: 700px; }
 
+/* TEXT_ITEMVIEWER */
+#sbkTiv_MainArea { text-align: left; display: block; white-space: pre;background-color: white;color: #222222;padding-left: 50px;padding-right: 50px; font-family: "Courier New", Arial, Serif;}
+#sbkTiv_ErrorArea {font-size: 1.2em;font-weight: bold; text-align: center;padding: 100px 50px 100px 50px;color: #aaaaaa; }
+.sbkTiv_TextHighlight { background:yellow; font-weight:bold; }
+
+/* TEXT_SEARCH_ITEMVIEWER */
+input.sbkTsv_SearchBox  {  color: Blue;  width: 220px;  background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.sbkTsv_SearchBox_focused  {  color: #0000a8;  width: 220px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.sbkTsv_ResultsArea { background-color: White; }
+.sbkTsv_ResultsArea h2 { FONT-SIZE: 1.25em; COLOR: #999; TEXT-ALIGN: left;padding-left: 25px; }
+#sbkTsv_ResultsTable { text-align: center;width: 100%; border-collapse:separate; border-spacing: 15px;background-color: white;color: #222222; }
+#sbkTsv_HorizontalLine { width:100%; color:#dddddd;background-color: #dddddd; } 
+#sbkTsv_CurrentSearch { width: 600px;padding: 5px 0 12px 0; }
+#sbkTsv_CurrentSearch a:link { color: cornflowerblue; }
+#sbkTsv_CurrentSearch a:visited { color: cornflowerblue; }
+#sbkTsv_CurrentSearch a:hover { color: cornflowerblue; }
+.sbkTsv_ResultNumber { width:5px;vertical-align:top;font-weight:bold; }
+.sbkTsv_ResultsLink { font-weight: bold; }
+.sbkTsv_Thumbnail { border: 1px solid blue; }
+.sbkTsv_HighlightText { background-color:Yellow;font-weight: bold; }
+#sbkTsv_QuickTips { PADDING: 0; FONT-SIZE: 1.0em; MARGIN: 0 0 0 15px; COLOR: #314384; text-align:left; }
+#sbkTsv_QuickTips H3 { display: inline; FONT-SIZE: 1.0em; font-weight: bold;padding: 0;margin: 0; }
+#sbkTsv_QuickTips P { PADDING: 0 0 6px 0; MARGIN: 0 0 0 10px; COLOR: black; }
+#sbkTsv_QuickTips LI { padding:3px 0 4px 25px; LIST-STYLE-POSITION: outside; BACKGROUND: url( images/pointer_blue.gif) no-repeat 15px 7px; MARGIN-BOTTOM: 7px; LINE-HEIGHT: 16px; LIST-STYLE-TYPE: none; }
+.sbkTsv_Bold { font-weight: bold; }
+.sbkTsv_BoldItalic { font-weight: bold;font-style: italic; }
+.sbkTsv_Italic { font-style: italic; }
+
+/* MULTIVOLUMES_ITEMVIEWER */
+#sbkMviv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+#sbkMviv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em; }
+#sbkMviv_ThumbnailsArea { BORDER-WIDTH: 0; TEXT-ALIGN: center; font-size: 0.9em; }
+.sbkMviv_Thumbnail { border-radius: 5px; background-color: #333333; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white; }
+.sbkMviv_Thumbnail:hover { background-color: #888888; }
+#sbkMviv_ThumbnailCurrent { font-weight: bold;font-style: italic;background-color: #6f6b06; }
+.sbkMviv_Tree { padding: 20px 0 20px 40px; width: 600px; }
+#sbkMviv_TableGroupTitle { font-weight: bold; }
+#sbkMviv_TreeSelectedNode { font-style: italic; }
+.sbkMviv_TreeDarkNode { background-color: black;color: white; }
+.sbkMviv_TreePrivateNode { color: #555555; }
+.sbkMviv_TreeRestrictedNode { font-style: normal; }
+#sbkMviv_Table { border: none; border-collapse:collapse; width:750px; }
+#sbkMviv_Table td { padding: 5px; }
+#sbkMviv_TableHeaderRow { text-align: left;background-color: #0022a7;color: white;height: 25px; }
+#sbkMviv_Table th { text-align: left;padding-left: 6px; }
+.sbkMviv_TablePrivateItem { font-style: italic; }
+.sbkMviv_TablePublicItem { font-style: normal; }
+.sbkMviv_TableRestrictedItem { font-style: italic; }
+.sbkMviv_TableRowSeperator { background-color: #e7e7e7; }
+#sbkMviv_RelatedTitles { width: 650px; }
+#sbkMviv_RelatedTitled td { padding: 5px; }
+.sbkMviv_RelatedTitlesRelation { width:150px; vertical-align:top; font-weight:bold; }
 
-
-.SobekCitation_METS {
-    BORDER-WIDTH: 0; COLOR: black; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 1.1em; font-family: Courier New, Courier, Arial; width:950px;
-}
-
-.SobekCitationDisplay  { color: black;BACKGROUND-COLOR: #eeeeee; }
-
-.SobekCitationDisplay a { color: blue; }
-
-.SobekCitationDisplay h1 {
-    PADDING-RIGHT: 450px; PADDING-LEFT: 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;
-}
-
-
-
-
-
-.SobekCitationSectionTitle1
-{
-    color:Gray; padding-top: 10px;
-}
-
-.SobekCitationSection1
-{
-    BACKGROUND-COLOR: White; 
-}
-
-.SobekCitationSectionTitle2
-{
-    color:Gray; padding-top: 10px;
-}
-
-
-
-.CitationViewSelectRow
-{
-        position: relative; margin-left: auto; margin-right: auto; height:15px; text-align:right; 
-}
-
-#SobekCitation a:link { color: blue; }
-
-  
-
-
-
-.texthighlight { background:yellow; font-weight:bold;	}
-
-  .tableRowNormal { background-color: White; }
-  .tableRowHighlight { background-color: #eeeeee }
-  .privateTableBibTitle { font-size:1.2em; text-decoration: none; font-weight: bold; }
-  .privateTableItemTitle { font-size:1.1em; text-decoration: none; font-weight: bold; }
-  .privateTableBibDaysNumber { font-size:1.4em; font-weight: bold; }
-  .privateTableItemDaysNumber { font-size:1.25em; font-weight: bold; }
-  
-  
-  .briefResultsTitle { font-size: 1.15em; font-weight: bold;  }
-  .briefResultsTitle a:link { color: #00a; }
-  
-  .thumbnailNormal { background-color: #333333;color: white; }
-  .thumbnailHighlight { background-color: #cccccc;color: Black; }
-
-
-
-
-  .fadeEffect { background-color: #FFFF00; }
-  
-  
-
-
-      
-
-
-
-.selectedcitationitem {
-    background-color: #0121a8;
-}
-
-
-
-
-
-#jpegimage 
-{
-    margin-left: auto;
-    margin-right: auto;
-}
-
-
-#itemviewbox
-{
-    BORDER: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee; 
-   margin-top: 2px; margin-bottom: 2px;
-    padding: 2px; text-align: center;  margin-left:auto; margin-right:auto; 
-}
-
-
-
-
-
-	
-
-
-.SobekDocumentHeader {
-	 margin: 0; padding: 0;  WIDTH: 100%; COLOR: black; BACKGROUND-COLOR: #ffffff; text-align: left;
-}
-
-.SobekViewSelectRow{
-	 margin: 0; padding: 5px 0 0 0;  WIDTH: 100%; COLOR: black; background-image: url( ../design/skins/sobek/spacer.gif); text-align: left;
-}
-
-
-
-
-
-#SobekDocumentDisplay h1 {
-	PADDING-RIGHT: 450px; PADDING-LEFT: 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;
-}
-
-#SobekDocumentDisplay h2 {
-	PADDING-RIGHT: 450px; PADDING-LEFT: 35px; FONT-SIZE: 1.3em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;
-}
-
-
-
-#SobekDocumentDisplay a:link { color: cornflowerblue;}
-#SobekDocumentDisplay a:visited { color: cornflowerblue;}
-#SobekDocumentDisplay a:hover { color: cornflowerblue;text-decoration: underline; }
-
-#SobekDocumentDisplay2 a:link { color: cornflowerblue;}
-#SobekDocumentDisplay2 a:visited { color: cornflowerblue;}
-#SobekDocumentDisplay2 a:hover { color: cornflowerblue;text-decoration: underline; }
-
-
-
-
-
-
-#SelectGoToThumbnailSpan {
-    display: inline;
-    padding-right: 40px;
-    font-weight: bold;
-}
-
-
-
-
-
-
-
-.SobekSearch { margin: 0; margin-top:1px; padding: 8px 0 8px 0; width: 100%;
-		font-size:0.85em; font-family:Arial, Helvetica, sans-serif;
-		font-weight: bold; 	color: #666; background-color: #FFFFFF; text-indent: 15px; 		}
-		
-.SobekSearch_ie { margin: 0; margin-top:1px; padding: 8px 0 0 0; width: 100%; font-size:0.85em;
-		font-family:Arial, Helvetica, sans-serif; font-weight: bold; color: #666;
-		background-color: #FFFFFF; 	text-indent: 6px;  	}
-
-form.SobekSearch { margin:0; padding-top:5px; padding-bottom:4px; color: #0021a5;}
-
-input.SobekSearchBox  {  color: Blue;  width: 220px;  background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.SobekSearchBox_focused  {  color: #0000a8;  width: 220px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-
-
-
-
-	
-	
-hr {
-  color: #ccc;
-  background-color: #cccccc;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-#selectNumOfThumbnails {
-    background-color: #777777;
-    color: white;
-    border: none;
-}
-
-#selectGoToThumbnail {
-    background-color: #777777;
-    color: white;
-    border: none;
-}
 

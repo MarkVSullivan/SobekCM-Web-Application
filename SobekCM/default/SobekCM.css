@@ -394,10 +394,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     FONT-SIZE: medium; WIDTH: 100%; COLOR: black; BACKGROUND-COLOR: white
 }
 
-.SobekGroupViewTree 
-{
-    padding: 20px 0px 20px 40px; width: 600px;
-}
+
 
 /** Styles relating to the main collection pages and related searches, browses, etc.. **/
 #pagecontainer

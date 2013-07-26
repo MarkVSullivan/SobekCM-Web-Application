@@ -76,7 +76,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             StringBuilder result = new StringBuilder(500);
-            Output.WriteLine("        <!-- EMBEDDED VIDEO VIEWER OUTPUT -->");
             Output.WriteLine("          <td><div id=\"sbkEmv_ViewerTitle\">Streaming Video</div></td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("        <tr>");
@@ -85,7 +84,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine(CurrentItem.Behaviors.Embedded_Video);
 
             Output.WriteLine("          </td>");
-            Output.WriteLine("        <!-- END EMBEDDED VIDEO VIEWER OUTPUT -->");
         }
     }
 }

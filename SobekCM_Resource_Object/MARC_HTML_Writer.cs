@@ -48,12 +48,12 @@ namespace SobekCM.Resource_Object
 
             // Start to build the HTML result
             StringBuilder results = new StringBuilder();
-            results.Append("<table border=\"0\" align=\"center\" width=\"" + Width + "\">\n");
+            results.Append("<table style=\"border:none; text-align:left; width:" + Width + ";\">\n");
 
             // Add the LEADER
             results.Append("  <tr class=\"trGenContent\">\n");
-            results.Append("    <td width=\"33\" valign=\"top\">LDR</td>\n");
-            results.Append("    <td width=\"26\" valign=\"top\">&nbsp;</td>\n");
+            results.Append("    <td style=\"width:33px;vertical-align:top;\">LDR</td>\n");
+            results.Append("    <td style=\"width:26px;vertical-align:top;\">&nbsp;</td>\n");
             results.Append("    <td>" + tags.Leader.Replace(" ", "^") + "</td>\n");
             results.Append("  </tr>");
 
@@ -62,8 +62,8 @@ namespace SobekCM.Resource_Object
             foreach (MARC_Field thisTag in tags.Sorted_MARC_Tag_List)
             {
                 results.Append("  <tr class=\"trGenContent\">\n");
-                results.Append("    <td width=\"33\" valign=\"top\">" + thisTag.Tag.ToString().PadLeft(3, '0') + "</td>\n");
-                results.Append("    <td width=\"26\" valign=\"top\"><font color=\"green\">" + thisTag.Indicators.Replace(" ", "&nbsp;&nbsp;&nbsp;") + "</font></td>\n");
+                results.Append("    <td>" + thisTag.Tag.ToString().PadLeft(3, '0') + "</td>\n");
+                results.Append("    <td style=\"color: green;\">" + thisTag.Indicators.Replace(" ", "&nbsp;&nbsp;&nbsp;") + "</td>\n");
                 results.Append("    <td>");
                 if ((thisTag.Tag == 8) || (thisTag.Tag == 7) || (thisTag.Tag == 6))
                 {
@@ -71,28 +71,28 @@ namespace SobekCM.Resource_Object
                 }
                 else
                 {
-                    results.Append(base.Convert_String_To_XML_Safe(thisTag.Control_Field_Value).Replace("|a", "<font color=\"blue\">|a</font>").
-                                       Replace("|b", "<font color=\"blue\">|b</font>").
-                                       Replace("|c", "<font color=\"blue\">|c</font>").
-                                       Replace("|d", "<font color=\"blue\">|d</font>").
-                                       Replace("|e", "<font color=\"blue\">|e</font>").
-                                       Replace("|g", "<font color=\"blue\">|g</font>").
-                                       Replace("|x", "<font color=\"blue\">|x</font>").
-                                       Replace("|y", "<font color=\"blue\">|y</font>").
-                                       Replace("|z", "<font color=\"blue\">|z</font>").
-                                       Replace("|v", "<font color=\"blue\">|v</font>").
-                                       Replace("|h", "<font color=\"blue\">|h</font>").
-                                       Replace("|u", "<font color=\"blue\">|u</font>").
-                                       Replace("|f", "<font color=\"blue\">|f</font>").
-                                       Replace("|n", "<font color=\"blue\">|n</font>").
-                                       Replace("|2", "<font color=\"blue\">|2</font>").
-                                       Replace("|3", "<font color=\"blue\">|3</font>").
-                                       Replace("|w", "<font color=\"blue\">|w</font>").
-                                       Replace("|t", "<font color=\"blue\">|t</font>").
-                                       Replace("|q", "<font color=\"blue\">|q</font>").
-                                       Replace("|o", "<font color=\"blue\">|o</font>").
-                                       Replace("|i", "<font color=\"blue\">|i</font>").
-                                       Replace("|4", "<font color=\"blue\">|4</font>"));
+                    results.Append(base.Convert_String_To_XML_Safe(thisTag.Control_Field_Value).Replace("|a", "<span style=\"color:blue;\">|a</span>").
+                                       Replace("|b", "<span style=\"color:blue;\">|b</span>").
+                                       Replace("|c", "<span style=\"color:blue;\">|c</span>").
+                                       Replace("|d", "<span style=\"color:blue;\">|d</span>").
+                                       Replace("|e", "<span style=\"color:blue;\">|e</span>").
+                                       Replace("|g", "<span style=\"color:blue;\">|g</span>").
+                                       Replace("|x", "<span style=\"color:blue;\">|x</span>").
+                                       Replace("|y", "<span style=\"color:blue;\">|y</span>").
+                                       Replace("|z", "<span style=\"color:blue;\">|z</span>").
+                                       Replace("|v", "<span style=\"color:blue;\">|v</span>").
+                                       Replace("|h", "<span style=\"color:blue;\">|h</span>").
+                                       Replace("|u", "<span style=\"color:blue;\">|u</span>").
+                                       Replace("|f", "<span style=\"color:blue;\">|f</span>").
+                                       Replace("|n", "<span style=\"color:blue;\">|n</span>").
+                                       Replace("|2", "<span style=\"color:blue;\">|2</span>").
+                                       Replace("|3", "<span style=\"color:blue;\">|3</span>").
+                                       Replace("|w", "<span style=\"color:blue;\">|w</span>").
+                                       Replace("|t", "<span style=\"color:blue;\">|t</span>").
+                                       Replace("|q", "<span style=\"color:blue;\">|q</span>").
+                                       Replace("|o", "<span style=\"color:blue;\">|o</span>").
+                                       Replace("|i", "<span style=\"color:blue;\">|i</span>").
+                                       Replace("|4", "<span style=\"color:blue;\">|4</span>"));
                 }
                 results.Append("</td>\n");
                 results.Append("  </tr>");
