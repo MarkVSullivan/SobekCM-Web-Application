@@ -20,6 +20,10 @@ namespace SobekCM.Library
     /// <summary> Class provides static context to constant settings based on the basic information about this instance of the application and server information </summary>
     public class SobekCM_Library_Settings
     {
+
+        public const string Backup_Files_Folder_Name = "sobek_files";
+
+
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
         public const string CURRENT_WEB_VERSION = "3.20 BETA";
 
