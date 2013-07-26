@@ -3,7 +3,7 @@
 //#region Supporting JS
 
 //jquery UI elements
-$(function () {
+$(function() {
     //draggable content settings
     $("#mapper_container_toolbox").draggable({
         handle: "#mapper_container_toolboxMinibar" //div used as handle
@@ -17,8 +17,8 @@ $(function () {
         heightStyle: "content" //set hieght to?
     });
     //tooltips (the tooltip text is the title of the element defined in localization js)
-    $("#content_toolbarGrabber").tooltip({track:true});
-    $("#content_toolbar_button_reset").tooltip({track:true});
+    $("#content_toolbarGrabber").tooltip({ track: true });
+    $("#content_toolbar_button_reset").tooltip({ track: true });
     $("#content_toolbar_button_toggleMapControls").tooltip({track:true});
     $("#content_toolbar_button_toggleToolbox").tooltip({track:true});
     $("#content_toolbar_button_layerRoadmap").tooltip({track:true});

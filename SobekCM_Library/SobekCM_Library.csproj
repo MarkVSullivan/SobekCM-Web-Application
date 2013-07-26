@@ -201,6 +201,7 @@
     <Compile Include="ItemViewer\Viewers\JPEG2000_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="ItemViewer\Viewers\ScriptMethod.cs" />
     <Compile Include="ItemViewer\Viewers\Test_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

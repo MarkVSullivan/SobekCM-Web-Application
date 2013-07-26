@@ -59,6 +59,7 @@ var cCoordsFrozen = "no";               //used to freeze/unfreeze coordinate vie
 var incomingPointCenter = [];           //defined in c# to js on page
 var incomingPointLabel = [];            //defined in c# to js on page
 var incomingOverlayBounds = [];         //defined in c# to js on page
+var incomingOverlayLabel = [];          //defined in c# to js on page
 var incomingOverlaySourceURL = [];      //defined in c# to js on page
 var incomingOverlayRotation = [];       //defined in c# to js on page
 var ghostOverlayRectangle = [];         //holds ghost overlay rectangles (IE overlay hotspots)
@@ -66,6 +67,7 @@ var workingOverlayIndex = null;         //holds the index of the overlay we are 
 var currentlyEditing = "no";            //tells us if we are editing anything
 var currentTopZindex = 5;               //current top zindex (used in displaying overlays over overlays)
 var savingOverlayIndex = [];            //holds index of the overlay we are saving
+var savingOverlayLabel = [];            //holds label of the overlay we are saving
 var savingOverlaySourceURL = [];        //hold the source url of the overlay to save
 var savingOverlayBounds = [];           //holds bounds of the overlay we are saving
 var savingOverlayRotation = [];         //holds rotation of the overlay we are saving
@@ -1044,6 +1046,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
 //Stores the overlays to save and their associated data
 function cacheSaveOverlay(index) {
     savingOverlayIndex[csoi] = workingOverlayIndex;                                         //set overlay index to save
+    savingOverlayLabel[csoi] = incomingOverlayLabel[workingOverlayIndex];                   //set label to save
     savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           //set source url to save
     savingOverlayBounds[csoi] = ghostOverlayRectangle[workingOverlayIndex].getBounds();     //set bounds to save
     savingOverlayRotation[csoi] = preservedRotation;                                        //set rotation to save
