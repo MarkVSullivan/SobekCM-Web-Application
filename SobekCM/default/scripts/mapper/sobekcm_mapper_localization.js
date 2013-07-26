@@ -96,7 +96,7 @@ try {
     document.getElementById("content_toolbox_posItem").title = "Coordinates: This is the selected Latitude and Longitude of the point you selected.";
     document.getElementById("content_toolbox_rgItem").title = "Address: This is the nearest address of the point you selected.";
     document.getElementById("content_toolbox_button_saveItem").title = "Save Location Changes";
-    document.getElementById("content_toolbox_button_clearItem").title = "Clear Location Changes";
+    document.getElementById("content_toolbox_button_clearItem").title = "Reset Location Changes";
     //tab
     document.getElementById("content_toolbox_button_placeOverlay").title = "Toggle Overlay Editing";
     document.getElementById("content_toolbox_button_overlayGetUserLocation").title = "Center On Your Current Position";
@@ -107,7 +107,7 @@ try {
     document.getElementById("content_toolbox_rotationClockwise").title = ".1&deg Right: Click to Rotate .1&deg Clockwise";
     document.getElementById("transparency").title = "Transparency: Set the transparency of this Overlay";
     document.getElementById("content_toolbox_button_saveOverlay").title = "Save Overlay Changes";
-    document.getElementById("content_toolbox_button_clearOverlay").title = "Clear All Overlay Changes";
+    document.getElementById("content_toolbox_button_clearOverlay").title = "Reset All Overlay Changes";
     //tab
     document.getElementById("content_toolbox_button_placePOI").title = "Toggle Point Of Interest Editing";
     document.getElementById("content_toolbox_button_poiGetUserLocation").title = "Center On Your Current Position";
@@ -127,11 +127,11 @@ try {
 try {
     document.getElementById("content_minibar_header").innerHTML = "Toolbox";
     document.getElementById("content_toolbox_button_saveItem").value = "Save";
-    document.getElementById("content_toolbox_button_clearItem").value = "Clear";
+    document.getElementById("content_toolbox_button_clearItem").value = "Reset";
     document.getElementById("content_toolbox_button_saveOverlay").value = "Save";
-    document.getElementById("content_toolbox_button_clearOverlay").value = "Clear";
+    document.getElementById("content_toolbox_button_clearOverlay").value = "Reset";
     document.getElementById("content_toolbox_button_savePOI").value = "Save";
-    document.getElementById("content_toolbox_button_clearPOI").value = "Clear";
+    document.getElementById("content_toolbox_button_clearPOI").value = "Reset";
     document.getElementById("content_toolbox_tab1_header").innerHTML = "Map Controls";
     document.getElementById("content_toolbox_tab2_header").innerHTML = "Actions";
     document.getElementById("content_toolbox_tab3_header").innerHTML = "Manage Location";

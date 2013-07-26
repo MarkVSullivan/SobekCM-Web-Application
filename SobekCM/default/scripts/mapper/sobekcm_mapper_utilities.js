@@ -187,6 +187,58 @@ function toServer(dataPackage) {
     });
 }
 
+//toggles overlay for editing
+function overlayEditMe(id) {
+    var ghostIndex = id;
+    pageMode = "edit";
+    if (currentlyEditing == "yes") {                                                            //if editing is being done, save
+        cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
+        ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
+        currentlyEditing = "no";                                                                //reset editing marker
+        preservedRotation = 0;                                                                  //reset preserved rotation
+    }
+    if (currentlyEditing == "no") {
+        currentlyEditing = "yes"; //enable editing marker
+        workingOverlayIndex = ghostIndex; //set this overay as the one being e
+        ghostOverlayRectangle[ghostIndex].setOptions(editable); //show ghost
+        currentTopZindex++; //iterate top z index
+        document.getElementById("overlay" + ghostIndex).style.zIndex = currentTopZindex; //bring overlay to front
+        ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: currentTopZindex }); //bring ghost to front
+        for (var i = 0; i < savingOverlayIndex.length; i++) { //set rotation if the overlay was previously saved
+            if (ghostIndex == savingOverlayIndex[i]) {
+                preservedRotation = savingOverlayRotation[i];
+            }
+        }
+        //panMap(ghostOverlayRectangle[ghostIndex].bounds.getCenter()); //attempt to pan to center of overlay
+    }
+    displayMessage("Editing Overlay " + id);
+}
+
+//hide poi on map
+function overlayHideMe(id) {
+    overlaysOnMap[id].setMap(null);
+    ghostOverlayRectangle[id].setMap(null);
+    document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "add.png\" onclick=\"overlayShowMe(" + id + ");\" />";
+    displayMessage("Hiding Overlay " + id);
+}
+
+//show poi on map
+function overlayShowMe(id) {
+    overlaysOnMap[id].setMap(map);
+    ghostOverlayRectangle[id].setMap(map);
+    document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
+    displayMessage("Showing Overlay " + id);
+}
+
+//delete poi from map and list
+function overlayDeleteMe(id) {
+    overlaysOnMap[id].setMap(null);
+    ghostOverlayRectangle[id].setMap(null);
+    var strg = "#overlay" + id; //create <li> poi string
+    $(strg).remove(); //remove <li>
+    displayMessage("Overlay " + id + " Removed");
+}
+
 //open the infowindow of a poi
 function poiEditMe(id) {
     poiObj[id].setMap(map);
@@ -231,7 +283,24 @@ function poiGetDesc(id) {
     if (temp.contains("~") || temp.contains("|")) {
         displayMessage(L8);
     } else {
+        
+        //replace the list item title 
+        var tempHTMLHolder1 = document.getElementById("poiList").innerHTML.replace(poiDesc[id], document.getElementById("poiDesc" + id).value);
+        document.getElementById("poiList").innerHTML = tempHTMLHolder1;
+        //now replace the title (order is important)
+        var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace(poiDesc[id].substring(0, 20), document.getElementById("poiDesc" + id).value.substring(0, 20));
+        //now post all this back to the listbox
+        document.getElementById("poiList").innerHTML = tempHTMLHolder2;
+        
+        //replace the obeject label
+        label[id].set(content,document.getElementById("poiDesc" + id).value.substring(0, 20));
+       
+
+        //assign full description to the poi object
         poiDesc[id] = document.getElementById("poiDesc" + id).value;
+        
+        //close the poi desc box
+
     }
 }                       
 
@@ -248,23 +317,6 @@ function searchResultDeleteMe() {
     searchCount = 0; //reset search count
 }
 
-//callback message board [currently not used]
-function HandleResult(arg) {
-    switch (arg) {
-        case "0":
-            displayMessage(L12);
-            break;
-        case "1":
-            displayMessage(L13);
-            break;
-        case "2":
-            displayMessage(L14);
-            break;
-        case "3":
-            displayMessage(L15);
-            break;
-    }
-}
 
 //used for lat/long tool
 function DisplayCursorCoords(arg) {
@@ -502,7 +554,41 @@ function useSearchAsItemLocation() {
         savingMarkerCenter = itemMarker.getPosition(); //store coords to save
     });
 
-}            
+}
+
+//used to display list of overlays in the toolbox container
+function initOverlayList() {
+    de("initOverlayList(); started...");
+    document.getElementById("overlayList").innerHTML = "";
+    if (incomingOverlayLabel.length > 0) {
+        de("There are " + incomingOverlayLabel.length + " Incoming Overlays");
+        for (var i = 0; i < incomingOverlayLabel.length; i++) {
+            de("Adding Overlay List Item");
+            document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", i, incomingOverlayLabel[i], "");
+        }  
+    }   
+}
+
+//used to write html content to page via js
+function writeHTML(type, param1, param2, param3) {
+    var htmlString = "";
+    switch (type) {
+        case "poiListItem":
+            de("Creating html String");
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\" New" + param3 + param2 + " \"> New" + param3 + param2 + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
+            poiDesc[param1] = "New" + param3 + param2;
+            break;
+        case "poiDesc":
+            de("Creating html String");
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
+            break;
+        case "overlayListItem":
+            de("Creating html String");
+            htmlString = "<div id=\"overlay" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
+            break;
+    }
+    return htmlString;
+}
 
 //keypress shortcuts/actions
 window.onkeypress = keypress;

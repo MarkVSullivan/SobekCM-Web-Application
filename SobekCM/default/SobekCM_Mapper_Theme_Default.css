@@ -112,6 +112,43 @@ a img {
 	padding-right: 5px;
 	height: 16px;
 }
+#overlayList_container {
+	background:#fcfcfc;
+	color: #6a6f75;
+	border: 0 none;
+	font: bold 12px Arial,Helvetica,Sans-serif;
+	width:200px;
+	padding: 6px 15px 6px 15px;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	-webkit-text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+	text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+	-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+	margin-left:5px;
+	overflow: hidden;
+
+}
+#overlayList_scoll_container {
+	overflow-x:hidden;
+	height:140px;
+	margin-right: -5px;
+}
+#overlayList {
+	padding-left:5px;
+	text-align: left;
+}
+.overlayListItem {
+	height: 16px;
+}
+.overlayActionButton {
+	float: right;
+	clear: both;
+	padding-right: 5px;
+	height: 16px;
+}
 #poiList_container {
 	background:#fcfcfc;
 	color: #6a6f75;
@@ -259,8 +296,8 @@ a img {
 }
 
 .buttonPOIDesc {
-	margin-top: 5px;
-	font: bold 12px Arial,Helvetica,Sans-serif;
+    margin-top: 5px;
+    font: bold 12px Arial,Helvetica,Sans-serif;
 	color: #fcfcfc;
 	text-decoration: none;
 	background-color:#6a6f75; 
@@ -271,6 +308,10 @@ a img {
 }
 .buttonPOIDesc:hover {
 	cursor: pointer;
+}
+.poiDescContainer {
+    width: 240px;
+    overflow: hidden;
 }
 
 .tab-field {

@@ -408,9 +408,10 @@ function clear(id) {
             break;
 
         case "overlay":
-            //does nothing
-            displayMessage("Nothing to clear"); //temp
-            //displayMessage(L10);
+            clearIncomingOverlays();
+            displayIncomingOverlays();
+            initOverlayList();
+            displayMessage(L10);
             break;
 
         case "poi":
