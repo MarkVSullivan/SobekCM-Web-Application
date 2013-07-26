@@ -414,8 +414,8 @@ function initialize() {
             poiType[poi_i] = "marker";
             var poiId = poi_i + 1;
             var poiDescTemp = L_Marker;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a>" + " <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a>" + " <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/>" + " <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
+            document.getElementById("poiList").innerHTML += writeHTML("poiListItem", poi_i, poiId, poiDescTemp);
+            var contentString = writeHTML("poiDesc", poi_i, "", "");
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString,
                 pixelOffset: new google.maps.Size(0, -2)
@@ -481,8 +481,8 @@ function initialize() {
             poiObj[poi_i] = circle;
             poiType[poi_i] = "circle";
             var poiDescTemp = L_Circle;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
+            document.getElementById("poiList").innerHTML += writeHTML("poiListItem", poi_i, poiId, poiDescTemp);
+            var contentString = writeHTML("poiDesc", poi_i, "", "");
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -565,8 +565,8 @@ function initialize() {
             poiObj[poi_i] = rectangle;
             poiType[poi_i] = "rectangle";
             var poiDescTemp = L_Rectangle;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
+            document.getElementById("poiList").innerHTML += writeHTML("poiListItem", poi_i, poiId, poiDescTemp);
+            var contentString = writeHTML("poiDesc", poi_i, "", "");
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -666,8 +666,8 @@ function initialize() {
             poiObj[poi_i] = polygon;
             poiType[poi_i] = "polygon";
             var poiDescTemp = L_Polygon;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
+            document.getElementById("poiList").innerHTML += writeHTML("poiListItem", poi_i, poiId, poiDescTemp);
+            var contentString = writeHTML("poiDesc", poi_i, "", "");
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -753,8 +753,8 @@ function initialize() {
             poiObj[poi_i] = polyline;
             poiType[poi_i] = "polyline";
             var poiDescTemp = L_Line;
-            document.getElementById("poiList").innerHTML += "<div id=\"poi" + poi_i + "\" class=\"poiListItem\"> " + poiId + ". " + poiDescTemp + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "edit.png\"/></a> <a id=\"poiToggle" + poi_i + "\" href=\"#\"><img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + poi_i + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + poi_i + ");\"><img src=\"" + baseURL + baseImagesDirURL + "delete.png\"/></a></div></div>";
-            var contentString = "<textarea id=\"poiDesc" + poi_i + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + poi_i + ");\">Save</div>";
+            document.getElementById("poiList").innerHTML += writeHTML("poiListItem", poi_i, poiId, poiDescTemp);
+            var contentString = writeHTML("poiDesc", poi_i, "", "");
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString
             });
@@ -956,9 +956,8 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
         //this part runs when the mapobject is created and rendered
         initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
+        initOverlayList(); //list all the overlays in the list box"
     });
-    
-    
 }                         
 
 //Displays all the points sent from the C# code.
@@ -990,6 +989,17 @@ function displayIncomingOverlays() {
         setGhostOverlay(i, incomingOverlayBounds[i]);                                                                                       //set hotspot on top of overlay
     }
     overlaysCurrentlyDisplayed = true;
+}
+
+//clears all incoming overlays
+function clearIncomingOverlays() {
+    for (var i = 0; i < incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
+        overlaysOnMap[i].setMap(null);
+        overlaysOnMap[i] = null;
+        ghostOverlayRectangle[i].setMap(null);
+        ghostOverlayRectangle[i] = null;
+    }
+    //overlaysCurrentlyDisplayed = false;
 }
 
 //Creates and sets the ghost overlays (used to tie actions with actual overlay)

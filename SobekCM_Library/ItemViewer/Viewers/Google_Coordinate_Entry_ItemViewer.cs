@@ -321,7 +321,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
             mapperBuilder.AppendLine(" function initGeoObjects(){ ");
             mapperBuilder.AppendLine(" ");
-
+            
             #endregion
 
             //write geo objects as js vars
@@ -649,6 +649,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                                 <div id=\"overlayTransparencySlider\"></div> ");
             mapperBuilder.AppendLine("                             </div> ");
             mapperBuilder.AppendLine("                         </div> ");
+            mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+            mapperBuilder.AppendLine("                         <div id=\"overlayList_container\"> ");
+            mapperBuilder.AppendLine("                             <div id=\"overlayList_scoll_container\"> ");
+            mapperBuilder.AppendLine("                                 <div id=\"overlayList\"></div> ");
+            mapperBuilder.AppendLine("                             </div> ");
+            mapperBuilder.AppendLine("                         </div>   ");
             mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
             mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveOverlay\" > </div> ");
             mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearOverlay\" > </div> ");

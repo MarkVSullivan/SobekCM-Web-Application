@@ -100,7 +100,7 @@ body {
 }
 #mapper_container_toolbox {
 	display: none;
-	max-height:560px;
+	/*max-height:560px;*/
 	width:250px;
 	float:left;
 	position:absolute;
