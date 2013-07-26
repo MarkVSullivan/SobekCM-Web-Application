@@ -14,6 +14,7 @@ using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Items;
+using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
@@ -55,6 +56,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private Dictionary<Page_TreeNode, Division_TreeNode> childToParent;
         private QualityControl_Profile qc_profile;
+
+        private string metsInProcessFile;
 
         /// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
         public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, Navigation.SobekCM_Navigation_Object Current_Mode)
@@ -100,16 +103,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If the QC work is already in process, we may find a temporary METS file to read.
 
             // Determine the in process directory for this
-            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork";
+            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + CurrentItem.METS_Header.ObjectID;
             if (Current_User.UFID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork";
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork\\" + CurrentItem.METS_Header.ObjectID;
+
+            // Make the folder for the user in process directory
+            if (!Directory.Exists(userInProcessDirectory))
+                Directory.CreateDirectory(userInProcessDirectory);
+
+            // Create the name for the tempoary METS file?
+            metsInProcessFile = userInProcessDirectory + "\\" + Current_Object.BibID + "_" + Current_Object.VID + ".mets.xml";
 
             // Is this work in the user's SESSION state?
             qc_item = HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] as SobekCM_Item;
             if (qc_item == null)
             {
                 // Is there a temporary METS for this item, which is not expired?
-                string metsInProcessFile = userInProcessDirectory + "\\" + Current_Object.BibID + "_" + Current_Object.VID + ".mets";
                 if ((File.Exists(metsInProcessFile)) &&
                     (File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
                 {
@@ -149,6 +158,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
             autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
             hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
+            string clear_pagination_from_form = HttpContext.Current.Request.Form["Clear_Pagination"] ?? String.Empty;
+            string clear_reorder_pagination_from_form = HttpContext.Current.Request.Form["Clear_Reorder_Pagination"] ?? String.Empty;
+     
+            //If the user has selected the Clear Pagination option, call the appropriate method now
+            if (clear_pagination_from_form == "true")
+            {
+                ClearPagination();
+            }
+            
+            //If Clear and Reorder Selected, call the method here
+            if (clear_reorder_pagination_from_form == "true")
+            {
+                Clear_Pagination_And_Reorder_Pages();
+            }
 
             //Get any notes/comments entered by the user
             notes = HttpContext.Current.Request.Form["txtComments"] ?? String.Empty;
@@ -223,22 +246,138 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this was a cancel request do that
             if (hidden_request == "cancel")
             {
+                // Delete all temporary files and cache
+                if (Directory.Exists(userInProcessDirectory))
+                {
+                    string[] tempFiles = Directory.GetFiles(userInProcessDirectory);
+                    foreach (string tempFile in tempFiles)
+                    {
+                        try
+                        {
+                            File.Delete(tempFile);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+
+                    // Delete the folder
+                    try
+                    {
+                        Directory.Delete(userInProcessDirectory);
+                    }
+                    catch 
+                    {
+                        
+                    }
+                }
+
+                // Clear the updated item from the session
+                HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
+
+                // Forward back to the default item view
+                CurrentMode.ViewerCode = String.Empty;
                 CurrentMode.Redirect();
             }
-            else if (hidden_request == "save")
+            else if ((hidden_request == "save") || ( hidden_request == "complete" ) || ( hidden_request == "autosave" ))
             {
                 //Save the current time
                 HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
 
                 // Read the data from the http form, perform all requests, and
                 // update the qc_item (also updates the session and temporary files)
-                Save_From_Form_Request_To_Item(String.Empty, String.Empty);
+                // Save this updated information in the temporary folder's METS file for reading later if necessary.
+                if ((Save_From_Form_Request_To_Item(String.Empty, String.Empty)) && (( hidden_request == "save" ) || ( hidden_request == "complete")))
+                {
+                    // If the user selected SAVE or COMPLETE, roll out the new version
+                    if (File.Exists(metsInProcessFile))
+                    {
+                        string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+                        string backup_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
 
-                // Save this updated information in the temporary folder's METS file for reading
-                // later if necessary.
-                HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                HttpContext.Current.ApplicationInstance.CompleteRequest();
-                CurrentMode.Request_Completed = true;
+                        // Ensure the backup directory exists
+                        if (!Directory.Exists(backup_directory))
+                            Directory.CreateDirectory(backup_directory);
+
+                        // Get the last write date on the current METS
+                        string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
+                        if (File.Exists(current_mets)) // SHOULD EXIST!
+                        {
+                            // Get the last write time 
+                            DateTime lastWriteTime = (new FileInfo(current_mets)).LastWriteTime;
+
+                            // Determine the name of the new backup METS
+                            string backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + lastWriteTime.Year + "_" + lastWriteTime.Month.ToString().PadLeft(2,'0') + "_" + lastWriteTime.Day.ToString().PadLeft(2,'0') + ".mets.bak";
+                            if (File.Exists(backup_mets_name))
+                            {
+                                int version = 2;
+                                do
+                                {
+                                    backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + lastWriteTime.Year + "_" + lastWriteTime.Month.ToString().PadLeft(2, '0') + "_" + lastWriteTime.Day.ToString().PadLeft(2, '0') + "_v" + version.ToString().PadLeft(2,'0') + ".mets.bak";
+                                } while (File.Exists(backup_mets_name));
+                            }
+
+                            // Copy the existing mets to the backup spot
+                            File.Copy(current_mets, backup_mets_name);
+                        }
+
+                        // Copy the inprocess METS into the production digital resource directory
+                        File.Copy(metsInProcessFile, current_mets, true);
+                    }
+
+                    // Delete all temporary files and cache
+                    if (Directory.Exists(userInProcessDirectory))
+                    {
+                        string[] tempFiles = Directory.GetFiles(userInProcessDirectory);
+                        foreach (string tempFile in tempFiles)
+                        {
+                            try
+                            {
+                                File.Delete(tempFile);
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+
+                        // Delete the folder
+                        try
+                        {
+                            Directory.Delete(userInProcessDirectory);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+
+                    // Clear the updated item from the session
+                    HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
+
+                    // Clear the cache for this item completely, so the system will recreate the object from the new METS
+                    Cached_Data_Manager.Remove_Digital_Resource_Object(CurrentItem.BibID, CurrentItem.VID, null);
+
+                    // Redirect differently depending on SAVE or COMPLETE
+                    if (hidden_request == "save")
+                    {
+                        // Forward back to the QC form 
+                        HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        CurrentMode.Request_Completed = true;
+                    }
+                    else if (hidden_request == "complete")
+                    {
+
+                        // Forward to the item
+                        CurrentMode.ViewerCode = String.Empty;
+                        CurrentMode.Redirect();
+                    }
+                }
+
+
+
             }
             else if (hidden_request == "move_selected_pages")
             {
@@ -273,49 +412,53 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-      //TODO: Complete this method
+        /// <summary>
+        /// Clears all the page labels, division types and names, and reorders the pages by filename
+        /// </summary>
         private void Clear_Pagination_And_Reorder_Pages()
         {
+
+            bool error = false;
+
             Dictionary<Page_TreeNode, Division_TreeNode> pages_to_division = new Dictionary<Page_TreeNode, Division_TreeNode>();
-            SortedDictionary<Page_TreeNode,string> nodeToFilename = new SortedDictionary<Page_TreeNode, string>();
+            SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
             try
             {
-                foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+                foreach (Page_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Pages_PreOrder)
                 {
-                    
-                    //Is this a page node?
-                    if (thisNode.Page)
-                    {
-                        thisNode.Label = ((Page_TreeNode) thisNode).Files[0].File_Name_Sans_Extension;
-                        nodeToFilename.Add((Page_TreeNode) thisNode, thisNode.Label);
-
-                        //nodeToFilename.Add(thisNode.GetHashCode(), ((Page_TreeNode) thisNode).Files[0].File_Name_Sans_Extension);
-
-
-                    }
-  
-                    qc_item.Divisions.Clear();
-                    qc_item.Divisions.Add_Outer_Division("Main",0,"Main");
-
-
+                    thisNode.Label = String.Empty;
+                    string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
+                    nodeToFilename[file_sans] = thisNode;
                 }
-                // Save the updated to the session
-                  HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
 
-                  // Save to the temporary QC work section
-                  try
-                  {
-                      // Ensure the directory exists under the user's temporary mySobek InProcess folder
-                      if (!Directory.Exists(userInProcessDirectory))
-                          Directory.CreateDirectory(userInProcessDirectory);
+                qc_item.Divisions.Physical_Tree.Clear();
+                Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
+                qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
 
-                      // Save the METS
-                      qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
-                  }
-                  catch (Exception)
-                  {
-                      throw;
-                  }
+
+                for (int i = 0; i < nodeToFilename.Count; i++)
+                {
+                    mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
+                }
+
+
+                // Save the updated item to the session
+                HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+
+                // Save to the temporary QC work section
+                try
+                {
+                    // Ensure the directory exists under the user's temporary mySobek InProcess folder
+                    if (!Directory.Exists(userInProcessDirectory))
+                        Directory.CreateDirectory(userInProcessDirectory);
+
+                    // Save the METS
+                    qc_item.Save_METS(metsInProcessFile);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
             catch (Exception)
             {
@@ -324,7 +467,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
 
-    /// <summary> Clears the pagination names of all the pages of the qc item </summary>
+        /// <summary> Clears the pagination names of all the pages of the qc item </summary>
           private void ClearPagination()
           {
               try
@@ -349,7 +492,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                           Directory.CreateDirectory(userInProcessDirectory);
 
                       // Save the METS
-                      qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
+                      qc_item.Save_METS(metsInProcessFile);
                   }
                   catch (Exception)
                   {
@@ -363,399 +506,395 @@ namespace SobekCM.Library.ItemViewer.Viewers
               }
           }
 
-		/// <summary> Save all the data from form post-back into the item in memory, and 
-		/// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
-		/// <returns> Returns the list of all selected (or checked on the checkbox) page data</returns>
-		private List<QC_Viewer_Page_Division_Info> Save_From_Form_Request_To_Item(string filename_to_move_after, string filename_to_omit )
-		{
-			// Get the current page number
-			int current_qc_viewer_page_num = 1;
-			if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
-				Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
+        /// <summary> Save all the data from form post-back into the item in memory, and 
+        /// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
+        /// <returns> Returns TRUE if successful, otherwise FALSE </returns>
+        private bool Save_From_Form_Request_To_Item(string filename_to_move_after, string filename_to_omit)
+        {
+            bool returnValue = true;
+
+            // Get the current page number
+            int current_qc_viewer_page_num = 1;
+            if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
+                Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
 
 
-			// First, build a dictionary of all the pages ( filename --> page division object )
-			Dictionary<Page_TreeNode, Division_TreeNode> pages_to_division = new Dictionary<Page_TreeNode, Division_TreeNode>();
-			Dictionary<string, Page_TreeNode> pages_by_name = new Dictionary<string, Page_TreeNode>();
-			List<Page_TreeNode> page_list = new List<Page_TreeNode>();
-			List<string> page_filename_list = new List<string>();
-			Division_TreeNode lastDivision = null;
-		   //Autonumber the remaining pages based on the selected option
-			if (autonumber_mode_from_form == 0 || autonumber_mode_from_form == 1)
-			{
-	//		    autonumber_mode = autonumber_mode_from_form;
-				bool reached_last_page = false;
-				bool reached_next_div = false;
-				int number=0;
-				if (autonumber_number_system == "decimal")
-					number = Int32.Parse(autonumber_number_only) + 1;
-				else if (autonumber_number_system == "roman")
-					number = RomanToNumber(autonumber_number_only) +1;
+            // First, build a dictionary of all the pages ( filename --> page division object )
+            Dictionary<Page_TreeNode, Division_TreeNode> pages_to_division = new Dictionary<Page_TreeNode, Division_TreeNode>();
+            Dictionary<string, Page_TreeNode> pages_by_name = new Dictionary<string, Page_TreeNode>();
+            List<Page_TreeNode> page_list = new List<Page_TreeNode>();
+            List<string> page_filename_list = new List<string>();
+            Division_TreeNode lastDivision = null;
+            //Autonumber the remaining pages based on the selected option
+            if (autonumber_mode_from_form == 0 || autonumber_mode_from_form == 1)
+            {
+                //		    autonumber_mode = autonumber_mode_from_form;
+                bool reached_last_page = false;
+                bool reached_next_div = false;
+                int number = 0;
+                if (autonumber_number_system == "decimal")
+                    number = Int32.Parse(autonumber_number_only) + 1;
+                else if (autonumber_number_system == "roman")
+                    number = RomanToNumber(autonumber_number_only) + 1;
 
-				//Do the autonumbering first
-				foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
-				{
-					//Is this a division or a page node?
-					if (thisNode.Page)
-					{
-						Page_TreeNode thisPage = (Page_TreeNode) thisNode;
-					 
-						//Verify the page
-						if (thisPage.Files.Count > 0)
-						{
-							string filename = thisPage.Files[0].File_Name_Sans_Extension;
+                //Do the autonumbering first
+                foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+                {
+                    //Is this a division or a page node?
+                    if (thisNode.Page)
+                    {
+                        Page_TreeNode thisPage = (Page_TreeNode) thisNode;
 
-							if (filename == hidden_autonumber_filename)
-							{
-							  //  bool b = true;
-								reached_last_page = true;
+                        //Verify the page
+                        if (thisPage.Files.Count > 0)
+                        {
+                            string filename = thisPage.Files[0].File_Name_Sans_Extension;
 
-							}
-							//if the last page displayed on the screen has been reached
-							else if (reached_last_page == true)
-							{
-								//Mode "0": Autonumber all pages of current division
-								//Mode "1": Autonumber all pages of the entire document
-								if ((autonumber_mode_from_form == 0 && reached_next_div == false) || (autonumber_mode_from_form==1))
-								{
-									if(autonumber_number_system=="decimal")
-									  thisPage.Label = autonumber_text_only + number.ToString();
-									else
-									{
-										thisPage.Label = autonumber_text_only + NumberToRoman(number);
-									}
-									number++;
-								}
+                            if (filename == hidden_autonumber_filename)
+                            {
+                                //  bool b = true;
+                                reached_last_page = true;
 
-							}
-	
-						}
-					}
-					else if(reached_last_page==true)
-					{
-						reached_next_div = true;
-					}
+                            }
+                                //if the last page displayed on the screen has been reached
+                            else if (reached_last_page == true)
+                            {
+                                //Mode "0": Autonumber all pages of current division
+                                //Mode "1": Autonumber all pages of the entire document
+                                if ((autonumber_mode_from_form == 0 && reached_next_div == false) || (autonumber_mode_from_form == 1))
+                                {
+                                    if (autonumber_number_system == "decimal")
+                                        thisPage.Label = autonumber_text_only + number.ToString();
+                                    else
+                                    {
+                                        thisPage.Label = autonumber_text_only + NumberToRoman(number);
+                                    }
+                                    number++;
+                                }
 
-				}
-			}
+                            }
 
-		   //Move/Delete Pages as appropriate 
-			foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
-			{
-				// Is this a division, or page node?
-				if (thisNode.Page)
-				{
-					Page_TreeNode thisPage = (Page_TreeNode)thisNode;
-					// Verify the page 
-					if (thisPage.Files.Count > 0)
-					{
-						string filename = thisPage.Files[0].File_Name_Sans_Extension;
-						pages_by_name[filename] = thisPage;
-						page_filename_list.Add(filename);
-					}
+                        }
+                    }
+                    else if (reached_last_page == true)
+                    {
+                        reached_next_div = true;
+                    }
 
-					// Add to the list of pages
-					page_list.Add(thisPage);
+                }
+            }
 
-					// Save the link from the page, up to the division
-					pages_to_division[thisPage] = lastDivision;
-				}
-				else
-				{
-					lastDivision = (Division_TreeNode)thisNode;
-				}
-			}
+            //Move/Delete Pages as appropriate 
+            foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
+            {
+                // Is this a division, or page node?
+                if (thisNode.Page)
+                {
+                    Page_TreeNode thisPage = (Page_TreeNode) thisNode;
+                    // Verify the page 
+                    if (thisPage.Files.Count > 0)
+                    {
+                        string filename = thisPage.Files[0].File_Name_Sans_Extension;
+                        pages_by_name[filename] = thisPage;
+                        page_filename_list.Add(filename);
+                    }
 
-			// Step through and collect all the form data
-			List<QC_Viewer_Page_Division_Info> page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
-			List<Page_TreeNode> existing_pages_in_window = new List<Page_TreeNode>();
+                    // Add to the list of pages
+                    page_list.Add(thisPage);
 
-			//Get the list of pages to be moved
-			List<string> pages_to_move_list = new List<string>();
-			List<QC_Viewer_Page_Division_Info> selected_page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
-		  
-			try
-			{
-				// Now, step through each of the pages in the return
-				string[] keysFromForm = HttpContext.Current.Request.Form.AllKeys;
-				foreach (string thisKey in keysFromForm)
-				{
-					// Has this gotten to the next page?
-					if ((thisKey.IndexOf("filename") == 0) && (thisKey.Length > 8))
-					{
-						QC_Viewer_Page_Division_Info thisInfo = new QC_Viewer_Page_Division_Info();
+                    // Save the link from the page, up to the division
+                    pages_to_division[thisPage] = lastDivision;
+                }
+                else
+                {
+                    lastDivision = (Division_TreeNode) thisNode;
+                }
+            }
 
-						// Get the filename for this new page
-						thisInfo.Filename = HttpContext.Current.Request.Form[thisKey];
+            // Step through and collect all the form data
+            List<QC_Viewer_Page_Division_Info> page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
+            List<Page_TreeNode> existing_pages_in_window = new List<Page_TreeNode>();
 
-						// Get the index to use for all the other keys
-						string thisIndex = thisKey.Substring(8);
+            //Get the list of pages to be moved
+            List<string> pages_to_move_list = new List<string>();
+            List<QC_Viewer_Page_Division_Info> selected_page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
 
-						// Get the page name 
-						thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
+            try
+            {
+                // Now, step through each of the pages in the return
+                string[] keysFromForm = HttpContext.Current.Request.Form.AllKeys;
+                foreach (string thisKey in keysFromForm)
+                {
+                    // Has this gotten to the next page?
+                    if ((thisKey.IndexOf("filename") == 0) && (thisKey.Length > 8))
+                    {
+                        QC_Viewer_Page_Division_Info thisInfo = new QC_Viewer_Page_Division_Info();
 
-						// Was this page selected with the checkbox?  (for bulk delete or move)
-						//Get this info only if the move/delete operations are explicitly triggered
-						if (hidden_request == "delete_page" || hidden_request == "delete_selected_page" || hidden_request == "move_selected_pages")
-						{
-							if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == filename_to_omit))
-							{
-								thisInfo.Checkbox_Selected = true;
-								selected_page_div_from_form.Add(thisInfo);
-							}
-						}
-						// Is this a new division?
-						if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
-						{
-							thisInfo.New_Division = true;
+                        // Get the filename for this new page
+                        thisInfo.Filename = HttpContext.Current.Request.Form[thisKey];
 
-							// Get the new division type/label
-							thisInfo.Division_Type = HttpContext.Current.Request.Form["selectDivType" + thisIndex].Trim().Replace("!", "");
-							thisInfo.Division_Label = String.Empty;
-							if (HttpContext.Current.Request.Form["txtDivName" + thisIndex] != null)
-								thisInfo.Division_Label = HttpContext.Current.Request.Form["txtDivName" + thisIndex].Trim();
-							if (thisInfo.Division_Type.Length == 0)
-								thisInfo.Division_Type = "Chapter";
+                        // Get the index to use for all the other keys
+                        string thisIndex = thisKey.Substring(8);
 
-							// Get the division config, based on the division type
-							if (qc_profile[thisInfo.Division_Type] != null)
-							{
-								QualityControl_Division_Config divInfo = qc_profile[thisInfo.Division_Type];
+                        // Get the page name 
+                        thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
-								if (divInfo.BaseTypeName.Length > 0)
-								{
-									thisInfo.Division_Label = thisInfo.Division_Type;
-									thisInfo.Division_Type = divInfo.BaseTypeName;
-								}
-							}
-						}
-						else
-						{
-							thisInfo.New_Division = false;
-						}
+                        // Was this page selected with the checkbox?  (for bulk delete or move)
+                        //Get this info only if the move/delete operations are explicitly triggered
+                        if (hidden_request == "delete_page" || hidden_request == "delete_selected_page" || hidden_request == "move_selected_pages")
+                        {
+                            if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == filename_to_omit))
+                            {
+                                thisInfo.Checkbox_Selected = true;
+                                selected_page_div_from_form.Add(thisInfo);
+                            }
+                        }
+                        // Is this a new division?
+                        if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
+                        {
+                            thisInfo.New_Division = true;
 
-						// Add this page to the collection
-						page_div_from_form.Add(thisInfo);
+                            // Get the new division type/label
+                            thisInfo.Division_Type = HttpContext.Current.Request.Form["selectDivType" + thisIndex].Trim().Replace("!", "");
+                            thisInfo.Division_Label = String.Empty;
+                            if (HttpContext.Current.Request.Form["txtDivName" + thisIndex] != null)
+                                thisInfo.Division_Label = HttpContext.Current.Request.Form["txtDivName" + thisIndex].Trim();
+                            if (thisInfo.Division_Type.Length == 0)
+                                thisInfo.Division_Type = "Chapter";
 
-						// Also, collect the page node from the mets/resource for clearing later
-						if (pages_by_name.ContainsKey(thisInfo.Filename))
-						{
-							Page_TreeNode existing_pagenode = pages_by_name[thisInfo.Filename];
-							existing_pages_in_window.Add(existing_pagenode);
-						}
-					}
-				}
-			}
-			catch (Exception ee)
-			{
-				bool error = true;
-			}
+                            // Get the division config, based on the division type
+                            if (qc_profile[thisInfo.Division_Type] != null)
+                            {
+                                QualityControl_Division_Config divInfo = qc_profile[thisInfo.Division_Type];
 
-			// Determine the "window" that the user was seeing
-			int window_first_page_index = page_filename_list.Count - 1;
-			int window_last_page_index = 0;
-			foreach (QC_Viewer_Page_Division_Info thisInfo in page_div_from_form)
-			{
-				// Get the filename and then get the order
-				int page_order = page_filename_list.IndexOf(thisInfo.Filename);
-				if (page_order < window_first_page_index)
-					window_first_page_index = page_order;
-				if (page_order > window_last_page_index)
-					window_last_page_index = page_order;
-			}
+                                if (divInfo.BaseTypeName.Length > 0)
+                                {
+                                    thisInfo.Division_Label = thisInfo.Division_Type;
+                                    thisInfo.Division_Type = divInfo.BaseTypeName;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            thisInfo.New_Division = false;
+                        }
 
-			// TODO: Do some sanity checks here to ensure it worked
+                        // Add this page to the collection
+                        page_div_from_form.Add(thisInfo);
 
-			// Determine if the first page was part of an existing division (and not the first page in that division)
-			Page_TreeNode window_first_page = page_list[window_first_page_index];
-			Division_TreeNode window_first_division = pages_to_division[window_first_page];
-			Division_TreeNode existing_division_containing_first_page = null;
-			if (window_first_division.Nodes.IndexOf(window_first_page) > 0)
-				existing_division_containing_first_page = window_first_division;
+                        // Also, collect the page node from the mets/resource for clearing later
+                        if (pages_by_name.ContainsKey(thisInfo.Filename))
+                        {
+                            Page_TreeNode existing_pagenode = pages_by_name[thisInfo.Filename];
+                            existing_pages_in_window.Add(existing_pagenode);
+                        }
+                    }
+                }
+
+                // Determine the "window" that the user was seeing
+                int window_first_page_index = page_filename_list.Count - 1;
+                int window_last_page_index = 0;
+                foreach (QC_Viewer_Page_Division_Info thisInfo in page_div_from_form)
+                {
+                    // Get the filename and then get the order
+                    int page_order = page_filename_list.IndexOf(thisInfo.Filename);
+                    if (page_order < window_first_page_index)
+                        window_first_page_index = page_order;
+                    if (page_order > window_last_page_index)
+                        window_last_page_index = page_order;
+                }
+
+                // TODO: Do some sanity checks here to ensure it worked
+
+                // Determine if the first page was part of an existing division (and not the first page in that division)
+                Page_TreeNode window_first_page = page_list[window_first_page_index];
+                Division_TreeNode window_first_division = pages_to_division[window_first_page];
+                Division_TreeNode existing_division_containing_first_page = null;
+                if (window_first_division.Nodes.IndexOf(window_first_page) > 0)
+                    existing_division_containing_first_page = window_first_division;
 
 
-			// Collect any additional, non-cleared pages from the division which contained the last page originally
-			List<Page_TreeNode> remnant_pages = new List<Page_TreeNode>();
-			Page_TreeNode window_last_page = page_list[window_last_page_index];
-			Division_TreeNode window_last_division = pages_to_division[window_last_page];
-			if (window_last_division.Nodes.IndexOf(window_last_page) < window_last_division.Nodes.Count)
-			{
-				for (int i = window_last_division.Nodes.IndexOf(window_last_page) + 1;
-					 i < window_last_division.Nodes.Count;
-					 i++)
-				{
-					remnant_pages.Add((Page_TreeNode)window_last_division.Nodes[i]);
-				}
-			}
+                // Collect any additional, non-cleared pages from the division which contained the last page originally
+                List<Page_TreeNode> remnant_pages = new List<Page_TreeNode>();
+                Page_TreeNode window_last_page = page_list[window_last_page_index];
+                Division_TreeNode window_last_division = pages_to_division[window_last_page];
+                if (window_last_division.Nodes.IndexOf(window_last_page) < window_last_division.Nodes.Count)
+                {
+                    for (int i = window_last_division.Nodes.IndexOf(window_last_page) + 1;
+                         i < window_last_division.Nodes.Count;
+                         i++)
+                    {
+                        remnant_pages.Add((Page_TreeNode) window_last_division.Nodes[i]);
+                    }
+                }
 
 
 
-			// Clear the window pages completely, including the remnant pages, which we add back at the end
-			int index_within_chapter_roots_to_begin_insert = qc_item.Divisions.Physical_Tree.Roots.Count;
-			foreach (Page_TreeNode thisNode in existing_pages_in_window)
-			{
-				// Get the parent division, to clear this
-				Division_TreeNode parentNode = pages_to_division[thisNode];
-				parentNode.Nodes.Remove(thisNode);
+                // Clear the window pages completely, including the remnant pages, which we add back at the end
+                int index_within_chapter_roots_to_begin_insert = qc_item.Divisions.Physical_Tree.Roots.Count;
+                foreach (Page_TreeNode thisNode in existing_pages_in_window)
+                {
+                    // Get the parent division, to clear this
+                    Division_TreeNode parentNode = pages_to_division[thisNode];
+                    parentNode.Nodes.Remove(thisNode);
 
-				// What is the index within the list of chapters
-				int this_root_index = qc_item.Divisions.Physical_Tree.Roots.IndexOf(parentNode) + 1;
+                    // What is the index within the list of chapters
+                    int this_root_index = qc_item.Divisions.Physical_Tree.Roots.IndexOf(parentNode) + 1;
 
 
-				// Does this clear out the chapter completely?
-				if (parentNode.Nodes.Count == 0)
-				{
-					qc_item.Divisions.Physical_Tree.Roots.Remove(parentNode);
-					this_root_index--;
-				}
+                    // Does this clear out the chapter completely?
+                    if (parentNode.Nodes.Count == 0)
+                    {
+                        qc_item.Divisions.Physical_Tree.Roots.Remove(parentNode);
+                        this_root_index--;
+                    }
 
-				// If this insert point is prior to the previously collected insert point, use this one for the first chapter
-				if (this_root_index < index_within_chapter_roots_to_begin_insert)
-					index_within_chapter_roots_to_begin_insert = this_root_index;
-			}
-			foreach (Page_TreeNode thisNode in remnant_pages)
-			{
-				// Get the parent division, to clear this
-				window_last_division.Nodes.Remove(thisNode);
+                    // If this insert point is prior to the previously collected insert point, use this one for the first chapter
+                    if (this_root_index < index_within_chapter_roots_to_begin_insert)
+                        index_within_chapter_roots_to_begin_insert = this_root_index;
+                }
+                foreach (Page_TreeNode thisNode in remnant_pages)
+                {
+                    // Get the parent division, to clear this
+                    window_last_division.Nodes.Remove(thisNode);
 
-				// Does this clear out the chapter completely?
-				if (window_last_division.Nodes.Count == 0)
-				{
-					qc_item.Divisions.Physical_Tree.Roots.Remove(window_last_division);
-				}
-			}
+                    // Does this clear out the chapter completely?
+                    if (window_last_division.Nodes.Count == 0)
+                    {
+                        qc_item.Divisions.Physical_Tree.Roots.Remove(window_last_division);
+                    }
+                }
 
 
 
 
-			int move_into_division_index = -1;
-			int move_into_node_index = -1;
-		  //  string filename_to_move_after = "00002";
+                int move_into_division_index = -1;
+                int move_into_node_index = -1;
+                //  string filename_to_move_after = "00002";
 
-			// Add each page from the original form
-			Division_TreeNode last_added_division = existing_division_containing_first_page;
-			foreach (QC_Viewer_Page_Division_Info pageInfo in page_div_from_form)
-			{
-				// Is this a new division?
-				if (pageInfo.New_Division)
-				{
-					// If there was a last division, ensure some pages were added and add to the METS
-					if (last_added_division != null)
-					{
-						// Were any pages added to this last div?
-						if (last_added_division.Nodes.Count > 0)
-						{
-							// Since there were pages, add this to the METS
-							qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
-						}
-					}
+                // Add each page from the original form
+                Division_TreeNode last_added_division = existing_division_containing_first_page;
+                foreach (QC_Viewer_Page_Division_Info pageInfo in page_div_from_form)
+                {
+                    // Is this a new division?
+                    if (pageInfo.New_Division)
+                    {
+                        // If there was a last division, ensure some pages were added and add to the METS
+                        if (last_added_division != null)
+                        {
+                            // Were any pages added to this last div?
+                            if (last_added_division.Nodes.Count > 0)
+                            {
+                                // Since there were pages, add this to the METS
+                                qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+                            }
+                        }
 
-					// Create the new division
-					last_added_division = new Division_TreeNode(pageInfo.Division_Type, pageInfo.Division_Label);
-				}
+                        // Create the new division
+                        last_added_division = new Division_TreeNode(pageInfo.Division_Type, pageInfo.Division_Label);
+                    }
 
-				// Get the page tree node and assign the new page label
-				Page_TreeNode thisPage = pages_by_name[pageInfo.Filename];
-				thisPage.Label = pageInfo.Page_Label;
-                
-				// Add this page to the last division (possibly just created above) assuming it is 
-				// not marked for removal (either by mass delete or mass move)
-				if (!pageInfo.Checkbox_Selected)
-					last_added_division.Add_Child(thisPage);
-				else
-				{
-					// Save the built page node for later, in case they will be MOVED
-					pageInfo.METS_STructMap_Page_Node = thisPage;
-				}
+                    // Get the page tree node and assign the new page label
+                    Page_TreeNode thisPage = pages_by_name[pageInfo.Filename];
+                    thisPage.Label = pageInfo.Page_Label;
 
-				// Were we involved in a mass move, in which case we are looking for the insertion point?
-				if ((filename_to_move_after.Length > 0) && (move_into_division_index < 0 ) && (pageInfo.Filename == filename_to_move_after))
-				{
-					move_into_division_index = index_within_chapter_roots_to_begin_insert;
-					move_into_node_index = last_added_division.Nodes.Count;
-				}
-			}
+                    // Add this page to the last division (possibly just created above) assuming it is 
+                    // not marked for removal (either by mass delete or mass move)
+                    if (!pageInfo.Checkbox_Selected)
+                        last_added_division.Add_Child(thisPage);
+                    else
+                    {
+                        // Save the built page node for later, in case they will be MOVED
+                        pageInfo.METS_STructMap_Page_Node = thisPage;
+                    }
 
-			// Handle all the remnant by adding to the last division 
-			foreach (Page_TreeNode thisNode in remnant_pages)
-			{
-				last_added_division.Add_Child(thisNode);
-			}
-			
-			// Handle any unfinished divisions
-			// If there was a last division, ensure some pages were added and add to the METS
-			if (last_added_division != null)
-			{
-				// Were any pages added to this last div?
-				if (last_added_division.Nodes.Count > 0)
-				{
-					// Since there were pages, add this to the METS
-					qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
-				}
-			}
+                    // Were we involved in a mass move, in which case we are looking for the insertion point?
+                    if ((filename_to_move_after.Length > 0) && (move_into_division_index < 0) && (pageInfo.Filename == filename_to_move_after))
+                    {
+                        move_into_division_index = index_within_chapter_roots_to_begin_insert;
+                        move_into_node_index = last_added_division.Nodes.Count;
+                    }
+                }
+
+                // Handle all the remnant by adding to the last division 
+                foreach (Page_TreeNode thisNode in remnant_pages)
+                {
+                    last_added_division.Add_Child(thisNode);
+                }
+
+                // Handle any unfinished divisions
+                // If there was a last division, ensure some pages were added and add to the METS
+                if (last_added_division != null)
+                {
+                    // Were any pages added to this last div?
+                    if (last_added_division.Nodes.Count > 0)
+                    {
+                        // Since there were pages, add this to the METS
+                        qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
+                    }
+                }
 
 
-			// Insert any pages which were moved
-			if ((filename_to_move_after.Length > 0) && ( selected_page_div_from_form.Count > 0 ))
-			{
-				// TODO: Check for the lack of any divisions what-so-ever within the METS.  If so, add one.
+                // Insert any pages which were moved
+                if ((filename_to_move_after.Length > 0) && (selected_page_div_from_form.Count > 0))
+                {
+                    // TODO: Check for the lack of any divisions what-so-ever within the METS.  If so, add one.
 
-				Division_TreeNode divNodeToInsertWithin = null;
+                    Division_TreeNode divNodeToInsertWithin = null;
 
-				 // Get the division
-				if (move_into_division_index >= 0)
-					divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[move_into_division_index];
-				else if (filename_to_move_after == "[BEFORE FIRST]")
-				{
-					divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[0];
-					move_into_node_index = 0;
-				}
+                    // Get the division
+                    if (move_into_division_index >= 0)
+                        divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[move_into_division_index];
+                    else if (filename_to_move_after == "[BEFORE FIRST]")
+                    {
+                        divNodeToInsertWithin = (Division_TreeNode) qc_item.Divisions.Physical_Tree.Roots[0];
+                        move_into_node_index = 0;
+                    }
 
-				if ( divNodeToInsertWithin != null )
-				{
-					// Insert each page in order
-					foreach (QC_Viewer_Page_Division_Info insertPage in selected_page_div_from_form)
-					{
-						divNodeToInsertWithin.Nodes.Insert(move_into_node_index++, insertPage.METS_STructMap_Page_Node);
-					}
-				}
-			}
+                    if (divNodeToInsertWithin != null)
+                    {
+                        // Insert each page in order
+                        foreach (QC_Viewer_Page_Division_Info insertPage in selected_page_div_from_form)
+                        {
+                            divNodeToInsertWithin.Nodes.Insert(move_into_node_index++, insertPage.METS_STructMap_Page_Node);
+                        }
+                    }
+                }
 
-			// Save the updated to the session
-			HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+                // Save the updated to the session
+                HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
 
-			// Save to the temporary QC work section
-			try
-			{
-				// Ensure the directory exists under the user's temporary mySobek InProcess folder
-				if (!Directory.Exists(userInProcessDirectory))
-					Directory.CreateDirectory(userInProcessDirectory);
+                // Save to the temporary QC work section
 
-				// Save the METS
-				qc_item.Save_METS(userInProcessDirectory + "\\" + qc_item.BibID + "_" + qc_item.VID + ".mets");
+                // Ensure the directory exists under the user's temporary mySobek InProcess folder
+                if (!Directory.Exists(userInProcessDirectory))
+                    Directory.CreateDirectory(userInProcessDirectory);
 
- 
+                // Save the METS
+                qc_item.Save_METS(metsInProcessFile);
+
+
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(userInProcessDirectory);
-                double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length) / 1024));
+                double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
                 qc_item.DiskSize_MB = size;
-                
+
                 //Save changes to the DB
-        //        Resource_Object.Database.SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, mainThumbnailFileName, mainJPGFileName, PageCount, all_files_final.Count(), size,notes);
-            
+                //Resource_Object.Database.SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, mainThumbnailFileName, mainJPGFileName, PageCount, all_files_final.Count(), size,notes);
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-            
 
-			// Return the information about all checked boxes
-			return selected_page_div_from_form;
-		}
+            }
+            catch (Exception ee)
+            {
+                returnValue = false;
+            }
 
-		/// <summary> Override the property to get the current item, since the QC viewer uses a DIFFERENT item, to avoid
+
+            // Return the flag indicating success
+            return returnValue;
+        }
+
+        /// <summary> Override the property to get the current item, since the QC viewer uses a DIFFERENT item, to avoid
 		/// changing the publicly available item until the user clicks submit and the new METS is written </summary>
 		public override SobekCM_Item CurrentItem
 		{
@@ -917,12 +1056,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			if (uri.Query.IndexOf("ts") > 0)
 			{
-				size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("nt"));
+				size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("ts"));
 				CurrentMode.Size_Of_Thumbnails = (short)size_of_thumbnails;
 			}
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = -1;
+			}
+
+            if (uri.Query.IndexOf("an") > 0)
+			{
+				autonumber_mode = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("an"));
+				CurrentMode.Autonumbering_Mode = (short)autonumber_mode;
+			}
+			else
+			{
+				CurrentMode.Autonumbering_Mode = 2;
 			}
 
             //// Get the links for the METS
@@ -1017,17 +1166,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//builder.AppendLine("\t\t<li>Invalid images</li>");
 			//builder.AppendLine("\t\t<li>Incorrect volume/title</li>");
 			//builder.AppendLine("\t</ul></li>");
-            Output.WriteLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
+   //         Output.WriteLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
 
             Output.WriteLine("<li><a onclick=\"return false;\">Resource</a><ul>");
-            Output.WriteLine("\t<li><a onclick=\"return false;\">Save</a></li>");
-            Output.WriteLine("\t<li><a onclick=\"return false;\">Complete</a></li>");
-            Output.WriteLine("\t<li><a onclick=\"return false;\">Cancel</a></li>");
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"return behaviors_save_form();\">Save</a></li>");
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"save_submit_form();\";>Complete</a></li>");
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"behaviors_cancel_form();\">Cancel</a></li>");
             Output.WriteLine("</ul></li>");
 
             Output.WriteLine("<li><a href=\"#\">Edit</a><ul>");
-            Output.WriteLine("\t<li><a onclick=\"return false;\">Clear Pagination</a></li>");
-            Output.WriteLine("\t<li><a onclick=\"return false;\">Clear All &amp; Reorder Pages</a></li>");
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"javascript:ClearPagination();return false;\">Clear Pagination</a></li>");
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"javascript:ClearReorderPagination();return false;\">Clear All &amp; Reorder Pages</a></li>");
             Output.WriteLine("</ul></li>");
 
             Output.WriteLine("<li><a onclick=\"return false;\">Settings</a><ul>");
@@ -1234,7 +1383,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_text_without_number\" name=\"Autonumber_text_without_number\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_only\" name=\"Autonumber_number_only\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
-			
+		    Output.WriteLine("<input type=\"hidden\" id=\"Clear_Pagination\" name=\"Clear_Pagination\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"Clear_Reorder_Pagination\" name=\"Clear_Reorder_Pagination\" value=\"\"/>");
 
 			// Start the main div for the thumbnails
 	
@@ -1602,7 +1752,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Start inner table
             Output.WriteLine("<span style=\"float:right\"><table style=\"width=\"100%\"><tr>");
             Output.WriteLine("<td>Comments: </td><td><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea></td> ");
-            Output.WriteLine("<td><button type=\"button\" class=\"qc_mainbuttons\">Complete</button></td>");
+            Output.WriteLine("<td><button type=\"button\" class=\"qc_mainbuttons\" onclick=\"save_submit_form();\">Complete</button></td>");
             Output.WriteLine("<td><button type=\"button\" class=\"qc_mainbuttons\" onclick=\"behaviors_cancel_form();\">Cancel</button></td>");
 		    //Close inner table
 		    Output.WriteLine("</tr></table></span>");
@@ -1812,8 +1962,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             //Now reset the current mode value since we won't need to set it again
             CurrentMode.Autonumbering_Mode = -1;
-
-
 
 
 

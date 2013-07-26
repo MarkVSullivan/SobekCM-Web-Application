@@ -17,7 +17,7 @@ function qc_set_fullscreen() {
 
 
 
-//Update the division types when a division checkbox is checked/unchecked
+//Updates the division types when a "New Division" checkbox is checked/unchecked
 function UpdateDivDropdown(CheckBoxID, MaxPageCount)
 {
 	//get the list of all the thumbnail spans on the page
@@ -259,7 +259,7 @@ function DivNameTextChanged(textboxID, MaxPageCount)
 
 function PaginationTextChanged(textboxID,mode,MaxPageCount)
 {
- alert("in the main function");
+     alert("Mode selected:"+mode);
      //get the list of all the thumbnail spans on the page
 	var spanArrayObjects = new Array();
 
@@ -311,31 +311,30 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 
 	if (matches != null) 
     {
-       // the id attribute contains a digit
+       
+	   // the id attribute contains a digit
        var len=matches.length;
        var number = matches[len-1];
 	   var nonNumber='';
 	   var val=document.getElementById(textboxID).value;
 
-       
 	   //if the number is at the end of the string, with a space before
 	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
        {
-	       //Set the QC form hidden variable with this mode
-		           var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
+		   //Set the QC form hidden variable with this mode
+		           var hidden_autonumber_mode = document.getElementById('autonumber_mode_from_form');
                    hidden_autonumber_mode.value = '0';
-				   
+	   
 				   var hidden_number_system = document.getElementById('Autonumber_number_system');
 				   hidden_number_system.value='decimal';
         
-      
-			var i;
-			var j='';
+            alert(number + ' is the page number to auto-number from');
+			var i=-1;
+			var j=-1;
 			var lastIndex=0;
 			for(i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
 			{
 			  number++;
-			 //alert(i);
 			  if(document.getElementById('textbox'+spanArray[i]))
 			  {
 			    lastIndex=i;
@@ -347,6 +346,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 			  }//end if
 			}//end for
           // 	if(i>=spanArray.indexOf(currPageLastIndex))
+			alert('outside of loop');
 			
 			var hidden_filename=document.getElementById('filename'+spanArray[lastIndex]);
 			alert(hidden_filename.value);
@@ -1400,7 +1400,7 @@ function qc_auto_save()
 
 	jQuery('form').each(function() {
 	    var hiddenfield = document.getElementById('QC_behaviors_request');
-		hiddenfield.value = 'save';
+		hiddenfield.value = 'autosave';
 
 		var thisURL =window.location.href.toString();
         // For each form on the page, pass the form data via an ajax POST to
@@ -1663,7 +1663,33 @@ function DeleteSelectedPages()
     return false;
 	
 }
+
+// Function is called when user clicks COMPLETE
+function save_submit_form()
+{
+        var hidden_request = document.getElementById('QC_behaviors_request');
+
+        hidden_request.value = 'complete';
+
+        document.itemNavForm.submit();
+		return false;
+}
  
-                
+ //Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
+ function ClearPagination()
+{
+  var hidden_request =document.getElementById('Clear_Pagination');
+  hidden_request.value = "true";
+  
+  document.itemNavForm.submit();
+} 
 
 
+//Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
+function ClearReorderPagination()
+{
+  var hidden_request =document.getElementById('Clear_Reorder_Pagination');
+  hidden_request.value = "true";
+  
+  document.itemNavForm.submit();
+}
