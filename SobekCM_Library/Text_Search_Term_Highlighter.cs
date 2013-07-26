@@ -30,6 +30,18 @@ namespace SobekCM.Library
         /// <returns> Source text including highlights </returns>
         public static string Hightlight_Term_In_HTML(string Source_Text, List<string> Search_Terms)
         {
+            return Hightlight_Term_In_HTML(Source_Text, Search_Terms, HIGHLIGHT_START, HIGHLIGHT_END);
+        }
+
+
+        /// <summary> Checks the source html text for terms to highlight and returns the text, including any highlighting </summary>
+        /// <param name="Source_Text"> Source text which may contain terms to highlight </param>
+        /// <param name="Search_Terms"> Terms to highlight in the source text </param>
+        /// <param name="Highlight_Start">HTML to use at the beginning of a span to highlight</param>
+        /// <param name="Highlight_End">HTML to use at the end of a span to highlight</param>
+        /// <returns> Source text including highlights </returns>
+        public static string Hightlight_Term_In_HTML(string Source_Text, List<string> Search_Terms, string Highlight_Start, string Highlight_End )
+        {
             // Place the entire text into lower case
             string sourceLower = Source_Text.ToLower();
 

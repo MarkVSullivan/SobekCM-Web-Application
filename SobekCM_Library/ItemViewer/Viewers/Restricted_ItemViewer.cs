@@ -64,7 +64,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<td align=\"left\" colspan=\"3\">" + restrictedMessage + "</td>");
+            Output.WriteLine("<td style=\"text-align:left;\" colspan=\"3\">" + restrictedMessage + "</td>");
         }
     }
 }

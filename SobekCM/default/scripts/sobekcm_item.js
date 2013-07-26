@@ -354,16 +354,16 @@ function close_share_form() {
 
 // Function to set the full screen mode 
 function jp2_set_fullscreen() {
-    var x = $("#openseadragon_container").offset().left;
-    var y = $("#openseadragon_container").offset().top;
+    var x = $("#sbkJp2_Container").offset().left;
+    var y = $("#sbkJp2_Container").offset().top;
 
     var window_height = $(window).height();
     var new_height = window_height - y - 10;
-    $("#openseadragon_container").height(new_height);
+    $("#sbkJp2_Container").height(new_height);
 
     var window_width = $(window).width();
     var new_width = window_width - x - 20;   
-    $("#openseadragon_container").width(new_width);
+    $("#sbkJp2_Container").width(new_width);
 }
 
 // Function to set the full screen mode 

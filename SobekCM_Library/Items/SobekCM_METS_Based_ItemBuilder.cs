@@ -275,11 +275,7 @@ namespace SobekCM.Library.Items
                 }
 
                 // Check to see if multiple sibling volumes exist
-                bool multiple_volumes_exist = false;
-                if (Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1)
-                {
-                    multiple_volumes_exist = true;
-                }
+                bool multiple_volumes_exist = Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1;
 
                 // Now finish building the object from the application state values
                 Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist);              
@@ -407,6 +403,7 @@ namespace SobekCM.Library.Items
             DataRow mainItemRow = databaseInfo.Tables[2].Rows[0];
             thisPackage.Behaviors.Set_Primary_Identifier(mainItemRow["Primary_Identifier_Type"].ToString(), mainItemRow["Primary_Identifier"].ToString());
             thisPackage.Behaviors.GroupTitle = mainItemRow["GroupTitle"].ToString();
+            thisPackage.Behaviors.GroupType = mainItemRow["GroupType"].ToString();
             thisPackage.Web.File_Root = mainItemRow["File_Location"].ToString();
             thisPackage.Web.AssocFilePath = mainItemRow["File_Location"] + "\\" + thisPackage.VID + "\\";
             thisPackage.Behaviors.IP_Restriction_Membership = Convert.ToInt16(mainItemRow["IP_Restriction_Mask"]);             
@@ -641,6 +638,7 @@ namespace SobekCM.Library.Items
 
             // Make sure no views were retained from the METS file itself
             thisPackage.Behaviors.Clear_Views();
+            thisPackage.Behaviors.Clear_Item_Level_Page_Views();
 
             // If this has more than 1 sibling (this count includes itself), add the multi-volumes viewer
             if (multiple)
@@ -654,7 +652,7 @@ namespace SobekCM.Library.Items
             thisPackage.Behaviors.Add_View(View_Enum.GOOGLE_COORDINATE_ENTRY);
             thisPackage.Behaviors.Add_View(View_Enum.TEST);
 
-            // Add the full text 
+            // Add the full text searchable
             if ( thisPackage.Behaviors.Text_Searchable )
                 thisPackage.Behaviors.Add_View(View_Enum.SEARCH);
 
@@ -669,293 +667,350 @@ namespace SobekCM.Library.Items
                 
             }
 
-            // IF this is dark, add no other views
-            if (!thisPackage.Behaviors.Dark_Flag)
+            // If this is a newspaper, and there is no datecreated, see if we 
+            // can make one from the  serial hierarchy
+            if (thisPackage.Behaviors.GroupType.ToUpper() == "NEWSPAPER")
             {
-                // Check to see which views were present from the database, and build the list
-                Dictionary<View_Enum, View_Object> viewsFromDb = new Dictionary<View_Enum, View_Object>();
-                foreach (DataRow viewRow in databaseInfo.Tables[4].Rows)
+                if ((thisPackage.Bib_Info.Origin_Info.Date_Created.Length == 0) && (thisPackage.Bib_Info.Origin_Info.Date_Issued.Length == 0))
                 {
-                    string viewType = viewRow[0].ToString();
-                    string attribute = viewRow[1].ToString();
-                    string label = viewRow[2].ToString();
-
-                    View_Enum viewTypeEnum = View_Enum.None;
-                    switch (viewType)
+                    // Is the serial hierarchy three deep?
+                    if (thisPackage.Behaviors.hasSerialInformation)
                     {
-                        case "JPEG":
-                            viewTypeEnum = View_Enum.JPEG;
-                            break;
-
-                        case "JPEG2000":
-                            viewTypeEnum = View_Enum.JPEG2000;
-                            break;
-
-                        case "Text":
-                            viewTypeEnum = View_Enum.TEXT;
-                            break;
-
-                        case "Page Turner":
-                            viewTypeEnum = View_Enum.PAGE_TURNER;
-                            break;
-
-                        case "Google Map":
-                            viewTypeEnum = View_Enum.GOOGLE_MAP;
-                            break;
-
-                        case "HTML Viewer":
-                            viewTypeEnum = View_Enum.HTML;
-                            break;
-
-                        case "Related Images":
-                            viewTypeEnum = View_Enum.RELATED_IMAGES;
-                            break;
-
-                        case "TOC":
-                            viewTypeEnum = View_Enum.TOC;
-                            break;
-
-                        case "TEI":
-                            viewTypeEnum = View_Enum.TEI;
-                            break;
-                    }
-
-                    if (viewTypeEnum != View_Enum.None)
-                    {
-                        viewsFromDb[viewTypeEnum] = new View_Object(viewTypeEnum, label, attribute);
-                    }
-                }
-
-                // Add the thumbnail view, if requested and has multiple pages
-                if (thisPackage.Divisions.Page_Count > 1)
-                {
-                    if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-                    {
-                        thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
-                        viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-                    }
-
-                    thisPackage.Behaviors.Add_View(View_Enum.QUALITY_CONTROL);
-                }
-                else
-                {
-                    if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-                    {
-                        viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-                    }
-                }
-
-                // If this item has more than one division, look for the TOC viewer
-                if ((thisPackage.Divisions.Has_Multiple_Divisions) && (!thisPackage.Bib_Info.ImageClass))
-                {
-                    if (viewsFromDb.ContainsKey(View_Enum.TOC))
-                    {
-                        thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.TOC]);
-                        viewsFromDb.Remove(View_Enum.TOC);
-                    }
-                }
-
-                // In addition, if there is a latitude or longitude listed, look for the Google Maps
-                bool hasCoords = false;
-                GeoSpatial_Information geoInfo = (GeoSpatial_Information) thisPackage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY);
-                if (( geoInfo != null ) && ( geoInfo.hasData ))
-                {
-                    if ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))
-                    {
-                        hasCoords = true;
-                    }
-                }
-                if (!hasCoords)
-                {
-                    List<abstract_TreeNode> pageList = thisPackage.Divisions.Physical_Tree.Pages_PreOrder;
-                    foreach (abstract_TreeNode thisPage in pageList)
-                    {
-                        GeoSpatial_Information geoInfo2 = (GeoSpatial_Information) thisPage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY);
-                        if ((geoInfo2 != null) && (geoInfo2.hasData))
+                        if (thisPackage.Behaviors.Serial_Info.Count == 3)
                         {
-                            if ((geoInfo2.Point_Count > 0) || (geoInfo2.Polygon_Count > 0))
+                            int year = -1;
+                            int month = -1;
+                            int day = -1;
+
+                            if (Int32.TryParse(thisPackage.Behaviors.Serial_Info[0].Display, out year))
                             {
-                                hasCoords = true;
-                                break;
+                                if (Int32.TryParse(thisPackage.Behaviors.Serial_Info[2].Display, out day))
+                                {
+                                    if ((year > 0) && (year < DateTime.Now.Year + 2) && ( day > 0 ) && ( day <= 31 ))
+                                    {
+                                        // Is the month a number?
+                                        if (Int32.TryParse(thisPackage.Behaviors.Serial_Info[1].Display, out month))
+                                        {
+                                            try
+                                            {
+                                                // Do it this way since hopefully that will work for localization issues
+                                                DateTime date = new DateTime(year, month, day);
+                                                thisPackage.Bib_Info.Origin_Info.Date_Created = date.ToShortDateString();
+                                            }
+                                            catch 
+                                            {
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            thisPackage.Bib_Info.Origin_Info.Date_Created = thisPackage.Behaviors.Serial_Info[1].Display + " " + day + ", " + year;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if ( thisPackage.Behaviors.Serial_Info.Count == 2 )
+                        {
+                            int year = -1;
+                            if (Int32.TryParse(thisPackage.Behaviors.Serial_Info[0].Display, out year))
+                            {
+                                if ((year > 0) && (year < DateTime.Now.Year + 2) && ( thisPackage.Behaviors.Serial_Info[1].Display.Length > 0 ))
+                                {
+                                    thisPackage.Bib_Info.Origin_Info.Date_Created = thisPackage.Behaviors.Serial_Info[1].Display + " " + year;
+                                }
                             }
                         }
                     }
                 }
+            }
 
-                if (hasCoords)
+            // IF this is dark, add no other views
+            if (thisPackage.Behaviors.Dark_Flag) return;
+
+            // Check to see which views were present from the database, and build the list
+            Dictionary<View_Enum, View_Object> viewsFromDb = new Dictionary<View_Enum, View_Object>();
+            foreach (DataRow viewRow in databaseInfo.Tables[4].Rows)
+            {
+                string viewType = viewRow[0].ToString();
+                string attribute = viewRow[1].ToString();
+                string label = viewRow[2].ToString();
+
+                View_Enum viewTypeEnum = View_Enum.None;
+                switch (viewType)
                 {
-                    if (viewsFromDb.ContainsKey(View_Enum.GOOGLE_MAP))
-                    {
-                        thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.GOOGLE_MAP]);
-                        viewsFromDb.Remove(View_Enum.GOOGLE_MAP);
-                    }
-                    else
-                    {
-                        thisPackage.Behaviors.Add_View(View_Enum.GOOGLE_MAP);
-                    }
+                    case "JPEG":
+                        viewTypeEnum = View_Enum.JPEG;
+                        break;
+
+                    case "JPEG2000":
+                        viewTypeEnum = View_Enum.JPEG2000;
+                        break;
+
+                    case "Text":
+                        viewTypeEnum = View_Enum.TEXT;
+                        break;
+
+                    case "Page Turner":
+                        viewTypeEnum = View_Enum.PAGE_TURNER;
+                        break;
+
+                    case "Google Map":
+                        viewTypeEnum = View_Enum.GOOGLE_MAP;
+                        break;
+
+                    case "HTML Viewer":
+                        viewTypeEnum = View_Enum.HTML;
+                        break;
+
+                    case "Related Images":
+                        viewTypeEnum = View_Enum.RELATED_IMAGES;
+                        break;
+
+                    case "TOC":
+                        viewTypeEnum = View_Enum.TOC;
+                        break;
+
+                    case "TEI":
+                        viewTypeEnum = View_Enum.TEI;
+                        break;
                 }
 
-                // Step through each download and make sure it is fully built
-                if (thisPackage.Divisions.Download_Tree.Has_Files)
+                if (viewTypeEnum != View_Enum.None)
                 {
-                    string ead_file = String.Empty;
-                    int pdf_download = 0;
-                    string pdf_download_url = String.Empty;
-                    int non_flash_downloads = 0;
-                    List<abstract_TreeNode> downloadPages = thisPackage.Divisions.Download_Tree.Pages_PreOrder;
-                    foreach (Page_TreeNode downloadPage in downloadPages)
-                    {
-                        // Was this an EAD page?
-                        if ((downloadPage.Label == GlobalVar.EAD_METADATA_MODULE_KEY) && (downloadPage.Files.Count == 1))
-                        {
-                            ead_file = downloadPage.Files[0].System_Name;
-                        }
-
-                        // Was this an XSL/EAD page?
-                        if ((downloadPage.Label == "XSL") && (downloadPage.Files.Count == 1))
-                        {
-                        }
-
-                        // Step through each download file
-                        foreach (SobekCM_File_Info thisFile in downloadPage.Files)
-                        {
-                            if (thisFile.File_Extension == "SWF")
-                            {
-                                string flashlabel = downloadPage.Label;
-                                View_Object newView = thisPackage.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, thisFile.System_Name);
-                                thisPackage.Behaviors.Default_View = newView;
-                            }
-                            else
-                            {
-                                non_flash_downloads++;
-                            }
-
-                            if (thisFile.File_Extension == "PDF")
-                            {
-                                pdf_download++;
-                                pdf_download_url = thisFile.System_Name;
-                            }
-                        }
-                    }
-
-                    if (((non_flash_downloads > 0) && (pdf_download != 1)) || ((non_flash_downloads > 1) && (pdf_download == 1)))
-                    {
-
-                        if (thisPackage.Web.Static_PageCount == 0)
-                            thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.DOWNLOADS);
-                        else
-                            thisPackage.Behaviors.Add_View(View_Enum.DOWNLOADS);
-                    }
-
-                    if (pdf_download == 1)
-                    {
-                        if ((thisPackage.Web.Static_PageCount == 0) && ( thisPackage.Behaviors.Default_View == null ))
-                        {
-                            thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.PDF);
-                            thisPackage.Behaviors.Default_View.FileName = pdf_download_url;
-                        }
-                        else
-                        {
-                            thisPackage.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
-                        }
-                    }
-
-                    // Some special code for EAD objects
-                    if ((thisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Archival ) && (ead_file.Length > 0))
-                    {
-                        // Now, read this EAD file information 
-                        string ead_file_location = SobekCM_Library_Settings.Image_Server_Network + thisPackage.Web.AssocFilePath + ead_file;
-                        EAD_File_ReaderWriter reader = new EAD_File_ReaderWriter();
-                        string Error_Message;
-                        Dictionary<string, object> options = new Dictionary<string, object>();
-                        options["EAD_File_ReaderWriter:XSL_Location"] = SobekCM_Library_Settings.System_Base_URL + "default/sobekcm_default.xsl";
-                        reader.Read_Metadata(ead_file_location, thisPackage, options, out Error_Message);
-
-                        // Clear all existing views
-                        thisPackage.Behaviors.Clear_Views();
-                        thisPackage.Behaviors.Add_View(View_Enum.CITATION);
-                        thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
-
-                        // Get the metadata module for EADs
-                        EAD_Info eadInfo = (EAD_Info)thisPackage.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
-                        if (( eadInfo != null ) && ( eadInfo.Container_Hierarchy.Containers.Count > 0 ))
-                            thisPackage.Behaviors.Add_View(View_Enum.EAD_CONTAINER_LIST);
-
-                    }
+                    viewsFromDb[viewTypeEnum] = new View_Object(viewTypeEnum, label, attribute);
                 }
-                else
-                {
-                    if (thisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial )
-                    {
-                        thisPackage.Behaviors.Add_View(View_Enum.DOWNLOADS);
-                    }
-                }
+            }
 
-                // If there is a RELATED URL with youtube, add that viewer
-                if ((thisPackage.Bib_Info.hasLocationInformation) && (thisPackage.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") >= 0))
-                {
-                    View_Object newViewObj = new View_Object(View_Enum.YOUTUBE_VIDEO);
-                    thisPackage.Behaviors.Add_View(newViewObj);
-                    thisPackage.Behaviors.Default_View = newViewObj;
-                }
-
-                // Look for the HTML type views next, and possible set some defaults
-                if (viewsFromDb.ContainsKey(View_Enum.HTML))
-                {
-                    thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.HTML]);
-                    thisPackage.Behaviors.Default_View = viewsFromDb[View_Enum.HTML];
-                    viewsFromDb.Remove(View_Enum.HTML);
-                }
-
-                // Copy the TEI flag
-                if (viewsFromDb.ContainsKey(View_Enum.TEI))
-                {
-                    thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.TEI]);
-                    viewsFromDb.Remove(View_Enum.HTML);
-                }
-
-                // Look to add any index information here ( such as on SANBORN maps)
-                Map_Info mapInfo = (Map_Info) thisPackage.Get_Metadata_Module(GlobalVar.SOBEKCM_MAPS_METADATA_MODULE_KEY);
-                if (mapInfo != null)
-                {
-                    //// Were there streets?
-                    //if (thisPackage.Map.Streets.Count > 0)
-                    //{
-                    //    returnValue.Item_Views.Add(new ViewerFetcher.Streets_ViewerFetcher());
-                    //}
-
-                    //// Were there features?
-                    //if (thisPackage.Map.Features.Count > 0)
-                    //{
-                    //    returnValue.Item_Views.Add(new ViewerFetcher.Features_ViewerFetcher());
-                    //}
-                }
-
-                // Look for the RELATED IMAGES view next
+            // Add the thumbnail view, if requested and has multiple pages
+            if (thisPackage.Divisions.Page_Count > 1)
+            {
                 if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
                 {
                     thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
                     viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
                 }
 
-                // Look for the PAGE TURNER view next
-                if (viewsFromDb.ContainsKey(View_Enum.PAGE_TURNER))
+                thisPackage.Behaviors.Add_View(View_Enum.QUALITY_CONTROL);
+            }
+            else
+            {
+                if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
                 {
-                    thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.PAGE_TURNER]);
-                    viewsFromDb.Remove(View_Enum.PAGE_TURNER);
+                    viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
+                }
+            }
+
+            // If this item has more than one division, look for the TOC viewer
+            if ((thisPackage.Divisions.Has_Multiple_Divisions) && (!thisPackage.Bib_Info.ImageClass))
+            {
+                if (viewsFromDb.ContainsKey(View_Enum.TOC))
+                {
+                    thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.TOC]);
+                    viewsFromDb.Remove(View_Enum.TOC);
+                }
+            }
+
+            // In addition, if there is a latitude or longitude listed, look for the Google Maps
+            bool hasCoords = false;
+            GeoSpatial_Information geoInfo = (GeoSpatial_Information) thisPackage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY);
+            if (( geoInfo != null ) && ( geoInfo.hasData ))
+            {
+                if ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))
+                {
+                    hasCoords = true;
+                }
+            }
+            if (!hasCoords)
+            {
+                List<abstract_TreeNode> pageList = thisPackage.Divisions.Physical_Tree.Pages_PreOrder;
+                foreach (abstract_TreeNode thisPage in pageList)
+                {
+                    GeoSpatial_Information geoInfo2 = (GeoSpatial_Information) thisPage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY);
+                    if ((geoInfo2 != null) && (geoInfo2.hasData))
+                    {
+                        if ((geoInfo2.Point_Count > 0) || (geoInfo2.Polygon_Count > 0))
+                        {
+                            hasCoords = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasCoords)
+            {
+                if (viewsFromDb.ContainsKey(View_Enum.GOOGLE_MAP))
+                {
+                    thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.GOOGLE_MAP]);
+                    viewsFromDb.Remove(View_Enum.GOOGLE_MAP);
+                }
+                else
+                {
+                    thisPackage.Behaviors.Add_View(View_Enum.GOOGLE_MAP);
+                }
+            }
+
+            // Step through each download and make sure it is fully built
+            if (thisPackage.Divisions.Download_Tree.Has_Files)
+            {
+                string ead_file = String.Empty;
+                int pdf_download = 0;
+                string pdf_download_url = String.Empty;
+                int non_flash_downloads = 0;
+                List<abstract_TreeNode> downloadPages = thisPackage.Divisions.Download_Tree.Pages_PreOrder;
+                foreach (Page_TreeNode downloadPage in downloadPages)
+                {
+                    // Was this an EAD page?
+                    if ((downloadPage.Label == GlobalVar.EAD_METADATA_MODULE_KEY) && (downloadPage.Files.Count == 1))
+                    {
+                        ead_file = downloadPage.Files[0].System_Name;
+                    }
+
+                    // Was this an XSL/EAD page?
+                    if ((downloadPage.Label == "XSL") && (downloadPage.Files.Count == 1))
+                    {
+                    }
+
+                    // Step through each download file
+                    foreach (SobekCM_File_Info thisFile in downloadPage.Files)
+                    {
+                        if (thisFile.File_Extension == "SWF")
+                        {
+                            string flashlabel = downloadPage.Label;
+                            View_Object newView = thisPackage.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, thisFile.System_Name);
+                            thisPackage.Behaviors.Default_View = newView;
+                        }
+                        else
+                        {
+                            non_flash_downloads++;
+                        }
+
+                        if (thisFile.File_Extension == "PDF")
+                        {
+                            pdf_download++;
+                            pdf_download_url = thisFile.System_Name;
+                        }
+                    }
                 }
 
-                // Finally, add all the ITEM VIEWS
-                foreach (View_Object thisObject in viewsFromDb.Values)
+                if (((non_flash_downloads > 0) && (pdf_download != 1)) || ((non_flash_downloads > 1) && (pdf_download == 1)))
                 {
-                    switch (thisObject.View_Type)
+
+                    if (thisPackage.Web.Static_PageCount == 0)
+                        thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.DOWNLOADS);
+                    else
+                        thisPackage.Behaviors.Add_View(View_Enum.DOWNLOADS);
+                }
+
+                if (pdf_download == 1)
+                {
+                    if ((thisPackage.Web.Static_PageCount == 0) && ( thisPackage.Behaviors.Default_View == null ))
                     {
-                        case View_Enum.TEXT:
-                        case View_Enum.JPEG:
-                        case View_Enum.JPEG2000:
-                            thisPackage.Behaviors.Add_Item_Level_Page_View(thisObject);
-                            break;
+                        thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.PDF);
+                        thisPackage.Behaviors.Default_View.FileName = pdf_download_url;
                     }
+                    else
+                    {
+                        thisPackage.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
+                    }
+                }
+
+                // Some special code for EAD objects
+                if ((thisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Archival ) && (ead_file.Length > 0))
+                {
+                    // Now, read this EAD file information 
+                    string ead_file_location = SobekCM_Library_Settings.Image_Server_Network + thisPackage.Web.AssocFilePath + ead_file;
+                    EAD_File_ReaderWriter reader = new EAD_File_ReaderWriter();
+                    string Error_Message;
+                    Dictionary<string, object> options = new Dictionary<string, object>();
+                    options["EAD_File_ReaderWriter:XSL_Location"] = SobekCM_Library_Settings.System_Base_URL + "default/sobekcm_default.xsl";
+                    reader.Read_Metadata(ead_file_location, thisPackage, options, out Error_Message);
+
+                    // Clear all existing views
+                    thisPackage.Behaviors.Clear_Views();
+                    thisPackage.Behaviors.Add_View(View_Enum.CITATION);
+                    thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
+
+                    // Get the metadata module for EADs
+                    EAD_Info eadInfo = (EAD_Info)thisPackage.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+                    if (( eadInfo != null ) && ( eadInfo.Container_Hierarchy.Containers.Count > 0 ))
+                        thisPackage.Behaviors.Add_View(View_Enum.EAD_CONTAINER_LIST);
+
+                }
+            }
+            else
+            {
+                if (thisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial )
+                {
+                    thisPackage.Behaviors.Add_View(View_Enum.DOWNLOADS);
+                }
+            }
+
+            // If there is a RELATED URL with youtube, add that viewer
+            if ((thisPackage.Bib_Info.hasLocationInformation) && (thisPackage.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") >= 0))
+            {
+                View_Object newViewObj = new View_Object(View_Enum.YOUTUBE_VIDEO);
+                thisPackage.Behaviors.Add_View(newViewObj);
+                thisPackage.Behaviors.Default_View = newViewObj;
+            }
+
+            // Look for the HTML type views next, and possible set some defaults
+            if (viewsFromDb.ContainsKey(View_Enum.HTML))
+            {
+                thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.HTML]);
+                thisPackage.Behaviors.Default_View = viewsFromDb[View_Enum.HTML];
+                viewsFromDb.Remove(View_Enum.HTML);
+            }
+
+            // Copy the TEI flag
+            if (viewsFromDb.ContainsKey(View_Enum.TEI))
+            {
+                thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.TEI]);
+                viewsFromDb.Remove(View_Enum.HTML);
+            }
+
+            // Look to add any index information here ( such as on SANBORN maps)
+            Map_Info mapInfo = (Map_Info) thisPackage.Get_Metadata_Module(GlobalVar.SOBEKCM_MAPS_METADATA_MODULE_KEY);
+            if (mapInfo != null)
+            {
+                //// Were there streets?
+                //if (thisPackage.Map.Streets.Count > 0)
+                //{
+                //    returnValue.Item_Views.Add(new ViewerFetcher.Streets_ViewerFetcher());
+                //}
+
+                //// Were there features?
+                //if (thisPackage.Map.Features.Count > 0)
+                //{
+                //    returnValue.Item_Views.Add(new ViewerFetcher.Features_ViewerFetcher());
+                //}
+            }
+
+            // Look for the RELATED IMAGES view next
+            if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
+            {
+                thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
+                viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
+            }
+
+            // Look for the PAGE TURNER view next
+            if (viewsFromDb.ContainsKey(View_Enum.PAGE_TURNER))
+            {
+                thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.PAGE_TURNER]);
+                viewsFromDb.Remove(View_Enum.PAGE_TURNER);
+            }
+
+            // Finally, add all the ITEM VIEWS
+            foreach (View_Object thisObject in viewsFromDb.Values)
+            {
+                switch (thisObject.View_Type)
+                {
+                    case View_Enum.TEXT:
+                    case View_Enum.JPEG:
+                    case View_Enum.JPEG2000:
+                        thisPackage.Behaviors.Add_Item_Level_Page_View(thisObject);
+                        break;
                 }
             }
         }
@@ -992,6 +1047,17 @@ namespace SobekCM.Library.Items
                                 {
                                     thisPackage.Web.Viewer_To_File[pageseq.ToString() + codes[0]] = thisFile;
                                 }
+                            }
+                        }
+
+                        // TEST: Special case for text
+                        if (thisPackage.BibID == "UF00001672")
+                        {
+                            if (thisFile.File_Extension.ToLower().IndexOf("jpg") >= 0)
+                            {
+                                string filename = thisFile.File_Name_Sans_Extension + ".txt";
+                                SobekCM_File_Info thisFileInfo = new SobekCM_File_Info(filename);
+                                thisPackage.Web.Viewer_To_File[pageseq.ToString() + "t"] = thisFileInfo;
                             }
                         }
                     }

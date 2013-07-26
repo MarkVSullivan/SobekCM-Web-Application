@@ -1,7 +1,9 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.UI.WebControls;
@@ -15,6 +17,45 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Text_ItemViewer : abstractItemViewer
     {
+        private string text_from_file;
+        private bool file_does_not_exist;
+        private bool error_occurred;
+        private int width;
+
+        /// <summary> This provides an opportunity for the viewer to perform any pre-display work
+        /// which is necessary before entering any of the rendering portions </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> This methods pulls the text to display and determines the width </remarks>
+        public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
+        {
+            // Set some defaults
+            text_from_file = String.Empty;
+            file_does_not_exist = false;
+            error_occurred = false;
+            width = -1;
+
+            if (FileName.Length > 0)
+            {
+                string filesource = CurrentItem.Web.Source_URL + "/" + FileName;
+                text_from_file = Get_Html_Page(filesource, Tracer);
+
+                // Did this work?
+                if (text_from_file.Length > 0)
+                {
+                    string[] splitter = text_from_file.Split("\n".ToCharArray());
+                    foreach (string thisString in splitter)
+                    {
+                        width = Math.Max(width, thisString.Length*9);
+                    }
+                   // width = Math.Min(width, 800);
+                }
+            }
+            else
+            {
+                file_does_not_exist = true;
+            }
+        }
+
         /// <summary> Gets the type of item viewer this object represents </summary>
         /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.Text"/>. </value>
         public override ItemViewer_Type_Enum ItemViewer_Type
@@ -32,6 +73,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
+        /// <value> This returns the width of the jpeg file to display or 500, whichever is larger </value>
+        public override int Viewer_Width
+        {
+            get
+            {
+                return width < 600 ? 600 : width;
+            }
+        }
+
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -43,68 +94,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Build the value
-            Output.WriteLine("\t\t<td align=\"left\" colspan=\"3\">"  );
-            Output.WriteLine("\t\t\t<table class=\"SobekDocumentText\">" );
-            Output.WriteLine("\t\t\t\t<tr>" );
-            Output.WriteLine("\t\t\t\t\t<td width=\"15\"> </td>" );
-            Output.WriteLine("\t\t\t\t\t<td>");
-            Output.WriteLine("\t\t\t\t\t\t<pre>" );	
             
-            if ( FileName.Length > 0 )
+
+            if ((error_occurred) || (file_does_not_exist) || (text_from_file.Trim().Length == 0 ))
             {
-                string filesource = CurrentItem.Web.Source_URL + "/" + FileName;
-                string text = Get_Html_Page( filesource, Tracer );
-
-                // If there was a term search here, highlight it
-                if (CurrentMode.Text_Search.Length > 0)
+                Output.WriteLine("\t\t<td id=\"sbkTiv_ErrorArea\">");
+                if (error_occurred)
                 {
-                    string upper_text = text.ToUpper();
-                    string upper_search = CurrentMode.Text_Search.ToUpper();
-                    StringBuilder text_builder = new StringBuilder(text);
-
-                    int start_point = 0;
-                    int adjust = 0;
-                    int this_point = upper_text.IndexOf(upper_search, start_point);
-                    while (this_point >= 0)
-                    {
-                        if ((this_point + adjust) < text_builder.Length)
-                        {
-                            text_builder.Insert(this_point + adjust, "<span style=\"background-color: #FFFF00\">");
-                        }
-                        if (this_point + 40 + upper_search.Length + adjust < text_builder.Length)
-                        {
-                            text_builder.Insert(this_point + 40 + upper_search.Length + adjust, "</span>");
-                        }
-                        else
-                        {
-                            text_builder.Append("</span>");
-                        }
-
-                        adjust += 47;
-                        start_point = this_point + upper_search.Length;
-                        if (start_point < upper_text.Length)
-                        {
-                            this_point = upper_text.IndexOf(upper_search, start_point);
-                        }
-                        else
-                        {
-                            this_point = -1;
-                        }
-                    }
-
-                    Output.Write(text_builder.ToString());
+                    Output.WriteLine("Unknown error while retrieving text");
+                }
+                else if (file_does_not_exist)
+                {
+                    Output.WriteLine("No text file exists for this page");
                 }
                 else
                 {
-                    Output.Write(text);
+                    Output.WriteLine("No text is recorded for this page");
                 }
             }
+            else
+            {
+                Output.WriteLine("\t\t<td id=\"sbkTiv_MainArea\">");
+                // If there was a term search here, highlight it
+                if (CurrentMode.Text_Search.Length > 0)
+                {
+                    // Get any search terms
+                    List<string> terms = new List<string>();
+                    string[] splitter = CurrentMode.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
+                    terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
 
-            Output.WriteLine("\t\t\t\t\t\t</pre>" );
-            Output.WriteLine("\t\t\t\t\t</td>");
-            Output.WriteLine("\t\t\t\t\t<td width=\"15\"> </td>" );
-            Output.WriteLine("\t\t\t\t</TR>" );
-            Output.WriteLine("\t\t\t</TABLE>" );
+                    Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(text_from_file, terms, "<span class=\"sbkTiv_TextHighlight\">", "</span>"));
+                }
+                else
+                {
+                    Output.Write(text_from_file);
+                }
+            }
             Output.WriteLine("\t\t</td>" );
         }
 
@@ -130,7 +155,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch (Exception ee)
             {
-                throw new ApplicationException("Error pulling html data '" + strURL + "'", ee);
+                if (ee.Message.IndexOf("404") >= 0)
+                    file_does_not_exist = true;
+                else
+                    error_occurred = true;
+                return String.Empty;
             }
         }
     }

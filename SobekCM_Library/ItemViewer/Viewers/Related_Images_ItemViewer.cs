@@ -159,10 +159,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			//Start building the top nav bar
-			Output.WriteLine("\t\t<!-- RELATED IMAGES VIEWER TOP NAV ROW -->");
-			Output.WriteLine("<tr>");
+            Output.WriteLine("<tr>");
 			Output.WriteLine("<td>");
-			 
+            Output.WriteLine("\t\t<!-- RELATED IMAGES VIEWER TOP NAV ROW -->");
+
 			//Include the js files
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_related_items.js\"></script>");
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
@@ -314,7 +314,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			ushort current_view_page = CurrentMode.Page;
 
 			// Start the citation table
-			Output.WriteLine("\t<tr>");
 			Output.WriteLine("\t\t<td>" );
             Output.WriteLine("\t\t<!-- RELATED IMAGES VIEWER OUTPUT -->");
 
@@ -408,12 +407,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.ViewerCode = current_view_code;
 			CurrentMode.Page = current_view_page;
 
+            Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
 
 			// Finish the citation table
 			Output.WriteLine("\t\t</td>");
 			Output.WriteLine("\t\t<!-- END RELATED IMAGES VIEWER OUTPUT -->");
 
-			Output.WriteLine("<script type=\"text/javascript\"> WindowResizeActions();</script>");
+
 		}
 
 		/// <summary> This provides an opportunity for the viewer to perform any pre-display work

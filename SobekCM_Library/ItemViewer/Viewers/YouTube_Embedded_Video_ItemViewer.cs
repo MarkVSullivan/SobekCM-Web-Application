@@ -79,7 +79,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             StringBuilder result = new StringBuilder(500);
-            Output.WriteLine("        <!-- YOU TUBE VIEWER OUTPUT -->");
             Output.WriteLine("          <td><div id=\"sbkEmv_ViewerTitle\">Streaming Video</div></td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("        <tr>");
@@ -91,7 +90,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("              <embed src=\"" + youtube_url + "\" type=\"application/x-shockwave-flash\" AllowScriptAccess=\"always\" allowfullscreen=\"true\" width=\"" + width + "\" height=\"" + height + "\"></embed>");
             Output.WriteLine("            </object>");
             Output.WriteLine("          </td>" );
-            Output.WriteLine("        <!-- END YOU TUBE VIEWER OUTPUT -->" );
         }
     }
 }

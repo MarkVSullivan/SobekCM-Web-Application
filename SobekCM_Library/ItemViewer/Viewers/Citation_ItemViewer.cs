@@ -195,7 +195,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				case Citation_Type.Standard:
 					if ( terms.Count > 0 )
 					{
-                        Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(!isRobot, Tracer), terms) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" );
+                        Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(!isRobot, Tracer), terms, "<span class=\"sbkCiv_TextHighlight\">", "</span>") + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
 					}
 					else
 					{
@@ -206,7 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				case Citation_Type.MARC:
 					if ( terms.Count > 0 )
 					{
-                        Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(MARC_String(Tracer), terms) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->" );
+                        Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(MARC_String(Tracer), terms, "<span class=\"sbkCiv_TextHighlight\">", "</span>") + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
 					}
 					else
 					{
@@ -502,12 +502,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("<blockquote>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</blockquote>");
             builder.AppendLine("<br />");
 
-            builder.AppendLine("<a href=\"" + complete_mets + "\" target=\"_blank\">View Complete METS/MODS</a>");
-            builder.AppendLine("<blockquote>This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established <a href=\"http://www.loc.gov/standards/mets/\">Metadata Encoding and Transmission Standard</a> (METS) and <a href=\"http://www.loc.gov/standards/mods/\">Metadata Object Description Schema</a> (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.</blockquote>");
+		    builder.AppendLine("<div id=\"sbkCiv_MetsDownload\" class=\"sbCiv_DownloadSection\">");
+            builder.AppendLine("  <a href=\"" + complete_mets + "\" target=\"_blank\">View Complete METS/MODS</a>");
+            builder.AppendLine("  <p>This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established <a href=\"http://www.loc.gov/standards/mets/\">Metadata Encoding and Transmission Standard</a> (METS) and <a href=\"http://www.loc.gov/standards/mods/\">Metadata Object Description Schema</a> (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.</p>");
+		    builder.AppendLine("</div>");
 
-            builder.AppendLine("<br />");
-            builder.AppendLine("<a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
-            builder.AppendLine("<blockquote>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + CurrentMode.Redirect_URL("FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</blockquote>");
+            builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
+            builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
+            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + CurrentMode.Redirect_URL("FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
+		    builder.AppendLine("</div>");
 
             // Should the TEI be added here?
 
@@ -534,9 +537,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add the HTML for this
-                builder.AppendLine("<br />");
-                builder.AppendLine("<a href=\"" + greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".tei.xml\" target=\"_blank\">View TEI/Text File</a>");
-                builder.AppendLine("<blockquote>The full-text of this item is also available in the established standard <a href=\"http://www.tei-c.org/index.xml\">Text Encoding Initiative</a> (TEI) downloadable file.</blockquote>");
+                builder.AppendLine("<div id=\"sbkCiv_TeiDownload\" class=\"sbCiv_DownloadSection\">");
+                builder.AppendLine("  <a href=\"" + greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".tei.xml\" target=\"_blank\">View TEI/Text File</a>");
+                builder.AppendLine("  <p>The full-text of this item is also available in the established standard <a href=\"http://www.tei-c.org/index.xml\">Text Encoding Initiative</a> (TEI) downloadable file.</p>");
+                builder.AppendLine("</div>");
 
             }
 
@@ -596,6 +600,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
             builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
+
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");
             builder.AppendLine("<div id=\"sbkCiv_MarcAutoGenerated\">The record above was auto-generated from the METS file.</div>");

@@ -36,7 +36,7 @@ namespace SobekCM.Library.Items
             innerData.Columns.Add("MainThumbnail");
             innerData.Columns.Add("VID");
             innerData.Columns.Add("IP_Restriction_Mask", typeof(Int16));
-
+            innerData.Columns.Add("Dark", typeof(Boolean));
         }
 
         /// <summary> Constructor for a new instance of the SobekCM_Items_In_Title class </summary>

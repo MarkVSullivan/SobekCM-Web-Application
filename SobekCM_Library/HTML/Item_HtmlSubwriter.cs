@@ -823,7 +823,7 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("            </td>");
                     Output.WriteLine("            <td style=\"vertical-align:top\">");
-                    Output.WriteLine("              <button title=\"Cancel changes\" class=\"sbkIsw_intheader_button intheader_cancel_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
+                    Output.WriteLine("              <button title=\"Cancel changes\" class=\"internalheader_button\" onclick=\"open_access_restrictions(); return false;\">CANCEL</button>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
@@ -974,13 +974,33 @@ namespace SobekCM.Library.HTML
                     // Add the Title if there is one
                     if (final_title.Length > 0)
                     {
-                        if (final_title.Length > 125)
+                        // Is this a newspaper?
+                        bool newspaper = currentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+                        if ((newspaper) && ((currentItem.Bib_Info.Origin_Info.Date_Created.Length > 0) || (currentItem.Bib_Info.Origin_Info.Date_Issued.Length > 0 )))
                         {
-                            Output.WriteLine("\t<h1><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+                            string date = currentItem.Bib_Info.Origin_Info.Date_Created;
+                            if (currentItem.Bib_Info.Origin_Info.Date_Created.Length == 0)
+                                date = currentItem.Bib_Info.Origin_Info.Date_Issued;
+
+                            if (final_title.Length > 125)
+                            {
+                                Output.WriteLine("\t<h1><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+                            }
+                            else
+                            {
+                                Output.WriteLine("\t<h1>" + final_title + " ( " + date + " )</h1>");
+                            }
                         }
                         else
                         {
-                            Output.WriteLine("\t<h1>" + final_title + "</h1>");
+                            if (final_title.Length > 125)
+                            {
+                                Output.WriteLine("\t<h1><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+                            }
+                            else
+                            {
+                                Output.WriteLine("\t<h1>" + final_title + "</h1>");
+                            }
                         }
                     }
 
@@ -1220,6 +1240,7 @@ namespace SobekCM.Library.HTML
                         if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
                         {
                             List<string> pageViewLinks = new List<string>();
+            
                             foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
                             {
                                 View_Enum thisViewType = thisPageView.View_Type;
@@ -1232,6 +1253,15 @@ namespace SobekCM.Library.HTML
                                     }
                                 }
                             }
+
+                            if (currentItem.BibID == "UF00001672")
+                            {
+                                string filename = currentPage.Files[0].File_Name_Sans_Extension + ".txt";
+                                SobekCM_File_Info newFile = new SobekCM_File_Info(filename);
+                                pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem));
+
+                            }
+
 
                             // Only continue if there were views
                             if (pageViewLinks.Count > 0)
@@ -1570,8 +1600,8 @@ namespace SobekCM.Library.HTML
                         if ((PageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
                         {
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_LeftPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
                          
@@ -1583,8 +1613,8 @@ namespace SobekCM.Library.HTML
                         if ((PageViewer.Current_Page < PageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
                         {
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_RightPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
 
