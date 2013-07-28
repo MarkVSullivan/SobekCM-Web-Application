@@ -56,10 +56,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    public SobekCM_Navigation_Object CurrentMode { protected get; set; }
 
 	    /// <summary> Sets the current item for this viewer to display </summary>
-	    public virtual SobekCM_Item CurrentItem { protected get; set; }
+	    public SobekCM_Item CurrentItem { protected get; set; }
 
         /// <summary> Sets the current user, in case there are any user options to include </summary>
-        public virtual User_Object CurrentUser { protected get; set; }
+        public User_Object CurrentUser { protected get; set; }
 
         /// <summary> Adds any viewer_specific information to the left Navigation Bar Menu Section  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>

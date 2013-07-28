@@ -2964,8 +2964,8 @@ namespace SobekCM.Resource_Object.Database
                 param_list[0] =new SqlParameter("@itemid", ItemID);
                 param_list[1] = new SqlParameter("@notes", Notes); 
 		        param_list[2] = new SqlParameter("@onlineuser", User);
-                param_list[3] = new SqlParameter("@mainthumbnailfilename", MainThumbnailFileName);
-                param_list[4] = new SqlParameter("@mainjpgfilename", MainJPGFileName); 
+                param_list[3] = new SqlParameter("@mainthumbnail", MainThumbnailFileName);
+                param_list[4] = new SqlParameter("@mainjpeg", MainJPGFileName); 
                 param_list[5] = new SqlParameter("@pagecount", PageCount); 
                 param_list[6] = new SqlParameter("@filecount", FileCount);
                 param_list[7] = new SqlParameter("@disksize_mb", Disksize_mb);

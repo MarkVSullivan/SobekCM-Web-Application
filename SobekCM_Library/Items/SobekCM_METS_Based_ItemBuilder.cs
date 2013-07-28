@@ -416,6 +416,7 @@ namespace SobekCM.Library.Items
             thisPackage.Tracking.Internal_Comments = mainItemRow["Comments"].ToString();
             thisPackage.Behaviors.Dark_Flag = Convert.ToBoolean(mainItemRow["Dark"]);
             thisPackage.Tracking.Born_Digital = Convert.ToBoolean(mainItemRow["Born_Digital"]);
+            thisPackage.Behaviors.Main_Thumbnail = mainItemRow["MainThumbnail"].ToString();
             //thisPackage.Divisions.Page_Count = Convert.ToInt32(mainItemRow["Pages"]);
             if (mainItemRow["Disposition_Advice"] != DBNull.Value)
                 thisPackage.Tracking.Disposition_Advice = Convert.ToInt16(mainItemRow["Disposition_Advice"]);
@@ -432,6 +433,7 @@ namespace SobekCM.Library.Items
                 if (mainItemRow["Tracking_Box"] != DBNull.Value)
                     thisPackage.Tracking.Tracking_Box= mainItemRow["Tracking_Box"].ToString();
             }
+
 
 
             // Set more of the sobekcm web portions in the item 
