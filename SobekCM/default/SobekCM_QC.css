@@ -84,7 +84,7 @@
 
 .spanQCIconsTopNavRow{float:right;}
 
-.qcPickMainThumbnailCursor{cursor:url(../default/images/thumbnail_cursor.cur),default;}
+.qcPickMainThumbnailCursor{cursor:url(http://ufdc.ufl.edu/default/images/thumbnail_cursor.cur),default;}
 .qcMovePagesCursor{cursor:url(../default/images/move_pages_cursor.cur),default;}
 .qcDeletePagesCursor{cursor:url(../default/images/delete_cursor.cur),default;}
 .qcResetMouseCursorToDefault{cursor:default;}
