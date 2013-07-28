@@ -17,7 +17,7 @@
     width: 100%; 
     background-color: #7d90d5;  
     height: 33px;  
-    font-size: 0.95em; 
+    font-size: 0.75em; 
     color:#FFFFFF; 
     vertical-align: top;
     display: inline-block;
@@ -298,6 +298,7 @@
     font-weight:bold;
     width: 550px;
     height: 33px;
+     display: inline; 
 }
 
 #selected-sf-menu-item

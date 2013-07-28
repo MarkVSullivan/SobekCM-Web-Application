@@ -1392,6 +1392,52 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (page > (qc_item.Web.Static_PageCount - 1) / images_per_page)
 				page = (ushort)((qc_item.Web.Static_PageCount - 1) / images_per_page);
 
+            //Determine the error icon size, main-thumbnail-selected icon size based on the current thumbnail size 
+            int error_icon_height = 20;
+            int error_icon_width = 20;
+            int pick_main_thumbnail_height = 20;
+            int pick_main_thumbnail_width = 20;
+            int arrow_height = 12;
+            int arrow_width = 15;
+            switch (size_of_thumbnails)
+            {
+                case 2:
+                    error_icon_height = 25;
+                    error_icon_width = 25;
+                    pick_main_thumbnail_height = 25;
+                    pick_main_thumbnail_width = 25;
+                    arrow_height = 17;
+                    arrow_width = 20;
+                    break;
+
+                case 3:
+                    error_icon_height = 30;
+                    error_icon_width = 30;
+                    pick_main_thumbnail_height = 30;
+                    pick_main_thumbnail_width = 30;
+                    arrow_height = 22;
+                    arrow_width = 25;
+                    break;
+
+                case 4:
+                    error_icon_height = 30;
+                    error_icon_width = 30;
+                    pick_main_thumbnail_height = 30;
+                    pick_main_thumbnail_width = 30;
+                    arrow_height = 22;
+                    arrow_width = 25;
+                    break;
+
+                default:
+                    error_icon_height = 20;
+                    error_icon_height = 20;
+                    pick_main_thumbnail_height = 20;
+                    pick_main_thumbnail_width = 20;
+                    arrow_height = 12;
+                    arrow_width = 15;
+                    break;
+            }
+
 			//Outer div which contains all the thumbnails
 			Output.WriteLine("<div id=\"allThumbnailsOuterDiv1\" align=\"center\" style=\"margin:5px;\" class=\"qcContainerDivClass\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
 
@@ -1428,52 +1474,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string filename_sans_extension = thisFile.File_Name_Sans_Extension;
 					Output.WriteLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" />" + filename_sans_extension + "</td>");
 									  
-					//Determine the error icon size, main-thumbnail-selected icon size based on the current thumbnail size 
-					int error_icon_height = 20;
-					int error_icon_width = 20;
-					int pick_main_thumbnail_height = 20;
-					int pick_main_thumbnail_width = 20;
-					int arrow_height = 12;
-					int arrow_width = 15;
-					switch (size_of_thumbnails)
-					{
-						case 2:
-							error_icon_height = 25;
-							error_icon_width = 25;
-							pick_main_thumbnail_height = 25;
-							pick_main_thumbnail_width = 25;
-							arrow_height = 17;
-							arrow_width = 20;
-							break;
-
-						case 3:
-							error_icon_height = 30;
-							error_icon_width = 30;
-							pick_main_thumbnail_height = 30;
-							pick_main_thumbnail_width = 30;
-							arrow_height = 22;
-							arrow_width = 25;
-							break;
-
-						case 4:
-							error_icon_height = 30;
-							error_icon_width = 30;
-							pick_main_thumbnail_height = 30;
-							pick_main_thumbnail_width = 30;
-							arrow_height = 22;
-							arrow_width = 25;
-							break;
-
-						default:
-							error_icon_height = 20;
-							error_icon_height = 20;
-							pick_main_thumbnail_height = 20;
-							pick_main_thumbnail_width = 20;
-							arrow_height = 12;
-							arrow_width = 15;
-							break;
-					}
-
 					//Add the checkbox for moving this thumbnail
 					Output.WriteLine("<td><span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, "+qc_item.Web.Static_PageCount+")\"/></span>");
 					Output.WriteLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove', 'form_qcmove_link', 280, 400 ); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
@@ -1484,6 +1484,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					int main_thumbnail_index = -1;
 					if (!String.IsNullOrEmpty(hidden_main_thumbnail))
 						Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
+
 					//Add the main_thumbnail icon
 					if (main_thumbnail_index >= 0 && main_thumbnail_index == page_index && hidden_request != "unpick_main_thumbnail")
 						Output.WriteLine("<span id=\"spanImg" + page_index + "\" class=\"pickMainThumbnailIconSelected\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" height=" + pick_main_thumbnail_height + " width=" + pick_main_thumbnail_width + "/></span></td></tr>");
@@ -1546,14 +1547,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,1," + qc_item.Web.Static_PageCount +");\"></input></td></tr>");
+					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,1);\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
 
 					// Add the Division prompting, and the check box for a new division
 					Output.Write("<tr><td class=\"divisiontext\" align=\"left\">" + division_text);
-					Output.Write("<input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.name, " +  qc_item.Web.Static_PageCount + ");\"");
+					Output.Write("<input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.id);\"");
 					if ( newParent )
 						Output.Write(" checked=\"checked\"");
 					Output.WriteLine("/></td>");
@@ -1570,10 +1571,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the division box
 					if(newParent)
-						Output.WriteLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" onchange=\"DivisionTypeChanged(this.id," + qc_item.Web.Static_PageCount + ");\">");
+						Output.WriteLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" onchange=\"DivisionTypeChanged(this.id);\">");
 					else
 					{
-						Output.WriteLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" disabled=\"disabled\" onchange=\"DivisionTypeChanged(this.id," + qc_item.Web.Static_PageCount + ");\">");
+						Output.WriteLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" disabled=\"disabled\" onchange=\"DivisionTypeChanged(this.id);\">");
 					}
 
 					string txtDivNameCssClass = "txtNamedDivHidden";
@@ -1621,12 +1622,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					if (newParent)
 					{
 						Output.WriteLine("<tr id=\"divNameTableRow" + page_index + "\" class=\"" + txtDivNameCssClass + "\"><td class=\"namedDivisionText\" align=\"left\">" + division_name_text + "</td>");
-						Output.WriteLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id," + qc_item.Web.Static_PageCount + ");\"/></td></tr>");
+						Output.WriteLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
 					}
 					else
 					{
 						Output.WriteLine("<tr id=\"divNameTableRow" + page_index + "\" class=\"" + txtDivNameCssClass + "\"><td class=\"namedDivisionText\" align=\"left\">" + division_name_text + "</td>");
-						Output.WriteLine("<td><input type=\"text\" disabled=\"disabled\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id," + qc_item.Web.Static_PageCount + ");\"/></td></tr>");
+						Output.WriteLine("<td><input type=\"text\" disabled=\"disabled\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
 					}
 					//Add the span with the on-hover-options for the page thumbnail
 					Output.WriteLine("<tr><td colspan=\"100%\">");
@@ -1734,6 +1735,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
             Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSpanFlashOnPageLoad());</script>");
+            Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(Configure_QC(" + qc_item.Web.Static_PageCount + "));</script>");
 			if(makeSortable)
                 Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
 

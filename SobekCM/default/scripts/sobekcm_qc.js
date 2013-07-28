@@ -1,254 +1,143 @@
+var spanArrayObjects;
+var spanArray;
+
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
-//alert('in qc set fullscreen');
-    var x = $("#allThumbnailsOuterDiv1").offset().left;
-    var y = $("#allThumbnailsOuterDiv1").offset().top;
+	var y = $("#allThumbnailsOuterDiv1").offset().top;
 
-    var window_height = $(window).height();
-    var new_height = window_height - y - 63;
+	var window_height = $(window).height();
+	var new_height = window_height - y - 63;
 
-  //  var window_width = $(window).width();
-  //  var new_width = window_width - x - 5;
-   // alert('y: ' + y + '    window height: ' + window_height + '      new_height: ' + new_height);
-    
-    $("#allThumbnailsOuterDiv1").height(new_height);
-   // $("#allThumbnailsOuterDiv1").width(new_width);
+	$("#allThumbnailsOuterDiv1").height(new_height);
 }
 
+function Configure_QC( MaxPageCount ) {
+    //get the list of all the thumbnail spans on the page
+    spanArrayObjects = $("#allThumbnailsOuterDiv").children();
+
+    spanArray = new Array();
+
+    //get the spanIDs from the array of span objects 
+    var j = 0;
+    for (var i = 0; i < spanArrayObjects.length; i++)
+    {
+        if (spanArrayObjects[i].id.indexOf('span') == 0)
+        {
+            spanArray[j++] = spanArrayObjects[i].id;
+        }
+    }
+}
 
 
 //Updates the division types when a "New Division" checkbox is checked/unchecked
-function UpdateDivDropdown(CheckBoxID, MaxPageCount)
-{
-	//get the list of all the thumbnail spans on the page
-	var spanArrayObjects = new Array();
+function UpdateDivDropdown(CheckBoxID) {
+    var index = CheckBoxID.replace("newDivType", '');
+    var checkBoxElement = document.getElementById(CheckBoxID);
+    var selectDivTypeElement = document.getElementById('selectDivType' + index);
+    var textDivNameElement = document.getElementById('txtDivName' + index);
+    
+    // Check the state of the checkbox 
+    if (checkBoxElement.checked == true) {
+        // This is the start of a new division, so enable the div-type controls
+        selectDivTypeElement.disabled = false;
+        textDivNameElement.disabled = false;
+    } else {
+        // This is no longer the beginning of a new division 
+        selectDivTypeElement.disabled = true;
 
-	if(window.spanArrayGlobal!= null)
-	 { 
-	
-	  spanArrayObjects = window.spanArrayGlobal;
-	 
-	 }
-	else
-	{
-	  for(var j=0;j<MaxPageCount;j++)
-	  {
-	     spanArrayObjects[j]='span'+j;
-	  }
-	 
-	}
-	
-	 var spanArray=new Array();
+        // Enable the text div element, depending on if the curernt div can be named
+        if (selectDivTypeElement.value.indexOf('!') == 0)
+            textDivNameElement.disabled = false;
+        else
+            textDivNameElement.disabled = true;
 
-	 //get the spanIDs from the array of span objects 
-	 for(var k=0;k<spanArrayObjects.length;k++)
-	 {
-	 //var pageIndex = spanID.split('span')[1];
-	   spanArray[k]=spanArrayObjects[k].split('span')[1];
-	 }
-     
+        //update the subsequent divs
+        var i = spanArray.indexOf('span' + index);
 
-	if(document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).disabled==true)
-	{
-	  document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).disabled=false;
-	  
-	  //If a division name textbox is required and disabled, enable it
-	  document.getElementById('txtDivName'+(CheckBoxID.split('newdiv')[1])).disabled = false;
-	}
-	else
-	{
-	 document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).disabled=true;
-	 //Disable the named division textbox
-	 if(document.getElementById('selectDivType'+(CheckBoxID.split('newdiv')[1])).value.indexOf('!')==0)
-	   document.getElementById('txtDivName'+(CheckBoxID.split('newdiv')[1])).disabled = true;
-	 
-	 //update the subsequent divs
-	 var index=CheckBoxID.split('newdiv')[1];
-	 var i = spanArray.indexOf(index);
+        // Since this is the first span on the page, set to MAIN.
+        // Really, this needs to look up a hidden value in case this was not the first
+        // page of thumbnails
+        var divTypeToSet = 'Main';
+        var divNameToSet = '';
 
-	  if(i==0)
-	  {
-		document.getElementById('selectDivType'+index).value='Main';
-		
-//		while(document.getElementById('selectDivType'+spanArray[i]).disabled==true)
-       while(i<spanArray.length)
-		{
-          i++;
-		  if(document.getElementById('selectDivType'+spanArray[i]))
-			{
-			  document.getElementById('selectDivType'+spanArray[i]).value = 'Main';
-			  document.getElementById('newDivType'+spanArray[i]).checked=false;
-              document.getElementById('newDivType'+spanArray[i]).disabled=true;
+        if (i > 0) {
+            // Get the divtype from the previous division
+            var previousSelectDivId = spanArray[i - 1].replace('span', 'selectDivType');
+            divTypeToSet = document.getElementById(previousSelectDivId).value;
+            var previousDivNameId = spanArray[i - 1].replace('span', 'txtDivName');
+            divNameToSet = document.getElementById(previousDivNameId).value;
+        }
 
-			}
-		
-		}
-	
-	  }
-	  else
-	  {
-		var j=i-1;
-		var valToSet = 'Main';
 
-		while(!(document.getElementById('selectDivType'+spanArray[j])))
-		{
-		 j--;
-		}
-
-		valToSet = document.getElementById('selectDivType'+spanArray[j]).value;
-
-		var k=i;
-		  
-		//set the page division type of all pages till the start of the next div
-		while(document.getElementById('selectDivType'+spanArray[k]).disabled==true && k<spanArray.length)
-		{
-		  if(document.getElementById('selectDivType'+spanArray[k]))
-			document.getElementById('selectDivType'+spanArray[k]).value = valToSet;
-		  k++;
-		}
-		
-	  }
-	  
-	}
-
+        //set the page division type of all pages till the start of the next div
+        while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == true))
+        {
+            document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = divTypeToSet;
+            document.getElementById(spanArray[i].replace('span', 'txtDivName')).value = divNameToSet;
+            if (divNameToSet.length > 0) {
+                document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).className = 'txtNamedDivVisible';
+            } else {
+                document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).className = 'txtNamedDivHidden';
+            }
+            i++;
+        }
+    }
 }
 
 //Change all subsequent division types when one div type is changed. Also update the named division type textboxes as appropriate
-function DivisionTypeChanged(selectID,MaxPageCount)
+function DivisionTypeChanged(SelectID)
 {
-   //Get the list of all the thumbnail spans on the page
-	var spanArrayObjects = new Array();
+    var index = SelectID.replace('selectDivType', '');
+    var divisionTypeElement = document.getElementById(SelectID);
 
-	//Get the array from the global variable if previously assigned
-	if(window.spanArrayGlobal!= null)
-	 { 
-	  spanArrayObjects = window.spanArrayGlobal;
-	 }
-	 //else set the array values here
-	else
-	{
-	  for(var j=0;j<MaxPageCount;j++)
-	  {
-	     spanArrayObjects[j]='span'+j;
-	  }
-	 
-	}
-	
-	 var spanArray=new Array();
-
-	 //get the spanIDs from the array of span objects 
-	 for(var k=0;k<spanArrayObjects.length;k++)
-	 {
-	 //var pageIndex = spanID.split('span')[1];
-	   spanArray[k]=spanArrayObjects[k].split('span')[1];
-	 }
-
-	var currID = selectID.split('selectDivType')[1];
-   // var i=parseInt(currID)+1;
-    var i = spanArray.indexOf(currID)+1;
-	var currVal = document.getElementById(selectID).value;
-
+    var i = spanArray.indexOf('span' + index) + 1;
+	var currVal = divisionTypeElement.value;
 
 	//if the new Division type selected is a nameable div
-	if(currVal.indexOf('!')==0)
+	if (divisionTypeElement.value.indexOf('!') == 0)
 	{
-	  document.getElementById('divNameTableRow'+currID).className='txtNamedDivVisible';
+	    document.getElementById('divNameTableRow' + index).className = 'txtNamedDivVisible';
 
-	 var j=i;
-	 //Make the name textboxes of all other pages of this div visible
-	 while(document.getElementById('selectDivType'+spanArray[j]).disabled==true)
-  	 {
-	  //alert(i);
-	  if(document.getElementById('selectDivType'+ spanArray[j]))
-	   { 
-	     document.getElementById('selectDivType'+ spanArray[j]).value = currVal;
-		 document.getElementById('txtDivName'+spanArray[j]).disabled = true;
-	   }
-	  if(document.getElementById('divNameTableRow'+ spanArray[j]))
-		document.getElementById('divNameTableRow'+ spanArray[j]).className = 'txtNamedDivVisible';
-	  j++;
-	 }
-
-
+	    //Make the name textboxes of all other pages of this div visible
+	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span','selectDivType')).disabled==true))
+	    {
+	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
+	        document.getElementById(spanArray[i].replace('span','txtDivName')).disabled = true;
+	        document.getElementById(spanArray[i].replace('span','divNameTableRow')).className = 'txtNamedDivVisible';
+	        i++;
+	    }
 	}
-	
-	//else if the division type selected is not a nameable div
 	else if(currVal.indexOf('!')==-1)
 	{
-	 //Hide the name textbox for this page
-	 document.getElementById('divNameTableRow'+currID).className='txtNamedDivHidden';
-	 var j=i;
+	    //else if the division type selected is not a nameable div
+	    //Hide the name textbox for this page
+	    document.getElementById('divNameTableRow' + index).className = 'txtNamedDivHidden';
 	
-	//Hide the name textboxes of all the other pages of this division type
-    while(document.getElementById('selectDivType'+spanArray[j]).disabled==true)
-  	 {
-	  //alert(i);
-	  
-	 if(document.getElementById('selectDivType'+ spanArray[j]))
-	    document.getElementById('selectDivType'+ spanArray[j]).value = currVal;
-	  if(document.getElementById('divNameTableRow'+ spanArray[j]))
-		document.getElementById('divNameTableRow'+ spanArray[j]).className = 'txtNamedDivHidden';
-	  j++;
-	 }
+	    //Hide the name textboxes of all the other pages of this division type
+	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == true))
+	    {
+	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
+	        document.getElementById(spanArray[i].replace('span', 'txtDivName')).value = '';
+	        document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).className = 'txtNamedDivHidden';
+	        i++;
+	    }
 	}
-
 }
 
 
 //Update the division name through the textboxes of the division type when changed in one
-function DivNameTextChanged(textboxID, MaxPageCount)
+function DivNameTextChanged(TextboxID)
 {
-   //Get the list of all the thumbnail spans on the page
-	var spanArrayObjects = new Array();
-
-	//Get the array of all UI thumbnails from the global variable if previously assigned
-	if(window.spanArrayGlobal!= null)
-	 { 
-	  spanArrayObjects = window.spanArrayGlobal;
-	 }
-	 //else set the array values here
-	else
-	{
-	  for(var j=0;j<MaxPageCount;j++)
-	  {
-	     spanArrayObjects[j]='span'+j;
-	  }
-	 
-	}
-	
-	 var spanArray=new Array();
-
-	 //get the spanIDs from the array of span objects 
-	 for(var k=0;k<spanArrayObjects.length;k++)
-	 {
-	 //var pageIndex = spanID.split('span')[1];
-	   spanArray[k]=spanArrayObjects[k].split('span')[1];
-	 }
-     var currVal = document.getElementById(textboxID).value;
-     var currID = textboxID.split('txtDivName')[1];
+    var index = TextboxID.replace('txtDivName', '');
+    var divisionNameElement = document.getElementById(TextboxID);
+    var i = spanArray.indexOf('span' + index) + 1;
+    var currVal = divisionNameElement.value;
   
-  //Update the textboxes of the same division after this one
-  var i=spanArray.indexOf(currID)+1;
-
-  while(document.getElementById('selectDivType'+spanArray[i]).disabled==true)
-  {
-     document.getElementById('txtDivName'+spanArray[i]).value = currVal;
-	 i++;
-  }
-  //If updated somewhere in the middle of the div, also update the previous textboxes all the way till the start of the current division
-  if(document.getElementById('selectDivType'+currID).disabled==true)
-  { 
-    i=spanArray.indexOf(currID)-1;
-	while(i>0 && document.getElementById('selectDivType'+spanArray[i]).disabled==true)
-	{
-	  document.getElementById('txtDivName'+spanArray[i]).value = currVal;
-	  i--;
-	}
-	document.getElementById('txtDivName'+spanArray[i]).value = currVal;
-  }
-  
-  
-
+    //Update the textboxes of the same division after this one
+    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == true)) {
+        document.getElementById(spanArray[i].replace('span', 'txtDivName')).value = currVal;
+	    i++;
+    }
 }
 
 //Autonumber subsequent textboxes on changing one textbox value
@@ -257,106 +146,68 @@ function DivNameTextChanged(textboxID, MaxPageCount)
 //2: No auto numbering
 //parameter MaxPageCount: the max number of pages for the current item in qc. This refers to all the pages, not just the ones displayed on the screen (though this makes no difference from the javascript point of view.)
 
-function PaginationTextChanged(textboxID,mode,MaxPageCount)
+function PaginationTextChanged(TextboxID, Mode)
 {
-     alert("Mode selected:"+mode);
-     //get the list of all the thumbnail spans on the page
-	var spanArrayObjects = new Array();
 
-	if(window.spanArrayGlobal!= null)
-	 { 
-	  spanArrayObjects = window.spanArrayGlobal;
-	 }
-	else
-	{
-	  for(var j=0;j<MaxPageCount;j++)
-	  {
-	     spanArrayObjects[j]='span'+j;
-	  }
-	 
-	}
-	
-	 var spanArray=new Array();
+    //Mode '0': Autonumber all the thumbnail page names till the end
+    //Mode '1': Autonumber all the thumbnail pages till the start of the next div
+    //Mode '2': No autonumber
 
-	 //get the spanIDs from the array of span objects 
-	 for(var k=0;k<spanArrayObjects.length;k++)
-	 {
-	 //var pageIndex = spanID.split('span')[1];
-	   spanArray[k]=spanArrayObjects[k].split('span')[1];
-	 }
-
-  //Mode '0': Autonumber all the thumbnail page names till the end
-  if(mode=='0')
-  {
-    var textboxValue = document.getElementById(textboxID).value;
+    if (Mode == '2')
+        return;
+    
+    var textboxValue = document.getElementById(TextboxID).value;
+    var index = TextboxID.replace('textbox', '');
 	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
 	
 	var textOnlyLastBox=document.getElementById('Autonumber_text_without_number');
 	var numberOnlyLastBox=document.getElementById('Autonumber_number_only');
 	
 //	lastNumber = lastNumber.toUpperCase().trim();
-    var matches = document.getElementById(textboxID).value.match(/\d+/g);
+	var matches = lastNumber.match(/\d+/g);
 	var varRomanMatches = true;
 	var isRomanLower=true;
 
+    // Look for any characters in the last portion which are NOT in the roman numbers
 	for(var x=0;x<lastNumber.length;x++)
 	{
-	  var c=lastNumber.charAt(x);
-	  if("IVXLCDM".indexOf(c)==-1 && "ivxlcdm".indexOf(c)==-1)
-	  {
-     	  varRomanMatches=false;
-	  }
-
+	    var c=lastNumber.charAt(x);
+	    if("IVXLCDM".indexOf(c)==-1 && "ivxlcdm".indexOf(c)==-1)
+	    {
+		    varRomanMatches=false;
+	    }
 	}
 
+    // Was there a match for numbers in the last portion?
 	if (matches != null) 
-    {
-       
-	   // the id attribute contains a digit
-       var len=matches.length;
-       var number = matches[len-1];
-	   var nonNumber='';
-	   var val=document.getElementById(textboxID).value;
-
+	{
 	   //if the number is at the end of the string, with a space before
-	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
-       {
-		   //Set the QC form hidden variable with this mode
-		           var hidden_autonumber_mode = document.getElementById('autonumber_mode_from_form');
-                   hidden_autonumber_mode.value = '0';
-	   
-				   var hidden_number_system = document.getElementById('Autonumber_number_system');
-				   hidden_number_system.value='decimal';
-        
-            alert(number + ' is the page number to auto-number from');
-			var i=-1;
-			var j=-1;
-			var lastIndex=0;
-			for(i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
+	   if(matches.length == lastNumber.length)
+	   {
+	        //Set the QC form hidden variable with this mode
+	        document.getElementById('autonumber_mode_from_form').value = Mode;
+	        document.getElementById('Autonumber_number_system').value = 'decimal';
+	        textOnlyLastBox.value = textboxValue.substr(0, textboxValue.length - matches.length);
+		
+			for(var i=spanArray.indexOf('span' + index)+1;i<=spanArray.length;i++)
 			{
-			  number++;
-			  if(document.getElementById('textbox'+spanArray[i]))
-			  {
-			    lastIndex=i;
-				numberOnlyLastBox.value=number.toString();
-				textOnlyLastBox.value=document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1);
-				j=document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
-			    document.getElementById('textbox'+spanArray[i]).value = 
-				 document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
-			  }//end if
-			}//end for
-          // 	if(i>=spanArray.indexOf(currPageLastIndex))
-			alert('outside of loop');
-			
-			var hidden_filename=document.getElementById('filename'+spanArray[lastIndex]);
-			alert(hidden_filename.value);
-			var hidden_filename_from_form = document.getElementById('Autonumber_last_filename');
-			hidden_filename_from_form.value=hidden_filename.value;
-			
-			{alert(j);}
-       }//end if
-    }//end if
-    else if(varRomanMatches==true)
+			    // If this is MODE 1, then look to see if this is the beginnnig of a new division
+			    if ((Mode == '1') && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == false))
+			        break;
+
+                // Determine and save the next numeric value
+			    number++;
+			    numberOnlyLastBox.value = number.toString();
+			    
+			    var inLoopTextBoxElment = document.getElementById(spanArray[i].replace('span', 'textbox'));
+			    inLoopTextBoxElment = textOnlyLastBox.value + number;
+			}
+
+	        var hidden_filename = document.getElementById(spanArray[spanArray.length - 1].replace('span', 'filename'));
+			document.getElementById('Autonumber_last_filename').value=hidden_filename.value;
+	   }//end if
+	}//end if
+	else if(varRomanMatches==true)
 	{
 //	   alert('Possible roman numeral detected!');
 	   var romanToNumberError="No error";
@@ -370,18 +221,18 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		  }
 		  else
 		  {
-		     isRomanLower =true;
+			 isRomanLower =true;
 		  }
 		}
 //	   alert(isRomanLower);
 	   
    
-        var roman = lastNumber.toUpperCase().trim();
-        
+		var roman = lastNumber.toUpperCase().trim();
+		
 		if(roman.split('V').length>2||roman.split('L').length>2||roman.split('D').length>2)
 		{
-     		romanToNumberError="Rule 4 violated";
-	    }	  
+			romanToNumberError="Rule 4 violated";
+		}	  
 		//Rule 1
 		var count=1;
 		var last='Z';
@@ -390,7 +241,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		  //Duplicate?
 		  if(roman.charAt(x)==last)
 		  {
-		    count++;
+			count++;
 			if(count==4)
 			{
 			  romanToNumberError="Rule 1 violated";
@@ -408,7 +259,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		var ptr=0;
 		var values = new Array();
 		var maxDigit=1000;
-        var digit=0;
+		var digit=0;
 		var nextDigit=0;
 		
 		while (ptr<roman.length)
@@ -418,30 +269,30 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		  switch(numeral)
 		  {
 		   case "I":
-		     digit=1;
+			 digit=1;
 			 break;
 		   case "V":
-		     digit=5;
+			 digit=5;
 			 break;
 		   case "X":
-		      digit=10;
+			  digit=10;
 			  break;
 		   case "L":
 			digit=50;
 			break;
 		   case "C":
-		     digit=100;
+			 digit=100;
 			 break;
 		  case "D":
-		      digit=500;
+			  digit=500;
 			  break;
 		   case "M":
-		      digit=1000;
+			  digit=1000;
 			  break;
 		  
 		  }
 		 //Rule 3
-         if(digit>maxDigit)		 
+		 if(digit>maxDigit)		 
 		 {
 		   romanToNumberError="Rule 3 violated";
 		 }
@@ -454,31 +305,31 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		  switch(nextNumeral)
 		  {
 		   case "I":
-		     nextDigit=1;
+			 nextDigit=1;
 			 break;
 		   case "V":
-		     nextDigit=5;
+			 nextDigit=5;
 			 break;
 		   case "X":
-		      nextDigit=10;
+			  nextDigit=10;
 			  break;
 		   case "L":
 			nextDigit=50;
 			break;
 		   case "C":
-		     nextDigit=100;
+			 nextDigit=100;
 			 break;
 		  case "D":
-		      nextDigit=500;
+			  nextDigit=500;
 			  break;
 		   case "M":
-		      nextDigit=1000;
+			  nextDigit=1000;
 			  break;
 		  
 		  }
 		  if(nextDigit>digit)
 		  {
-		    if("IXC".indexOf(numeral)==-1 || nextDigit>(digit*10) || roman.split(numeral).length>3)
+			if("IXC".indexOf(numeral)==-1 || nextDigit>(digit*10) || roman.split(numeral).length>3)
 			  {
 			   romanToNumberError="Rule 3 violated";
 			  }
@@ -500,7 +351,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		{
 		  if(values[i]<values[i+1])
 		  {
-		    romanToNumberError="Rule 5 violated";
+			romanToNumberError="Rule 5 violated";
 		  }
 		}
 		
@@ -511,7 +362,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		  total=total+values[i];
 		}
 		
-        if((typeof total)=="number" && (romanToNumberError=="No error"))
+		if((typeof total)=="number" && (romanToNumberError=="No error"))
 		{
 		 // alert(total);
 		   //Set the QC form hidden variable with this mode
@@ -530,7 +381,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 			  if(document.getElementById('textbox'+spanArray[i]))
 			  {
 			  
-			    var number=total;
+				var number=total;
 				
 				//Convert decimal "total" back to a roman numeral
 				
@@ -546,7 +397,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 				  //If the number being converted is less than the current key value, append the corresponding numeral or numerical pair to the resultant string
 				  while(number>=values[x])
 				  {
-				    number=number-values[x];
+					number=number-values[x];
 					result=result+numerals[x];
 					
 				  }
@@ -561,7 +412,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 				//End conversion to roman numeral
 
 //				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
-			    document.getElementById('textbox'+spanArray[i]).value = 
+				document.getElementById('textbox'+spanArray[i]).value = 
 				 document.getElementById(textboxID).value.substr(0,((document.getElementById(textboxID).value.length)-(lastNumber.length))-1)+' '+result;
 			  }//end if
 			}//end for
@@ -569,297 +420,6 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 		
 		}
 	}
-  }//end if
- 
- //Mode '1': Autonumber all the thumbnail pages till the start of the next div
-   if(mode=='1')
-  {
-   alert("mode="+mode+"textboxID="+textboxID);
-    var textboxValue = document.getElementById(textboxID).value;
-	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
-//	lastNumber = lastNumber.toUpperCase().trim();
-    var matches = document.getElementById(textboxID).value.match(/\d+/g);
-	var varRomanMatches = true;
-	var isRomanLower=true;
-
-	for(var x=0;x<lastNumber.length;x++)
-	{
-	  var c=lastNumber.charAt(x);
-	  if("IVXLCDM".indexOf(c)==-1 && "ivxlcdm".indexOf(c)==-1)
-	  {
-     	  varRomanMatches=false;
-	  }
-
-	}
-	
-    if (matches != null) 
-    {
-       // the id attribute contains a digit
-       var len=matches.length;
-       var number = matches[len-1];
-	   var nonNumber='';
-	   var val=document.getElementById(textboxID).value;
-       alert(number);
-       alert(val);
-	   
-	   //if the number is at the end of the string, with a space before
-	   if(val.indexOf(number.toString())==(val.length-number.toString().length) && val.substr(val.indexOf(number.toString())-1,1)==' ')
-       {
-		   //Set the QC form hidden variable with this mode, i.e. mode '1'
-		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
-		   hidden_autonumber_mode.value = '1';
-		   
-		   var hidden_number_system = document.getElementById('Autonumber_number_system');
-		   hidden_number_system.value='decimal';
-	   
-      //      for(var i=parseInt(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
-			var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
-	//		alert(i);
-			while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
-			{
-			  number++;
-			 //alert(i);
-			  if(document.getElementById('textbox'+spanArray[i]))
-			  {
-			    document.getElementById('textbox'+spanArray[i]).value = 
-				 document.getElementById(textboxID).value.substr(0,(document.getElementById(textboxID).value.length-number.toString.length)-1)+' '+number.toString();
-				 
-//				 if(i==spanArray.indexOf(currPageLastIndex))
-//				  alert(i);
-			  }//end if
-			  i++;
-			}//end while
-			
-				  
-       }//end if
-    }//end if
-
-	//else check for roman numeral autonumbering
-	
-	 else if(varRomanMatches==true)
-	{
-//	   alert('Possible roman numeral detected!');
-	   var romanToNumberError="No error";
-	   
-	   for(var x=0;x<lastNumber.length;x++)
-		{
-		  var c=lastNumber.charAt(x);
-		  if("IVXLCDM".indexOf(c)>-1)
-		  {
-			  isRomanLower=false;
-		  }
-		  else
-		  {
-		     isRomanLower =true;
-		  }
-		}
-//	   alert(isRomanLower);
-	   
-   
-        var roman = lastNumber.toUpperCase().trim();
-        
-		if(roman.split('V').length>2||roman.split('L').length>2||roman.split('D').length>2)
-		{
-     		romanToNumberError="Rule 4 violated";
-	    }	  
-		//Rule 1
-		var count=1;
-		var last='Z';
-		for(var x=0;x<roman.length;x++)
-		{
-		  //Duplicate?
-		  if(roman.charAt(x)==last)
-		  {
-		    count++;
-			if(count==4)
-			{
-			  romanToNumberError="Rule 1 violated";
-			}
-
-		  }
-		  else
-		  {
-			  count=1;
-			  last = roman.charAt(x);
-		  }
-		}
-
-		//Create an arraylist containing the values
-		var ptr=0;
-		var values = new Array();
-		var maxDigit=1000;
-        var digit=0;
-		var nextDigit=0;
-		
-		while (ptr<roman.length)
-		{
-		  //Base value of digit
-		  var numeral=roman.charAt(ptr);
-		  switch(numeral)
-		  {
-		   case "I":
-		     digit=1;
-			 break;
-		   case "V":
-		     digit=5;
-			 break;
-		   case "X":
-		      digit=10;
-			  break;
-		   case "L":
-			digit=50;
-			break;
-		   case "C":
-		     digit=100;
-			 break;
-		  case "D":
-		      digit=500;
-			  break;
-		   case "M":
-		      digit=1000;
-			  break;
-		  
-		  }
-		 //Rule 3
-         if(digit>maxDigit)		 
-		 {
-		   romanToNumberError="Rule 3 violated";
-		 }
-		 
-		 //Next digit
-		 var nextDigit=0;
-		 if(ptr<roman.length-1)
-		 {
-		  var nextNumeral=roman.charAt(ptr+1);
-		  switch(nextNumeral)
-		  {
-		   case "I":
-		     nextDigit=1;
-			 break;
-		   case "V":
-		     nextDigit=5;
-			 break;
-		   case "X":
-		      nextDigit=10;
-			  break;
-		   case "L":
-			nextDigit=50;
-			break;
-		   case "C":
-		     nextDigit=100;
-			 break;
-		  case "D":
-		      nextDigit=500;
-			  break;
-		   case "M":
-		      nextDigit=1000;
-			  break;
-		  
-		  }
-		  if(nextDigit>digit)
-		  {
-		    if("IXC".indexOf(numeral)==-1 || nextDigit>(digit*10) || roman.split(numeral).length>3)
-			  {
-			   romanToNumberError="Rule 3 violated";
-			  }
-			  maxDigit=digit-1;
-			  digit=nextDigit-digit;
-			  ptr++;
-		  }
-		  
-		 }
-		 values.push(digit);
-		 //next digit
-		 ptr++;
-	//	  alert(values);
-		
-		
-		}
-		//Rule 5
-		for(var i=0;i<values.length-1;i++)
-		{
-		  if(values[i]<values[i+1])
-		  {
-		    romanToNumberError="Rule 5 violated";
-		  }
-		}
-		
-		//Rule 2
-		var total=0;
-		for(var i=0;i<values.length;i++)
-		{
-		  total=total+values[i];
-		}
-		
-        if((typeof total)=="number" && (romanToNumberError=="No error"))
-		{
-		   //Set the QC form hidden variable with this mode
-		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
-		   hidden_autonumber_mode.value = '1';
-		   
-		   var hidden_number_system = document.getElementById('Autonumber_number_system');
-		   hidden_number_system.value='roman';
-		   
-		
-		  //Now autonumber all the remaining textboxes of this div
-		  var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;
-		  while(document.getElementById('selectDivType'+spanArray[i]).disabled==true && i<MaxPageCount)
-			{
-			  total++;
-
-			  if(document.getElementById('textbox'+spanArray[i]))
-			  {
-			  
-			    var number=total;
-				
-				//Convert decimal "total" back to a roman numeral
-				
-				//Set up the key-value arrays
-				var values=[1000,900,500,400,100,90,50,40,10,9,5,4,1];
-				var numerals=["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"];
-				
-				//initialize the string
-				var result="";
-				
-				for(var x=0;x<13;x++)
-				{
-				  //If the number being converted is less than the current key value, append the corresponding numeral or numerical pair to the resultant string
-				  while(number>=values[x])
-				  {
-				    number=number-values[x];
-					result=result+numerals[x];
-					
-				  }
-				}
-				
-//				alert(result);
-				if(isRomanLower)
-				{
-				  result=result.toLowerCase();
-				}
-				
-				//End conversion to roman numeral
-
-//				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
-			    document.getElementById('textbox'+spanArray[i]).value = 
-				 document.getElementById(textboxID).value.substr(0,((document.getElementById(textboxID).value.length)-(lastNumber.length))-1)+' '+result;
-			  }//end if
-			  i++;
-			}//end for
-		  
-		
-		}
-	}
-	
-	
-	
-	//end roman numeral auto numbering
-	
-	
-
-  }//end if
-  
-  
 }//end function
 
 
@@ -867,7 +427,7 @@ function PaginationTextChanged(textboxID,mode,MaxPageCount)
 function PickMainThumbnail(spanID)
 {
 	var pageIndex = spanID.split('span')[1];
-	var hiddenfield = document.getElementById('Main_Thumbnail_Index');
+    var hiddenfield = document.getElementById('Main_Thumbnail_Index').value;
 	var hidden_request = document.getElementById('QC_behaviors_request');
 	 hidden_request.value="";
 
@@ -875,17 +435,17 @@ function PickMainThumbnail(spanID)
 	//Cursor currently set to the "Pick Main Thumbnail" cursor?
 	if($('body').css('cursor').indexOf("thumbnail_cursor")>-1)
 	{
-	  var spanImageID='spanImg'+pageIndex;
 	  //is there a previously selected Main Thumbnail?
 	  if(hiddenfield.length>0 && document.getElementById('spanImg'+hiddenfield).className=="pickMainThumbnailIconSelected")
 	  {
-	    //First unmark the existing one as the main thumbnail
+		//First unmark the existing one as the main thumbnail
 		document.getElementById('spanImg'+hiddenfield).className='pickMainThumbnailIcon';
 		
 		//Then set the hidden request value to 'unpick'
 		hidden_request.value='unpick_main_thumbnail';
-							
 	  }
+	    
+	  var spanImageID = 'spanImg' + pageIndex;
 	  
 	  //User selects a main thumbnail
 	  if(document.getElementById(spanImageID).className=="pickMainThumbnailIcon")
@@ -899,7 +459,7 @@ function PickMainThumbnail(spanID)
 		
 		//Set the hidden field value with the main thumbnail
 		hiddenfield.value = pageIndex;
-	    hidden_request.value = "pick_main_thumbnail";
+		hidden_request.value = "pick_main_thumbnail";
 
 		
 	  }
@@ -917,9 +477,9 @@ function PickMainThumbnail(spanID)
 			 //Set the hidden field value with the main thumbnail
 			 
 			 hiddenfield.value = pageIndex;
-	         hidden_request.value = 'unpick_main_thumbnail';  
+			 hidden_request.value = 'unpick_main_thumbnail';  
 			 
-			 			 
+						 
 		  }
 	  }
 	  // Submit this
@@ -927,41 +487,38 @@ function PickMainThumbnail(spanID)
 	  return false;
 	  
 	}
-
 }
 
 //Show the QC Icons below the thumbnail on mouseover
-function showQcPageIcons(spanID)
+function showQcPageIcons(SpanID)
 {
-  //alert(spanID);
-  var pageIndex = spanID.split('span')[1];
-  var qcPageIconsSpan = 'qcPageOptions'+pageIndex;
-  document.getElementById(qcPageIconsSpan).className = "qcPageOptionsSpanHover";
+    var qcPageIconsSpan = SpanID.replace('span', 'qcPageOptions');
+    document.getElementById(qcPageIconsSpan).className = "qcPageOptionsSpanHover";
 }
 
 //Hide the QC Icon bar below the thumbnail on mouseout
-function hideQcPageIcons(spanID)
+function hideQcPageIcons(SpanID)
 {
-  var pageIndex = spanID.split('span')[1];
-  var qcPageIconsSpan = 'qcPageOptions'+pageIndex;
-  document.getElementById(qcPageIconsSpan).className = "qcPageOptionsSpan";
+    var qcPageIconsSpan = SpanID.replace('span', 'qcPageOptions');
+    document.getElementById(qcPageIconsSpan).className = "qcPageOptionsSpan";
 }
 
 //Show the error icon on mouseover
-function showErrorIcon(spanID)
+function showErrorIcon(SpanID)
 {
-  var pageIndex = spanID.split('span')[1];
-  var qcErrorIconSpan = 'error'+pageIndex;
-  document.getElementById(qcErrorIconSpan).className = "errorIconSpanHover";
+    var qcErrorIconSpanName = SpanID.replace('span', 'error');
+    var qcErrorIconSpan = document.getElementById(qcErrorIconSpanName);
+    if ( qcErrorIconSpan != null )
+	    qcErrorIconSpan.className = "errorIconSpanHover";
 }
 
 //Hide the error icon on mouseout
-function hideErrorIcon(spanID)
+function hideErrorIcon(SpanID)
 {
-  var pageIndex = spanID.split('span')[1];
-  var qcErrorIconSpan = 'error'+pageIndex;
-  document.getElementById(qcErrorIconSpan).className = "errorIconSpan";
-
+    var qcErrorIconSpanName = SpanID.replace('span', 'error');
+    var qcErrorIconSpan = document.getElementById(qcErrorIconSpanName);
+    if (qcErrorIconSpan != null)
+	    qcErrorIconSpan.className = "errorIconSpan";
 }
 
 //Change the cursor to the custom cursor for Selecting a Main Thumbnail
@@ -1003,7 +560,7 @@ function ChangeMouseCursor(MaxPageCount)
 
 	}
 
-    else
+	else
 	{
 		//Remove the default cursor style class, and any other custom class first before setting this one, 
 		//otherwise it will override the custom cursor class
@@ -1192,7 +749,6 @@ $('body').addClass('qcDeletePagesCursor');
 }
 
 
-
 //Make the thumbnails sortable
 function MakeSortable1()
 {
@@ -1204,11 +760,11 @@ function MakeSortable1()
 
 $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 											start: function(event, ui)
-                                             {
+											 {
 											   startPosition=$(ui.item).index()+1;
 											 },
-                                             stop: function(event, ui)
-									         {
+											 stop: function(event, ui)
+											 {
 												   newPosition = $(ui.item).index()+1;
 																								  
 												
@@ -1229,7 +785,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 												//if position has been changed, update the page division correspondingly
 												  if(startPosition != newPosition)
 												  {
-												    //get the spanID of the current span being dragged & dropped
+													//get the spanID of the current span being dragged & dropped
 													 var spanID=$(ui.item).attr('id');
 													 var pageIndex = spanID.split('span')[1];
 													
@@ -1246,27 +802,27 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													{
 													   //alert('Moving a new division page');
 
-                                                        //If the next div is not the start of a new division 
+														//If the next div is not the start of a new division 
 													   if (document.getElementById('newDivType' + (spanArray[startPosition].split('span')[1])).checked == false)
 													   {
-													        document.getElementById('newDivType' + (spanArray[startPosition].split('span')[1])).checked = true;
-													        document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).disabled = false;
-													        //alert('still in the right place');
-													        document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value = document.getElementById('selectDivType' + pageIndex).value;
+															document.getElementById('newDivType' + (spanArray[startPosition].split('span')[1])).checked = true;
+															document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).disabled = false;
+															//alert('still in the right place');
+															document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value = document.getElementById('selectDivType' + pageIndex).value;
 
-													        //Update the division name textbox
-													        if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.index('!')==0)
-													        {
-													            document.getElementById('divNameTableRow' + (spanArray[startPosition].split('span')[1])).className = 'txtNamedDivVisible';
-													            document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = false;
+															//Update the division name textbox
+															if (document.getElementById('selectDivType' + (spanArray[startPosition].split('span')[1])).value.index('!')==0)
+															{
+																document.getElementById('divNameTableRow' + (spanArray[startPosition].split('span')[1])).className = 'txtNamedDivVisible';
+																document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = false;
 
-													        }
-													        else
-													        {
-													            document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = true;
-													        }
+															}
+															else
+															{
+																document.getElementById('txtDivName' + (spanArray[startPosition].split('span')[1])).disabled = true;
+															}
 													   }
-													    //else do nothing
+														//else do nothing
 													}
 													//else do nothing
 													
@@ -1275,7 +831,7 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													//set makes this impossible, but just in case.
 													if(indexSpanArray==0)
 													{
-							                          //Make the moved div the start of a new div
+													  //Make the moved div the start of a new div
 													  document.getElementById('newDivType'+(spanArray[newPosition-1].split('span')[1])).checked=true;
 													  //Enable the moved div's DivType dropdown
 													  document.getElementById('selectDivType'+(spanArray[newPosition-1].split('span')[1])).disabled=false;
@@ -1285,28 +841,29 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													  //Unmark the replaced div's NewDiv Checkbox (and disable the dropdown)
 													  document.getElementById('newDivType'+(spanArray[newPosition].split('span')[1])).checked=false;
 													  document.getElementById('selectDivType'+(spanArray[newPosition].split('span')[1])).disabled=true;
-	                                                  
+													  
 													  //If this is now a named div, update the division name textbox
 													  if(document.getElementById('selectDivType'+(spanArray[newPosition].split('span')[1])).value.IndexOf('!')==0)
 													  {
-													      document.getElementById('divNameTableRow' + (spanArray[newPosition].split('span')[1])).className = 'txtNamedDivVisible';
+														  document.getElementById('divNameTableRow' + (spanArray[newPosition].split('span')[1])).className = 'txtNamedDivVisible';
 														document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1])).value = document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1]+1)).value;
 														document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1]+1)).disabled=true;
 													  }
 													  else
 													  {
-													      document.getElementById('divNameTableRow' + (spanArray[newPosition].split('span')[1])).className = 'txtNamedDivHidden';
+														  document.getElementById('divNameTableRow' + (spanArray[newPosition].split('span')[1])).className = 'txtNamedDivHidden';
 														document.getElementById('txtDivName'+(spanArray[newPosition].split('span')[1]+1)).disabled=false;
 													  }
 													}
 													
 													//else
 													//CASE 2: Span moved to any location other than 0
-																									
 													else if (indexSpanArray > 0)
 													{
 													 //Moved span's DivType = preceding Div's Div type
-													  document.getElementById('selectDivType'+(spanArray[newPosition-1].split('span')[1])).value = document.getElementById('selectDivType'+(spanArray[newPosition-2].split('span')[1])).value;
+														document.getElementById('selectDivType' + (spanArray[newPosition - 1].split('span')[1])).value = document.getElementById('selectDivType' + (spanArray[newPosition - 2].split('span')[1])).value;
+														
+
 													  //Moved span != start of a new Division
 													  document.getElementById('newDivType'+(spanArray[newPosition-1].split('span')[1])).checked=false;
 													  document.getElementById('selectDivType'+(spanArray[newPosition-1].split('span')[1])).disabled=true;
@@ -1314,14 +871,14 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 													  //update the division name textbox
 													  if(document.getElementById('selectDivType'+(spanArray[newPosition-2].split('span')[1])).value.indexOf('!')==0)
 													  {
-													    document.getElementById('divNameTableRow' + (spanArray[newPosition - 1].split('span')[1])).className = 'txtNamedDivVisible';
+														document.getElementById('divNameTableRow' + (spanArray[newPosition - 1].split('span')[1])).className = 'txtNamedDivVisible';
 														document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).disabled=true;
-													    document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).value=document.getElementById('txtDivName'+(spanArray[newPosition-2].split('span')[1])).value;
+														document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).value=document.getElementById('txtDivName'+(spanArray[newPosition-2].split('span')[1])).value;
 														
 													  }
 													  else
 													  {
-													    document.getElementById('divNameTableRow' + (spanArray[newPosition - 1].split('span')[1])).className = 'txtNamedDivHidden';
+														document.getElementById('divNameTableRow' + (spanArray[newPosition - 1].split('span')[1])).className = 'txtNamedDivHidden';
 														document.getElementById('txtDivName'+(spanArray[newPosition-1].split('span')[1])).disabled=false;
 													  }
 													  
@@ -1337,37 +894,25 @@ $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
 $("#allThumbnailsOuterDiv").disableSelection();
 
 
-                                                 															 
+																											 
 
 }
-
-
 
 //Cancel function: set the hidden field(s) accordingly
 function behaviors_cancel_form() 
 {
-	var hiddenfield = document.getElementById('QC_behaviors_request');
-	hiddenfield.value = 'cancel';
-
-	
-    // Submit this
-    document.itemNavForm.submit();
-    return false;
+	document.getElementById('QC_behaviors_request').value = 'cancel';
+	document.itemNavForm.submit();
+	return false;
 }
-
 
 //Save function: set the hidden field(s) accordingly
 function behaviors_save_form() 
 {
-    var hiddenfield = document.getElementById('QC_behaviors_request');
-	hiddenfield.value = 'save';
-	
-    // Submit this
-    document.itemNavForm.submit();
-    return false;
-
+	document.getElementById('QC_behaviors_request').value = 'save';
+	document.itemNavForm.submit();
+	return false;
 }
-
 
 //Turn On/Off the autosave option
 function changeAutoSaveOption()
@@ -1375,7 +920,7 @@ function changeAutoSaveOption()
    var linkID = document.getElementById('autosaveLink');
    var hiddenfield = document.getElementById('Autosave_Option');
    var hiddenfield_behavior = document.getElementById('QC_behaviors_request');
-    hiddenfield_behavior.value = 'save';
+	hiddenfield_behavior.value = 'save';
 
 	if(linkID.innerHTML=='Turn Off Autosave')
 	{
@@ -1388,10 +933,10 @@ function changeAutoSaveOption()
 	 linkID.innerHTML = 'Turn Off Autosave';
 	 hiddenfield.value = 'true';
 	}
-    
+	
 	//Submit the form
 	document.itemNavForm.submit();
-    return false;
+	return false;
 }
 
 //Called from the main form every three minutes
@@ -1399,20 +944,20 @@ function qc_auto_save()
 {
 
 	jQuery('form').each(function() {
-	    var hiddenfield = document.getElementById('QC_behaviors_request');
+		var hiddenfield = document.getElementById('QC_behaviors_request');
 		hiddenfield.value = 'autosave';
 
 		var thisURL =window.location.href.toString();
-        // For each form on the page, pass the form data via an ajax POST to
-        // the save action
-        $.ajax({
+		// For each form on the page, pass the form data via an ajax POST to
+		// the save action
+		$.ajax({
 					url: thisURL,
 					data: 'autosave=true&'+jQuery(this).serialize(),
 					type: 'POST',
 					async: true,
 					success: function(data)
 					{
-					     //Update the time of saving
+						 //Update the time of saving
 						  var currdate = new Date();
 						  var hours = currdate.getHours();
 						  var minutes = currdate.getMinutes();
@@ -1423,14 +968,14 @@ function qc_auto_save()
 						  minutes=minutes<10?'0'+minutes:minutes;
 						  var time = hours+":"+minutes+' '+ampm;
 						  
-                          var timeToDisplay = "Saved at "+time;
+						  var timeToDisplay = "Saved at "+time;
 				//		  $("#displayTimeSaved").text(timeToDisplay);
 							
 							return false;
 		 
 					}// end successful POST function
 				}); // end jQuery ajax call
-    }); // end setting up the autosave on every form on the page
+	}); // end setting up the autosave on every form on the page
 }
 
 
@@ -1453,8 +998,8 @@ for(var i=0; i<MaxPageCount; i++)
  //If a checkbox has been checked, and the move_thumbnails cursor is currently set
  if (document.getElementById(chkBoxID).checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
  {
-    document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
-    for(var i=0; i<MaxPageCount; i++)
+	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+	for(var i=0; i<MaxPageCount; i++)
 	{
 		 if(document.getElementById('movePageArrows'+i))
 		   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';
@@ -1463,7 +1008,7 @@ for(var i=0; i<MaxPageCount; i++)
 }
 else if(document.getElementById(chkBoxID).checked==true && $('body').css('cursor').indexOf("delete_cursor")>-1)
 {
-     document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButton';
+	 document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButton';
    
 }
 else
@@ -1471,7 +1016,7 @@ else
   //Check if there is any other checked checkbox on the screen
   for(var i=0; i<MaxPageCount; i++)
   {
-    if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true)
+	if((document.getElementById('chkMoveThumbnail'+i)) && document.getElementById('chkMoveThumbnail'+i).checked==true)
 	{
 	  
 	  checked = true;
@@ -1480,9 +1025,9 @@ else
   
   if(checked==true && $('body').css('cursor').indexOf("move_pages_cursor")>-1)
   {
-     document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
-     //Unhide the left/right arrows for moving pages
-     for(var i=0; i<MaxPageCount; i++)
+	 document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';
+	 //Unhide the left/right arrows for moving pages
+	 for(var i=0; i<MaxPageCount; i++)
 	{
 		 if(document.getElementById('movePageArrows'+i))
 		   document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';
@@ -1493,11 +1038,11 @@ else
   
   else if(checked==true && $('body').css('cursor').indexOf("delete_cursor")>-1)
   {
-    document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButton';
+	document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButton';
   }
   else
   {
-     document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButtonHidden';
+	 document.getElementById('divDeleteMoveOnScroll').className='qcDivDeleteButtonHidden';
 	 document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
   }  
 
@@ -1513,7 +1058,7 @@ else
 function rbMovePagesChanged(rbValue)
 {
   if(rbValue=='After')
-    {
+	{
 	  document.getElementById('selectDestinationPageList1').disabled=false;
 	  document.getElementById('selectDestinationPageList2').disabled=true;
 	}
@@ -1531,13 +1076,13 @@ function update_popup_form(pageID,before_after)
   //alert(pageID+before_after);
   if(before_after=='After')
   {
-    if(document.getElementById('selectDestinationPageList1'))
+	if(document.getElementById('selectDestinationPageList1'))
 	{
 	 // alert(before_after);
 	  document.getElementById('rbMovePages1').checked=true;
 	  document.getElementById('selectDestinationPageList1').disabled=false;
 	  document.getElementById('selectDestinationPageList2').disabled=true;	
-      //Change the dropdown selected option as well
+	  //Change the dropdown selected option as well
 	  var ddl = document.getElementById('selectDestinationPageList1');
 		var opts = ddl.options.length;
 		
@@ -1553,13 +1098,13 @@ function update_popup_form(pageID,before_after)
   }
   else if(before_after=='Before')
   {
-    if(document.getElementById('selectDestinationPageList1'))
+	if(document.getElementById('selectDestinationPageList1'))
 	{
 	  document.getElementById('rbMovePages2').checked=true;
 	  document.getElementById('selectDestinationPageList1').disabled=true;
 	  document.getElementById('selectDestinationPageList2').disabled=false;	
 
-      //Change the dropdown selected option as well
+	  //Change the dropdown selected option as well
 	   var ddl = document.getElementById('selectDestinationPageList2');
 		var opts = ddl.options.length;
 		for (var i=0; i<opts; i++)
@@ -1578,7 +1123,7 @@ function update_popup_form(pageID,before_after)
 function move_pages_submit()
 {
    // alert('in function move_pages_submit');
-     var hidden_request = document.getElementById('QC_behaviors_request');
+	 var hidden_request = document.getElementById('QC_behaviors_request');
 	 var hidden_action = document.getElementById('QC_move_relative_position');
 	 var hidden_destination = document.getElementById('QC_move_destination');
 	 var file_name='';
@@ -1586,7 +1131,7 @@ function move_pages_submit()
 
 	 
 	 hidden_request.value='move_selected_pages';
-     hidden_action.value = '';
+	 hidden_action.value = '';
 	 hidden_destination.value=file_name;
 	 
 	 //if 'Before' selected, change to corresponding 'After' unless 'Before' 0th option is selected
@@ -1594,15 +1139,15 @@ function move_pages_submit()
 	 {
 	   if(document.getElementById('selectDestinationPageList2').selectedIndex>0)
 	   { 
-	     var ddl=document.getElementById('selectDestinationPageList2');
-	     var selIndex = ddl.selectedIndex-1;
+		 var ddl=document.getElementById('selectDestinationPageList2');
+		 var selIndex = ddl.selectedIndex-1;
 		 hidden_action.value = 'After';
 		 hidden_destination.value = ddl.options[selIndex].value;
 	   //  alert(hidden_destination.value);
 	   }
 	   else
 	   {
-	     hidden_action.value = 'Before';
+		 hidden_action.value = 'Before';
 		 var ddl=document.getElementById('selectDestinationPageList2');
 		 hidden_destination.value = ddl.options[ddl.selectedIndex].value;
 		// alert(hidden_destination.value);
@@ -1628,68 +1173,45 @@ function move_pages_submit()
 //--------------------End of Functions for the Move-Selected-Pages Popup Form----------------//
 
 
-function ImageDeleteClicked(filename) {
-
-    input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
-
-    if (input_box == true) 
-	{
-        var hidden_request = document.getElementById('QC_behaviors_request');
-        var details = document.getElementById('QC_affected_file');
-
-        hidden_request.value = 'delete_page';
-        details.value = filename;
-
-        document.itemNavForm.submit();
-    }
-    return false;
+function ImageDeleteClicked(Filename) {
+	var input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
+	if (input_box == true) {
+	    document.getElementById('QC_behaviors_request').value = 'delete_page';
+	    document.getElementById('QC_affected_file').value = Filename;
+		document.itemNavForm.submit();
+	}
+	return false;
 }
 
 
-function DeleteSelectedPages()
-{
-	input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
-	
+function DeleteSelectedPages() {
+	var input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
 	if (input_box == true) 
 	{
-        var hidden_request = document.getElementById('QC_behaviors_request');
-  //      var details = document.getElementById('QC_affected_file');
-
-        hidden_request.value = 'delete_selected_page';
-  //      details.value = filename;
-
-        document.itemNavForm.submit();
-    }
-    return false;
-	
+		document.getElementById('QC_behaviors_request').value = 'delete_selected_page';
+		document.itemNavForm.submit();
+	}
+	return false;
 }
 
 // Function is called when user clicks COMPLETE
-function save_submit_form()
-{
-        var hidden_request = document.getElementById('QC_behaviors_request');
-
-        hidden_request.value = 'complete';
-
-        document.itemNavForm.submit();
-		return false;
+function save_submit_form() {
+    document.getElementById('QC_behaviors_request').value = 'complete';
+	document.itemNavForm.submit();
+	return false;
 }
  
- //Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
- function ClearPagination()
-{
-  var hidden_request =document.getElementById('Clear_Pagination');
-  hidden_request.value = "true";
-  
-  document.itemNavForm.submit();
-} 
+//Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
+function ClearPagination() {
+    document.getElementById('Clear_Pagination').value = "true";
+    document.itemNavForm.submit();
+    return false;
+}
 
 
 //Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
-function ClearReorderPagination()
-{
-  var hidden_request =document.getElementById('Clear_Reorder_Pagination');
-  hidden_request.value = "true";
-  
-  document.itemNavForm.submit();
+function ClearReorderPagination() {
+    document.getElementById('Clear_Reorder_Pagination').value = "true";
+    document.itemNavForm.submit();
+    return false;
 }
