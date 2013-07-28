@@ -23,7 +23,6 @@ namespace SobekCM.Library
 
         public const string Backup_Files_Folder_Name = "sobek_files";
 
-
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
         public const string CURRENT_WEB_VERSION = "3.20 BETA";
 
@@ -1156,6 +1155,11 @@ namespace SobekCM.Library
         {
             get { return webServerIp; }
             set { webServerIp = value; }
+        }
+
+        public static string Recycle_Bin
+        {
+            get { return imageServerNetwork + "\\RECYCLE BIN"; }
         }
 
         #region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
