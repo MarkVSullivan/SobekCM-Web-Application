@@ -85,26 +85,26 @@
 .spanQCIconsTopNavRow{float:right;}
 
 .qcPickMainThumbnailCursor{cursor:url(http://ufdc.ufl.edu/default/images/thumbnail_cursor.cur),default;}
-.qcMovePagesCursor{cursor:url(../default/images/move_pages_cursor.cur),default;}
-.qcDeletePagesCursor{cursor:url(../default/images/delete_cursor.cur),default;}
+.qcMovePagesCursor{cursor:url(http://ufdc.ufl.edu/default/images/move_pages_cursor.cur),default;}
+.qcDeletePagesCursor{cursor:url(http://ufdc.ufl.edu/default/images/delete_cursor.cur),default;}
 .qcResetMouseCursorToDefault{cursor:default;}
 
 .txtNamedDivHidden{ visibility: hidden;}
 .txtNamedDivVisible{ visibility: visible;}
 
-.qcDivMoveOnScroll {position: fixed; bottom: 3px; right: 0.1%;visibility: visible; }
-.qcDivMoveOnScrollHidden{ position: fixed;bottom: 3px;right: 0.1%;visibility: hidden;}
+.qcDivMoveOnScroll {position: fixed; bottom: 95px; right: 40px;visibility: visible; }
+.qcDivMoveOnScrollHidden{ position: fixed;bottom: 95px; right: 40px;visibility: hidden;}
 
-.qcDivDeleteButton{position: fixed; bottom: 3px; right: 0.1%;visibility: visible;}
-.qcDivDeleteButtonHidden{position: fixed;bottom: 3px;right: 0.1%;visibility: hidden;}
+.qcDivDeleteButton{position: fixed; bottom: 95px; right: 40px;visibility: visible;}
+.qcDivDeleteButtonHidden{position: fixed;bottom: 95px;right: 40px;visibility: hidden;}
 
 .displayTimeSaved{ color: #555555;font-size: 9pt;}
 
 .popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
-.popup_table { padding-left: 20px; margin-left: 20px; }
+.popup_table { margin-left: 50px;margin-right: 50px; }
 
-.qcmove_popup_div { position:fixed; background-color:#eeeeee; width:620px; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
 
 .btnMovePages {
 	background-color:#ffab23;
@@ -225,3 +225,6 @@
     -webkit-box-shadow: inset 0 0 9px 6px #6a6f75;
 	box-shadow: inset 0 0 9px 6px #6a6f75;
 }
+
+.qc_movebuttons { background-color: #7d90d5; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 6px 13px 6px 13px; cursor: pointer; font-size: 1.0em; letter-spacing: 0.5px; }
+.qc_movebuttons:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }

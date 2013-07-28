@@ -227,6 +227,36 @@ function popup(windowname, linkname, windowheight, windowwidth ) {
 	return false;
 }
 
+function popup(windowname) {
+    // Get the size of the popup
+    var windowwidth = $('#' + windowname).width();
+    var windowheight = $('#' + windowname).height();
+
+    blanket_size(windowname, windowheight);
+
+    var total_width = $(window).width();
+    var total_height = $(window).height();
+
+    var new_x = (total_width - windowwidth) / 2;
+    var new_y = (total_height - windowheight) / 2;
+
+    $('#' + windowname).css({
+        position: "absolute",
+        top: new_y,
+        left: new_x
+    });
+
+    toggle('blanket_outer');
+    toggle(windowname);
+
+    // Create the draggable object to allow this window to be dragged around
+    //document.getElementById(windowname).draggable();
+    $('#' + windowname).draggable();
+    //mydrag = new Draggable( windowname, {starteffect:null});
+
+    return false;
+}
+
 function popdown(windowname ) {
 	toggle('blanket_outer');
 	toggle(windowname);		

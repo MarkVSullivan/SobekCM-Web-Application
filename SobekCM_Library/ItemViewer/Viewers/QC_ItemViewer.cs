@@ -276,7 +276,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Read the data from the http form, perform all requests, and
                     // update the qc_item (also updates the session and temporary files)
                     string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
-                    Save_From_Form_Request_To_Item(String.Empty, filename_to_delete);
+                    if (Save_From_Form_Request_To_Item(String.Empty, filename_to_delete))
+                    {
+                        Delete_Resource_File(filename_to_delete);
+                    }
+
+                    // Since we deleted a page, we need to roll out our new version
+                    Move_Temp_Changes_To_Production();
 
                     HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
                     HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -286,7 +292,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 case "delete_selected_pages":
                     // Read the data from the http form, perform all requests, and
                     // update the qc_item (also updates the session and temporary files)
-                    Save_From_Form_Request_To_Item(String.Empty, String.Empty);
+                    List<QC_Viewer_Page_Division_Info> selected_page_div_from_form;
+                    if (Save_From_Form_Request_To_Item(String.Empty, String.Empty, out selected_page_div_from_form))
+                    {
+                        foreach (QC_Viewer_Page_Division_Info thisPage in selected_page_div_from_form)
+                        {
+                            Delete_Resource_File(thisPage.METS_StructMap_Page_Node.Files[0].File_Name_Sans_Extension);
+                        }
+                    }
+
+                    // Since we deleted a page, we need to roll out our new version
+                    Move_Temp_Changes_To_Production();
 
                     HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
                     HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -535,10 +551,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         #region Save all the page/division info from the form to the temporary METS
 
-        /// <summary> Save all the data from form post-back into the item in memory, and 
+	    /// <summary> Save all the data from form post-back into the item in memory, and 
+	    /// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
+	    /// <returns> Returns TRUE if successful, otherwise FALSE </returns>
+	    private bool Save_From_Form_Request_To_Item(string FilenameToMoveAfter, string FilenameToOmit)
+	    {
+	        List<QC_Viewer_Page_Division_Info> selected_page_div_from_form;
+	        return Save_From_Form_Request_To_Item(FilenameToMoveAfter, FilenameToOmit, out selected_page_div_from_form);
+	    }
+
+	    /// <summary> Save all the data from form post-back into the item in memory, and 
 		/// return all the page information for those pages which are CHECKED (with the checkbox) </summary>
 		/// <returns> Returns TRUE if successful, otherwise FALSE </returns>
-		private bool Save_From_Form_Request_To_Item(string FilenameToMoveAfter, string FilenameToOmit)
+        private bool Save_From_Form_Request_To_Item(string FilenameToMoveAfter, string FilenameToOmit, out List<QC_Viewer_Page_Division_Info> Selected_Page_Div_From_Form)
 		{
 			bool returnValue = true;
 
@@ -553,6 +578,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<Page_TreeNode> page_list = new List<Page_TreeNode>();
 			List<string> page_filename_list = new List<string>();
 			Division_TreeNode lastDivision = null;
+
 			//Autonumber the remaining pages based on the selected option
 			if (autonumber_mode_from_form == 0 || autonumber_mode_from_form == 1)
 			{
@@ -639,7 +665,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<Page_TreeNode> existing_pages_in_window = new List<Page_TreeNode>();
 
 			//Get the list of pages to be moved
-			List<QC_Viewer_Page_Division_Info> selected_page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
+			Selected_Page_Div_From_Form = new List<QC_Viewer_Page_Division_Info>();
 
 			try
 			{
@@ -661,12 +687,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 						// Was this page selected with the checkbox?  (for bulk delete or move)
 						//Get this info only if the move/delete operations are explicitly triggered
-						if (hidden_request == "delete_page" || hidden_request == "delete_selected_page" || hidden_request == "move_selected_pages")
+						if (hidden_request == "delete_page" || hidden_request == "delete_selected_pages" || hidden_request == "move_selected_pages")
 						{
 							if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == FilenameToOmit))
 							{
 								thisInfo.Checkbox_Selected = true;
-								selected_page_div_from_form.Add(thisInfo);
+                                Selected_Page_Div_From_Form.Add(thisInfo);
 							}
 						}
 						// Is this a new division?
@@ -848,7 +874,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 
 				// Insert any pages which were moved
-				if ((FilenameToMoveAfter.Length > 0) && (selected_page_div_from_form.Count > 0))
+                if ((FilenameToMoveAfter.Length > 0) && (Selected_Page_Div_From_Form.Count > 0))
 				{
 					// TODO: Check for the lack of any divisions what-so-ever within the METS.  If so, add one.
 
@@ -866,7 +892,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					if (divNodeToInsertWithin != null)
 					{
 						// Insert each page in order
-						foreach (QC_Viewer_Page_Division_Info insertPage in selected_page_div_from_form)
+                        foreach (QC_Viewer_Page_Division_Info insertPage in Selected_Page_Div_From_Form)
 						{
 							divNodeToInsertWithin.Nodes.Insert(move_into_node_index++, insertPage.METS_StructMap_Page_Node);
 						}
@@ -982,6 +1008,37 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    }
 
         #endregion
+
+        #region Delete a resource file from the resource folder
+
+	    private void Delete_Resource_File(string FilenameToDelete)
+	    {
+	        string resource_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+            string[] files = Directory.GetFiles(resource_directory, FilenameToDelete + ".*");
+	        string recycle_bin = SobekCM_Library_Settings.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
+	        if (!Directory.Exists(recycle_bin))
+	            Directory.CreateDirectory(recycle_bin);
+
+	        foreach (string thisFile in files)
+	        {
+	            FileInfo thisFileInfo = new FileInfo(thisFile);
+	            string extension = thisFileInfo.Extension.ToUpper();
+	            if ((extension == ".JPG") || (extension == ".TIF") || (extension == ".JP2") || (extension == ".TXT") || (extension == ".PRO") || (extension == ".TIFF") || (extension == ".JPEG") || (extension == ".GIF") || (extension == ".PNG"))
+	            {
+                    if ( File.Exists(recycle_bin + "\\" + thisFileInfo.Name))
+                        File.Delete(recycle_bin + "\\" + thisFileInfo.Name);
+                    File.Move(thisFile, recycle_bin + "\\" + thisFileInfo.Name);
+	            }
+	        }
+            if (File.Exists(resource_directory + "\\" + FilenameToDelete + "thm.jpg"))
+	        {
+                if (File.Exists(recycle_bin + "\\" + FilenameToDelete + "thm.jpg"))
+                    File.Delete(recycle_bin + "\\" + FilenameToDelete + "thm.jpg");
+                File.Move(resource_directory + "\\" + FilenameToDelete + "thm.jpg", recycle_bin + "\\" + FilenameToDelete + "thm.jpg");
+	        }
+	    }
+
+	    #endregion
 
         /// <summary> Gets the type of item viewer this object represents </summary>
 		/// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.Quality_Control"/>. </value>
@@ -1142,7 +1199,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        Output.WriteLine("</script>");
 	        //end shift+click checkboxes
 
-	        Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove', 'btnMovePages', 280, 400 );\">Move to</button></div>");
+	        Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"qcDivMoveOnScrollHidden\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove');\">Move to</button></div>");
 
 	        //Add the button to delete pages
 	        Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"qcDivDeleteButtonHidden\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>");
@@ -1280,6 +1337,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //builder.AppendLine("\t</ul></li>");
             //         Output.WriteLine("\t<li><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\">Save</a></li>");
 
+
+            // Get the checkmarks
+            string noCheckmark = "<img src=\"" + image_location + "nocheckmark.png\" alt=\"\" /> ";
+            string checkmark = "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" /> ";
+
             Output.WriteLine("<li><a onclick=\"return false;\">Resource</a><ul>");
             Output.WriteLine("\t<li><a href=\"\" onclick=\"return behaviors_save_form();\">Save</a></li>");
             Output.WriteLine("\t<li><a href=\"\" onclick=\"save_submit_form();\";>Complete</a></li>");
@@ -1295,27 +1357,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t<li><a onclick=\"return false;\">Thumbnail Size</a><ul>");
             //Add the thumbnail size options
             if (thumbnailSize == 1)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Small</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Small</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 1;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Small</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Small</a></li>");
             }
 
             if (thumbnailSize == 2)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Medium</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Medium</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 2;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Medium</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Medium</a></li>");
             }
 
             if (thumbnailSize == 3)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Large</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Large</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 3;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Large</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Large</a></li>");
             }
 
             //Reset the current mode
@@ -1326,46 +1388,46 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the thumbnails per page options
             if (thumbnailsPerPage == 25)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*25</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "25</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 25;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">25</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "25</a></li>");
             }
             if (thumbnailsPerPage == 50)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*50</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "50</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 50;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">50</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "50</a></li>");
             }
             if (thumbnailsPerPage == 100)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*100</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "100</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 100;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">100</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "100</a></li>");
             }
             if (thumbnailsPerPage == 500)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*500</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "500</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 500;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">500</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "500</a></li>");
             }
             if (thumbnailsPerPage == 1000)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*1000</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "1000</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 1000;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">1000</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "1000</a></li>");
             }
             if (thumbnailsPerPage == qc_item.Web.Static_PageCount)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*All thumbnails</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "All thumbnails</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = (short)qc_item.Web.Static_PageCount;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">All thumbnails</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "All thumbnails</a></li>");
             }
             //Reset the current mode
             CurrentMode.Thumbnails_Per_Page = (short)thumbnails_per_page;
@@ -1374,25 +1436,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("\t<li><a onclick=\"return false;\">Automatic Numbering</a><ul>");
             if (autonumber_mode == 2)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*No automatic numbering</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "No automatic numbering</a></li>");
             else
             {
                 CurrentMode.Autonumbering_Mode = 2;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">No automatic numbering</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "No automatic numbering</a></li>");
             }
             if (autonumber_mode == 1)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Within same division</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Within same division</a></li>");
             else
             {
                 CurrentMode.Autonumbering_Mode = 1;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Within same division</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Within same division</a></li>");
             }
             if (autonumber_mode == 0)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">*Entire document</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Entire document</a></li>");
             else
             {
                 CurrentMode.Autonumbering_Mode = 0;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">Entire document</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Entire document</a></li>");
             }
             //Reset the mode
             CurrentMode.Autonumbering_Mode = autonumber_mode;
@@ -1747,7 +1809,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//      navRowBuilder.AppendLine();
 			Output.WriteLine("<!-- Pop-up form for moving page(s) by selecting the checkbox in image -->");
 			Output.WriteLine("<div class=\"qcmove_popup_div\" id=\"form_qcmove\" style=\"display:none;\">");
-			Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">MOVE SELECTED PAGES</td><td align=\"right\"><a href=\"" + CurrentMode.Base_URL + "logon/help\" target=\"_FORM_QCMOVE_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcmove' ); \">X</a> &nbsp; </td></tr></table></div>");
+			Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">MOVE SELECTED PAGES</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcmove' ); \">X</a> &nbsp; </td></tr></table></div>");
 			Output.WriteLine("  <br />");
 			Output.WriteLine("  <table class=\"popup_table\">");
 
@@ -1783,10 +1845,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("</select></td></tr>");
 
 			//Add the Cancel & Move buttons
-			Output.WriteLine("    <tr><td colspan=\"2\"><center>");
-			Output.WriteLine("      <br><a href=\"\" onclick=\"move_pages_submit();\"><input type=\"image\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/move_big_button.gif\" value=\"Submit\" alt=\"Submit\" /></a>&nbsp;");
-			Output.WriteLine("      <a href=\"#template\" onclick=\" popdown( 'form_qcmove' );\"><img border=\"0\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel1_big_button.gif\" alt=\"CANCEL\" /></a><br> ");
-			Output.WriteLine("    </center></td></tr>");
+			Output.WriteLine("    <tr><td colspan=\"3\" style=\"text-align:center\">");
+            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"qc_movebuttons\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel this move\" class=\"qc_movebuttons\" onclick=\"return cancel_move_pages();\">CANCEL</button>&nbsp;<br />");
+			Output.WriteLine("    </td></tr>");
 
 			// Finish the popup form
 			Output.WriteLine("  </table>");

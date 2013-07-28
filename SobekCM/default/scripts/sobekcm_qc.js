@@ -587,8 +587,19 @@ function ResetCursorToDefault(MaxPageCount)
 function MovePages(MaxPageCount)
 {
     //If this cursor is already set, change back to default
-    if($('body').css('cursor').indexOf("move_pages_cursor")>-1) {
-        ResetCursorToDefault(MaxPageCount);
+    if ($('body').css('cursor').indexOf("move_pages_cursor") > -1) {
+        // See if any checkboxes are currently checked
+        var checked_found = 0;
+        for (var j = 0; j < spanArray.length; j++) {
+            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+            if (checkbox.checked) checked_found++;
+        }
+
+        if (checked_found == 0) {
+            cancel_move_pages();
+            } else {
+            popup('form_qcmove');
+        }
     }
     else
     {
@@ -610,6 +621,7 @@ function MovePages(MaxPageCount)
 		    }
 	    }
     }
+    return false;
 }
 
 
@@ -618,7 +630,7 @@ function DeletePages(MaxPageCount)
     //Change the mouse cursor, unhide all the checkboxes
     //If this cursor is already set, change back to default
     if ($('body').css('cursor').indexOf("delete_cursor") > -1) {
-        ResetCursorToDefault(MaxPageCount);
+        DeleteSelectedPages();
     }
     else
     {
@@ -638,6 +650,8 @@ function DeletePages(MaxPageCount)
                 document.getElementById('chkMoveThumbnail' + i).className = 'chkMoveThumbnailVisible';
         }
     }
+
+    return false;
 }
 
 
@@ -984,6 +998,27 @@ function update_popup_form(pageID,before_after)
 }
 
 //Move the selected pages
+function cancel_move_pages() {
+
+    if ($('#form_qcmove').css('display') != 'none') {
+        popdown('form_qcmove');
+    }
+
+    ResetCursorToDefault(-1);
+
+    // Reset and hide all the checkboxes as well
+    for (var j = 0; j < spanArray.length; j++) {
+        var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        checkbox.checked = false;
+        checkbox.className = 'chkMoveThumbnailHidden';
+        
+        document.getElementById('movePageArrows' + j).className = 'movePageArrowIconHidden';
+    }
+
+    return false;
+}
+
+//Move the selected pages
 function move_pages_submit()
 {
    // alert('in function move_pages_submit');
@@ -1047,12 +1082,42 @@ function ImageDeleteClicked(Filename) {
 
 
 function DeleteSelectedPages() {
-	var input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
-	if (input_box == true) 
-	{
-		document.getElementById('QC_behaviors_request').value = 'delete_selected_pages';
-		document.itemNavForm.submit();
-	}
+    
+    // See if any checkboxes are currently checked
+    var checked_found = 0;
+    for (var j = 0; j < spanArray.length; j++) {
+        var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        if (checkbox.checked) checked_found++;
+    }
+
+    if (checked_found == 0) {
+        ResetCursorToDefault(-1);
+
+        // Reset and hide all the checkboxes as well
+        for (var j = 0; j < spanArray.length; j++) {
+            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+            checkbox.checked = false;
+            checkbox.className = 'chkMoveThumbnailHidden';
+        }
+
+    } else {
+        var input_box = confirm("Are you sure you want to delete these " + checked_found + " pages and apply all changes up to this point?");
+        if (input_box == true) {
+
+            document.getElementById('QC_behaviors_request').value = 'delete_selected_pages';
+            document.itemNavForm.submit();
+        } else {
+            ResetCursorToDefault(-1);
+
+            // Reset and hide all the checkboxes as well
+            for (var j = 0; j < spanArray.length; j++) {
+                var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+                checkbox.checked = false;
+                checkbox.className = 'chkMoveThumbnailHidden';
+            }
+        }
+    }
+    
 	return false;
 }
 
