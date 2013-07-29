@@ -19,12 +19,14 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private List<Coordinate_Point> internal_points;
         private string label;
         private ushort pageSequence;
+        public double polygonRotation;
 
         /// <summary> Constructor for a new instance of this Coordinate_Polygon class </summary>
         public Coordinate_Polygon()
         {
             edge_points = new List<Coordinate_Point>();
             internal_points = new List<Coordinate_Point>();
+            polygonRotation = 0;
             pageSequence = 0;
         }
 
@@ -297,6 +299,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             return newPoint;
         }
 
+        /// <summary> Add Rotation Data </summary>
+        public void Add_Rotation(double rotation)
+        {
+            polygonRotation = rotation;
+        }
+
         /// <summary> Writes this polygon of coordinate points as SobekCM-formatted XML </summary>
         /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
         /// <param name="results"> Stream to write this polygon of coordinate points as SobekCM-formatted XML</param>
@@ -332,11 +340,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 }
                 results.Write("</" + sobekcm_namespace + ":Internal>\r\n");
             }
-            //if (rotation.Count > 0)
-            //{
-            //    results.Write("<" + sobekcm_namespace + ":Rotation> "+ rotation +" </" + sobekcm_namespace + ":Rotation>\r\n");
-            //    results.Write("");
-            //}
+            results.Write("<" + sobekcm_namespace + ":Rotation> " + polygonRotation + " </" + sobekcm_namespace + ":Rotation>\r\n");
+            results.Write("");
             results.Write("</" + sobekcm_namespace + ":Polygon>\r\n");
         }
     }
