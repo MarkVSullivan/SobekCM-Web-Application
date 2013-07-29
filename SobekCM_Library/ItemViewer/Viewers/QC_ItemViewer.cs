@@ -1316,7 +1316,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Get the icons for the thumbnail sizes
             string image_location = CurrentMode.Default_Images_URL;
 
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:UploadNewPageImages();return false;\"><img src=\"" + image_location + "qc_addfiles.png" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Upload new page image files\"/></a></span>");
+            string viewerCode = CurrentMode.ViewerCode;
+            CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+            CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+            string url = CurrentMode.Redirect_URL();
+            CurrentMode.Mode = Display_Mode_Enum.Item_Display;
+            CurrentMode.ViewerCode = viewerCode;
+
+            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:UploadNewPageImages('" + url + "');return false;\"><img src=\"" + image_location + "qc_addfiles.png" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Upload new page image files\"/></a></span>");
             Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Save the resource and apply your changes\" /></a></span>");
 
             if (thumbnailSize == 1)
@@ -1350,7 +1357,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Choose main Thumbnail\"/></a></span>");
             Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;left\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Move multiple pages\"/></a></span>");
             Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:DeletePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Delete multiple pages\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"View METS\"></img></a></span>");
+         //   Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"View METS\"></img></a></span>");
             Output.WriteLine("</div>");
             Output.WriteLine("<ul class=\"qc-menu\">");
 

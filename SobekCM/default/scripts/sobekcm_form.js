@@ -136,20 +136,22 @@ function popup_keypress_focus(windowname, linkname, focusname, windowheight, win
 {
     if ( isMozilla == 'False' )
     {
-        blanket_size(windowname, linkname, windowheight );
-        window_pos(windowname, windowwidth);
-        toggle('blanket_outer');
-        toggle(windowname);	
+        popup(windowname);
+        //blanket_size(windowname, linkname, windowheight );
+        //window_pos(windowname, windowwidth);
+        //toggle('blanket_outer');
+        //toggle(windowname);	
     }
     else
     {
         theKeyPressed = evt.charCode || evt.keyCode;
         if ( theKeyPressed != 9 )
         {    
-	        blanket_size(windowname, linkname, windowheight );
-	        window_pos(windowname, windowwidth);
-	        toggle('blanket_outer');
-	        toggle(windowname);		
+            popup(windowname);
+            //blanket_size(windowname, linkname, windowheight );
+            //window_pos(windowname, windowwidth);
+            //toggle('blanket_outer');
+            //toggle(windowname);	
 	    }
 	}
 
@@ -168,40 +170,44 @@ function popup_keypress(windowname, linkname, windowheight, windowwidth, isMozil
 {
     if ( isMozilla == 'False' )
     {
-        blanket_size(windowname, linkname, windowheight );
-        window_pos(windowname, windowwidth);
-        toggle('blanket_outer');
-        toggle(windowname);	
+        popup(windowname);
+        //blanket_size(windowname, linkname, windowheight );
+        //window_pos(windowname, windowwidth);
+        //toggle('blanket_outer');
+        //toggle(windowname);	
     }
     else
     {
         theKeyPressed = evt.charCode || evt.keyCode;
-        if ( theKeyPressed != 9 )
-        {    
-	        blanket_size(windowname, linkname, windowheight );
-	        window_pos(windowname, windowwidth);
-	        toggle('blanket_outer');
-	        toggle(windowname);		
+        if ( theKeyPressed != 9 ) {
+            popup(windowname);
+	        //blanket_size(windowname, linkname, windowheight );
+	        //window_pos(windowname, windowwidth);
+	        //toggle('blanket_outer');
+	        //toggle(windowname);		
 	    }
 	}
 
 	// Create the draggable object to allow this window to be dragged around
 	//document.getElementById(windowname).draggable();
-	$('#' + windowname).draggable();
+	//$('#' + windowname).draggable();
 	//mydrag = new Draggable( windowname, {starteffect:null});
 	
 	return false;
 } 
 
-function popup_focus(windowname, linkname, focusname, windowheight, windowwidth ) {
-	blanket_size(windowname, linkname, windowheight );
-	window_pos(windowname, windowwidth);
-	toggle('blanket_outer');
-	toggle(windowname);
+function popup_focus(windowname, linkname, focusname, windowheight, windowwidth) {
+    
+    popup(windowname);
+    
+	//blanket_size(windowname, linkname, windowheight );
+	//window_pos(windowname, windowwidth);
+	//toggle('blanket_outer');
+	//toggle(windowname);
 
 	// Create the draggable object to allow this window to be dragged around
 	//document.getElementById(windowname).draggable();
-	$('#' + windowname).draggable();
+	//$('#' + windowname).draggable();
 	//mydrag = new Draggable( windowname, {starteffect:null});
 	
 	var focusfield = document.getElementById(focusname);
@@ -213,15 +219,16 @@ function popup_focus(windowname, linkname, focusname, windowheight, windowwidth 
 	return false;
 }
 
-function popup(windowname, linkname, windowheight, windowwidth ) {
-	blanket_size(windowname, linkname, windowheight );
-	window_pos(windowname, windowwidth);
-	toggle('blanket_outer');
-	toggle(windowname);
+function popup(windowname, linkname, windowheight, windowwidth) {
+    popup(windowname);
+	//blanket_size(windowname, linkname, windowheight );
+	//window_pos(windowname, windowwidth);
+	//toggle('blanket_outer');
+	//toggle(windowname);
 
 	// Create the draggable object to allow this window to be dragged around
 	//document.getElementById(windowname).draggable();
-	$('#' + windowname).draggable();
+	//$('#' + windowname).draggable();
 	//mydrag = new Draggable( windowname, {starteffect:null});
 		    
 	return false;
