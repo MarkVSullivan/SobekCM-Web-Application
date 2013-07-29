@@ -1059,6 +1059,7 @@ function cacheSaveOverlay(index) {
     savingOverlayLabel[csoi] = incomingOverlayLabel[workingOverlayIndex];                   //set label to save
     savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           //set source url to save
     savingOverlayBounds[csoi] = ghostOverlayRectangle[workingOverlayIndex].getBounds();     //set bounds to save
+    de(preservedRotation);
     savingOverlayRotation[csoi] = preservedRotation;                                        //set rotation to save
     if (savingOverlayIndex[csoi] != index) {                                                
         csoi++;                                                                             //iterate the current save overlay index   

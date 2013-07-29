@@ -55,19 +55,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
+            // If there is no user, send to the login
+            if (Current_User == null)
+            { 
+                //CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                CurrentMode.Redirect();
+                return;
+            }  
+            
             CurrentUser = Current_User;
             CurrentItem = Current_Item;
             this.CurrentMode = Current_Mode;
             //geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
 
-            // If there is no user, send to the login
-            if (CurrentUser == null)
-            {
-                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                CurrentMode.Redirect();
-                return;
-            }           
+                     
 
         }
 
@@ -144,7 +146,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 itemPolygon.Recalculate_Bounding_Box();
 
                                 //add the rotation
-                                //tempPolygon.add_Rotation(Convert.ToDouble(ar[4]));
+                                itemPolygon.Add_Rotation(Convert.ToDouble(ar[4]));
                             }
                         }
                     }
@@ -163,7 +165,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         itemPolygon.Recalculate_Bounding_Box();
                         
                         //add the rotation
-                        //tempPolygon.Add_Rotation(Convert.ToDouble(ar[4]));
+                        itemPolygon.Add_Rotation(Convert.ToDouble(ar[4]));
 
                         //add the polygon to the geo info
                         itemGeoInfo.Add_Polygon(itemPolygon);
@@ -447,8 +449,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         mapperBuilder.AppendLine("      incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
 
                         //get and set the rotation value
-                        polygonRotation.Add(0);
-                        mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
+                        //polygonRotation.Add(0);
+                        //mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
+                        mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
 
                         //iterate
                         it++;
