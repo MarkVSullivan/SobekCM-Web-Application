@@ -457,9 +457,17 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("File_Management_MySobekViewer.Write_HTML", "Add instructions");
 
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<div class=\"SobekHomeText\">");
-            Output.WriteLine("<br />");
-            Output.WriteLine("<blockquote>Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.</blockquote><br />"); 
+            Output.WriteLine("<div class=\"sbkPiu_MainArea\">");
+            Output.WriteLine("<h2>Manage Downloads</h2>");
+            Output.WriteLine("<blockquote>");
+            Output.WriteLine("Upload the download files for your item.  You can also provide labels for each file, once they are uploaded.<br /><br />");
+            
+            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">Click here to upload page images instead.</a>");
+            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+
+            Output.WriteLine("</blockquote><br />");
+
         }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -471,7 +479,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("File_Management_MySobekViewer.Add_HTML_In_Main_Form", "");
+                Tracer.Add_Trace("File_Managament_MySobekViewer.Add_HTML_In_Main_Form", "");
             }
 
             // Add the hidden fields first
@@ -480,6 +488,9 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"phase\" name=\"phase\" value=\"\" />");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" ></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+
+            Output.WriteLine("<hr />");
+            Output.WriteLine("<br />");
 
             #region Get the list of all files sans extensions to pages 
 
@@ -562,79 +573,79 @@ namespace SobekCM.Library.MySobekViewer
 
             // Any page images?
             int file_counter = 0;
-            if (SobekCM_Library_Settings.Allow_Page_Image_File_Management)
-            {
-                if (image_files.Count > 0)
-                {
-                    Output.WriteLine("The following page images are already uploaded for this package:");
-                    Output.WriteLine("<blockquote>");
-                    Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
-                    Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
-                    Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
-                    Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
-                    Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
-                    Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
-                    Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
-                    Output.WriteLine("  </tr>");
+            //if (SobekCM_Library_Settings.Allow_Page_Image_File_Management)
+            //{
+            //    if (image_files.Count > 0)
+            //    {
+            //        Output.WriteLine("The following page images are already uploaded for this package:");
+            //        Output.WriteLine("<blockquote>");
+            //        Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
+            //        Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
+            //        Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
+            //        Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
+            //        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
+            //        Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
+            //        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
+            //        Output.WriteLine("  </tr>");
 
-                    // Step through all the page image file groups
-                    foreach (string fileKey in image_files.Keys)
-                    {
-                        // Get this group of files
-                        List<string> fileGroup = image_files[fileKey];
+            //        // Step through all the page image file groups
+            //        foreach (string fileKey in image_files.Keys)
+            //        {
+            //            // Get this group of files
+            //            List<string> fileGroup = image_files[fileKey];
 
-                        // Add each individual file
-                        foreach (string thisFile in fileGroup)
-                        {
-                            file_counter++;
+            //            // Add each individual file
+            //            foreach (string thisFile in fileGroup)
+            //            {
+            //                file_counter++;
 
-                            // Add the file name literal
-                            FileInfo fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
-                            Output.WriteLine("<tr align=\"left\" >");
-                            Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
-                            if (fileInfo.Length < 1024)
-                                Output.WriteLine("<td>" + fileInfo.Length + "</td>");
-                            else
-                            {
-                                if (fileInfo.Length < (1024 * 1024))
-                                    Output.WriteLine("<td>" + (fileInfo.Length / 1024) + " KB</td>");
-                                else
-                                    Output.WriteLine("<td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
-                            }
+            //                // Add the file name literal
+            //                FileInfo fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
+            //                Output.WriteLine("<tr align=\"left\" >");
+            //                Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
+            //                if (fileInfo.Length < 1024)
+            //                    Output.WriteLine("<td>" + fileInfo.Length + "</td>");
+            //                else
+            //                {
+            //                    if (fileInfo.Length < (1024 * 1024))
+            //                        Output.WriteLine("<td>" + (fileInfo.Length / 1024) + " KB</td>");
+            //                    else
+            //                        Output.WriteLine("<td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
+            //                }
 
-                            Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
-                            Output.WriteLine("<td></td>");
-                        //    Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
-                        }
+            //                Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
+            //                Output.WriteLine("<td></td>");
+            //            //    Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
+            //            }
 
-                        // Now add the row to include the label
-                        string input_name = "upload_label" + file_counter.ToString();
-                        Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
-                        Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-                        if (HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] == null)
-                        {
-                            if ( image_files_to_labels.ContainsKey( fileKey ))
-                            {
-                                HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] = image_files_to_labels[fileKey];
-                                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( image_files_to_labels[fileKey] ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");                            
-                            }
-                        }
-                        else
-                        {
-                            string label_from_session = HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey].ToString();
-                            Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( label_from_session ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-                        }
-                        Output.WriteLine("</td></tr>");
-                        Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
-                        Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
-                    }
-                    Output.WriteLine("</table></blockquote><br />");
-                }
-            }
+            //            // Now add the row to include the label
+            //            string input_name = "upload_label" + file_counter.ToString();
+            //            Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
+            //            Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+            //            if (HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] == null)
+            //            {
+            //                if ( image_files_to_labels.ContainsKey( fileKey ))
+            //                {
+            //                    HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] = image_files_to_labels[fileKey];
+            //                    Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( image_files_to_labels[fileKey] ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
+            //                }
+            //                else
+            //                {
+            //                    Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");                            
+            //                }
+            //            }
+            //            else
+            //            {
+            //                string label_from_session = HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey].ToString();
+            //                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( label_from_session ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
+            //            }
+            //            Output.WriteLine("</td></tr>");
+            //            Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
+            //            Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
+            //        }
+            //        Output.WriteLine("</table></blockquote><br />");
+            //    }
+            //}
 
             // Any download files?
             if (download_files.Count > 0)
@@ -711,18 +722,30 @@ namespace SobekCM.Library.MySobekViewer
 
             const string completionMessage = "Once all files are uploaded, press SUBMIT to finish this item.";
 
-            Output.WriteLine("<table width=\"750\">");
+            Output.WriteLine("<table width=\"750px\">");
             Output.WriteLine("  <tr height=\"40px\" align=\"left\" valign=\"middle\" >");
             Output.WriteLine("    <td height=\"40px\" width=\"450\">" + completionMessage + "</td>");
             Output.WriteLine("    <td height=\"40px\" align=\"right\">");
-            Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(2);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/back_button_22.gif\" alt=\"BACK\" /></a>");
-            Output.WriteLine("      &nbsp; ");
-            Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(9);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/submit_button_22.gif\" alt=\"SUBMIT\" /></a> &nbsp; ");
+            Output.WriteLine("      <button title=\"Cancel this and remove the recentely uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
+            if (download_files.Count == 0)
+                Output.WriteLine("      <button title=\"You must upload some files before you can submit your changes\" disabled=\"disabled\" class=\"sbkPiu_RoundButtonDisabled\">SUBMIT</button> &nbsp; ");
+            else
+                Output.WriteLine("      <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
             Output.WriteLine("    </td>");
             Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td colspan=\"3\">");
             Output.WriteLine("<br /><br />");
+            Output.WriteLine("<hr />");
+            Output.WriteLine("<br />");
+            Output.WriteLine("The following extensions are accepted:");
+            Output.WriteLine("<blockquote>");
+            Output.WriteLine(SobekCM_Library_Settings.Upload_File_Types.Replace(",",", "));
+            Output.WriteLine("</blockquote>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("</table>");
             Output.WriteLine("</div>");
 
             #endregion
@@ -737,7 +760,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
+            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
             // Add the upload controls to the file place holder
             add_upload_controls(uploadFilesPlaceHolder, Tracer);
@@ -745,7 +768,7 @@ namespace SobekCM.Library.MySobekViewer
 
         private void add_upload_controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
+            Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
             StringBuilder filesBuilder = new StringBuilder(2000);
             filesBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
@@ -760,18 +783,19 @@ namespace SobekCM.Library.MySobekViewer
                                       {
                                           CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
                                           ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
-                                          ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts"
+                                          ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
+                                          AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types
                                       };
             placeHolder.Controls.Add(DJUploadController1);
 
             DJAccessibleProgrssBar1 = new DJAccessibleProgressBar();
             placeHolder.Controls.Add(DJAccessibleProgrssBar1);
 
-            DJFileUpload1 = new DJFileUpload {ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1};
+            DJFileUpload1 = new DJFileUpload { ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1, AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types, GoButton_CSS = "sbkPiu_RoundButton" };
             placeHolder.Controls.Add(DJFileUpload1);
 
             // Set the default processor
-            FileSystemProcessor fs = new FileSystemProcessor {OutputPath = digitalResourceDirectory};
+            FileSystemProcessor fs = new FileSystemProcessor { OutputPath = digitalResourceDirectory};
             DJUploadController1.DefaultFileProcessor = fs;
 
             // Change the file processor and set it's properties.

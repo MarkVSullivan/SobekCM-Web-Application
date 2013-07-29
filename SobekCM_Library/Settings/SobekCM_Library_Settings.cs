@@ -74,6 +74,8 @@ namespace SobekCM.Library
         private static int webOutputCachingMinutes;
         private static string mainBuilderInputFolder;
         private static string webServerIp;
+        private static string uploadFileTypes;
+        private static string uploadImageTypes;
 
         private static readonly string base_url;
 
@@ -104,6 +106,8 @@ namespace SobekCM.Library
         public static readonly bool Verify_CheckSum = true;
         private static SobekCM_Database_Type_Enum sobekDatabaseType;
 
+        private static Dictionary<string, string> additionalGlobalSettings;
+
         /// <summary> Static constructor sets all the values to default empty strings </summary>
         static SobekCM_Library_Settings()
         {
@@ -128,6 +132,8 @@ namespace SobekCM.Library
                 Default_UI_Language = Web_Language_Enum.English;
                 webOutputCachingMinutes = 0;
                 builderVerbose = false;
+                uploadFileTypes = String.Empty;
+                uploadImageTypes = String.Empty;
 
                 // Define new empty collections
                 dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -139,6 +145,7 @@ namespace SobekCM.Library
                 metadataFieldsByFacetName = new Dictionary<string, Metadata_Search_Field>();
                 incomingFolders = new List<Builder_Source_Folder>();
                 searchStopWords = new List<string>();
+                additionalGlobalSettings = new Dictionary<string, string>();
 
                 // Should we read the configuration file?
                 if (String.IsNullOrEmpty(SobekCM_Database.Connection_String))
@@ -297,6 +304,8 @@ namespace SobekCM.Library
                 Get_String_Value(settingsDictionary, "System Error Email", ref systemErrorEmail, String.Empty);
                 Get_Integer_Value(settingsDictionary, "Thumbnail Height", ref thumbnailHeight, ref error, -1);
                 Get_Integer_Value(settingsDictionary, "Thumbnail Width", ref thumbnailWidth, ref error, -1);
+                Get_String_Value(settingsDictionary, "Upload File Types", ref uploadFileTypes, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
+                Get_String_Value(settingsDictionary, "Upload Image Types", ref uploadImageTypes, ".txt,.tif,.jpg,.jp2,.pro");
                 Get_String_Value(settingsDictionary, "Web In Process Submission Location", ref inProcessSubmissionLocation, String.Empty);
                 Get_Integer_Value(settingsDictionary, "Web Output Suggested Caching", ref webOutputCachingMinutes, ref error, 0);
                 
@@ -320,6 +329,7 @@ namespace SobekCM.Library
             if (Settings_Dictionary.ContainsKey(Key))
             {
                 Setting = Settings_Dictionary[Key];
+                Settings_Dictionary.Remove(Key);
             }
             else
             {
@@ -332,6 +342,7 @@ namespace SobekCM.Library
             if (Settings_Dictionary.ContainsKey( Key ))
             {
                 Setting = Settings_Dictionary[Key];
+                Settings_Dictionary.Remove(Key);
             }
             else
             {
@@ -346,6 +357,7 @@ namespace SobekCM.Library
                 try
                 {
                     Setting = Convert.ToBoolean(Settings_Dictionary[Key]);
+                    Settings_Dictionary.Remove(Key);
                 }
                 catch
                 {
@@ -371,6 +383,7 @@ namespace SobekCM.Library
                 try
                 {
                     Setting = Convert.ToInt16(Settings_Dictionary[Key]);
+                    Settings_Dictionary.Remove(Key);
                 }
                 catch
                 {
@@ -1157,9 +1170,25 @@ namespace SobekCM.Library
             set { webServerIp = value; }
         }
 
+        /// <summary> Network location of the recycle bin, where deleted items and
+        /// files are placed for a while, in case of accidental deletion </summary>
         public static string Recycle_Bin
         {
             get { return imageServerNetwork + "\\RECYCLE BIN"; }
+        }
+
+        /// <summary> List of file type extensions which can be uploaded in the
+        /// file management interface.  These should all treated as downloads in the system. </summary>
+        public static string Upload_File_Types
+        {
+            get { return uploadFileTypes; }
+        }
+
+        /// <summary> List of file type extensions which can be uploaded in the page
+        /// image upload interface.  These should all be treated as page files in the system </summary>
+        public static string Upload_Image_Types
+        {
+            get { return uploadImageTypes; }
         }
 
         #region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders

@@ -230,4 +230,9 @@ input.sbkTsv_SearchBox_focused  {  color: #0000a8;  width: 220px;  background-co
 #sbkMviv_RelatedTitled td { padding: 5px; }
 .sbkMviv_RelatedTitlesRelation { width:150px; vertical-align:top; font-weight:bold; }
 
+/* TRACKING_ITEMVIEWER */
+.sbkTrk_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+.sbkTrk_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em; }
+.sbkTrk_ViewSelectRow { }
 
+.fadeEffect { background-color: #6f6b06; border-radius: 5px; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white;  }

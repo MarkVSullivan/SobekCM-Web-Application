@@ -1627,7 +1627,8 @@ namespace SobekCM.Library.MySobekViewer
                                           {
                                               CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
                                               ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
-                                              ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts"
+                                              ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
+                                              AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types + "," + SobekCM_Library_Settings.Upload_Image_Types
                                           };
                 placeHolder.Controls.Add(DJUploadController1);
 

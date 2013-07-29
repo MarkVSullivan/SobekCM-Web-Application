@@ -1142,3 +1142,11 @@ function ClearReorderPagination() {
     document.itemNavForm.submit();
     return false;
 }
+
+function UploadNewPageImages() {
+    var input_box = confirm("Are you sure you want to add more page images?   Any unsaved changes will be lost.");
+    if (input_box == true) {
+        window.location.href = 'http://localhost:60232/sobekcm/my/images/TEST000007/00001';
+    }
+    return false;
+}

@@ -142,11 +142,7 @@ namespace SobekCM.Library.MainWriters
                 if ((internalHeaderAction == "hide") || (internalHeaderAction == "show"))
                 {
                     // Pull the current visibility from the session
-                    bool shown = true;
-                    if ((HttpContext.Current.Session["internal_header"] != null) && (HttpContext.Current.Session["internal_header"].ToString() == "hidden"))
-                    {
-                        shown = false;
-                    }
+                    bool shown = !((HttpContext.Current.Session["internal_header"] != null) && (HttpContext.Current.Session["internal_header"].ToString() == "hidden"));
                     if ((internalHeaderAction == "hide") && (shown))
                     {
                         HttpContext.Current.Session["internal_header"] = "hidden";
@@ -790,7 +786,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ( currentMode.isPostBack) return;
+            if (( currentMode.isPostBack) && ( currentMode.Mode != Display_Mode_Enum.My_Sobek )) return;
             if (subwriter == null) return;
 
             Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);

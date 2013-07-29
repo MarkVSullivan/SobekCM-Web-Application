@@ -336,7 +336,7 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Edit an existing item through the online metadata editing process </summary>
 		Edit_Item_Metadata,
 
-		/// <summary> Edit the files related to a digial resource, by deleting or uploading new files </summary>
+        /// <summary> Edit the files related to a digial resource, by deleting or uploading new files </summary>
 		File_Management,
 
 		/// <summary> View a current folder (or bookshelf) or perform folder management on saved items </summary>
@@ -368,6 +368,9 @@ namespace SobekCM.Library.Navigation
 
 		/// <summary> Change your current password (or temporary password) </summary>
 		New_Password,
+        
+        /// <summary> Edit the page images related to a digial resource, by deleting or uploading new images </summary>
+        Page_Images_Management,
 
 		/// <summary> Edit user-based preferences and user information </summary>
 		Preferences,

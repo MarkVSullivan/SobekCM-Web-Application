@@ -731,6 +731,8 @@ namespace SobekCM.Library.Navigation
 						case My_Sobek_Type_Enum.File_Management:
 							return this_base_url + "my/files/" + BibID + "/" + VID + urlOptions1;
 
+                        case My_Sobek_Type_Enum.Page_Images_Management:
+                            return this_base_url + "my/images/" + BibID + "/" + VID + urlOptions1;
 
 						case My_Sobek_Type_Enum.Edit_Group_Behaviors:
 							if (!String.IsNullOrEmpty(mysobekSubmode))

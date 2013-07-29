@@ -447,6 +447,17 @@ namespace SobekCM.Library.Navigation
 												navigator.My_Sobek_SubMode = url_relative_list[4];
 											break;
 
+                                        case "images":
+                                            navigator.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                                            if (url_relative_list.Count > 2)
+                                                navigator.BibID = url_relative_list[2].ToUpper();
+                                            if (url_relative_list.Count > 3)
+                                                navigator.VID = url_relative_list[3];
+                                            if (url_relative_list.Count > 4)
+                                                navigator.My_Sobek_SubMode = url_relative_list[4];
+                                            break;
+
+
 										case "addvolume":
 											navigator.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
 											if (url_relative_list.Count > 2)
