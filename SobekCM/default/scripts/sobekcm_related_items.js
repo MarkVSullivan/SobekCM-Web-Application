@@ -20,24 +20,39 @@ document.getElementById('selectNumOfThumbnails').options[ntIndex].selected='true
 }
 
 //Make the span change color and fadeout over 4 seconds
-function AddAnchorDivEffect(urlWithAnchor)
-{
+
+function AddAnchorDivEffect(urlWithAnchor) {
     var spanID = 'span' + urlWithAnchor.substring(urlWithAnchor.indexOf('#') + 1);
+
+    var color = $('.sbkRi_Thumbnail').css('backgroundColor');
+
     
+    //document.getElementById(spanID).style.background="#FFFF00";
+    if (document.getElementById(spanID)) {
+        document.getElementById(spanID).className = 'fadeEffect';
+
+        $(".fadeEffect").animate({ backgroundColor: color }, 4000,
+            function() {
+                document.getElementById(spanID).className = 'sbkRi_Thumbnail';
+            });
+    }
+}
+
+function AddAnchorDivEffect_QC(urlWithAnchor) {
+    var spanID = urlWithAnchor.substring(urlWithAnchor.indexOf('#') + 1);
+
     var color = $('.thumbnailspan').css('backgroundColor');
 
 
-    
-	//document.getElementById(spanID).style.background="#FFFF00";
-			document.getElementById(spanID).className='fadeEffect';
-	
-			$(".fadeEffect").animate({ backgroundColor: color }, 4000,
-			    function () {
-                    document.getElementById(spanID).className = 'thumbnailspan';
-			        alert(spanID);
-			});
+    //document.getElementById(spanID).style.background="#FFFF00";
+    if (document.getElementById(spanID)) {
+        document.getElementById(spanID).className = 'fadeEffect';
 
-	
+        $(".fadeEffect").animate({ backgroundColor: color }, 4000,
+            function () {
+                document.getElementById(spanID).className = 'thumbnailspan';
+            });
+    }
 }
 
 //Make the appropriate span change color on pageload, if anchor present in the url

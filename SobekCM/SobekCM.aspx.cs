@@ -105,10 +105,10 @@ public partial class UFDC : System.Web.UI.Page
                     tocPlaceHolder.Visible = false;
             }
 
-            // The file upload form is only shown in ONE case
+            // The file upload form is only shown in these cases
             if ((Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) ||
                 ((Page_Globals.currentMode.Writer_Type != Writer_Type_Enum.HTML) && (Page_Globals.currentMode.Writer_Type != Writer_Type_Enum.HTML_LoggedIn)) ||
-                (((Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.New_Item) || (Page_Globals.currentMode.My_Sobek_SubMode.Length == 0) || (Page_Globals.currentMode.My_Sobek_SubMode[0] != '8')) && (Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.File_Management)) ||
+                (((Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.New_Item) || (Page_Globals.currentMode.My_Sobek_SubMode.Length == 0) || (Page_Globals.currentMode.My_Sobek_SubMode[0] != '8')) && (Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.File_Management) && (Page_Globals.currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Page_Images_Management)) ||
                 (Session["user"] == null))
             {
                 fileUploadForm.Visible = false;

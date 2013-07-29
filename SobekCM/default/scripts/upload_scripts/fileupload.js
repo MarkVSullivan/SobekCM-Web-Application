@@ -154,7 +154,6 @@ function up_RemoveUpload(e)
 
 function up_BeginUpload(key, showcancel, url)
 {
-    if (!Page_IsValid) return;
     if (navigator.userAgent.indexOf("Opera") != -1) return;
     if (document.getElementById(key) == null) return; 
     if (!up_ValidateHaveUploads()) return;

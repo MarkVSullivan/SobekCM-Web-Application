@@ -76,6 +76,9 @@ namespace darrenjohnstone.net.FileUpload
             }
         }
 
+        /// <summary> CSS class to be assigned to the upload button, overriding the default  </summary>
+        public string GoButton_CSS { get; set; }
+
         /// <summary>
         /// Gets or sets the allowed file extensions (a comma separated list .pdf,.zip,.gif).
         /// </summary>
@@ -253,6 +256,7 @@ namespace darrenjohnstone.net.FileUpload
                 outerContainer.Controls.Add(fuContainer);
 
                 System.Web.UI.WebControls.FileUpload fu = new System.Web.UI.WebControls.FileUpload();
+                fu.ID = "fileuploadbox";
                 fu.CssClass = "upFileNormal";
                 if ( System.Web.HttpContext.Current.Request.Browser.Browser.IndexOf("IE") >= 0 )
                     fu.CssClass = "upFileNormal_IE";
@@ -293,6 +297,8 @@ namespace darrenjohnstone.net.FileUpload
                 btnGo.Visible = ShowUploadButton;
                 btnGo.CausesValidation = true;
                 btnGo.CssClass = "upGoButton";
+                if (!String.IsNullOrEmpty(GoButton_CSS))
+                    btnGo.CssClass = GoButton_CSS;
             }
             else
             {
@@ -302,77 +308,11 @@ namespace darrenjohnstone.net.FileUpload
                 btnGo.Visible = ShowUploadButton;
                 btnGo.CausesValidation = true;
                 btnGo.CssClass = "upButtonNormal";
+                if (!String.IsNullOrEmpty(GoButton_CSS))
+                    btnGo.CssClass = GoButton_CSS;
                 btnGo.Attributes.Add("ajaxcall", "none");
+                btnGo.OnClientClick = "return check_fileextensions_custom('" + ClientID + "');";
             }
-
-            if (ApplyStyles)
-            {
-                ImageButton btnAdd = new ImageButton();
-                fuContainer.Controls.Add(btnAdd);
-                btnAdd.AlternateText = "Add a new upload";
-                btnAdd.ImageUrl = _controller.ImagePath + "addbutton.gif";
-                btnAdd.OnClientClick = "up_AddUpload('" + ClientID + "'); return false;";
-                btnAdd.Visible = ShowAddButton;
-                btnAdd.CssClass = "upAddButton upShowDynamic";
-            }
-            else
-            {
-                Button btnAdd = new Button();
-                fuContainer.Controls.Add(btnAdd);
-                btnAdd.Text = "Add";
-                btnAdd.OnClientClick = "up_AddUpload('" + ClientID + "'); return false;";
-                btnAdd.Visible = ShowAddButton;
-                btnAdd.CssClass = "upButtonNormal upShowDynamic";
-            }
-
-
-
-            //Panel buttonContainer = new Panel();
-            //buttonContainer.CssClass = "upButtons";
-
-            //// Create the buttons
-            //if (ApplyStyles)
-            //{
-            //    ImageButton btnGo = new ImageButton();
-            //    buttonContainer.Controls.Add(btnGo);
-            //    btnGo.AlternateText = "Upload now";
-            //    btnGo.ImageUrl = _controller.ImagePath + "uploadbutton.gif";
-            //    btnGo.Visible = ShowUploadButton;
-            //    btnGo.CausesValidation = true;
-            //    btnGo.CssClass = "upGoButton";
-            //}
-            //else
-            //{
-            //    Button btnGo = new Button();
-            //    buttonContainer.Controls.Add(btnGo);
-            //    btnGo.Text = "Upload";
-            //    btnGo.Visible = ShowUploadButton;
-            //    btnGo.CausesValidation = true;
-            //    btnGo.CssClass = "upButtonNormal";
-            //    btnGo.Attributes.Add("ajaxcall", "none");
-            //}
-
-            //if (ApplyStyles)
-            //{
-            //    ImageButton btnAdd = new ImageButton();
-            //    buttonContainer.Controls.Add(btnAdd);
-            //    btnAdd.AlternateText = "Add a new upload";
-            //    btnAdd.ImageUrl = _controller.ImagePath + "addbutton.gif";
-            //    btnAdd.OnClientClick = "up_AddUpload('" + ClientID + "'); return false;";
-            //    btnAdd.Visible = ShowAddButton;
-            //    btnAdd.CssClass = "upAddButton upShowDynamic";
-            //}
-            //else
-            //{
-            //    Button btnAdd = new Button();
-            //    buttonContainer.Controls.Add(btnAdd);
-            //    btnAdd.Text = "Add";
-            //    btnAdd.OnClientClick = "up_AddUpload('" + ClientID + "'); return false;";
-            //    btnAdd.Visible = ShowAddButton;
-            //    btnAdd.CssClass = "upButtonNormal upShowDynamic";
-            //}
-
-            //outerContainer.Controls.Add(buttonContainer);
 
             CustomValidator val = new CustomValidator();
             val.ServerValidate += new ServerValidateEventHandler(val_ServerValidate);
@@ -384,14 +324,12 @@ namespace darrenjohnstone.net.FileUpload
 
             HiddenField extensions = new HiddenField();
             extensions.Value = AllowedFileExtensions;
+            extensions.ID = "allowedExtensions";
             Controls.Add(extensions);
 
-            CustomValidator valExtensions = new CustomValidator();
-            valExtensions.ClientValidationFunction = "up_ValidateUploadExtensions";
-            valExtensions.ErrorMessage = InvalidExtensionMessage;
-            valExtensions.EnableClientScript = valExtensions.EnableClientScript = (AllowedFileExtensions != null);
-            valExtensions.Display = ValidatorDisplay.Dynamic;
-            Controls.Add(valExtensions);
+            Literal invalidExtensionMsg = new Literal();
+            invalidExtensionMsg.Text = "<span style=\"display:none;color:Red;\" id=\"invalidExtensionMsg\">" + InvalidExtensionMessage + "</span>";
+            Controls.Add(invalidExtensionMsg);
 
             // Create the end marker
             _endMarker = new HiddenField();

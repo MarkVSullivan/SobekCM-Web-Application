@@ -150,10 +150,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("        <!-- TRACKING ITEM VIEWER OUTPUT -->" );
 
             // Start the citation table
-            Output.WriteLine("          <td align=\"left\"><span class=\"SobekViewerTitle\"><b>Tracking Information</b></span></td>");
+            Output.WriteLine("          <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\"><b>Tracking Information</b></span></td>");
             Output.WriteLine( "       </tr>");
             Output.WriteLine("        <tr>");
-            Output.WriteLine("          <td class=\"SobekCitationDisplay\">" );
+            Output.WriteLine("          <td class=\"sbkTrk_MainArea\">" );
 
             // Set the text
             const string MILESTONES_VIEW = "MILESTONES";
@@ -164,8 +164,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the tabs for the different citation information
             string viewer_code = CurrentMode.ViewerCode;
-            Output.WriteLine("            <div class=\"SobekCitation\">");
-            Output.WriteLine("              <div class=\"CitationViewSelectRow\">");
+            Output.WriteLine("              <div class=\"sbkTrk_ViewSelectRow\">");
 
             if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
@@ -233,23 +232,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             switch (citationType)
             {
                 case Tracking_Type.Milestones:
-                    Output.WriteLine(Milestones_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
+                    Output.WriteLine(Milestones_String(Tracer) + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.History:
-                    Output.WriteLine(History_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
+                    Output.WriteLine(History_String(Tracer) + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.Media:
-                    Output.WriteLine(Media_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
+                    Output.WriteLine(Media_String(Tracer) + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.Archives:
-                    Output.WriteLine(Archives_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
+                    Output.WriteLine(Archives_String(Tracer) + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
 
                 case Tracking_Type.Directory_List:
-                    Output.WriteLine(Directory_String(Tracer) + "</div>" + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
+                    Output.WriteLine(Directory_String(Tracer) +  "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
             }
 

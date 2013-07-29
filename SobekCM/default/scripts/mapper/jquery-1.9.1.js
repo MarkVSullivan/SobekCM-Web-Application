@@ -1302,7 +1302,8 @@ jQuery.extend({
 		}
 
 		return deferred.promise();
-	}
+	},
+	value: 
 });
 jQuery.support = (function() {
 

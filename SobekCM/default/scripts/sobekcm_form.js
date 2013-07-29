@@ -534,5 +534,39 @@ function get_viewport()
         a = 'client';
         e = document.documentElement || document.body;
     }
-    return { width: e[a + 'Width'], height: e[a + 'Height'] } 
+    return { width: e[a + 'Width'], height: e[a + 'Height'] };
 }
+
+
+function check_fileextensions_custom(clientid) {
+
+    var fileToUploadElement2 = document.getElementById(clientid + '_fileuploadbox');
+    var extField = document.getElementById(clientid + "_allowedExtensions").value;
+ 
+    var lowered = fileToUploadElement2.value.toLowerCase();
+
+    var ok = true;
+
+    var exts = extField.split(',');
+
+    var valid = false;
+    for (var j = 0; j < exts.length; j++) {
+        if (lowered.lastIndexOf(exts[j]) != -1) {
+            valid = true;
+            break;
+        }
+    }
+
+    ok = ok && valid;
+
+    if (!ok) {
+        document.getElementById('invalidExtensionMsg').style.display = 'inline';
+        return false;
+    }
+        
+
+    else {
+        return true;
+    }
+}
+    

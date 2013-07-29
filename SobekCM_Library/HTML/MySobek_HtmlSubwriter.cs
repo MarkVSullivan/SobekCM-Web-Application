@@ -206,6 +206,10 @@ namespace SobekCM.Library.HTML
                     mySobekViewer = new Mass_Update_Items_MySobekViewer(user, Current_Mode, currentItem, codeManager, Tracer);
                     break;
 
+                case My_Sobek_Type_Enum.Page_Images_Management:
+                    mySobekViewer = new Page_Image_Upload_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, htmlSkin, translator, Tracer );
+                    break;
+
                 case My_Sobek_Type_Enum.User_Tags:
                     mySobekViewer = new User_Tags_MySobekViewer(user, Tracer);
                     break;
@@ -390,7 +394,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
 
             // If we are currently uploading files, add those specific upload styles 
-            if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management))
+            if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
             {
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
