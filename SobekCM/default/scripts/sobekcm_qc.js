@@ -365,7 +365,7 @@ function PaginationTextChanged(TextboxID, Mode)
 		
 		if((typeof total)=="number" && (romanToNumberError=="No error"))
 		{
-//		  alert(total);
+
 		   //Set the QC form hidden variable with this mode
 		   var hidden_autonumber_mode = document.getElementById('autonumber_mode_from_form');
 		   hidden_autonumber_mode.value = '0';
