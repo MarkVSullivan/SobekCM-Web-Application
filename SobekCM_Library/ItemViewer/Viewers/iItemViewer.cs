@@ -169,6 +169,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
 		int Viewer_Width { get; }
 
+        /// <summary> Height for the main viewer section to adjusted to accomodate this viewer</summary>
+        int Viewer_Height { get; }
+
         /// <summary> Gets the current page for paging purposes </summary>
         int Current_Page { get; }
 

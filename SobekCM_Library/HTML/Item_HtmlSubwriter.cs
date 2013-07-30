@@ -627,6 +627,8 @@ namespace SobekCM.Library.HTML
             if (!String.IsNullOrEmpty(currentMode.Fragment))
                 return;
 
+            string currentViewerCode = currentMode.ViewerCode;
+
             Output.WriteLine("  <table id=\"sbkIsw_Internalheader\">");
             Output.WriteLine("    <tr style=\"height:30px;\">");
             Output.WriteLine("      <td style=\"text-align:left\">");
@@ -667,11 +669,18 @@ namespace SobekCM.Library.HTML
 
 
                     // Add ability to edit behaviors for this item
-                    string currentViewerCode = currentMode.ViewerCode;
-                    currentMode.ViewerCode = "qc";
-                    Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                    currentMode.Mode = Display_Mode_Enum.Item_Display;
-                    currentMode.ViewerCode = currentViewerCode;
+                    if (currentItem.Web.Static_PageCount == 0)
+                    {
+                        currentMode.Mode = Display_Mode_Enum.My_Sobek;
+                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                        currentMode.Mode = Display_Mode_Enum.Item_Display;
+                    }
+                    else
+                    {
+                        currentMode.ViewerCode = "qc";
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+  }
 
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
@@ -729,10 +738,9 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                string currentViewCode = currentMode.ViewerCode;
                 currentMode.ViewerCode = "milestones";
                 Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                currentMode.ViewerCode = currentViewCode;
+                currentMode.ViewerCode = currentViewerCode;
 
                 // Add ability to edit behaviors for this item
                 if (userCanEditItem)
@@ -861,8 +869,6 @@ namespace SobekCM.Library.HTML
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
                     Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
-                    currentMode.Mode = Display_Mode_Enum.Item_Display;
-
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
                 }
@@ -870,6 +876,9 @@ namespace SobekCM.Library.HTML
             }
 
             Output.WriteLine("  </table>");
+
+            currentMode.Mode = Display_Mode_Enum.Item_Display;
+            currentMode.ViewerCode = currentViewerCode;
         }
 
         //public void Set_Text_Language(Application_State.Language_Enum Language)
@@ -1109,16 +1118,7 @@ namespace SobekCM.Library.HTML
 
                         Output.WriteLine("</div>");
                     }
-
-                    Output.WriteLine(" <script>");
-                    Output.WriteLine();
-                    Output.WriteLine("jQuery(document).ready(function () {");
-                    Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
-                    Output.WriteLine("  });");
-                    Output.WriteLine();
-                    Output.WriteLine("</script>");
-                    Output.WriteLine();
-                    Output.WriteLine("<ul id=\"sample-menu-1\" class=\"sf-menu\">");
+                    Output.WriteLine("<ul class=\"sf-menu\">");
 
                     // Save the current view type
                     ushort page = currentMode.Page;
@@ -1316,10 +1316,16 @@ namespace SobekCM.Library.HTML
 
 
 
-                    Output.WriteLine("\t</ul>");
+                    Output.WriteLine("\t</ul></div>");
                     Output.WriteLine();
 
-                    Output.WriteLine("</div>");
+                    Output.WriteLine(" <script>");
+                    Output.WriteLine();
+                    Output.WriteLine("jQuery(document).ready(function () {");
+                    Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
+                    Output.WriteLine("  });");
+                    Output.WriteLine();
+                    Output.WriteLine("</script>");
                     Output.WriteLine();
                 }
 
@@ -1502,7 +1508,10 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<!-- Begin the main item viewing area -->");
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
-                Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" >");
+                if ( PageViewer.Viewer_Height > 0 )
+                    Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" style=\"height:" + PageViewer.Viewer_Height + "px;\" >");
+                else
+                    Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" >");
             }
             else
             {

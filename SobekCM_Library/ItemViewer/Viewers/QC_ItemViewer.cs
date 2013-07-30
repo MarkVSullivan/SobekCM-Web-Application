@@ -59,6 +59,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 		private string metsInProcessFile;
 
+	    private int allThumbnailsOuterDiv1Width;
+        private int allThumbnailsOuterDiv1Height;
+
 		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
 		public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
 		{
@@ -146,6 +149,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			qc_profile = QualityControl_Configuration.Default_Profile;
 
 			title = "Quality Control";
+
+            // If this was a post-back keep the required height and width for the qc area
+            allThumbnailsOuterDiv1Width = -1;
+		    allThumbnailsOuterDiv1Height = -1;
+            string temp_width = HttpContext.Current.Request.Form["QC_window_width"] ?? String.Empty;
+            string temp_height = HttpContext.Current.Request.Form["QC_window_height"] ?? String.Empty;
+            if ((temp_width.Length > 0) && (temp_height.Length > 0))
+            {
+                // Parse the values and save to the session
+                if (Int32.TryParse(temp_width, out allThumbnailsOuterDiv1Width))
+                    HttpContext.Current.Session["QC_AllThumbnailsWidth"] = allThumbnailsOuterDiv1Width;
+                if (Int32.TryParse(temp_height, out allThumbnailsOuterDiv1Height))
+                    HttpContext.Current.Session["QC_AllThumbnailsHeight"] = allThumbnailsOuterDiv1Height;
+
+            }
+            else
+            {
+                object session_width = HttpContext.Current.Session["QC_AllThumbnailsWidth"];
+                if (session_width != null)
+                    allThumbnailsOuterDiv1Width = (int) session_width;
+                object session_height = HttpContext.Current.Session["QC_AllThumbnailsHeight"];
+                if (session_height != null)
+                    allThumbnailsOuterDiv1Height = (int) session_height;
+            }
 
 			// See if there were hidden requests
 			hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
@@ -1079,6 +1106,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			 }
 		}
 
+        /// <summary> Height for the main viewer section to adjusted to accomodate this viewer</summary>
+        public override int Viewer_Height
+        {
+            get
+            {
+                //if (allThumbnailsOuterDiv1Height > 0)
+                //{
+                //    // Need to accomodate the last row height as well
+                //    return allThumbnailsOuterDiv1Height + 38;
+                //}
+                return -1;
+            }
+        }
+
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -1293,47 +1334,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //StringBuilder builder = new StringBuilder(4000);
             Output.WriteLine("<div id=\"qc-menubar\">");
-            Output.WriteLine("<div id=\"menu-right-actions-qc\">");
 
-            // Add the option to GO TO a certain thumbnail next
-            Output.WriteLine("<div id=\"SelectGoToThumbnailSpan\">" + Go_To_Thumbnail + ":<select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" >");
-
-            //iterate through the page items
-            if (qc_item.Web.Static_PageCount > 0)
-            {
-                int thumbnail_count = 0;
-                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
-                {
-                    thumbnail_count++;
-                    string currentPageURL1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
-                    string filename = thisFile.Files[0].File_Name_Sans_Extension;
-                    if (filename.Length > 16)
-                    {
-                        // Are there numbers at the end?
-                        if (Char.IsNumber(filename[filename.Length - 1]))
-                        {
-                            int number_length = 1;
-                            while (Char.IsNumber(filename[filename.Length - (1 + number_length)]))
-                                number_length++;
-
-                            int characters = 12 - number_length;
-                            if (characters < 2)
-                                filename = "..." + filename.Substring(filename.Length - Math.Min(number_length, 12));
-                            else
-                            {
-                                filename = filename.Substring(0, characters) + "..." + filename.Substring(filename.Length - number_length);
-                            }
-                        }
-                        else
-                        {
-                            filename = filename.Substring(0, 12) + "...";
-                        }
-                    }
-
-                    Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\">" + filename + "</option>");
-                }
-            }
-            Output.WriteLine("</select></div>");
+            Output.WriteLine("<div id=\"sbkQc_MenuRightActions\">");
 
             //Get the icons for the thumbnail sizes
             string image_location = CurrentMode.Default_Images_URL;
@@ -1381,6 +1383,45 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:DeletePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Delete multiple pages\"/></a></span>");
          //   Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"View METS\"></img></a></span>");
             Output.WriteLine("</div>");
+            // Add the option to GO TO a certain thumbnail next
+            Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\">" + Go_To_Thumbnail + ":<select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" >");
+
+            //iterate through the page items
+            if (qc_item.Web.Static_PageCount > 0)
+            {
+                int thumbnail_count = 0;
+                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                {
+                    thumbnail_count++;
+                    string currentPageURL1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+                    string filename = thisFile.Files[0].File_Name_Sans_Extension;
+                    if (filename.Length > 16)
+                    {
+                        // Are there numbers at the end?
+                        if (Char.IsNumber(filename[filename.Length - 1]))
+                        {
+                            int number_length = 1;
+                            while (Char.IsNumber(filename[filename.Length - (1 + number_length)]))
+                                number_length++;
+
+                            int characters = 12 - number_length;
+                            if (characters < 2)
+                                filename = "..." + filename.Substring(filename.Length - Math.Min(number_length, 12));
+                            else
+                            {
+                                filename = filename.Substring(0, characters) + "..." + filename.Substring(filename.Length - number_length);
+                            }
+                        }
+                        else
+                        {
+                            filename = filename.Substring(0, 12) + "...";
+                        }
+                    }
+
+                    Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\">" + filename + "</option>");
+                }
+            }
+            Output.WriteLine("</select></div>");
             Output.WriteLine("<ul class=\"qc-menu\">");
 
             //builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
@@ -1563,7 +1604,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("\t</tr><tr>") ;
 			Output.WriteLine("\t\t<td>" );
 
-
 			Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_behaviors_request\" name=\"QC_behaviors_request\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"QC_affected_file\" name=\"QC_affected_file\" value=\"\" />");
@@ -1577,6 +1617,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_text_without_number\" name=\"Autonumber_text_without_number\" value=\"\"/>");
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_number_only\" name=\"Autonumber_number_only\" value=\"\"/>");
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"QC_window_height\" name=\"QC_window_height\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"QC_window_width\" name=\"QC_window_width\" value=\"\"/>");
 
 			// Start the main div for the thumbnails
 	
@@ -1631,7 +1673,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			//Outer div which contains all the thumbnails
-			Output.WriteLine("<div id=\"allThumbnailsOuterDiv1\" align=\"center\" style=\"margin:5px;\" class=\"qcContainerDivClass\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
+            if (( allThumbnailsOuterDiv1Height > 0 ) && ( allThumbnailsOuterDiv1Width > 0 ))
+    			Output.WriteLine("<div id=\"allThumbnailsOuterDiv1\" class=\"qcContainerDivClass\" style=\"width:" + allThumbnailsOuterDiv1Width + "px;height:" + allThumbnailsOuterDiv1Height + "px;\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
+            else
+            {
+                Output.WriteLine("<div id=\"allThumbnailsOuterDiv1\" class=\"qcContainerDivClass\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
+            }
 
 			List<abstract_TreeNode> static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
 			// Step through each page in the item
@@ -1763,7 +1810,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the text box for entering the name of this page
 					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + thisPage.Label + "\" onchange=\"PaginationTextChanged(this.id,1);\"></input></td></tr>");
+					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + Server.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id,1);\"></input></td></tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
@@ -1953,15 +2000,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			  Output.WriteLine("<script type=\"text/javascript\">setInterval(qc_auto_save, 180* 1000);</script>");
 
             //Add the Complete and Cancel buttons at the end of the form
-			Output.WriteLine("</tr><tr><td colspan=\"100%\">");
+            Output.WriteLine("</tr><tr><td colspan=\"100%\">");
 			//Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
 			//Start inner table
-			Output.WriteLine("<span style=\"float:right\"><table style=\"width=\"100%\"><tr>");
-			Output.WriteLine("<td>Comments: </td><td><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea></td> ");
-			Output.WriteLine("<td><button type=\"button\" class=\"qc_mainbuttons\" onclick=\"save_submit_form();\">Complete</button></td>");
-			Output.WriteLine("<td><button type=\"button\" class=\"qc_mainbuttons\" onclick=\"behaviors_cancel_form();\">Cancel</button></td>");
+            Output.WriteLine("<div id=\"sbkQc_BottomRow\">");
+			Output.WriteLine("<span id=\"sbkQC_BottomRowTextSpan\">Comments: </span><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
+			Output.WriteLine("<button type=\"button\" class=\"qc_mainbuttons\" onclick=\"save_submit_form();\">Complete</button>");
+			Output.WriteLine("<button type=\"button\" class=\"qc_mainbuttons\" onclick=\"behaviors_cancel_form();\">Cancel</button>");
 			//Close inner table
-			Output.WriteLine("</tr></table></span>");
+			Output.WriteLine("</div>");
 			Output.WriteLine("</td></tr>");
 
 			

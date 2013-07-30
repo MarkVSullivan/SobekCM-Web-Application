@@ -3,12 +3,19 @@ var spanArray;
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
-	var y = $("#allThumbnailsOuterDiv1").offset().top;
-
-	var window_height = $(window).height();
-	var new_height = window_height - y - 63;
-
-	$("#allThumbnailsOuterDiv1").height(new_height);
+    // set the height (starting under the header, etc..)
+    var y = $("#allThumbnailsOuterDiv1").offset().top;
+    var window_height = $(window).height();
+    var new_height = Math.floor(window_height - y - 63);
+    $("#allThumbnailsOuterDiv1").height(new_height);
+    
+    // set the width
+    var window_width = Math.floor($(window).width()) - 12;
+    $("#allThumbnailsOuterDiv1").width(window_width);
+    
+    // Save these values
+    document.getElementById("QC_window_height").value = new_height.toString();
+    document.getElementById("QC_window_width").value = window_width.toString();
 }
 
 function Configure_QC( MaxPageCount ) {

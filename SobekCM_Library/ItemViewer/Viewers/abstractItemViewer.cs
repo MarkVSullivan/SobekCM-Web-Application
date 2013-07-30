@@ -244,6 +244,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
+        /// <summary> Height for the main viewer section to adjusted to accomodate this viewer</summary>
+        public virtual int Viewer_Height
+        {
+            get
+            {
+                return -1;
+            }
+        }
+
         /// <summary> Gets the current page for paging purposes </summary>
         /// <value> By default this returns the page value from the current reqeust mode</value>
         public virtual int Current_Page
