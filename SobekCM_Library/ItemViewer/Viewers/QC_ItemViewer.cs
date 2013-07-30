@@ -395,13 +395,35 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Autonumbering_Mode = -1;
             }
 
+            // Ensure there are no pages directly under the item
+            List<abstract_TreeNode> add_to_new_main = new List<abstract_TreeNode>();
+            foreach (abstract_TreeNode rootNode in qc_item.Divisions.Physical_Tree.Roots)
+            {
+                if (rootNode.Page)
+                {
+                    add_to_new_main.Add(rootNode);
+                }
+            }
+            if (add_to_new_main.Count > 0)
+            {
+                Division_TreeNode newMain = new Division_TreeNode("Main", String.Empty);
+                qc_item.Divisions.Physical_Tree.Roots.Add(newMain);
+                foreach( abstract_TreeNode thisNode in add_to_new_main )
+                    newMain.Add_Child(thisNode);
+            }
+
+
             // Now, build a list from child node to parent node
             childToParent = new Dictionary<Page_TreeNode, Division_TreeNode>();
             foreach (abstract_TreeNode rootNode in qc_item.Divisions.Physical_Tree.Roots)
             {
                 if (!rootNode.Page)
                 {
-                    recurse_through_and_find_child_parent_relationship((Division_TreeNode)rootNode);
+                    recurse_through_and_find_child_parent_relationship((Division_TreeNode) rootNode);
+                }
+                else
+                {
+                    
                 }
             }
 
