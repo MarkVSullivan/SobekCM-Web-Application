@@ -15,7 +15,11 @@
 **                                                                 
 **************************************************************************/    
 
-#SelectGoToThumbnailSpan { display: inline;padding-right: 50px; }
+#sbkQc_GoToThumbnailDiv { float: right; display: inline; padding-right: 50px;padding-top: 7px; color: white; text-transform:uppercase; font-weight:bold;  }
+#sbkQc_MenuRightActions { float: right; width: 310px; height: 33px; display: inline;  }
+#sbkQc_BottomRow { text-align: right;height: 44px; }
+#sbkQc_BottomRow textarea {margin-right: 20px; }
+#sbkQC_BottomRowTextSpan { vertical-align: top; }
 
 .qcContainerDivClass {
      overflow: scroll; 
@@ -24,6 +28,8 @@
      background-color: #333333;
     -ms-scrollbar-track-color: #888888;
     -ms-scrollbar-face-color: #7d90d5;
+    text-align: center;
+    margin: 5px;
 }
 
 ::-webkit-scrollbar {
@@ -150,14 +156,14 @@
 
 .action-qc-menu-item
 {
-	padding-bottom: 10px;
+	padding-bottom: 6px;
 	text-decoration:none;
 	height: 33px;
 	cursor: pointer;
 	cursor: hand; 
     padding-right: 6px;
     padding-left: 6px;
-    padding-top: 8px;
+    padding-top: 11px;
 
 }
 
@@ -173,14 +179,14 @@
 
 .action-qc-menu-item2
 {
-	padding-bottom: 10px;
+	padding-bottom: 6px;
 	text-decoration:none;
 	height: 33px;
 	cursor: pointer;
 	cursor: hand; 
     padding-right: 6px;
     padding-left: 6px;
-    padding-top: 8px;
+    padding-top: 11px;
 }
 
 .action-qc-menu-item2:hover
@@ -218,6 +224,8 @@
     letter-spacing: 0.5px;
     margin-right: 5px;
     margin-left: 5px;
+    vertical-align: top;
+    margin-top: 4px;
 }
 
 .qc_mainbuttons:hover {

@@ -5,7 +5,6 @@
 {
     width: 100%; 
     background-color: #7d90d5;  
-    height: 27px;  
     font-size: 0.75em; 
     color:#FFFFFF; 
     vertical-align: top;
@@ -16,16 +15,18 @@
 {
     width: 100%; 
     background-color: #7d90d5;  
-    height: 33px;  
     font-size: 0.75em; 
     color:#FFFFFF; 
     vertical-align: top;
     display: inline-block;
+    padding: 0;
+    margin: 0;
 }
 
 
 /*** ESSENTIAL STYLES ***/
 .sf-menu {
+    height: 14px;  
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -37,6 +38,7 @@
 }
 
 .qc-menu {
+    height: 14px;  
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -123,7 +125,7 @@
 	border-left: 1px solid #fff;
 	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
 	border-top: 1px solid rgba(255,255,255,.5);
-	padding: .75em 1em;
+    padding: .75em 1em;
 	text-decoration: none;
 	zoom: 1; /* IE7 */
 }
@@ -266,7 +268,7 @@
 .action-sf-menu-item
 {
   /*  border-left: 1px solid #fff; */
-    padding-top: 6px;
+    padding-top: 6px;  
 	padding-bottom: 6px;
 	text-decoration:none;
 	height: 18px;
@@ -288,36 +290,28 @@
 	text-transform:uppercase;
     font-weight:bold;
     padding-top: 6px;
+    padding: 6px 0 0 0;
+    margin: 0;
 }
 
-
-#menu-right-actions-qc {
-    float: right;
-    color: white;
-	text-transform:uppercase;
-    font-weight:bold;
-    width: 630px;
-    height: 33px;
-     display: inline; 
-}
 
 #selected-sf-menu-item
 {
     text-decoration:none;
     background-color: #0021a6;
     border-left: 1px solid #fff;
-	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
-	border-top: 1px solid rgba(255,255,255,.5);
-    height: 15px;
+    height: 14px;
 	text-decoration: none;
 	zoom: 1; /* IE7 */
     padding: .50em .75em;
     color: white;
     border-top: none;
-    
+    margin: 0;   
 }
 
 #selected-sf-menu-item-link {
     background-color: #0021a6;
     height: 27px;
+    margin: 0;
+    padding: 0;
 }
