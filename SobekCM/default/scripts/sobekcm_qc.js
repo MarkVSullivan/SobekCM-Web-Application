@@ -168,7 +168,7 @@ function PaginationTextChanged(TextboxID, Mode)
 	var varRomanMatches = true;
 	var isRomanLower=true;
 
-    // Look for any characters in the last portion which are NOT in the roman numbers
+    // Look for any potential roman numeral matches at the end of the string
 	for(var x=0;x<lastNumber.length;x++)
 	{
 	    var c=lastNumber.charAt(x);
@@ -209,7 +209,7 @@ function PaginationTextChanged(TextboxID, Mode)
 	}//end if
 	else if(varRomanMatches==true)
 	{
-//	   alert('Possible roman numeral detected!');
+	   //alert('Possible roman numeral detected');
 	   var romanToNumberError="No error";
 	   
 	   for(var x=0;x<lastNumber.length;x++)
@@ -231,9 +231,9 @@ function PaginationTextChanged(TextboxID, Mode)
 		
 		if(roman.split('V').length>2||roman.split('L').length>2||roman.split('D').length>2)
 		{
-			romanToNumberError="Rule 4 violated";
+			romanToNumberError="Repeated use of V,L or D";
 		}	  
-		//Rule 1
+		//Rule 1-check that a single letter is not repeated more than thrice
 		var count=1;
 		var last='Z';
 		for(var x=0;x<roman.length;x++)
@@ -244,7 +244,7 @@ function PaginationTextChanged(TextboxID, Mode)
 			count++;
 			if(count==4)
 			{
-			  romanToNumberError="Rule 1 violated";
+			  romanToNumberError="Single letter repeated more than thrice";
 			}
 
 		  }
@@ -291,10 +291,11 @@ function PaginationTextChanged(TextboxID, Mode)
 			  break;
 		  
 		  }
-		 //Rule 3
+		 //Check for subtractive combination: A small valued numeral may be placed to the left of a larger value. When this occurs, the smaller numeral is subtracted
+		 //from the larger. Also, the subtracted digit must be at least 1/10th the value of the larger numeral and must be either I,X or C
 		 if(digit>maxDigit)		 
 		 {
-		   romanToNumberError="Rule 3 violated";
+		   romanToNumberError="Smaller value incorrectly placed next to a larger value numeral";
 		 }
 		 
 		 //Next digit
@@ -331,7 +332,7 @@ function PaginationTextChanged(TextboxID, Mode)
 		  {
 			if("IXC".indexOf(numeral)==-1 || nextDigit>(digit*10) || roman.split(numeral).length>3)
 			  {
-			   romanToNumberError="Rule 3 violated";
+			   romanToNumberError="Rule of subtractive combination violated";
 			  }
 			  maxDigit=digit-1;
 			  digit=nextDigit-digit;
@@ -342,20 +343,20 @@ function PaginationTextChanged(TextboxID, Mode)
 		 values.push(digit);
 		 //next digit
 		 ptr++;
-	//	  alert(values);
+//		  alert(values);
 		
 		
 		}
-		//Rule 5
+		//Going left to right - the value should not increase
 		for(var i=0;i<values.length-1;i++)
 		{
 		  if(values[i]<values[i+1])
 		  {
-			romanToNumberError="Rule 5 violated";
+			romanToNumberError="Larger valued numeral(pair) found to the right of a smaller value";
 		  }
 		}
 		
-		//Rule 2
+		//Larger numerals should be placed to the left of smaller numerals
 		var total=0;
 		for(var i=0;i<values.length;i++)
 		{
@@ -364,25 +365,31 @@ function PaginationTextChanged(TextboxID, Mode)
 		
 		if((typeof total)=="number" && (romanToNumberError=="No error"))
 		{
-		 // alert(total);
+
 		   //Set the QC form hidden variable with this mode
-		   var hidden_autonumber_mode = document.getElementById('Autonumber_mode');
+		   var hidden_autonumber_mode = document.getElementById('autonumber_mode_from_form');
 		   hidden_autonumber_mode.value = '0';
+//		   alert('after setting the autonumber mode hidden variable');
 		   
 		   var hidden_number_system = document.getElementById('Autonumber_number_system');
 		   hidden_number_system.value='roman';
-		 
+
 		 
 		  //Now autonumber all the remaining textboxes of the document
-		  for(var i=spanArray.indexOf(textboxID.split('textbox')[1])+1;i<=MaxPageCount;i++)
+
+  
+		  for(var i=spanArray.indexOf('span'+TextboxID.split('textbox')[1])+1;i<=spanArray.length;i++)
 			{
 			  total++;
-			 //alert(i);
-			  if(document.getElementById('textbox'+spanArray[i]))
+
+			  //If MODE 1: Check for the start of a new division
+			  if ((Mode == '1') && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == false))
+			        break;
+			  if(document.getElementById(spanArray[i].replace('span','textbox')))
 			  {
 			  
 				var number=total;
-				
+				//alert('before beginning reconversion');
 				//Convert decimal "total" back to a roman numeral
 				
 				//Set up the key-value arrays
@@ -412,8 +419,8 @@ function PaginationTextChanged(TextboxID, Mode)
 				//End conversion to roman numeral
 
 //				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
-				document.getElementById('textbox'+spanArray[i]).value = 
-				 document.getElementById(textboxID).value.substr(0,((document.getElementById(textboxID).value.length)-(lastNumber.length))-1)+' '+result;
+				document.getElementById(spanArray[i].replace('span','textbox')).value = 
+				 document.getElementById(TextboxID).value.substr(0,((document.getElementById(TextboxID).value.length)-(lastNumber.length))-1)+' '+result;
 			  }//end if
 			}//end for
 		}
