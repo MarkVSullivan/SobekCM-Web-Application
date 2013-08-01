@@ -1,5 +1,6 @@
 var spanArrayObjects;
 var spanArray;
+var autonumberingMode=-1;
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -16,7 +17,40 @@ function qc_set_fullscreen() {
     // Save these values
     document.getElementById("QC_window_height").value = new_height.toString();
     document.getElementById("QC_window_width").value = window_width.toString();
+	
+	//Adjust the 
 }
+
+function TestFunction(a,b)
+{
+alert(a+b);
+
+}
+
+function Autonumbering_mode_changed(mode, image_location)
+{
+   //Set the global mode variable to this value
+   autonumberingMode=mode;
+
+  // alert('mode set to:'+autonumberingMode);
+  alert('mode:'+mode+ 'image location'+image_location);
+  
+  //First uncheck all the autonumbering options in the menubar
+   for(var i=0;i<=2;i++)
+   {
+
+	   var uncheckedImageID = document.getElementById('checkmarkMode'+i);
+	   uncheckedImageID.src=image_location+"noCheckmark.png";
+	 
+   }
+  
+   //Now check the selected autonumber mode option
+   var imageID = document.getElementById('checkmarkMode'+mode);
+   imageID.src= image_location+"checkmark.png";
+   
+
+}
+
 
 function Configure_QC( MaxPageCount ) {
     //get the list of all the thumbnail spans on the page
@@ -160,6 +194,12 @@ function PaginationTextChanged(TextboxID, Mode)
     //Mode '1': Autonumber all the thumbnail pages till the start of the next div
     //Mode '2': No autonumber
 
+	//if there is a value assigned to the global autonumbering mode variable, use the global value insted of this one
+	if(autonumberingMode>-1)
+	  Mode = autonumberingMode;
+	
+//	alert('Mode value is:'+Mode);
+	
     if (Mode == '2')
         return;
     
@@ -188,16 +228,22 @@ function PaginationTextChanged(TextboxID, Mode)
     // Was there a match for numbers in the last portion?
 	if (matches != null) 
 	{
+//	alert('Matches length:' + matches.length+' Last number.length: '+lastNumber.length+ 'matches[0].length:'+matches[0].length);
 	   //if the number is at the end of the string, with a space before
-	   if(matches.length == lastNumber.length)
+	   if(matches[0].length == lastNumber.length)
 	   {
 	        //Set the QC form hidden variable with this mode
-	        document.getElementById('autonumber_mode_from_form').value = Mode;
+//	        alert('before setting the hidden variable value');
+			document.getElementById('autonumber_mode_from_form').value = Mode;
 	        document.getElementById('Autonumber_number_system').value = 'decimal';
-	        textOnlyLastBox.value = textboxValue.substr(0, textboxValue.length - matches.length);
+	        textOnlyLastBox.value = textboxValue.substr(0, textboxValue.length - matches[0].length);
+			
+			
 	        var number = parseInt(lastNumber);
+
 			for(var i=spanArray.indexOf('span' + index)+1; i < spanArray.length;i++)
 			{
+//			alert('Current i value:'+i);
 			    // If this is MODE 1, then look to see if this is the beginnnig of a new division
 			    if ((Mode == '1') && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == false))
 			        break;
@@ -219,6 +265,7 @@ function PaginationTextChanged(TextboxID, Mode)
 	   //alert('Possible roman numeral detected');
 	   var romanToNumberError="No error";
 	   
+	   //Determine whether the roman number is in upper or lower case
 	   for(var x=0;x<lastNumber.length;x++)
 		{
 		  var c=lastNumber.charAt(x);
@@ -302,7 +349,7 @@ function PaginationTextChanged(TextboxID, Mode)
 		 //from the larger. Also, the subtracted digit must be at least 1/10th the value of the larger numeral and must be either I,X or C
 		 if(digit>maxDigit)		 
 		 {
-		   romanToNumberError="Smaller value incorrectly placed next to a larger value numeral";
+		   romanToNumberError="Smaller value incorrectly placed to the left of a larger value numeral";
 		 }
 		 
 		 //Next digit
@@ -946,7 +993,7 @@ function chkMoveThumbnailChanged(chkBoxID, MaxPageCount)
 // ------------------ Functions for the Move-Selected-Pages Popup Form---------------------//
 
 
-//Disable\enable the select dropdowns based on the radio button selected
+//Disable/enable the select dropdowns based on the radio button selected
 function rbMovePagesChanged(rbValue)
 {
   if(rbValue=='After')
