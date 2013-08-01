@@ -745,16 +745,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         //add poi point
         public void Add_POI_Point(double Latitude, double Longitude, string Label)
         {
-            // Only add this point if it does not already exists
-            if (points == null)
-                points = new List<Coordinate_Point>();
-
-            foreach (Coordinate_Point existingPoint in points)
-            {
-                if ((existingPoint.Latitude == Latitude) && (existingPoint.Longitude == Longitude))
-                    return;
-            }
-
             points.Add(new Coordinate_Point(Latitude, Longitude, Label));
         }
 
@@ -771,9 +761,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         }
 
         //add circle
-        public void Add_POI_Circle()
+        public void Add_POI_Circle(Coordinate_Polygon Circle)
         {
-           
+            polygons.Add(Circle);
         }
     }
 }
