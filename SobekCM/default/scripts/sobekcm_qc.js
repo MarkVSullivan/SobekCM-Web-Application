@@ -228,12 +228,10 @@ function PaginationTextChanged(TextboxID, Mode)
     // Was there a match for numbers in the last portion?
 	if (matches != null) 
 	{
-//	alert('Matches length:' + matches.length+' Last number.length: '+lastNumber.length+ 'matches[0].length:'+matches[0].length);
 	   //if the number is at the end of the string, with a space before
 	   if(matches[0].length == lastNumber.length)
 	   {
 	        //Set the QC form hidden variable with this mode
-//	        alert('before setting the hidden variable value');
 			document.getElementById('autonumber_mode_from_form').value = Mode;
 	        document.getElementById('Autonumber_number_system').value = 'decimal';
 	        textOnlyLastBox.value = textboxValue.substr(0, textboxValue.length - matches[0].length);
