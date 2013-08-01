@@ -1953,7 +1953,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					Output.WriteLine("<img class=\"qc_toolboximage\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
 
-
 					//for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
 					//for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
