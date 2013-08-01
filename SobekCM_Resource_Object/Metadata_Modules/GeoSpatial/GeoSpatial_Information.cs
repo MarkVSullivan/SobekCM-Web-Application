@@ -741,5 +741,29 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             }
             lines.Clear();
         }
+
+        //add poi point
+        public void Add_POI_Point(double Latitude, double Longitude, string Label)
+        {
+            points.Add(new Coordinate_Point(Latitude, Longitude, Label));
+        }
+
+        //add line
+        public void Add_POI_Line(Coordinate_Line Line)
+        {
+            lines.Add(Line);
+        }
+
+        //add polygon
+        public void Add_POI_Polygon(Coordinate_Polygon Polygon)
+        {
+            polygons.Add(Polygon);
+        }
+
+        //add circle
+        public void Add_POI_Circle(Coordinate_Polygon Circle)
+        {
+            polygons.Add(Circle);
+        }
     }
 }

@@ -143,7 +143,7 @@ function createSavedPOI() {
                 poiKML[i] = poiObj[i].getPosition().toString();
                 break;
             case "circle":
-                poiKML[i] = poiObj[i].getCenter() + ",";
+                poiKML[i] = poiObj[i].getCenter() + "|";
                 poiKML[i] += poiObj[i].getRadius();
                 break;
             case "rectangle":
@@ -151,11 +151,13 @@ function createSavedPOI() {
                 break;
             case "polygon":
                 poiObj[i].getPath().forEach(function (latLng) {
+                    poiKML[i] += "|";
                     poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator    
                 });
                 break;
             case "polyline":
                 poiObj[i].getPath().forEach(function (latLng) {
+                    poiKML[i] += "|";
                     poiKML[i] += latLng; //NOTE: this has a non standard coordinate separator    
                 });
                 break;
