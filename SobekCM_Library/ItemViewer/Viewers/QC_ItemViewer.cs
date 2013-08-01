@@ -1932,8 +1932,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine("</select></td></tr>");
 
 					//Add the textbox for named divisions
-
-					if (newParent)
+                    if (newParent)
 					{
 						Output.WriteLine("<tr id=\"divNameTableRow" + page_index + "\" class=\"" + txtDivNameCssClass + "\"><td class=\"namedDivisionText\" align=\"left\">" + division_name_text + "</td>");
 						Output.WriteLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
