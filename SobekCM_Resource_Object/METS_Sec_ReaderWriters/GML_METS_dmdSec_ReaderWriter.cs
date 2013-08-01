@@ -264,10 +264,13 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             // Read the feature label
                             string polygonLabel = String.Empty;
                             double polygonRotation = 0;
+                            double circleRadius = 0;
                             if (Input_XmlReader.MoveToAttribute("label"))
                                 polygonLabel = Input_XmlReader.Value;
                             if (Input_XmlReader.MoveToAttribute("rotation"))
                                 polygonRotation = Convert.ToDouble(Input_XmlReader.Value);
+                            if (Input_XmlReader.MoveToAttribute("radius"))
+                                circleRadius = Convert.ToDouble(Input_XmlReader.Value);
                             do
                             {
                                 if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Polygon") //check to see if end of element
@@ -372,9 +375,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 Output_Stream.WriteLine("<gml:featureMember>");
                 if (thisPolygon.Label.Length > 0)
-                    Output_Stream.WriteLine("<gml:Polygon label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.polygonRotation + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.polygonRotation + "\" radius=\"" + thisPolygon.circleRadius + "\">");
                 else
-                    Output_Stream.WriteLine("<gml:Polygon rotation=\"" + thisPolygon.polygonRotation + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon rotation=\"" + thisPolygon.polygonRotation + "\" radius=\"" + thisPolygon.circleRadius + "\">");
                 Output_Stream.WriteLine("<gml:exterior>");
                 Output_Stream.WriteLine("<gml:LinearRing>");
                 Output_Stream.Write("<gml:Coordinates>");
