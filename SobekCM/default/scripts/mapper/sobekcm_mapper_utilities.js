@@ -189,6 +189,11 @@ function toServer(dataPackage) {
     });
 }
 
+//centeres on an overlay
+function overlayCenterOnMe(id){
+    panMap(ghostOverlayRectangle[id].getCenter()); //attempt to pan to center of overlay
+}
+
 //toggles overlay for editing
 function overlayEditMe(id) {
     var ghostIndex = id;
@@ -211,7 +216,7 @@ function overlayEditMe(id) {
                 preservedRotation = savingOverlayRotation[i];
             }
         }
-        //panMap(ghostOverlayRectangle[ghostIndex].bounds.getCenter()); //attempt to pan to center of overlay
+        overlayCenterOnMe(id);
     }
     displayMessage("Editing Overlay " + id);
 }
