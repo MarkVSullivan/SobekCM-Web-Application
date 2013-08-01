@@ -241,7 +241,6 @@ function PaginationTextChanged(TextboxID, Mode)
 
 			for(var i=spanArray.indexOf('span' + index)+1; i < spanArray.length;i++)
 			{
-//			alert('Current i value:'+i);
 			    // If this is MODE 1, then look to see if this is the beginnnig of a new division
 			    if ((Mode == '1') && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == false))
 			        break;
