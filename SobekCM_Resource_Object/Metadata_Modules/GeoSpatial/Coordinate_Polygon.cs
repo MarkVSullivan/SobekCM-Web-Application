@@ -20,6 +20,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private string label;
         private ushort pageSequence;
         public double polygonRotation;
+        public double circleRadius;
 
         /// <summary> Constructor for a new instance of this Coordinate_Polygon class </summary>
         public Coordinate_Polygon()
@@ -28,6 +29,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             internal_points = new List<Coordinate_Point>();
             polygonRotation = 0;
             pageSequence = 0;
+            circleRadius = 0;
         }
 
         /// <summary> Return the rectangular bounding box, with the first point in the upper left corner 
@@ -305,6 +307,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             polygonRotation = rotation;
         }
 
+        /// <summary> Add Radius Data </summary>
+        public void Add_Radius(double radius)
+        {
+            circleRadius = radius;
+        }
+
         /// <summary> Writes this polygon of coordinate points as SobekCM-formatted XML </summary>
         /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
         /// <param name="results"> Stream to write this polygon of coordinate points as SobekCM-formatted XML</param>
@@ -340,7 +348,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 }
                 results.Write("</" + sobekcm_namespace + ":Internal>\r\n");
             }
-            results.Write("<" + sobekcm_namespace + ":Rotation> " + polygonRotation + " </" + sobekcm_namespace + ":Rotation>\r\n");
             results.Write("");
             results.Write("</" + sobekcm_namespace + ":Polygon>\r\n");
         }

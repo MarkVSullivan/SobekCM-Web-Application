@@ -211,14 +211,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 break;
                             case "circle":
 
+                                //create new circle
+                                Coordinate_Polygon poiCircle = new Coordinate_Polygon();
+
+                                //set the label
+                                poiCircle.Label = ar[2];
+
+                                //set the radius
+                                poiCircle.Add_Radius(Convert.ToDouble(ar[4]));
+
                                 //prep incoming lat/long
                                 string[] temp3 = ar[3].Split(',');
                                 double temp3Lat = Convert.ToDouble(temp3[0].Replace("(", ""));
                                 double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
 
-                                string savedCircleDesc = ar[2];
+                                //add the center point
+                                poiCircle.Add_Edge_Point(temp3Lat, temp3Long, "circleCenter");
 
-                                string savedCircleRadius = ar[4];
+                                //add to the resource obj
+                                resourceGeoInfo.Add_POI_Circle(poiCircle);
 
                                 break;
                             case "rectangle":
