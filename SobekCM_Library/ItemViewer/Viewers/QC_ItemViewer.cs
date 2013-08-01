@@ -631,7 +631,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Autonumber the remaining pages based on the selected option
 			if (autonumber_mode_from_form == 0 || autonumber_mode_from_form == 1)
 			{
-				//		    autonumber_mode = autonumber_mode_from_form;
+			    autonumber_mode = autonumber_mode_from_form;
+			    CurrentMode.Autonumbering_Mode = autonumber_mode_from_form;
 				bool reached_last_page = false;
 				bool reached_next_div = false;
 				int number = 0;
@@ -1138,6 +1139,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Body_Attributes.Clear();
             Body_Attributes.Add(new Tuple<string, string>("onload", "qc_set_fullscreen();"));
             Body_Attributes.Add(new Tuple<string, string>("onresize", "qc_set_fullscreen();"));
+            
         }
 
 		#region Methods and properties to allow the paging to work correctly
@@ -1395,6 +1397,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     thumbnail_count++;
                     string currentPageURL1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
                     string filename = thisFile.Files[0].File_Name_Sans_Extension;
+                    string tooltipText = String.Empty;
+
                     if (filename.Length > 16)
                     {
                         // Are there numbers at the end?
@@ -1409,16 +1413,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 filename = "..." + filename.Substring(filename.Length - Math.Min(number_length, 12));
                             else
                             {
+                                tooltipText = filename;
                                 filename = filename.Substring(0, characters) + "..." + filename.Substring(filename.Length - number_length);
                             }
                         }
                         else
                         {
+                            tooltipText = filename;
                             filename = filename.Substring(0, 12) + "...";
                         }
                     }
 
-                    Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\">" + filename + "</option>");
+                    Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\" title=\""+tooltipText+"\">" + filename + "</option>");
                 }
             }
             Output.WriteLine("</select></div>");
@@ -1436,10 +1442,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the checkmarks
             string noCheckmark = "<img src=\"" + image_location + "nocheckmark.png\" alt=\"\" /> ";
             string checkmark = "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" /> ";
+            
 
             Output.WriteLine("<li><a onclick=\"return false;\">Resource</a><ul>");
             Output.WriteLine("\t<li><a href=\"\" onclick=\"return behaviors_save_form();\">Save</a></li>");
-            Output.WriteLine("\t<li><a href=\"\" onclick=\"save_submit_form();\";>Complete</a></li>");
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"save_submit_form();\">Complete</a></li>");
             Output.WriteLine("\t<li><a href=\"\" onclick=\"behaviors_cancel_form();\">Cancel</a></li>");
             Output.WriteLine("</ul></li>");
 
@@ -1531,25 +1538,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("\t<li><a onclick=\"return false;\">Automatic Numbering</a><ul>");
             if (autonumber_mode == 2)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "No automatic numbering</a></li>");
+               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:return Autonumbering_mode_changed(2, '"+image_location+"'); \">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
             else
             {
-                CurrentMode.Autonumbering_Mode = 2;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "No automatic numbering</a></li>");
+              //  CurrentMode.Autonumbering_Mode = 2;
+                //Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'"+image_location+"'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+                
             }
             if (autonumber_mode == 1)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Within same division</a></li>");
+               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:return Autonumbering_mode_changed(1, '" + image_location + "'); \">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
             else
             {
-                CurrentMode.Autonumbering_Mode = 1;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Within same division</a></li>");
+               // CurrentMode.Autonumbering_Mode = 1;
+               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
             }
             if (autonumber_mode == 0)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "Entire document</a></li>");
+               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:return Autonumbering_mode_changed(0, '" + image_location + "'); \">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
             else
             {
-                CurrentMode.Autonumbering_Mode = 0;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "Entire document</a></li>");
+              //  CurrentMode.Autonumbering_Mode = 0;
+//                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
             }
             //Reset the mode
             CurrentMode.Autonumbering_Mode = autonumber_mode;
@@ -1711,7 +1725,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Add the name of the file
                     string filename_sans_extension = thisFile.File_Name_Sans_Extension;
-                    Output.WriteLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" />" + filename_sans_extension + "</td>");
+				    string filenameToDisplay = filename_sans_extension;
+                    //Truncate the filename if too long
+                    string tooltipText = String.Empty;
+
+                    if (filename_sans_extension.Length > 16)
+                    {
+                        // Are there numbers at the end?
+                        if (Char.IsNumber(filenameToDisplay[filenameToDisplay.Length - 1]))
+                        {
+                            int number_length = 1;
+                            while (Char.IsNumber(filenameToDisplay[filenameToDisplay.Length - (1 + number_length)]))
+                                number_length++;
+
+                            int characters = 8 - number_length;
+                            if (characters < 2)
+                                filenameToDisplay = "..." + filenameToDisplay.Substring(filenameToDisplay.Length - Math.Min(number_length, 8));
+                            else
+                            {
+                                tooltipText = filenameToDisplay;
+                                filenameToDisplay = filenameToDisplay.Substring(0, characters) + "..." + filenameToDisplay.Substring(filenameToDisplay.Length - number_length);
+                            }
+                        }
+                        else
+                        {
+                            tooltipText = filenameToDisplay;
+                            filenameToDisplay = filenameToDisplay.Substring(0, 8) + "...";
+                        }
+                    }
+
+     //               Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\" title=\"" + tooltipText + "\">" + filename + "</option>");
+
+                    //End filename truncation
+
+
+
+                    Output.WriteLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span title=\""+tooltipText+"\">" + filenameToDisplay + "</span></td>");
 
                     //Add the checkbox for moving this thumbnail
                     Output.WriteLine("<td><span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, " + qc_item.Web.Static_PageCount + ")\"/></span>");
@@ -1763,6 +1812,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string division_text = "Division:";
 					string pagination_text = "Pagination:";
 					string division_name_text = "Name:";
+				    string division_tooltip_text = "Division";
+				    string division_checkbox_tooltip = "Check for the beginning of a new division type";
 					string division_box = "divisionbox_small";
 					string pagination_box = "pagebox_small";
 					int icon_width = 15;
@@ -1816,11 +1867,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					bool newParent = thisParent != lastParent;
 
 					// Add the Division prompting, and the check box for a new division
-					Output.Write("<tr><td class=\"divisiontext\" align=\"left\">" + division_text);
-					Output.Write("<input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.id);\"");
+					Output.Write("<tr><td class=\"divisiontext\" align=\"left\"><span title=\"" +division_tooltip_text+"\">"+ division_text+"</span>");
+					Output.Write("<span title=\""+division_checkbox_tooltip+"\"><input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.id);\"");
 					if ( newParent )
 						Output.Write(" checked=\"checked\"");
-					Output.WriteLine("/></td>");
+                    Output.WriteLine("/></span></td>");
 
 					// Determine the text for the parent
 					string parentLabel = String.Empty;
@@ -1881,8 +1932,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine("</select></td></tr>");
 
 					//Add the textbox for named divisions
-
-					if (newParent)
+                    if (newParent)
 					{
 						Output.WriteLine("<tr id=\"divNameTableRow" + page_index + "\" class=\"" + txtDivNameCssClass + "\"><td class=\"namedDivisionText\" align=\"left\">" + division_name_text + "</td>");
 						Output.WriteLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
@@ -1902,7 +1952,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
 
 					Output.WriteLine("<img class=\"qc_toolboximage\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
-
 
 					//for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
