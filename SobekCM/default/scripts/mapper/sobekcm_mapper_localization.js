@@ -17,8 +17,8 @@ var L5 = "Returned to Bounds!"; //tesbounds();
 var L6 = "Could not find location. Either the format you entered is invalid or the location is outside of the map bounds."; //codeAddress();
 var L7 = "Error: Overlay image source cannot contain a ~ or |"; //createSavedOverlay();
 var L8 = "Error: Description cannot contain a ~ or |"; //poiGetDesc(id);
-var L9 = "Item Cleared!"; //buttonClearItem();
-var L10 = "Overlay Cleared!"; //buttonClearOverlay();
+var L9 = "Item Location Reset!"; //buttonClearItem();
+var L10 = "Overlays Reset!"; //buttonClearOverlay();
 var L11 = "POI Set Cleared!"; //buttonClearPOI();
 var L12 = "Nothing Happened!"; //HandleResult(arg);
 var L13 = "Item Saved!"; //HandleResult(arg);
@@ -39,6 +39,10 @@ var L27 = "Overlay Editing Turned On";
 var L28 = "ERROR: Failed Adding Titles";
 var L29 = "ERROR: Failed Adding Textual Content";
 var L30 = "Edit Location by Dragging Exisiting Marker";
+var L31 = "Hiding";
+var L32 = "Showing";
+var L33 = "Removed";
+var L34 = "Editing";
 
 //by listeners
 try {
