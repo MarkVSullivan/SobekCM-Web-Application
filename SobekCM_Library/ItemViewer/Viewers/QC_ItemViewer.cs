@@ -138,7 +138,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 
-
 			// If no QC item, this is an error
 			if (qc_item == null)
 			{
