@@ -56,22 +56,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
+            CurrentUser = Current_User;
+            CurrentItem = Current_Item;
+            this.CurrentMode = Current_Mode;
+
             // If there is no user, send to the login
-            if (Current_User == null)
+            if (CurrentUser == null)
             { 
-                //CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 CurrentMode.Redirect();
                 return;
             }  
             
-            CurrentUser = Current_User;
-            CurrentItem = Current_Item;
-            this.CurrentMode = Current_Mode;
-            //geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-
-                     
-
         }
 
         //parse and save incoming message 
@@ -715,7 +712,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab3_header\" class=\"tab-title\"></div> ");
-            mapperBuilder.AppendLine("                 <div class=\"tab\"> ");
+            mapperBuilder.AppendLine("                 <div id=\"itemACL\" class=\"tab\"> ");
             mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
             mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_tab3\"> ");
             mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_placeItem\" class=\"button\"></div> ");
@@ -731,7 +728,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                     </div> ");
             mapperBuilder.AppendLine("                 </div> ");
             mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab4_header\" class=\"tab-title\"></div> ");
-            mapperBuilder.AppendLine("                 <div class=\"tab\"> ");
+            mapperBuilder.AppendLine("                 <div id=\"overlayACL\" class=\"tab\"> ");
             mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_placeOverlay\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayGetUserLocation\" class=\"button\"></div> ");
@@ -791,7 +788,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine(" </div> ");
             mapperBuilder.AppendLine(" <div id=\"debugs\"></div> ");
 
-
+            
             #endregion
 
             //custom js files (load order does matter)

@@ -399,18 +399,27 @@ function save(id) {
 function clear(id) {
     switch (id) {
         case "item":
+            //clear the current marker
             itemMarker.setMap(null); //delete marker form map
             itemMarker = null; //delete reference to marker
             savingMarkerCenter = null; //reset stored coords to save
             document.getElementById('content_toolbox_posItem').value = ""; //reset lat/long in tab
             document.getElementById('content_toolbox_rgItem').value = ""; //reset address in tab
+            //redraw incoming marker
+            displayIncomingPoints();
             displayMessage(L9); //say all is reset
             break;
 
         case "overlay":
+            //delete all incoming overlays
             clearIncomingOverlays();
+            //show all the incoming overlays
             displayIncomingOverlays();
+            //redraw list items of overlays
             initOverlayList();
+            //clear the save cache
+            clearCacheSaveOverlay();
+            //say we are finished
             displayMessage(L10);
             break;
 
