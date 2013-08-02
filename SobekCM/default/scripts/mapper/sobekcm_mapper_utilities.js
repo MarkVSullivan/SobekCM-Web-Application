@@ -2,6 +2,7 @@
 
 //inits user defined options
 function initOptions() {
+    
     toggleVis("mapControls");
     toggleVis("mapControls");
     toggleVis("toolbox");
@@ -14,6 +15,21 @@ function initOptions() {
     toggleVis("mapDrawingManager");
     buttonActive("layer");
     document.getElementById("content_toolbarGrabber").style.display = "block";
+    //determine ACL
+    if (incomingPointCenter.length > 0) {
+        //there is an item
+        actionsACL("full", "item");
+    } else {
+        if (incomingOverlayBounds.length > 0) {
+            //there are overlays
+            actionsACL("full", "overlay");
+        } else {
+            //actionsACL("full", "item");
+            //actionsACL("full", "overlay");
+            //actionsACL("full", "poi"); //not yet implemented
+        }
+    }
+    
 }
 
 //open a specific tab
@@ -134,7 +150,7 @@ function createSavedOverlay(label, source, bounds, rotation) {
 
 //create a package to send to the server to save poi
 function createSavedPOI() {
-    var dataPackage = "";
+    var dataPackage = null;
     //cycle through all pois
     for (var i = 0; i < poiObj.length; i++) {
         //get specific geometry 
@@ -162,15 +178,23 @@ function createSavedPOI() {
                 });
                 break;
             case "deleted":
-                //nothing to do here
+                //nothing to do here, just a placeholder
                 break;
         }
-        //compile message
-        var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
-        dataPackage += data + "~";
+        //filter out the deleted pois
+        if (poiType[i] != "deleted") {
+            //compile data message
+            var data = "poi|" + poiType[i] + "|" + poiDesc[i] + "|" + poiKML[i] + "|";
+            dataPackage += data + "~";
+        }
+        
     }
     de("saving overlay set: " + dataPackage); //temp  
-    toServer(dataPackage); //send to server to save
+    //add another filter to catch if datapackage is null
+    if (dataPackage != null) {
+        toServer(dataPackage); //send to server to save    
+    }
+    
 }
 
 //sends save dataPackages to the server via json
@@ -184,9 +208,15 @@ function toServer(dataPackage) {
         dataType: "json",
         success: function (result) {
             de("server result:" + result);
-            displayMessage("Saved");
+            displayMessage(L_Saved);
         }
     });
+}
+
+//centeres on an overlay
+function overlayCenterOnMe(id) {
+    //attempt to pan to center of overlay
+    map.panTo(ghostOverlayRectangle[id].getBounds().getCenter()); 
 }
 
 //toggles overlay for editing
@@ -211,9 +241,9 @@ function overlayEditMe(id) {
                 preservedRotation = savingOverlayRotation[i];
             }
         }
-        //panMap(ghostOverlayRectangle[ghostIndex].bounds.getCenter()); //attempt to pan to center of overlay
+        overlayCenterOnMe(id);
     }
-    displayMessage("Editing Overlay " + id);
+    displayMessage(L34 + " " + incomingOverlayLabel[id]);
 }
 
 //hide poi on map
@@ -221,7 +251,7 @@ function overlayHideMe(id) {
     overlaysOnMap[id].setMap(null);
     ghostOverlayRectangle[id].setMap(null);
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "add.png\" onclick=\"overlayShowMe(" + id + ");\" />";
-    displayMessage("Hiding Overlay " + id);
+    displayMessage(L31 + " " + id);
 }
 
 //show poi on map
@@ -229,7 +259,7 @@ function overlayShowMe(id) {
     overlaysOnMap[id].setMap(map);
     ghostOverlayRectangle[id].setMap(map);
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
-    displayMessage("Showing Overlay " + id);
+    displayMessage(L32 + " " + id);
 }
 
 //delete poi from map and list
@@ -238,17 +268,15 @@ function overlayDeleteMe(id) {
     ghostOverlayRectangle[id].setMap(null);
     var strg = "#overlay" + id; //create <li> poi string
     $(strg).remove(); //remove <li>
-    displayMessage("Overlay " + id + " Removed");
+    displayMessage(id + " " + L33);
 }
 
 //open the infowindow of a poi
 function poiEditMe(id) {
     poiObj[id].setMap(map);
-    if (poiType[id] == "marker") {
-        infowindow[id].open(map, poiObj[id]);
-    } else {
-        infowindow[id].setMap(map);
-    }
+    infowindow[id].setMap(map);
+    //document.getElementById("overlayListItem" + id).style.backgroundColor = "red"; //not implemented yet
+    document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }
 
 //hide poi on map
@@ -280,30 +308,53 @@ function poiDeleteMe(id) {
 
 //get the poi desc
 function poiGetDesc(id) {
-
-    var temp = document.getElementById("poiDesc" + id).value;
-    if (temp.contains("~") || temp.contains("|")) {
-        displayMessage(L8);
+    de("poiGetDesc("+id+"); started...");
+    //filter to not set desc to blank
+    if (document.getElementById("poiDesc" + id).value == "") {
+        return;
     } else {
+        //get the desc
+        var temp = document.getElementById("poiDesc" + id).value;
         
-        //replace the list item title 
-        var tempHTMLHolder1 = document.getElementById("poiList").innerHTML.replace(poiDesc[id], document.getElementById("poiDesc" + id).value);
-        document.getElementById("poiList").innerHTML = tempHTMLHolder1;
-        //now replace the title (order is important)
-        var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace(poiDesc[id].substring(0, 20), document.getElementById("poiDesc" + id).value.substring(0, 20));
-        //now post all this back to the listbox
-        document.getElementById("poiList").innerHTML = tempHTMLHolder2;
-        
-        //replace the obeject label
-        label[id].set(content,document.getElementById("poiDesc" + id).value.substring(0, 20));
-       
+        //check for invalid characters
+        if (temp.contains("~") || temp.contains("|")) {
+            displayMessage(L8);
+        } else {
 
-        //assign full description to the poi object
-        poiDesc[id] = document.getElementById("poiDesc" + id).value;
-        
-        //close the poi desc box
+            de("poiDesc[id]: " + poiDesc[id]);
+            de("temp: " + temp);
 
+            //replace the list item title 
+            var tempHTMLHolder1 = document.getElementById("poiList").innerHTML.replace(poiDesc[id],temp);
+            document.getElementById("poiList").innerHTML = tempHTMLHolder1;
+            
+            de("tempHTMLHolder1: " + tempHTMLHolder1);
+            de("poiDesc[id].substring(0, 20): " + poiDesc[id].substring(0, 20));
+            de("temp.substring(0, 20): " + temp.substring(0, 20));
+
+            //now replace the title (order is important)
+            var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace("> " + poiDesc[id].substring(0, 20), "> " + temp.substring(0, 20));
+            //now post all this back to the listbox
+            document.getElementById("poiList").innerHTML = tempHTMLHolder2;
+
+            de("tempHTMLHolder2: " + tempHTMLHolder2);
+            de("label[id]" + label[id]);
+            de("temp.substring(0, 20): " + temp.substring(0, 20));
+
+            //replace the object label
+            label[id].set("labelContent", temp.substring(0, 20));
+
+            de("poiDesc[id]: " + poiDesc[id]);
+            de("temp: " + temp);
+
+            //assign full description to the poi object
+            poiDesc[id] = temp;
+            
+            //close the poi desc box
+            infowindow[id].setMap(null);
+        }
     }
+    de("poiGetDesc(" + id + "); finished...");
 }                       
 
 //delete search results from map and list
@@ -392,7 +443,7 @@ $(function ($) {
             }
             preservedRotation = knobRotationValue; //reassign
             keepRotate(preservedRotation); //send to display fcn of rotation
-
+            savingOverlayRotation[workingOverlayIndex] = preservedRotation; //just make sure it is prepping for save
         }
     });
 
@@ -422,6 +473,7 @@ function rotate(degreeIn) {
         });
     }
     preservedRotation = degree; //preserve rotation value
+    savingOverlayRotation[workingOverlayIndex] = preservedRotation; //just make sure it is prepping for save
 }
 
 //get the center lat/long of a polygon
@@ -469,17 +521,8 @@ function finder(stuff) {
         codeAddress("lookup", stuff); //find the thing
         document.getElementById("content_toolbar_searchField").value = stuff; //sync toolbar
         document.getElementById("content_toolbox_searchField").value = stuff; //sync toolbox
+        action("other"); //needed to clear out any action buttons that may be active
         openToolboxTab(1); //open the actions tab
-    } else {
-        //do nothing and keep quiet
-    }
-}
-
-//placeholder to search the collection [currently not used]
-function searcher(stuff) {
-
-    if (stuff.length > 0) {
-        displayMessage("No collection to search"); //temp
     } else {
         //do nothing and keep quiet
     }
@@ -571,8 +614,56 @@ function initOverlayList() {
     }   
 }
 
+//used to set acess control levels for the actions
+function actionsACL(level, id) {
+    //doesnt work
+    //document.getElementById("mapper_container_toolbar").style.width = "1170px";
+    //document.getElementById("mapper_container_toolbar").style["margin-left"] = "-535px";
+    switch (id) {
+        case "item":
+            switch(level) {
+                case "full":
+                    $('#content_toolbar_button_manageOverlay').hide();
+                    $('#content_toolbox_button_manageOverlay').hide();
+                    $('#content_toolbox_tab4_header').hide();
+                    $('#overlayACL').hide();
+                    break;
+                case "read":
+                    //nothing yet
+                    break;
+                case "none":
+                    $('#content_toolbar_button_manageOverlay').show();
+                    $('#content_toolbox_button_manageOverlay').show();
+                    $('#content_toolbox_tab4_header').show();
+                    $('#overlayACL').show();
+                    break;
+            }
+            break;
+        case "overlay":
+            switch (level) {
+                case "full":
+                    $('#content_toolbar_button_manageItem').hide();
+                    $('#content_toolbox_button_manageItem').hide();
+                    $('#content_toolbox_tab3_header').hide();
+                    $('#itemACL').hide();
+                    break;
+                case "read":
+                    //nothing yet
+                    break;
+                case "none":
+                    $('#content_toolbar_button_manageItem').show();
+                    $('#content_toolbox_button_manageItem').show();
+                    $('#content_toolbox_tab3_header').show();
+                    $('#itemACL').show();
+                    break;
+            }
+            break;
+    }
+}
+
 //used to write html content to page via js
 function writeHTML(type, param1, param2, param3) {
+    de("writeHTML(); started...");
     var htmlString = "";
     switch (type) {
         case "poiListItem":
@@ -601,7 +692,7 @@ function keypress(e) {
     } else if (e) {
         keycode = e.which;
     }
-    de("keycode: " + keycode);
+    de("key pressed: " + keycode);
     switch (keycode) {
         case 70: //F
             if (navigator.appName == "Microsoft Internet Explorer") {
@@ -672,6 +763,22 @@ function resizeView() {
     document.getElementById("mapper_container").style.height = percentOfHeight + "%";
 
     //de(percentOfHeight);
+}
+
+//clear the save overlay cache
+function clearCacheSaveOverlay() {
+    de("clearCacheSaveOverlay(); started... ");
+    if (savingOverlayIndex.length > 0) {
+        de("reseting cache");
+        savingOverlayIndex = [];
+        savingOverlayLabel = [];
+        savingOverlaySourceURL = [];
+        savingOverlayBounds = [];
+        savingOverlayRotation = [];
+        de("cache reset");
+    } else {
+        de("nothing in cache");
+    }
 }
 
 //debugging 
