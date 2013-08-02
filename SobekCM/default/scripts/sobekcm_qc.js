@@ -75,7 +75,6 @@ function QC_Change_Sortable_Setting(option, image_location)
 }
 
 
-
 //Check/uncheck the corresponding menu autonumberng option when 
 function Autonumbering_mode_changed(mode, image_location)
 {
