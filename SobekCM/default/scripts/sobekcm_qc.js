@@ -1,6 +1,8 @@
 var spanArrayObjects;
 var spanArray;
 var autonumberingMode=-1;
+var makeSortable = true;
+
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -18,15 +20,63 @@ function qc_set_fullscreen() {
     document.getElementById("QC_window_height").value = new_height.toString();
     document.getElementById("QC_window_width").value = window_width.toString();
 	
-	//Adjust the 
+	//Adjust the menu "Go to thumbnail:" feature based on the window width
+	if(window_width>1022)
+	  {
+	    document.getElementById('GoToThumbnailTextSpan').innerHTML='GO TO THUMBNAIL:';
+		document.getElementById('sbkQc_GoToThumbnailDiv').style.visibility = 'visible';
+	  }
+	else if(window_width<1022 && window_width>999)
+	 {
+     	document.getElementById('GoToThumbnailTextSpan').innerHTML='GO TO:';
+	    document.getElementById('sbkQc_GoToThumbnailDiv').style.visibility = 'visible';
+	 }
+	
+	else if(window_width<999)
+	{
+      document.getElementById('GoToThumbnailTextSpan').innerHTML='GO TO THUMBNAIL:';
+	  document.getElementById('sbkQc_GoToThumbnailDiv').style.visibility='hidden';
+	}
+	  
 }
 
-function TestFunction(a,b)
+//Called when the user enables/disables sorting in the menu settings
+function QC_Change_Sortable_Setting(option, image_location)
 {
-alert(a+b);
+  //Assign the sorting option to the global variable. 
+  if(option=='1')
+    makeSortable = true;
+  else if(option=='0')
+     makeSortable = false;
+  
+  //Set the hidden variable value
+  var hidden_sortable_option = document.getElementById('QC_sortable_option'); 
+  hidden_sortable_option.value = makeSortable;
 
+  
+  //First uncheck both the options
+  var enableID = document.getElementById('checkmarkEnableSorting');
+  var disableID = document.getElementById('checkmarkDisableSorting');
+  
+  enableID.src=image_location+"noCheckmark.png";
+  disableID.src = image_location+"noCheckmark.png";
+  
+  //Now check the selected option
+  if(option=="1")
+   {
+     enableID.src=image_location+"checkmark.png";
+	  $("#allThumbnailsOuterDiv").sortable("enable");
+  }
+  else
+  {
+    disableID.src = image_location+"checkmark.png";
+    $("#allThumbnailsOuterDiv").sortable("disable");
+  }
 }
 
+
+
+//Check/uncheck the corresponding menu autonumberng option when 
 function Autonumbering_mode_changed(mode, image_location)
 {
    //Set the global mode variable to this value
@@ -35,7 +85,7 @@ function Autonumbering_mode_changed(mode, image_location)
   // alert('mode set to:'+autonumberingMode);
   alert('mode:'+mode+ 'image location'+image_location);
   
-  //First uncheck all the autonumbering options in the menubar
+  //First uncheck all the autonumbering options in the menu
    for(var i=0;i<=2;i++)
    {
 
@@ -725,6 +775,14 @@ function MakeSortable1()
 		},
 		stop: function(event, ui)
 		{
+		   //Confirm the move
+		   var input_box = confirm("Are you sure you want to move this page?");
+	       if(input_box==false)
+		   {
+		      $(this).sortable('cancel');
+		   }
+		   else if (input_box == true) 
+		   {
 		    // Pull a new spanArray
 		    var newSpanArray = new Array();
 		    //get the list of all the thumbnail spans on the page
@@ -846,6 +904,7 @@ function MakeSortable1()
 			        }
 			    } //end else if		
 			}//end if(startPosition!=newPosition)
+		  }//end if(input_box==true)
         },placeholder: "ui-state-highlight"});
 									 
     $("#allThumbnailsOuterDiv").disableSelection();

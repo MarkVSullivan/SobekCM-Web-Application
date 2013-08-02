@@ -186,7 +186,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
 			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
 			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
-
+		    string tempSortable = HttpContext.Current.Request.Form["QC_sortable_option"] ?? String.Empty;
+		    if (tempSortable == "false") makeSortable = false;
 
 
 			//Get any notes/comments entered by the user
@@ -1386,7 +1387,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
          //   Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"View METS\"></img></a></span>");
             Output.WriteLine("</div>");
             // Add the option to GO TO a certain thumbnail next
-            Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\">" + Go_To_Thumbnail + ":<select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" >");
+            Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\"><span id=\"GoToThumbnailTextSpan\">" + Go_To_Thumbnail + ":</span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" /></div>");
 
             //iterate through the page items
             if (qc_item.Web.Static_PageCount > 0)
@@ -1567,8 +1568,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             //Reset the mode
             CurrentMode.Autonumbering_Mode = autonumber_mode;
-
+            //Add the options to enable/disable drag & drop of pages
+            
             Output.WriteLine("\t</ul></li>");
+
+            Output.WriteLine("\t<li><a onclick=\"return false;\">Drag & Drop Pages</a><ul>");
+            if(makeSortable)
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkEnableSorting\"/>"+"Enable</a></li>");
+            else
+              Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkEnableSorting\"/>" + "Enable</a></li>");
+            
+            if(!makeSortable)
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(0,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkDisableSorting\"/>"+"Disable</a></li>");
+            else
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkDisableSorting\"/>" + "Disable</a></li>");
+                
+            Output.WriteLine("</ul></li>");
+            
             Output.WriteLine("</ul></li>");
             Output.WriteLine("<li><a onclick=\"return false;\">View</a><ul>");
             Output.WriteLine("\t<li><a href=\"" + complete_mets + "\" target=\"_blank\">View METS</a></li>");
@@ -1633,6 +1649,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_window_height\" name=\"QC_window_height\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_window_width\" name=\"QC_window_width\" value=\"\"/>");
+            Output.WriteLine("<input type=\"hidden\" id=\"QC_sortable_option\" name=\"QC_sortable_option\" value=\"\">");
 
 			// Start the main div for the thumbnails
 	
@@ -2040,7 +2057,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
 			Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSpanFlashOnPageLoad());</script>");
 			Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(Configure_QC(" + qc_item.Web.Static_PageCount + "));</script>");
-			if(makeSortable)
+	//		if(makeSortable)
 				Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
 
 
