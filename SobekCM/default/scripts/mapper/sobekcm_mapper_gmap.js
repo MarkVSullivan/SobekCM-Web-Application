@@ -443,7 +443,7 @@ function initialize() {
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
-                        infowindow[i].open(map);
+                        infowindow[i].open(null);
                         label[i].setPosition(marker.getPosition());
                         label[i].setMap(map);
                     }
@@ -525,7 +525,7 @@ function initialize() {
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(circle.getCenter());
-                        infowindow[i].open(map);
+                        infowindow[i].open(null);
                         label[i].setPosition(circle.getCenter());
                         label[i].setMap(map);
                     }
@@ -579,7 +579,7 @@ function initialize() {
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(rectangle.getBounds().getCenter());
-                        infowindow[i].setMap(map);
+                        infowindow[i].setMap(null);
                         label[i].setPosition(rectangle.getBounds().getCenter());
                         label[i].setMap(map);
                     }
@@ -627,7 +627,7 @@ function initialize() {
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(rectangle.getBounds().getCenter());
-                        infowindow[i].open(map);
+                        infowindow[i].open(null);
                         label[i].setPosition(rectangle.getBounds().getCenter());
                         label[i].setMap(map);
                     }
@@ -679,9 +679,9 @@ function initialize() {
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(polygonCenter(polygon));
-                        infowindow[i].setMap(map);
+                        infowindow[i].setMap(null);
                         label[i].setPosition(polygonCenter(polygon));
-                        label[i].setMap(null);
+                        label[i].setMap(map); //does not redisplay
                     }
                 }
             }
@@ -727,7 +727,7 @@ function initialize() {
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(polygonCenter(polygon));
-                        infowindow[i].open(map);
+                        infowindow[i].open(null);
                         label[i].setPosition(polygonCenter(polygon));
                         label[i].setMap(map);
                     }
@@ -814,7 +814,7 @@ function initialize() {
                         var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                         var polylineStartPoint = polylinePoints[0];
                         infowindow[poi_i].setPosition(polylineStartPoint);
-                        infowindow[poi_i].open(map);
+                        infowindow[poi_i].open(null);
                         label[i].setPosition(polylineStartPoint);
                         label[i].setMap(map);
                         de("here3");
@@ -872,7 +872,7 @@ function initialize() {
                         var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                         var polylineStartPoint = polylinePoints[0];
                         infowindow[i].setPosition(polylineStartPoint);
-                        infowindow[i].open(map);
+                        infowindow[i].open(null);
                         label[i].setPosition(polylineStartPoint);
                         label[i].setMap(map);
                     }
@@ -1059,7 +1059,7 @@ function cacheSaveOverlay(index) {
     savingOverlayLabel[csoi] = incomingOverlayLabel[workingOverlayIndex];                   //set label to save
     savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           //set source url to save
     savingOverlayBounds[csoi] = ghostOverlayRectangle[workingOverlayIndex].getBounds();     //set bounds to save
-    de(preservedRotation);
+    de("preserved rotation: "+preservedRotation);
     savingOverlayRotation[csoi] = preservedRotation;                                        //set rotation to save
     if (savingOverlayIndex[csoi] != index) {                                                
         csoi++;                                                                             //iterate the current save overlay index   
