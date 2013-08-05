@@ -43,6 +43,13 @@ var L31 = "Hiding";
 var L32 = "Showing";
 var L33 = "Removed";
 var L34 = "Editing";
+var L35 = "Apply Changes (Make Changes Public)";
+var L36 = "Apply";
+var L37 = "Save";
+var L38 = "Save to Temporary File";
+var L39 = "Nothing To Search";
+var L40 = "Cannot Convert";
+var L41 = "Select The Area To Draw The Overlay";
 
 //by listeners
 try {
@@ -97,6 +104,8 @@ try {
     //tab
     document.getElementById("content_toolbox_button_placeItem").title = "Edit Location";
     document.getElementById("content_toolbox_button_itemGetUserLocation").title = "Center On Your Current Position";
+    document.getElementById("content_toolbox_button_useSearchAsLocation").title = "Use Search Result As Location";
+    document.getElementById("content_toolbox_button_convertToOverlay").title = "Convert This To a Map Overlay";
     document.getElementById("content_toolbox_posItem").title = "Coordinates: This is the selected Latitude and Longitude of the point you selected.";
     document.getElementById("content_toolbox_rgItem").title = "Address: This is the nearest address of the point you selected.";
     document.getElementById("content_toolbox_button_saveItem").title = "Save Location Changes";
@@ -106,9 +115,9 @@ try {
     document.getElementById("content_toolbox_button_overlayGetUserLocation").title = "Center On Your Current Position";
     document.getElementById("rotation").title = "Rotate: Edit the rotation value";
     document.getElementById("rotationKnob").title = "Rotate: Edit the rotation value";
-    document.getElementById("content_toolbox_rotationCounterClockwise").title = ".1&deg Left: Click to Rotate .1&deg Counter-Clockwise";
+    document.getElementById("content_toolbox_rotationCounterClockwise").title = "Tenth Degree Left: Click to Rotate a Tenth Degree Counter-Clockwise";
     document.getElementById("content_toolbox_rotationReset").title = "Reset: Click to Reset Rotation";
-    document.getElementById("content_toolbox_rotationClockwise").title = ".1&deg Right: Click to Rotate .1&deg Clockwise";
+    document.getElementById("content_toolbox_rotationClockwise").title = "Tenth Degree Right: Click to Rotate a Tenth Degree Clockwise";
     document.getElementById("transparency").title = "Transparency: Set the transparency of this Overlay";
     document.getElementById("content_toolbox_button_saveOverlay").title = "Save Overlay Changes";
     document.getElementById("content_toolbox_button_clearOverlay").title = "Reset All Overlay Changes";

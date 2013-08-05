@@ -185,6 +185,12 @@
 #content_toolbox_button_itemGetUserLocation {
     background-image: url("images/mapper/getUserLocation.png");
 }
+#content_toolbox_button_useSearchAsLocation {
+    background-image: url("images/mapper/button-search.png");
+}
+#content_toolbox_button_convertToOverlay {
+    background-image: url("images/mapper/button-action2.png");
+}
 #content_toolbox_button_overlayGetUserLocation {
     background-image: url("images/mapper/getUserLocation.png");
 }

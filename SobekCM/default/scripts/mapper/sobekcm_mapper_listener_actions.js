@@ -246,19 +246,30 @@ function place(id) {
             
         case "overlay":
             placerType = "overlay";
-            if (pageMode == "edit") {
-                pageMode = "view";
-                if (savingOverlayIndex.length > 0) {
-                    for (var i = 0; i < savingOverlayIndex.length; i++) {
-                        ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
+            if (incomingOverlayBounds.length > 0) {
+                if (pageMode == "edit") {
+                    pageMode = "view";
+                    if (savingOverlayIndex.length > 0) {
+                        for (var i = 0; i < savingOverlayIndex.length; i++) {
+                            ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
+                        }
                     }
+                    displayMessage(L26);
+                } else {
+                    pageMode = "edit";
+                    displayMessage(L27);
                 }
-                displayMessage(L26);
+                //toggleOverlayEditor(); 
             } else {
-                pageMode = "edit";
-                displayMessage(L27);
+                //select the area to draw the overlay
+                displayMessage(L41);
+                //set drawingmode to rectangle
+                drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
+                //tweak rectangle drawing so that it looks like the ghost rectangle
+                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] } });
+                drawingManager.setMap(map);
             }
-            //toggleOverlayEditor(); 
+
             break;
             
         case "poi":
@@ -361,35 +372,109 @@ function geolocate(id) {
 function save(id) {
     switch (id) {
         case "item":
-            if (savingMarkerCenter != null) {
-                de("saving location: " + savingMarkerCenter); //grab coords from gmaps js
-                createSavedItem(savingMarkerCenter);
-                //displayMessage(L_Saved); //not used here
+            //is this the first time saving a changed item?
+            if (firstSaveItem == true) {
+                //determine if there is something to save
+                if (savingMarkerCenter != null) {
+                    de("saving location: " + savingMarkerCenter);
+                    //save to temp xml file
+                    createSavedItem(savingMarkerCenter);
+                    //reset first save
+                    firstSaveItem = false;
+                    //change save button to apply button
+                    document.getElementById("content_toolbox_button_saveItem").value = L36;
+                    //change save title to apply
+                    document.getElementById("content_toolbox_button_saveItem").title = L35;
+                } else {
+                    displayMessage(L_NotSaved);
+                }
             } else {
-                displayMessage(L_NotSaved);
+                //apply the changes
+                de("Applying Changes...");
+                //currently doesnt do anything
+
+                //reset apply button to save
+                document.getElementById("content_toolbox_button_saveItem").value = L37;
+                document.getElementById("content_toolbox_button_saveitem").title = L38;
             }
             break;
 
         case "overlay":
-            if (savingOverlayIndex.length) {
-                for (var i = 0; i < savingOverlayIndex.length; i++) {
-                    de("saving overlay: " + savingOverlayLabel[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
-                    createSavedOverlay(savingOverlayLabel[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
-                    //ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting
+            //is this the first time saving a changed item?
+            if (firstSaveOverlay == true) {
+                //determine if there is something to save
+                if (savingOverlayIndex.length) {
+                    for (var i = 0; i < savingOverlayIndex.length; i++) {
+                        //save to temp xml file
+                        de("saving overlay: " + savingOverlayLabel[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
+                        createSavedOverlay(savingOverlayLabel[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+                    }
+                    //reset first save
+                    firstSaveOverlay = false;
+                    //change save button to apply button
+                    document.getElementById("content_toolbox_button_saveOverlay").value = L36;
+                    //change save title to apply
+                    document.getElementById("content_toolbox_button_saveOverlay").title = L35;
+                } else {
+                    //tell that we did not save anything
+                    displayMessage(L_NotSaved);
                 }
-                //displayMessage(L_Saved); //not used here
             } else {
-                displayMessage(L_NotSaved);
+                
+                //is there something to save?
+                if (savingOverlayIndex.length) {
+                    //apply the changes
+                    de("Applying Changes...");
+                    //currently doesnt do anything
+                } else {
+                    displayMessage(L_NotSaved);
+                }
+                
+                //reset apply button to save
+                document.getElementById("content_toolbox_button_saveOverlay").value = L37;
+                document.getElementById("content_toolbox_button_saveOverlay").title = L38;
             }
             break;
 
         case "poi":
+            //save to temp xml file
             if (poiObj.length > 0) {
                 de("saving " + poiObj.length + " POIs...");
                 createSavedPOI();
                 //displayMessage(L_Saved); //not used here
             } else {
                 displayMessage(L_NotSaved);
+            }
+            
+            //is this the first time saving a changed item?
+            if (firstSavePOI == true) {
+                //determine if there is something to save
+                if (poiObj.length > 0) {
+                    //save to temp xml file
+                    de("saving " + poiObj.length + " POIs...");
+                    createSavedPOI();
+                    //reset first save
+                    firstSavePOI = false;
+                    //change save button to apply button
+                    document.getElementById("content_toolbox_button_savePOI").value = L36;
+                    //change save title to apply
+                    document.getElementById("content_toolbox_button_savePOI").title = L35;
+                } else {
+                    //tell that we did not save anything
+                    displayMessage(L_NotSaved);
+                }
+            } else {
+                //is there something to save?
+                if (poiObj.length > 0) {
+                    //apply the changes
+                    de("Applying Changes...");
+                    //currently doesnt do anything
+                } else {
+                    displayMessage(L_NotSaved);
+                }
+                //reset apply button to save
+                document.getElementById("content_toolbox_button_savePOI").value = L37;
+                document.getElementById("content_toolbox_button_savePOI").title = L38;
             }
             break;
     }

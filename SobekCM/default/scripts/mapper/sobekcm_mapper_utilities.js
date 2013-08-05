@@ -266,7 +266,7 @@ function overlayShowMe(id) {
 function overlayDeleteMe(id) {
     overlaysOnMap[id].setMap(null);
     ghostOverlayRectangle[id].setMap(null);
-    var strg = "#overlay" + id; //create <li> poi string
+    var strg = "#overlayListItem" + id; //create <li> poi string
     $(strg).remove(); //remove <li>
     displayMessage(id + " " + L33);
 }
@@ -576,29 +576,64 @@ function codeLatLng(latlng) {
 
 //assign search location pin to item location
 function useSearchAsItemLocation() {
-    placerType = "item";                        //this tells listeners what to do
-    itemMarker = new google.maps.Marker({
-        map: map,
-        position: searchResult.getPosition(),   //assign to prev search result location
-        draggable: true
-    });
+    //debuggin
+    de("search result: " + searchResult);
+    //check to see if there is a search result
+    if (searchResult != null) {
+        //this tells listeners what to do
+        placerType = "item";                        
+        //assign new position of marker
+        itemMarker.setPosition(searchResult.getPosition());
+        //prevent redraw
+        firstMarker++;                              
+        //delete search result
+        searchResultDeleteMe(); 
+        //display new marker
+        itemMarker.setMap(map);                     
+        //get the lat/long of item marker and put it in the item location tab
+        document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); 
+        //get the reverse geo address for item location and put in location tab
+        codeLatLng(itemMarker.getPosition());
+        //store coords to save
+        savingMarkerCenter = itemMarker.getPosition(); 
+        //add listener for new item marker (can only add once the itemMarker is created)
+        google.maps.event.addListener(itemMarker, 'dragend', function () {
+            //get lat/long
+            document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
+            //get address
+            codeLatLng(itemMarker.getPosition());
+            //store coords to save
+            savingMarkerCenter = itemMarker.getPosition();
+        });
+    } else {
+        //nothing in search
+        displayMessage(L39);
+    }
+}
 
-    firstMarker++;                              //prevent redraw
+//used to convert an incoming point to an overlay
+function convertToOverlay() {
+    //is there an item to convert and is there a proper source?
+    if (itemMarker && incomingPointSourceURL[0]!="") {
+        //hide marker
+        itemMarker.setMap(null);
+        //switch to overlay tab
+        actionsACL("none", "item");
+        actionsACL("full", "overlay");
+
+        //add what we know already
+        incomingOverlayLabel[0] = incomingPointLabel[0];
+        incomingOverlaySourceURL[0] = incomingPointSourceURL[0];
+
+        //click to drag area for overlay to be drawn
+        //write new overlay with listeners like incoming but within drawing manager
+        //perhaps create a sample overlay image with bounds centered on point 
+
+    } else {
+        //cannot convert
+        displayMessage(L40);
+    }
     
-    searchResultDeleteMe(); //delete search result
-    
-    itemMarker.setMap(map);                     //set itemMarker location icon to map
-    document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get the lat/long of item marker and put it in the item location tab
-    codeLatLng(itemMarker.getPosition());       //get the reverse geo address for item location and put in location tab
-    savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-
-    //add listener for new item marker (can only add once the itemMarker is created)
-    google.maps.event.addListener(itemMarker, 'dragend', function () {
-        document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition(); //get lat/long
-        codeLatLng(itemMarker.getPosition());   //get address
-        savingMarkerCenter = itemMarker.getPosition(); //store coords to save
-    });
-
 }
 
 //used to display list of overlays in the toolbox container
