@@ -83,7 +83,9 @@ $(function() {
     $("#descPOI").tooltip({track:true});
     $("#content_toolbox_button_savePOI").tooltip({track:true});
     $("#content_toolbox_button_itemGetUserLocation").tooltip({track:true});
-    $("#content_toolbox_button_overlayGetUserLocation").tooltip({track:true});
+    $("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
+    $("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
+    $("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
     $("#content_toolbox_button_poiGetUserLocation").tooltip({track:true});
     $("#content_toolbox_button_clearItem").tooltip({track:true});
     $("#content_toolbox_button_clearOverlay").tooltip({track:true});

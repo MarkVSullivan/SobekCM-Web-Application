@@ -566,6 +566,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         mapperBuilder.AppendLine("      incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
                         mapperBuilder.AppendLine("      incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+
+                        try
+                        {
+                            //get the image url
+                            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            string first_page_jpeg = String.Empty;
+                            foreach (SobekCM_File_Info thisFile in first_page_files)
+                            {
+                                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                    (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                                {
+                                    first_page_jpeg = thisFile.System_Name;
+                                    break;
+                                }
+                            }
+                            string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+
+                            mapperBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
+                        }
+                        catch (Exception)
+                        {
+                            mapperBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"\" ");
+                            throw;
+                        }
+
+                        
                     }
                     mapperBuilder.AppendLine(" ");
                     mapperBuilder.AppendLine("      displayIncomingPoints();");
@@ -717,6 +743,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_tab3\"> ");
             mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_placeItem\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_itemGetUserLocation\" class=\"button\"></div>   ");
+            mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_useSearchAsLocation\" class=\"button\"></div> ");
+            mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_convertToOverlay\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
             mapperBuilder.AppendLine("                             <textarea id=\"content_toolbox_posItem\" class=\"tab-field\" rows=\"2\" cols=\"24\" placeholder=\"Selected Lat/Long\"></textarea> ");
             mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
@@ -787,6 +815,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("     </div> ");
             mapperBuilder.AppendLine(" </div> ");
             mapperBuilder.AppendLine(" <div id=\"debugs\"></div> ");
+
 
             
             #endregion

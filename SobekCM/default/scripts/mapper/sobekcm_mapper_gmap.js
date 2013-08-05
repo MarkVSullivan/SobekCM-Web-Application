@@ -1,6 +1,9 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
+var firstSaveItem;                      //holds first save marker (used to determine if saving or applying changes)
+var firstSaveOverlay;                   //holds first save marker (used to determine if saving or applying changes)
+var firstSavePOI;                       //holds first save marker (used to determine if saving or applying changes)
 var baseImagesDirURL;                   //holds the base image directory url
 var mapDrawingManagerDisplayed;         //holds marker for drawing manager
 var mapLayerActive;                     //holds the current map layer active
@@ -35,7 +38,7 @@ var degree = 0;                         //initializing degree
 var firstMarker = 0;                    //used to iterate if marker placement was the first (to prevent duplicates)
 var overlayCount = 0;                   //iterater
 var mapInBounds;                        //is the map in bounds
-var searchResult;                       //will contain object
+var searchResult = null;                //will contain object
 var circleCenter;                       //hold center point of circle
 var markerCenter;                       //hold center of marker
 var placerType;                         //type of data (marker,overlay,poi)
@@ -58,6 +61,7 @@ var CustomOverlay;                      //does nothing
 var cCoordsFrozen = "no";               //used to freeze/unfreeze coordinate viewer
 var incomingPointCenter = [];           //defined in c# to js on page
 var incomingPointLabel = [];            //defined in c# to js on page
+var incomingPointSourceURL = [];        //defined in c# to js on page
 var incomingOverlayBounds = [];         //defined in c# to js on page
 var incomingOverlayLabel = [];          //defined in c# to js on page
 var incomingOverlaySourceURL = [];      //defined in c# to js on page
@@ -382,6 +386,7 @@ function initialize() {
     google.maps.event.addListener(drawingManager, 'markercomplete', function (marker) {
         testBounds(); //are we still in the bounds 
         if (placerType == "item") {
+            firstSaveItem = true;
             //used to prevent multi markers
             if (firstMarker > 0) {
                 drawingManager.setDrawingMode(null); //only place one at a time
@@ -397,8 +402,9 @@ function initialize() {
         }
 
         if (placerType == "poi") {
+            firstSavePOI = true;
             poi_i++;
-
+            
             label[poi_i] = new MarkerWithLabel({
                 position: marker.getPosition(), //position of real marker
                 map: map,
@@ -426,6 +432,7 @@ function initialize() {
         google.maps.event.addListener(marker, 'dragstart', function () {
             
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) { 
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -436,10 +443,12 @@ function initialize() {
         });
         google.maps.event.addListener(marker, 'dragend', function () {
             if (placerType == "item") {
+                firstSaveItem = true;
                 document.getElementById('content_toolbox_posItem').value = marker.getPosition();
                 codeLatLng(marker.getPosition());
             }
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
@@ -452,6 +461,7 @@ function initialize() {
         });
         google.maps.event.addListener(marker, 'click', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
@@ -464,6 +474,7 @@ function initialize() {
     google.maps.event.addListener(drawingManager, 'circlecomplete', function (circle) {
         testBounds();
         if (placerType == "poi") {
+            firstSavePOI = true;
             poi_i++;
 
             label[poi_i] = new MarkerWithLabel({
@@ -493,6 +504,7 @@ function initialize() {
         google.maps.event.addListener(circle, 'dragstart', function () {
 
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -522,6 +534,7 @@ function initialize() {
         });
         google.maps.event.addListener(circle, 'dragend', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(circle.getCenter());
@@ -534,6 +547,7 @@ function initialize() {
         });
         google.maps.event.addListener(circle, 'click', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(circle.getCenter());
@@ -546,8 +560,26 @@ function initialize() {
     google.maps.event.addListener(drawingManager, 'rectanglecomplete', function (rectangle) {
         
         testBounds();                                   //check the bounds to make sure you havent strayed too far away
+        if (placerType == "overlay") {
+            //mark that we are editing
+            firstSaveOverlay = true;
+
+            //add the incoming overlay bounds
+            incomingOverlayBounds[0] = rectangle.getBounds();
+            
+            //redisplay overlays (the one we just made)
+            displayIncomingOverlays();
+
+            //hide the rectangle we drew
+            rectangle.setMap(null);
+
+            //prevent redraw
+            drawingManager.setDrawingMode(null);
+        }
+
 
         if (placerType == "poi") {
+            firstSavePOI = true;
             poi_i++;
 
             label[poi_i] = new MarkerWithLabel({
@@ -576,6 +608,7 @@ function initialize() {
         
         google.maps.event.addListener(rectangle, 'bounds_changed', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(rectangle.getBounds().getCenter());
@@ -588,6 +621,7 @@ function initialize() {
         });
         google.maps.event.addListener(rectangle, 'dragstart', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -598,6 +632,7 @@ function initialize() {
         });
         google.maps.event.addListener(rectangle, 'drag', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -624,6 +659,7 @@ function initialize() {
         });
         google.maps.event.addListener(rectangle, 'dragend', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(rectangle.getBounds().getCenter());
@@ -636,6 +672,7 @@ function initialize() {
         });
         google.maps.event.addListener(rectangle, 'click', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(rectangle.getBounds().getCenter());
@@ -649,6 +686,7 @@ function initialize() {
     google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
         testBounds();
         if (placerType == "poi") {
+            firstSavePOI = true;
             poi_i++;
 
             label[poi_i] = new MarkerWithLabel({
@@ -676,6 +714,7 @@ function initialize() {
         }
         google.maps.event.addListener(polygon.getPath(), 'set_at', function () { //if bounds change
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(polygonCenter(polygon));
@@ -688,6 +727,7 @@ function initialize() {
         });
         google.maps.event.addListener(polygon, 'dragstart', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -698,6 +738,7 @@ function initialize() {
         });
         google.maps.event.addListener(polygon, 'drag', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -724,6 +765,7 @@ function initialize() {
         });
         google.maps.event.addListener(polygon, 'dragend', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(polygonCenter(polygon));
@@ -736,6 +778,7 @@ function initialize() {
         });
         google.maps.event.addListener(polygon, 'click', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setPosition(polygonCenter(polygon));
@@ -748,6 +791,7 @@ function initialize() {
     google.maps.event.addListener(drawingManager, 'polylinecomplete', function (polyline) {
         testBounds();
         if (placerType == "poi") {
+            firstSavePOI = true;
             poi_i++;
             var poiId = poi_i + 1;
             poiObj[poi_i] = polyline;
@@ -794,7 +838,8 @@ function initialize() {
 
         }
         google.maps.event.addListener(polyline.getPath(), 'set_at', function () { //what is path?
-            if (placerType == "poi") {             
+            if (placerType == "poi") {
+                firstSavePOI = true;
                 de("is poi");
                 for (var i = 0; i < poiObj.length; i++) {
                     de("inside loop1");
@@ -825,6 +870,7 @@ function initialize() {
         });
         google.maps.event.addListener(polyline, 'dragstart', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 for (var i = 0; i < poiObj.length; i++) {
                     if (poiObj[i] == this) {
                         infowindow[i].setMap(null);
@@ -856,6 +902,7 @@ function initialize() {
         });
         google.maps.event.addListener(polyline, 'dragend', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 //var bounds = new google.maps.LatLngBounds;
                 //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
                 //var polylineCenter = bounds.getCenter();
@@ -882,6 +929,7 @@ function initialize() {
         });
         google.maps.event.addListener(polyline, 'click', function () {
             if (placerType == "poi") {
+                firstSavePOI = true;
                 //var bounds = new google.maps.LatLngBounds;
                 //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
                 //var polylineCenter = bounds.getCenter();
@@ -912,7 +960,6 @@ function initialize() {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
     });                                           
     
-    //used to process lat/long points
     google.maps.event.addDomListener(map, 'mousemove', function (point) {
 
         if (cCoordsFrozen == "no") {
@@ -974,6 +1021,7 @@ function displayIncomingPoints() {
         document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
         codeLatLng(itemMarker.getPosition());
         google.maps.event.addListener(itemMarker, 'dragend', function () {
+            firstSaveItem = true;
             savingMarkerCenter = itemMarker.getPosition(); //store coords to save
             document.getElementById('content_toolbox_posItem').value = itemMarker.getPosition();
             codeLatLng(itemMarker.getPosition());
@@ -1051,10 +1099,16 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
         }
     });
 
+    //set listener for right click (fixes reset issue over overlays)
+    google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'rightclick', function () {
+        drawingManager.setDrawingMode(null); //reset drawing manager no matter what
+    });
+
 }
 
 //Stores the overlays to save and their associated data
 function cacheSaveOverlay(index) {
+    firstSaveOverlay = true;
     savingOverlayIndex[csoi] = workingOverlayIndex;                                         //set overlay index to save
     savingOverlayLabel[csoi] = incomingOverlayLabel[workingOverlayIndex];                   //set label to save
     savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           //set source url to save

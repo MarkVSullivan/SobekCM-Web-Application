@@ -180,7 +180,13 @@ try {
     document.getElementById("content_toolbox_button_itemGetUserLocation").addEventListener("click", function () {
         geolocate("item");
     }, false);
-    document.getElementById("content_toolbox_posItem").addEventListener("click", function () { 
+    document.getElementById("content_toolbox_button_useSearchAsLocation").addEventListener("click", function () {
+        useSearchAsItemLocation();
+    }, false);
+    document.getElementById("content_toolbox_button_convertToOverlay").addEventListener("click", function () {
+        convertToOverlay();
+    }, false);
+    document.getElementById("content_toolbox_posItem").addEventListener("click", function () {
         //nothing, maybe copy?
      }, false);
     document.getElementById("content_toolbox_rgItem").addEventListener("click", function () { 
