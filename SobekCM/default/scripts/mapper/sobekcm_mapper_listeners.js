@@ -199,7 +199,7 @@ try {
         clear("item");
     }, false);
     //tab
-    document.getElementById("content_toolbox_button_placeOverlay").addEventListener("click", function () {
+    document.getElementById("content_toolbox_button_overlayPlace").addEventListener("click", function () {
         place("overlay");
     }, false);
     document.getElementById("content_toolbox_button_overlayGetUserLocation").addEventListener("click", function () {

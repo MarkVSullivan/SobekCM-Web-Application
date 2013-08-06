@@ -614,7 +614,7 @@ function useSearchAsItemLocation() {
 //used to convert an incoming point to an overlay
 function convertToOverlay() {
     //is there an item to convert and is there a proper source?
-    if (itemMarker && incomingPointSourceURL[0]!="") {
+    if (itemMarker && incomingPointSourceURL[0] != "") {
         //hide marker
         itemMarker.setMap(null);
         //switch to overlay tab
@@ -624,6 +624,7 @@ function convertToOverlay() {
         //add what we know already
         incomingOverlayLabel[0] = incomingPointLabel[0];
         incomingOverlaySourceURL[0] = incomingPointSourceURL[0];
+        incomingOverlayRotation[0] = 0;
 
         //click to drag area for overlay to be drawn
         //write new overlay with listeners like incoming but within drawing manager
@@ -644,6 +645,9 @@ function initOverlayList() {
         de("There are " + incomingOverlayLabel.length + " Incoming Overlays");
         for (var i = 0; i < incomingOverlayLabel.length; i++) {
             de("Adding Overlay List Item");
+            if (incomingOverlayLabel[i] == "") {
+                incomingOverlayLabel[i] = "Overlay" + (i+1);
+            }
             document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", i, incomingOverlayLabel[i], "");
         }  
     }   

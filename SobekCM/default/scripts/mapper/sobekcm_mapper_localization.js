@@ -111,7 +111,7 @@ try {
     document.getElementById("content_toolbox_button_saveItem").title = "Save Location Changes";
     document.getElementById("content_toolbox_button_clearItem").title = "Reset Location Changes";
     //tab
-    document.getElementById("content_toolbox_button_placeOverlay").title = "Toggle Overlay Editing";
+    document.getElementById("content_toolbox_button_overlayPlace").title = "Toggle Overlay Editing";
     document.getElementById("content_toolbox_button_overlayGetUserLocation").title = "Center On Your Current Position";
     document.getElementById("rotation").title = "Rotate: Edit the rotation value";
     document.getElementById("rotationKnob").title = "Rotate: Edit the rotation value";
