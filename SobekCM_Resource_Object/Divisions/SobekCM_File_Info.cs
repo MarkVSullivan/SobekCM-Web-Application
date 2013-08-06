@@ -239,6 +239,10 @@ namespace SobekCM.Resource_Object.Divisions
                     return new View_Object(View_Enum.TEXT, "Text", string.Empty, System_Name);
 
                 case "image/jpeg":
+                    // Special code to exclude thumbnails from the jpegs that
+                    // get an item viewer
+                    if (System_Name.ToLower().IndexOf("thm.jpg") > 0)
+                        return null;
                     return new View_Object(View_Enum.JPEG, "Page Image", "WIDTH=" + width + ";HEIGHT=" + height, System_Name);
 
                 case "image/jp2":

@@ -185,8 +185,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
 			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
 			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
-		    string tempSortable = HttpContext.Current.Request.Form["QC_sortable_option"] ?? String.Empty;
-		    if (tempSortable == "false") makeSortable = false;
+		    temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? String.Empty;
+		    if (temp == "false") makeSortable = false;
+            temp = HttpContext.Current.Request.Form["QC_autonumber_option"] ?? "-1";
+            if ((Int32.TryParse(temp, out autonumber_mode)) && ( autonumber_mode >= 0 ) && ( autonumber_mode <= 2 ))
+            {
+                CurrentUser.Add_Option("QC_ItemViewer:AutonumberingMode", autonumber_mode);
+            }
+            
 
 
 			//Get any notes/comments entered by the user
@@ -378,7 +384,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the proper number of thumbnails per page
             // First, pull the thumbnails per page from the user options
-            thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", qc_item.Web.Static_PageCount);
+            thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", 1000);
 
             // Or was there a new value in the URL?
             if (CurrentMode.Thumbnails_Per_Page >= -1)
@@ -390,9 +396,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Thumbnails_Per_Page = -100;
             }
 
-            // -1 means to display all thumbnails
+            // -1 means to display all thumbnails (which is now capped at 1000)
             if (thumbnailsPerPage == -1)
-                thumbnailsPerPage = int.MaxValue;
+                thumbnailsPerPage = 1000;
 
             // Get the proper size of thumbnails per page
             // First, pull the thumbnails per page from the user options
@@ -411,16 +417,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the autonumbering mode
             // First, pull the autonumbering mode from the user options
             autonumber_mode = CurrentUser.Get_Option("QC_ItemViewer:AutonumberingMode", 0);
-
-            // Or was there a new value in the URL?
-            if (CurrentMode.Autonumbering_Mode > -1)
-            {
-                CurrentUser.Add_Option("QC_ItemViewer:AutonumberingMode", CurrentMode.Autonumbering_Mode);
-                autonumber_mode = CurrentMode.Autonumbering_Mode;
-
-                //Now reset the current mode value since we won't need to set it again
-                CurrentMode.Autonumbering_Mode = -1;
-            }
 
             // Ensure there are no pages directly under the item
             List<abstract_TreeNode> add_to_new_main = new List<abstract_TreeNode>();
@@ -632,7 +628,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (autonumber_mode_from_form == 0 || autonumber_mode_from_form == 1)
 			{
 			    autonumber_mode = autonumber_mode_from_form;
-			    CurrentMode.Autonumbering_Mode = autonumber_mode_from_form;
 				bool reached_last_page = false;
 				bool reached_next_div = false;
 				int number = 0;
@@ -1324,16 +1319,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Size_Of_Thumbnails = -1;
             }
 
-            if (uri.Query.IndexOf("an") > 0)
-            {
-                autonumber_mode = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("an"));
-                CurrentMode.Autonumbering_Mode = (short)autonumber_mode;
-            }
-            else
-            {
-                CurrentMode.Autonumbering_Mode = 0;
-            }
-
             //StringBuilder builder = new StringBuilder(4000);
             Output.WriteLine("<div id=\"qc-menubar\">");
 
@@ -1524,13 +1509,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Thumbnails_Per_Page = 1000;
                 Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "1000</a></li>");
             }
-            if (thumbnailsPerPage == qc_item.Web.Static_PageCount)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + checkmark + "All thumbnails</a></li>");
-            else
-            {
-                CurrentMode.Thumbnails_Per_Page = (short)qc_item.Web.Static_PageCount;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "All thumbnails</a></li>");
-            }
+
             //Reset the current mode
             CurrentMode.Thumbnails_Per_Page = (short)thumbnails_per_page;
             Output.WriteLine("\t</ul></li>");
@@ -1538,37 +1517,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("\t<li><a onclick=\"return false;\">Automatic Numbering</a><ul>");
             if (autonumber_mode == 2)
-               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:return Autonumbering_mode_changed(2, '"+image_location+"'); \">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+            {
+                 Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+            }
             else
             {
-              //  CurrentMode.Autonumbering_Mode = 2;
-                //Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'"+image_location+"'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
-                
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
             }
             if (autonumber_mode == 1)
-               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:return Autonumbering_mode_changed(1, '" + image_location + "'); \">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
+            {
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
+            }
             else
             {
-               // CurrentMode.Autonumbering_Mode = 1;
-               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
                 Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
             }
             if (autonumber_mode == 0)
-               // Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:return Autonumbering_mode_changed(0, '" + image_location + "'); \">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
+            {
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
+            }
             else
             {
-              //  CurrentMode.Autonumbering_Mode = 0;
-//                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
                 Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
             }
-            //Reset the mode
-            CurrentMode.Autonumbering_Mode = autonumber_mode;
+
+
             //Add the options to enable/disable drag & drop of pages
-            
             Output.WriteLine("\t</ul></li>");
 
             Output.WriteLine("\t<li><a onclick=\"return false;\">Drag & Drop Pages</a><ul>");
@@ -1649,6 +1623,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<input type=\"hidden\" id=\"QC_window_height\" name=\"QC_window_height\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_window_width\" name=\"QC_window_width\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_sortable_option\" name=\"QC_sortable_option\" value=\"\">");
+            Output.WriteLine("<input type=\"hidden\" id=\"QC_autonumber_option\" name=\"QC_autonumber_option\" value=\"" + autonumber_mode + "\">");
 
 			// Start the main div for the thumbnails
 	

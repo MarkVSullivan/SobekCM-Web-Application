@@ -79,10 +79,10 @@ function QC_Change_Sortable_Setting(option, image_location)
 function Autonumbering_mode_changed(mode, image_location)
 {
    //Set the global mode variable to this value
-   autonumberingMode=mode;
+    autonumberingMode = mode;
+    document.getElementById("QC_autonumber_option").value = mode;
 
-  // alert('mode set to:'+autonumberingMode);
-  alert('mode:'+mode+ 'image location'+image_location);
+//  alert('mode:'+mode+ 'image location'+image_location);
   
   //First uncheck all the autonumbering options in the menu
    for(var i=0;i<=2;i++)
@@ -96,8 +96,9 @@ function Autonumbering_mode_changed(mode, image_location)
    //Now check the selected autonumber mode option
    var imageID = document.getElementById('checkmarkMode'+mode);
    imageID.src= image_location+"checkmark.png";
-   
-
+  
+    // Close the superfish menu
+   $('ul.qc-menu').hideSuperfishUl();
 }
 
 
@@ -116,6 +117,9 @@ function Configure_QC( MaxPageCount ) {
             spanArray[j++] = spanArrayObjects[i].id;
         }
     }
+    
+    autonumberingMode = document.getElementById("QC_autonumber_option").value;
+    
 }
 
 
