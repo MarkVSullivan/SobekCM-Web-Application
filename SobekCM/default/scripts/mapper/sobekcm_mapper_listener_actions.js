@@ -263,10 +263,14 @@ function place(id) {
             } else {
                 //select the area to draw the overlay
                 displayMessage(L41);
+                
+                //define drawing manager
+                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] }, rectangleOptions: { strokeOpacity: 0.2, strokeWeight: 1, fillOpacity: 0.0 } });
+                
                 //set drawingmode to rectangle
                 drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
-                //tweak rectangle drawing so that it looks like the ghost rectangle
-                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] } });
+
+                //apply the changes
                 drawingManager.setMap(map);
             }
 

@@ -60,7 +60,7 @@ $(function() {
     $("#content_toolbox_button_manageOverlay").tooltip({track:true});
     $("#content_toolbox_button_managePOI").tooltip({track:true});
     $("#content_toolbox_button_placeItem").tooltip({track:true});
-    $("#content_toolbox_button_placeOverlay").tooltip({track:true});
+    $("#content_toolbox_button_overlayPlace").tooltip({track:true});
     $("#content_toolbox_button_placePOI").tooltip({track:true});
     $("#content_toolbox_button_poiMarker").tooltip({track:true});
     $("#content_toolbox_button_poiCircle").tooltip({track:true});
@@ -77,7 +77,7 @@ $(function() {
     $("#content_toolbox_button_placeItem").tooltip({track:true});
     $("#descItem").tooltip({track:true});
     $("#content_toolbox_button_saveItem").tooltip({track:true});
-    $("#content_toolbox_button_placeOverlay").tooltip({track:true});
+    $("#content_toolbox_button_overlayPlace").tooltip({track:true});
     $("#content_toolbox_button_saveOverlay").tooltip({track:true});
     $("#content_toolbox_button_placePOI").tooltip({track:true});
     $("#descPOI").tooltip({track:true});

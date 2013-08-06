@@ -1,6 +1,7 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
+var poiCount = 0;                       //holds a marker for pois drawn (fixes first poi desc issue)
 var firstSaveItem;                      //holds first save marker (used to determine if saving or applying changes)
 var firstSaveOverlay;                   //holds first save marker (used to determine if saving or applying changes)
 var firstSavePOI;                       //holds first save marker (used to determine if saving or applying changes)
@@ -424,9 +425,18 @@ function initialize() {
             var contentString = writeHTML("poiDesc", poi_i, "", "");
             infowindow[poi_i] = new google.maps.InfoWindow({
                 content: contentString,
-                pixelOffset: new google.maps.Size(0, -2)
+                position: marker.getPosition(),
+                pixelOffset: new google.maps.Size(0, -40)
             });
-            infowindow[poi_i].open(map, poiObj[poi_i]);
+            //infowindow[poi_i].open(map, poiObj[poi_i]);
+            if (poiCount > 0) {
+                infowindow[poi_i].open(map);
+            } else {
+                poiCount++;
+                infowindow[poi_i].setMap(map);
+                infowindow[poi_i].setMap(null);
+                infowindow[poi_i].setMap(map);
+            }
         }
 
         google.maps.event.addListener(marker, 'dragstart', function () {
@@ -498,7 +508,14 @@ function initialize() {
                 content: contentString
             });
             infowindow[poi_i].setPosition(circle.getCenter());
-            infowindow[poi_i].open(map);
+            if (poiCount > 0) {
+                infowindow[poi_i].open(map);
+            } else {
+                poiCount++;
+                infowindow[poi_i].setMap(map);
+                infowindow[poi_i].setMap(null);
+                infowindow[poi_i].setMap(map);
+            }
         }
 
         google.maps.event.addListener(circle, 'dragstart', function () {
@@ -569,10 +586,13 @@ function initialize() {
             
             //redisplay overlays (the one we just made)
             displayIncomingOverlays();
-
+            
+            //relist the overlay we drew
+            initOverlayList();
+            
             //hide the rectangle we drew
             rectangle.setMap(null);
-
+            
             //prevent redraw
             drawingManager.setDrawingMode(null);
         }
@@ -603,7 +623,15 @@ function initialize() {
                 content: contentString
             });
             infowindow[poi_i].setPosition(rectangle.getBounds().getCenter());
-            infowindow[poi_i].open(map);
+            if (poiCount > 0) {
+                infowindow[poi_i].open(map);
+            } else {
+                poiCount++;
+                infowindow[poi_i].setMap(map);
+                infowindow[poi_i].setMap(null);
+                infowindow[poi_i].setMap(map);
+            }
+            
         }
         
         google.maps.event.addListener(rectangle, 'bounds_changed', function () {
@@ -710,7 +738,14 @@ function initialize() {
                 content: contentString
             });
             infowindow[poi_i].setPosition(polygonCenter(polygon));
-            infowindow[poi_i].open(map);
+            if (poiCount > 0) {
+                infowindow[poi_i].open(map);
+            } else {
+                poiCount++;
+                infowindow[poi_i].setMap(map);
+                infowindow[poi_i].setMap(null);
+                infowindow[poi_i].setMap(map);
+            }
         }
         google.maps.event.addListener(polygon.getPath(), 'set_at', function () { //if bounds change
             if (placerType == "poi") {
@@ -821,7 +856,14 @@ function initialize() {
             var polylineStartPoint = polylinePoints[0];
             de("polylineStartPoint: " + polylineStartPoint);
             infowindow[poi_i].setPosition(polylineStartPoint);
-            infowindow[poi_i].open(map);
+            if (poiCount > 0) {
+                infowindow[poi_i].open(map);
+            } else {
+                poiCount++;
+                infowindow[poi_i].setMap(map);
+                infowindow[poi_i].setMap(null);
+                infowindow[poi_i].setMap(map);
+            }
 
             label[poi_i] = new MarkerWithLabel({
                 //position: polylineCenter, //position of real marker
@@ -1034,7 +1076,9 @@ function displayIncomingOverlays() {
     for (var i = 0; i < incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
         overlaysOnMap[i] = new CustomOverlay(i, incomingOverlayBounds[i], incomingOverlaySourceURL[i], map, incomingOverlayRotation[i]);    //create overlay with incoming
         overlaysOnMap[i].setMap(map);                                                                                                       //set the overlay to the map
+        
         setGhostOverlay(i, incomingOverlayBounds[i]);                                                                                       //set hotspot on top of overlay
+        de("I created ghost: " + i);
     }
     overlaysCurrentlyDisplayed = true;
 }
@@ -1063,10 +1107,14 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
     google.maps.event.addListener(ghostOverlayRectangle[ghostIndex], 'click', function () {
         if (pageMode == "edit") {
             if (currentlyEditing == "yes") {                                                            //if editing is being done, save
-                cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
-                ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
-                currentlyEditing = "no";                                                                //reset editing marker
-                preservedRotation = 0;                                                                  //reset preserved rotation
+                if (workingOverlayIndex == null) {
+                    currentlyEditing = "no";
+                } else {
+                    cacheSaveOverlay(ghostIndex);                                                       //trigger a cache of current working overlay
+                    ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                    //set rectangle to ghosting
+                    currentlyEditing = "no";                                                            //reset editing marker
+                    preservedRotation = 0;                                                              //reset preserved rotation
+                }
             }
             if (currentlyEditing == "no") {                                                             //if editing is not being done, start editing
                 $("#toolbox").show();                                                                   //show the toolbox
