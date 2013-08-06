@@ -153,7 +153,6 @@ namespace SobekCM.Library.Navigation
 			ItemID_DEPRECATED = -1;
 		    Thumbnails_Per_Page = -100;
 		    Size_Of_Thumbnails = -1;
-		    Autonumbering_Mode = -1;
 
 			Invalid_Item = false;
 			Skin_in_URL = false;
@@ -517,9 +516,6 @@ namespace SobekCM.Library.Navigation
 
         /// <summary> Size of Thumbnails to appear in the related items viewer </summary>
         public short Size_Of_Thumbnails { get; set; }
-
-        /// <summary> The pagination autonumbering mode for the QC item viewer 0:Whole document; 1: Current Division; 2: None </summary>
-        public int Autonumbering_Mode { get; set; }
 
 	    /// <summary> Fragment utilized when only a portion of a page needs to be rendered </summary>
         public string Fragment { get; set; }
@@ -1175,19 +1171,6 @@ namespace SobekCM.Library.Navigation
                             else
                             {
                                 itemDisplayBuilder.Append("&ts=" + Size_Of_Thumbnails);
-                            }
-                        }
-
-                        if ((ViewerCode.IndexOf("qc") >= 0) && (Autonumbering_Mode>=0 && Autonumbering_Mode<=2))
-                        {
-                            if (!query_string_started)
-                            {
-                                itemDisplayBuilder.Append("?an=" + Autonumbering_Mode);
-                                query_string_started = true;
-                            }
-                            else
-                            {
-                                itemDisplayBuilder.Append("&an=" + Autonumbering_Mode);
                             }
                         }
 
