@@ -9,6 +9,12 @@ var L_Polygon = "Polygon";
 var L_Line = "Line";
 var L_Saved = "Saved";
 var L_NotSaved = "Nothing To Save";
+var L_Save = "Save";
+var L_Apply = "Apply";
+var L_Editing = "Editing";
+var L_Removed = "Removed";
+var L_Showing = "Showing";
+var L_Hiding = "Hiding";
 var L1 = "SobekCM Plugin <a href=\"#\">Report a Sobek Error</a>"; //copyright node
 var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
 var L3 = "Description (Optional)"; //describe poi box
@@ -39,17 +45,21 @@ var L27 = "Overlay Editing Turned On";
 var L28 = "ERROR: Failed Adding Titles";
 var L29 = "ERROR: Failed Adding Textual Content";
 var L30 = "Edit Location by Dragging Exisiting Marker";
-var L31 = "Hiding";
-var L32 = "Showing";
-var L33 = "Removed";
-var L34 = "Editing";
+var L31 = L_Hiding;
+var L32 = L_Showing;
+var L33 = L_Removed;
+var L34 = L_Editing;
 var L35 = "Apply Changes (Make Changes Public)";
-var L36 = "Apply";
-var L37 = "Save";
+var L36 = L_Apply;
+var L37 = L_Save;
 var L38 = "Save to Temporary File";
 var L39 = "Nothing To Search";
 var L40 = "Cannot Convert";
 var L41 = "Select The Area To Draw The Overlay";
+var L42 = "Hiding POIs"; //toogle poi
+var L43 = "Showing POIs"; //toggle poi
+var L44 = "Converted Item To Overlay";
+var L45 = "Nothing To Toggle";
 
 //by listeners
 try {
@@ -111,8 +121,10 @@ try {
     document.getElementById("content_toolbox_button_saveItem").title = "Save Location Changes";
     document.getElementById("content_toolbox_button_clearItem").title = "Reset Location Changes";
     //tab
-    document.getElementById("content_toolbox_button_overlayPlace").title = "Toggle Overlay Editing";
+    document.getElementById("content_toolbox_button_overlayEdit").title = "Toggle Overlay Editing";
+    document.getElementById("content_toolbox_button_overlayPlace").title = "Place A New Overlay";
     document.getElementById("content_toolbox_button_overlayGetUserLocation").title = "Center On Your Current Position";
+    document.getElementById("content_toolbox_button_overlayToggle").title = "Toggle All Overlays On Map";
     document.getElementById("rotation").title = "Rotate: Edit the rotation value";
     document.getElementById("rotationKnob").title = "Rotate: Edit the rotation value";
     document.getElementById("content_toolbox_rotationCounterClockwise").title = "Tenth Degree Left: Click to Rotate a Tenth Degree Counter-Clockwise";
@@ -124,6 +136,7 @@ try {
     //tab
     document.getElementById("content_toolbox_button_placePOI").title = "Toggle Point Of Interest Editing";
     document.getElementById("content_toolbox_button_poiGetUserLocation").title = "Center On Your Current Position";
+    document.getElementById("content_toolbox_button_poiToggle").title = "Toggle All POIs On Map";
     document.getElementById("content_toolbox_button_poiMarker").title = "Marker: Place a Point";
     document.getElementById("content_toolbox_button_poiCircle").title = "Circle: Place a Circle";
     document.getElementById("content_toolbox_button_poiRectangle").title = "Rectangle: Place a Rectangle";

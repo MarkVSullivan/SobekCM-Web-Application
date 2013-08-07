@@ -182,6 +182,19 @@
 #content_message {
     /*something*/
 }
+.message {
+    text-align: center;
+    color: black;
+    font-size: 11px;
+    font-weight: bold;
+    z-index:99999;
+    padding: 2px 2px 2px 2px;
+    margin: 2px 0 2px 0;
+	background-color:peachpuff;
+	-webkit-box-shadow:0 2px 3px rgba(0,0,0,0.5);
+	box-shadow:0 2px 3px rgba(0,0,0,0.5);
+	display:none;
+}
 #content_toolbox_button_itemGetUserLocation {
     background-image: url("images/mapper/getUserLocation.png");
 }
@@ -201,13 +214,19 @@
     background-image: url("images/mapper/button-action1.png");
 }
 #content_toolbox_button_overlayPlace {
+    background-image: url("images/mapper/button-base.png");
+}
+#content_toolbox_button_overlayEdit {
     background-image: url("images/mapper/button-action2.png");
+}
+#content_toolbox_button_overlayToggle {
+    background-image: url("images/mapper/button-base.png");
 }
 #content_toolbox_button_placePOI {
     background-image: url("images/mapper/button-action3.png");
 }
 #content_toolbox_button_poiToggle {
-    background-image: url("images/mapper/button-action3.png");
+    background-image: url("images/mapper/button-base.png");
 }
 #content_toolbox_rotationCounterClockwise {
     background-image: url("images/mapper/rotation-counterClockwise.png");

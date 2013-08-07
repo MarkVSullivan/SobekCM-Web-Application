@@ -1,0 +1,27 @@
+<head>
+
+	<script type="text/javascript">
+		var thisURL = window.location.href.toString();
+        $("#Result").click(function() {
+            try {
+                    $.ajax({
+                        type: "POST",
+                        url: thisURL+"/GetDate",
+                        data: "{}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function() {
+                            alert("success");
+                        }
+                    });
+                } catch(err) {
+                    alert("error: " + err);
+                }
+        });
+	</script>
+	
+	
+</head>
+<body>
+<div id="Result"> Time? </div>	
+</body>

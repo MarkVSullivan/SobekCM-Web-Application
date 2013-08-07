@@ -1,0 +1,1233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document>
+	<name>canterbury_history.kml</name>
+	<Style id="sh_icon38_copy13">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy11">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy16">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_star_copy1">
+		<IconStyle>
+			<color>ff00ffff</color>
+			<scale>1.4</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy14">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy40</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy4</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon46_copy13">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy13</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy13</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_icon46_copy1">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy4">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sn_icon44_copy11">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon44.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy20">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sh_icon380">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy12">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy20">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy2</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy20</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_star_copy1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_star_copy1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_star_copy1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon38_copy3">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sn_icon46_copy30">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy2">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy16">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy11">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy11</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy11</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon38_copy5">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sh_star_copy2">
+		<IconStyle>
+			<color>ff00ffff</color>
+			<scale>1.4</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy8</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy8</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon44_copy50">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon44_copy50</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon36_copy50</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon36_copy50">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon36.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sn_icon46_copy9">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_star_copy2">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_star_copy2</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_star_copy2</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon46_copy9">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy9</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy9</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon44_copy11">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon44_copy11</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon36_copy11</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon38_copy70">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy5">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_star_copy2">
+		<IconStyle>
+			<color>ff00ffff</color>
+			<scale>1.2</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy12</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon36">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon36.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sn_icon44_copy12">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon44.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy16">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy16</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy16</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_icon46_copy0">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon36_copy11">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon36.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy8">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon460">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy9">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy13">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy14">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy14</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy14</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon46">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon460</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon38_copy11">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy7">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy70</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy70</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon46_copy5">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy5</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy5</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_icon44_copy50">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon44.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon440">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon44.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon46_copy70">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_star_copy1">
+		<IconStyle>
+			<color>ff00ffff</color>
+			<scale>1.2</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy8">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon46_copy00">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon46_copy10">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy10</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy10</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon46_copy3">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46_copy30</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon38_copy3</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_icon46_copy40">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon440">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon440</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon36</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon36_copy12">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon36.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon460">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon46</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon380</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_icon46_copy10">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_icon38_copy14">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_icon44_copy12">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon44_copy12</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon36_copy12</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon38">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sh_icon38_copy0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sh_icon38_copy10">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon38.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Folder>
+		<name>Canterbury - History and Architecture</name>
+		<description>History and Architecture of Canterbury, Kent, UK</description>
+		<Folder>
+			<name>Reconstructions</name>
+			<description>Drawn by John Atherton Bowen © Canterbury Archaeological Trust Ltd
+
+http://www.canterburytrust.co.uk/schools/gallery/gall01.htm</description>
+			<Placemark>
+				<name>Tudor Canterbury</name>
+				<description><![CDATA[Tudor Canterbury: a reconstruction based on archaeological and documentary evidence and standing remains.
+<img src="http://www.canterburytrust.co.uk/schools/assets/recon05b.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.080916751909829</longitude>
+					<latitude>51.27902265938796</latitude>
+					<altitude>0</altitude>
+					<range>142.440747813857</range>
+					<tilt>69.69807310824795</tilt>
+					<heading>14.92851144529293</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_star_copy2</styleUrl>
+				<Point>
+					<coordinates>1.080793712916326,51.27907539680798,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>St Thomas Becket&apos;s Canterbury</name>
+				<description><![CDATA[St Thomas Becket's Canterbury: a reconstruction based on the evidence of archaeological remains,
+medieval documents and standing buildings. <br />
+<img src="http://www.canterburytrust.co.uk/schools/assets/recon04b.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.083344583488568</longitude>
+					<latitude>51.28001742998352</latitude>
+					<altitude>0</altitude>
+					<range>375.7441299057181</range>
+					<tilt>74.38526684167984</tilt>
+					<heading>-134.7138908884912</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_star_copy1</styleUrl>
+				<Point>
+					<coordinates>1.082327650547541,51.2799924232762,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+		<Folder>
+			<name>Buildings</name>
+			<Placemark>
+				<name>Ivy Lane</name>
+				<description><![CDATA[Wealden Hall style house - late 14th century
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/ivylane.htm">More</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/ivyln3.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.086924002535363</longitude>
+					<latitude>51.2770246134238</latitude>
+					<altitude>0</altitude>
+					<range>124.382367355594</range>
+					<tilt>2.066661392151618e-010</tilt>
+					<heading>0.000297250214439967</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy16</styleUrl>
+				<Point>
+					<coordinates>1.086815845001695,51.2767798160944,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Fyndon Gate</name>
+				<description><![CDATA[<h3>Fyndon's Gate, Lady Wootton's Green</h3>
+<p>The original Great Gate to St Augustine's Abbey
+Rebuilt by Abbot Fyndon between 1301 and 1309</p>
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/fyndon.htm">More Information</a><br />
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/fyndon/full2.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.08714045967321</longitude>
+					<latitude>51.27877912434479</latitude>
+					<altitude>0</altitude>
+					<range>162.5344653314456</range>
+					<tilt>3.624918933499432e-010</tilt>
+					<heading>0.004353376905159748</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy14</styleUrl>
+				<Point>
+					<coordinates>1.086794444444444,51.2789277777778,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>12, The Friars</name>
+				<description><![CDATA[12, The Friars (Canterbury Tales pub)
+Late 18th century house with nice brickwork - now a lively pub opposite the Marlowe Theatre.
+http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/tales.htm
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/tales1.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.078737629693348</longitude>
+					<latitude>51.28062881292926</latitude>
+					<altitude>0</altitude>
+					<range>79.7319484487129</range>
+					<tilt>0</tilt>
+					<heading>-0.002202559097245536</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy13</styleUrl>
+				<Point>
+					<coordinates>1.078643076078521,51.280701356931,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Eastbridge Hospital of Saint Thomas the Martyr</name>
+				<description><![CDATA[12th century hospital for pilgrims - probably founded in 1176
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/eastbrg1.htm">More Information</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/eastbrg/eastbrg23.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.078446559047067</longitude>
+					<latitude>51.27975050728753</latitude>
+					<altitude>0</altitude>
+					<range>162.5344641509233</range>
+					<tilt>0</tilt>
+					<heading>-0.002429658235018398</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy10</styleUrl>
+				<Point>
+					<coordinates>1.078251239086214,51.2799530421518,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Cogan House</name>
+				<description><![CDATA[<p>13th century building, formerly a Hospital for the poor, with wonderful woodcarvings.<br />
+Notes: Cogan House has a Victorian front but dates back to 1203 or earlier, and is one of the most distinguished buildings in Canterbury - and even in England. It is claimed that one of its walls is the earliest of its type in England, being partly of chalk.</p>
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/cogan.htm">More Information</a><br />
+
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/cogan/68.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.07827867196612</longitude>
+					<latitude>51.28028815629047</latitude>
+					<altitude>0</altitude>
+					<range>162.5344641488014</range>
+					<tilt>1.984557721500576e-010</tilt>
+					<heading>-0.002560643762029466</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy11</styleUrl>
+				<Point>
+					<coordinates>1.077654200531043,51.28029456702406,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>The Kings&apos; School Shop</name>
+				<description><![CDATA[<h3>28 Palace Street</h3>
+<p>Early 17th century (probably 1647) timber-framed building with jetties - leaning alarmingly! Wonderful carving and unusual small clerestory windows.</p>
+<a href="http://www.canterburytrust.co.uk/buildrec/28palace.htm">Canterbury Archaeological Trust</a><br />
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/plcst28.htm">Canterbury Buildings Website</a>
+
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/ps28c.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.083423367151131</longitude>
+					<latitude>51.28122045649248</latitude>
+					<altitude>0</altitude>
+					<range>411.9104777523126</range>
+					<tilt>0</tilt>
+					<heading>0.00145330142553066</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy8</styleUrl>
+				<Point>
+					<coordinates>1.081938888888889,51.28161944444445,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>The Bull Inn (now shops)</name>
+				<description><![CDATA[http://www.canterburytrust.co.uk/buildrec/thebull.htm
+<img src="http://www.canterburytrust.co.uk/buildrec/assets/thebul01.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.08276549931176</longitude>
+					<latitude>51.27878840045614</latitude>
+					<altitude>0</altitude>
+					<range>411.9104777551419</range>
+					<tilt>0</tilt>
+					<heading>0.0009399900219145033</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy9</styleUrl>
+				<Point>
+					<coordinates>1.08144996853882,51.27900839126648,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>St Martin&apos;s Church</name>
+				<description><![CDATA[The oldest church in England still in use
+- part of the UNESCO world heritage site.
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/..%5Cpages%5Cstmart1a.htm">More Information</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/stmarts/church.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.094129445977772</longitude>
+					<latitude>51.27787775133844</latitude>
+					<altitude>0</altitude>
+					<range>459.6661226181482</range>
+					<tilt>5.638783320923968e-010</tilt>
+					<heading>0.03908426205805951</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy20</styleUrl>
+				<Point>
+					<coordinates>1.093678976999243,51.277980229661,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>16 watling Street</name>
+				<description><![CDATA[1625? Earliest brick house still standing in Canterbury.
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/..%5Cpages%5Cwtlng16.htm">More Information</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/wtlng/wtlng3.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.079509276840239</longitude>
+					<latitude>51.27698705776513</latitude>
+					<altitude>0</altitude>
+					<range>142.5832551316327</range>
+					<tilt>5.415080077463736e-011</tilt>
+					<heading>-0.0006039253057393986</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy00</styleUrl>
+				<Point>
+					<coordinates>1.079208333333333,51.27694444444446,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>7-8 Best Lane</name>
+				<description><![CDATA[17th century townhouse
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/bestlane.htm">More Information</a>
+
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/bestln1.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.07920570151698</longitude>
+					<latitude>51.27994868868065</latitude>
+					<altitude>0</altitude>
+					<range>138.6829057673338</range>
+					<tilt>0</tilt>
+					<heading>-0.000840783644474644</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy5</styleUrl>
+				<Point>
+					<coordinates>1.079222222222222,51.280075,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Site of All Saint&apos;s Church</name>
+				<description><![CDATA[Notes: A lovely 1780's print of All Saints Church, now gone, which used to stand by the King's Bridge in the middle of Canterbury, opposite St. Thomas' Hospital, where now there is a pizza restaurant.
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/PAGES/allsaints.htm">More Information</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/history/allsaints.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.080173579198274</longitude>
+					<latitude>51.27975601120139</latitude>
+					<altitude>0</altitude>
+					<range>402.5559195185016</range>
+					<tilt>1.749284656798925e-011</tilt>
+					<heading>-0.00882157541612291</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy4</styleUrl>
+				<Point>
+					<coordinates>1.078563230452346,51.27998078723876,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Site of Saxon - Mediaeval burial ground</name>
+				<description>Underneath the old 1960s sorting office was an extensive burial ground, excavated by the Canterbury Archaeological Trust in the late 80s.</description>
+				<LookAt>
+					<longitude>1.085349680969342</longitude>
+					<latitude>51.28279360778307</latitude>
+					<altitude>0</altitude>
+					<range>482.147712314452</range>
+					<tilt>0</tilt>
+					<heading>-0.006478220910335241</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon440</styleUrl>
+				<Point>
+					<coordinates>1.085297222222222,51.28295833333335,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Saint John Baptist Hospital</name>
+				<description><![CDATA[<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/stjohns1.jpg" />
+
+<p>Norman Hospital or Almshouse - the oldest in England, dating from around 1085, though much of it (as the doorway below) is 15th/16th century and later.</p>
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/sjjohns1.htm">More Information</a>]]></description>
+				<LookAt>
+					<longitude>1.084902520741509</longitude>
+					<latitude>51.28283655598347</latitude>
+					<altitude>0</altitude>
+					<range>196.9431416988472</range>
+					<tilt>0</tilt>
+					<heading>0.0005247868227857974</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy1</styleUrl>
+				<Point>
+					<coordinates>1.084662741732771,51.2831180089074,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Blackfriars</name>
+				<description><![CDATA[<p>From 1237 - 13th century friary with many later modifications<p>
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/blckfrrs.htm">More About this building</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/blckfrrs.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.080142667920524</longitude>
+					<latitude>51.28156985663198</latitude>
+					<altitude>0</altitude>
+					<range>310.7694614117324</range>
+					<tilt>7.008900523672335e-011</tilt>
+					<heading>0.01460957814287693</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy3</styleUrl>
+				<Point>
+					<coordinates>1.079331789795489,51.28127953694833,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>67 Burgate</name>
+				<description><![CDATA[<p>15th - 16th century with ornate carvings</p>
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/pages/bur67.htm">More Information</a>
+<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/bur67a.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.084210774730394</longitude>
+					<latitude>51.27807008496643</latitude>
+					<altitude>0</altitude>
+					<range>110.5453813203171</range>
+					<tilt>8.619334593306884e-011</tilt>
+					<heading>-1.499944271394762e-005</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46</styleUrl>
+				<Point>
+					<coordinates>1.083945115376864,51.27823025180134,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Roper Gate</name>
+				<description><![CDATA[http://www.canterburytrust.co.uk/buildrec/ropergt.htm
+<img src="http://www.canterburytrust.co.uk/buildrec/assets/roperg02.jpg" />]]></description>
+				<LookAt>
+					<longitude>1.072423018874422</longitude>
+					<latitude>51.28311973974095</latitude>
+					<altitude>0</altitude>
+					<range>258.6597982349015</range>
+					<tilt>1.726616683840397e-010</tilt>
+					<heading>1.055287213638146</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon46_copy7</styleUrl>
+				<Point>
+					<coordinates>1.072300658677406,51.28327082593108,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>17 Palace Street, Canterbury</name>
+				<description><![CDATA[<img src="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/photos/plc17a.jpg" />
+
+<h1>Conquest House</h1>
+
+<p>Timber framed building - foundations in 11th century. Outwardly appears17th century timber-framed. <br />
+<a href="http://weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/..%5Cpages%5Cplcst17.htm">More Information</a></p>]]></description>
+				<LookAt>
+					<longitude>1.081665422968116</longitude>
+					<latitude>51.28107430496186</latitude>
+					<altitude>0</altitude>
+					<range>173.0193985714448</range>
+					<tilt>0</tilt>
+					<heading>0.678888404911848</heading>
+				</LookAt>
+				<styleUrl>#msn_icon460</styleUrl>
+				<Point>
+					<coordinates>1.081495437916615,51.28119963235135,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+		<Folder>
+			<name>Maps</name>
+			<GroundOverlay>
+				<name>Canterbury, 1881</name>
+				<description>6 Inch Ordnance Survey Map 1881 for Canterbury
+From  KCC, Centre for Kentish Studies 
+http://www.hereshistorykent.org.uk/displayImagedata.cfm?type=Map&amp;digref=6inch_Canterbury&amp;placename=Canterbury&amp;placeID=70&amp;categoryID=23</description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/6inch_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28376933849128</north>
+					<south>51.27572937976829</south>
+					<east>1.090326180366095</east>
+					<west>1.073197853755636</west>
+					<rotation>-1.767757010862437</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1821</name>
+				<description><![CDATA[<p>Greenwood Map for Canterbury, 1821</p>
+<p>Another Cartographically suspect number, very similar in errors to the 1801 Mudge map.</p>
+<a href="http://www.hereshistorykent.org.uk/displayImagedata.cfm?type=Map&digref=Greenwood_Canterbury&placename=Canterbury&placeID=70&categoryID=23">KCC, Centre for Kentish Studies</a>]]></description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/Greenwood_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28868924780689</north>
+					<south>51.26760524355063</south>
+					<east>1.111571231094943</east>
+					<west>1.059018364412566</west>
+					<rotation>-3.353619467381676</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1801</name>
+				<description><![CDATA[<p>Mudge Map, 1801<br />
+(Frankly, rubbish cartography on this one. Ew.)</p>
+
+<a href="http://www.hereshistorykent.org.uk/displayImagedata.cfm?type=Map&digref=Mudge_Canterbury&placename=Canterbury&placeID=70&categoryID=23">KCC, Centre for Kentish Studies</a>]]></description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/Mudge_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.29181636171909</north>
+					<south>51.27032715161852</south>
+					<east>1.095974823295729</east>
+					<west>1.061711540087293</west>
+					<rotation>-0.1101810498537152</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1769</name>
+				<description>Andrews, Dury and Herbert Map 1769 for Canterbury
+From KCC Centre for Web Studies
+http://www.hereshistorykent.org.uk/displayImagedata.cfm?type=Map&amp;digref=A-D_Canterbury&amp;placename=Canterbury&amp;placeID=70&amp;categoryID=23</description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/A-D_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28777024778498</north>
+					<south>51.27043447879269</south>
+					<east>1.096196454297028</east>
+					<west>1.061866805530088</west>
+					<rotation>6.341862233981751</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1768</name>
+				<description>Map of Canterbury of 1768 - a plan produced by John Andrews and Matthew Wren - &apos;A Plan of the City of Canterbury&apos;
+
+From Stephen Bax&apos;s Site, http://weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/1768/map.htm</description>
+				<Icon>
+					<href>//weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/1768/1768.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28628721484429</north>
+					<south>51.27219811135355</south>
+					<east>1.095448842216851</east>
+					<west>1.066696270082369</west>
+					<rotation>5.484533047380342</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1752</name>
+				<description>A Map of Canterbury of 1752 - an engraving by William and Henry Doidge &apos;A plan of the Antient City of Canterbury together with the remains of St. Austin&apos;s Monastery carefully surveyed and delineated by W &amp; H Doidge, Land Surveyors, April 1752.
+
+Via http://weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/1752/map.htm
+Stephen Bax</description>
+				<Icon>
+					<href>http://weblingua.hostinguk.com/invictaweb/canterburybuildings/maps/1752/1752.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28589470694208</north>
+					<south>51.27272152995565</south>
+					<east>1.095135996043367</east>
+					<west>1.06849859798223</west>
+					<rotation>5.132733055121435</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1719</name>
+				<visibility>0</visibility>
+				<description>Parker Map 1719 for Canterbury</description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/Parker_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.32438713574938</north>
+					<south>51.22672564180547</south>
+					<east>1.188993151151703</east>
+					<west>0.9689915420986667</west>
+					<rotation>-4.395955853597104</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1596</name>
+				<description><![CDATA[Symonson Map 1596 for Canterbury
+
+<a href="http://www.hereshistorykent.org.uk/displayImagedata.cfm?type=Map&digref=Symonson_Canterbury&placename=Canterbury&placeID=70&categoryID=23">KCC Centre for Kentish Studies</a>]]></description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/Symonson_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.31124867479124</north>
+					<south>51.23599073892451</south>
+					<east>1.188157798401193</east>
+					<west>1.007332490025581</west>
+					<rotation>0.4672552154721293</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1575</name>
+				<description><![CDATA[Saxton Plan of the City, 1575
+
+<img src="http://www.hereshistorykent.org.uk/images/Canterbury/Map/Saxon_CanterburyStreets.jpg" width="300"/>]]></description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/Saxon_CanterburyCity.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28872483159631</north>
+					<south>51.2686834108719</south>
+					<east>1.089224202365043</east>
+					<west>1.070979648411817</west>
+					<rotation>80.96048619458725</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Canterbury, 1575</name>
+				<description><![CDATA[Saxton Map 1575 for Canterbury
+
+<a href="http://www.hereshistorykent.org.uk/displayImagedata.cfm?type=Map&digref=Saxon_Canterbury&placename=Canterbury&placeID=70&categoryID=23">KCC Centre for Kentish Studies</a>]]></description>
+				<Icon>
+					<href>http://www.hereshistorykent.org.uk/images/Canterbury/Map/Saxon_Canterbury.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.31293840871842</north>
+					<south>51.26155334680337</south>
+					<east>1.135063357979431</east>
+					<west>0.9926389937519891</west>
+					<rotation>-7.124962632230753</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Roman Archaeology in Modern Canterbury</name>
+				<description>From the Canterbury Archaeological Trust
+
+http://www.canterburytrust.co.uk/schools/gallery/gall08.htm</description>
+				<color>f5ffffff</color>
+				<Icon>
+					<href>http://www.canterburytrust.co.uk/schools/assets/gall08ab.gif</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28423466197794</north>
+					<south>51.27368624602305</south>
+					<east>1.094393793761625</east>
+					<west>1.069740870345949</west>
+					<rotation>-2.764273393195952</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+			<GroundOverlay>
+				<name>Plan of Roman Canterbury</name>
+				<description><![CDATA[Plan of Roman Canterbury showing major features of the town.
+From the <a href="http://www.canterburytrust.co.uk/schools/randascr/rascr05.htm#thecentre">Canterbury Archaeological Trust</a>]]></description>
+				<Icon>
+					<href>http://www.canterburytrust.co.uk/schools/assets/gall08bb.jpg</href>
+					<viewBoundScale>0.75</viewBoundScale>
+				</Icon>
+				<LatLonBox>
+					<north>51.28442867886911</north>
+					<south>51.27292959873958</south>
+					<east>1.091787723123193</east>
+					<west>1.061922962480851</west>
+					<rotation>-0.6049890750149041</rotation>
+				</LatLonBox>
+			</GroundOverlay>
+		</Folder>
+		<Folder>
+			<name>Wikipedia Entries</name>
+			<Placemark>
+				<name>St Augustine&apos;s Abbey</name>
+				<description>http://en.wikipedia.org/wiki/St_Augustine%27s_Abbey</description>
+				<LookAt>
+					<longitude>1.087865926942831</longitude>
+					<latitude>51.27809064467608</latitude>
+					<altitude>0</altitude>
+					<range>181.0102914566778</range>
+					<tilt>7.775952511721144e-011</tilt>
+					<heading>0.006519621701814342</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon44_copy11</styleUrl>
+				<Point>
+					<coordinates>1.088206490743417,51.27812731878093,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Church of St. Martin, Canterbury</name>
+				<description>http://en.wikipedia.org/wiki/Church_of_St._Martin%2C_Canterbury</description>
+				<LookAt>
+					<longitude>1.09419636499797</longitude>
+					<latitude>51.27775295756532</latitude>
+					<altitude>0</altitude>
+					<range>471.5402337174911</range>
+					<tilt>0</tilt>
+					<heading>0.01145855541172052</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon44_copy50</styleUrl>
+				<Point>
+					<coordinates>1.0938236821206,51.27798851141907,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>St Dunstan;s Church, Canterbury</name>
+				<description>http://en.wikipedia.org/wiki/St._Dunstan%27s%2C_Canterbury</description>
+				<LookAt>
+					<longitude>1.070824926292346</longitude>
+					<latitude>51.28343857482988</latitude>
+					<altitude>0</altitude>
+					<range>104.7800589400131</range>
+					<tilt>5.632336862007788e-010</tilt>
+					<heading>0.02394981821573119</heading>
+					<altitudeMode>relativeToGround</altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_icon44_copy12</styleUrl>
+				<Point>
+					<coordinates>1.070813475841746,51.28365833333334,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+	</Folder>
+</Document>
+</kml>

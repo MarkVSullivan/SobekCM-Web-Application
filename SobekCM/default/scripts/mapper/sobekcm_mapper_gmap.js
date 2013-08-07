@@ -1,6 +1,10 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
+//var isConverted = false;                //holds a marker to tell me if it was converted (fixes a bug)
+var messageCount = 0;                   //holds the running count of all the messages written in a session
+//var overlayToggleState = "displayed";   //holds marker for displayed/hidden overlays
+var poiToggleState = "displayed";       //holds marker for displayed/hidden pois
 var poiCount = 0;                       //holds a marker for pois drawn (fixes first poi desc issue)
 var firstSaveItem;                      //holds first save marker (used to determine if saving or applying changes)
 var firstSaveOverlay;                   //holds first save marker (used to determine if saving or applying changes)
