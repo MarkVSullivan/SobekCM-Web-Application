@@ -84,9 +84,12 @@ $(function() {
     $("#content_toolbox_button_savePOI").tooltip({track:true});
     $("#content_toolbox_button_itemGetUserLocation").tooltip({track:true});
     $("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
+    $("#content_toolbox_button_overlayEdit").tooltip({ track: true });
+    $("#content_toolbox_button_overlayToggle").tooltip({ track: true });
     $("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
     $("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
-    $("#content_toolbox_button_poiGetUserLocation").tooltip({track:true});
+    $("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
+    $("#content_toolbox_button_poiToggle").tooltip({ track: true });
     $("#content_toolbox_button_clearItem").tooltip({track:true});
     $("#content_toolbox_button_clearOverlay").tooltip({track:true});
     $("#content_toolbox_button_clearPOI").tooltip({track:true});
