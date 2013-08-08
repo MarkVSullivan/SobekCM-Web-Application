@@ -1254,8 +1254,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        // shift+click checkboxes
 	        Output.WriteLine("<script type=\"text/javascript\">$(document).ready(function() {$(function() {$(\"input[name^='chkMoveThumbnail']\").shiftClick();});");
 	        Output.WriteLine("(function($) {$.fn.shiftClick = function() {var lastSelected;var checkBoxes = $(this);this.each(function() {$(this).click(function(ev) {if (ev.shiftKey) {var MaxPageCount = " + qc_item.Web.Static_PageCount + ";var spanArrayObjects = new Array();if(window.spanArrayGlobal!= null){ spanArrayObjects = window.spanArrayGlobal;}else{for(var j=0;j<MaxPageCount;j++){spanArrayObjects[j]='span'+j;}}var spanArray=new Array();for(var k=0;k<spanArrayObjects.length;k++){spanArray[k]=spanArrayObjects[k].split('span')[1];} var last = checkBoxes.index(lastSelected);var first = checkBoxes.index(this);var thisID = (this.id).split('chkMoveThumbnail')[1];var lastID = (lastSelected.id).split('chkMoveThumbnail')[1];var thisIndex = spanArray.indexOf(thisID);");
-	        Output.WriteLine("var lastIndex = spanArray.indexOf(lastID); var start = Math.min(thisIndex, lastIndex);var end = Math.max(thisIndex, lastIndex);var chk = lastSelected.checked;for (var i = start; i < end; i++) {document.getElementById('chkMoveThumbnail'+(spanArray[i])).checked = chk;}var atLeastOneSelected=false;if($('body').css('cursor').indexOf(\"move_pages_cursor\")>-1){for(var i=0;i<MaxPageCount; i++){if(document.getElementById('chkMoveThumbnail'+i).checked)atLeastOneSelected=true;}if(!(atLeastOneSelected)){document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';}");
-	        Output.WriteLine("}else{document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).className = 'movePageArrowIconVisible';}}}} else {lastSelected = this;}})});};})(jQuery);});");
+	        Output.WriteLine("var lastIndex = spanArray.indexOf(lastID); var start = Math.min(thisIndex, lastIndex);var end = Math.max(thisIndex, lastIndex);var chk = lastSelected.checked;for (var i = start; i < end; i++) {document.getElementById('chkMoveThumbnail'+(spanArray[i])).checked = chk;}var atLeastOneSelected=false;if($('body').css('cursor').indexOf(\"move_pages_cursor\")>-1){for(var i=0;i<MaxPageCount; i++){if(document.getElementById('chkMoveThumbnail'+i).checked)atLeastOneSelected=true;}if(!(atLeastOneSelected)){document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).style.visibility = 'hidden';}");
+	        Output.WriteLine("}else{document.getElementById('divMoveOnScroll').className='qcDivMoveOnScroll';for(var i=0; i<MaxPageCount; i++){if(document.getElementById('movePageArrows'+i))document.getElementById('movePageArrows'+i).style.visibility = 'visible';}}}} else {lastSelected = this;}})});};})(jQuery);});");
 	        Output.WriteLine("</script>");
 	        //end shift+click checkboxes
 
@@ -1365,9 +1365,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
 
             Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Standard cursor\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:ChangeMouseCursor(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Choose main Thumbnail\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:MovePages(" + qc_item.Web.Static_PageCount + "); return false;left\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Move multiple pages\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:DeletePages(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Delete multiple pages\"/></a></span>");
+            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"return mainthumbnailicon_click();\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Choose main Thumbnail\"/></a></span>");
+            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"return movepagesicon_click();\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Move multiple pages\"/></a></span>");
+            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"return bulkdeleteicon_click();\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Delete multiple pages\"/></a></span>");
          //   Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"View METS\"></img></a></span>");
             Output.WriteLine("</div>");
             // Add the option to GO TO a certain thumbnail next
@@ -1685,7 +1685,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<div id=\"allThumbnailsOuterDiv1\" class=\"qcContainerDivClass\"><span id=\"allThumbnailsOuterDiv\" align=\"left\" style=\"float:left\" class=\"doNotSort\">");
             }
 
+            // Determine the main thumbnail
+            int main_thumbnail_index = -1;
+            if (!String.IsNullOrEmpty(hidden_main_thumbnail))
+                Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
+
+            //Add the division types fromt he current QC Config profile to a local dictionary
+            Dictionary<string, bool> qcDivisionList = new Dictionary<string, bool>();
+            foreach (QualityControl_Division_Config qcDivConfig in qc_profile.All_Division_Types)
+            {
+                qcDivisionList.Add(qcDivConfig.TypeName, qcDivConfig.isNameable);
+            }
+
+            //Get the division types from the Page Tree (from this METS), and the extra ones not in the profile to the 
+            foreach (KeyValuePair<Page_TreeNode, Division_TreeNode> node in childToParent)
+            {
+                string type = node.Value.Type;
+                string label = node.Value.Label;
+                if (!qcDivisionList.ContainsKey(type))
+                {
+                    bool isNameable = (String.IsNullOrEmpty(label)) ? false : true;
+                    qcDivisionList.Add(type, isNameable);
+                }
+            }
+
+            // Get the collection of pages from the item
 			List<abstract_TreeNode> static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
+
 			// Step through each page in the item
 			Division_TreeNode lastParent = null;
 			for (int page_index = page * images_per_page; (page_index < (page + 1) * images_per_page) && (page_index < static_pages.Count); page_index++)
@@ -1708,18 +1734,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						image_url = (qc_item.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
 
-					// Start the box for this thumbnail
-					Output.WriteLine("<a name=\"" + thisPage.Label + "\" id=\"" + thisPage.Label + "\"></a>");
-					Output.WriteLine("<span id=\"span" + page_index + "\" onclick=\"PickMainThumbnail(this.id);\" align=\"left\" style=\"display:inline-block;\" onmouseover=\"this.className='thumbnailHighlight'; showQcPageIcons(this.id); showErrorIcon(this.id);\" onmouseout=\"this.className='thumbnailNormal'; hideQcPageIcons(this.id); hideErrorIcon(this.id);\" >");
-					Output.WriteLine("<div class=\"qcpage\" align=\"center\" id=\"parent" + image_url + "\" >");
-                    Output.WriteLine("<table>");
-
-                    // Add the name of the file
+                    // Get the name of the file
                     string filename_sans_extension = thisFile.File_Name_Sans_Extension;
-				    string filenameToDisplay = filename_sans_extension;
+                    string filenameToDisplay = filename_sans_extension;
+
+					// Start the box for this thumbnail
+                    Output.WriteLine("<!-- PAGE " + page_index + " ( " + filename_sans_extension + " ) -->");
+					Output.WriteLine("<a name=\"" + thisPage.Label + "\" id=\"" + thisPage.Label + "\"></a>");
+                    Output.WriteLine("<span class=\"sbkQc_Span\" id=\"span" + page_index + "\" onclick=\"return qcspan_onclick(this.id);\" onmouseover=\"return qcspan_mouseover(this.id);\" onmouseout=\"return qcspan_mouseout(this.id);\" >");
+                    Output.WriteLine("  <table>");
+
                     //Truncate the filename if too long
                     string tooltipText = String.Empty;
-
                     if (filename_sans_extension.Length > 16)
                     {
                         // Are there numbers at the end?
@@ -1744,60 +1770,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             filenameToDisplay = filenameToDisplay.Substring(0, 8) + "...";
                         }
                     }
-
-     //               Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\" title=\"" + tooltipText + "\">" + filename + "</option>");
-
                     //End filename truncation
-
-
-
-                    Output.WriteLine("<tr><td class=\"qcfilename\" align=\"left\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span title=\""+tooltipText+"\">" + filenameToDisplay + "</span></td>");
+                    
+                    // Start the top row and add the filename
+				    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td class=\"sbkQc_Filename\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span title=\""+tooltipText+"\">" + filenameToDisplay + "</span></td>");
 
                     //Add the checkbox for moving this thumbnail
-                    Output.WriteLine("<td><span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, " + qc_item.Web.Static_PageCount + ")\"/></span>");
-                    Output.WriteLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
-                    Output.WriteLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
-
-                    //Add the error icon
-                    //			Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
-                    int main_thumbnail_index = -1;
-                    if (!String.IsNullOrEmpty(hidden_main_thumbnail))
-                        Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
+				    Output.WriteLine("      <td>");
+                    Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(this.id);\"/>");
+				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
+                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" style=\"height:" + arrow_height + ";width:" + arrow_width + ";\" alt=\"Missing Icon Image\" /></a>");
+				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" style=\"height:" + arrow_height + ";width:" + arrow_width + ";\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
-                    if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                        Output.WriteLine("<span id=\"spanImg" + page_index + "\" class=\"pickMainThumbnailIconSelected\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" height=" + pick_main_thumbnail_height + " width=" + pick_main_thumbnail_width + "/></span></td></tr>");
+				    if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + ";width:" + pick_main_thumbnail_width + ";visibility:visible;\" />");
                     else
-                        Output.WriteLine("<span id=\"spanImg" + page_index + "\" class=\"pickMainThumbnailIcon\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" height=" + pick_main_thumbnail_height + " width=" + pick_main_thumbnail_width + "/></span></td></tr>");
+                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + ";width:" + pick_main_thumbnail_width + ";visibility:hidden;\" />");
 
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
 
- 
+				    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td colspan=\"2\">");
 
-                    //// Add the name of the file
-                    //string filename_sans_extension = thisFile.File_Name_Sans_Extension;
-                    //Output.WriteLine("<span class=\"qcfilename\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" />" + filename_sans_extension + "</span>");
-
-                    ////Add the checkbox for moving this thumbnail
-                    //Output.WriteLine("<span ><input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"chkMoveThumbnailHidden\" onchange=\"chkMoveThumbnailChanged(this.id, " + qc_item.Web.Static_PageCount + ")\"/></span>");
-                    //Output.WriteLine("<span id=\"movePageArrows" + page_index + "\" class=\"movePageArrowIconHidden\"><a id=\"form_qcmove_link_left\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></a>");
-                    //Output.WriteLine("<a id=\"form_qcmove_link2\" href=\"http://ufdc.ufl.edu/l/technical/javascriptrequired\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + arrow_height + "\" width=\"" + arrow_width + "\" alt=\"Missing Icon Image\"></img></span>");
-
-                    ////Add the error icon
-                    ////			Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/Cancel.ico\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" alt=\"Missing Icon Image\"></img></span>");
-                    //int main_thumbnail_index = -1;
-                    //if (!String.IsNullOrEmpty(hidden_main_thumbnail))
-                    //    Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
-
-                    ////Add the main_thumbnail icon
-                    //if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                    //    Output.WriteLine("<span id=\"spanImg" + page_index + "\" class=\"pickMainThumbnailIconSelected\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" height=" + pick_main_thumbnail_height + " width=" + pick_main_thumbnail_width + "/></span>");
-                    //else
-                    //    Output.WriteLine("<span id=\"spanImg" + page_index + "\" class=\"pickMainThumbnailIcon\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" height=" + pick_main_thumbnail_height + " width=" + pick_main_thumbnail_width + "/></span>");
-
-                    //Output.WriteLine("<table>");
-
-					// Add the anchor for jumping to the file?
-					Output.Write("<tr><td colspan=\"2\"><a id=\"" + page_index+ "\" href=\"" + url + "\" target=\"_blank\">");
 
 					// Write the image and determine some values, based on current thumbnail size
 					string division_text = "Division:";
@@ -1805,64 +1803,65 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string division_name_text = "Name:";
 				    string division_tooltip_text = "Division";
 				    string division_checkbox_tooltip = "Check for the beginning of a new division type";
-					string division_box = "divisionbox_small";
-					string pagination_box = "pagebox_small";
-					int icon_width = 15;
-					int icon_height = 15;
-					int num_spaces = 1;
+					string division_box;
+					string pagination_box;
+				    string icon_class;
 					switch (size_of_thumbnails)
 					{
 						case 2:
-							Output.Write("<img id=\"child" + image_url + "\"  src=\"" + image_url + "\" width=\"315px\" height=\"50%\" alt=\"MISSING THUMBNAIL\" class=\"qcthumbnails\" />");
-							division_box = "divisionbox_medium";
-							pagination_box = "pagebox_medium";
-							icon_width = 20;
-							icon_height = 20;
-							num_spaces = 3;
+                            Output.Write("        <img id=\"child" + image_url + "\"  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Medium\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
+                            division_box = "sbkQc_DivisionBox_Medium";
+                            pagination_box = "sbkQc_PageBox_Medium";
+					        icon_class = "sbkQc_PageOptionsIcon_Medium";
 							break;
 
 						case 3:
-							Output.WriteLine("<img id=\"child" + image_url + "\" src=\"" + image_url + "\" width=\"472.5px\" height=\"75%\" alt=\"MISSING THUMBNAIL\" class=\"qcthumbnails\" />");
-							division_box = "divisionbox_large";
-							pagination_box = "pagebox_large";
-							icon_width = 20;
-							icon_height = 20;
-							num_spaces = 4;
+                            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Large\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
+                            division_box = "sbkQc_DivisionBox_Large";
+                            pagination_box = "sbkQc_PageBox_Large";
+                            icon_class = "sbkQc_PageOptionsIcon_Large";
 							break;
 
 						case 4:
-							Output.WriteLine("<img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"qcthumbnails\" />");
-							division_box = "divisionbox_full";
-							pagination_box = "pagebox_full";
-							icon_width = 25;
-							icon_height = 25;
-							num_spaces = 4;
+                            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Full\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
+                            division_box = "sbkQc_DivisionBox_Full";
+                            pagination_box = "sbkQc_PageBox_Full";
+                            icon_class = "sbkQc_PageOptionsIcon_Full";
 							break;
 
 						default:
-							Output.WriteLine("<img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"qcthumbnails\"/>");
-							division_box = "divisionbox_small";
-							pagination_box = "pagebox_small";
+                            Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
+                            division_box = "sbkQc_DivisionBox_Small";
+                            pagination_box = "sbkQc_PageBox_Small";
+                            icon_class = "sbkQc_PageOptionsIcon_Small";
 							division_text = "D:";
 							pagination_text = "Page:";
 							break;
 					}
-								   
-					Output.WriteLine("</a></td></tr>");
+
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
 
 					// Add the text box for entering the name of this page
-					Output.WriteLine("<tr><td class=\"paginationtext\" align=\"left\">" + pagination_text + "</td>");
-					Output.WriteLine("<td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + Server.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id,1);\"></input></td></tr>");
+				    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td class=\"sbkQc_PaginationText\">" + pagination_text + "</td>");
+				    Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + Server.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id,1);\"></input></td>");
+                    Output.WriteLine("    </tr>");
 
 					// Was this a new parent?
 					bool newParent = thisParent != lastParent;
 
 					// Add the Division prompting, and the check box for a new division
-					Output.Write("<tr><td class=\"divisiontext\" align=\"left\"><span title=\"" +division_tooltip_text+"\">"+ division_text+"</span>");
-					Output.Write("<span title=\""+division_checkbox_tooltip+"\"><input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.id);\"");
+                    Output.WriteLine("    <tr>");
+				    Output.WriteLine("      <td class=\"sbkQc_DivisionText\" align=\"left\">");
+                    Output.WriteLine("        <span title=\"" + division_tooltip_text + "\">" + division_text + "</span>");
+				    Output.WriteLine("        <span title=\"" + division_checkbox_tooltip + "\">");
+                    Output.Write(    "          <input type=\"checkbox\" id=\"newDivType" + page_index + "\" name=\"newdiv" + page_index + "\" value=\"new\" onclick=\"UpdateDivDropdown(this.id);\"");
 					if ( newParent )
 						Output.Write(" checked=\"checked\"");
-                    Output.WriteLine("/></span></td>");
+				    Output.WriteLine("/>");
+				    Output.WriteLine("        </span>");
+                    Output.WriteLine("      </td>");
 
 					// Determine the text for the parent
 					string parentLabel = String.Empty;
@@ -1875,85 +1874,76 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 
 					// Add the division box
-					if(newParent)
-						Output.WriteLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" onchange=\"DivisionTypeChanged(this.id);\">");
-					else
-					{
-						Output.WriteLine("<td><select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" disabled=\"disabled\" onchange=\"DivisionTypeChanged(this.id);\">");
-					}
+                    Output.WriteLine("      <td>");
+				    if (newParent)
+				    {
+                        Output.WriteLine("        <select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" onclick=\"DivisionTypeChanged(this.id);\">");
+				    }
+				    else
+				    {
+                        Output.WriteLine("        <select id=\"selectDivType" + page_index + "\" name=\"selectDivType" + page_index + "\" class=\"" + division_box + "\" disabled=\"disabled\" onclick=\"DivisionTypeChanged(this.id);\">");
+				    }
 
-					string txtDivNameCssClass = "txtNamedDivHidden";
-					//Add the division types fromt he current QC Config profile to a local dictionary
-					Dictionary<string, bool> qcDivisionList = new Dictionary<string, bool>();
-					foreach (QualityControl_Division_Config qcDivConfig in qc_profile.All_Division_Types)
-					{
-						qcDivisionList.Add(qcDivConfig.TypeName,qcDivConfig.isNameable);
-					}
-
-					//Get the division types from the Page Tree (from this METS), and the extra ones not in the profile to the 
-					foreach (KeyValuePair<Page_TreeNode, Division_TreeNode> node in childToParent)
-					{
-						string type = node.Value.Type;
-						string label = node.Value.Label;
-						if (!qcDivisionList.ContainsKey(type))
-						{
-							bool isNameable = (String.IsNullOrEmpty(label)) ? false : true;
-							qcDivisionList.Add(type, isNameable);
-						}
-					}
-
-
-
-					//Iterate through all the division types in this profile
+                    Output.Write("          ");
+					//Iterate through all the division types in this profile+local to this METS
+                    bool showTextDivName = false;
 					foreach (KeyValuePair<string, bool> divisionType in qcDivisionList)
 					{
 						if (divisionType.Key == parentType && divisionType.Value == false)
-							Output.WriteLine("<option value=\"" + divisionType.Key + "\" selected=\"selected\">" + divisionType.Key + "</option>");
+							Output.Write("<option value=\"" + divisionType.Key + "\" selected=\"selected\">" + divisionType.Key + "</option>");
 						else if (divisionType.Key == parentType && divisionType.Value )
 						{
-							Output.WriteLine("<option value=\"!" + divisionType.Key + "\" selected=\"selected\">" + divisionType.Key + "</option>");
-							txtDivNameCssClass = "txtNamedDivVisible";
+							Output.Write("<option value=\"!" + divisionType.Key + "\" selected=\"selected\">" + divisionType.Key + "</option>");
+                            showTextDivName = true;
 						}
 						else if (divisionType.Value )
-							Output.WriteLine("<option value=\"!" + divisionType.Key + "\">" + divisionType.Key + "</option>");
+							Output.Write("<option value=\"!" + divisionType.Key + "\">" + divisionType.Key + "</option>");
 						else
-							Output.WriteLine("<option value=\"" + divisionType.Key + "\">" + divisionType.Key + "</option>");
+							Output.Write("<option value=\"" + divisionType.Key + "\">" + divisionType.Key + "</option>");
 					}
+				    Output.WriteLine();
+				    Output.WriteLine("        </select>");
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
 
-					Output.WriteLine("</select></td></tr>");
 
 					//Add the textbox for named divisions
+                    if (showTextDivName)
+                        Output.WriteLine("    <tr id=\"divNameTableRow" + page_index + "\" style=\"visibility:visible;\">");
+                    else
+                        Output.WriteLine("    <tr id=\"divNameTableRow" + page_index + "\" style=\"visibility:hidden;\">");
+                    Output.WriteLine("      <td class=\"sbkQc_NamedDivisionText\" align=\"left\">" + division_name_text + "</td>");
+
                     if (newParent)
-					{
-						Output.WriteLine("<tr id=\"divNameTableRow" + page_index + "\" class=\"" + txtDivNameCssClass + "\"><td class=\"namedDivisionText\" align=\"left\">" + division_name_text + "</td>");
-						Output.WriteLine("<td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
+                    {
+                        Output.WriteLine("      <td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td>");
 					}
 					else
-					{
-						Output.WriteLine("<tr id=\"divNameTableRow" + page_index + "\" class=\"" + txtDivNameCssClass + "\"><td class=\"namedDivisionText\" align=\"left\">" + division_name_text + "</td>");
-						Output.WriteLine("<td><input type=\"text\" disabled=\"disabled\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
+                    {
+						Output.WriteLine("      <td><input type=\"text\" disabled=\"disabled\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
 					}
+                    Output.WriteLine("    </tr>");
+
+
+
 					//Add the span with the on-hover-options for the page thumbnail
-					Output.WriteLine("<tr><td colspan=\"100%\">");
-					Output.WriteLine("<span id=\"qcPageOptions"+page_index+"\" class=\"qcPageOptionsSpan\" style=\"float:right\"><img src=\""+CurrentMode.Base_URL+"default/images/ToolboxImages/Main_Information.ICO\" height=\""+icon_height+"\" width=\""+icon_width+"\" alt=\"Missing Icon Image\"></img>");
-					
-					//Add spaces between icons based on the current thumbnail size 
-					for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
-					Output.WriteLine("<a href=\"" + url + "\" target=\"_blank\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/View.ico\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img></a>");
-					for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
+				    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td colspan=\"2\">");
+				    Output.WriteLine("        <span id=\"qcPageOptions" + page_index + "\" class=\"sbkQc_PageOptionsSpan\">");
+                    Output.WriteLine("          <img src=\""+CurrentMode.Base_URL+"default/images/ToolboxImages/Main_Information.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
+                    Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/View.ico\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <img class=\"qc_toolboximage\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
 
-					Output.WriteLine("<img class=\"qc_toolboximage\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
-
-					//for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
-					//for (int i = 0; i < num_spaces; i++) { Output.WriteLine("&nbsp;"); }
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
 
-					Output.WriteLine("</span>");
-					Output.WriteLine("</td></tr>");
+                    Output.WriteLine("        </span>");
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
 
 					// Finish this one division
-					Output.WriteLine("</table></div></span>");
+				    Output.WriteLine("  </table>");
+                    Output.WriteLine("</span>");
 					Output.WriteLine();
 					break;
 				}

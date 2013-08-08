@@ -2,6 +2,7 @@ var spanArrayObjects;
 var spanArray;
 var autonumberingMode=-1;
 var makeSortable = true;
+var cursorMode = 1;
 
 
 // Function to set the full screen mode 
@@ -169,13 +170,15 @@ function UpdateDivDropdown(CheckBoxID) {
             document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = divTypeToSet;
             document.getElementById(spanArray[i].replace('span', 'txtDivName')).value = divNameToSet;
             if (divNameToSet.length > 0) {
-                document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).className = 'txtNamedDivVisible';
+                document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).style.visibility='visible';
             } else {
-                document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).className = 'txtNamedDivHidden';
+                document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).style.visibility = 'hidden';
             }
             i++;
         }
     }
+
+    return true;
 }
 
 //Change all subsequent division types when one div type is changed. Also update the named division type textboxes as appropriate
@@ -190,14 +193,15 @@ function DivisionTypeChanged(SelectID)
 	//if the new Division type selected is a nameable div
 	if (divisionTypeElement.value.indexOf('!') == 0)
 	{
-	    document.getElementById('divNameTableRow' + index).className = 'txtNamedDivVisible';
+	    document.getElementById('divNameTableRow' + index).style.visibility = 'visible';
+	    document.getElementById('divNameTableRow' + index).value = '';
 
 	    //Make the name textboxes of all other pages of this div visible
 	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span','selectDivType')).disabled==true))
 	    {
 	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
 	        document.getElementById(spanArray[i].replace('span','txtDivName')).disabled = true;
-	        document.getElementById(spanArray[i].replace('span','divNameTableRow')).className = 'txtNamedDivVisible';
+	        document.getElementById(spanArray[i].replace('span','divNameTableRow')).style.visibility='visible';
 	        i++;
 	    }
 	}
@@ -205,14 +209,14 @@ function DivisionTypeChanged(SelectID)
 	{
 	    //else if the division type selected is not a nameable div
 	    //Hide the name textbox for this page
-	    document.getElementById('divNameTableRow' + index).className = 'txtNamedDivHidden';
+	    document.getElementById('divNameTableRow' + index).style.visibility = 'hidden';
 	
 	    //Hide the name textboxes of all the other pages of this division type
 	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == true))
 	    {
 	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
 	        document.getElementById(spanArray[i].replace('span', 'txtDivName')).value = '';
-	        document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).className = 'txtNamedDivHidden';
+	        document.getElementById(spanArray[i].replace('span', 'divNameTableRow')).style.visibility = 'hidden';
 	        i++;
 	    }
 	}
@@ -532,46 +536,19 @@ function PaginationTextChanged(TextboxID, Mode)
 }//end function
 
 
-//Assign the 'main thumbnail' to the selected thumbnail span
-function PickMainThumbnail(SpanID)
-{
-	//Cursor currently set to the "Pick Main Thumbnail" cursor?
-	if($('body').css('cursor').indexOf("thumbnail_cursor")>-1)
-	{
-	    var pageIndex = SpanID.replace('span', '');
-	    
-        // Set the hidden value
-	    document.getElementById('Main_Thumbnail_File').value = document.getElementById('filename' + pageIndex).value;
-
-	    // Reset the cursor
-	    ResetCursorToDefault(-1);
-	    
-        // Ensure no other spans are set
-	    for (var i = 0; i < spanArray.length; i++) {
-	        if (document.getElementById(spanArray[i].replace('span', 'spanImg')).className == 'pickMainThumbnailIconSelected') {
-	            document.getElementById(spanArray[i].replace('span', 'spanImg')).className = 'pickMainThumbnailIcon';
-	            break;
-	        }
-	    }         
-
-	    // Set the new thumbnail in the user interface
-	    document.getElementById('spanImg' + pageIndex).className = 'pickMainThumbnailIconSelected';
-	}
-    return false;
-}
 
 //Show the QC Icons below the thumbnail on mouseover
 function showQcPageIcons(SpanID)
 {
     var qcPageIconsSpan = SpanID.replace('span', 'qcPageOptions');
-    document.getElementById(qcPageIconsSpan).className = "qcPageOptionsSpanHover";
+    document.getElementById(qcPageIconsSpan).style.visibility = 'visible';
 }
 
 //Hide the QC Icon bar below the thumbnail on mouseout
 function hideQcPageIcons(SpanID)
 {
     var qcPageIconsSpan = SpanID.replace('span', 'qcPageOptions');
-    document.getElementById(qcPageIconsSpan).className = "qcPageOptionsSpan";
+    document.getElementById(qcPageIconsSpan).style.visibility = 'hidden';
 }
 
 //Show the error icon on mouseover
@@ -594,111 +571,82 @@ function hideErrorIcon(SpanID)
 
 //Change the cursor to the custom cursor for Selecting a Main Thumbnail
 //On clicking on the "Pick Main Thumbnail" icon in the menu bar
-function ChangeMouseCursor(MaxPageCount)
+function mainthumbnailicon_click()
 {
 	//If this cursor is already set, change back to default
-	if($('body').css('cursor').indexOf("thumbnail_cursor")>-1)
-	{
-	    //Remove custom cursor classes if any
-	    $('body').removeClass('qcPickMainThumbnailCursor');
-	    $('body').removeClass('qcMovePagesCursor');
-	    $('body').removeClass('qcDeletePagesCursor');
-
-	    //Reset to default
-	    $('body').addClass('qcResetMouseCursorToDefault');
-	
-	    //Clear and hide all the 'move' checkboxes, in case currently visible
-	    for(var i=0;i<MaxPageCount; i++)
-	    {
-	        if(document.getElementById('chkMoveThumbnail'+i))
-	        {
-		        document.getElementById('chkMoveThumbnail'+i).checked=false;
-	            document.getElementById('chkMoveThumbnail' + i).className = 'chkMoveThumbnailHidden';
-	        }
-	    }
-	    
-	    //Also re-hide the button for moving multiple pages in case previously made visible
-	    document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-	    document.getElementByOd('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-	    
-	    //Hide all the left/right arrows for moving pages
-	    for(var i=0; i<MaxPageCount; i++)
-	    {
-		    if(document.getElementById('movePageArrows'+i))
-			    document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
-	    }
+	if(cursorMode == 2) {
+	    ResetCursorToDefault();
 	}
 	else
 	{
 		//Remove the default cursor style class, and any other custom class first before setting this one, 
 		//otherwise it will override the custom cursor class
-		$('body').removeClass('qcResetMouseCursorToDefault');
-		$('body').removeClass('qcMovePagesCursor');
-		$('body').removeClass('qcDeletePagesCursor');
-		
-		//Set the custom cursor
-		$('body').addClass('qcPickMainThumbnailCursor');
+	    ResetCursorToDefault();
+	    
+	    // Step through each span
+	    for (var j = 0; j < spanArray.length; j++) {
+	        // Get the span
+	        var span = $('#' + spanArray[j]);
+	        
+	        span.removeClass('qcResetMouseCursorToDefault');
+	        span.addClass('qcPickMainThumbnailCursor');
+	    }
+	    
+	    // Set flag to thumbnail cursor mode
+		cursorMode = 2;
+	}
 
-		//Clear and hide all the 'move' checkboxes, in case currently visible
-		for(var i=0;i<MaxPageCount; i++)
-		{
-		    if(document.getElementById('chkMoveThumbnail'+i))
-		    {
-			    document.getElementById('chkMoveThumbnail'+i).checked=false;
-				document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailHidden';
-			}
-    	}
-
-		//Also re-hide the button for moving multiple pages in case previously made visible
-		document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-		document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-		
-		 //Hide all the left/right arrows for moving pages
-		for(var i=0; i<MaxPageCount; i++)
-		{
-		    if(document.getElementById('movePageArrows'+i))
-			    document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
-		}
-	}	
+    return false;
 }
 
-function ResetCursorToDefault(MaxPageCount)
+function ResetCursorToDefault()
 {
-	//Remove custom cursor classes if any
-	$('body').removeClass('qcPickMainThumbnailCursor');
-	$('body').removeClass('qcMovePagesCursor');
-	$('body').removeClass('qcDeletePagesCursor');
+	////Remove custom cursor classes if any
+	//$('body').removeClass('qcPickMainThumbnailCursor');
+	//$('body').removeClass('qcMovePagesCursor');
+	//$('body').removeClass('qcDeletePagesCursor');
 
-	//Reset to default
-	$('body').addClass('qcResetMouseCursorToDefault');
-	
-	//Clear and hide all the 'move' checkboxes, in case currently visible
-	for(var i=0;i<MaxPageCount; i++)
-	{
-	    if(document.getElementById('chkMoveThumbnail'+i))
-	    {
-		    document.getElementById('chkMoveThumbnail'+i).checked=false;
-		    document.getElementById('chkMoveThumbnail' + i).className = 'chkMoveThumbnailHidden';
-	    }
-	}
+	////Reset to default
+	//$('body').addClass('qcResetMouseCursorToDefault');
     
+    // Set flag to normal cursor mode
+	cursorMode = 1;
+    
+    // Step through each span
+	for (var j = 0; j < spanArray.length; j++)
+	{
+	    // Get the span
+	    var span = $('#' + spanArray[j]);
+	    
+	    // Reset the cursor on the span
+	    span.removeClass('qcPickMainThumbnailCursor');
+	    span.removeClass('qcMovePagesCursor');
+	    span.removeClass('qcDeletePagesCursor');
+	    span.addClass('qcResetMouseCursorToDefault');
+	    
+	    // Reset each checkbox
+	    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+	    if ( checkbox.checked == true )
+	        checkbox.checked = false;
+	    
+	    checkbox.style.visibility = 'hidden';
+	    
+	    //Hide all the left/right arrows for moving pages
+	    var moveArrows = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
+	    moveArrows.style.visibility = 'hidden';
+	}
+
+	   
 	//Also re-hide the button for moving multiple pages in case previously made visible
 	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
 	document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-	
-	 //Hide all the left/right arrows for moving pages
-	for(var i=0; i<MaxPageCount; i++)
-	{
-	    if(document.getElementById('movePageArrows'+i))
-		    document.getElementById('movePageArrows'+i).className = 'movePageArrowIconHidden';
-	}
 }
 
 //Change cursor: move pages
-function MovePages(MaxPageCount)
+function movepagesicon_click()
 {
     //If this cursor is already set, change back to default
-    if ($('body').css('cursor').indexOf("move_pages_cursor") > -1) {
+    if (cursorMode == 3) {
         // See if any checkboxes are currently checked
         var checked_found = 0;
         for (var j = 0; j < spanArray.length; j++) {
@@ -716,49 +664,59 @@ function MovePages(MaxPageCount)
     {
         //Remove the default cursor style class first before setting the custom one, 
         //otherwise it will override the custom cursor class
-        $('body').removeClass('qcResetMouseCursorToDefault');
-        $('body').removeClass('qcPickMainThumbnailCursor');
-        $('body').removeClass('qcDeletePagesCursor');
+        ResetCursorToDefault();
+        
+        // Step through each span and set the cursor
+        for (var j = 0; j < spanArray.length; j++) {
+            // Get the span
+            var span = $('#' + spanArray[j]);
 
-        //First change the cursor
-        $('body').addClass('qcMovePagesCursor');
+            span.removeClass('qcResetMouseCursorToDefault');
+            span.addClass('qcMovePagesCursor');
+        }
+        
+        // Set flag to multiple move cursor mode
+        cursorMode = 3;
 
-       //Unhide all the checkboxes
-	    for(var i=0;i<MaxPageCount; i++)
-	    {
-		    if(document.getElementById('chkMoveThumbnail'+i))
-		    {
-		      document.getElementById('chkMoveThumbnail'+i).className='chkMoveThumbnailVisible';
-		    }
-	    }
+        //Unhide all the checkboxes
+        for (var j = 0; j < spanArray.length; j++) {
+            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+            checkbox.style.visibility = 'visible';
+        }
     }
     return false;
 }
 
 
-function DeletePages(MaxPageCount)
+function bulkdeleteicon_click()
 {
     //Change the mouse cursor, unhide all the checkboxes
     //If this cursor is already set, change back to default
-    if ($('body').css('cursor').indexOf("delete_cursor") > -1) {
+    if (cursorMode == 4) {
         DeleteSelectedPages();
     }
     else
     {
         //Remove the default cursor style class first before setting the custom one, 
         //otherwise it will override the custom cursor class
-        $('body').removeClass('qcResetMouseCursorToDefault');
-        $('body').removeClass('qcPickMainThumbnailCursor');
-        $('body').removeClass('qcMovePagesCursor');
+        ResetCursorToDefault();
+        
+        // Step through each span and set the cursor
+        for (var j = 0; j < spanArray.length; j++) {
+            // Get the span
+            var span = $('#' + spanArray[j]);
 
-        //First change the cursor
-        $('body').addClass('qcDeletePagesCursor');
+            span.removeClass('qcResetMouseCursorToDefault');
+            span.addClass('qcDeletePagesCursor');
+        }
+        
+        // Set flag to multiple delete cursor mode
+        cursorMode = 4;
 
         //Unhide all the checkboxes
-        for (var i = 0; i < MaxPageCount; i++)
-        {
-            if (document.getElementById('chkMoveThumbnail' + i)) 
-                document.getElementById('chkMoveThumbnail' + i).className = 'chkMoveThumbnailVisible';
+        for (var j = 0; j < spanArray.length; j++) {
+            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+            checkbox.style.visibility = 'visible';
         }
     }
 
@@ -770,145 +728,136 @@ function DeletePages(MaxPageCount)
 function MakeSortable1()
 {
     var startPosition;
-    var newPosition; 
+    var newPosition;
 
-    $("#allThumbnailsOuterDiv").sortable({containment: 'parent',
-		start: function(event, ui) {
-		    startPosition = spanArray.indexOf($(ui.item).attr('id'));
-		},
-		stop: function(event, ui)
-		{
-		   //Confirm the move
-		   var input_box = confirm("Are you sure you want to move this page?");
-	       if(input_box==false)
-		   {
-		      $(this).sortable('cancel');
-		   }
-		   else if (input_box == true) 
-		   {
-		    // Pull a new spanArray
-		    var newSpanArray = new Array();
-		    //get the list of all the thumbnail spans on the page
-		    spanArrayObjects = $("#allThumbnailsOuterDiv").children();
+    $("#allThumbnailsOuterDiv").sortable({
+        containment: 'parent',
+        start: function(event, ui) {
+            startPosition = spanArray.indexOf($(ui.item).attr('id'));
+        },
+        stop: function(event, ui) {
+            //Confirm the move
+            var input_box = confirm("Are you sure you want to move this page?");
+            if (input_box == false) {
+                $(this).sortable('cancel');
+            } else if (input_box == true) {
+                // Pull a new spanArray
+                var newSpanArray = new Array();
+                //get the list of all the thumbnail spans on the page
+                spanArrayObjects = $("#allThumbnailsOuterDiv").children();
 
-		    //get the spanIDs from the array of span objects 
-		    var j = 0;
-		    for (var i = 0; i < spanArrayObjects.length; i++) {
-		        if (spanArrayObjects[i].id.indexOf('span') == 0) {
-		            newSpanArray[j++] = spanArrayObjects[i].id;
-		        }
-		    }
+                //get the spanIDs from the array of span objects 
+                var j = 0;
+                for (var i = 0; i < spanArrayObjects.length; i++) {
+                    if (spanArrayObjects[i].id.indexOf('span') == 0) {
+                        newSpanArray[j++] = spanArrayObjects[i].id;
+                    }
+                }
 
-		    var spanID = $(ui.item).attr('id');
-		    newPosition = newSpanArray.indexOf($(ui.item).attr('id'));
+                var spanID = $(ui.item).attr('id');
+                newPosition = newSpanArray.indexOf($(ui.item).attr('id'));
 
-			// if position has been changed, update the page division correspondingly
-			if(startPosition != newPosition)
-			{
-			    //get the spanID of the current span being dragged & dropped
-				var pageIndex = spanID.replace('span','');										
-													   		    
-			    // Get the two most important spans (one being moved and NEXT after the move)
-				var movedSpan = document.getElementById('newDivType' + pageIndex);
-			    var movedFromSpanName = spanArray[startPosition];
-			    var movedFromSpanCheckBox = document.getElementById(movedFromSpanName.replace('span', 'newDivType'));
-													
-				//If the span being moved is the start of a new Div 															
-			    if (movedSpan.checked == true)
-				{
-				    //alert('Moving a new division page');
-                    //If the original next div is not the start of a new division, make it the beginning
-			        if ((movedFromSpanCheckBox != null) && (movedFromSpanCheckBox.checked == false))
-			        {
-			            // Set next original page as new division
-			            movedFromSpanCheckBox.checked = true;
-			            
-		            
-                        // Set the division type on the next original page and then set as enabled
-			            var divTypeSelectElement = document.getElementById(movedFromSpanName.replace('span', 'selectDivType'));
-			            divTypeSelectElement.disabled = false;
-			            divTypeSelectElement.value = document.getElementById('selectDivType' + pageIndex).value;
+                // if position has been changed, update the page division correspondingly
+                if (startPosition != newPosition) {
+                    //get the spanID of the current span being dragged & dropped
+                    var pageIndex = spanID.replace('span', '');
 
-						//Update the division name textbox
-			            if (divTypeSelectElement.value.index('!') == 0)
-						{
-			                document.getElementById(movedFromSpanName.replace('span','divNameTableRow')).className = 'txtNamedDivVisible';
-			                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).disabled = false;
-			                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).value = '';
-						}
-						else
-			            {
-			                document.getElementById(movedFromSpanName.replace('span', 'divNameTableRow')).className = 'txtNamedDivHidden';
-			                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).disabled = true;
-			                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).value = '';
-						}
-				    }
-			    }
-			    
-			    // Since we are done with dealing with the OLD position, we will begin to use the
-			    // new array of spans on the page, which reflects the new positioning
-			    spanArray = newSpanArray;
-			    
-			    var movedSpanDivTypeElement = document.getElementById('selectDivType' + pageIndex);
-													
-				//CASE 1: 
-			    // If the new position is position 0: This happens if the user moves the page 
-			    // to the very beginning of the thumbnails.  In this case, MOVE the div info 
-			    // from the first thumbnail to this one.
-			    if (newPosition == 0) {
-			        // Get the id for the second span (previously the first thumbnail)
-			        var previousFirstID = spanArray[1].replace('span', '');
+                    // Get the two most important spans (one being moved and NEXT after the move)
+                    var movedSpan = document.getElementById('newDivType' + pageIndex);
+                    var movedFromSpanName = spanArray[startPosition];
+                    var movedFromSpanCheckBox = document.getElementById(movedFromSpanName.replace('span', 'newDivType'));
 
-			        //Make the moved div the start of a new div
-			        document.getElementById('newDivType' + pageIndex).checked = true;
-			        //Enable the moved div's DivType dropdown
-			        movedSpanDivTypeElement.disabled = false;
+                    //If the span being moved is the start of a new Div 															
+                    if (movedSpan.checked == true) {
+                        //alert('Moving a new division page');
+                        //If the original next div is not the start of a new division, make it the beginning
+                        if ((movedFromSpanCheckBox != null) && (movedFromSpanCheckBox.checked == false)) {
+                            // Set next original page as new division
+                            movedFromSpanCheckBox.checked = true;
 
-			        //Set the moved div's DivType value to that of the one it is replacing
-			        movedSpanDivTypeElement.value = document.getElementById('selectDivType' + previousFirstID).value;
 
-			        //Unmark the replaced div's NewDiv Checkbox (and disable the dropdown)
-			        document.getElementById('newDivType' + previousFirstID).checked = false;
-			        document.getElementById('selectDivType' + previousFirstID).disabled = true;
-			        document.getElementById('txtDivName' + previousFirstID).disabled = true;
+                            // Set the division type on the next original page and then set as enabled
+                            var divTypeSelectElement = document.getElementById(movedFromSpanName.replace('span', 'selectDivType'));
+                            divTypeSelectElement.disabled = false;
+                            divTypeSelectElement.value = document.getElementById('selectDivType' + pageIndex).value;
 
-			        //If this is now a named div, update the division name textbox
-			        if (movedSpanDivTypeElement.value.indexOf('!') == 0) {
-			            document.getElementById('divNameTableRow' + pageIndex).className = 'txtNamedDivVisible';
-			            document.getElementById('txtDivName' + pageIndex).value = document.getElementById('txtDivName' + previousFirstID).value;
-			            document.getElementById('txtDivName' + pageIndex).disabled = false;
-			        } else {
-			            document.getElementById('divNameTableRow' + pageIndex).className = 'txtNamedDivHidden';
-			            document.getElementById('txtDivName' + pageIndex).value = '';
-			            document.getElementById('txtDivName' + pageIndex).disabled = true;
-			        }
-			    }
+                            //Update the division name textbox
+                            if (divTypeSelectElement.value.index('!') == 0) {
+                                document.getElementById(movedFromSpanName.replace('span', 'divNameTableRow')).style.visibility = 'visible';
+                                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).disabled = false;
+                                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).value = '';
+                            } else {
+                                document.getElementById(movedFromSpanName.replace('span', 'divNameTableRow')).style.visibility = 'hidden';
+                                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).disabled = true;
+                                document.getElementById(movedFromSpanName.replace('span', 'txtDivName')).value = '';
+                            }
+                        }
+                    }
 
-			    //else
-			    //CASE 2: Span moved to any location other than 0
-			    else if (newPosition > 0) {
-    		        //Moved span's DivType = preceding Div's Div type
-			        movedSpanDivTypeElement.value = document.getElementById(spanArray[newPosition - 1].replace('span', 'selectDivType')).value;
+                    // Since we are done with dealing with the OLD position, we will begin to use the
+                    // new array of spans on the page, which reflects the new positioning
+                    spanArray = newSpanArray;
 
-			        // Moved span != start of a new Division
-			        document.getElementById('newDivType' + pageIndex).checked = false;
-			        movedSpanDivTypeElement.disabled = true;
-			        document.getElementById('txtDivName' + pageIndex).disabled = true;
+                    var movedSpanDivTypeElement = document.getElementById('selectDivType' + pageIndex);
 
-			        //If this is now a named div, update the division name textbox
-			        if (movedSpanDivTypeElement.value.indexOf('!') == 0)
-			        {
-			            document.getElementById('divNameTableRow' + pageIndex).className = 'txtNamedDivVisible';
-			            document.getElementById('txtDivName' + pageIndex).value = document.getElementById(spanArray[newPosition - 1].replace('span', 'txtDivName')).value;
+                    //CASE 1: 
+                    // If the new position is position 0: This happens if the user moves the page 
+                    // to the very beginning of the thumbnails.  In this case, MOVE the div info 
+                    // from the first thumbnail to this one.
+                    if (newPosition == 0) {
+                        // Get the id for the second span (previously the first thumbnail)
+                        var previousFirstID = spanArray[1].replace('span', '');
 
-			        } else {
-			            document.getElementById('divNameTableRow' + pageIndex).className = 'txtNamedDivHidden';
-			            document.getElementById('txtDivName' + pageIndex).value = '';
-			        }
-			    } //end else if		
-			}//end if(startPosition!=newPosition)
-		  }//end if(input_box==true)
-        },placeholder: "ui-state-highlight"});
+                        //Make the moved div the start of a new div
+                        document.getElementById('newDivType' + pageIndex).checked = true;
+                        //Enable the moved div's DivType dropdown
+                        movedSpanDivTypeElement.disabled = false;
+
+                        //Set the moved div's DivType value to that of the one it is replacing
+                        movedSpanDivTypeElement.value = document.getElementById('selectDivType' + previousFirstID).value;
+
+                        //Unmark the replaced div's NewDiv Checkbox (and disable the dropdown)
+                        document.getElementById('newDivType' + previousFirstID).checked = false;
+                        document.getElementById('selectDivType' + previousFirstID).disabled = true;
+                        document.getElementById('txtDivName' + previousFirstID).disabled = true;
+
+                        //If this is now a named div, update the division name textbox
+                        if (movedSpanDivTypeElement.value.indexOf('!') == 0) {
+                            document.getElementById('divNameTableRow' + pageIndex).style.visibility = 'visible';
+                            document.getElementById('txtDivName' + pageIndex).value = document.getElementById('txtDivName' + previousFirstID).value;
+                            document.getElementById('txtDivName' + pageIndex).disabled = false;
+                        } else {
+                            document.getElementById('divNameTableRow' + pageIndex).style.visibility = 'hidden';
+                            document.getElementById('txtDivName' + pageIndex).value = '';
+                            document.getElementById('txtDivName' + pageIndex).disabled = true;
+                        }
+                    }
+
+                        //else
+                        //CASE 2: Span moved to any location other than 0
+                    else if (newPosition > 0) {
+                        //Moved span's DivType = preceding Div's Div type
+                        movedSpanDivTypeElement.value = document.getElementById(spanArray[newPosition - 1].replace('span', 'selectDivType')).value;
+
+                        // Moved span != start of a new Division
+                        document.getElementById('newDivType' + pageIndex).checked = false;
+                        movedSpanDivTypeElement.disabled = true;
+                        document.getElementById('txtDivName' + pageIndex).disabled = true;
+
+                        //If this is now a named div, update the division name textbox
+                        if (movedSpanDivTypeElement.value.indexOf('!') == 0) {
+                            document.getElementById('divNameTableRow' + pageIndex).style.visibility = 'visible';
+                            document.getElementById('txtDivName' + pageIndex).value = document.getElementById(spanArray[newPosition - 1].replace('span', 'txtDivName')).value;
+
+                        } else {
+                            document.getElementById('divNameTableRow' + pageIndex).style.visibility = 'hidden';
+                            document.getElementById('txtDivName' + pageIndex).value = '';
+                        }
+                    } //end else if		
+                } //end if(startPosition!=newPosition)
+            } //end if(input_box==true)
+        }, placeholder: "ui-state-highlight"
+    });
 									 
     $("#allThumbnailsOuterDiv").disableSelection();
 }
@@ -994,52 +943,50 @@ function qc_auto_save()
 }
 
 
-//When any 'move page' checkbox is checked/unchecked
-
-function chkMoveThumbnailChanged(chkBoxID, MaxPageCount)
+//When any 'bulk move/delete page' checkbox is checked/unchecked
+function qccheckbox_onchange(chkBoxID)
 {
     var checked = false;
     document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
     document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
     
     //Hide all the left/right arrows for moving pages
-    for (var i = 0; i < MaxPageCount; i++)
-    {
-        if (document.getElementById('movePageArrows' + i))
-            document.getElementById('movePageArrows' + i).className = 'movePageArrowIconHidden';
+    for (var j = 0; j < spanArray.length; j++) {
+        var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
+        arrowSpan.style.visibility = 'hidden';
     }
-
+    
     //If a checkbox has been checked, and the move_thumbnails cursor is currently set
-    if (document.getElementById(chkBoxID).checked == true && $('body').css('cursor').indexOf("move_pages_cursor") > -1) {
+    if (document.getElementById(chkBoxID).checked == true && cursorMode == 3) {
         document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScroll';
-        for (var i = 0; i < MaxPageCount; i++) {
-            if (document.getElementById('movePageArrows' + i))
-                document.getElementById('movePageArrows' + i).className = 'movePageArrowIconVisible';
-
+        for (var j = 0; j < spanArray.length; j++) {
+            var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
+            arrowSpan.style.visibility = 'visible';
         }
-    } else if (document.getElementById(chkBoxID).checked == true && $('body').css('cursor').indexOf("delete_cursor") > -1) {
+        
+    } else if (document.getElementById(chkBoxID).checked == true && cursorMode == 4) {
         document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButton';
 
     } else {
         //Check if there is any other checked checkbox on the screen
-        for (var i = 0; i < MaxPageCount; i++) {
-            if ((document.getElementById('chkMoveThumbnail' + i)) && document.getElementById('chkMoveThumbnail' + i).checked == true) {
-
-                checked = true;
+        for (var i = 0; i < spanArray.length; i++) {
+            if (document.getElementById('chkMoveThumbnail' + i).checked == true) {
+                    checked = true;
+                    break;
             }
         }
 
-        if (checked == true && $('body').css('cursor').indexOf("move_pages_cursor") > -1)
+        if (cursorMode == 3)
         {
             document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScroll';
+            
             //Unhide the left/right arrows for moving pages
-            for (var i = 0; i < MaxPageCount; i++)
-            {
-                if (document.getElementById('movePageArrows' + i))
-                    document.getElementById('movePageArrows' + i).className = 'movePageArrowIconVisible';
+            for (var j = 0; j < spanArray.length; j++) {
+                var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
+                arrowSpan.style.visibility = 'visible';
             }
 
-        } else if (checked == true && $('body').css('cursor').indexOf("delete_cursor") > -1) {
+        } else if (checked == true && cursorMode == 4) {
             document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButton';
         } else {
             document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
@@ -1124,15 +1071,16 @@ function cancel_move_pages() {
         popdown('form_qcmove');
     }
 
-    ResetCursorToDefault(-1);
+    ResetCursorToDefault();
 
     // Reset and hide all the checkboxes as well
     for (var j = 0; j < spanArray.length; j++) {
         var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-        checkbox.checked = false;
-        checkbox.className = 'chkMoveThumbnailHidden';
+        if ( checkbox.checked == true )
+            checkbox.checked = false;
+        checkbox.style.visibility = 'hidden';
         
-        document.getElementById('movePageArrows' + j).className = 'movePageArrowIconHidden';
+        document.getElementById('movePageArrows' + j).style.visibility = 'hidden';
     }
 
     return false;
@@ -1211,13 +1159,14 @@ function DeleteSelectedPages() {
     }
 
     if (checked_found == 0) {
-        ResetCursorToDefault(-1);
+        ResetCursorToDefault();
 
         // Reset and hide all the checkboxes as well
         for (var j = 0; j < spanArray.length; j++) {
             var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-            checkbox.checked = false;
-            checkbox.className = 'chkMoveThumbnailHidden';
+            if ( checkbox.checked == true )
+                checkbox.checked = false;
+            checkbox.style.visibility = 'hidden';
         }
 
     } else {
@@ -1227,18 +1176,26 @@ function DeleteSelectedPages() {
             document.getElementById('QC_behaviors_request').value = 'delete_selected_pages';
             document.itemNavForm.submit();
         } else {
-            ResetCursorToDefault(-1);
+            ResetCursorToDefault();
 
             // Reset and hide all the checkboxes as well
             for (var j = 0; j < spanArray.length; j++) {
                 var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-                checkbox.checked = false;
-                checkbox.className = 'chkMoveThumbnailHidden';
+                if ( checkbox.checked == true )
+                    checkbox.checked = false;
+                
+                checkbox.style.visibility = 'hidden';
             }
         }
     }
     
 	return false;
+}
+
+function thumbnail_click(spanid, url) {
+    if (cursorMode == 1) {
+        window.open(url, spanid);
+    }
 }
 
 // Function is called when user clicks COMPLETE
@@ -1269,4 +1226,56 @@ function UploadNewPageImages(url) {
         window.location.href = url;
     }
     return false;
+}
+
+// Function called when the user mouses over a page
+function qcspan_mouseover(spanid) {
+    $('#' + spanid).removeClass('sbkQc_SpanMouseOut');
+    $('#' + spanid).addClass('sbkQc_SpanMouseOver');
+    showQcPageIcons(spanid);
+    showErrorIcon(spanid);
+    return false;
+}
+
+// Function called when the user mouses out of a page
+function qcspan_mouseout(spanid) {
+    $('#' + spanid).removeClass('sbkQc_SpanMouseOver');
+    $('#' + spanid).addClass('sbkQc_SpanMouseOut');
+    hideQcPageIcons(spanid);
+    hideErrorIcon(spanid);
+    return false;
+}
+
+function qcspan_onclick(spanid) {
+    // Get the page index
+    var pageIndex = spanid.replace('span', '');
+    
+    //Cursor currently set to the "Pick Main Thumbnail" cursor?
+    if (cursorMode == 2) {
+
+        // Set the hidden value
+        document.getElementById('Main_Thumbnail_File').value = document.getElementById('filename' + pageIndex).value;
+
+        // Reset the cursor
+        ResetCursorToDefault();
+
+        // Ensure no other spans are set
+        for (var i = 0; i < spanArray.length; i++) {
+            if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility == 'visible') {
+                document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility = 'hidden';
+                break;
+            }
+        }
+
+        // Set the new thumbnail in the user interface
+        document.getElementById('pick_main_thumbnail' + pageIndex).style.visibility = 'visible';
+    }
+    
+    // Cursor set to bulk delete or move
+    if ((cursorMode == 3) || (cursorMode == 4)) {
+
+        var checkbox = document.getElementById('chkMoveThumbnail' + pageIndex);
+        checkbox.checked = !checkbox.checked;
+        qccheckbox_onchange('chkMoveThumbnail' + pageIndex);
+    }
 }
