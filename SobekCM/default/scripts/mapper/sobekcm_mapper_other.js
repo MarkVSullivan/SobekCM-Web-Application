@@ -6,8 +6,8 @@
 $(function() {
     //draggable content settings
     $("#mapper_container_toolbox").draggable({
-        handle: "#mapper_container_toolboxMinibar" //div used as handle
-        //containment: "#mapper_container" //does not work error with map objects
+        handle: "#mapper_container_toolboxMinibar"//, //div used as handle
+        //containment: "#mapper_container" //bind to map container 
     });
     //accordian settings
     $("#mapper_container_toolboxTabs").accordion({
