@@ -1780,8 +1780,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(this.id);\"/>");
 				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" style=\"height:" + arrow_height + ";width:" + arrow_width + ";\" alt=\"Missing Icon Image\" /></a>");
-				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" style=\"height:" + arrow_height + ";width:" + arrow_width + ";\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
+				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
                     Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
@@ -1932,7 +1932,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("        <span id=\"qcPageOptions" + page_index + "\" class=\"sbkQc_PageOptionsSpan\">");
                     Output.WriteLine("          <img src=\""+CurrentMode.Base_URL+"default/images/ToolboxImages/Main_Information.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
                     Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/View.ico\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
-                    Output.WriteLine("          <img class=\"qc_toolboximage\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
+                    Output.WriteLine("          <img onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
 
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
