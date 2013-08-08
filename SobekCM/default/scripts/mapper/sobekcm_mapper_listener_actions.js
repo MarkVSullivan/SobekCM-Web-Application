@@ -90,6 +90,48 @@ function toggleVis(id) {
             //buttonActive("mapDrawingManager"); 
             break;
             
+        case "overlays":
+            if (overlaysOnMap.length) {
+                if (overlaysCurrentlyDisplayed == true) {
+                    displayMessage(L22);
+                    for (var i = 0; i < incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                        overlaysOnMap[i].setMap(null); //hide the overlay from the map
+                        ghostOverlayRectangle[i].setMap(null); //hide ghost from map
+                        overlaysCurrentlyDisplayed = false; //mark that overlays are not on the map
+                    }
+                } else {
+                    displayMessage(L23);
+                    for (var i = 0; i < incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                        overlaysOnMap[i].setMap(map); //set the overlay to the map
+                        ghostOverlayRectangle[i].setMap(map); //set to map
+                        overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
+                    }
+                }
+            } else {
+                //nothing to toggle
+                displayMessage(L45);
+            }
+            break;
+
+        case "pois":
+            if (poiCount) {
+                for (var i = 0; i < poiCount; i++) {
+                    if (poiToggleState == "displayed") {
+                        poiHideMe(i);
+                        poiToggleState = "hidden";
+                        displayMessage(L42);
+                    } else {
+                        poiShowMe(i);
+                        poiToggleState = "displayed";
+                        displayMessage(L43);
+                    }
+                }
+            } else {
+                //nothing to toggle
+                displayMessage(L45);
+            }
+            break;
+
         default:
             //toggle that item if not found above
             break;
@@ -263,11 +305,18 @@ function place(id) {
             } else {
                 //select the area to draw the overlay
                 displayMessage(L41);
+                
+                //define drawing manager
+                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] }, rectangleOptions: { strokeOpacity: 0.2, strokeWeight: 1, fillOpacity: 0.0 } });
+                
                 //set drawingmode to rectangle
                 drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
-                //tweak rectangle drawing so that it looks like the ghost rectangle
-                drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] } });
+
+                //apply the changes
                 drawingManager.setMap(map);
+                
+                //go ahead and auto switch to editing mode
+                pageMode = "edit";
             }
 
             break;

@@ -41,6 +41,11 @@ function openToolboxTab(id) {
     //    document.getElementById("content_toolbox_searchButton").style.display = "none";
     //}
     ////END WORKAROUND
+    //START WORKAROUND
+    //if (isConverted==true) {
+    //    $("#mapper_container_toolboxTabs").accordion('activate', false);
+    //}
+    //END WORKAROUND
     $("#mapper_container_toolboxTabs").accordion({ active: id });
 }
 
@@ -102,23 +107,43 @@ function buttonActive(id) {
 //display an inline message
 function displayMessage(message) {
 
-    de(message); //send to debugger for logging
-
-    //create message
-    //var messageText = "<p class=\"message\">";
-    //messageText += message; //assign incoming message to text
-    //messageText += "</p>";
-    document.getElementById("content_message").innerHTML = message; //assign to element
-
+    //debug log this message
+    de("message #" + messageCount + ": " + message); //send to debugger for logging
+    
+    //compile div ID
+    var currentDivId = "message" + messageCount;
+    
+    //create unique message div
+    var messageDiv = document.createElement("div");
+    messageDiv.setAttribute("id", currentDivId);
+    messageDiv.className = "message";
+    document.getElementById("content_message").appendChild(messageDiv);
+    
+    //assign the message
+    document.getElementById(currentDivId).innerHTML = message;
+    
     //show message
-    document.getElementById("mapper_container_message").style.display = "block"; //display element
-
+    document.getElementById(currentDivId).style.display = "block"; //display element
+    
     //fade message out
     setTimeout(function () {
-        $("#mapper_container_message").fadeOut("slow", function () {
-            $("#mapper_container_message").hide();
+        $("#" + currentDivId).fadeOut("slow", function () {
+            $("#" + currentDivId).remove();
         });
     }, 3000); //after 3 sec
+
+    //keep a count of messages
+    messageCount++;
+
+    ////show message
+    //document.getElementById("mapper_container_message").style.display = "block"; //display element
+
+    ////fade message out
+    //setTimeout(function () {
+    //    $("#mapper_container_message").fadeOut("slow", function () {
+    //        $("#mapper_container_message").hide();
+    //    });
+    //}, 3000); //after 3 sec
 }
 
 //create a package to send to server to save item location
@@ -251,7 +276,7 @@ function overlayHideMe(id) {
     overlaysOnMap[id].setMap(null);
     ghostOverlayRectangle[id].setMap(null);
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "add.png\" onclick=\"overlayShowMe(" + id + ");\" />";
-    displayMessage(L31 + " " + id);
+    displayMessage(L31 + " " + incomingOverlayLabel[id]);
 }
 
 //show poi on map
@@ -259,7 +284,7 @@ function overlayShowMe(id) {
     overlaysOnMap[id].setMap(map);
     ghostOverlayRectangle[id].setMap(map);
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + baseURL + baseImagesDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
-    displayMessage(L32 + " " + id);
+    displayMessage(L32 + " " + incomingOverlayLabel[id]);
 }
 
 //delete poi from map and list
@@ -614,21 +639,26 @@ function useSearchAsItemLocation() {
 //used to convert an incoming point to an overlay
 function convertToOverlay() {
     //is there an item to convert and is there a proper source?
-    if (itemMarker && incomingPointSourceURL[0]!="") {
+    if (itemMarker && incomingPointSourceURL[0] != "") {
         //hide marker
         itemMarker.setMap(null);
         //switch to overlay tab
         actionsACL("none", "item");
         actionsACL("full", "overlay");
 
+        //a simple marker to fix a bug
+        //isConverted = true;
+
+        //explicitly open overlay tab (fixes bug)
+        openToolboxTab(3);
+
         //add what we know already
         incomingOverlayLabel[0] = incomingPointLabel[0];
         incomingOverlaySourceURL[0] = incomingPointSourceURL[0];
-
-        //click to drag area for overlay to be drawn
-        //write new overlay with listeners like incoming but within drawing manager
-        //perhaps create a sample overlay image with bounds centered on point 
-
+        incomingOverlayRotation[0] = 0;
+        
+        //converted
+        displayMessage(L44);
     } else {
         //cannot convert
         displayMessage(L40);
@@ -644,6 +674,9 @@ function initOverlayList() {
         de("There are " + incomingOverlayLabel.length + " Incoming Overlays");
         for (var i = 0; i < incomingOverlayLabel.length; i++) {
             de("Adding Overlay List Item");
+            if (incomingOverlayLabel[i] == "") {
+                incomingOverlayLabel[i] = "Overlay" + (i+1);
+            }
             document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", i, incomingOverlayLabel[i], "");
         }  
     }   

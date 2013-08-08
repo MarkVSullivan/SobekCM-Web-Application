@@ -86,22 +86,27 @@ try {
     }, false);
     //headers
     document.getElementById("content_toolbox_tab1_header").addEventListener("click", function () {
+        de("tab1 header clicked...");
         action("other");
         openToolboxTab(0);
     }, false);
     document.getElementById("content_toolbox_tab2_header").addEventListener("click", function () {
+        de("tab2 header clicked...");
         action("other");
         openToolboxTab(1);
     }, false);
     document.getElementById("content_toolbox_tab3_header").addEventListener("click", function () {
+        de("tab3 header clicked...");
         action("manageItem");
         //openToolboxTab(2); //called in action
     }, false);
     document.getElementById("content_toolbox_tab4_header").addEventListener("click", function () {
+        de("tab4 header clicked...");
         action("manageOverlay");
         //openToolboxTab(3); //called in action
     }, false);
     document.getElementById("content_toolbox_tab5_header").addEventListener("click", function () {
+        de("tab5 header clicked...");
         action("managePOI");
         //openToolboxTab(4); //called in action
     }, false);
@@ -184,7 +189,12 @@ try {
         useSearchAsItemLocation();
     }, false);
     document.getElementById("content_toolbox_button_convertToOverlay").addEventListener("click", function () {
+        //convert it
         convertToOverlay();
+        //now trigger place overlay
+        place("overlay");
+        //now enable editing of overlay
+        //edit("overlay");
     }, false);
     document.getElementById("content_toolbox_posItem").addEventListener("click", function () {
         //nothing, maybe copy?
@@ -199,11 +209,17 @@ try {
         clear("item");
     }, false);
     //tab
-    document.getElementById("content_toolbox_button_placeOverlay").addEventListener("click", function () {
+    document.getElementById("content_toolbox_button_overlayPlace").addEventListener("click", function () {
+        place("overlay");
+    }, false);
+    document.getElementById("content_toolbox_button_overlayEdit").addEventListener("click", function () {
         place("overlay");
     }, false);
     document.getElementById("content_toolbox_button_overlayGetUserLocation").addEventListener("click", function () {
         geolocate("overlay");
+    }, false);
+    document.getElementById("content_toolbox_button_overlayToggle").addEventListener("click", function () {
+        toggleVis("overlays");
     }, false);
     document.getElementById("rotationKnob").addEventListener("click", function () { 
         //do nothing, (possible just mapper_container)
@@ -235,6 +251,9 @@ try {
     }, false);
     document.getElementById("content_toolbox_button_poiGetUserLocation").addEventListener("click", function () {
         geolocate("poi");
+    }, false);
+    document.getElementById("content_toolbox_button_poiToggle").addEventListener("click", function () {
+        toggleVis("pois");
     }, false);
     document.getElementById("content_toolbox_button_poiMarker").addEventListener("click", function () {
         placePOI("marker");

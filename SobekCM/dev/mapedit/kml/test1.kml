@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gml="http://www.opengis.net/gml">
+	<Document>
+		<Folder>
+			<name>GML2KML Testings</name>
+			<Placemark>
+				<Metadata>
+					<gml:FeatureCollection>
+						<gml:featureMember>
+							<gml:Point label="Lake Wauberg">
+								<gml:Coordinates>29.530151,-82.301459</gml:Coordinates>
+							</gml:Point>
+						</gml:featureMember>
+					</gml:FeatureCollection>
+				</Metadata>
+				<name>Lake Wauberg</name>
+				<description>Lake Wauberg Desc</description>
+				<Point>
+				  <coordinates>-82.301459,29.530151,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<Metadata>
+					<gml:FeatureCollection>
+						<gml:featureMember>
+							<gml:Point label="Veterinary School">
+								<gml:Coordinates>29.634352,-82.35064</gml:Coordinates>
+							</gml:Point>
+						</gml:featureMember>
+					</gml:FeatureCollection>
+				</Metadata>
+				<name>Veterinary School</name>
+				<description>Veterinary School Desc</description>
+				<Point>
+				  <coordinates>-82.35064,29.634352,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<Metadata>
+					<gml:FeatureCollection>
+						<gml:featureMember>
+							<gml:Line label="Waldo Road">
+								<gml:Coordinates>29.652852,-82.310944 29.716681,-82.268372 29.791494,-82.167778 </gml:Coordinates>
+							</gml:Line>
+						</gml:featureMember>
+					</gml:FeatureCollection>
+				</Metadata>
+				<name>Waldo Road</name>
+				<description>Waldo Road Desc</description>
+				<LineString>
+					<extrude>1</extrude>
+					<tessellate>1</tessellate>
+					<altitudeMode>absolute</altitudeMode>
+					<coordinates>-82.310944,29.652852,0 -82.268372,29.716681,0 -82.167778,29.791494,0</coordinates>
+				</LineString>
+			</Placemark>
+			<Placemark>
+				<Metadata>
+					<gml:FeatureCollection>
+						<gml:featureMember>
+							<gml:Polygon label="University of Florida Campus">
+								<gml:exterior>
+									<gml:LinearRing>
+										<gml:Coordinates>29.651435,-82.339869 29.641216,-82.340298 29.629503,-82.371969 29.649645,-82.371712 </gml:Coordinates>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</gml:featureMember>
+					</gml:FeatureCollection>
+				</Metadata>
+				<name>University of Florida Campus</name>
+				<description>University of Florida Campus Desc</description>
+				<Polygon>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>-82.339869,29.651435,50 -82.340298,29.641216,50 -82.371969,29.629503,50 -82.371712,29.649645,50</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+	</Document>
+</kml>
+		
+		

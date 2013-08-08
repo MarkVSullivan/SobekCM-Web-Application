@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+<Document>
+<description><![CDATA[powered by <a href="http://www.wordpress.org">WordPress</a> &amp; <a href="http://www.mapsmarker.com">MapsMarker.com</a>]]></description>
+<open>1</open>
+<Style id="restaurant"><IconStyle><Icon><href>http://www.infiniteperspective.com/wp-content/uploads/leaflet-maps-marker-icons/restaurant.png</href></Icon></IconStyle></Style>
+<Style id="coffee"><IconStyle><Icon><href>http://www.infiniteperspective.com/wp-content/uploads/leaflet-maps-marker-icons/coffee.png</href></Icon></IconStyle></Style>
+<Folder>
+<name>Places Where My Art is Hanging</name>
+<Placemark id="marker-1">
+<styleUrl>#restaurant</styleUrl>
+<name>The Present Moment Cafe</name>
+<TimeStamp><when>2013-05-14T10:05:24+00:00</when></TimeStamp>
+<atom:author><atom:name>admin</atom:name></atom:author>
+<atom:link rel="related" href="http://www.infiniteperspective.com" />
+<description><![CDATA[]]></description>
+<address><![CDATA[224 West King Street, St. Augustine, FL]]></address>
+<Point>
+<coordinates>-81.327595,29.890862</coordinates>
+</Point>
+</Placemark>
+<Placemark id="marker-2">
+<styleUrl>#coffee</styleUrl>
+<name>The Kookaburra</name>
+<TimeStamp><when>2013-05-14T10:05:11+00:00</when></TimeStamp>
+<atom:author><atom:name>admin</atom:name></atom:author>
+<atom:link rel="related" href="http://www.infiniteperspective.com" />
+<description><![CDATA[]]></description>
+<address><![CDATA[24 Cathedral Place, St. Augustine, FL]]></address>
+<Point>
+<coordinates>-81.312183,29.892812</coordinates>
+</Point>
+</Placemark>
+</Folder>
+<ScreenOverlay>
+<name><![CDATA[powered by WordPress & MapsMarker.com]]></name>
+<Icon>
+<href>http://www.infiniteperspective.com/wp-content/plugins/leaflet-maps-marker/inc/img/kml-overlay-powered-by.png</href>
+</Icon>
+<overlayXY x="0" y="1" xunits="fraction" yunits="fraction"/>
+<screenXY x="0" y="1" xunits="fraction" yunits="fraction"/>
+<rotationXY x="0" y="0" xunits="fraction" yunits="fraction"/>
+<size x="0" y="0" xunits="fraction" yunits="fraction"/>
+</ScreenOverlay>
+</Document>
+</kml>
