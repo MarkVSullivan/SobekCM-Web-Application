@@ -1,7 +1,7 @@
 var spanArrayObjects;
 var spanArray;
 var autonumberingMode=-1;
-var makeSortable = true;
+var makeSortable = 3;
 var cursorMode = 1;
 
 
@@ -41,14 +41,12 @@ function qc_set_fullscreen() {
 	  
 }
 
-//Called when the user enables/disables sorting in the menu settings
+//Called when the user clicks on one of the sorting options in the menu 
 function QC_Change_Sortable_Setting(option, image_location)
 {
   //Assign the sorting option to the global variable. 
-  if(option=='1')
-    makeSortable = true;
-  else if(option=='0')
-     makeSortable = false;
+    makeSortable = option;
+
   
   //Set the hidden variable value
   var hidden_sortable_option = document.getElementById('QC_sortable_option'); 
@@ -58,25 +56,35 @@ function QC_Change_Sortable_Setting(option, image_location)
   //First uncheck both the options
   var enableID = document.getElementById('checkmarkEnableSorting');
   var disableID = document.getElementById('checkmarkDisableSorting');
+  var enableWithConfID = document.getElementById('checkmarkEnableSorting_conf');
   
   enableID.src=image_location+"noCheckmark.png";
   disableID.src = image_location+"noCheckmark.png";
+  enableWithConfID.src = image_location+"noCheckmark.png";
   
   //Now check the selected option
-  if(option=="1")
+  if(option==1)
    {
      enableID.src=image_location+"checkmark.png";
 	  $("#allThumbnailsOuterDiv").sortable("enable");
+   }
+  else if(option==2)
+  {
+    enableWithConfID.src = image_location+"checkmark.png";
+	$("#allThumbnailsOuterDiv").sortable("enable");
   }
   else
   {
     disableID.src = image_location+"checkmark.png";
     $("#allThumbnailsOuterDiv").sortable("disable");
   }
+    // Close the superfish menu
+   $('ul.qc-menu').hideSuperfishUl();
+  
 }
 
 
-//Check/uncheck the corresponding menu autonumberng option when 
+//Check/uncheck the corresponding autonumbering option when selected in the menu
 function Autonumbering_mode_changed(mode, image_location)
 {
    //Set the global mode variable to this value
@@ -120,7 +128,8 @@ function Configure_QC( MaxPageCount ) {
     }
     
     autonumberingMode = document.getElementById("QC_autonumber_option").value;
-    
+	makeSortable = document.getElementById("QC_sortable_option").value;
+	
 }
 
 
@@ -238,29 +247,39 @@ function DivNameTextChanged(TextboxID)
     }
 }
 
+
+
 //Autonumber subsequent textboxes on changing one textbox value
 //parameter textboxID = the ID of the pagination textbox changed by the user
 //parameter mode: the autonumbering mode passed in from the qc itemviewer. 0:auto number all the pages of the entire item, 1: all the pages of the current division only, 
 //2: No auto numbering
 //parameter MaxPageCount: the max number of pages for the current item in qc. This refers to all the pages, not just the ones displayed on the screen (though this makes no difference from the javascript point of view.)
 
-function PaginationTextChanged(TextboxID, Mode)
+function PaginationTextChanged(TextboxID)
 {
 
     //Mode '0': Autonumber all the thumbnail page names till the end
     //Mode '1': Autonumber all the thumbnail pages till the start of the next div
     //Mode '2': No autonumber
 
+	alert('Beginning of function PaginationTextChanged');
 	//if there is a value assigned to the global autonumbering mode variable, use the global value insted of this one
-	if(autonumberingMode>-1)
-	  Mode = autonumberingMode;
-	
-//	alert('Mode value is:'+Mode);
-	
-    if (Mode == '2')
+//	if(autonumberingMode>-1)
+//	  Mode = autonumberingMode;
+    var Mode=autonumberingMode;
+    if (Mode == 2)
         return;
     
+	alert('Mode:'+Mode);
+	
     var textboxValue = document.getElementById(TextboxID).value;
+	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
+	var onlyNumberEntered = textboxValue.match(/\d+/g);
+	if(onlyNumberEntered)
+	  {
+	     document.getElementById(TextboxID).value = 'Page '+ textboxValue;
+		 textboxValue = document.getElementById(TextboxID).value;
+	  }
     var index = TextboxID.replace('textbox', '');
 	var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length-1)];
 	
@@ -268,6 +287,7 @@ function PaginationTextChanged(TextboxID, Mode)
 	var numberOnlyLastBox=document.getElementById('Autonumber_number_only');
 	
 //	lastNumber = lastNumber.toUpperCase().trim();
+    var onlyNumberEntered = 
 	var matches = lastNumber.match(/\d+/g);
 	var varRomanMatches = true;
 	var isRomanLower=true;
@@ -341,7 +361,7 @@ function PaginationTextChanged(TextboxID, Mode)
 		{
 			romanToNumberError="Repeated use of V,L or D";
 		}	  
-		//Rule 1-check that a single letter is not repeated more than thrice
+		//Check that a single letter is not repeated more than thrice
 		var count=1;
 		var last='Z';
 		for(var x=0;x<roman.length;x++)
@@ -736,12 +756,8 @@ function MakeSortable1()
             startPosition = spanArray.indexOf($(ui.item).attr('id'));
         },
         stop: function(event, ui) {
-            //Confirm the move
-            var input_box = confirm("Are you sure you want to move this page?");
-            if (input_box == false) {
-                $(this).sortable('cancel');
-            } else if (input_box == true) {
-                // Pull a new spanArray
+           
+// Pull a new spanArray
                 var newSpanArray = new Array();
                 //get the list of all the thumbnail spans on the page
                 spanArrayObjects = $("#allThumbnailsOuterDiv").children();
@@ -756,6 +772,21 @@ function MakeSortable1()
 
                 var spanID = $(ui.item).attr('id');
                 newPosition = newSpanArray.indexOf($(ui.item).attr('id'));
+
+
+
+		   //Confirm the move, if sortable option set to 2:'Enabled with confirmation'
+            var makeSortable_input = true;
+			if(makeSortable==2 && (startPosition!=newPosition))
+			{
+ //    			alert('startPosition:'+startPosition+' newPosition:'+newPosition);
+				makeSortable_input = confirm("Are you sure you want to move this page?");
+			}
+
+            if (makeSortable_input == false) {
+                $(this).sortable('cancel');
+            } else if (makeSortable_input == true) {
+                
 
                 // if position has been changed, update the page division correspondingly
                 if (startPosition != newPosition) {
@@ -858,8 +889,12 @@ function MakeSortable1()
             } //end if(input_box==true)
         }, placeholder: "ui-state-highlight"
     });
-									 
+							 
     $("#allThumbnailsOuterDiv").disableSelection();
+	if(makeSortable==3)
+	{
+	  $("#allThumbnailsOuterDiv").sortable('disable');
+	}
 }
 
 //Cancel function: set the hidden field(s) accordingly
