@@ -176,8 +176,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add the rotation
                             itemPolygon.Add_Rotation(Convert.ToDouble(ar[4]));
 
-                            //add the polygon to the geo info
-                            itemGeoInfo.Add_Polygon(itemPolygon);
+                            //check to see if there is a lower level geo info
+                            if (itemGeoInfo != null)
+                            {
+                                //add the polygon to the geo info
+                                itemGeoInfo.Add_Polygon(itemPolygon);
+                            }
+                            else
+                            {
+                                //add the polygon to the resource level geo info
+                                resourceGeoInfo.Add_Polygon(itemPolygon);
+                            }
+
+                            
                             
                         }
 
@@ -566,7 +577,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         mapperBuilder.AppendLine("      incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
                         mapperBuilder.AppendLine("      incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
-
+                        
                         try
                         {
                             //get the image url
@@ -758,8 +769,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab4_header\" class=\"tab-title\"></div> ");
             mapperBuilder.AppendLine("                 <div id=\"overlayACL\" class=\"tab\"> ");
             mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_placeOverlay\" class=\"button\"></div> ");
+            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayEdit\" class=\"button\"></div> ");
+            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayPlace\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayGetUserLocation\" class=\"button\"></div> ");
+            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayToggle\" class=\"button\"></div> ");
+            mapperBuilder.AppendLine("  ");
             mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_overlayTools\"> ");
             mapperBuilder.AppendLine("                             <div id=\"rotation\"> ");
@@ -792,6 +806,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_placePOI\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiGetUserLocation\" class=\"button\"></div> ");
+            mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiToggle\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiMarker\" class=\"button\"></div> ");
             mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiCircle\" class=\"button\"></div> ");
@@ -816,8 +831,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapperBuilder.AppendLine(" </div> ");
             mapperBuilder.AppendLine(" <div id=\"debugs\"></div> ");
 
-
-            
+           
             #endregion
 
             //custom js files (load order does matter)

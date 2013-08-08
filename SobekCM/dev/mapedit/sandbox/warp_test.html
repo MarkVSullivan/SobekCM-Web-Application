@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+    <head><script src="excanvas.js"></script>
+        <title>JS1k, 1k demo submission [434]</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+	<img src="http://www.stencilsanddecals.com/images/lg/11908AnotherCoffeeSwirl.jpg" style="transform:skewX(10deg);">
+        <canvas id="c"></canvas>
+        <script>
+/*
+
+links:
+http://www.splashnology.com/article/pixel-distortions-with-bilinear-filtration-in-html5-canvas/4739/
+http://stackoverflow.com/questions/14648203/is-there-a-way-to-distort-an-image-to-look-like-a-wave-effect
+http://www.script-tutorials.com/cross-browser-image-shaking-effect-using-javascript/
+
+
+      THE FOLLOWING SCRIPT IS ADAPTED FROM  
+   
+          http://js1k.com/demos#id434  
+
+BY:        Alex Epifano       
+            @msm595     
+DESCRIPTION:
+A 3d cloth simulation. 
+Interact with it! Drag it! Fun! Controls: 
+Drag: mouse Gravity (toggle): 
+g Pin (hold point in place): 
+press and hold any character (other than g), 
+select a point with the mouse, 
+manipulate point, 
+release point, 
+release key; 
+
+ORIGINAL SCRIPT BY ANDREW HOYER
+
+See Cloth   
+       http://www.andrew-hoyer.com/experiments/cloth
+
+
+
+CHANGES MADE IN THIS SCRIPT
+
+
+dblclick to create a pin at point of next drag on cloth
+
+added image cell based on canvas-warp formula
+
+      SEE CANVAS-WARP
+
+       http://github.com/migurski/canvas-warp
+
+
+FUTURE ADAPTIONS TO DO:
+split the image into cells using offscreen canvas elements
+use each element to act as image in drawCell function to achieve a single image as cloth 
+
+
+PROBLEMS:
+
+quality issues with Chrome: looks so bad I cried. 
+Clipping didn't seem to work right if background in image differs from page background. 
+It must be rounding the point locations when it clips
+Any help from experts is sorely needed
+
+
+IE won't render the images correctly but everything else works. Tried jpg and png
+Didn't try IE9, but it's supposed to work.
+
+*/
+
+
+
+
+
+window.onload=function(){     
+window.canvas = document.getElementById('c');
+ctx = canvas.getContext('2d');
+var img=new Image()
+img.src="http://i55.tinypic.com/o3bpj.jpg"   //"HAHACANVAS.jpg"
+clothPoints = 10;
+
+canvas.width = gwidth = canvas.height = gheight = 600;
+cloth = [];
+lines = [];
+
+q = 0
+h = 0;
+gravity = true
+makePin=false
+o = 1;
+y = .05
+
+
+while( h < clothPoints ) { 
+  y += .085
+  x = .05    
+  cloth[h] = [];
+  var i=0    
+while( i < clothPoints ) {
+  x += .085
+  cloth[h][i] = {x: x, y: y, i: 1, k: x, j: y ,pin:0};
+        
+if (h > 0) { lines.push( [ h - 1 , i ,  h,  i ] )} 
+  ( i > 0 ? lines.push([h, i - 1, h, i]) : 0 )
+i++
+}
+h++
+}
+cloth[0][0].i = 0
+cloth[0][clothPoints-1].i = 0;
+//cloth[clothPoints-1][0].i = 0
+//cloth[clothPoints-1][clothPoints-1].i = 0;
+cloth[0][0].pin = 1
+cloth[0][clothPoints-1].pin = 1;
+//cloth[clothPoints-1][0].pin = 1
+//cloth[clothPoints-1][clothPoints-1].pin = 1;
+
+
+
+
+/*   
+
+     drawCell ADAPTED FROM
+
+
+http://github.com/migurski/canvas-warp
+
+
+*/
+
+
+
+function drawCell(x1, y1, x2, y2, x3, y3, x4, y4){
+
+ctx.save();
+ctx.transform(x2-x1, y2-y1, x3-x1, y3-y1, x1, y1);
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(0, 1 );
+ctx.lineTo(1 ,0 );
+ctx.clip();
+ctx.drawImage(img, 0, 0,  1,  1);
+ctx.restore();
+/*bottom half of cell*/
+ctx.save();
+ctx.transform(x3-x4, y3-y4, x2-x4, y2-y4, x4, y4);
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(1.1, 0);
+ctx.lineTo(0, 1.1);
+ctx.clip();
+ctx.scale(   -1,   -1)
+ctx.translate( -1 , -1)
+ctx.drawImage(img, 0, 0, 1, 1);
+ctx.restore();
+
+}
+
+
+n = function (e) {
+
+ctx.clearRect(0, 0, gwidth, gheight);
+for (h = 0; h < clothPoints; h++) {
+for (i = 0; i < clothPoints; i++) {
+p = cloth[h][i];
+if (p.i != 0) {
+    p.nx = p.x * 1.99 - p.k * .99;
+    p.ny = p.y * 1.99 - p.j * .99 + (.00125 * ( gravity==true ? 1 : 0 ) );
+    p.k = p.x;
+    p.j = p.y;
+    p.x = p.nx;
+    p.y = p.ny
+
+    }
+       }
+      }
+for (h = 0; h < 2; h++) {
+for (i = 0; i < lines.length; i++) {
+            a = lines[i];
+
+            s = cloth[a[0]][a[1]];
+            t = cloth[a[2]][a[3]];
+            dx = t.x - s.x;
+            dy = t.y - s.y;
+            de = dx * dx + dy * dy;
+            di = (de - .0064) / ((de + .0064) * (s.i + t.i));
+            if (s.i != 0) {
+                s.x += dx * di;
+                s.y += dy * di
+            }
+            if (t.i != 0) {
+                t.x += -1 * dx * di;
+                t.y += -1 * dy * di
+            }
+        }
+    }
+    for (i = 0; i < lines.length; i++) {
+        a = lines[i];
+        ctx.beginPath();
+
+        s = cloth[a[0]][a[1]];
+        t = cloth[a[2]][a[3]];
+if(s.pin==1)ctx.arc(s.x* gwidth,s.y* gheight,2,0,6.28,false)
+        ctx.moveTo(s.x * gwidth, s.y * gheight);
+        ctx.lineTo(t.x * gwidth, t.y * gheight);
+        ctx.stroke()
+ 
+    }
+for(z=1;z< cloth.length;z++){
+for(zz=1;zz<cloth[z].length;zz++){
+var A=cloth[z-1][zz-1]
+var B=cloth[z-1][zz]
+var C=cloth[z][zz-1]
+var D=cloth[z][zz]
+              
+
+
+ 
+drawCell(A.x* gwidth,A.y*gheight,B.x* gwidth,B.y*gheight,C.x* gwidth,C.y*gheight,D.x* gwidth,D.y*gheight)
+}
+}
+
+
+
+setTimeout(arguments.callee,50)
+};
+setTimeout(n, 35);
+document.onmousedown = function (e) {e=!e?window.event:e
+    w = clothPoints;
+    for (h = 0; h < clothPoints; h++) {
+        for (i = 0; i < clothPoints; i++) {
+            p = cloth[h][i];
+            dx = ((e.pageX||e.clientX)-canvas.offsetLeft )/ gwidth - p.x;
+            dy = ((e.pageY||e.clientY)-canvas.offsetTop ) / gheight - p.y;
+            nw = dx * dx + dy * dy;
+            if (nw < w) {
+                w = nw;
+                q = p
+
+            }
+
+        }
+    }
+    document.onmousemove = function (e) {e=!e?window.event:e
+        q.x = q.k = ((e.pageX||e.clientX)-canvas.offsetLeft )/ gwidth;
+        q.y = q.j = ((e.pageY||e.clientY)-canvas.offsetTop ) / gheight;
+        q.i = 0
+ ctx.beginPath()
+ctx.arc((e.pageX||e.clientX)-canvas.offsetLeft,(e.pageY||e.clientY)-canvas.offsetTop,5,0,6.28,false)
+ctx.fillStyle="rgba(255,0,0,.3)"
+ctx.fill()
+
+    };
+document.ondblclick = function () {
+makePin=true
+}
+    document.onmouseup = function ( ) {
+
+
+        document.onmousemove = null;
+        q.i = q.pin==1?0:1
+if(makePin==true){ q.i=0 ; q.pin=1}
+
+makePin=false
+
+ 
+    };
+};
+
+document.onkeydown = function (e) {e=!e?window.event:e
+    if (e.keyCode == 71) {
+        gravity  = (gravity == false) ? true : false
+    }
+    o = 0
+};
+
+document.onkeyup = function (e) {
+    o = 1
+}
+
+
+
+
+
+
+}
+</script>
+    </body>
+</html>
