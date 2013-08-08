@@ -21,6 +21,40 @@
 #sbkQc_BottomRow textarea {margin-right: 20px; }
 #sbkQC_BottomRowTextSpan { vertical-align: top; }
 
+
+
+
+.sbkQc_Span { text-align:left; display:inline-block; background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;}
+.sbkQc_SpanMouseOver { background-color: #bfc6ce; }
+.sbkQc_SpanMouseOut { background-color: #b0c4de; }
+.sbkQc_Filename { color: #3c3c3c;font-size: 1.15em;font-weight: bold;text-align: left; }
+.sbkQc_Checkbox { visibility: hidden; }
+.sbkQc_MovePageArrowsSpan { visibility: hidden; }
+.sbkQc_PaginationText { color: #3c3c3c;text-align: left; }
+.sbkQc_DivisionText { color: #3c3c3c;text-align: left; }
+.sbkQc_NamedDivisionText { color: #3c3c3c;text-align: left; }
+
+.sbkQc_Thumbnail_Small { border: 1px solid  #a9a9a9; }
+.sbkQc_Thumbnail_Medium { border: 1px solid  #a9a9a9; width: 315px; height: 50%;}
+.sbkQc_Thumbnail_Large { border: 1px solid  #a9a9a9; width: 472.5px; height: 75%;  }
+.sbkQc_Thumbnail_Full { border: 1px solid  #a9a9a9; }
+
+.sbkQc_DivisionBox_Small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
+.sbkQc_DivisionBox_Medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
+.sbkQc_DivisionBox_Large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+.sbkQc_DivisionBox_Full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+  
+.sbkQc_PageBox_Small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
+.sbkQc_PageBox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
+.sbkQc_PageBox_Large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+.sbkQc_PageBox_Full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
+
+.sbkQc_PageOptionsSpan{ float: right;  visibility: hidden;}
+.sbkQc_PageOptionsIcon_Small { height: 15px;width: 15px; }
+.sbkQc_PageOptionsIcon_Medium { height: 20px;width: 20px; }
+.sbkQc_PageOptionsIcon_Large { height: 20px;width: 20px; }
+.sbkQc_PageOptionsIcon_Full {height: 25px;width: 25px;  }
+
 .qcContainerDivClass {
      overflow: scroll; 
      height: 650px;
@@ -56,47 +90,22 @@
     background-color: #7d90d5;
 }
 
-  .qcpage { background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;}
-  .qcfilename { color: #3c3c3c;font-size: 1.15em;font-weight: bold;}
-  .qcthumbnails { border: 1px solid  #a9a9a9; }
-  .paginationtext { color: #3c3c3c; }
-  .divisiontext { color: #3c3c3c; }
-  .namedDivisionText{ color: #3c3c3c; }
-
-  .divisionbox_small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
-  .divisionbox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
-  .divisionbox_large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
-  .divisionbox_full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
-  
-  .pagebox_small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
-  .pagebox_medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 238px; }
-  .pagebox_large { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
-  .pagebox_full { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 370px; }
-
- .qcPageOptionsSpan{ float: right;  visibility: hidden;}
- .qcPageOptionsSpanHover{float:right; visibility: visible;}
 
 .errorIconSpan{float:right; visibility: hidden;}
 .errorIconSpanHover{float:right; visibility: visible;}
 
-.pickMainThumbnailIcon{visibility: hidden; float:right;}
-.pickMainThumbnailIconSelected{visibility: visible; float:right;}
 
-.chkMoveThumbnailHidden{visibility: Hidden;}
-.chkMoveThumbnailVisible{visibility: Visible;}
 
-.movePageArrowIconHidden{ visibility: hidden;}
-.movePageArrowIconVisible{ visibility: Visible;}
+
 
 .spanQCIconsTopNavRow{float:right;}
 
-.qcPickMainThumbnailCursor{cursor:url(http://ufdc.ufl.edu/default/images/thumbnail_cursor.cur),default;}
-.qcMovePagesCursor{cursor:url(http://ufdc.ufl.edu/default/images/move_pages_cursor.cur),default;}
-.qcDeletePagesCursor{cursor:url(http://ufdc.ufl.edu/default/images/delete_cursor.cur),default;}
+.qcPickMainThumbnailCursor{cursor:url(http://localhost:60232/sobekcm/default/images/thumbnail_cursor.cur),default;}
+.qcMovePagesCursor{cursor:url(http://localhost:60232/sobekcm/default/images/move_pages_cursor.cur),default;}
+.qcDeletePagesCursor{cursor:url(http://localhost:60232/sobekcm/default/images/delete_cursor.cur),default;}
 .qcResetMouseCursorToDefault{cursor:default;}
 
-.txtNamedDivHidden{ visibility: hidden;}
-.txtNamedDivVisible{ visibility: visible;}
+
 
 .qcDivMoveOnScroll {position: fixed; bottom: 95px; right: 40px;visibility: visible; }
 .qcDivMoveOnScrollHidden{ position: fixed;bottom: 95px; right: 40px;visibility: hidden;}
