@@ -766,7 +766,6 @@ namespace SobekCM.Library.HTML
                     // Add the internal comments row ( hidden content initially )
                     Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
                     Output.WriteLine("      <td colspan=\"3\">");
-                    Output.WriteLine("        <center>");
                     Output.WriteLine("        <table id=\"internal_notes_div\">");
                     Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
@@ -778,7 +777,6 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
-                    Output.WriteLine("        </center>");
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
                 }
@@ -790,7 +788,6 @@ namespace SobekCM.Library.HTML
                     // Add the internal comments row ( hidden content initially )
                     Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
                     Output.WriteLine("      <td colspan=\"2\">");
-                    Output.WriteLine("        <center>");
                     Output.WriteLine("        <table id=\"internal_notes_div\">");
                     Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
@@ -799,7 +796,6 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
-                    Output.WriteLine("        </center>");
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
                 }
@@ -1354,7 +1350,8 @@ namespace SobekCM.Library.HTML
             {
                 // Start the item viewer
                 Output.WriteLine("<!-- Begin the left navigational bar -->");
-                Output.WriteLine(PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000 ? "<div id=\"sbkIsw_Leftnavbar_hack\">" : "<div id=\"sbkIsw_Leftnavbar\">");
+
+                Output.WriteLine(PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000 || showToc ? "<div id=\"sbkIsw_Leftnavbar_hack\">" : "<div id=\"sbkIsw_Leftnavbar\">");
 
                 //// Compute the URL options which may be needed
                 //string url_options = currentMode.URL_Options();
