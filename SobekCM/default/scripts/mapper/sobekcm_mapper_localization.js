@@ -60,6 +60,7 @@ var L42 = "Hiding POIs"; //toogle poi
 var L43 = "Showing POIs"; //toggle poi
 var L44 = "Converted Item To Overlay";
 var L45 = "Nothing To Toggle";
+var L46 = "Nothing to Reset";
 
 //by listeners
 try {

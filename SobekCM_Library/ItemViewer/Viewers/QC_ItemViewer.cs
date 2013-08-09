@@ -44,7 +44,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private string hidden_move_destination_fileName;
 		private string userInProcessDirectory;
 		private string complete_mets;
-		private bool makeSortable = true;
+		private int makeSortable = 1;
 		private bool isLower;
 		private string mainThumbnailFileName_from_db;
 		private string mainJPGFileName_from_db;
@@ -185,8 +185,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
 			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
 			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
-		    temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? String.Empty;
-		    if (temp == "false") makeSortable = false;
+		    temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? "-1";
+		    if (Int32.TryParse(temp, out makeSortable) && (makeSortable > 0) && (makeSortable <= 3))
+		    {
+		        CurrentUser.Add_Option("QC_ItemViewer:SortableMode",makeSortable);
+		    }
             temp = HttpContext.Current.Request.Form["QC_autonumber_option"] ?? "-1";
             if ((Int32.TryParse(temp, out autonumber_mode)) && ( autonumber_mode >= 0 ) && ( autonumber_mode <= 2 ))
             {
@@ -198,7 +201,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Get any notes/comments entered by the user
 			notes = HttpContext.Current.Request.Form["txtComments"] ?? String.Empty;
 
-			if (!(Boolean.TryParse(HttpContext.Current.Request.Form["QC_Sortable"], out makeSortable))) makeSortable = true;
+			if (!(Int32.TryParse(HttpContext.Current.Request.Form["QC_Sortable"], out makeSortable))) makeSortable = 3;
 			// If the hidden move relative position is BEFORE, it is before the very first page
 			if (hidden_move_relative_position == "Before")
 				hidden_move_destination_fileName = "[BEFORE FIRST]";
@@ -381,6 +384,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     mainJPGFileName_from_db = mainJPGFileName_from_db.Substring(0, lengthJpeg);
 
             }
+            //Get the Drag & Drop setting from the user options
+            makeSortable = CurrentUser.Get_Option("QC_ItemViewer:SortableMode", 3);
 
             // Get the proper number of thumbnails per page
             // First, pull the thumbnails per page from the user options
@@ -417,6 +422,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the autonumbering mode
             // First, pull the autonumbering mode from the user options
             autonumber_mode = CurrentUser.Get_Option("QC_ItemViewer:AutonumberingMode", 0);
+
+            //Also pull the Sortable mode from the user options
+            makeSortable = CurrentUser.Get_Option("QC_ItemViewer:SortableMode", 3);
 
             // Ensure there are no pages directly under the item
             List<abstract_TreeNode> add_to_new_main = new List<abstract_TreeNode>();
@@ -1546,15 +1554,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t</ul></li>");
 
             Output.WriteLine("\t<li><a onclick=\"return false;\">Drag & Drop Pages</a><ul>");
-            if(makeSortable)
-            Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkEnableSorting\"/>"+"Enable</a></li>");
+            if(makeSortable==1)
+            Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkEnableSorting\"/>"+"Enabled</a></li>");
             else
-              Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkEnableSorting\"/>" + "Enable</a></li>");
-            
-            if(!makeSortable)
-                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(0,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkDisableSorting\"/>"+"Disable</a></li>");
+              Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkEnableSorting\"/>" + "Enabled</a></li>");
+
+            if (makeSortable==2)
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkEnableSorting_conf\"/>" + "Enabled with Confirmation</a></li>");
             else
-                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkDisableSorting\"/>" + "Disable</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkEnableSorting_conf\"/>" + "Enabled with Confirmation</a></li>");
+
+            if(makeSortable==3)
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(3,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkDisableSorting\"/>"+"Disabled</a></li>");
+            else
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(3,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkDisableSorting\"/>" + "Disabled</a></li>");
                 
             Output.WriteLine("</ul></li>");
             
@@ -1622,7 +1635,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<input type=\"hidden\" id=\"Autonumber_last_filename\" name=\"Autonumber_last_filename\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_window_height\" name=\"QC_window_height\" value=\"\"/>");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_window_width\" name=\"QC_window_width\" value=\"\"/>");
-            Output.WriteLine("<input type=\"hidden\" id=\"QC_sortable_option\" name=\"QC_sortable_option\" value=\"\">");
+            Output.WriteLine("<input type=\"hidden\" id=\"QC_sortable_option\" name=\"QC_sortable_option\" value=\""+makeSortable+"\">");
             Output.WriteLine("<input type=\"hidden\" id=\"QC_autonumber_option\" name=\"QC_autonumber_option\" value=\"" + autonumber_mode + "\">");
 
 			// Start the main div for the thumbnails
@@ -1845,7 +1858,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					// Add the text box for entering the name of this page
 				    Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td class=\"sbkQc_PaginationText\">" + pagination_text + "</td>");
-				    Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + Server.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id,1);\"></input></td>");
+				    Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + Server.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id);\"></input></td>");
                     Output.WriteLine("    </tr>");
 
 					// Was this a new parent?
@@ -2021,8 +2034,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//If the current url has an anchor, call the javascript function to animate the corresponding span background color
 			Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSpanFlashOnPageLoad());</script>");
 			Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(Configure_QC(" + qc_item.Web.Static_PageCount + "));</script>");
-	//		if(makeSortable)
-				Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
+			Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
 
 
 			//If the autosave option is not set, or set to true, set the interval (3 minutes) for autosaving
