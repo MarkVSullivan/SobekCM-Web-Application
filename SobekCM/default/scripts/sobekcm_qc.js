@@ -262,7 +262,7 @@ function PaginationTextChanged(TextboxID)
     //Mode '1': Autonumber all the thumbnail pages till the start of the next div
     //Mode '2': No autonumber
 
-//	alert('Beginning of function PaginationTextChanged');
+
 	//if there is a value assigned to the global autonumbering mode variable, use the global value insted of this one
 //	if(autonumberingMode>-1)
 //	  Mode = autonumberingMode;
