@@ -15,7 +15,7 @@ function initOptions() {
     toggleVis("mapDrawingManager");
     buttonActive("layer");
     document.getElementById("content_toolbarGrabber").style.display = "block";
-    //determine ACL
+    //determine ACL placer type
     if (incomingPointCenter.length > 0) {
         //there is an item
         actionsACL("full", "item");
@@ -29,6 +29,12 @@ function initOptions() {
             //actionsACL("full", "poi"); //not yet implemented
         }
     }
+    //determine ACL maptype toggle
+    if (hasCustomMapType == true) {
+        actionsACL("full", "customMapType");
+    } else {
+        actionsACL("none", "customMapType");
+    }
     
 }
 
@@ -41,11 +47,6 @@ function openToolboxTab(id) {
     //    document.getElementById("content_toolbox_searchButton").style.display = "none";
     //}
     ////END WORKAROUND
-    //START WORKAROUND
-    //if (isConverted==true) {
-    //    $("#mapper_container_toolboxTabs").accordion('activate', false);
-    //}
-    //END WORKAROUND
     $("#mapper_container_toolboxTabs").accordion({ active: id });
 }
 
@@ -134,16 +135,6 @@ function displayMessage(message) {
 
     //keep a count of messages
     messageCount++;
-
-    ////show message
-    //document.getElementById("mapper_container_message").style.display = "block"; //display element
-
-    ////fade message out
-    //setTimeout(function () {
-    //    $("#mapper_container_message").fadeOut("slow", function () {
-    //        $("#mapper_container_message").hide();
-    //    });
-    //}, 3000); //after 3 sec
 }
 
 //create a package to send to server to save item location
@@ -248,13 +239,15 @@ function overlayCenterOnMe(id) {
 function overlayEditMe(id) {
     var ghostIndex = id;
     pageMode = "edit";
-    if (currentlyEditing == "yes") {                                                            //if editing is being done, save
+    if (currentlyEditing == "yes" && workingOverlayIndex!=null) {                               //if editing is being done and there is something to save, save
+        de("saving overlay " + ghostIndex);
         cacheSaveOverlay(ghostIndex);                                                           //trigger a cache of current working overlay
         ghostOverlayRectangle[workingOverlayIndex].setOptions(ghosting);                        //set rectangle to ghosting
         currentlyEditing = "no";                                                                //reset editing marker
         preservedRotation = 0;                                                                  //reset preserved rotation
     }
-    if (currentlyEditing == "no") {
+    if (currentlyEditing == "no" || workingOverlayIndex==null) {
+        de("editing overlay " + ghostIndex);
         currentlyEditing = "yes"; //enable editing marker
         workingOverlayIndex = ghostIndex; //set this overay as the one being e
         ghostOverlayRectangle[ghostIndex].setOptions(editable); //show ghost
@@ -429,6 +422,11 @@ function checkZoomLevel() {
                     displayMessage(L17);
                 }
                 break;
+            case "blocklot":
+                if (currentZoomLevel == minZoomLevel_BlockLot) {
+                    displayMessage(L17);
+                }
+                break;
         }
         if (isCustomOverlay == true) {
             if (currentZoomLevel == minZoomLevel_BlockLot) {
@@ -466,9 +464,13 @@ $(function ($) {
                 knobRotationValue = ((knobRotationValue - 360) * (1)); //used to correct for visual effect of knob error
                 //knobRotationValue = ((knobRotationValue-180)*(-1));
             }
-            preservedRotation = knobRotationValue; //reassign
-            keepRotate(preservedRotation); //send to display fcn of rotation
-            savingOverlayRotation[workingOverlayIndex] = preservedRotation; //just make sure it is prepping for save
+            //only do something if we are in pageEdit Mode and there is an overlay to apply these changes to
+            if (workingOverlayIndex != null) {
+                preservedRotation = knobRotationValue; //reassign
+                keepRotate(preservedRotation); //send to display fcn of rotation
+                de("workingOverlayIndex: " + workingOverlayIndex);
+                savingOverlayRotation[workingOverlayIndex] = preservedRotation; //just make sure it is prepping for save    
+            }
         }
     });
 
@@ -726,6 +728,16 @@ function actionsACL(level, id) {
                     break;
             }
             break;
+        case "customMapType":
+            switch (level) {
+                case "full":
+                    $('#content_toolbar_button_layerCustom').show();
+                    break;
+                case "none":
+                    $('#content_toolbar_button_layerCustom').hide();
+                    break;
+            }
+            break;
     }
 }
 
@@ -835,18 +847,24 @@ function resizeView() {
 
 //clear the save overlay cache
 function clearCacheSaveOverlay() {
-    de("clearCacheSaveOverlay(); started... ");
+    de("attempting to clear save overlay cache");
     if (savingOverlayIndex.length > 0) {
-        de("reseting cache");
+        de("reseting cache data");
         savingOverlayIndex = [];
         savingOverlayLabel = [];
         savingOverlaySourceURL = [];
         savingOverlayBounds = [];
         savingOverlayRotation = [];
+        de("reseting cache save overlay index");
+        csoi = 0;
         de("cache reset");
     } else {
         de("nothing in cache");
     }
+    de("reseting working index");
+    workingOverlayIndex = null;
+    de("reseting preserved rotation");
+    preservedRotation = 0;
 }
 
 //debugging 

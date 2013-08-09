@@ -1,9 +1,8 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
-//var isConverted = false;                //holds a marker to tell me if it was converted (fixes a bug)
+var hasCustomMapType;                   //holds marker for determining if there is a custom map type
 var messageCount = 0;                   //holds the running count of all the messages written in a session
-//var overlayToggleState = "displayed";   //holds marker for displayed/hidden overlays
 var poiToggleState = "displayed";       //holds marker for displayed/hidden pois
 var poiCount = 0;                       //holds a marker for pois drawn (fixes first poi desc issue)
 var firstSaveItem;                      //holds first save marker (used to determine if saving or applying changes)
@@ -30,7 +29,7 @@ var minZoomLevel_Terrain;               //max zoom in, terrain
 var minZoomLevel_Satellite;             //max zoom in, sat + hybrid
 var minZoomLevel_Roadmap;               //max zoom in, roadmap (default)
 var minZoomLevel_BlockLot;              //max zoom in, used for special layers not having default of roadmap
-var isCustomOverlay;                    //used to determine if other overlays (block/lot etc) //unknown
+var isCustomOverlay;                    //used to determine if other overlays (block/lot etc) //used in testbounds unknown if needed
 var preservedRotation;                  //rotation, default
 var knobRotationValue;                  //rotation to display by default 
 var preserveOpacity;                    //opacity, default value (0-1,1=opaque)
@@ -125,6 +124,7 @@ function setupInterface(collection) {
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
             strictBounds = null;                                                    //set the bounds for this google map instance (set to null for no bounds)
+            hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
             break;
         case "stAugustine":
             baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
@@ -148,6 +148,7 @@ function setupInterface(collection) {
             preservedRotation = 0;                                                  //rotation, default
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
+            hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
             strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
                 new google.maps.LatLng(29.78225755812941, -81.4306640625),
                 new google.maps.LatLng(29.99181288866604, -81.1917114257)
@@ -174,6 +175,7 @@ function setupInterface(collection) {
             preservedRotation = 0;                                                  //rotation, default
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
             strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
                 new google.maps.LatLng(29.21570636285318, -82.87811279296875),
                 new google.maps.LatLng(30.07978967039041, -81.76300048828125)
@@ -196,11 +198,11 @@ function setupInterface(collection) {
             minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
             minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
             minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) 
             preservedRotation = 0;                                                  //rotation, default
             knobRotationValue = 0;                                                  //rotation to display by default 
             preserveOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            
+            hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
             strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
                 //new google.maps.LatLng(30.69420636285318, -88.04311279296875), //fl nw
                 //new google.maps.LatLng(25.06678967039041, -77.33330048828125) //fl se
@@ -1160,16 +1162,32 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
 
 //Stores the overlays to save and their associated data
 function cacheSaveOverlay(index) {
+    de("caching save overlay");
+    de("current save overlay index: " + csoi);
+    //is this the first save
     firstSaveOverlay = true;
-    savingOverlayIndex[csoi] = workingOverlayIndex;                                         //set overlay index to save
-    savingOverlayLabel[csoi] = incomingOverlayLabel[workingOverlayIndex];                   //set label to save
-    savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           //set source url to save
-    savingOverlayBounds[csoi] = ghostOverlayRectangle[workingOverlayIndex].getBounds();     //set bounds to save
-    de("preserved rotation: "+preservedRotation);
-    savingOverlayRotation[csoi] = preservedRotation;                                        //set rotation to save
-    if (savingOverlayIndex[csoi] != index) {                                                
-        csoi++;                                                                             //iterate the current save overlay index   
+    de("firstSaveOvelay: " + firstSaveOverlay);
+    //set overlay index to save
+    savingOverlayIndex[csoi] = workingOverlayIndex;                                         
+    de("savingOverlayIndex[csoi]:" + savingOverlayIndex[csoi]);
+    //set label to save
+    savingOverlayLabel[csoi] = incomingOverlayLabel[workingOverlayIndex];                   
+    de("savingOverlayLabel[csoi]:" + savingOverlayLabel[csoi]);
+    //set source url to save
+    savingOverlaySourceURL[csoi] = incomingOverlaySourceURL[workingOverlayIndex];           
+    de("savingOverlaySourceURL[csoi]:" + savingOverlaySourceURL[csoi]);
+    //set bounds to save
+    savingOverlayBounds[csoi] = ghostOverlayRectangle[workingOverlayIndex].getBounds();     
+    de("savingOverlayBounds[csoi]:" + savingOverlayBounds[csoi]);
+    //set rotation to save
+    savingOverlayRotation[csoi] = preservedRotation;                                        
+    de("savingOverlayRotation[csoi]:" + savingOverlayRotation[csoi]);
+    //check to see if we just recached or if it was a unique cache
+    if (savingOverlayIndex[csoi] != index) {
+        //iterate the current save overlay index   
+        csoi++;                                                                             
     }
+    de("save overlay cached");
 }
 
 //Starts the creation of a custom overlay div which contains a rectangular image.

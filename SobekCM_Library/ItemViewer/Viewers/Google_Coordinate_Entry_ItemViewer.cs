@@ -372,7 +372,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum>
+                return new List<HtmlSubwriter_Behaviors_Enum> 
                     {
                         HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
                         HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
