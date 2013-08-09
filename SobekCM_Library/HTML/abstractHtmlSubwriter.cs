@@ -147,9 +147,9 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Output stream to write the html for the internal header search box to </param>
         protected void Write_Internal_Header_Search_Box(TextWriter Output)
         {
-                Output.WriteLine("      <td align=\"right\" valign=\"middle\" width=\"340px\">");
+                Output.WriteLine("      <td style=\"text-align:right; vertical-align:middle; width:340px;\">");
                 Output.WriteLine("        <table>");
-                Output.WriteLine("          <tr height=\"16px\" valign=\"top\">");
+                Output.WriteLine("          <tr style=\"vertical-align:top; height: 16px;\">");
                 Output.WriteLine("            <td valign=\"top\">");
                 Output.Write("              <input name=\"internalSearchTextBox\" type=\"text\" id=\"internalSearchTextBox\" class=\"SobekInternalSearchBox\" value=\"\" onfocus=\"javascript:textbox_enter('internalSearchTextBox', 'SobekInternalSearchBox_focused')\" onblur=\"javascript:textbox_leave('internalSearchTextBox', 'SobekInternalSearchBox')\"");
                 if (currentMode.Browser_Type.IndexOf("IE") >= 0)

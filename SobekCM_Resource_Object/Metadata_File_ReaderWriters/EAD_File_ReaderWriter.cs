@@ -172,7 +172,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // Try to read the XML
                 try
                 {
-                    XmlTextReader reader2 = new XmlTextReader(description_builder.ToString());
+                    StringReader strReader = new StringReader(description_builder.ToString());
+                    XmlTextReader reader2 = new XmlTextReader(strReader);
 
                     // Initial doctype declaration sometimes throws an error for a missing EAD.dtd.
                     bool ead_start_found = false;
@@ -182,7 +183,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         try
                         {
                             reader2.Read();
-                            if ((reader2.NodeType == XmlNodeType.Element) && (reader2.Name.ToLower() == GlobalVar.EAD_METADATA_MODULE_KEY))
+                            if ((reader2.NodeType == XmlNodeType.Element) && (reader2.Name.ToLower() == "ead"))
                             {
                                 ead_start_found = true;
                             }
@@ -422,7 +423,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
 
 
-                        if (reader2.NodeType == XmlNodeType.EndElement && reader2.Name.Equals(GlobalVar.EAD_METADATA_MODULE_KEY))
+                        if (reader2.NodeType == XmlNodeType.EndElement && reader2.Name.Equals("ead"))
                             break;
                     }
 
