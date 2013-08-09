@@ -450,8 +450,10 @@ function save(id) {
 
         case "overlay":
             //is this the first time saving a changed item?
+            de("first save overlay? " + firstSaveOverlay);
             if (firstSaveOverlay == true) {
                 //determine if there is something to save
+                de("overlay length? " + savingOverlayIndex.length);
                 if (savingOverlayIndex.length) {
                     for (var i = 0; i < savingOverlayIndex.length; i++) {
                         //save to temp xml file
@@ -545,16 +547,23 @@ function clear(id) {
             break;
 
         case "overlay":
-            //delete all incoming overlays
-            clearIncomingOverlays();
-            //show all the incoming overlays
-            displayIncomingOverlays();
-            //redraw list items of overlays
-            initOverlayList();
-            //clear the save cache
-            clearCacheSaveOverlay();
-            //say we are finished
-            displayMessage(L10);
+            if (workingOverlayIndex != null) {
+                //delete all incoming overlays
+                clearIncomingOverlays();
+                //show all the incoming overlays
+                displayIncomingOverlays();
+                //redraw list items of overlays
+                initOverlayList();
+                //clear the save cache
+                clearCacheSaveOverlay();
+                //reset edit mode
+                place("overlay");
+                //say we are finished
+                displayMessage(L10);
+            } else {
+                displayMessage(L46);
+            }
+            
             break;
 
         case "poi":
