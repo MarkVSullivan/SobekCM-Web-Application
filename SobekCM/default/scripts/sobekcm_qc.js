@@ -273,7 +273,8 @@ function PaginationTextChanged(TextboxID)
 	
     var textboxValue = document.getElementById(TextboxID).value;
 	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
-	var onlyNumberEntered = textboxValue.match(/\d+/g);
+    //var onlyNumberEntered = textboxValue.match(/\d+/g);
+    var onlyNumberEntered = ((!isNaN(parseFloat(textboxValue))) && isFinite(textboxValue));
 	if(onlyNumberEntered)
 	  {
 	     document.getElementById(TextboxID).value = 'Page '+ textboxValue;
