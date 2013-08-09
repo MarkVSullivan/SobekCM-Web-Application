@@ -46,7 +46,7 @@ function QC_Change_Sortable_Setting(option, image_location)
 {
   //Assign the sorting option to the global variable. 
     makeSortable = option;
-
+//    alert('option:'+option+' image_location:'+image_location);
   
   //Set the hidden variable value
   var hidden_sortable_option = document.getElementById('QC_sortable_option'); 
@@ -262,7 +262,7 @@ function PaginationTextChanged(TextboxID)
     //Mode '1': Autonumber all the thumbnail pages till the start of the next div
     //Mode '2': No autonumber
 
-	alert('Beginning of function PaginationTextChanged');
+//	alert('Beginning of function PaginationTextChanged');
 	//if there is a value assigned to the global autonumbering mode variable, use the global value insted of this one
 //	if(autonumberingMode>-1)
 //	  Mode = autonumberingMode;
@@ -270,7 +270,7 @@ function PaginationTextChanged(TextboxID)
     if (Mode == 2)
         return;
     
-	alert('Mode:'+Mode);
+//	alert('Mode:'+Mode);
 	
     var textboxValue = document.getElementById(TextboxID).value;
 	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
@@ -287,7 +287,6 @@ function PaginationTextChanged(TextboxID)
 	var numberOnlyLastBox=document.getElementById('Autonumber_number_only');
 	
 //	lastNumber = lastNumber.toUpperCase().trim();
-    var onlyNumberEntered = 
 	var matches = lastNumber.match(/\d+/g);
 	var varRomanMatches = true;
 	var isRomanLower=true;
@@ -336,7 +335,7 @@ function PaginationTextChanged(TextboxID)
 	}//end if
 	else if(varRomanMatches==true)
 	{
-	   //alert('Possible roman numeral detected');
+
 	   var romanToNumberError="No error";
 	   
 	   //Determine whether the roman number is in upper or lower case
