@@ -1132,6 +1132,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars-black.css\" />");
+
+            Output.WriteLine("  <style type=\"text/css\">");
+            Output.WriteLine("    .qcPickMainThumbnailCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/thumbnail_cursor.cur),default;}");
+            Output.WriteLine("    .qcMovePagesCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/move_pages_cursor.cur),default;}");
+            Output.WriteLine("    .qcDeletePagesCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/delete_cursor.cur),default;}");
+            Output.WriteLine("  </style>");
         }
 
         /// <summary> Gets the collection of body attributes to be included 
@@ -1342,42 +1348,46 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode.Mode = Display_Mode_Enum.Item_Display;
             CurrentMode.ViewerCode = viewerCode;
 
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:UploadNewPageImages('" + url + "');return false;\"><img src=\"" + image_location + "qc_addfiles.png" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Upload new page image files\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "ToolboxImages/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Save the resource and apply your changes\" /></a></span>");
+            Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"javascript:UploadNewPageImages('" + url + "');return false;\"><img src=\"" + image_location + "qc/qc_addfiles.png" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Upload new page image files\"/></a></span>");
+            Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "qc/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Save the resource and apply your changes\" /></a></span>");
+
+            Output.WriteLine("<span class=\"sbkQc_MainMenuSeperator\"></span>");
 
             if (thumbnailSize == 1)
-                Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 1;
-                Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
             }
 
             if (thumbnailSize == 2)
-                Output.WriteLine("<span class=\"action-qc-menu-item2\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 2;
-                Output.WriteLine("<span class=\"action-qc-menu-item2\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
             }
 
             if (thumbnailSize == 3)
-                Output.WriteLine("<span class=\"action-qc-menu-item2\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 3;
-                Output.WriteLine("<span class=\"action-qc-menu-item2\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "ToolboxImages/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
             }
 
             //Reset the current mode
             CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
 
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"javascript:ResetCursorToDefault(" + qc_item.Web.Static_PageCount + "); return false;\"><img src=\"" + image_location + "ToolboxImages/Point13.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Standard cursor\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"return mainthumbnailicon_click();\"><img src=\"" + image_location + "ToolboxImages/thumbnail_large.gif" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Choose main Thumbnail\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"return movepagesicon_click();\"><img src=\"" + image_location + "ToolboxImages/DRAG1PG.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Move multiple pages\"/></a></span>");
-            Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"\" onclick=\"return bulkdeleteicon_click();\"><img src=\"" + image_location + "ToolboxImages/TRASH01.ICO" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Delete multiple pages\"/></a></span>");
-         //   Output.WriteLine("<span class=\"action-qc-menu-item\" ><a href=\"" + complete_mets + "\" target=\"_blank\"><img src=\"" + image_location + "ToolboxImages/mets.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"View METS\"></img></a></span>");
+            Output.WriteLine("<span class=\"sbkQc_MainMenuSeperator\"></span>");
+
+            Output.WriteLine("<span id=\"qc_mainmenu_default\" class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"\" onclick=\"return defaulticon_click();\"><img src=\"" + image_location + "qc/Point13.ICO" + "\" alt=\"Missing icon\" title=\"Standard cursor\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_thumb\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return mainthumbnailicon_click();\"><img src=\"" + image_location + "qc/thumbnail_large.gif" + "\" alt=\"Missing icon\" title=\"Choose main Thumbnail\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_move\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return movepagesicon_click();\"><img src=\"" + image_location + "qc/DRAG1PG.ICO" + "\" alt=\"Missing icon\" title=\"Move multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_delete\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return bulkdeleteicon_click();\"><img src=\"" + image_location + "qc/TRASH01.ICO" + "\" alt=\"Missing icon\" title=\"Delete multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
             Output.WriteLine("</div>");
+
             // Add the option to GO TO a certain thumbnail next
             Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\"><span id=\"GoToThumbnailTextSpan\">" + Go_To_Thumbnail + ":</span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" /></div>");
 
@@ -1644,51 +1654,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (page > (qc_item.Web.Static_PageCount - 1) / images_per_page)
 				page = (ushort)((qc_item.Web.Static_PageCount - 1) / images_per_page);
 
-			//Determine the error icon size, main-thumbnail-selected icon size based on the current thumbnail size 
-			int error_icon_height = 20;
-			int error_icon_width = 20;
-			int pick_main_thumbnail_height = 20;
-			int pick_main_thumbnail_width = 20;
-			int arrow_height = 12;
-			int arrow_width = 15;
-			switch (size_of_thumbnails)
-			{
-				case 2:
-					error_icon_height = 25;
-					error_icon_width = 25;
-					pick_main_thumbnail_height = 25;
-					pick_main_thumbnail_width = 25;
-					arrow_height = 17;
-					arrow_width = 20;
-					break;
-
-				case 3:
-					error_icon_height = 30;
-					error_icon_width = 30;
-					pick_main_thumbnail_height = 30;
-					pick_main_thumbnail_width = 30;
-					arrow_height = 22;
-					arrow_width = 25;
-					break;
-
-				case 4:
-					error_icon_height = 30;
-					error_icon_width = 30;
-					pick_main_thumbnail_height = 30;
-					pick_main_thumbnail_width = 30;
-					arrow_height = 22;
-					arrow_width = 25;
-					break;
-
-				default:
-					error_icon_height = 20;
-					error_icon_height = 20;
-					pick_main_thumbnail_height = 20;
-					pick_main_thumbnail_width = 20;
-					arrow_height = 12;
-					arrow_width = 15;
-					break;
-			}
 
 			//Outer div which contains all the thumbnails
             if (( allThumbnailsOuterDiv1Height > 0 ) && ( allThumbnailsOuterDiv1Width > 0 ))
@@ -1724,6 +1689,80 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the collection of pages from the item
 			List<abstract_TreeNode> static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
+
+            // Determine some values including some icon sizes, based on current thumbnail size
+            int error_icon_height = 20;
+            int error_icon_width = 20;
+            int pick_main_thumbnail_height = 20;
+            int pick_main_thumbnail_width = 20;
+            int arrow_height = 12;
+            int arrow_width = 15;
+            string division_text = "Division:";
+            string pagination_text = "Pagination:";
+            string division_name_text = "Name:";
+            string division_tooltip_text = "Division";
+            string division_checkbox_tooltip = "Check for the beginning of a new division type";
+            string division_box;
+            string pagination_box;
+            string icon_class;
+            switch (size_of_thumbnails)
+            {
+                case 2:
+                    error_icon_height = 25;
+					error_icon_width = 25;
+					pick_main_thumbnail_height = 25;
+					pick_main_thumbnail_width = 25;
+					arrow_height = 17;
+					arrow_width = 20;
+                    division_box = "sbkQc_DivisionBox_Medium";
+                    pagination_box = "sbkQc_PageBox_Medium";
+                    icon_class = "sbkQc_PageOptionsIcon_Medium";
+                    break;
+
+                case 3:
+                    error_icon_height = 30;
+					error_icon_width = 30;
+					pick_main_thumbnail_height = 30;
+					pick_main_thumbnail_width = 30;
+					arrow_height = 22;
+					arrow_width = 25;
+                    division_box = "sbkQc_DivisionBox_Large";
+                    pagination_box = "sbkQc_PageBox_Large";
+                    icon_class = "sbkQc_PageOptionsIcon_Large";
+                    break;
+
+                case 4:
+                    error_icon_height = 30;
+					error_icon_width = 30;
+					pick_main_thumbnail_height = 30;
+					pick_main_thumbnail_width = 30;
+					arrow_height = 22;
+					arrow_width = 25;
+                    division_box = "sbkQc_DivisionBox_Full";
+                    pagination_box = "sbkQc_PageBox_Full";
+                    icon_class = "sbkQc_PageOptionsIcon_Full";
+                    break;
+
+                default:
+                    error_icon_height = 20;
+					error_icon_height = 20;
+					pick_main_thumbnail_height = 20;
+					pick_main_thumbnail_width = 20;
+					arrow_height = 12;
+					arrow_width = 15;
+                    division_box = "sbkQc_DivisionBox_Small";
+                    pagination_box = "sbkQc_PageBox_Small";
+                    icon_class = "sbkQc_PageOptionsIcon_Small";
+                    division_text = "D:";
+                    pagination_text = "Page:";
+                    break;
+            }
+
+            // Set some mouse-over text
+            string info_text = "View technical image information";
+            string delete_text = "Delete this page and related files";
+            string view_text = "Open this page in a new window";
+
 
 			// Step through each page in the item
 			Division_TreeNode lastParent = null;
@@ -1793,15 +1832,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(this.id);\"/>");
 				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
-				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT02.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
+				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT04.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
                     Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
 				    if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + ";width:" + pick_main_thumbnail_width + ";visibility:visible;\" />");
+                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                     else
-                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + ";width:" + pick_main_thumbnail_width + ";visibility:hidden;\" />");
+                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -1810,45 +1849,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("      <td colspan=\"2\">");
 
 
-					// Write the image and determine some values, based on current thumbnail size
-					string division_text = "Division:";
-					string pagination_text = "Pagination:";
-					string division_name_text = "Name:";
-				    string division_tooltip_text = "Division";
-				    string division_checkbox_tooltip = "Check for the beginning of a new division type";
-					string division_box;
-					string pagination_box;
-				    string icon_class;
+					// Write the image, based on current thumbnail size
 					switch (size_of_thumbnails)
 					{
 						case 2:
                             Output.Write("        <img id=\"child" + image_url + "\"  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Medium\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
-                            division_box = "sbkQc_DivisionBox_Medium";
-                            pagination_box = "sbkQc_PageBox_Medium";
-					        icon_class = "sbkQc_PageOptionsIcon_Medium";
 							break;
 
 						case 3:
                             Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Large\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
-                            division_box = "sbkQc_DivisionBox_Large";
-                            pagination_box = "sbkQc_PageBox_Large";
-                            icon_class = "sbkQc_PageOptionsIcon_Large";
 							break;
 
 						case 4:
                             Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Full\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
-                            division_box = "sbkQc_DivisionBox_Full";
-                            pagination_box = "sbkQc_PageBox_Full";
-                            icon_class = "sbkQc_PageOptionsIcon_Full";
 							break;
 
 						default:
                             Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
-                            division_box = "sbkQc_DivisionBox_Small";
-                            pagination_box = "sbkQc_PageBox_Small";
-                            icon_class = "sbkQc_PageOptionsIcon_Small";
-							division_text = "D:";
-							pagination_text = "Page:";
 							break;
 					}
 
@@ -1919,7 +1936,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
 
-
 					//Add the textbox for named divisions
                     if (showTextDivName)
                         Output.WriteLine("    <tr id=\"divNameTableRow" + page_index + "\" style=\"visibility:visible;\">");
@@ -1937,15 +1953,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
                     Output.WriteLine("    </tr>");
 
-
-
 					//Add the span with the on-hover-options for the page thumbnail
 				    Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td colspan=\"2\">");
 				    Output.WriteLine("        <span id=\"qcPageOptions" + page_index + "\" class=\"sbkQc_PageOptionsSpan\">");
-                    Output.WriteLine("          <img src=\""+CurrentMode.Base_URL+"default/images/ToolboxImages/Main_Information.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
-                    Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\"><img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/View.ico\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
-                    Output.WriteLine("          <img onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
+                    Output.WriteLine("          <img title=\"" + info_text + "\" src=\""+CurrentMode.Base_URL+"default/images/qc/Main_Information.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
+                    Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\" title=\"" + view_text + "\" ><img src=\"" + CurrentMode.Base_URL + "default/images/qc/View.ico\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <img title=\"" + delete_text + "\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/qc/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
 
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
@@ -2016,8 +2030,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//Add the Cancel & Move buttons
 			Output.WriteLine("    <tr><td colspan=\"3\" style=\"text-align:center\">");
-            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"qc_movebuttons\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
-            Output.WriteLine("      <button title=\"Cancel this move\" class=\"qc_movebuttons\" onclick=\"return cancel_move_pages();\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkQc_MoveButtons\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkQc_MoveButtons\" onclick=\"return cancel_move_pages();\">CANCEL</button>&nbsp;<br />");
 			Output.WriteLine("    </td></tr>");
 
 			// Finish the popup form
@@ -2047,8 +2061,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Start inner table
             Output.WriteLine("<div id=\"sbkQc_BottomRow\">");
 			Output.WriteLine("<span id=\"sbkQC_BottomRowTextSpan\">Comments: </span><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
-			Output.WriteLine("<button type=\"button\" class=\"qc_mainbuttons\" onclick=\"save_submit_form();\">Complete</button>");
-			Output.WriteLine("<button type=\"button\" class=\"qc_mainbuttons\" onclick=\"behaviors_cancel_form();\">Cancel</button>");
+            Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"save_submit_form();\">Complete</button>");
+            Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"behaviors_cancel_form();\">Cancel</button>");
 			//Close inner table
 			Output.WriteLine("</div>");
 			Output.WriteLine("</td></tr>");

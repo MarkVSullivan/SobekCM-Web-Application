@@ -595,12 +595,14 @@ function mainthumbnailicon_click()
 	//If this cursor is already set, change back to default
 	if(cursorMode == 2) {
 	    ResetCursorToDefault();
+	    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 	}
 	else
 	{
 		//Remove the default cursor style class, and any other custom class first before setting this one, 
 		//otherwise it will override the custom cursor class
 	    ResetCursorToDefault();
+	    $('#qc_mainmenu_thumb').addClass('sbkQc_MainMenuIconCurrent');
 	    
 	    // Step through each span
 	    for (var j = 0; j < spanArray.length; j++) {
@@ -618,18 +620,20 @@ function mainthumbnailicon_click()
     return false;
 }
 
+function defaulticon_click() {
+    ResetCursorToDefault();
+    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
+    return false;
+}
+
 function ResetCursorToDefault()
 {
-	////Remove custom cursor classes if any
-	//$('body').removeClass('qcPickMainThumbnailCursor');
-	//$('body').removeClass('qcMovePagesCursor');
-	//$('body').removeClass('qcDeletePagesCursor');
-
-	////Reset to default
-	//$('body').addClass('qcResetMouseCursorToDefault');
-    
     // Set flag to normal cursor mode
-	cursorMode = 1;
+    cursorMode = 1;
+    $('#qc_mainmenu_default').removeClass('sbkQc_MainMenuIconCurrent');
+    $('#qc_mainmenu_thumb').removeClass('sbkQc_MainMenuIconCurrent');
+    $('#qc_mainmenu_move').removeClass('sbkQc_MainMenuIconCurrent');
+    $('#qc_mainmenu_delete').removeClass('sbkQc_MainMenuIconCurrent');
     
     // Step through each span
 	for (var j = 0; j < spanArray.length; j++)
@@ -696,6 +700,7 @@ function movepagesicon_click()
         
         // Set flag to multiple move cursor mode
         cursorMode = 3;
+        $('#qc_mainmenu_move').addClass('sbkQc_MainMenuIconCurrent');
 
         //Unhide all the checkboxes
         for (var j = 0; j < spanArray.length; j++) {
@@ -731,6 +736,7 @@ function bulkdeleteicon_click()
         
         // Set flag to multiple delete cursor mode
         cursorMode = 4;
+        $('#qc_mainmenu_delete').addClass('sbkQc_MainMenuIconCurrent');
 
         //Unhide all the checkboxes
         for (var j = 0; j < spanArray.length; j++) {
@@ -1106,6 +1112,7 @@ function cancel_move_pages() {
     }
 
     ResetCursorToDefault();
+    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
     // Reset and hide all the checkboxes as well
     for (var j = 0; j < spanArray.length; j++) {
@@ -1194,6 +1201,7 @@ function DeleteSelectedPages() {
 
     if (checked_found == 0) {
         ResetCursorToDefault();
+        $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
         // Reset and hide all the checkboxes as well
         for (var j = 0; j < spanArray.length; j++) {
@@ -1211,6 +1219,7 @@ function DeleteSelectedPages() {
             document.itemNavForm.submit();
         } else {
             ResetCursorToDefault();
+            $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
             // Reset and hide all the checkboxes as well
             for (var j = 0; j < spanArray.length; j++) {
@@ -1292,6 +1301,7 @@ function qcspan_onclick(spanid) {
 
         // Reset the cursor
         ResetCursorToDefault();
+        $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
         // Ensure no other spans are set
         for (var i = 0; i < spanArray.length; i++) {
