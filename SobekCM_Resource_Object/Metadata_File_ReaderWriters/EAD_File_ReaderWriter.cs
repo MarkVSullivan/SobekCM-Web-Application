@@ -70,7 +70,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             if (Return_Package.BibID.Length == 0)
                 Return_Package.BibID = eadFileInfo.Name.Replace(".xml", "");
             Return_Package.VID = "00001";
-            Return_Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
+            Return_Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
             Return_Package.Bib_Info.Type.Collection = true;
 
             return returnValue;
@@ -97,7 +97,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Set a couple defaults first
-            Return_Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
+            Return_Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
             Return_Package.Bib_Info.Type.Collection = true;
             Error_Message = String.Empty;
 

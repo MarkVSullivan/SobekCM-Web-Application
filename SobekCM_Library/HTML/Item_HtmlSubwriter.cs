@@ -1122,7 +1122,7 @@ namespace SobekCM.Library.HTML
                     // Add the item level views
                     foreach (View_Object thisView in currentItem.Behaviors.Views)
                     {
-                        if ((!itemRestrictedFromUserByIp) || (thisView.View_Type == View_Enum.CITATION) ||
+                        if (((!itemRestrictedFromUserByIp) && ( !currentItem.Behaviors.Dark_Flag )) || (thisView.View_Type == View_Enum.CITATION) ||
                             (thisView.View_Type == View_Enum.ALL_VOLUMES) ||
                             (thisView.View_Type == View_Enum.RELATED_IMAGES))
                         {
@@ -1131,18 +1131,24 @@ namespace SobekCM.Library.HTML
                             {
                                 string viewerCode = currentMode.ViewerCode;
                                 currentMode.ViewerCode = "citation";
+                                if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+                                    currentMode.ViewerCode = "description";
                                 if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
-                                    (viewerCode == "usage"))
+                                    (viewerCode == "usage") || (viewerCode == "description"))
                                 {
-                                    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Citation</a>");
+                                    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
                                 }
                                 else
                                 {
-                                    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Citation</a>");
+                                    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
                                 }
                                 Output.WriteLine("<ul>");
 
-                                Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
+                                if ( currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD ) 
+                                    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Archival Description</a></li>");
+                                else
+                                    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
+          
 
                                 currentMode.ViewerCode = "marc";
                                 Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">MARC View</a></li>");
@@ -1446,9 +1452,9 @@ namespace SobekCM.Library.HTML
                             description_link = currentMode.Redirect_URL("description");
 
                         // Add the TOC as a floating DIV
-                        Output.WriteLine("      <div class=\"floating-toc\">");
-                        Output.WriteLine("      <ul class=\"SobekNavBarMenu\">");
-                        Output.WriteLine("        <li class=\"SobekNavBarHeader\">TABLE OF CONTENTS &nbsp; &nbsp; &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
+                        Output.WriteLine("      <div id=\"sbkEad_FloatingTOC\">");
+                        Output.WriteLine("      <ul class=\"sbkEad_TocMenu\">");
+                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
 
                         foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
                         {

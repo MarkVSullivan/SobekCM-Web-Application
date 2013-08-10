@@ -1071,13 +1071,6 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
     margin-right: 15px;
 }
 
-div.floating-toc
-{
-    position:fixed;
-    z-index:100;
-    width: 194px;
-}
-
 .calendar_button
 {
     margin-top: 4px;

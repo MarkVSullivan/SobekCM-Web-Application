@@ -80,13 +80,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Build the value
             StringBuilder builder = new StringBuilder(15000);
-            builder.AppendLine("          <td align=\"left\"><span class=\"SobekViewerTitle\">Container List</span></td>");
+            builder.AppendLine("          <td><div id=\"sbkEad_ViewerTitle\">Container List</div></td>");
             builder.AppendLine("        </tr>");
             builder.AppendLine("        <tr>");
-            builder.AppendLine("          <td>");
-            builder.AppendLine("            <div class=\"SobekCitation\">");
-            builder.AppendLine("              <br />");
-            builder.AppendLine("              <blockquote>" );
+            builder.AppendLine("          <td id=\"sbkEad_MainArea\">");
 
 
             // Step through the top level first
@@ -189,10 +186,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Put some spaces for now
                 builder.AppendLine("<br /><br />");                
             }
-
-            builder.AppendLine("              </blockquote>" );
-            builder.AppendLine("              <br />");
             builder.AppendLine("            </div>");
+            builder.AppendLine("          </td>");
 
             // Add the HTML for the image
             Literal mainLiteral = new Literal {Text = builder.ToString()};

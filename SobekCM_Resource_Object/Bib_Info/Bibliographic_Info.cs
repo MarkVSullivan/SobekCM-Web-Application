@@ -1352,6 +1352,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                             sobekcm_genre = thisGenre.Genre_Term;
 
                             // Special code here looking for project
+                            if (String.Compare(sobekcm_genre, "ead", true) == 0)
+                                return TypeOfResource_SobekCM_Enum.EAD;
+
+                            // Special code here looking for project
                             if (String.Compare(sobekcm_genre, "project", true) == 0)
                                 return TypeOfResource_SobekCM_Enum.Project;
 
@@ -1465,6 +1469,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                         type.MODS_Type = TypeOfResource_MODS_Enum.Text;
                         break;
 
+                    case TypeOfResource_SobekCM_Enum.EAD:
+                        type.MODS_Type = TypeOfResource_MODS_Enum.Mixed_Material;
+                        Add_Genre("ead", "sobekcm");
+                        break;
+
                     case TypeOfResource_SobekCM_Enum.Learning_Object:
                         type.MODS_Type = TypeOfResource_MODS_Enum.Mixed_Material;
                         Add_Genre("learning object", "sobekcm");
@@ -1539,6 +1548,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case TypeOfResource_SobekCM_Enum.Book:
                         return "Book";
 
+                    case TypeOfResource_SobekCM_Enum.EAD:
+                        return "Finding Guide (EAD)";
+
                     case TypeOfResource_SobekCM_Enum.Learning_Object:
                         return "Learning Object";
 
@@ -1605,6 +1617,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case "BOOK":
                     case "TEXT":
                         SobekCM_Type = TypeOfResource_SobekCM_Enum.Book;
+                        return;
+
+                    case "EAD":
+                    case "FINDING GUIDE":
+                        SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
                         return;
 
                     case "LEARNING OBJECT":
