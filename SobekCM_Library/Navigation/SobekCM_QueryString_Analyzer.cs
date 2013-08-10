@@ -136,6 +136,39 @@ namespace SobekCM.Library.Navigation
             {
                 navigator.Fragment = QueryString["fragment"];
             }
+
+            // Get the valid URL Portal
+            navigator.Default_Aggregation = "all";
+            Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);
+            navigator.SobekCM_Instance_Abbreviation = urlPortal.Abbreviation;
+            navigator.SobekCM_Instance_Name = urlPortal.Name;
+            navigator.Portal_PURL = urlPortal.Base_PURL;
+            if (urlPortal.Default_Aggregation.Length > 0)
+            {
+                navigator.Default_Aggregation = urlPortal.Default_Aggregation;
+                navigator.Aggregation = urlPortal.Default_Aggregation;
+            }
+            if (urlPortal.Default_Web_Skin.Length > 0)
+            {
+                navigator.Default_Skin = urlPortal.Default_Web_Skin;
+                navigator.Skin = urlPortal.Default_Web_Skin;
+                navigator.Skin_in_URL = false;
+            }
+
+            // Collect the interface string
+            if (QueryString["n"] != null)
+            {
+                string currSkin = HttpUtility.HtmlEncode(QueryString["n"].ToLower().Replace("'", ""));
+
+                // Save the interface
+                if (currSkin.Length > 0)
+                {
+                    if (currSkin.IndexOf(",") > 0)
+                        currSkin = currSkin.Substring(0, currSkin.IndexOf(","));
+                    navigator.Skin = currSkin.ToLower();
+                    navigator.Skin_in_URL = true;
+                }
+            }
 			
 			// Parse URL request different now, depending on if this is a legacy URL type or the new URL type
 			navigator.Mode = Display_Mode_Enum.None;
@@ -160,38 +193,6 @@ namespace SobekCM.Library.Navigation
 				return;
 			}
 
-			// Get the valid URL Portal
-			navigator.Default_Aggregation = "all";
-			Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);
-			navigator.SobekCM_Instance_Abbreviation = urlPortal.Abbreviation;
-			navigator.SobekCM_Instance_Name = urlPortal.Name;
-			navigator.Portal_PURL = urlPortal.Base_PURL;
-			if (urlPortal.Default_Aggregation.Length > 0)
-			{
-				navigator.Default_Aggregation = urlPortal.Default_Aggregation;
-				navigator.Aggregation = urlPortal.Default_Aggregation;
-			}
-			if (urlPortal.Default_Web_Skin.Length > 0)
-			{
-				navigator.Default_Skin = urlPortal.Default_Web_Skin;
-				navigator.Skin = urlPortal.Default_Web_Skin;
-				navigator.Skin_in_URL = false;
-			}
-
-			// Collect the interface string
-			if (QueryString["n"] != null)
-			{
-				string currSkin = HttpUtility.HtmlEncode(QueryString["n"].ToLower().Replace("'", ""));
-
-				// Save the interface
-				if (currSkin.Length > 0)
-				{
-					if (currSkin.IndexOf(",") > 0)
-						currSkin = currSkin.Substring(0, currSkin.IndexOf(","));
-					navigator.Skin = currSkin.ToLower();
-					navigator.Skin_in_URL = true;
-				}
-			}
 
 			// Set the default mode
 			navigator.Mode = Display_Mode_Enum.Aggregation_Home;
