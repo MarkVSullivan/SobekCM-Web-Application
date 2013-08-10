@@ -162,7 +162,9 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.EAD_DESCRIPTION:
-                    returnVal.Add(HTML_Helper(Skin_Code, "description", Translator.Get_Translation("DESCRIPTION", Current_Mode.Language), Current_Mode));
+                    // Return nothing, this is currently written when writing the CITATION, for 
+                    // all EAD type items.
+                    //returnVal.Add(HTML_Helper(Skin_Code, "description", Translator.Get_Translation("DESCRIPTION", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.PAGE_TURNER:

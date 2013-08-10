@@ -160,6 +160,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 /** EMBEDDEDVIDEO_ITEMVIEWER */
 #sbkEmv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
 #sbkEmv_MainArea { text-align: center; background-color: #333333; }
+#sbkEmv_MainArea iframe { display: block;text-align: center; margin: 0 auto;}
 
 /** FLASH_ITEMVIEWER */
 #sbkFiv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
@@ -234,5 +235,20 @@ input.sbkTsv_SearchBox_focused  {  color: #0000a8;  width: 220px;  background-co
 .sbkTrk_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
 .sbkTrk_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em; }
 .sbkTrk_ViewSelectRow { }
+
+/* EAD-SPECIFIC ITEM STYLES ( EAD_DESCRIPTION_ITEMVIEWER, EAD_CONTAINER_LIST_ITEMVIEWER, EAD TOC) */
+#sbkEad_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+#sbkEad_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em;padding: 25px; margin: 0;}
+#sbkEad_FloatingTOC { position:fixed; z-index:100; width: 184px; padding-bottom: 100px; }
+.sbkEad_TocHeader { padding: 5px 10px 5px 5px; FONT-WEIGHT: bold; FONT-SIZE: 0.9em; COLOR: White; FONT-FAMILY: Arial, Helvetica, sans-serif; WHITE-SPACE: nowrap; LETTER-SPACING: 1px; vertical-align: text-top; }
+.sbkEad_TocHeader A:link { display:inline; background: #333333;  }
+.sbkEad_TocHeader A:hover { display:inline; background: #333333; }
+.sbkEad_TocHeader A:visited { display:inline; background: #333333;  }
+UL.sbkEad_TocMenu { padding: 0;margin: 0; WIDTH: 100%; WHITE-SPACE: nowrap; LIST-STYLE-TYPE: none; }
+UL.sbkEad_TocMenu LI A { PADDING-BOTTOM: 2px; PADDING-TOP: 4px; DISPLAY: block; FONT-WEIGHT: bold; FONT-SIZE: 0.85em; WIDTH: 100%; TEXT-INDENT: 15px; FONT-FAMILY: Arial, Helvetica, sans-serif; WHITE-SPACE: nowrap;TEXT-DECORATION: none;color: white;background-color: #555555; }
+UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
+
+
+
 
 .fadeEffect { background-color: #6f6b06; border-radius: 5px; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white;  }
