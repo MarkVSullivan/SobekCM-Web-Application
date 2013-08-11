@@ -3,7 +3,7 @@ var spanArray;
 var autonumberingMode=-1;
 var makeSortable = 3;
 var cursorMode = 1;
-
+var lastSelected = -1;
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -129,7 +129,7 @@ function Configure_QC( MaxPageCount ) {
     
     autonumberingMode = document.getElementById("QC_autonumber_option").value;
 	makeSortable = document.getElementById("QC_sortable_option").value;
-	
+
 }
 
 
@@ -649,9 +649,11 @@ function ResetCursorToDefault()
 	    
 	    // Reset each checkbox
 	    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-	    if ( checkbox.checked == true )
+	    if (checkbox.checked == true) {
 	        checkbox.checked = false;
-	    
+	        span.removeClass('sbkQc_SpanSelected');
+	    }
+
 	    checkbox.style.visibility = 'hidden';
 	    
 	    //Hide all the left/right arrows for moving pages
@@ -661,8 +663,8 @@ function ResetCursorToDefault()
 
 	   
 	//Also re-hide the button for moving multiple pages in case previously made visible
-	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-	document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
+	document.getElementById('divMoveOnScroll').style.visibility = 'hidden';
+	document.getElementById('divDeleteMoveOnScroll').style.visibility = 'hidden';
 }
 
 //Change cursor: move pages
@@ -702,11 +704,11 @@ function movepagesicon_click()
         cursorMode = 3;
         $('#qc_mainmenu_move').addClass('sbkQc_MainMenuIconCurrent');
 
-        //Unhide all the checkboxes
-        for (var j = 0; j < spanArray.length; j++) {
-            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-            checkbox.style.visibility = 'visible';
-        }
+        ////Unhide all the checkboxes
+        //for (var j = 0; j < spanArray.length; j++) {
+        //    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        //    checkbox.style.visibility = 'visible';
+        //}
     }
     return false;
 }
@@ -738,11 +740,11 @@ function bulkdeleteicon_click()
         cursorMode = 4;
         $('#qc_mainmenu_delete').addClass('sbkQc_MainMenuIconCurrent');
 
-        //Unhide all the checkboxes
-        for (var j = 0; j < spanArray.length; j++) {
-            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-            checkbox.style.visibility = 'visible';
-        }
+        ////Unhide all the checkboxes
+        //for (var j = 0; j < spanArray.length; j++) {
+        //    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        //    checkbox.style.visibility = 'visible';
+        //}
     }
 
     return false;
@@ -984,54 +986,68 @@ function qc_auto_save()
 
 
 //When any 'bulk move/delete page' checkbox is checked/unchecked
-function qccheckbox_onchange(chkBoxID)
+function qccheckbox_onchange(event, chkBoxID)
 {
-    var checked = false;
-    document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
-    document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-    
-    //Hide all the left/right arrows for moving pages
-    for (var j = 0; j < spanArray.length; j++) {
-        var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
-        arrowSpan.style.visibility = 'hidden';
-    }
-    
-    //If a checkbox has been checked, and the move_thumbnails cursor is currently set
-    if (document.getElementById(chkBoxID).checked == true && cursorMode == 3) {
-        document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScroll';
-        for (var j = 0; j < spanArray.length; j++) {
-            var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
-            arrowSpan.style.visibility = 'visible';
-        }
-        
-    } else if (document.getElementById(chkBoxID).checked == true && cursorMode == 4) {
-        document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButton';
-
+    // This should only happen for cursor modes 3 or 4
+    if ((cursorMode != 3) && (cursorMode != 4))
+        return;
+       
+    // Set the background
+    if (document.getElementById(chkBoxID).checked == true) {
+        $('#' + chkBoxID.replace('chkMoveThumbnail', 'span')).addClass('sbkQc_SpanSelected');
     } else {
-        //Check if there is any other checked checkbox on the screen
+        $('#' + chkBoxID.replace('chkMoveThumbnail', 'span')).removeClass('sbkQc_SpanSelected');
+    }
+
+    // See if any checkboxes remain checked
+    var checked = false;
+    if (document.getElementById(chkBoxID).checked == true)
+        checked = true;
+    else {
+        // This isn't checked anymore, are any others?
         for (var i = 0; i < spanArray.length; i++) {
             if (document.getElementById('chkMoveThumbnail' + i).checked == true) {
-                    checked = true;
-                    break;
+                checked = true;
+                break;
             }
         }
+    }
 
-        if (cursorMode == 3)
-        {
-            document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScroll';
-            
-            //Unhide the left/right arrows for moving pages
+    // If none checked, hide the buttons
+    if (!checked) {
+        document.getElementById('divMoveOnScroll').style.visibility = 'hidden';
+        document.getElementById('divDeleteMoveOnScroll').style.visibility = 'hidden';
+
+        //Hide all the left/right arrows for moving pages
+        for (var j = 0; j < spanArray.length; j++) {
+            var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
+            arrowSpan.style.visibility = 'hidden';
+        }
+    } else {
+        
+        //If a checkbox has been checked display the necessary controls
+        
+        // BULK MOVE MODE
+        if (cursorMode == 3) {
+            document.getElementById('divMoveOnScroll').style.visibility = 'visible';
             for (var j = 0; j < spanArray.length; j++) {
                 var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
                 arrowSpan.style.visibility = 'visible';
             }
-
-        } else if (checked == true && cursorMode == 4) {
-            document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButton';
-        } else {
-            document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-            document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
         }
+        
+        // BULK DELETE MODE
+        if (cursorMode == 4) {
+            document.getElementById('divDeleteMoveOnScroll').style.visibility = 'visible';
+            
+            }
+    }
+    
+    // Stop the event propogation
+    var evt = event ? event : window.event;
+    if (evt != null) {
+        if (evt.stopPropagation) evt.stopPropagation();
+        if (evt.cancelBubble != null) evt.cancelBubble = true;
     }
 }
 
@@ -1119,7 +1135,7 @@ function cancel_move_pages() {
         var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
         if ( checkbox.checked == true )
             checkbox.checked = false;
-        checkbox.style.visibility = 'hidden';
+        //checkbox.style.visibility = 'hidden';
         
         document.getElementById('movePageArrows' + j).style.visibility = 'hidden';
     }
@@ -1208,7 +1224,7 @@ function DeleteSelectedPages() {
             var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
             if ( checkbox.checked == true )
                 checkbox.checked = false;
-            checkbox.style.visibility = 'hidden';
+            //checkbox.style.visibility = 'hidden';
         }
 
     } else {
@@ -1224,10 +1240,12 @@ function DeleteSelectedPages() {
             // Reset and hide all the checkboxes as well
             for (var j = 0; j < spanArray.length; j++) {
                 var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-                if ( checkbox.checked == true )
+                if (checkbox.checked == true) {
                     checkbox.checked = false;
-                
-                checkbox.style.visibility = 'hidden';
+                    $('#' + spanArray[j]).removeClass('sbkQc_SpanSelected');
+                }
+
+                //checkbox.style.visibility = 'hidden';
             }
         }
     }
@@ -1289,7 +1307,8 @@ function qcspan_mouseout(spanid) {
     return false;
 }
 
-function qcspan_onclick(spanid) {
+function qcspan_onclick(event, spanid) {
+   
     // Get the page index
     var pageIndex = spanid.replace('span', '');
     
@@ -1320,6 +1339,31 @@ function qcspan_onclick(spanid) {
 
         var checkbox = document.getElementById('chkMoveThumbnail' + pageIndex);
         checkbox.checked = !checkbox.checked;
-        qccheckbox_onchange('chkMoveThumbnail' + pageIndex);
+        if (event.shiftKey) {
+            if ((checkbox.checked) && (lastSelected >= 0)) {
+
+
+                var thisIndex = spanArray.indexOf(spanid);
+
+                var start = Math.min(thisIndex, lastSelected);
+                var end = Math.max(thisIndex, lastSelected);
+
+                for (var i = start; i < end; i++) {
+                    document.getElementById(spanArray[i].replace('span', 'chkMoveThumbnail')).checked = true;
+                    $('#' + spanArray[i]).addClass('sbkQc_SpanSelected');
+                }
+            }
+        } else {
+            if (checkbox.checked) {
+                lastSelected = spanArray.indexOf(spanid);
+            } else {
+                lastSelected = -1;
+            }
+        }
+
+        // Always fire this event, for some more global changes
+        qccheckbox_onchange(null, 'chkMoveThumbnail' + pageIndex);
     }
 }
+
+
