@@ -134,8 +134,10 @@
 .qcmove_popup_div { position:fixed; background-color:#eeeeee; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
 
 .btnMovePages {
-	background-color:#ffab23;
+	background-color:Yellow;
     display:inline-block;
+    border-radius: 25px;
+    text-transform: uppercase;
 	color:#333333;
 	font-family:Arial;
 	font-size:15px;
