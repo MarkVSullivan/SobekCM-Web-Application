@@ -421,10 +421,10 @@ function geolocate(id) {
 function save(id) {
     switch (id) {
         case "item":
-            //is this the first time saving a changed item?
-            if (firstSaveItem == true) {
-                //determine if there is something to save
-                if (savingMarkerCenter != null) {
+            //determine if there is something to save
+            if (savingMarkerCenter != null) {
+                //is this the first time saving a changed item?
+                if (firstSaveItem == true) {
                     de("saving location: " + savingMarkerCenter);
                     //save to temp xml file
                     createSavedItem(savingMarkerCenter);
@@ -435,17 +435,18 @@ function save(id) {
                     //change save title to apply
                     document.getElementById("content_toolbox_button_saveItem").title = L35;
                 } else {
-                    displayMessage(L_NotSaved);
+                    //apply the changes
+                    de("Applying Changes...");
+                    //currently doesnt do anything
+
+                    //reset apply button to save
+                    document.getElementById("content_toolbox_button_saveItem").value = L37;
+                    document.getElementById("content_toolbox_button_saveitem").title = L38;
                 }
             } else {
-                //apply the changes
-                de("Applying Changes...");
-                //currently doesnt do anything
-
-                //reset apply button to save
-                document.getElementById("content_toolbox_button_saveItem").value = L37;
-                document.getElementById("content_toolbox_button_saveitem").title = L38;
+                displayMessage(L_NotSaved);
             }
+            
             break;
 
         case "overlay":

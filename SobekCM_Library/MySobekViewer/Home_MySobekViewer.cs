@@ -128,7 +128,7 @@ namespace SobekCM.Library.MySobekViewer
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             currentMode.My_Sobek_SubMode = String.Empty;
             currentMode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-            Output.WriteLine("<tr valign=\"middle\" height=\"40px\" ><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "bookshelf.jpg\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View and organize my bookshelves</a></td></tr>");
+            Output.WriteLine("<tr valign=\"middle\" height=\"40px\" ><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "bookshelf.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View and organize my bookshelves</a></td></tr>");
 
             // Add a link to view all saved searches
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;

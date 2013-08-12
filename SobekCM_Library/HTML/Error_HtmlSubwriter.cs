@@ -27,6 +27,10 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Error_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
+            // Start the page container
+            Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<br />");
+
             string url_options = currentMode.URL_Options();
             if (url_options.Length > 0)
                 url_options = "?" + url_options;
@@ -67,6 +71,10 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<br /><br />");
                 Output.WriteLine("</div>");
             }
+
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
             return true;
         }

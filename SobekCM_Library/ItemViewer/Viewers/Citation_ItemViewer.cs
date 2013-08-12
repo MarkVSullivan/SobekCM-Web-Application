@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -483,15 +484,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		protected string Metadata_String( Custom_Tracer Tracer )
 		{
 			// Get the links for the METS and GSA
-			string greenstoneLocation = CurrentItem.Web.Source_URL + "/";
-			string complete_mets = greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
-		    string marc_xml = greenstoneLocation + "marc.xml";
+			string resourceURL = CurrentItem.Web.Source_URL + "/";
+            string complete_mets = resourceURL + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
+            string marc_xml = resourceURL + "marc.xml";
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
             {
-                complete_mets = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
-                marc_xml = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/marc.xml";
+                resourceURL = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/";
+                complete_mets = resourceURL + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
+                marc_xml = resourceURL + "marc.xml";
             }
 
 
@@ -501,6 +503,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             builder.AppendLine("<blockquote>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</blockquote>");
             builder.AppendLine("<br />");
+
+            if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+            {
+                string ead_file = String.Empty;
+                List<abstract_TreeNode> downloadPages = CurrentItem.Divisions.Download_Tree.Pages_PreOrder;
+                foreach (Page_TreeNode downloadPage in downloadPages)
+                {
+                    // Was this an EAD page?
+                    if ((downloadPage.Label == "EAD") && (downloadPage.Files.Count == 1))
+                    {
+                        if (downloadPage.Files[0].System_Name.ToLower().IndexOf(".xml") > 0)
+                        {
+                            ead_file = downloadPage.Files[0].System_Name;
+                            break;
+                        }
+                    }
+                }
+
+                if (ead_file.Length > 0)
+                {
+                    builder.AppendLine("<div id=\"sbkCiv_EadDownload\" class=\"sbCiv_DownloadSection\">");
+                    builder.AppendLine("  <a href=\"" + resourceURL + ead_file + "\" target=\"_blank\">View Finding Aid (EAD)</a>");
+                    builder.AppendLine("  <p>This archival collection is described with an electronic finding aid.   This metadata file contains all of the archival description and container list for this archival material.  This file follows the established <a href=\"http://www.loc.gov/ead/\">Encoded Archival Description</a> (EAD) standard.</p>");
+                    builder.AppendLine("</div>");
+                }
+            }
 
 		    builder.AppendLine("<div id=\"sbkCiv_MetsDownload\" class=\"sbCiv_DownloadSection\">");
             builder.AppendLine("  <a href=\"" + complete_mets + "\" target=\"_blank\">View Complete METS/MODS</a>");
@@ -538,7 +566,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add the HTML for this
                 builder.AppendLine("<div id=\"sbkCiv_TeiDownload\" class=\"sbCiv_DownloadSection\">");
-                builder.AppendLine("  <a href=\"" + greenstoneLocation + CurrentItem.BibID + "_" + CurrentItem.VID + ".tei.xml\" target=\"_blank\">View TEI/Text File</a>");
+                builder.AppendLine("  <a href=\"" + resourceURL + CurrentItem.BibID + "_" + CurrentItem.VID + ".tei.xml\" target=\"_blank\">View TEI/Text File</a>");
                 builder.AppendLine("  <p>The full-text of this item is also available in the established standard <a href=\"http://www.tei-c.org/index.xml\">Text Encoding Initiative</a> (TEI) downloadable file.</p>");
                 builder.AppendLine("</div>");
 
