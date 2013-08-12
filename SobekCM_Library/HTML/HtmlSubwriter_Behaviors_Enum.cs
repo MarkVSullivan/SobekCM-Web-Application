@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SobekCM.Library.HTML
 {
+    /// <summary> Enumeration is used to allow individual HtmlSubwriters 
+    /// (and viewers under those subwriters) to bubble up specific behaviors
+    /// to the main HTMl writer and specific subwriter </summary>
     public enum HtmlSubwriter_Behaviors_Enum : byte
     {
         Suppress_Internal_Header,
@@ -23,9 +26,8 @@ namespace SobekCM.Library.HTML
 
         Item_Subwriter_Suppress_Left_Navigation_Bar,
 
-        Item_Subwriter_Requires_Left_Navigation_Bar
+        Item_Subwriter_Requires_Left_Navigation_Bar,
 
-
-
+        MySobek_Subwriter_Mimic_Item_Subwriter
     }
 }

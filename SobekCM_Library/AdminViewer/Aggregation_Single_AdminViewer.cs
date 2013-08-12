@@ -254,7 +254,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <b>Edit all values associated with an item aggregation</b>");
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter the new values for this aggreagtion and press the SAVE button when all your edits are complete.</li>");
-            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/singleaggr\" target=\"ADMIN_AGGR_HELP\" >click here to view the help page</a>.</li>");
+            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_AGGR_HELP\" >click here to view the help page</a>.</li>");
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
 

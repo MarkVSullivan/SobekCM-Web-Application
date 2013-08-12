@@ -99,7 +99,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and updated the current status as well as view the most recent log files.<br /><br />");
-            Output.WriteLine("    For more information about the builder and possible actions from this screen, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
+            Output.WriteLine("    For more information about the builder and possible actions from this screen, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
             Output.WriteLine("  </blockquote>");
 
             // If missing values, display an error

@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Library.AdminViewer;
@@ -45,6 +46,10 @@ namespace SobekCM.Library.MySobekViewer
         private const string DOWN_TAB_END_ORIG = "</span><img src=\"{0}design/skins/{1}/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
         private const string DOWN_SELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">";
         private const string DOWN_SELECTED_TAB_END_ORIG = "</span><img src=\"{0}design/skins/{1}/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
+
+        /// <summary> Empty list of behaviors, returned by default </summary>
+        /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
+        protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
         /// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing SELECTED tab </summary>
         protected string Down_Selected_Tab_End;
@@ -132,6 +137,15 @@ namespace SobekCM.Library.MySobekViewer
         public virtual bool Contains_Popup_Forms
         {
             get { return false; }
+        }
+
+
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public virtual List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get { return emptybehaviors; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>

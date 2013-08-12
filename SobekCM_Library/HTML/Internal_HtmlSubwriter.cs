@@ -90,23 +90,16 @@ namespace SobekCM.Library.HTML
             }
 
             // Ensure there is a valid user, and the user is internal
-            bool isAuthorized = false;
-            if ((user != null) && ((user.Is_Internal_User) || ( user.Is_Portal_Admin ) || ( user.Is_System_Admin )))
-                isAuthorized = true;
+            bool isAuthorized = (user != null) && ((user.Is_Internal_User) || ( user.Is_Portal_Admin ) || ( user.Is_System_Admin ));
 
-             // Save the current type
+            // Save the current type
             Internal_Type_Enum type = currentMode.Internal_Type;
-            Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
 
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + title + Unselected_Tab_End + "</a>");
-            currentMode.Mode = Display_Mode_Enum.Internal;
+            // Add the banner
+            Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, Hierarchy_Object);
 
             if (!isAuthorized)
             {
-                Output.WriteLine("</div>");
-                Output.WriteLine();
-
                 Output.WriteLine("<div class=\"SobekSearchPanel\">");
                 Output.WriteLine("  <h1>" + unauthorizedTitle + "</h1>");
                 Output.WriteLine("</div>");
@@ -124,51 +117,12 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                // Write the mySobek home tab
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + my_sobek_home + Unselected_Tab_End + "</a>");
+                // Add the user-specific main menu
+                UserSpecific_MainMenu_Writer.Add_Main_Menu(Output, currentMode, user);
 
-                // Write the folders tab
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + myLibrary + Unselected_Tab_End + "</a>");
-
-                // Write the preferences tab
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + myPreferences + Unselected_Tab_End + "</a>");
-
-                 // The only time we don't show the standard INTERNAL view selectors is when NEW ITEMS is selected
-                // and there are recenly added NEW ITEMS
-                DataTable New_Items = null;
-                if ( type == Internal_Type_Enum.New_Items )
-                    New_Items = SobekCM_Database.Tracking_Update_List(Tracer);
-
-                // If this user is internal, add that
-
-                if (( New_Items != null ) && ( New_Items.Rows.Count > 0 ))
-                {
-                    currentMode.Mode = Display_Mode_Enum.Internal;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Selected_Tab_Start + internalTab + Selected_Tab_End + "</a>");
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                }
-                else
-                {
-                    Output.WriteLine( Selected_Tab_Start + internalTab + Selected_Tab_End);
-                }
-
-
-
-                // Write the sobek admin tab
-                if ((user.Is_System_Admin) || ( user.Is_Portal_Admin ))
-                {
-                    currentMode.Mode = Display_Mode_Enum.Administrative;
-                    currentMode.Admin_Type = Admin_Type_Enum.Home;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_admin + Unselected_Tab_End + "</a>");
-                }
-                currentMode.Mode = Display_Mode_Enum.Internal;
-
-                Output.WriteLine("</div>");
-                Output.WriteLine();
+                // Start the page container
+                Output.WriteLine("<div id=\"pagecontainer\">");
+                Output.WriteLine("<br />");
 
                 // Determine the title
                 string stat_title = String.Empty;
@@ -200,65 +154,6 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <h1>" + stat_title + "</h1>");
                 Output.WriteLine("</div>");
 
-
-
-                if ((New_Items == null) || (New_Items.Rows.Count == 0))
-                {
-                    Output.WriteLine("<div class=\"ShowSelectRow\">");
-
-                    if ((type == Internal_Type_Enum.Aggregations) || (type == Internal_Type_Enum.Aggregations_List))
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + collection_details + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Internal_Type = Internal_Type_Enum.Aggregations_List;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + collection_details + Down_Tab_End + "</a>");
-                    }
-
-                    if (type == Internal_Type_Enum.New_Items)
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + new_items + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Internal_Type = Internal_Type_Enum.New_Items;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + new_items + Down_Tab_End + "</a>");
-                    }
-
-                    if (type == Internal_Type_Enum.Build_Failures)
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + buildFailures + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Internal_Type = Internal_Type_Enum.Build_Failures;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + buildFailures + Down_Tab_End + "</a>");
-                    }
-
-                    if (type == Internal_Type_Enum.Cache)
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + memory_mgmt + Down_Selected_Tab_End);
-
-                    }
-                    else
-                    {
-                        currentMode.Internal_Type = Internal_Type_Enum.Cache;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + memory_mgmt + Down_Tab_End + "</a>");
-                    }
-
-                    if (type == Internal_Type_Enum.Wordmarks)
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + wordmarks + Down_Selected_Tab_End);
-
-                    }
-                    else
-                    {
-                        currentMode.Internal_Type = Internal_Type_Enum.Wordmarks;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + wordmarks + Down_Tab_End + "</a>");
-                    }
-                    Output.WriteLine("</div>");
-                }
 
                 /*  THIS IS CURRENTLY DISABLED.. ONLY EVER SHOWS THE MASTER LIST 
                 // Add subtypes for collection information
@@ -325,6 +220,7 @@ namespace SobekCM.Library.HTML
 
 
                     case Internal_Type_Enum.New_Items:
+                        DataTable New_Items = SobekCM_Database.Tracking_Update_List(Tracer);
                         add_new_item_html(Output, New_Items, Tracer);
                         break;
 
@@ -1630,12 +1526,23 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
-        }
 
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+        }
 
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum>() { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
+        }
+
+        /// <summary> Writes final HTML after all the forms </summary>
+        /// <param name="Output">Stream to directly write to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
         }
     }
 }

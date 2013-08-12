@@ -243,7 +243,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    URL portals allow the same SobekCM library to have a very different look and feel and encompass different item aggregations.  Each portal is defined by the incoming URL and the URL for each incoming request is analyzed to ensure it is handled correctly.<br /><br />");
-            Output.WriteLine("    For more information about URL portals, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
+            Output.WriteLine("    For more information about URL portals, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
             Output.WriteLine("  </blockquote>");
 
             Output.WriteLine("  <span class=\"SobekAdminTitle\">New URL Portal</span>");

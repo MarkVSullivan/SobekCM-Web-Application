@@ -282,7 +282,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    Thematic headings are the headings on the main library home page, under which all the item ");
             Output.WriteLine("    aggregation icons appear.<br /><br />");
-            Output.WriteLine("    For more information about thematic headings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
+            Output.WriteLine("    For more information about thematic headings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
             Output.WriteLine("  </blockquote>");
 
             Output.WriteLine("  <span class=\"SobekAdminTitle\">New Thematic Heading</span>");

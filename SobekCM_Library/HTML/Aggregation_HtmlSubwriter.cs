@@ -34,7 +34,6 @@ namespace SobekCM.Library.HTML
         private readonly Aggregation_Code_Manager codeManager;
         private readonly abstractAggregationViewer collectionViewer;
         private readonly User_Object currentUser;
-        private readonly IP_Restriction_Ranges ipRestrictions;
         private readonly Item_Lookup_Object itemList;
         private readonly List<iSearch_Title_Result> pagedResults;
         private readonly Search_Results_Statistics resultsStatistics;
@@ -55,7 +54,6 @@ namespace SobekCM.Library.HTML
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>
         /// <param name="Current_User"> Currently logged on user </param>
-        /// <param name="IP_Restrictions"> IP restrictions, used to determine if a user has access to a particular item </param>
         /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public Aggregation_HtmlSubwriter(Item_Aggregation Hierarchy_Object, 
@@ -66,7 +64,6 @@ namespace SobekCM.Library.HTML
             List<iSearch_Title_Result> Paged_Results,
             Aggregation_Code_Manager Code_Manager, Item_Lookup_Object All_Items_Lookup,
             List<Thematic_Heading> Thematic_Headings, User_Object Current_User,
-            IP_Restriction_Ranges IP_Restrictions,
             HTML_Based_Content Static_Web_Content,
             Custom_Tracer Tracer )
         {
@@ -80,7 +77,6 @@ namespace SobekCM.Library.HTML
             codeManager = Code_Manager;
             itemList = All_Items_Lookup;
             thematicHeadings = Thematic_Headings;
-            ipRestrictions = IP_Restrictions;
             resultsStatistics = Results_Statistics;
             pagedResults = Paged_Results;
 
@@ -138,9 +134,7 @@ namespace SobekCM.Library.HTML
                     if (address.Length > 0)
                     {
                         // Determine the email format
-                        bool is_html_format = true;
-                        if (format == "TEXT")
-                            is_html_format = false;
+                        bool is_html_format = format != "TEXT";
 
                         // CC: the user, unless they are already on the list
                         string cc_list = currentUser.Email;
@@ -285,6 +279,127 @@ namespace SobekCM.Library.HTML
             }
         }
 
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        {
+            get
+            {
+                // When editing the aggregation details, the banner should be included here
+                if (collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
+                {
+                    return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                        };
+                }
+                return emptybehaviors;
+            }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Based on display mode, add ROBOT instructions
+            switch (currentMode.Mode)
+            {
+                case Display_Mode_Enum.Aggregation_Home:
+                case Display_Mode_Enum.Aggregation_Browse_Info:
+                case Display_Mode_Enum.Search:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+                    break;
+
+                default:
+                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+                    break;
+            }
+
+            // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
+            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
+            {
+                Output.WriteLine("  <link rel=\"search\" href=\"" + currentMode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + currentMode.SobekCM_Instance_Abbreviation + " Search\" />");
+            }
+        }
+
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get
+            {
+                switch (currentMode.Mode)
+                {
+                    case Display_Mode_Enum.Aggregation_Home:
+                        if (Hierarchy_Object != null)
+                        {
+                            return (Hierarchy_Object.Code == "ALL") ? "{0} Home" : "{0} Home - " + Hierarchy_Object.Name;
+                        }
+                        return "{0} Home";
+
+                    case Display_Mode_Enum.Search:
+                        return (Hierarchy_Object != null) ? "{0} Search - " + Hierarchy_Object.Name : "{0} Search";
+
+                    case Display_Mode_Enum.Aggregation_Browse_Info:
+                        if (Hierarchy_Object != null)
+                        {
+                            return "{0} - " + Hierarchy_Object.Name;
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Aggregation_Browse_By:
+                    case Display_Mode_Enum.Aggregation_Browse_Map:
+                    case Display_Mode_Enum.Aggregation_Private_Items:
+                    case Display_Mode_Enum.Aggregation_Item_Count:
+                    case Display_Mode_Enum.Aggregation_Usage_Statistics:
+                    case Display_Mode_Enum.Aggregation_Admin_View:
+                        return "{0} - " + Hierarchy_Object.Name;
+                }
+
+                // default
+                return (Hierarchy_Object != null) ? "{0} - " + Hierarchy_Object.Name : "{0}";
+            }
+        }
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        public override List<Tuple<string, string>> Body_Attributes
+        {
+            get
+            {
+                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+
+                switch (currentMode.Mode)
+                {
+                    case Display_Mode_Enum.Aggregation_Browse_Info:
+                        if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                        {
+                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Search:
+                        if (currentMode.Search_Type == Search_Type_Enum.Map)
+                        {
+                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
+
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Aggregation_Browse_Map:
+                        returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                        break;
+                }
+
+                return returnValue;
+            }
+        }
+
+
         #region Public method to write the internal header
 
         /// <summary> Adds the internal header HTML for this specific HTML writer </summary>
@@ -354,34 +469,21 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-        /// <summary> Gets the collection of special behaviors which this subwriter
-        /// requests from the main HTML subwriter. </summary>
-        /// <remarks> By default, this returns an empty list </remarks>
-        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
-        {
-            get
-            {
-                // When editing the aggregation details, the banner should be included here
-                if (collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
-                {
-                    return new List<HtmlSubwriter_Behaviors_Enum>
-                        {
-                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-                        };
-                }
-                return base.emptybehaviors;
-            }
-        }
+
 
         #region Public method to write HTML to the output stream
 
-        /// <summary> Writes the HTML generated by this administrative html subwriter directly to the response stream </summary>
+        /// <summary> Writes the HTML generated by this aggregation html subwriter directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Rendering HTML");
+
+            // Start the page container
+            Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<br />");
 
             // Draw the banner and add links to the other views first
             if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
@@ -412,7 +514,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<form name=\"search_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
                 }
 
-                const string formName = "search_form";
+                const string FORM_NAME = "search_form";
                 if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
                 {
                     // Determine the number of columns for text areas, depending on browser
@@ -503,7 +605,7 @@ namespace SobekCM.Library.HTML
                     if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
                     {
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
-                        Add_Sharing_Buttons(Output, formName, "SobekResultsSort");
+                        Add_Sharing_Buttons(Output, FORM_NAME, "SobekResultsSort");
                     }
                 }
                 else
@@ -516,7 +618,7 @@ namespace SobekCM.Library.HTML
                 {
                     StringBuilder builder = new StringBuilder(2000);
                     StringWriter writer = new StringWriter(builder);
-                    Add_Sharing_Buttons(writer, formName, "SobekHomeBannerButton");
+                    Add_Sharing_Buttons(writer, FORM_NAME, "SobekHomeBannerButton");
                     ((Rotating_Highlight_Search_AggregationViewer)collectionViewer).Sharing_Buttons_HTML = builder.ToString();
 
                     collectionViewer.Add_Search_Box_HTML(Output, Tracer);
@@ -537,11 +639,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Prepare to add the collection selector information, but first, check to see if this the main home page
-            bool sobekcm_main_home_page = false;
-            if ((currentMode.Mode == Display_Mode_Enum.Aggregation_Home) && (Hierarchy_Object.Code == "all"))
-            {
-                sobekcm_main_home_page = true;
-            }
+            bool sobekcm_main_home_page = (currentMode.Mode == Display_Mode_Enum.Aggregation_Home) && (Hierarchy_Object.Code == "all");
 
             // Add the collection selector, if it ever appears here
             if ((!sobekcm_main_home_page) && (collectionViewer.Selection_Panel_Display != Selection_Panel_Display_Enum.Never) && (Hierarchy_Object.Children_Count > 0))
@@ -686,7 +784,7 @@ namespace SobekCM.Library.HTML
             return finish_page;
         }
 
-        private void Add_Other_View_Tabs(TextWriter Output, bool downward_tabs, string style )
+        private void Add_Other_View_Tabs(TextWriter Output, bool DownwardTabs, string Style )
         {
             // If this skin has top-level navigation suppressed, skip the top tabs
             if (htmlSkin.Suppress_Top_Navigation)
@@ -703,7 +801,7 @@ namespace SobekCM.Library.HTML
             string myCollections = "MY COLLECTIONS";
             string partners = "BROWSE PARTNERS";
             string browseBy = "BROWSE BY";
-            const string browseMap = "MAP BROWSE";
+            const string BROWSE_MAP = "MAP BROWSE";
 
             if (currentMode.Language == Web_Language_Enum.Spanish)
             {
@@ -737,7 +835,7 @@ namespace SobekCM.Library.HTML
             }
 
             Output.WriteLine("<!-- Add the different applicable collection views -->");
-            Output.WriteLine("<div class=\"" + style + "\">");
+            Output.WriteLine("<div class=\"" + Style + "\">");
             Output.WriteLine("");
 
 
@@ -745,7 +843,7 @@ namespace SobekCM.Library.HTML
             string unselected_end = Unselected_Tab_End;
             string selected_start = Selected_Tab_Start;
             string selected_end = Selected_Tab_End;
-            if (downward_tabs)
+            if (DownwardTabs)
             {
                 unselected_start = Down_Tab_Start;
                 unselected_end = Down_Tab_End;
@@ -800,7 +898,7 @@ namespace SobekCM.Library.HTML
             currentMode.Mode = thisMode;
             for (int i = 1; i < Hierarchy_Object.Views_And_Searches.Count; i++)
             {
-                Output.Write(Aggregation_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(Hierarchy_Object.Views_And_Searches[i], currentMode, translator, downward_tabs));
+                Output.Write(Aggregation_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(Hierarchy_Object.Views_And_Searches[i], currentMode, translator, DownwardTabs));
             }
 
             // Replace any search string
@@ -826,13 +924,13 @@ namespace SobekCM.Library.HTML
             {
                 if (thisMode == Display_Mode_Enum.Aggregation_Browse_Map)
                 {
-                    Output.WriteLine("  " + selected_start + browseMap + selected_end);
+                    Output.WriteLine("  " + selected_start + BROWSE_MAP + selected_end);
                 }
                 else
                 {
                     currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Map;
                     currentMode.Info_Browse_Mode = String.Empty;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + browseMap + unselected_end + "</a>");
+                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + BROWSE_MAP + unselected_end + "</a>");
                 }
             }
 
@@ -925,7 +1023,7 @@ namespace SobekCM.Library.HTML
                         currentMode.Mode = thisMode;
                         currentMode.Home_Type = thisHomeType;
 
-                        Output.Write(Aggregation_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View, currentMode, translator, downward_tabs));
+                        Output.Write(Aggregation_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View, currentMode, translator, DownwardTabs));
                     }
 
                 }
@@ -961,12 +1059,12 @@ namespace SobekCM.Library.HTML
             currentMode.Home_Type = thisHomeType;
         }
 
-        private void Add_Sharing_Buttons( TextWriter Output, string form_name, string style )
+        private void Add_Sharing_Buttons( TextWriter Output, string FormName, string Style )
         {
             #region Add the buttons for sharing, emailing, etc..
 
-            Output.WriteLine("  <span class=\"" + style + "\">");
-            Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif'\" onclick=\"window.print(); return false;\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"print_button\" id=\"print_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif\" title=\"Print this page\" alt=\"PRINT\" /></a>");
+            Output.WriteLine("  <span class=\"" + Style + "\">");
+            Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif'\" onclick=\"window.print(); return false;\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"print_button\" id=\"print_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif\" title=\"Print this page\" alt=\"PRINT\" /></a>");
 
             if (currentUser != null)
             {
@@ -976,25 +1074,25 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\" onclick=\"return email_form_open2('send_button','');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
+                    Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\" onclick=\"return email_form_open2('send_button','');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
 
                 }
                 if (Hierarchy_Object.Aggregation_ID > 0)
                 {
                     if (currentUser.Is_On_Home_Page(currentMode.Aggregation))
                     {
-                        Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".remove_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/remove_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".remove_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/remove_rect_button.gif'\" onclick=\"return remove_aggregation();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"remove_button\" id=\"remove_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/remove_rect_button.gif\" title=\"Remove this from my collections home page\" alt=\"REMOVE\" /></a>");
+                        Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".remove_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/remove_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".remove_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/remove_rect_button.gif'\" onclick=\"return remove_aggregation();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"remove_button\" id=\"remove_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/remove_rect_button.gif\" title=\"Remove this from my collections home page\" alt=\"REMOVE\" /></a>");
                     }
                     else
                     {
-                        Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif'\" onclick=\"return add_aggregation();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"add_button\" id=\"add_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif\" title=\"Add this to my collections home page\" alt=\"ADD\" /></a>");
+                        Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif'\" onclick=\"return add_aggregation();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"add_button\" id=\"add_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif\" title=\"Add this to my collections home page\" alt=\"ADD\" /></a>");
                     }
                 }
             }
             else
             {
-                Output.Write("<a href=\"?m=hmh\" onmouseover=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
-                Output.Write("<a href=\"?m=hmh\" onmouseover=\"document." + form_name + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"add_button\" id=\"add_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif\" title=\"Save this to my collections home page\" alt=\"ADD\" /></a>");
+                Output.Write("<a href=\"?m=hmh\" onmouseover=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
+                Output.Write("<a href=\"?m=hmh\" onmouseover=\"document." + FormName + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".add_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"add_button\" id=\"add_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/add_rect_button.gif\" title=\"Save this to my collections home page\" alt=\"ADD\" /></a>");
             }
 
             if ((currentMode.Home_Type == Home_Type_Enum.Personalized) && (currentMode.Aggregation.Length == 0))
@@ -1003,7 +1101,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".share_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".share_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button.gif'\" onclick=\"return toggle_share_form2('share_button');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"share_button\" id=\"share_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button.gif\" title=\"Share this collection\" alt=\"SHARE\" /></a>");
+                Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".share_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".share_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button.gif'\" onclick=\"return toggle_share_form2('share_button');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"share_button\" id=\"share_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button.gif\" title=\"Share this collection\" alt=\"SHARE\" /></a>");
             }
             Output.WriteLine("</span>");
 
@@ -1015,10 +1113,10 @@ namespace SobekCM.Library.HTML
         #region Public method to add controls to the place holder 
 
         /// <summary> Adds the tree view control to the provided place holder if this is the tree view main home page </summary>
-        /// <param name="placeHolder"> Place holder into which to place the built tree control </param>
+        /// <param name="MainPlaceHolder"> Place holder into which to place the built tree control </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns>Flag indicates if secondary text contains controls </returns>
-        public bool Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public bool Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (((currentMode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (currentMode.Home_Type == Home_Type_Enum.Tree_Expanded)) && (Hierarchy_Object.Code == "all"))
             {
@@ -1040,7 +1138,7 @@ namespace SobekCM.Library.HTML
 
                 Literal literal1 = new Literal
                                        { Text = string.Format("<div class=\"thematicHeading\">All Collections</div>" + Environment.NewLine + "<div class=\"SobekText\">" + Environment.NewLine + "<blockquote>" + Environment.NewLine + "<div align=\"right\"><a href=\"{0}\">Collapse All</a> | <a href=\"{1}\">Expand All</a></div>" + Environment.NewLine , collapsed_url, expand_url) };
-                placeHolder.Controls.Add(literal1);
+                MainPlaceHolder.Controls.Add(literal1);
 
                 // Create the treeview
                 TreeView treeView1 = new TreeView
@@ -1050,17 +1148,17 @@ namespace SobekCM.Library.HTML
                 Create_TreeView_From_Collections(treeView1);
 
                 // Add the tree view to the placeholder
-                placeHolder.Controls.Add(treeView1);
+                MainPlaceHolder.Controls.Add(treeView1);
 
                 Literal literal2 = new Literal {Text = @"</blockquote></div>"};
-                placeHolder.Controls.Add(literal2);
+                MainPlaceHolder.Controls.Add(literal2);
 
                 return true;
             }
 
             if (collectionViewer.Secondary_Text_Requires_Controls)
             {
-                collectionViewer.Add_Secondary_Controls(placeHolder, Tracer);
+                collectionViewer.Add_Secondary_Controls(MainPlaceHolder, Tracer);
                 return true;
             }
 
@@ -1318,13 +1416,9 @@ namespace SobekCM.Library.HTML
                     bool aggrsLinkedToThemes = false;
                     if ((!SobekCM_Library_Settings.Include_TreeView_On_System_Home) && ( thematicHeadings.Count > 0 ))
                     {
-                        foreach (Thematic_Heading thisTheme in thematicHeadings)
+                        if (thematicHeadings.Any(thisTheme => codeManager.Aggregations_By_ThemeID(thisTheme.ThematicHeadingID).Count > 0))
                         {
-                            if (codeManager.Aggregations_By_ThemeID(thisTheme.ThematicHeadingID).Count > 0)
-                            {
-                                aggrsLinkedToThemes = true;
-                                break;
-                            }
+                            aggrsLinkedToThemes = true;
                         } 
                     }
 
@@ -2101,124 +2195,18 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-        /// <summary> Gets the collection of body attributes to be included 
-        /// within the HTML body tag (usually to add events to the body) </summary>
-        public override List<Tuple<string, string>> Body_Attributes
+
+
+
+
+        /// <summary> Writes final HTML after all the forms </summary>
+        /// <param name="Output">Stream to directly write to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            get
-            {
-                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
-
-                switch (currentMode.Mode)
-                {
-                    case Display_Mode_Enum.Aggregation_Browse_Info:
-                        if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
-                        {
-                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Search:
-                        if (currentMode.Search_Type == Search_Type_Enum.Map)
-                        {
-                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
-
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Aggregation_Browse_Map:
-                        returnValue.Add(new Tuple<string, string>("onload", "load();"));
-                        break;
-                }
-
-                return returnValue;
-            }
-        }
-
-        /// <summary> Title for this web page </summary>
-        public override string WebPage_Title
-        {
-            get 
-            {
-                switch (currentMode.Mode)
-                {
-                    case Display_Mode_Enum.Aggregation_Home:
-                        if (Hierarchy_Object != null)
-                        {
-                            if (Hierarchy_Object.Code == "ALL")
-                            {
-                                return "{0} Home";
-                            }
-                            else
-                            {
-                                return "{0} Home - " + Hierarchy_Object.Name;
-                            }
-                        }
-                        else
-                        {
-                            return "{0} Home";
-                        }
- 
-                    case Display_Mode_Enum.Search:
-                        if (Hierarchy_Object != null)
-                        {
-                            return "{0} Search - " + Hierarchy_Object.Name;
-                        }
-                        else
-                        {
-                            return "{0} Search";
-                        }
-
-                    case Display_Mode_Enum.Aggregation_Browse_Info:
-                        if (Hierarchy_Object != null)
-                        {
-                            return "{0} - " + Hierarchy_Object.Name;
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Aggregation_Browse_By:
-                    case Display_Mode_Enum.Aggregation_Browse_Map:
-                    case Display_Mode_Enum.Aggregation_Private_Items:
-                    case Display_Mode_Enum.Aggregation_Item_Count:
-                    case Display_Mode_Enum.Aggregation_Usage_Statistics:
-                    case Display_Mode_Enum.Aggregation_Admin_View:
-                        return "{0} - " + Hierarchy_Object.Name;
-                }
-
-                // default
-                if ( Hierarchy_Object != null )
-                    return "{0} - " + Hierarchy_Object.Name;
-                else
-                    return "{0}";                
-            }
-        }
-
-        /// <summary> Write any additional values within the HTML Head of the
-        /// final served page </summary>
-        /// <param name="Output"> Output stream currently within the HTML head tags </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
-        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            // Based on display mode, add ROBOT instructions
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Aggregation_Home:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                case Display_Mode_Enum.Search:
-                    Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
-                    break;
-
-                default:
-                    Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
-                    break;
-            }
-
-            // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
-            {
-                Output.WriteLine("  <link rel=\"search\" href=\"" + currentMode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + currentMode.SobekCM_Instance_Abbreviation + " Search\" />");
-            }
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
         }
     }
 }

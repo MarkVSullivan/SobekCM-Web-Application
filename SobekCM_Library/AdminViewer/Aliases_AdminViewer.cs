@@ -214,7 +214,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    Use item aggregation aliases to allow a term to forward to an existing item aggregation. ");
             Output.WriteLine("    This creates a simpler URL and can forward from a discontinued item aggregation.<br /><br />");
-            Output.WriteLine("    For more information about aggregation aliases and forwarding, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
+            Output.WriteLine("    For more information about aggregation aliases and forwarding, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
             Output.WriteLine("  </blockquote>");
 
             Output.WriteLine("  <span class=\"SobekAdminTitle\">New Item Aggregation Alias</span>");

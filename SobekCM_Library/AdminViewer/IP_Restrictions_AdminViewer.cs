@@ -223,7 +223,7 @@ namespace SobekCM.Library.AdminViewer
                 // Add the save and cancel button and link to help
                 currentMode.My_Sobek_SubMode = String.Empty;
                 Output.WriteLine("  <br />");
-                Output.WriteLine("  <table width=\"750px\"><tr><td align=\"left\"> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_22.gif\" alt=\"CLOSE\" /></a> &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\"></td></tr></table>");
+                Output.WriteLine("  <table width=\"750px\"><tr><td align=\"left\"> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_22.gif\" alt=\"CLOSE\" /></a> &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\"></td></tr></table>");
 
                 // Add all the basic information
                 Output.WriteLine("  <span class=\"SobekAdminTitle\">Basic Information</span>");
@@ -313,7 +313,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<div class=\"SobekHomeText\">");
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    Restrictive ranges of IP addresses may be used to restrict access to digital resources.  This form allows system administrators to edit the individual IP addresses and contiguous IP addresses associated with an existing restrictive range.<br /><br />");
-            Output.WriteLine("    For more information about IP restriction ranges and this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
+            Output.WriteLine("    For more information about IP restriction ranges and this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("  <span class=\"SobekAdminTitle\">Existing Ranges</span>");
             Output.WriteLine("  <blockquote>");
