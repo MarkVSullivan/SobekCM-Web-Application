@@ -46,7 +46,6 @@ function QC_Change_Sortable_Setting(option, image_location)
 {
   //Assign the sorting option to the global variable. 
     makeSortable = option;
-//    alert('option:'+option+' image_location:'+image_location);
   
   //Set the hidden variable value
   var hidden_sortable_option = document.getElementById('QC_sortable_option'); 

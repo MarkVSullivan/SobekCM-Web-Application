@@ -1848,7 +1848,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td colspan=\"2\">");
 
-
 					// Write the image, based on current thumbnail size
 					switch (size_of_thumbnails)
 					{
