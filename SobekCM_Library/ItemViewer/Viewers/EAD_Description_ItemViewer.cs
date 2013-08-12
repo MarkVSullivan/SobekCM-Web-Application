@@ -68,13 +68,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             EAD_Info eadInfo = (EAD_Info)CurrentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
 
             // Build the value
-            Output.WriteLine("          <td align=\"left\"><span class=\"SobekViewerTitle\">Archival Description</span></td>");
-            Output.WriteLine("        </tr>" );
-            Output.WriteLine("        <tr>");
             Output.WriteLine("          <td>");
-            Output.WriteLine("            <div class=\"SobekCitation\">");
-            Output.WriteLine("              <br />");
-            Output.WriteLine("              <blockquote>" );
+            Output.WriteLine("            <div id=\"sbkEad_MainArea\">");
 
             if (CurrentMode.Text_Search.Length > 0)
             {
@@ -93,9 +88,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.Write(eadInfo.Full_Description);
             }
             
-            Output.WriteLine("              </blockquote>" );
-            Output.WriteLine("              <br />" );
             Output.WriteLine("            </div>");
+            Output.WriteLine("          </td>");
  
         }
     }

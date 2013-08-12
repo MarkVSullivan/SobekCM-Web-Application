@@ -35,6 +35,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         Artifact,
         Audio,
         Book,
+        EAD,
         Learning_Object,
         Map,
         Mixed_Material,

@@ -401,7 +401,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.<br /><br />");
-            Output.WriteLine("    For more information about these settings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
+            Output.WriteLine("    For more information about these settings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine();
             Output.WriteLine("  <table width=\"100%\">");

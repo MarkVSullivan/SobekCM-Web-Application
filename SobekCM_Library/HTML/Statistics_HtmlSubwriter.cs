@@ -83,215 +83,160 @@ namespace SobekCM.Library.HTML
                 recent_searches_title = "Recherches Récentes en " + currentMode.SobekCM_Instance_Abbreviation;
             }
 
-            // Save the current type
-            Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
+            // Add the banner
+            Add_Banner(Output, "sbkShs_BannerDiv", currentMode, htmlSkin, Hierarchy_Object);
 
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
-            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + title + Unselected_Tab_End + "</a>");
-            currentMode.Mode = Display_Mode_Enum.Statistics;
+            #region Code to add the statistics menu
 
-            string stat_title = String.Empty;
-            if ((type == Statistics_Type_Enum.Item_Count_Standard_View) || (type == Statistics_Type_Enum.Item_Count_Growth_View) || ( type == Statistics_Type_Enum.Item_Count_Text ) || ( type == Statistics_Type_Enum.Item_Count_Arbitrary_View ))
+            string sobek_home_text = Mode.SobekCM_Instance_Abbreviation + " Home";
+            const string list_view_text = "List View";
+            const string brief_view_text = "Brief View";
+            const string tree_view_text = "Tree View";
+            const string partners_text = "Browse Partners";
+            const string advanced_search_text = "Advanced Search";
+            const string item_count_text = "Item Count";
+            const string standard_view_text = "Standard View";
+            const string fytd_view_text = "FYTD Growth View";
+            const string arbitrary_view_text = "Arbitrary Dates";
+            const string usage_stats_text = "Usage Statistics";
+            const string overall_text = "Overall Statistics";
+            const string collections_date_text = "Collections by Date";
+            const string items_date_text = "Item Views by Date";
+            const string collection_history_text = "Collection History";
+            const string top_titles_text = "Top Titles";
+            const string definitions_text = "Definitions";
+            const string recent_searches_text = "Recent Searches";
+
+            Output.WriteLine("<!-- Add the statistics menu -->");
+            Output.WriteLine("<div id=\"sf-menubar\">");
+            Output.WriteLine("<ul class=\"sf-menu\">");
+
+            // Save the currentt mode
+            Statistics_Type_Enum currentStatsType = Mode.Statistics_Type;
+            string currentInfoBrowseMode = Mode.Info_Browse_Mode;
+
+            // Add the 'SOBEK HOME' first menu option and suboptions
+            Mode.Mode = Display_Mode_Enum.Aggregation_Home;
+            Mode.Home_Type = Home_Type_Enum.List;
+            Output.WriteLine("\t\t<li id=\"sbkShs_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkShs_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkShs_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkShs_HomeSubMenu\">");
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
+            Mode.Home_Type = Home_Type_Enum.Descriptions;
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
+            if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
             {
-                Output.WriteLine("  " + Selected_Tab_Start + item_count + Selected_Tab_End );
-                stat_title = item_count_title;
+                Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
             }
-            else
+            if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
             {
-                currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + item_count + Unselected_Tab_End + "</a>");     
+                Mode.Home_Type = Home_Type_Enum.Partners_List;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_HomePartners\"><a href=\"" + Mode.Redirect_URL() + "\">" + partners_text + "</a></li>");
+            }
+            string advanced_url = Mode.Base_URL + "/advanced";
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeAdvSearch\"><a href=\"" + advanced_url + "\">" + advanced_search_text + "</a></li>");
+            Output.WriteLine("\t\t</ul></li>");
+
+            // Add the ITEMCOUNT
+            Mode.Mode = Display_Mode_Enum.Statistics;
+            Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
+            Output.WriteLine("\t\t<li id=\"sbkShs_ItemCount\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + item_count_text + "</a><ul id=\"sbkShs_ItemCountSubMenu\">");
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_ItemCountStandard\"><a href=\"" + Mode.Redirect_URL() + "\">" + standard_view_text + "</a></li>");
+
+            Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Growth_View;
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_ItemCountFytd\"><a href=\"" + Mode.Redirect_URL() + "\">" + fytd_view_text + "</a></li>");
+
+            if (currentMode.Internal_User)
+            {
+                currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Arbitrary_View;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_ItemCountArbitrary\"><a href=\"" + Mode.Redirect_URL() + "\">" + arbitrary_view_text + "</a></li>");
+            }
+            Output.WriteLine("\t\t</ul></li>");
+
+    //        if ((type == Statistics_Type_Enum.Usage_Item_Views_By_Date) || (type == Statistics_Type_Enum.Usage_Overall) ||
+    //(type == Statistics_Type_Enum.Usage_Collection_History) || (type == Statistics_Type_Enum.Usage_Collections_By_Date) ||
+    //(type == Statistics_Type_Enum.Usage_Definitions) || (type == Statistics_Type_Enum.Usage_By_Date_Text) ||
+    //(type == Statistics_Type_Enum.Usage_Collection_History_Text) || (type == Statistics_Type_Enum.Usage_Items_By_Collection) ||
+    //(type == Statistics_Type_Enum.Usage_Titles_By_Collection))
+
+            // Add the USAGE STATS
+            Mode.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
+            Output.WriteLine("\t\t<li id=\"sbkShs_Usage\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + usage_stats_text + "</a><ul id=\"sbkShs_UsageSubMenu\">");
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageOverall\"><a href=\"" + Mode.Redirect_URL() + "\">" + overall_text + "</a></li>");
+
+            // Robots do not get the next four options
+            if (!currentMode.Is_Robot)
+            {
+                Mode.Statistics_Type = Statistics_Type_Enum.Usage_Collections_By_Date;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageCollByDate\"><a href=\"" + Mode.Redirect_URL() + "\">" + collections_date_text + "</a></li>");
+
+                Mode.Statistics_Type = Statistics_Type_Enum.Usage_Item_Views_By_Date;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageItemsByDate\"><a href=\"" + Mode.Redirect_URL() + "\">" + items_date_text + "</a></li>");
+
+                Mode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageCollHistory\"><a href=\"" + Mode.Redirect_URL() + "\">" + collection_history_text + "</a></li>");
+
+                Mode.Statistics_Type = Statistics_Type_Enum.Usage_Titles_By_Collection;
+                Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageTopTitles\"><a href=\"" + Mode.Redirect_URL() + "\">" + top_titles_text + "</a></li>");
             }
 
-            if ((type == Statistics_Type_Enum.Usage_Item_Views_By_Date) || (type == Statistics_Type_Enum.Usage_Overall) ||
-                (type == Statistics_Type_Enum.Usage_Collection_History ) || ( type == Statistics_Type_Enum.Usage_Collections_By_Date ) ||
-                ( type == Statistics_Type_Enum.Usage_Definitions ) || ( type == Statistics_Type_Enum.Usage_Collection_History_Text ) ||
-                ( type == Statistics_Type_Enum.Usage_By_Date_Text ) || ( type == Statistics_Type_Enum.Usage_Items_By_Collection ))
-            {
-                Output.WriteLine("  " + Selected_Tab_Start + usage + Selected_Tab_End);
-                stat_title = usage_title;
-            }
-            else
-            {
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + usage + Unselected_Tab_End + "</a>");
-            }
+            Mode.Statistics_Type = Statistics_Type_Enum.Usage_Definitions;
+            Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageDefinitions\"><a href=\"" + Mode.Redirect_URL() + "\">" + definitions_text + "</a></li>");
+            Output.WriteLine("\t\t</ul></li>");
 
             // Robots do not get to index the recent searches
             if (!currentMode.Is_Robot)
             {
-                if (type == Statistics_Type_Enum.Recent_Searches)
-                {
-                    Output.WriteLine("  " + Selected_Tab_Start + recent_searches + Selected_Tab_End);
-                    stat_title = recent_searches_title;
-                }
-                else
-                {
-                    currentMode.Statistics_Type = Statistics_Type_Enum.Recent_Searches;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + recent_searches + Unselected_Tab_End + "</a>");
-                }
+                currentMode.Statistics_Type = Statistics_Type_Enum.Recent_Searches;
+                Output.WriteLine("\t\t<li id=\"sbkShs_RecentSearches\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + recent_searches_text + "</a></li>");
             }
-            currentMode.Statistics_Type = type;
-            Output.WriteLine("</div>");  
+
+
+            Output.WriteLine("\t</ul></div>");
             Output.WriteLine();
+
+            // Add the scripts needed
+            Output.WriteLine("<!-- Add references to the superfish and hoverintent libraries for the main user menu -->");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
+            Output.WriteLine();
+
+            Output.WriteLine("<!-- Initialize the main user menu -->");
+            Output.WriteLine("<script>");
+            Output.WriteLine();
+            Output.WriteLine("jQuery(document).ready(function () {");
+            Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
+            Output.WriteLine("  });");
+            Output.WriteLine();
+            Output.WriteLine("</script>");
+            Output.WriteLine();
+
+            // Restore the currentt mode
+            Mode.Statistics_Type = currentStatsType;
+            Mode.Info_Browse_Mode = currentInfoBrowseMode;
+
+            #endregion
+
+            // Determine the title
+            string stat_title = item_count_title;
+            if ((type == Statistics_Type_Enum.Usage_Item_Views_By_Date) || (type == Statistics_Type_Enum.Usage_Overall) ||
+                (type == Statistics_Type_Enum.Usage_Collection_History) || (type == Statistics_Type_Enum.Usage_Collections_By_Date) ||
+                (type == Statistics_Type_Enum.Usage_Definitions) || (type == Statistics_Type_Enum.Usage_By_Date_Text) ||
+                (type == Statistics_Type_Enum.Usage_Collection_History_Text) || (type == Statistics_Type_Enum.Usage_Items_By_Collection) ||
+                (type == Statistics_Type_Enum.Usage_Titles_By_Collection))
+            {
+                stat_title = usage_title;
+            }
+            if (type == Statistics_Type_Enum.Recent_Searches)
+                stat_title = recent_searches_title;
+
+
+            // Start the page container
+            Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<br />");
 
             Output.WriteLine("<div class=\"SobekSearchPanel\">");
             Output.WriteLine("  <h1>" + stat_title + "</h1>");
             Output.WriteLine("</div>");
-
-
-
-            // Add the sub options for item count
-            if ((type == Statistics_Type_Enum.Item_Count_Standard_View) || (type == Statistics_Type_Enum.Item_Count_Growth_View) ||
-                ( type == Statistics_Type_Enum.Item_Count_Text ) || ( type == Statistics_Type_Enum.Item_Count_Arbitrary_View ))
-            {
-                // Create the strings for the sub views
-                const string standardView = "STANDARD VIEW";
-                const string fytdView = "FYTD GROWTH VIEW";
-                const string arbitraryView = "ARBITRARY DATES";
-
-                Output.WriteLine("<div class=\"ShowSelectRow\">");
-                if (type == Statistics_Type_Enum.Item_Count_Standard_View)
-                {
-                    Output.WriteLine(Down_Selected_Tab_Start + standardView + Down_Selected_Tab_End );
-                }
-                else
-                {
-                    currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + standardView + Down_Tab_End + "</a>");
-                    currentMode.Statistics_Type = type;
-                }
-
-                if (type == Statistics_Type_Enum.Item_Count_Growth_View)
-                {
-                    Output.WriteLine(Down_Selected_Tab_Start + fytdView + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Growth_View;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + fytdView + Down_Tab_End + "</a>");
-                    currentMode.Statistics_Type = type;
-                }
-
-                if (currentMode.Internal_User)
-                {
-                    if (type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
-                    {
-                        Output.WriteLine(Down_Selected_Tab_Start + arbitraryView + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Arbitrary_View;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + arbitraryView + Down_Tab_End + "</a>");
-                        currentMode.Statistics_Type = type;
-                    }
-                }
-                Output.WriteLine("</div>");
-            }
-
-            // Add the sub options for usage
-            if ((type == Statistics_Type_Enum.Usage_Item_Views_By_Date) || (type == Statistics_Type_Enum.Usage_Overall) ||
-                (type == Statistics_Type_Enum.Usage_Collection_History) || (type == Statistics_Type_Enum.Usage_Collections_By_Date) ||
-                (type == Statistics_Type_Enum.Usage_Definitions) || ( type == Statistics_Type_Enum.Usage_By_Date_Text ) ||
-                ( type == Statistics_Type_Enum.Usage_Collection_History_Text ) || ( type == Statistics_Type_Enum.Usage_Items_By_Collection ) ||
-                ( type == Statistics_Type_Enum.Usage_Titles_By_Collection ))
-            {
-                // Create the strings for the sub views
-                const string overall = "OVERALL STATS";
-                const string collectionsDate = "COLLECTIONS BY DATE";
-                const string itemsDate = "ITEM VIEWS BY DATE";
-                const string collectionHistory = "COLLECTION HISTORY";
-                const string itemsByCollection = "TOP TITLES";
-                const string definitions = "DEFINITIONS";
-
-                Output.WriteLine("<div class=\"ShowSelectRow\">");
-                if (type == Statistics_Type_Enum.Usage_Overall)
-                {
-                    Output.WriteLine(Down_Selected_Tab_Start + overall + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + overall + Down_Tab_End + "</a>");
-                    currentMode.Statistics_Type = type;
-                }
-
-                // Robots do not get the next four options
-                if (!currentMode.Is_Robot)
-                {
-                    if (type == Statistics_Type_Enum.Usage_Collections_By_Date)
-                    {
-                        Output.WriteLine(Down_Selected_Tab_Start + collectionsDate + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collections_By_Date;
-                        if ((currentMode.Info_Browse_Mode.Length == 12) && (type == Statistics_Type_Enum.Usage_Item_Views_By_Date))
-                        {
-                            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + collectionsDate + Down_Tab_End + "</a>");
-                        }
-                        else
-                        {
-                            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + collectionsDate + Down_Tab_End + "</a>");
-                        }
-                        currentMode.Statistics_Type = type;
-                    }
-
-                    if (type == Statistics_Type_Enum.Usage_Item_Views_By_Date)
-                    {
-                        Output.WriteLine(Down_Selected_Tab_Start + itemsDate + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Item_Views_By_Date;
-                        if ((currentMode.Info_Browse_Mode.Length == 12) && (type == Statistics_Type_Enum.Usage_Collections_By_Date))
-                        {
-                            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + itemsDate + Down_Tab_End + "</a>");
-                        }
-                        else
-                        {
-                            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + itemsDate + Down_Tab_End + "</a>");
-                        }
-
-                        currentMode.Statistics_Type = type;
-                    }
-
-                    if (type == Statistics_Type_Enum.Usage_Collection_History)
-                    {
-                        Output.WriteLine(Down_Selected_Tab_Start + collectionHistory + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + collectionHistory + Down_Tab_End + "</a>");
-                        currentMode.Statistics_Type = type;
-                    }
-
-                    if ((type == Statistics_Type_Enum.Usage_Items_By_Collection) || ( type == Statistics_Type_Enum.Usage_Titles_By_Collection ))
-                    {
-                        Output.WriteLine(Down_Selected_Tab_Start + itemsByCollection + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Titles_By_Collection;
-                        Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + itemsByCollection + Down_Tab_End + "</a>");
-                        currentMode.Statistics_Type = type;
-                    }
-                }
-
-                if (type == Statistics_Type_Enum.Usage_Definitions)
-                {
-                    Output.WriteLine(Down_Selected_Tab_Start + definitions + Down_Selected_Tab_End);
-                }
-                else
-                {
-                    currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Definitions;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + definitions + Down_Tab_End + "</a>");
-                    currentMode.Statistics_Type = type;
-                }
-
-                Output.WriteLine("</div>");
-            }
-            currentMode.Statistics_Type = type;
 
             Output.WriteLine("<br />");
             Output.WriteLine("");
@@ -409,6 +354,10 @@ namespace SobekCM.Library.HTML
                     add_usage_by_date_text(Output, by_date3, start_month, start_year, end_month, end_year, Tracer);
                     break;
             }
+
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
             return true;
         }
@@ -2859,6 +2808,8 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // Add the code for the calendar pop-up if it may be required
             if (currentMode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View)

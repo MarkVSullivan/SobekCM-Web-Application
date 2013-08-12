@@ -857,43 +857,80 @@ namespace SobekCM.Library.Items
             if (thisPackage.Divisions.Download_Tree.Has_Files)
             {
                 string ead_file = String.Empty;
+                string ead_xsl_file = String.Empty;
                 int pdf_download = 0;
                 string pdf_download_url = String.Empty;
                 int non_flash_downloads = 0;
                 List<abstract_TreeNode> downloadPages = thisPackage.Divisions.Download_Tree.Pages_PreOrder;
+                bool download_handled = false;
                 foreach (Page_TreeNode downloadPage in downloadPages)
                 {
                     // Was this an EAD page?
-                    if ((downloadPage.Label == GlobalVar.EAD_METADATA_MODULE_KEY) && (downloadPage.Files.Count == 1))
+                    if ((downloadPage.Label == "EAD")  && ( downloadPage.Files.Count == 1 ))
                     {
-                        ead_file = downloadPage.Files[0].System_Name;
+                        if (downloadPage.Files[0].System_Name.ToLower().IndexOf(".xml") > 0)
+                        {
+                            thisPackage.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
+                            ead_file = downloadPage.Files[0].System_Name;
+                            download_handled = true;
+                        }
                     }
 
                     // Was this an XSL/EAD page?
                     if ((downloadPage.Label == "XSL") && (downloadPage.Files.Count == 1))
                     {
+                        if (downloadPage.Files[0].System_Name.ToLower().IndexOf(".xsl") > 0)
+                        {
+                            ead_xsl_file = downloadPage.Files[0].System_Name;
+                            download_handled = true;
+                        }
                     }
 
                     // Step through each download file
-                    foreach (SobekCM_File_Info thisFile in downloadPage.Files)
+                    if (!download_handled)
                     {
-                        if (thisFile.File_Extension == "SWF")
+                        foreach (SobekCM_File_Info thisFile in downloadPage.Files)
                         {
-                            string flashlabel = downloadPage.Label;
-                            View_Object newView = thisPackage.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, thisFile.System_Name);
-                            thisPackage.Behaviors.Default_View = newView;
-                        }
-                        else
-                        {
-                            non_flash_downloads++;
-                        }
+                            if (thisFile.File_Extension == "SWF")
+                            {
+                                string flashlabel = downloadPage.Label;
+                                View_Object newView = thisPackage.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, thisFile.System_Name);
+                                thisPackage.Behaviors.Default_View = newView;
+                            }
+                            else
+                            {
+                                non_flash_downloads++;
+                            }
 
-                        if (thisFile.File_Extension == "PDF")
-                        {
-                            pdf_download++;
-                            pdf_download_url = thisFile.System_Name;
+                            if (thisFile.File_Extension == "PDF")
+                            {
+                                pdf_download++;
+                                pdf_download_url = thisFile.System_Name;
+                            }
                         }
                     }
+                }
+
+                // Some special code for EAD objects
+                if ((thisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD) && (ead_file.Length > 0))
+                {
+                    // Now, read this EAD file information 
+                    string ead_file_location = SobekCM_Library_Settings.Image_Server_Network + thisPackage.Web.AssocFilePath + ead_file;
+                    EAD_File_ReaderWriter reader = new EAD_File_ReaderWriter();
+                    string Error_Message;
+                    Dictionary<string, object> options = new Dictionary<string, object>();
+                    options["EAD_File_ReaderWriter:XSL_Location"] = SobekCM_Library_Settings.System_Base_URL + "default/sobekcm_default.xsl";
+
+                    reader.Read_Metadata(ead_file_location, thisPackage, options, out Error_Message);
+
+                    // Clear all existing views
+                    thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
+
+                    // Get the metadata module for EADs
+                    EAD_Info eadInfo = thisPackage.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY) as EAD_Info;
+                    if ((eadInfo != null) && (eadInfo.Container_Hierarchy.Containers.Count > 0))
+                        thisPackage.Behaviors.Add_View(View_Enum.EAD_CONTAINER_LIST);
+
                 }
 
                 if (((non_flash_downloads > 0) && (pdf_download != 1)) || ((non_flash_downloads > 1) && (pdf_download == 1)))
@@ -918,28 +955,7 @@ namespace SobekCM.Library.Items
                     }
                 }
 
-                // Some special code for EAD objects
-                if ((thisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Archival ) && (ead_file.Length > 0))
-                {
-                    // Now, read this EAD file information 
-                    string ead_file_location = SobekCM_Library_Settings.Image_Server_Network + thisPackage.Web.AssocFilePath + ead_file;
-                    EAD_File_ReaderWriter reader = new EAD_File_ReaderWriter();
-                    string Error_Message;
-                    Dictionary<string, object> options = new Dictionary<string, object>();
-                    options["EAD_File_ReaderWriter:XSL_Location"] = SobekCM_Library_Settings.System_Base_URL + "default/sobekcm_default.xsl";
-                    reader.Read_Metadata(ead_file_location, thisPackage, options, out Error_Message);
 
-                    // Clear all existing views
-                    thisPackage.Behaviors.Clear_Views();
-                    thisPackage.Behaviors.Add_View(View_Enum.CITATION);
-                    thisPackage.Behaviors.Default_View = thisPackage.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
-
-                    // Get the metadata module for EADs
-                    EAD_Info eadInfo = (EAD_Info)thisPackage.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
-                    if (( eadInfo != null ) && ( eadInfo.Container_Hierarchy.Containers.Count > 0 ))
-                        thisPackage.Behaviors.Add_View(View_Enum.EAD_CONTAINER_LIST);
-
-                }
             }
             else
             {

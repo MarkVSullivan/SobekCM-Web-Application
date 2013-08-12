@@ -275,7 +275,7 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Aggregation_Item_Count:
                 case Display_Mode_Enum.Aggregation_Usage_Statistics:
                 case Display_Mode_Enum.Aggregation_Admin_View:
-                    subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, ipRestrictionInfo, htmlBasedContent, Tracer);
+                    subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, htmlBasedContent, Tracer);
                     break;
 
                 case Display_Mode_Enum.Item_Display:
@@ -618,7 +618,6 @@ namespace SobekCM.Library.MainWriters
 
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Menus.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // Always add jQuery library (changed as of 7/8/2013)
             if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
@@ -1177,17 +1176,17 @@ namespace SobekCM.Library.MainWriters
                         if  (hierarchyObject.Code != "all")
                         {                            
                             if (banner_image.Length > 0)
-                                banner = "<center><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></center>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-                                banner = "<center><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></center>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                             }
                             else
                             {
-                                banner = "<center><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></center>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></div>";
                             }
                         }
                     }

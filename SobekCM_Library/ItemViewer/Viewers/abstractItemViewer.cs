@@ -25,7 +25,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Empty list of behaviors, returned by default </summary>
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
-        protected List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+        protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
 	    /// <summary> Constructor for a new instance of the abstractItemViewer class </summary>
 	    protected abstractItemViewer()

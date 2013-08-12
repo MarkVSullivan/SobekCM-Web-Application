@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
+using SobekCM.Library.HTML;
 using SobekCM.Library.Navigation;
 
 namespace SobekCM.Library.AdminViewer
@@ -13,6 +15,10 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Sets the translation / language support object for writing the user interface in multiple languages </summary>
         Language_Support_Info Translator { get; set; }
+
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors { get; }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>

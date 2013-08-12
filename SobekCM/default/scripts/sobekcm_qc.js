@@ -3,7 +3,7 @@ var spanArray;
 var autonumberingMode=-1;
 var makeSortable = 3;
 var cursorMode = 1;
-
+var lastSelected = -1;
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -46,7 +46,7 @@ function QC_Change_Sortable_Setting(option, image_location)
 {
   //Assign the sorting option to the global variable. 
     makeSortable = option;
-
+//    alert('option:'+option+' image_location:'+image_location);
   
   //Set the hidden variable value
   var hidden_sortable_option = document.getElementById('QC_sortable_option'); 
@@ -129,7 +129,7 @@ function Configure_QC( MaxPageCount ) {
     
     autonumberingMode = document.getElementById("QC_autonumber_option").value;
 	makeSortable = document.getElementById("QC_sortable_option").value;
-	
+
 }
 
 
@@ -258,11 +258,10 @@ function DivNameTextChanged(TextboxID)
 function PaginationTextChanged(TextboxID)
 {
 
-    //Mode '0': Autonumber all the thumbnail page names till the end
-    //Mode '1': Autonumber all the thumbnail pages till the start of the next div
-    //Mode '2': No autonumber
-
-	alert('Beginning of function PaginationTextChanged');
+    //Mode '0': Auto number all the thumbnail page names till the end
+    //Mode '1': Auto number all the thumbnail pages till the start of the next div
+    //Mode '2': No auto numbering
+    
 	//if there is a value assigned to the global autonumbering mode variable, use the global value insted of this one
 //	if(autonumberingMode>-1)
 //	  Mode = autonumberingMode;
@@ -270,11 +269,12 @@ function PaginationTextChanged(TextboxID)
     if (Mode == 2)
         return;
     
-	alert('Mode:'+Mode);
+//	alert('Mode:'+Mode);
 	
     var textboxValue = document.getElementById(TextboxID).value;
 	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
-	var onlyNumberEntered = textboxValue.match(/\d+/g);
+    //var onlyNumberEntered = textboxValue.match(/\d+/g);
+    var onlyNumberEntered = ((!isNaN(parseFloat(textboxValue))) && isFinite(textboxValue));
 	if(onlyNumberEntered)
 	  {
 	     document.getElementById(TextboxID).value = 'Page '+ textboxValue;
@@ -287,7 +287,6 @@ function PaginationTextChanged(TextboxID)
 	var numberOnlyLastBox=document.getElementById('Autonumber_number_only');
 	
 //	lastNumber = lastNumber.toUpperCase().trim();
-    var onlyNumberEntered = 
 	var matches = lastNumber.match(/\d+/g);
 	var varRomanMatches = true;
 	var isRomanLower=true;
@@ -336,7 +335,7 @@ function PaginationTextChanged(TextboxID)
 	}//end if
 	else if(varRomanMatches==true)
 	{
-	   //alert('Possible roman numeral detected');
+
 	   var romanToNumberError="No error";
 	   
 	   //Determine whether the roman number is in upper or lower case
@@ -596,12 +595,14 @@ function mainthumbnailicon_click()
 	//If this cursor is already set, change back to default
 	if(cursorMode == 2) {
 	    ResetCursorToDefault();
+	    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 	}
 	else
 	{
 		//Remove the default cursor style class, and any other custom class first before setting this one, 
 		//otherwise it will override the custom cursor class
 	    ResetCursorToDefault();
+	    $('#qc_mainmenu_thumb').addClass('sbkQc_MainMenuIconCurrent');
 	    
 	    // Step through each span
 	    for (var j = 0; j < spanArray.length; j++) {
@@ -619,18 +620,20 @@ function mainthumbnailicon_click()
     return false;
 }
 
+function defaulticon_click() {
+    ResetCursorToDefault();
+    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
+    return false;
+}
+
 function ResetCursorToDefault()
 {
-	////Remove custom cursor classes if any
-	//$('body').removeClass('qcPickMainThumbnailCursor');
-	//$('body').removeClass('qcMovePagesCursor');
-	//$('body').removeClass('qcDeletePagesCursor');
-
-	////Reset to default
-	//$('body').addClass('qcResetMouseCursorToDefault');
-    
     // Set flag to normal cursor mode
-	cursorMode = 1;
+    cursorMode = 1;
+    $('#qc_mainmenu_default').removeClass('sbkQc_MainMenuIconCurrent');
+    $('#qc_mainmenu_thumb').removeClass('sbkQc_MainMenuIconCurrent');
+    $('#qc_mainmenu_move').removeClass('sbkQc_MainMenuIconCurrent');
+    $('#qc_mainmenu_delete').removeClass('sbkQc_MainMenuIconCurrent');
     
     // Step through each span
 	for (var j = 0; j < spanArray.length; j++)
@@ -646,9 +649,11 @@ function ResetCursorToDefault()
 	    
 	    // Reset each checkbox
 	    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-	    if ( checkbox.checked == true )
+	    if (checkbox.checked == true) {
 	        checkbox.checked = false;
-	    
+	        span.removeClass('sbkQc_SpanSelected');
+	    }
+
 	    checkbox.style.visibility = 'hidden';
 	    
 	    //Hide all the left/right arrows for moving pages
@@ -658,8 +663,8 @@ function ResetCursorToDefault()
 
 	   
 	//Also re-hide the button for moving multiple pages in case previously made visible
-	document.getElementById('divMoveOnScroll').className='qcDivMoveOnScrollHidden';
-	document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
+	document.getElementById('divMoveOnScroll').style.visibility = 'hidden';
+	document.getElementById('divDeleteMoveOnScroll').style.visibility = 'hidden';
 }
 
 //Change cursor: move pages
@@ -697,12 +702,13 @@ function movepagesicon_click()
         
         // Set flag to multiple move cursor mode
         cursorMode = 3;
+        $('#qc_mainmenu_move').addClass('sbkQc_MainMenuIconCurrent');
 
-        //Unhide all the checkboxes
-        for (var j = 0; j < spanArray.length; j++) {
-            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-            checkbox.style.visibility = 'visible';
-        }
+        ////Unhide all the checkboxes
+        //for (var j = 0; j < spanArray.length; j++) {
+        //    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        //    checkbox.style.visibility = 'visible';
+        //}
     }
     return false;
 }
@@ -732,12 +738,13 @@ function bulkdeleteicon_click()
         
         // Set flag to multiple delete cursor mode
         cursorMode = 4;
+        $('#qc_mainmenu_delete').addClass('sbkQc_MainMenuIconCurrent');
 
-        //Unhide all the checkboxes
-        for (var j = 0; j < spanArray.length; j++) {
-            var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-            checkbox.style.visibility = 'visible';
-        }
+        ////Unhide all the checkboxes
+        //for (var j = 0; j < spanArray.length; j++) {
+        //    var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        //    checkbox.style.visibility = 'visible';
+        //}
     }
 
     return false;
@@ -979,54 +986,68 @@ function qc_auto_save()
 
 
 //When any 'bulk move/delete page' checkbox is checked/unchecked
-function qccheckbox_onchange(chkBoxID)
+function qccheckbox_onchange(event, chkBoxID)
 {
-    var checked = false;
-    document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
-    document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-    
-    //Hide all the left/right arrows for moving pages
-    for (var j = 0; j < spanArray.length; j++) {
-        var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
-        arrowSpan.style.visibility = 'hidden';
-    }
-    
-    //If a checkbox has been checked, and the move_thumbnails cursor is currently set
-    if (document.getElementById(chkBoxID).checked == true && cursorMode == 3) {
-        document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScroll';
-        for (var j = 0; j < spanArray.length; j++) {
-            var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
-            arrowSpan.style.visibility = 'visible';
-        }
-        
-    } else if (document.getElementById(chkBoxID).checked == true && cursorMode == 4) {
-        document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButton';
-
+    // This should only happen for cursor modes 3 or 4
+    if ((cursorMode != 3) && (cursorMode != 4))
+        return;
+       
+    // Set the background
+    if (document.getElementById(chkBoxID).checked == true) {
+        $('#' + chkBoxID.replace('chkMoveThumbnail', 'span')).addClass('sbkQc_SpanSelected');
     } else {
-        //Check if there is any other checked checkbox on the screen
+        $('#' + chkBoxID.replace('chkMoveThumbnail', 'span')).removeClass('sbkQc_SpanSelected');
+    }
+
+    // See if any checkboxes remain checked
+    var checked = false;
+    if (document.getElementById(chkBoxID).checked == true)
+        checked = true;
+    else {
+        // This isn't checked anymore, are any others?
         for (var i = 0; i < spanArray.length; i++) {
             if (document.getElementById('chkMoveThumbnail' + i).checked == true) {
-                    checked = true;
-                    break;
+                checked = true;
+                break;
             }
         }
+    }
 
-        if (cursorMode == 3)
-        {
-            document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScroll';
-            
-            //Unhide the left/right arrows for moving pages
+    // If none checked, hide the buttons
+    if (!checked) {
+        document.getElementById('divMoveOnScroll').style.visibility = 'hidden';
+        document.getElementById('divDeleteMoveOnScroll').style.visibility = 'hidden';
+
+        //Hide all the left/right arrows for moving pages
+        for (var j = 0; j < spanArray.length; j++) {
+            var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
+            arrowSpan.style.visibility = 'hidden';
+        }
+    } else {
+        
+        //If a checkbox has been checked display the necessary controls
+        
+        // BULK MOVE MODE
+        if (cursorMode == 3) {
+            document.getElementById('divMoveOnScroll').style.visibility = 'visible';
             for (var j = 0; j < spanArray.length; j++) {
                 var arrowSpan = document.getElementById(spanArray[j].replace('span', 'movePageArrows'));
                 arrowSpan.style.visibility = 'visible';
             }
-
-        } else if (checked == true && cursorMode == 4) {
-            document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButton';
-        } else {
-            document.getElementById('divDeleteMoveOnScroll').className = 'qcDivDeleteButtonHidden';
-            document.getElementById('divMoveOnScroll').className = 'qcDivMoveOnScrollHidden';
         }
+        
+        // BULK DELETE MODE
+        if (cursorMode == 4) {
+            document.getElementById('divDeleteMoveOnScroll').style.visibility = 'visible';
+            
+            }
+    }
+    
+    // Stop the event propogation
+    var evt = event ? event : window.event;
+    if (evt != null) {
+        if (evt.stopPropagation) evt.stopPropagation();
+        if (evt.cancelBubble != null) evt.cancelBubble = true;
     }
 }
 
@@ -1107,13 +1128,14 @@ function cancel_move_pages() {
     }
 
     ResetCursorToDefault();
+    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
     // Reset and hide all the checkboxes as well
     for (var j = 0; j < spanArray.length; j++) {
         var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
         if ( checkbox.checked == true )
             checkbox.checked = false;
-        checkbox.style.visibility = 'hidden';
+        //checkbox.style.visibility = 'hidden';
         
         document.getElementById('movePageArrows' + j).style.visibility = 'hidden';
     }
@@ -1195,13 +1217,14 @@ function DeleteSelectedPages() {
 
     if (checked_found == 0) {
         ResetCursorToDefault();
+        $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
         // Reset and hide all the checkboxes as well
         for (var j = 0; j < spanArray.length; j++) {
             var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
             if ( checkbox.checked == true )
                 checkbox.checked = false;
-            checkbox.style.visibility = 'hidden';
+            //checkbox.style.visibility = 'hidden';
         }
 
     } else {
@@ -1212,14 +1235,17 @@ function DeleteSelectedPages() {
             document.itemNavForm.submit();
         } else {
             ResetCursorToDefault();
+            $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
             // Reset and hide all the checkboxes as well
             for (var j = 0; j < spanArray.length; j++) {
                 var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-                if ( checkbox.checked == true )
+                if (checkbox.checked == true) {
                     checkbox.checked = false;
-                
-                checkbox.style.visibility = 'hidden';
+                    $('#' + spanArray[j]).removeClass('sbkQc_SpanSelected');
+                }
+
+                //checkbox.style.visibility = 'hidden';
             }
         }
     }
@@ -1281,7 +1307,8 @@ function qcspan_mouseout(spanid) {
     return false;
 }
 
-function qcspan_onclick(spanid) {
+function qcspan_onclick(event, spanid) {
+   
     // Get the page index
     var pageIndex = spanid.replace('span', '');
     
@@ -1293,6 +1320,7 @@ function qcspan_onclick(spanid) {
 
         // Reset the cursor
         ResetCursorToDefault();
+        $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
 
         // Ensure no other spans are set
         for (var i = 0; i < spanArray.length; i++) {
@@ -1311,6 +1339,31 @@ function qcspan_onclick(spanid) {
 
         var checkbox = document.getElementById('chkMoveThumbnail' + pageIndex);
         checkbox.checked = !checkbox.checked;
-        qccheckbox_onchange('chkMoveThumbnail' + pageIndex);
+        if (event.shiftKey) {
+            if ((checkbox.checked) && (lastSelected >= 0)) {
+
+
+                var thisIndex = spanArray.indexOf(spanid);
+
+                var start = Math.min(thisIndex, lastSelected);
+                var end = Math.max(thisIndex, lastSelected);
+
+                for (var i = start; i < end; i++) {
+                    document.getElementById(spanArray[i].replace('span', 'chkMoveThumbnail')).checked = true;
+                    $('#' + spanArray[i]).addClass('sbkQc_SpanSelected');
+                }
+            }
+        } else {
+            if (checkbox.checked) {
+                lastSelected = spanArray.indexOf(spanid);
+            } else {
+                lastSelected = -1;
+            }
+        }
+
+        // Always fire this event, for some more global changes
+        qccheckbox_onchange(null, 'chkMoveThumbnail' + pageIndex);
     }
 }
+
+
