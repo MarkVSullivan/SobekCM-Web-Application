@@ -40,13 +40,6 @@ function initOptions() {
 
 //open a specific tab
 function openToolboxTab(id) {
-    ////START WORKAROUND
-    //if (id == 1) {
-    //    setTimeout(function () { document.getElementById("content_toolbox_searchButton").style.display = "block"; }, 100);
-    //} else {
-    //    document.getElementById("content_toolbox_searchButton").style.display = "none";
-    //}
-    ////END WORKAROUND
     $("#mapper_container_toolboxTabs").accordion({ active: id });
 }
 
@@ -144,9 +137,6 @@ function createSavedItem(coordinates) {
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
     de("saving item: " + dataPackage); //temp
-    //document.getElementById("saveTest").value = dataPackage; //not used
-    //document.location.reload(); //refresh page //not used
-    //CallServer(dataPackage); //not used (for callbacks)
     toServer(dataPackage);
 }
 
