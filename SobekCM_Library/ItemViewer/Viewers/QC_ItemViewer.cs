@@ -1832,8 +1832,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
 				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT02.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
-				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT04.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT02.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
+				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT04.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
                     Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
@@ -2016,7 +2016,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("</td></tr>");
 			Output.WriteLine("<tr><td></td><td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages2\" value=\"Before\" onclick=\"rbMovePagesChanged(this.value);\">Before</td>");
 
-			Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  disabled=\"true\">");
+			Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  name=\"selectDestinationPageList2\" disabled=\"true\">");
 
 			//iterate through the page items
 			if (qc_item.Web.Static_PageCount > 0)
