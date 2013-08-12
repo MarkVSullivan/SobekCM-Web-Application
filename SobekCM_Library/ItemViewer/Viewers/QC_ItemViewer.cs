@@ -641,8 +641,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				int number = 0;
 				if (autonumber_number_system == "decimal")
 					number = Int32.Parse(autonumber_number_only) + 1;
-				else if (autonumber_number_system == "roman")
-					number = RomanToNumber(autonumber_number_only) + 1;
+				else if (autonumber_number_system.ToLower() == "roman")
+					//number = RomanToNumber(autonumber_number_only) + 1;
+                    number = Int32.Parse(autonumber_number_only) + 1;
 
 				//Do the autonumbering first
 				foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
@@ -670,10 +671,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								{
 									if (autonumber_number_system == "decimal")
 										thisPage.Label = autonumber_text_only + number.ToString();
-									else
-									{
-										thisPage.Label = autonumber_text_only + NumberToRoman(number);
-									}
+                                    else if (autonumber_number_system == "ROMAN")
+                                    {
+                                        thisPage.Label = autonumber_text_only + NumberToRoman(number).ToUpper();
+                                    }
+                                    else
+                                    {
+                                        thisPage.Label = autonumber_text_only + NumberToRoman(number).ToLower();
+                                    }
 									number++;
 								}
 							}

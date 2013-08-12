@@ -300,6 +300,9 @@ function PaginationTextChanged(TextboxID)
 	    }
 	}
 
+	var hidden_filename = document.getElementById(spanArray[spanArray.length - 1].replace('span', 'filename'));
+	document.getElementById('Autonumber_last_filename').value=hidden_filename.value;
+	
     // Was there a match for numbers in the last portion?
 	if (matches != null) 
 	{
@@ -498,7 +501,7 @@ function PaginationTextChanged(TextboxID)
 //		   alert('after setting the autonumber mode hidden variable');
 		   
 		   var hidden_number_system = document.getElementById('Autonumber_number_system');
-		   hidden_number_system.value='roman';
+		   hidden_number_system.value='ROMAN';
 
 		 
 		  //Now autonumber all the remaining textboxes of the document
@@ -540,6 +543,7 @@ function PaginationTextChanged(TextboxID)
 				if(isRomanLower)
 				{
 				  result=result.toLowerCase();
+				  hidden_number_system.value='roman';
 				}
 				
 				//End conversion to roman numeral
@@ -547,8 +551,11 @@ function PaginationTextChanged(TextboxID)
 //				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
 				document.getElementById(spanArray[i].replace('span','textbox')).value = 
 				 document.getElementById(TextboxID).value.substr(0,((document.getElementById(TextboxID).value.length)-(lastNumber.length))-1)+' '+result;
-			  }//end if
-			}//end for
+				 
+		   textOnlyLastBox.value = document.getElementById(TextboxID).value.substr(0,((document.getElementById(TextboxID).value.length)-(lastNumber.length))-1)+' ';
+		   numberOnlyLastBox.value = total;
+			  }//end if(textbox found)
+			}//end for loop
 		}
 	}
 }//end function
