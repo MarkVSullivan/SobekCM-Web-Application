@@ -16,6 +16,10 @@
 **************************************************************************/
 
 
+#sbkHmw_BannerDiv { background-color: White;width: 100%;text-align: center;}
+#sbkAhs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
+#sbkShs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
+
 .smaller { font-size: 0.85em;	}
 
 img { border: 0; } 
@@ -397,21 +401,15 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 
 /** Styles relating to the main collection pages and related searches, browses, etc.. **/
-#pagecontainer
+#pagecontainer, #pagecontainer_resumed
 {
-    width: 750px; 
-    position: relative; 
-    margin-left: auto; 
-    margin-right: auto; 
-    border: solid 0px #ccc; 
+    margin-left: 70px; 
+    margin-right: 70px; 
     text-align:center; 
     FONT-SIZE: small; 
 }
 
-#pagecontainer_resumed
-{
-    width: 750px; position: relative; margin-left: auto; margin-right: auto; border: solid 0px #ccc; text-align:center; FONT-SIZE: small; 
-}
+
 
 
 #mainBanner  

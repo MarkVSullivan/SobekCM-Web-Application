@@ -19,6 +19,10 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Error_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
+            // Start the page container
+            Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<br />");
+
                 Output.WriteLine("<center>");
                 
                 Output.WriteLine("  <br /><br />");
@@ -32,6 +36,10 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <br /><br /><br /><br />");
                 Output.WriteLine("</span>");
                 Output.WriteLine("</center>");
+                Output.WriteLine();
+
+                Output.WriteLine("<!-- Close the pagecontainer div -->");
+                Output.WriteLine("</div>");
                 Output.WriteLine();
 
             return true;

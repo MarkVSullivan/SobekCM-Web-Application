@@ -1321,6 +1321,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t</ul></div>");
                     Output.WriteLine();
 
+                    Output.WriteLine("<!-- Initialize the main item menu -->");
                     Output.WriteLine(" <script>");
                     Output.WriteLine();
                     Output.WriteLine("jQuery(document).ready(function () {");
@@ -1884,7 +1885,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
                 // Add the scripts needed
-                Output.WriteLine("<!-- Add references to the jquery and sobekcm javascript files -->");
+                Output.WriteLine("<!-- Add references to the sobekcm javascript files and libraries needed for the user menu -->");
 
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
@@ -2021,6 +2022,7 @@ namespace SobekCM.Library.HTML
 
             // Write the main SobekCM item style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_ItemMenus.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // Add any viewer specific tags that need to reside within the HTML head
             if (PageViewer != null)

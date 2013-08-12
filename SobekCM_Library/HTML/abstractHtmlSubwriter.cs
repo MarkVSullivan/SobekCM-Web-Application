@@ -18,6 +18,47 @@ namespace SobekCM.Library.HTML
     /// HTML subwriters are the top level writing classes employed by the <see cref="Html_MainWriter"/>. </summary>
     public abstract class abstractHtmlSubwriter
     {
+        /// <summary> Adds the banner to the response stream from either the html web skin
+        /// or from the current item aggreagtion object, depending on flags in the web skin object </summary>
+        /// <param name="Output"> Stream to which to write the HTML for the banner </param>
+        /// <param name="Banner_Division_Name"> Name for the wrapper division around the banner </param>
+        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
+        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
+        /// <param name="CurrentMode"> Mode / navigation information for the current request</param>
+        /// <remarks> This is called by several html subwriters that otherwise tell this class to suppress writing the banner </remarks>
+        public static void Add_Banner(TextWriter Output, string Banner_Division_Name, SobekCM_Navigation_Object CurrentMode, SobekCM_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
+        {
+            Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
+            if ((HTML_Skin != null) && (HTML_Skin.Override_Banner))
+            {
+                Output.WriteLine(HTML_Skin.Banner_HTML);
+            }
+            else
+            {
+                string url_options = CurrentMode.URL_Options();
+                if (url_options.Length > 0)
+                    url_options = "?" + url_options;
+
+                if ((Hierarchy_Object != null) && (Hierarchy_Object.Code != "all"))
+                {
+                    Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a alt=\"" + Hierarchy_Object.ShortName + "\" href=\"" + CurrentMode.Base_URL + Hierarchy_Object.Code + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Banner_Image(CurrentMode.Language, HTML_Skin) + "\" alt=\"\" /></a></div>");
+                }
+                else
+                {
+                    if ((Hierarchy_Object != null) && (Hierarchy_Object.Banner_Image(CurrentMode.Language, HTML_Skin).Length > 0))
+                    {
+                        Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Banner_Image(CurrentMode.Language, HTML_Skin) + "\" alt=\"\" /></a></div>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></div>");
+                    }
+                }
+            }
+            Output.WriteLine();
+        }
+
+
         private const string SELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cL_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\"> ";
         private const string SELECTED_TAB_END_ORIG = " </span><img src=\"{0}design/skins/{1}/tabs/cR_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
         private const string UNSELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> ";

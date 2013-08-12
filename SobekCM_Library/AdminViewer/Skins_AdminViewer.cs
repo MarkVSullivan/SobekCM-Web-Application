@@ -505,7 +505,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <center><b>" + actionMessage + "</b></center>");
             }
 
-            Output.WriteLine("  <blockquote>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</blockquote>");
+            Output.WriteLine("  <blockquote>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</blockquote>");
 
             Output.WriteLine("  <span class=\"SobekAdminTitle\">New Web Skin</span>");
             Output.WriteLine("    <blockquote>");

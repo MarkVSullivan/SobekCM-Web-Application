@@ -87,6 +87,10 @@ namespace SobekCM.Library.HTML
                 button = "Retour";
             }
 
+            // Start the page container
+            Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<br />");
+
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<div class=\"SobekSearchPanel\" align=\"center\">");
             Output.WriteLine("  <h1>" + preferences + "</h1>");
@@ -164,6 +168,10 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  </form>");
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
+            Output.WriteLine();
+
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
             Output.WriteLine();
 
             return true;

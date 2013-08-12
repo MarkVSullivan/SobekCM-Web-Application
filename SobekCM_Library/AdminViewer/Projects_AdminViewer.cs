@@ -201,7 +201,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <center><b>" + actionMessage + "</b></center>");
             }
 
-            Output.WriteLine("  <blockquote>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "admin/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</blockquote>");
+            Output.WriteLine("  <blockquote>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</blockquote>");
 
             Output.WriteLine("  <span class=\"SobekAdminTitle\">New Project</span>");
             Output.WriteLine("    <blockquote>");
