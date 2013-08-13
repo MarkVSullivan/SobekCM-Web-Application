@@ -4,6 +4,8 @@ var autonumberingMode=-1;
 var makeSortable = 3;
 var cursorMode = 1;
 var lastSelected = -1;
+var thumbnailImageDictionary;
+
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -40,6 +42,17 @@ function qc_set_fullscreen() {
 	}
 	  
 }
+
+
+//Assign the thumbnail image filenames, file locations to the global dictionary
+function QC_Save_Image_Dictionary(filename, file_location) {
+    thumbnailImageDictionary[filename] = file_location;
+
+    alert('thumbnailImageDictionary[' + filename + ']=' + thumbnailImageDictionary[filename]);
+
+}
+
+
 
 //Called when the user clicks on one of the sorting options in the menu 
 function QC_Change_Sortable_Setting(option, image_location)

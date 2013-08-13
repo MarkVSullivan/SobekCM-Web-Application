@@ -49,8 +49,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private string mainThumbnailFileName_from_db;
 		private string mainJPGFileName_from_db;
 		private string notes;
-		private bool clear_pagination;
-		private bool clear_and_reorder_pagination;
 		private SobekCM_Item qc_item;
 		private DataRow Item_Detail;
 
@@ -1802,7 +1800,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("  <table>");
 
                     //Truncate the filename if too long
-                    string tooltipText = String.Empty;
+                    string filenameTooltipText = String.Empty;
+				    int truncated_length = 13;
                     if (filename_sans_extension.Length > 16)
                     {
                         // Are there numbers at the end?
@@ -1812,19 +1811,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             while (Char.IsNumber(filenameToDisplay[filenameToDisplay.Length - (1 + number_length)]))
                                 number_length++;
 
-                            int characters = 8 - number_length;
+                            int characters = truncated_length - number_length;
                             if (characters < 2)
-                                filenameToDisplay = "..." + filenameToDisplay.Substring(filenameToDisplay.Length - Math.Min(number_length, 8));
+                                filenameToDisplay = "..." + filenameToDisplay.Substring(filenameToDisplay.Length - Math.Min(number_length, truncated_length));
                             else
                             {
-                                tooltipText = filenameToDisplay;
+                                filenameTooltipText = filenameToDisplay;
                                 filenameToDisplay = filenameToDisplay.Substring(0, characters) + "..." + filenameToDisplay.Substring(filenameToDisplay.Length - number_length);
                             }
                         }
                         else
                         {
-                            tooltipText = filenameToDisplay;
-                            filenameToDisplay = filenameToDisplay.Substring(0, 8) + "...";
+                            filenameTooltipText = filenameToDisplay;
+                            filenameToDisplay = filenameToDisplay.Substring(0, truncated_length) + "...";
                         }
                     }
                     //End filename truncation
@@ -1832,15 +1831,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Start the top row and add the filename
 				    Output.WriteLine("    <tr>");
 				    Output.WriteLine("      <td colspan=\"2\">");
-                    Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span class=\"sbkQc_Filename\" title=\"" + tooltipText + "\">" + filenameToDisplay + "</span>");
+                    Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span class=\"sbkQc_Filename\" title=\"" + filenameTooltipText + "\">" + filenameToDisplay + "</span>");
 
                     //Add the checkbox for moving this thumbnail
 				   // Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
-				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05LT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
-				    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05RT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
-                    Output.WriteLine("        </span>");
+                    //Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
+                    //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
+                    //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
+                    //Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
 				    if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
@@ -1960,11 +1959,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					//Add the span with the on-hover-options for the page thumbnail
 				    Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <td colspan=\"2\">");
+                  //  Output.WriteLine("      <td colspan=\"2\">");
+                    Output.WriteLine("<td>");
+                    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
+                    Output.WriteLine("        </span>");
+                    Output.WriteLine("</td>");
+                    Output.WriteLine("<td>");
 				    Output.WriteLine("        <span id=\"qcPageOptions" + page_index + "\" class=\"sbkQc_PageOptionsSpan\">");
                     Output.WriteLine("          <img title=\"" + info_text + "\" src=\""+CurrentMode.Base_URL+"default/images/qc/Main_Information.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
                     Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\" title=\"" + view_text + "\" ><img src=\"" + CurrentMode.Base_URL + "default/images/qc/View.ico\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
                     Output.WriteLine("          <img title=\"" + delete_text + "\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/qc/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
+
 
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
 					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
@@ -2032,6 +2039,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 			}
 			Output.WriteLine("</select></td></tr>");
+
+            //Add the div for the preview section
+            Output.WriteLine("<div id=\"popupPreviewDiv\"> ");
+
+            Output.WriteLine("</div>");
+
+
+            //End div for the preview section
 
 			//Add the Cancel & Move buttons
 			Output.WriteLine("    <tr><td colspan=\"3\" style=\"text-align:center\">");
