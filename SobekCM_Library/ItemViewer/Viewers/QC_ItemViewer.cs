@@ -641,8 +641,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				int number = 0;
 				if (autonumber_number_system == "decimal")
 					number = Int32.Parse(autonumber_number_only) + 1;
-				else if (autonumber_number_system == "roman")
-					number = RomanToNumber(autonumber_number_only) + 1;
+				else if (autonumber_number_system.ToLower() == "roman")
+					//number = RomanToNumber(autonumber_number_only) + 1;
+                    number = Int32.Parse(autonumber_number_only) + 1;
 
 				//Do the autonumbering first
 				foreach (abstract_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Divisions_PreOrder)
@@ -670,10 +671,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								{
 									if (autonumber_number_system == "decimal")
 										thisPage.Label = autonumber_text_only + number.ToString();
-									else
-									{
-										thisPage.Label = autonumber_text_only + NumberToRoman(number);
-									}
+                                    else if (autonumber_number_system == "ROMAN")
+                                    {
+                                        thisPage.Label = autonumber_text_only + NumberToRoman(number).ToUpper();
+                                    }
+                                    else
+                                    {
+                                        thisPage.Label = autonumber_text_only + NumberToRoman(number).ToLower();
+                                    }
 									number++;
 								}
 							}
@@ -1832,8 +1837,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
 				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT02.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
-				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/POINT04.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05LT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
+				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05RT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
                     Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
@@ -1847,7 +1852,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				    Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td colspan=\"2\">");
-
 
 					// Write the image, based on current thumbnail size
 					switch (size_of_thumbnails)
@@ -2016,7 +2020,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("</td></tr>");
 			Output.WriteLine("<tr><td></td><td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages2\" value=\"Before\" onclick=\"rbMovePagesChanged(this.value);\">Before</td>");
 
-			Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  disabled=\"true\">");
+			Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  name=\"selectDestinationPageList2\" disabled=\"true\">");
 
 			//iterate through the page items
 			if (qc_item.Web.Static_PageCount > 0)

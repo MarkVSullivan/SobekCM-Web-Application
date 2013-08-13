@@ -46,7 +46,6 @@ function QC_Change_Sortable_Setting(option, image_location)
 {
   //Assign the sorting option to the global variable. 
     makeSortable = option;
-//    alert('option:'+option+' image_location:'+image_location);
   
   //Set the hidden variable value
   var hidden_sortable_option = document.getElementById('QC_sortable_option'); 
@@ -301,6 +300,9 @@ function PaginationTextChanged(TextboxID)
 	    }
 	}
 
+	var hidden_filename = document.getElementById(spanArray[spanArray.length - 1].replace('span', 'filename'));
+	document.getElementById('Autonumber_last_filename').value=hidden_filename.value;
+	
     // Was there a match for numbers in the last portion?
 	if (matches != null) 
 	{
@@ -324,7 +326,7 @@ function PaginationTextChanged(TextboxID)
                 // Determine and save the next numeric value
 			    number++;
 			    numberOnlyLastBox.value = number.toString();
-			    
+
 			    var inLoopTextBoxElment = document.getElementById(spanArray[i].replace('span', 'textbox'));
 			    inLoopTextBoxElment.value = textOnlyLastBox.value + number;
 			}
@@ -499,7 +501,7 @@ function PaginationTextChanged(TextboxID)
 //		   alert('after setting the autonumber mode hidden variable');
 		   
 		   var hidden_number_system = document.getElementById('Autonumber_number_system');
-		   hidden_number_system.value='roman';
+		   hidden_number_system.value='ROMAN';
 
 		 
 		  //Now autonumber all the remaining textboxes of the document
@@ -541,6 +543,7 @@ function PaginationTextChanged(TextboxID)
 				if(isRomanLower)
 				{
 				  result=result.toLowerCase();
+				  hidden_number_system.value='roman';
 				}
 				
 				//End conversion to roman numeral
@@ -548,8 +551,11 @@ function PaginationTextChanged(TextboxID)
 //				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
 				document.getElementById(spanArray[i].replace('span','textbox')).value = 
 				 document.getElementById(TextboxID).value.substr(0,((document.getElementById(TextboxID).value.length)-(lastNumber.length))-1)+' '+result;
-			  }//end if
-			}//end for
+				 
+		   textOnlyLastBox.value = document.getElementById(TextboxID).value.substr(0,((document.getElementById(TextboxID).value.length)-(lastNumber.length))-1)+' ';
+		   numberOnlyLastBox.value = total;
+			  }//end if(textbox found)
+			}//end for loop
 		}
 	}
 }//end function
@@ -945,7 +951,7 @@ function changeAutoSaveOption()
 	return false;
 }
 
-//Called from the main form every three minutes
+//Auto-save: Called from the main form every three minutes
 function qc_auto_save()
 {
 
@@ -1072,9 +1078,28 @@ function rbMovePagesChanged(rbValue)
 
 
 //Update the popup form based on the target page filename and relative position passed in
-function update_popup_form(pageID,before_after)
+function update_popup_form(page_index,pageID,before_after)
 {
-  //alert(pageID+before_after);
+
+   //Uncheck/Check this thumbnail (since clicking on the left/right move arrows for this thumbnail reversed the original user selected option)
+        var checkbox = document.getElementById('chkMoveThumbnail' + page_index);
+        checkbox.checked = !checkbox.checked;
+ //  qccheckbox_onchange(null, 'chkMoveThumbnail' + pageIndex);
+   
+	 var hidden_request = document.getElementById('QC_behaviors_request');
+	 var hidden_action = document.getElementById('QC_move_relative_position');
+	 var hidden_destination = document.getElementById('QC_move_destination');
+	 var file_name='';
+	 
+	 hidden_request.value='move_selected_pages';
+	 hidden_action.value = '';
+	 hidden_destination.value=file_name;
+	 
+	 
+//end section: delete code from the submit function 
+
+
+//alert(pageID+before_after);
   if(before_after=='After')
   {
 	if(document.getElementById('selectDestinationPageList1'))
@@ -1094,6 +1119,11 @@ function update_popup_form(pageID,before_after)
 			  ddl.selectedIndex = i;
 			}
 		}	
+	   hidden_action.value = 'After';
+	   var ddl=document.getElementById('selectDestinationPageList1');
+	   var selIndex = ddl.selectedIndex;
+	   hidden_destination.value = ddl.options[selIndex].value;
+//	   alert(hidden_destination.value);
 	  
 	}
   }
@@ -1116,6 +1146,25 @@ function update_popup_form(pageID,before_after)
 				
 			}
 		}	  
+		
+		if(document.getElementById('selectDestinationPageList2').selectedIndex>0)
+	   { 
+		 var ddl=document.getElementById('selectDestinationPageList2');
+		 var selIndex = ddl.selectedIndex-1;
+		 hidden_action.value = 'After';
+		 hidden_destination.value = ddl.options[selIndex].value;
+	     //alert(hidden_destination.value);
+//		 alert('Before selected: changing this to the corresponding after. hidden_action.value:'+hidden_action.value + hidden_destination.value);
+	   }
+	   else
+	   {
+		 hidden_action.value = 'Before';
+		 var ddl=document.getElementById('selectDestinationPageList2');
+		 hidden_destination.value = ddl.options[ddl.selectedIndex].value;
+//		 alert(hidden_destination.value);
+	   }
+		
+		
 	}
   }
 }
@@ -1156,7 +1205,7 @@ function move_pages_submit()
 	 hidden_action.value = '';
 	 hidden_destination.value=file_name;
 	 
-	 //if 'Before' selected, change to corresponding 'After' unless 'Before' 0th option is selected
+	 //if 'Before' selected, change to the corresponding 'After' unless 'Before' 0th option is selected
 	 if(document.getElementById('rbMovePages2').checked==true)
 	 {
 	   if(document.getElementById('selectDestinationPageList2').selectedIndex>0)
@@ -1165,7 +1214,7 @@ function move_pages_submit()
 		 var selIndex = ddl.selectedIndex-1;
 		 hidden_action.value = 'After';
 		 hidden_destination.value = ddl.options[selIndex].value;
-	   //  alert(hidden_destination.value);
+//	     alert('in the submit function, before selected, changing to after'+hidden_destination.value);
 	   }
 	   else
 	   {
@@ -1266,7 +1315,7 @@ function save_submit_form() {
 	return false;
 }
  
-//Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
+//Set the appropriate hidden variable for post back when the user selects the Clear_Pagination option
 function ClearPagination() {
     document.getElementById('QC_behaviors_request').value = 'clear_pagination';
     document.itemNavForm.submit();
@@ -1274,7 +1323,7 @@ function ClearPagination() {
 }
 
 
-//Set the appropriate hidden variable for postback when the user selects the Clear_Pagination option
+//Set the appropriate hidden variable for post back when the user selects the Clear_Pagination option
 function ClearReorderPagination() {
     document.getElementById('QC_behaviors_request').value = 'clear_reorder';
     document.itemNavForm.submit();
