@@ -123,7 +123,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 /* JPEG_ITEMVIEWER (Standard Page View) */
 #sbkJiv_Image { text-align: center; }
 #sbkJiv_ImageZoomable { text-align: center; font-size: 0.90em; color: #aaaaaa; }
-#sbkJiv_ImageZoomable img { text-align: center; cursor:url(http://ufdc.ufl.edu/default/images/zoom_tool.gif), pointer; border: none; }
+#sbkJiv_ImageZoomable img { text-align: center; cursor:url(http://ufdc.ufl.edu/default/images/zoom_tool.cur), pointer; border: none; }
 
 /* AWARE_JP2_ITEMVIEWER ( Aware Zoomable ) */
 #sbkAj2_Thumb { border:none; }

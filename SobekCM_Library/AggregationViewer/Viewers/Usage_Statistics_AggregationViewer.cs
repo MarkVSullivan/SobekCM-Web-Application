@@ -77,11 +77,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             switch (submode)
             {
                 case "views":
-                    Output.WriteLine("<h1>Work_History of Collection-Level Usage</h1>");
+                    Output.WriteLine("<h1>History of Collection-Level Usage</h1>");
                     break;
 
                 case "itemviews":
-                    Output.WriteLine("<h1>Work_History of Item Usage</h1>");
+                    Output.WriteLine("<h1>History of Item Usage</h1>");
                     break;
 
                 case "titles":

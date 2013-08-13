@@ -132,9 +132,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <td align=\"right\" width=\"24%\"><b><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></b></td>");
             Output.WriteLine("      <td width=\"3%\">&nbsp;</td>");
             Output.Write("      <td align=\"left\" width=\"56%\"><input name=\"u_search\" type=\"text\" class=\"SobekHomeSearchBox\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeSearchBox', 'SobekHomeSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeSearchBox', 'SobekHomeSearchBox');\" ");
-            if (currentMode.Browser_Type.IndexOf("IE") >= 0)
-                Output.Write(" onkeydown=\"fnTrapKD(event, 'dloc', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
-            else
+            //if (currentMode.Browser_Type.IndexOf("IE") >= 0)
+            //    Output.Write(" onkeydown=\"fnTrapKD(event, 'dloc', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
+            //else
                 Output.Write(" onkeydown=\"return fnTrapKD(event, 'dloc', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
 
             Output.WriteLine(" /></td>");
