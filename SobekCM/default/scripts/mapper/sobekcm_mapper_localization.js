@@ -61,6 +61,9 @@ var L43 = "Showing POIs"; //toggle poi
 var L44 = "Converted Item To Overlay";
 var L45 = "Nothing To Toggle";
 var L46 = "Nothing to Reset";
+var L47 = "Warning! This will erase any changes you have made. Do you still want to proceed?";
+var L48 = "Reseting Page";
+var L49 = "Did Not Reset Page";
 
 //by listeners
 try {
