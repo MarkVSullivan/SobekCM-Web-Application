@@ -1831,14 +1831,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     
                     // Start the top row and add the filename
 				    Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <td class=\"sbkQc_Filename\"><input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span title=\""+tooltipText+"\">" + filenameToDisplay + "</span></td>");
+				    Output.WriteLine("      <td colspan=\"2\">");
+                    Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span class=\"sbkQc_Filename\" title=\"" + tooltipText + "\">" + filenameToDisplay + "</span>");
 
                     //Add the checkbox for moving this thumbnail
-				    Output.WriteLine("      <td>");
+				   // Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
 				    Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05LT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
-				    Output.WriteLine("          <a href=\"\" onclick=\"var b=popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return b;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05RT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05LT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
+				    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/ARW05RT.ICO\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
                     Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon

@@ -341,17 +341,23 @@ function dloc_search_sobekcm(root, browseurl) {
         // STILL NEED TO REPLACE THESE FOR FRENCH AND SPANISH
         term = term.toLowerCase().replace(" or ", " =").replace(" and ", " ").replace(" not ", " -").replace(" y no ", " -").replace(" y ", " =").replace(" o ", " ").replace(" no ", " -");
 
-        // determine the base url
-        var url = root + "?text=" + term;
-        if (root.indexOf("?") > 0)
-            url = root + "&text=" + term;
-
         // Build the destination url by placing the selection option first and redirect
         if (document.search_form.newscheck.checked == false) {
+
+            // determine the base url
+            var url = root + "?t=" + term;
+            if (root.indexOf("?") > 0)
+                url = root + "&t=" + term;
+
             url = url + ",newspaper&f=TX,-FC";
             window.location.href = url;
         }
         else {
+            // determine the base url
+            var url = root + "?text=" + term;
+            if (root.indexOf("?") > 0)
+                url = root + "&text=" + term;
+
             window.location.href = url;
         }
     }
