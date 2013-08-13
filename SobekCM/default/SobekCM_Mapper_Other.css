@@ -1,263 +1,406 @@
 ﻿/* Mapper Other: Contains all other css for mapper plugin */
 
-#content_toolbar_button_reset {
-    background-image: url("images/mapper/button-reset.png");
-}
-#content_toolbar_button_toggleMapControls {
-    background-image: url("images/mapper/button-controls.png");
-}
-#content_toolbar_button_toggleToolbox {
-    background-image: url("images/mapper/button-toolbox.png");
-}
-#content_toolbar_button_layerRoadmap {
-    background-image: url("images/mapper/button-roadmap.png");
-}
-#content_toolbar_button_layerTerrain {
-    background-image: url("images/mapper/button-terrain.png");
-}
-#content_toolbar_button_layerSatellite {
-    background-image: url("images/mapper/button-satellite.png");
-}
-#content_toolbar_button_layerHybrid {
-    background-image: url("images/mapper/button-hybrid.png");
-}
-#content_toolbar_button_layerCustom {
-    background-image: url("images/mapper/button-blockLot.png");
-}
-#content_toolbar_button_layerReset {
-    background-image: url("images/mapper/button-layerReset.png");
-}
-#content_toolbar_button_panUp {
-    background-image: url("images/mapper/button-panUp.png");
-}
-#content_toolbar_button_panLeft {
-    background-image: url("images/mapper/button-panLeft.png");
-}
-#content_toolbar_button_panReset {
-    background-image: url("images/mapper/button-panReset.png");
-}
-#content_toolbar_button_panRight {
-    background-image: url("images/mapper/button-panRight.png");
-}
-#content_toolbar_button_panDown {
-    background-image: url("images/mapper/button-panDown.png");
-}
-#content_toolbar_button_zoomIn {
-    background-image: url("images/mapper/button-zoomIn.png");
-}
-#content_toolbar_button_zoomReset {
-    background-image: url("images/mapper/button-zoomReset2.png");
-}
-#content_toolbar_button_zoomOut {
-    background-image: url("images/mapper/button-zoomOut.png");
-}
-#content_toolbar_button_manageItem {
-    background-image: url("images/mapper/button-action1.png");
-}
-#content_toolbar_button_manageOverlay {
-    background-image: url("images/mapper/button-action2.png");
-}
-#content_toolbar_button_managePOI {
-    background-image: url("images/mapper/button-action3.png");
-}
-#content_toolbar_searchField {
-
-}
-#content_toolbar_searchButton {
-    background-image: url("images/mapper/search.png");
-}
-#content_toolbarGrabber {
-    display: none;
-    background-image: url("images/mapper/toolbar-toggle.png");
-    background-repeat: no-repeat;
-    min-height: 10px;
-    min-width: 40px;
-}
-#content_minibar_icon {
-    float: left;
-    background-image: url("images/mapper/toolbox-icon.png");
-    background-repeat: no-repeat;
-    height: 15px;
-    width: 28px;
-}
-#content_minibar_header {
-    float: left;
-    height: 15px;
-    font: 12px 'Arial Black', Gadget, sans-serif;
-}
-#content_minibar_button_minimize {
-    float: right;
-    background-image: url("images/mapper/toolbox-minimize2.png");
-    background-repeat: no-repeat;
-    height: 19px;
-    width: 19px;
-}
-#content_minibar_button_maximize {
-    float: right;
-    background-image: url("images/mapper/toolbox-maximize2.png");
-    background-repeat: no-repeat; 
-    height: 19px;
-    width: 19px;
-}
-#content_minibar_button_close {
-    float: right;
-    background-image: url("images/mapper/toolbox-close2.png");
-    background-repeat: no-repeat;
-    height: 19px;
-    width: 19px;
-}
-#content_minibar_button_minimize:hover {
-    cursor: pointer;
-}
-#content_minibar_button_maximize:hover {
-    cursor: pointer;
-}
-#content_minibar_button_close:hover {
-    cursor: pointer;
+#content_toolbar_button_reset
+{
+  background-image: url("images/mapper/button-reset.png");
 }
 
-#content_toolbox_button_reset {
-    background-image: url("images/mapper/button-reset.png");
+#content_toolbar_button_toggleMapControls
+{
+  background-image: url("images/mapper/button-controls.png");
 }
-#content_toolbox_button_toggleMapControls {
-    background-image: url("images/mapper/button-controls.png");
+
+#content_toolbar_button_toggleToolbox
+{
+  background-image: url("images/mapper/button-toolbox.png");
 }
-#content_toolbox_button_toggleToolbox {
-    background-image: url("images/mapper/button-toolbox.png");
+
+#content_toolbar_button_layerRoadmap
+{
+  background-image: url("images/mapper/button-roadmap.png");
 }
-#content_toolbox_button_layerRoadmap {
-    background-image: url("images/mapper/button-roadmap.png");
+
+#content_toolbar_button_layerTerrain
+{
+  background-image: url("images/mapper/button-terrain.png");
 }
-#content_toolbox_button_layerTerrain {
-    background-image: url("images/mapper/button-terrain.png");
+
+#content_toolbar_button_layerSatellite
+{
+  background-image: url("images/mapper/button-satellite.png");
 }
-#content_toolbox_button_layerSatellite {
-    background-image: url("images/mapper/button-satellite.png");
+
+#content_toolbar_button_layerHybrid
+{
+  background-image: url("images/mapper/button-hybrid.png");
 }
-#content_toolbox_button_layerHybrid {
-    background-image: url("images/mapper/button-hybrid.png");
+
+#content_toolbar_button_layerCustom
+{
+  background-image: url("images/mapper/button-blockLot.png");
 }
-#content_toolbox_button_layerCustom {
-    background-image: url("images/mapper/button-blockLot.png");
+
+#content_toolbar_button_layerReset
+{
+  background-image: url("images/mapper/button-layerReset.png");
 }
-#content_toolbox_button_layerReset {
-    background-image: url("images/mapper/button-layerReset.png");
+
+#content_toolbar_button_panUp
+{
+  background-image: url("images/mapper/button-panUp.png");
 }
-#content_toolbox_button_panUp {
-    background-image: url("images/mapper/button-panUp.png");
+
+#content_toolbar_button_panLeft
+{
+  background-image: url("images/mapper/button-panLeft.png");
 }
-#content_toolbox_button_panLeft {
-    background-image: url("images/mapper/button-panLeft.png");
+
+#content_toolbar_button_panReset
+{
+  background-image: url("images/mapper/button-panReset.png");
 }
-#content_toolbox_button_panReset {
-    background-image: url("images/mapper/button-panReset.png");
+
+#content_toolbar_button_panRight
+{
+  background-image: url("images/mapper/button-panRight.png");
 }
-#content_toolbox_button_panRight {
-    background-image: url("images/mapper/button-panRight.png");
+
+#content_toolbar_button_panDown
+{
+  background-image: url("images/mapper/button-panDown.png");
 }
-#content_toolbox_button_panDown {
-    background-image: url("images/mapper/button-panDown.png");
+
+#content_toolbar_button_zoomIn
+{
+  background-image: url("images/mapper/button-zoomIn.png");
 }
-#content_toolbox_button_zoomIn {
-    background-image: url("images/mapper/button-zoomIn.png");
+
+#content_toolbar_button_zoomReset
+{
+  background-image: url("images/mapper/button-zoomReset2.png");
 }
-#content_toolbox_button_zoomReset {
-    background-image: url("images/mapper/button-zoomReset2.png");
+
+#content_toolbar_button_zoomOut
+{
+  background-image: url("images/mapper/button-zoomOut.png");
 }
-#content_toolbox_button_zoomOut {
-    background-image: url("images/mapper/button-zoomOut.png");
+
+#content_toolbar_button_manageItem
+{
+  background-image: url("images/mapper/button-action1.png");
 }
-#content_toolbox_button_manageItem {
-    background-image: url("images/mapper/button-action1.png");
+
+#content_toolbar_button_manageOverlay
+{
+  background-image: url("images/mapper/button-action2.png");
 }
-#content_toolbox_button_manageOverlay {
-    background-image: url("images/mapper/button-action2.png");
+
+#content_toolbar_button_managePOI
+{
+  background-image: url("images/mapper/button-action3.png");
 }
-#content_toolbox_button_managePOI {
-    background-image: url("images/mapper/button-action3.png");
+
+#content_toolbar_searchField
+{
 }
-#content_toolbox_searchButton {
-    background-image: url("images/mapper/search.png");
+
+#content_toolbar_searchButton
+{
+  background-image: url("images/mapper/search.png");
 }
-#content_message {
-    /*something*/
+
+#content_toolbarGrabber
+{
+  display: none;
+  background-image: url("images/mapper/toolbar-toggle.png");
+  background-repeat: no-repeat;
+  min-height: 10px;
+  min-width: 40px;
 }
-.message {
-    text-align: center;
-    color: black;
-    font-size: 11px;
-    font-weight: bold;
-    z-index:99999;
-    padding: 2px 2px 2px 2px;
-    margin: 2px 0 2px 0;
-	background-color:peachpuff;
-	-webkit-box-shadow:0 2px 3px rgba(0,0,0,0.5);
-	box-shadow:0 2px 3px rgba(0,0,0,0.5);
-	display:none;
+
+#content_minibar_icon
+{
+  float: left;
+  background-image: url("images/mapper/toolbox-icon.png");
+  background-repeat: no-repeat;
+  height: 15px;
+  width: 28px;
 }
-#content_toolbox_button_itemGetUserLocation {
-    background-image: url("images/mapper/getUserLocation.png");
+
+#content_minibar_header
+{
+  float: left;
+  height: 15px;
+  font: 12px 'Arial Black', Gadget, sans-serif;
 }
-#content_toolbox_button_useSearchAsLocation {
-    background-image: url("images/mapper/button-search.png");
+
+#content_minibar_button_minimize
+{
+  float: right;
+  background-image: url("images/mapper/toolbox-minimize2.png");
+  background-repeat: no-repeat;
+  height: 19px;
+  width: 19px;
 }
-#content_toolbox_button_convertToOverlay {
-    background-image: url("images/mapper/button-action2.png");
+
+#content_minibar_button_maximize
+{
+  float: right;
+  background-image: url("images/mapper/toolbox-maximize2.png");
+  background-repeat: no-repeat;
+  height: 19px;
+  width: 19px;
 }
-#content_toolbox_button_overlayGetUserLocation {
-    background-image: url("images/mapper/getUserLocation.png");
+
+#content_minibar_button_close
+{
+  float: right;
+  background-image: url("images/mapper/toolbox-close2.png");
+  background-repeat: no-repeat;
+  height: 19px;
+  width: 19px;
 }
-#content_toolbox_button_poiGetUserLocation {
-    background-image: url("images/mapper/getUserLocation.png");
+
+#content_minibar_button_minimize:hover
+{
+  cursor: pointer;
 }
-#content_toolbox_button_placeItem {
-    background-image: url("images/mapper/button-action1.png");
+
+#content_minibar_button_maximize:hover
+{
+  cursor: pointer;
 }
-#content_toolbox_button_overlayPlace {
-    background-image: url("images/mapper/button-base.png");
+
+#content_minibar_button_close:hover
+{
+  cursor: pointer;
 }
-#content_toolbox_button_overlayEdit {
-    background-image: url("images/mapper/button-action2.png");
+
+#content_toolbox_button_reset
+{
+  background-image: url("images/mapper/button-reset.png");
 }
-#content_toolbox_button_overlayToggle {
-    background-image: url("images/mapper/button-base.png");
+
+#content_toolbox_button_toggleMapControls
+{
+  background-image: url("images/mapper/button-controls.png");
 }
-#content_toolbox_button_placePOI {
-    background-image: url("images/mapper/button-action3.png");
+
+#content_toolbox_button_toggleToolbox
+{
+  background-image: url("images/mapper/button-toolbox.png");
 }
-#content_toolbox_button_poiToggle {
-    background-image: url("images/mapper/button-base.png");
+
+#content_toolbox_button_layerRoadmap
+{
+  background-image: url("images/mapper/button-roadmap.png");
 }
-#content_toolbox_rotationCounterClockwise {
-    background-image: url("images/mapper/rotation-counterClockwise.png");
-    height: 25px;
-    width: 17px;
-    float: left;
+
+#content_toolbox_button_layerTerrain
+{
+  background-image: url("images/mapper/button-terrain.png");
 }
-#content_toolbox_rotationReset {
-    background-image: url("images/mapper/rotation-reset.png");
-    height: 29px;
-    width: 28px;
-    float: left;
+
+#content_toolbox_button_layerSatellite
+{
+  background-image: url("images/mapper/button-satellite.png");
 }
-#content_toolbox_rotationClockwise {
-    background-image: url("images/mapper/rotation-clockwise.png");
-    height: 25px;
-    width: 17px;
-    float: left;
+
+#content_toolbox_button_layerHybrid
+{
+  background-image: url("images/mapper/button-hybrid.png");
 }
-#content_toolbox_button_poiMarker {
-    background-image: url("images/mapper/button-drawMarker.png");
+
+#content_toolbox_button_layerCustom
+{
+  background-image: url("images/mapper/button-blockLot.png");
 }
-#content_toolbox_button_poiCircle {
-    background-image: url("images/mapper/button-drawCircle.png");
+
+#content_toolbox_button_layerReset
+{
+  background-image: url("images/mapper/button-layerReset.png");
 }
-#content_toolbox_button_poiRectangle {
-    background-image: url("images/mapper/button-drawRectangle.png");
+
+#content_toolbox_button_panUp
+{
+  background-image: url("images/mapper/button-panUp.png");
 }
-#content_toolbox_button_poiPolygon {
-    background-image: url("images/mapper/button-drawPolygon.png");
+
+#content_toolbox_button_panLeft
+{
+  background-image: url("images/mapper/button-panLeft.png");
 }
-#content_toolbox_button_poiLine {
-    background-image: url("images/mapper/button-drawLine.png");
+
+#content_toolbox_button_panReset
+{
+  background-image: url("images/mapper/button-panReset.png");
+}
+
+#content_toolbox_button_panRight
+{
+  background-image: url("images/mapper/button-panRight.png");
+}
+
+#content_toolbox_button_panDown
+{
+  background-image: url("images/mapper/button-panDown.png");
+}
+
+#content_toolbox_button_zoomIn
+{
+  background-image: url("images/mapper/button-zoomIn.png");
+}
+
+#content_toolbox_button_zoomReset
+{
+  background-image: url("images/mapper/button-zoomReset2.png");
+}
+
+#content_toolbox_button_zoomOut
+{
+  background-image: url("images/mapper/button-zoomOut.png");
+}
+
+#content_toolbox_button_manageItem
+{
+  background-image: url("images/mapper/button-action1.png");
+}
+
+#content_toolbox_button_manageOverlay
+{
+  background-image: url("images/mapper/button-action2.png");
+}
+
+#content_toolbox_button_managePOI
+{
+  background-image: url("images/mapper/button-action3.png");
+}
+
+#content_toolbox_searchButton
+{
+  background-image: url("images/mapper/search.png");
+}
+
+#content_message
+{
+  /*something*/
+}
+
+.message
+{
+  text-align: center;
+  color: black;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 99999;
+  padding: 2px 2px 2px 2px;
+  margin: 2px 0 2px 0;
+  background-color: peachpuff;
+  -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+  display: none;
+}
+
+#content_toolbox_button_itemGetUserLocation
+{
+  background-image: url("images/mapper/getUserLocation.png");
+}
+
+#content_toolbox_button_useSearchAsLocation
+{
+  background-image: url("images/mapper/button-search.png");
+}
+
+#content_toolbox_button_convertToOverlay
+{
+  background-image: url("images/mapper/button-action2.png");
+}
+
+#content_toolbox_button_overlayGetUserLocation
+{
+  background-image: url("images/mapper/getUserLocation.png");
+}
+
+#content_toolbox_button_poiGetUserLocation
+{
+  background-image: url("images/mapper/getUserLocation.png");
+}
+
+#content_toolbox_button_placeItem
+{
+  background-image: url("images/mapper/button-action1.png");
+}
+
+#content_toolbox_button_overlayPlace
+{
+  background-image: url("images/mapper/button-base.png");
+}
+
+#content_toolbox_button_overlayEdit
+{
+  background-image: url("images/mapper/button-action2.png");
+}
+
+#content_toolbox_button_overlayToggle
+{
+  background-image: url("images/mapper/button-base.png");
+}
+
+#content_toolbox_button_placePOI
+{
+  background-image: url("images/mapper/button-action3.png");
+}
+
+#content_toolbox_button_poiToggle
+{
+  background-image: url("images/mapper/button-base.png");
+}
+
+#content_toolbox_rotationCounterClockwise
+{
+  background-image: url("images/mapper/rotation-counterClockwise.png");
+  height: 25px;
+  width: 17px;
+  float: left;
+}
+
+#content_toolbox_rotationReset
+{
+  background-image: url("images/mapper/rotation-reset.png");
+  height: 29px;
+  width: 28px;
+  float: left;
+}
+
+#content_toolbox_rotationClockwise
+{
+  background-image: url("images/mapper/rotation-clockwise.png");
+  height: 25px;
+  width: 17px;
+  float: left;
+}
+
+#content_toolbox_button_poiMarker
+{
+  background-image: url("images/mapper/button-drawMarker.png");
+}
+
+#content_toolbox_button_poiCircle
+{
+  background-image: url("images/mapper/button-drawCircle.png");
+}
+
+#content_toolbox_button_poiRectangle
+{
+  background-image: url("images/mapper/button-drawRectangle.png");
+}
+
+#content_toolbox_button_poiPolygon
+{
+  background-image: url("images/mapper/button-drawPolygon.png");
+}
+
+#content_toolbox_button_poiLine
+{
+  background-image: url("images/mapper/button-drawLine.png");
 }

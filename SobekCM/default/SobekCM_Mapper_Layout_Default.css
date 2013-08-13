@@ -1,65 +1,84 @@
 ﻿/* Mapper UI Layout: Contains structure of mapper plugin. */
 
-body {
-	overflow:hidden;
+body
+{
+  overflow: hidden;
 }
-#mapper_container {
-    color: #000000;
-    margin: 0;
-	padding: 0;
-	overflow:hidden;
-	width: 100%;
-    height: 100%;
-	position:absolute;
-    background-image:url("images/mapper/bg1.png");
+
+#mapper_container
+{
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-image: url("images/mapper/bg1.png");
 }
-#mapper_container_pane_1{
-	display: none;
-	position:absolute;
-	width:100%;
-	min-height:48px;
-	text-align:center;
-	z-index:2;
-	background-image:url("images/mapper/bg1.png");
+
+#mapper_container_pane_1
+{
+  display: none;
+  position: absolute;
+  width: 100%;
+  min-height: 48px;
+  text-align: center;
+  z-index: 2;
+  background-image: url("images/mapper/bg1.png");
 }
-#mapper_container_toolbar{
-	position:absolute;
-	left: 50%;
-	width: 1190px;
-	margin-left:-545px;
+
+#mapper_container_toolbar
+{
+  position: absolute;
+  left: 50%;
+  width: 1190px;
+  margin-left: -545px;
 }
-.toolbar_grouping {
-	float:left;
-	padding-left:5px;
-	padding-right:5px;
-	margin: 4px 1px 4px 1px;
+
+.toolbar_grouping
+{
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 4px 1px 4px 1px;
 }
-.mapper_container_search {
-    display: inline-block;
+
+.mapper_container_search
+{
+  display: inline-block;
 }
-#googleMap {
-	width:100%;
-	height:100%;
-	z-index:0;
-	position:absolute;
+
+#googleMap
+{
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  position: absolute;
 }
-#mapper_container_toolbarGrabber {
-	position:absolute;
-	left:50%;
-	margin-left:-20px;
-	margin-top:48px;
-	z-index:4;
+
+#mapper_container_toolbarGrabber
+{
+  position: absolute;
+  left: 50%;
+  margin-left: -20px;
+  margin-top: 48px;
+  z-index: 4;
 }
-#mapper_container_toolbarGrabber:hover{
-	cursor: pointer;
-}
-#mapper_container_message {
-    position:absolute;
-    width: 200px;
-    top: 5px;
-    left: 50%;
-    margin-left: -100px;
-    z-index: 9999;
+
+  #mapper_container_toolbarGrabber:hover
+  {
+    cursor: pointer;
+  }
+
+#mapper_container_message
+{
+  position: absolute;
+  width: 200px;
+  top: 5px;
+  left: 50%;
+  margin-left: -100px;
+  z-index: 9999;
 }
 /*#mapper_container_message {
     color: black;
@@ -92,96 +111,123 @@ body {
 	box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	display:none;
 }*/
-#mapper_container_pane_2{
-	background-image:url("images/mapper/bg1.png");
-}
-#mapper_container_toolboxMinibar {
-	height:15px;
-	padding-right:10px;
-	padding-bottom: 3px;
-	margin-bottom: 10px;
-	padding-top: 4px;
-	margin-top:-2px;
-	text-align:right;
-	background-color:#ededed;
-	border-radius:25px;
-}
-#mapper_container_toolbox {
-	display: none;
-	/*max-height:560px;*/
-	width:250px;
-	float:left;
-	position:absolute;
-	z-index:1;
-	padding:10px;
-    margin-left:15px;
-	margin-top:200px;  
-   -webkit-box-shadow:0px 1px 3px rgba(0,0,0,0.5);
-	box-shadow:0px 1px 3px rgba(0,0,0,0.5);
-	border-radius: 15px;
-}
-#mapper_container_toolboxTabs{
-	font-size: 11px; 
-}
-.toolbox_tab-content{
-	height:100%;
-	width:240px;
-	text-align: center;
-	margin-left: -20px;
-	margin-right: -10px;
+#mapper_container_pane_2
+{
+  background-image: url("images/mapper/bg1.png");
 }
 
-.tab-title {
-	font-size:13px;
-}
-.tab {
-	height:100%;
-	text-align: center;
-	overflow: hidden; 
-}
-.lineBreak {
-	clear: both;
-	height: 20px;
-}
-#mapper_container_grid{
-	width: 100%;
-}
-#mapper_container_grid .x{
-	float: left;
-	width: 40px;
-	height: 40px;
-}
-#mapper_container_grid .y{
-	clear: both;
-}
-#mapper_container_grid .half{
-	float: left;
-	width: 20px;
-	height: 20px;
-}
-#mapper_container_toolbox_tab1 {
-	margin-left: 10px;
+#mapper_container_toolboxMinibar
+{
+  height: 15px;
+  padding-right: 10px;
+  padding-bottom: 3px;
+  margin-bottom: 10px;
+  padding-top: 4px;
+  margin-top: -2px;
+  text-align: right;
+  background-color: #ededed;
+  border-radius: 25px;
 }
 
-#mapper_container_toolbox_overlayTools {
-	display: inline-block;
-	width: 150px;
-
+#mapper_container_toolbox
+{
+  display: none;
+  /*max-height:560px;*/
+  width: 250px;
+  float: left;
+  position: absolute;
+  z-index: 1;
+  padding: 10px;
+  margin-left: 15px;
+  margin-top: 200px;
+  -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+  border-radius: 15px;
 }
-#mapper_container_toolbox_rotationButtons {
-	margin-left: 7px;
+
+#mapper_container_toolboxTabs
+{
+  font-size: 11px;
 }
 
-#debugs {
-    display: none;
-    position: absolute;
-    float: right;
-    height: 100%;
-    width: 200px;
-    background-color: black;
-    opacity: 0.7;
-    z-index: 999999;
-    color:whitesmoke;
-    padding: 5px 5px 5px 5px;
-    font-size: .8em;
+.toolbox_tab-content
+{
+  height: 100%;
+  width: 240px;
+  text-align: center;
+  margin-left: -20px;
+  margin-right: -10px;
+}
+
+.tab-title
+{
+  font-size: 13px;
+}
+
+.tab
+{
+  height: 100%;
+  text-align: center;
+  overflow: hidden;
+}
+
+.lineBreak
+{
+  clear: both;
+  height: 20px;
+}
+
+#mapper_container_grid
+{
+  width: 100%;
+}
+
+  #mapper_container_grid .x
+  {
+    float: left;
+    width: 40px;
+    height: 40px;
+  }
+
+  #mapper_container_grid .y
+  {
+    clear: both;
+  }
+
+  #mapper_container_grid .half
+  {
+    float: left;
+    width: 20px;
+    height: 20px;
+  }
+
+#mapper_container_toolbox_tab1
+{
+  margin-left: 10px;
+}
+
+#mapper_container_toolbox_overlayTools
+{
+  display: inline-block;
+  width: 150px;
+}
+
+#mapper_container_toolbox_rotationButtons
+{
+  margin-left: 7px;
+}
+
+#debugs
+{
+  display: none;
+  position: absolute;
+  float: right;
+  height: 100%;
+  width: 200px;
+  background-color: black;
+  opacity: 0.7;
+  z-index: 999999;
+  color: whitesmoke;
+  padding: 5px 5px 5px 5px;
+  font-size: .8em;
 }
