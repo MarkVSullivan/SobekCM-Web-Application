@@ -298,7 +298,13 @@ namespace SobekCM.Library.HTML
                     {
                         string template_banner = ((New_Group_And_Item_MySobekViewer)mySobekViewer).Current_Template_Banner;
                         template_banner_override = true;
-                        Output.WriteLine("<img id=\"mainBanner\" src=\"" + template_banner + "\" alt=\"MISSING BANNER\" />");
+                        if ( template_banner.IndexOf("http://") > 0 )
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + template_banner + "\" alt=\"MISSING BANNER\" />");
+                        else
+                        {
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + currentMode.Base_URL + template_banner + "\" alt=\"MISSING BANNER\" />");
+
+                        }
                     }
                 }
                 if ((!template_banner_override) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Group_Add_Volume))

@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,9 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object.Divisions;
 
+
 #endregion
+
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -24,6 +27,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return ItemViewer_Type_Enum.GnuBooks_PageTurner; }
         }
 
+
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This functions essentially like a single page viewer, so this property always returns the value 1</value>
         public override int PageCount
@@ -33,6 +37,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return 1;
             }
         }
+
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This is a single page viewer, so this property always returns NONE</value>
@@ -44,6 +49,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
         /// <value> This always returns the value -1, since this is not valid for this viewer </value>
         public override int Viewer_Width
@@ -53,6 +59,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return -1;
             }
         }
+
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
@@ -64,12 +71,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("GnuBooks_PageTurner_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
+
             // Add the division
-            Output.WriteLine("          <div id=\"GnuBook\"><p style=\"font-size: 14px;\">Book Turner presentations require a Javascript-enabled browser.</p></div>" + Environment.NewLine );
+            Output.WriteLine("          <div id=\"GnuBook\"><p style=\"font-size: 14px;\">Book Turner presentations require a Javascript-enabled browser.</p></div>" + Environment.NewLine);
+
 
             // Add the javascript
             Output.WriteLine("<script type=\"text/javascript\"> ");
             Output.WriteLine("  //<![CDATA[");
+
 
             // Get the list of jpegs, along with widths and heights
             List<int> width = new List<int>();
@@ -82,7 +92,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Step through each page looking for the jpeg
                 foreach (SobekCM_File_Info thisFile in thisPage.Files)
                 {
-                    if ((thisFile.MIME_Type(thisFile.File_Extension) == "image/jpeg") && (thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0 ))
+                    if ((thisFile.MIME_Type(thisFile.File_Extension) == "image/jpeg") && (thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0))
                     {
                         if (!files.Contains(thisFile.System_Name))
                         {
@@ -92,10 +102,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             height.Add(thisFile.Height);
                         }
 
+
                         break;
                     }
                 }
             }
+
 
             // Add the script for this resource
             Output.WriteLine("    // Create the GnuBook object");
@@ -137,7 +149,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("    gb.getPageURI = function(index) {");
             Output.WriteLine("        var imgStr = (index).toString();");
             Output.WriteLine("        if (index < 2) return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
-            for (int i = 0; i < files.Count; i++  )
+            for (int i = 0; i < files.Count; i++)
             {
                 Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + files[i] + "';");
             }
@@ -149,17 +161,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("    }");
             Output.WriteLine();
 
+
             Output.WriteLine("    // Return the page label for a page, by index");
             Output.WriteLine("    gb.getPageName = function(index) {");
-            Output.WriteLine("        var imgStr = '" + translator.Get_Translation("Page", CurrentMode.Language ) + "' + this.getPageNum(index);");
+            Output.WriteLine("        var imgStr = '" + translator.Get_Translation("Page", CurrentMode.Language) + "' + this.getPageNum(index);");
             for (int i = 0; i < files.Count; i++)
             {
                 Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + pagename[i] + "';");
             }
 
+
             Output.WriteLine("        return imgStr;");
             Output.WriteLine("    }");
             Output.WriteLine();
+
 
             Output.WriteLine("    // Return which side, left or right, that a given page should be displayed on");
             Output.WriteLine("    gb.getPageSide = function(index) {");
@@ -209,20 +224,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine();
             Output.WriteLine("    // Total number of leafs");
 
+
             // TRUE FOR EVEN PAGE BOOKS at least
             Output.WriteLine("    gb.numLeafs = " + (files.Count + 4) + ";");
             Output.WriteLine();
             Output.WriteLine("    // Book title and the URL used for the book title link");
-            Output.WriteLine("    gb.bookTitle= '" + CurrentItem.Bib_Info.Main_Title.ToString().Replace("'","") + "';");
+            Output.WriteLine("    gb.bookTitle= '" + CurrentItem.Bib_Info.Main_Title.ToString().Replace("'", "") + "';");
             Output.WriteLine("    gb.bookUrl = '" + CurrentMode.Base_URL + CurrentMode.BibID + "/" + CurrentMode.VID + "';");
             Output.WriteLine();
             Output.WriteLine("    // Let's go!");
             Output.WriteLine("    gb.init();");
 
 
+
+
             Output.Write("  //]]>");
             Output.Write("</script>");
         }
+
 
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
@@ -235,7 +254,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/jquery.easing.1.3.js\"></script> ");
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/bookturner.js\"></script>    ");
 
+
         }
+
 
         /// <summary> Gets the collection of special behaviors which this item viewer
         /// requests from the main HTML subwriter. </summary>
@@ -254,6 +275,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
@@ -262,8 +284,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Body_Attributes.Clear();
         }
 
+
     }
 }
-
-
-

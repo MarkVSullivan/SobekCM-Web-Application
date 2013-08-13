@@ -1,59 +1,54 @@
 // This contains all the basic search javascript which takes the user's entries ( client-side )
 // and converts to the search URL and requests the appropriate results to match the search
 
-function fnTrapKD(event, type, arg1, arg2, browseurl ) {
+function fnTrapKD(event, type, arg1, arg2, browseurl) {
 
     var return_caught = false;
     if (document.all) {
         if (event.keyCode == 13) {
             return_caught = true;
         }
-    }
-
-    else if (document.getElementById) {
+    } else if (document.getElementById) {
         if (event.which == 13) {
             return_caught = true;
-        }
-    }
-
-    else if (document.layers) {
-        if (event.which == 13) {
-            return_caught = true;
+        } else if (document.layers) {
+            if (event.which == 13) {
+                return_caught = true;
+            }
         }
     }
 
     if (return_caught) {
-        event.returnValue = false;
-        event.cancel = true;
+            event.returnValue = false;
+            event.cancel = true;
 
-        if (arg2.length == 0) {
-            if (type == 'basic')
-                basic_search_sobekcm(arg1, browseurl);
-            if (type == 'metadata')
-                metadata_search_sobekcm(arg1, browseurl);
-            if (type == 'newspaper')
-                newspaper_search_sobekcm(arg1, browseurl);
-            if (type == 'dloc')
-                dloc_search_sobekcm(arg1, browseurl);
-            if (type == 'text')
-                fulltext_search_sobekcm(arg1, browseurl);
-        }
-        else {
-            if ( type == 'basic' )
-                basic_select_search_sobekcm(arg1, arg2);
-            if (type == 'metadata')
-                metadata_select_search_sobekcm(arg1, arg2);
-            if (type == 'newspaper')
-                newspaper_select_search_sobekcm(arg1, arg2);
-            if (type == 'dloc')
-                dloc_select_search_sobekcm(arg1, arg2);
-            if (type == 'text')
-                fulltext_select_search_sobekcm(arg1, arg2);
-        }
+            if (arg2.length == 0) {
+                if (type == 'basic')
+                    basic_search_sobekcm(arg1, browseurl);
+                if (type == 'metadata')
+                    metadata_search_sobekcm(arg1, browseurl);
+                if (type == 'newspaper')
+                    newspaper_search_sobekcm(arg1, browseurl);
+                if (type == 'dloc')
+                    dloc_search_sobekcm(arg1, browseurl);
+                if (type == 'text')
+                    fulltext_search_sobekcm(arg1, browseurl);
+            } else {
+                if (type == 'basic')
+                    basic_select_search_sobekcm(arg1, arg2);
+                if (type == 'metadata')
+                    metadata_select_search_sobekcm(arg1, arg2);
+                if (type == 'newspaper')
+                    newspaper_select_search_sobekcm(arg1, arg2);
+                if (type == 'dloc')
+                    dloc_select_search_sobekcm(arg1, arg2);
+                if (type == 'text')
+                    fulltext_select_search_sobekcm(arg1, arg2);
+            }
 
-        return false;
+            return false;
+        }
     }
-}
 
 
 // Advanced search
@@ -347,9 +342,9 @@ function dloc_search_sobekcm(root, browseurl) {
         term = term.toLowerCase().replace(" or ", " =").replace(" and ", " ").replace(" not ", " -").replace(" y no ", " -").replace(" y ", " =").replace(" o ", " ").replace(" no ", " -");
 
         // determine the base url
-        var url = root + "?t=" + term;
+        var url = root + "?text=" + term;
         if (root.indexOf("?") > 0)
-            url = root + "&t=" + term;
+            url = root + "&text=" + term;
 
         // Build the destination url by placing the selection option first and redirect
         if (document.search_form.newscheck.checked == false) {

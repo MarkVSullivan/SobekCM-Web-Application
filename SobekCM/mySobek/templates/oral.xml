@@ -7,13 +7,13 @@
 		http://digital.uflib.ufl.edu/metadata/sobekcm_template/sobekcm_template.xsd">
 	
 	<!-- Define the information about this input template -->
-	<name>Oral Work_History Self-Submittal Tool</name>
+	<name>Oral History Self-Submittal Tool</name>
 	<notes>Template for the oral history program</notes>
 	<permissions>I, as copyright holder or licensee with the authority to grant copyright permissions for the title, hereby authorize the University of Florida, acting on behalf of the State of Florida, to digitize and distribute the title for nonprofit, educational purposes via the Internet or successive technologies. This is a non-exclusive grant of permissions for on-line and off-line use for an indefinite term. Off-line uses shall be consistent either, for educational uses, with the terms of U.S. copyright legislation's &quot;fair use&quot; provisions or, by the University of Florida, with the maintenance and preservation of an archival copy. Digitization allows the University of Florida to generate image- and text-based versions as appropriate and to provide and enhance access using search software. This grant of permissions prohibits use of the digitized versions for commercial use or profit unless I specifically grant rights for those uses in the rights field for this item.</permissions>
 	<dateCreated>February 18, 2010</dateCreated>
 	<lastModified>January 22, 2011</lastModified>
 	<creator>Mark V Sullivan</creator>
-	<banner>myUFDC/templates/images/oral.jpg</banner>
+	<banner>mySobek/templates/images/oral.jpg</banner>
 	<includeUserAsAuthor>false</includeUserAsAuthor>
 	<uploads>FILE</uploads>
 	<uploadMandatory>true</uploadMandatory>

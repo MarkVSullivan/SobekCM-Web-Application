@@ -259,6 +259,8 @@ public partial class UFDC : System.Web.UI.Page
 
     protected void Write_ItemNavForm_Closing()
     {
+
+
         // If the was a very basic error, or the request was complete, do nothing here
         if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
             return;

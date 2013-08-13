@@ -16,9 +16,12 @@
 **************************************************************************/
 
 
+
 #sbkHmw_BannerDiv { background-color: White;width: 100%;text-align: center;}
 #sbkAhs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
 #sbkShs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
+
+.texthighlight { background:yellow; font-weight:bold; }
 
 .smaller { font-size: 0.85em;	}
 
