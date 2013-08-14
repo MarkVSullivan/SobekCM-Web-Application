@@ -45,7 +45,7 @@ function qc_set_fullscreen() {
 
 
 //Assign the thumbnail image filenames, file locations to the global dictionary
-function QC_Save_Image_Dictionary(filename, file_location) {
+function QC_Add_Image_To_Dictionary(filename, file_location) {
     thumbnailImageDictionary[filename] = file_location;
 
     alert('thumbnailImageDictionary[' + filename + ']=' + thumbnailImageDictionary[filename]);

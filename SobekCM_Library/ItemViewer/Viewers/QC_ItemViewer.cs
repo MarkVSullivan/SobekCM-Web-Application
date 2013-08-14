@@ -1671,7 +1671,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!String.IsNullOrEmpty(hidden_main_thumbnail))
                 Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
 
-            //Add the division types fromt he current QC Config profile to a local dictionary
+            //Add the division types from the current QC Config profile to a local dictionary
             Dictionary<string, bool> qcDivisionList = new Dictionary<string, bool>();
             foreach (QualityControl_Division_Config qcDivConfig in qc_profile.All_Division_Types)
             {
@@ -1802,7 +1802,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //Truncate the filename if too long
                     string filenameTooltipText = String.Empty;
 				    int truncated_length = 13;
-                    if (filename_sans_extension.Length > 16)
+				    int length_to_check = 16;
+                    if (size_of_thumbnails == 2)
+                    {
+                        truncated_length = 20;
+                        length_to_check = 25;
+                    }
+                    else if (size_of_thumbnails == 3)
+                    {
+                        truncated_length = 25;
+                        length_to_check = 30;
+                    }
+
+                    if (filename_sans_extension.Length > length_to_check)
                     {
                         // Are there numbers at the end?
                         if (Char.IsNumber(filenameToDisplay[filenameToDisplay.Length - 1]))
@@ -1842,10 +1854,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //Output.WriteLine("        </span>");
 
                     //Add the main_thumbnail icon
-				    if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
-                    else
-                        Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+                    //if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                    //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                    //else
+                    //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -1857,19 +1869,48 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					switch (size_of_thumbnails)
 					{
 						case 2:
-                            Output.Write("        <img id=\"child" + image_url + "\"  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Medium\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
+					        {
+					            Output.Write("        <img id=\"child" + image_url + "\"  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Medium\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" style=\" z-index:1;\"/>");
+                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible; z-index:2;\" />");
+                                else
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;z-index:2;\" />");
+                                
+					        }
+
 							break;
 
 						case 3:
-                            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Large\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
+					        {
+					            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Large\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
+                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                else
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+					            
+					        }
 							break;
 
 						case 4:
-                            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Full\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
+					        {
+					            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Full\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
+                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                else
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+					            
+					        }
 							break;
 
 						default:
-                            Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
+					        {
+					            Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
+                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-99%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                else
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-99%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+					            
+					        }
 							break;
 					}
 
@@ -2041,9 +2082,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("</select></td></tr>");
 
             //Add the div for the preview section
-            Output.WriteLine("<div id=\"popupPreviewDiv\"> ");
+            //Output.WriteLine("<tr><td colspan=\"3\"><div id=\"popupPreviewDiv\" class=\"popup_form_preview_div\"> ");
+            //Output.WriteLine("<table><tr>");
+            //Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></span></td>");
+            //Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -10px 0 0 10px;\">span1<img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage\"></img></span>");
+            //Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -5px 0 0 5px;\">span2<img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage\"></img></span>");
+            //Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\">span3<img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage\"></img></span></td>");
+            //Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></span></td>");
+            //Output.WriteLine("</table>");
 
-            Output.WriteLine("</div>");
+            //Output.WriteLine("</td></tr></div>");
 
 
             //End div for the preview section
