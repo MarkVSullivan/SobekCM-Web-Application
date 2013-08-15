@@ -15,13 +15,12 @@ function show_map_instructions() {
 	return false;
 }
 
-function enter_address_box(what)
-{
-	if(what.value == what.defaultValue) 
-	{
+function enter_address_box(what) {
+	///<summary> Function is called when user enters the textbox to change the background color </summary>
+	if (what.value == what.defaultValue) {
 		what.value = '';
 	}
-	what.className='MapAddressBox_focused';
+	what.className = 'MapAddressBox_focused';
 }
 
 function leave_address_box(what)

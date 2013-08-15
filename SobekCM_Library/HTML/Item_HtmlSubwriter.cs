@@ -1067,7 +1067,11 @@ namespace SobekCM.Library.HTML
                 // The item viewer can choose to override the standard item menu
                 if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu))
                 {
-                    // Add the item views
+					// Can this user (if there is one) edit this item?
+	                bool canManage = (currentUser != null) && (currentUser.Can_Edit_This_Item(currentItem));
+
+
+	                // Add the item views
                     Output.WriteLine("<!-- Add the different view and social options -->");
                     Output.WriteLine("<div id=\"sf-menubar\">");
 
@@ -1094,7 +1098,17 @@ namespace SobekCM.Library.HTML
                         //    }
                         //}
 
-
+	                    string add_text = "Add";
+	                    string remove_text = "Remove";
+	                    string send_text = "Send";
+	                    string print_text = "Print";
+						if (canManage)
+						{
+							add_text = String.Empty;
+							remove_text = String.Empty;
+							send_text = String.Empty;
+							print_text = String.Empty;
+						}
 
 
                         if ((currentUser != null))
@@ -1103,34 +1117,34 @@ namespace SobekCM.Library.HTML
                             {
                                 if (currentUser.Is_In_Bookshelf(currentItem.BibID, currentItem.VID))
                                 {
-                                    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + currentMode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Remove</span></span>");
+                                    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + currentMode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + remove_text + "</span></span>");
                                 }
                                 else
                                 {
-                                    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Add</span></span>");
+                                    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
                                 }
                             }
 
 
-                            Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">Send</span></span>");
+                            Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
                         }
                         else
                         {
                             if (currentItem.Web.ItemID > 0)
-                                Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">Add</span></span>");
+                                Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 
 
-                            Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">Send</span></span>");
+                            Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
                         }
 
 
                         if (currentItem.Web.ItemID > 0)
                         {
-                            Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">Print</span></span>");
+                            Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
                         }
                         else
                         {
-                            Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">Print</span></span>");
+							Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
                         }
 
 
@@ -1141,6 +1155,7 @@ namespace SobekCM.Library.HTML
 
                     // Save the current view type
                     ushort page = currentMode.Page;
+	                string viewerCode = currentMode.ViewerCode;
 
 
                     // Add the item level views
@@ -1153,7 +1168,6 @@ namespace SobekCM.Library.HTML
                             // Special code for the CITATION view (TEMPORARY - v.3.2)
                             if (thisView.View_Type == View_Enum.CITATION)
                             {
-                                string viewerCode = currentMode.ViewerCode;
                                 currentMode.ViewerCode = "citation";
                                 if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
                                     currentMode.ViewerCode = "description";
@@ -1193,7 +1207,6 @@ namespace SobekCM.Library.HTML
                             }
                             else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
                             {
-                                string viewerCode = currentMode.ViewerCode;
                                 string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
                                 string all_volumes = "All Volumes";
                                 if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
@@ -1362,8 +1375,50 @@ namespace SobekCM.Library.HTML
                     }
 
 
+					// Add the MANAGE button?
+					if (userCanEditItem)
+					{
+						// Get all the mySObek URLs
+						currentMode.Mode = Display_Mode_Enum.My_Sobek;
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+						string edit_metadata_url = currentMode.Redirect_URL();
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+						string edit_behaviors_url = currentMode.Redirect_URL();
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+						string page_images_url = currentMode.Redirect_URL();
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+						string manage_downloads = currentMode.Redirect_URL();
+
+						currentMode.Mode = Display_Mode_Enum.Item_Display;
+						
+
+						Output.WriteLine("\t\t<li><a href=\"" + edit_metadata_url + "\">Manage</a><ul>");
+
+						Output.WriteLine("\t\t\t<li><a href=\"" + edit_metadata_url + "\">Edit Metadata</a></li>");
+						Output.WriteLine("\t\t\t<li><a href=\"" + edit_behaviors_url + "\">Edit Behaviors</a></li>");
+						Output.WriteLine("\t\t\t<li><a href=\"" + manage_downloads + "\">Manage Downloads</a></li>");
+
+						if ( currentItem.Web.Static_PageCount == 0 )
+							Output.WriteLine("\t\t\t<li><a href=\"" + page_images_url + "\">Manage Pages and Divisions</a></li>");
+						else
+						{
+							currentMode.ViewerCode = "qc";
+							Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
+						}
+
+						if ((currentUser.Is_Portal_Admin) || (currentUser.Is_System_Admin))
+						{
+							currentMode.ViewerCode = "mapedit";
+							Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
+						}
+
+						Output.WriteLine("\t\t</ul></li>");
+					}
+
+
                     // Set current submode back
                     currentMode.Page = page;
+	                currentMode.ViewerCode = viewerCode;
 
                     
 

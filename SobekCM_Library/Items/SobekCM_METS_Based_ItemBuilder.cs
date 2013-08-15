@@ -1069,7 +1069,7 @@ namespace SobekCM.Library.Items
                         }
 
                         // TEST: Special case for text
-                        if (thisPackage.BibID == "UF00001672")
+                        if ((thisPackage.BibID == "UF00001672") || ( thisPackage.BibID == "TEST000003"))
                         {
                             if (thisFile.File_Extension.ToLower().IndexOf("jpg") >= 0)
                             {

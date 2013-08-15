@@ -61,6 +61,11 @@ textarea.intheader_comments_input_focused  {  color:#0000a8; background-color: #
 .serial_hierarchy_button:hover { background-position: 0 -39px; }
 .mass_update_button { width: 141px; background: url("images/mass_update.png") no-repeat; }
 .mass_update_button:hover { background-position: 0 -39px; }
+#internal_notes_div
+{
+	margin-left: auto;
+	margin-right: auto;
+}
 
 /** title bar ( Item_HtmlSubwriter ) */
 #sbkIsw_Titlebar { width: 100%; background-color: #333333; padding: 4px 0 0 0; font-weight:bold; text-align:center; color:White;font-size: 0.90em; }
@@ -234,7 +239,6 @@ input.sbkTsv_SearchBox_focused  {  color: #0000a8;  width: 220px;  background-co
 /* TRACKING_ITEMVIEWER */
 .sbkTrk_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
 .sbkTrk_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em; }
-.sbkTrk_ViewSelectRow { }
 
 /* EAD-SPECIFIC ITEM STYLES ( EAD_DESCRIPTION_ITEMVIEWER, EAD_CONTAINER_LIST_ITEMVIEWER, EAD TOC) */
 #sbkEad_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
