@@ -3,6 +3,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -65,7 +67,6 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor", String.Empty);
 
-
             // Save the parameters
             codeManager = Code_Manager;
             itemList = Item_List;
@@ -93,6 +94,39 @@ namespace SobekCM.Library.MySobekViewer
             // Make the folder for the user in process directory
             if (!Directory.Exists(digitalResourceDirectory))
                 Directory.CreateDirectory(digitalResourceDirectory);
+            else
+            {
+				// Any post-processing to do?
+				string[] files = Directory.GetFiles(digitalResourceDirectory);
+				foreach (string thisFile in files)
+				{
+					FileInfo thisFileInfo = new FileInfo(thisFile);
+					if ((thisFileInfo.Extension.ToUpper() == ".TIF") || (thisFileInfo.Extension.ToUpper() == ".TIFF"))
+					{
+						// Is there a JPEG and/or thumbnail?
+						string jpeg = digitalResourceDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + ".jpg";
+						string jpeg_thumbnail = digitalResourceDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + "thm.jpg";
+
+						// Is one missing?
+						if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
+						{
+							try
+							{
+								var tiffImg = System.Drawing.Image.FromFile(thisFile);
+								var mainImg = ScaleImage(tiffImg, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height);
+								mainImg.Save(jpeg, ImageFormat.Jpeg);
+								var thumbnailImg = ScaleImage(tiffImg, 150, 400);
+								thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+
+							}
+							catch (Exception)
+							{
+								bool error = true;
+							}
+						}
+					}
+				}
+            }
 
             // If this is post-back, handle it
             if (currentMode.isPostBack)
@@ -192,6 +226,20 @@ namespace SobekCM.Library.MySobekViewer
                 }
             }
         }
+
+		public static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
+		{
+			var ratioX = (double)maxWidth / image.Width;
+			var ratioY = (double)maxHeight / image.Height;
+			var ratio = Math.Min(ratioX, ratioY);
+
+			var newWidth = (int)(image.Width * ratio);
+			var newHeight = (int)(image.Height * ratio);
+
+			var newImage = new Bitmap(newWidth, newHeight);
+			Graphics.FromImage(newImage).DrawImage(image, 0, 0, newWidth, newHeight);
+			return newImage;
+		}
 
         #endregion
 

@@ -5,7 +5,6 @@ using System.Data;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Items;
 
@@ -147,10 +146,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                if ( viewType == View_Type.Tree )
-                    return 750;
-                else 
-                    return -1;
+	            return viewType == View_Type.Tree ? 750 : -1;
             }
         }
 
