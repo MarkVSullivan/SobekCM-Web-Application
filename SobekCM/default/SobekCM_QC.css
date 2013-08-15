@@ -72,6 +72,7 @@
 .sbkQc_MovePagesFloatingButton {position: fixed; bottom: 95px; right: 40px;visibility: hidden; }
 .sbkQc_DeletePagesFloatingButton {position: fixed; bottom: 95px; right: 40px;visibility: hidden;}
 
+.popup_form_preview_div{display:inline-block; background-color: #555555;padding: 25px; border: 1px solid  black; margin: 5px;}
 
 .qcContainerDivClass {
      overflow: scroll; 
