@@ -1276,7 +1276,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Output.WriteLine("</script>");
 	        //end shift+click checkboxes
 
-	        Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"return popup('form_qcmove');\">Move to</button></div>");
+            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">Move to</button></div>");
 
 	        //Add the button to delete pages
             Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"sbkQc_DeletePagesFloatingButton\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>");
@@ -1766,6 +1766,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string delete_text = "Delete this page and related files";
             string view_text = "Open this page in a new window";
 
+            Output.WriteLine("<script type=\"text/javascript\">var qc_image_folder; var thumbnailImageDictionary={};</script>");
+     
+            //Save all the thumbnail image locations in the JavaScript global image dictionary
+            for (int i = 0; i < static_pages.Count; i++)
+            {
+                Page_TreeNode thisPage = (Page_TreeNode)static_pages[i];
+                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((thisFile => thisFile.System_Name.IndexOf("thm.jpg") > 0)))
+                {
+                    //set the image url to fetch the small thumbnail .thm image
+                    string image_url = (qc_item.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                    string filename = thisFile.File_Name_Sans_Extension;
+
+                    //Save the global image folder location
+                    Output.WriteLine("<script type=\"text/javascript\">Save_Image_Folder('" + CurrentMode.Default_Images_URL + "');</script>");
+                    //Add the image to the dictionary
+                    Output.WriteLine("<script type=\"text/javascript\">QC_Add_Image_To_Dictionary('" + filename + "','" + image_url + "');</script>");
+
+                }
+            }
+
 
 			// Step through each page in the item
 			Division_TreeNode lastParent = null;
@@ -2054,7 +2074,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("<tr><td>Move selected pages:</td>");
 			Output.WriteLine("<td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages1\" value=\"After\" checked=\"true\" onclick=\"rbMovePagesChanged(this.value);\">After");
 			Output.WriteLine("&nbsp;&nbsp;&nbsp;&nbsp;</td>");
-			Output.WriteLine("<td><select id=\"selectDestinationPageList1\" name=\"selectDestinationPageList1\">");
+			Output.WriteLine("<td><select id=\"selectDestinationPageList1\" name=\"selectDestinationPageList1\" onchange=\"update_preview();\">");
 			//Add the select options
 
 			//iterate through the page items
@@ -2069,7 +2089,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("</td></tr>");
 			Output.WriteLine("<tr><td></td><td><input type=\"radio\" name=\"rbMovePages\" id=\"rbMovePages2\" value=\"Before\" onclick=\"rbMovePagesChanged(this.value);\">Before</td>");
 
-			Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  name=\"selectDestinationPageList2\" disabled=\"true\">");
+            Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  name=\"selectDestinationPageList2\" onchange=\"update_preview();\" disabled=\"true\">");
 
 			//iterate through the page items
 			if (qc_item.Web.Static_PageCount > 0)
@@ -2082,16 +2102,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("</select></td></tr>");
 
             //Add the div for the preview section
-            //Output.WriteLine("<tr><td colspan=\"3\"><div id=\"popupPreviewDiv\" class=\"popup_form_preview_div\"> ");
-            //Output.WriteLine("<table><tr>");
-            //Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></span></td>");
-            //Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -10px 0 0 10px;\">span1<img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage\"></img></span>");
-            //Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -5px 0 0 5px;\">span2<img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage\"></img></span>");
-            //Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\">span3<img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage\"></img></span></td>");
-            //Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></span></td>");
-            //Output.WriteLine("</table>");
+            Output.WriteLine("<tr><td colspan=\"3\"><div id=\"popupPreviewDiv\" class=\"popup_form_preview_div\"> ");
+            Output.WriteLine("<table><tr>");
+            Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></span></td>");
+            Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -10px 0 0 10px;\"><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage1\"></img></span>");
+            Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -5px 0 0 5px;\"><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage2\"></img></span>");
+            Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\"><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage3\"></img></span></td>");
+            Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></span></td>");
+            Output.WriteLine("</table>");
 
-            //Output.WriteLine("</td></tr></div>");
+            Output.WriteLine("</div></td></tr>");
 
 
             //End div for the preview section
