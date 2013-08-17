@@ -2103,12 +2103,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the div for the preview section
             Output.WriteLine("<tr><td colspan=\"3\"><div id=\"popupPreviewDiv\" class=\"popup_form_preview_div\"> ");
-            Output.WriteLine("<table><tr>");
-            Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></span></td>");
-            Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -10px 0 0 10px;\"><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage1\"></img></span>");
-            Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -5px 0 0 5px;\"><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage2\"></img></span>");
-            Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\"><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage3\"></img></span></td>");
-            Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></span></td>");
+            Output.WriteLine("<table cellpadding=\"10\"><tr>");
+            Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><table><tr><td><span id=\"prevFileName\" class=\"sbkQc_Filename\"></span></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></td></tr></table></span></td>");
+            Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -16px 0 0 16px;\"><table><tr><td><span id=\"placeHolderText1\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage1\"></img></td></tr></table></span>");
+            Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -8px 0 0 8px;\"><table><tr><td><span id=\"placeHolderText2\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage2\"></img></td></tr></table></span>");
+            Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\"><table><tr><td><span id=\"placeHolderText3\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage3\"></img></td></tr></table></span></td>");
+            Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><table><tr><td><span id=\"nextFileName\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></td></tr></table></span></td>");
             Output.WriteLine("</table>");
 
             Output.WriteLine("</div></td></tr>");

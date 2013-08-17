@@ -132,7 +132,7 @@
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
 .popup_table { margin-left: 50px;margin-right: 50px; }
 
-.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:175px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
+.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:525px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
 
 .btnMovePages {
 	background-color:Yellow;
