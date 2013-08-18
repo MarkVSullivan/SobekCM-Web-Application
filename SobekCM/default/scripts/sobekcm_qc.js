@@ -4,8 +4,8 @@ var autonumberingMode=-1;
 var makeSortable = 3;
 var cursorMode = 1;
 var lastSelected = -1;
-var thumbnailImageDictionary;
-
+var thumbnailImageDictionary = {};
+var qc_image_folder;
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -44,11 +44,18 @@ function qc_set_fullscreen() {
 }
 
 
+function Save_Image_Folder(location) {
+    qc_image_folder = location+"qc/";
+}
+
+
 //Assign the thumbnail image filenames, file locations to the global dictionary
 function QC_Add_Image_To_Dictionary(filename, file_location) {
+ //   alert(filename+' '+file_location);
     thumbnailImageDictionary[filename] = file_location;
 
-    alert('thumbnailImageDictionary[' + filename + ']=' + thumbnailImageDictionary[filename]);
+   // alert(qc_image_folder);
+    //   alert('thumbnailImageDictionary[' + filename + ']=' + thumbnailImageDictionary[filename]);
 
 }
 
@@ -700,7 +707,8 @@ function movepagesicon_click()
 
         if (checked_found == 0) {
             cancel_move_pages();
-            } else {
+        } else {
+            update_preview();
             popup('form_qcmove');
         }
     }
@@ -1087,6 +1095,7 @@ function rbMovePagesChanged(rbValue)
 	  document.getElementById('selectDestinationPageList2').disabled=false;
 	  document.getElementById('selectDestinationPageList1').disabled=true;
 	}
+    update_preview();
 }
 
 
@@ -1109,10 +1118,7 @@ function update_popup_form(page_index,pageID,before_after)
 	 hidden_destination.value=file_name;
 	 
 	 
-//end section: delete code from the submit function 
 
-
-//alert(pageID+before_after);
   if(before_after=='After')
   {
 	if(document.getElementById('selectDestinationPageList1'))
@@ -1136,7 +1142,7 @@ function update_popup_form(page_index,pageID,before_after)
 	   var ddl=document.getElementById('selectDestinationPageList1');
 	   var selIndex = ddl.selectedIndex;
 	   hidden_destination.value = ddl.options[selIndex].value;
-//	   alert(hidden_destination.value);
+
 	  
 	}
   }
@@ -1166,20 +1172,22 @@ function update_popup_form(page_index,pageID,before_after)
 		 var selIndex = ddl.selectedIndex-1;
 		 hidden_action.value = 'After';
 		 hidden_destination.value = ddl.options[selIndex].value;
-	     //alert(hidden_destination.value);
-//		 alert('Before selected: changing this to the corresponding after. hidden_action.value:'+hidden_action.value + hidden_destination.value);
+
 	   }
 	   else
 	   {
 		 hidden_action.value = 'Before';
 		 var ddl=document.getElementById('selectDestinationPageList2');
 		 hidden_destination.value = ddl.options[ddl.selectedIndex].value;
-//		 alert(hidden_destination.value);
+
 	   }
 		
 		
 	}
   }
+    //Update the 'Preview' section of the popup form
+    update_preview();
+
 }
 
 //Move the selected pages
@@ -1234,7 +1242,7 @@ function move_pages_submit()
 		 hidden_action.value = 'Before';
 		 var ddl=document.getElementById('selectDestinationPageList2');
 		 hidden_destination.value = ddl.options[ddl.selectedIndex].value;
-		// alert(hidden_destination.value);
+		
 	   }
 	   
 	 }
@@ -1251,6 +1259,110 @@ function move_pages_submit()
 	 
 	 document.itemNavForm.submit();
 	 return false;
+}
+
+//update the preview section of the form
+function update_preview() {
+    //  alert('function update_preview  called successfully');
+    var rb_Before = document.getElementById('rbMovePages2');
+    var rb_After = document.getElementById('rbMovePages1');
+    var ddl_Before = document.getElementById('selectDestinationPageList2');
+    var ddl_After = document.getElementById('selectDestinationPageList1');
+    var prevThumbnail = document.getElementById('prevThumbnailImage');
+    var nextThumbnail = document.getElementById('nextThumbnailImage');
+    var placeholderImage1 = document.getElementById('PlaceholderThumbnailImage1');
+    var placeholderImage2 = document.getElementById('PlaceholderThumbnailImage2');
+    var placeholderImage3 = document.getElementById('PlaceholderThumbnailImage3');
+
+    //set the placeholder images
+    placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
+    placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
+    placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
+
+  //If the 'Before' radio button is selected
+    if (rb_Before.checked == true) {
+        //if before the 0th option is selected
+        if (ddl_Before.selectedIndex == 0) {
+            //set the prevThumbnail image to 'No pages'
+            prevThumbnail.src = qc_image_folder + "no_pages.jpg";
+            document.getElementById('prevFileName').innerHTML = '';
+        }
+            
+        else {// set the prev thumbnail
+            if (ddl_Before.options[ddl_Before.selectedIndex - 1].value.length > 0 && thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value].length > 0) {
+                prevThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value];
+                document.getElementById('prevFileName').innerHTML = ddl_Before.options[ddl_Before.selectedIndex-1].value;
+            }
+        }
+        //set the nextThumbnail
+            if (ddl_Before.options[ddl_Before.selectedIndex].value.length>0 && thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value].length>0) {
+                nextThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value];
+                document.getElementById('nextFileName').innerHTML = ddl_Before.options[ddl_Before.selectedIndex].value;
+            } else {
+                nextThumbnail.src = qc_image_folder + "no_pages.jpg";
+                document.getElementById('nextFileName').innerHTML = '';
+            }
+        
+    }
+    else if (rb_After.checked == true) {
+        //if after the 'last' option is selected
+        if (ddl_After.selectedIndex == ddl_After.options.length-1) {
+            //set the nextThumbnail image to 'No pages'
+            nextThumbnail.src = qc_image_folder + "no_pages.jpg";
+            document.getElementById('nextFileName').innerHTML = '';
+        }
+
+        else {// set the next thumbnail
+            if (ddl_After.options[ddl_After.selectedIndex + 1].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value].length > 0) {
+                nextThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value];
+                document.getElementById('nextFileName').innerHTML = ddl_After.options[ddl_After.selectedIndex + 1].value;
+            }
+            else {
+                nextThumbnail.src = qc_image_folder + "no_pages.jpg";
+                document.getElementById('nextFileName').innerHTML = '';
+            }
+        }
+        //set the prevThumbnail
+        if (ddl_After.options[ddl_After.selectedIndex].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value].length > 0) {
+            prevThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value];
+            document.getElementById('prevFileName').innerHTML = ddl_After.options[ddl_After.selectedIndex].value;
+        } else {
+            prevThumbnail.src = qc_image_folder + "no_pages.jpg";
+            document.getElementById('prevFileName').innerHTML = '';
+        }
+
+    }
+
+    //Adjust the placeholder span(s) based on the number of pages(checkboxes) selected 
+    var chkboxCount = 0;
+    var placeHolderSpan1 = document.getElementById('PlaceholderThumbnail1');
+    var placeHolderSpan2 = document.getElementById('PlaceholderThumbnail2');
+    var placeHolderSpan3 = document.getElementById('PlaceholderThumbnail3');
+    
+    for (var j = 0; j < spanArray.length; j++) {
+        var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
+        if (checkbox.checked == true)
+            chkboxCount++;
+    }
+    if (chkboxCount == 1) {
+        placeHolderSpan1.style.visibility = 'hidden';
+        placeHolderSpan2.style.visibility = 'hidden';
+        //set the placeholder images
+        placeholderImage1.src = qc_image_folder + "move_page_here.jpg";
+        placeholderImage2.src = qc_image_folder + "move_page_here.jpg";
+        placeholderImage3.src = qc_image_folder + "move_page_here.jpg";
+        
+    }
+    
+    else if (chkboxCount > 1) {
+        placeHolderSpan1.style.visibility = 'visible';
+        placeHolderSpan2.style.visibility = 'visible';
+        //set the placeholder images
+        placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
+        placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
+        placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
+    }
+
 }
 
 
