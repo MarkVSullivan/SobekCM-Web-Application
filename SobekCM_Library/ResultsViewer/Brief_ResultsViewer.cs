@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
+using SobekCM.Library.Settings;
 
 #endregion
 

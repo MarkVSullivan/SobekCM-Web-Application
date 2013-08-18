@@ -10,6 +10,7 @@ using System.Web;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 
 #endregion
 

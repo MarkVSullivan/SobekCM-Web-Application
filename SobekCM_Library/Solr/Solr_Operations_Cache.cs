@@ -9,14 +9,14 @@ namespace SobekCM.Library.Solr
 {
     internal static class Solr_Operations_Cache<T> where T : new() 
     { 
-        private static ISolrOperations<T> solrOperations; 
+        private static ISolrOperations<T> solrOperations;
 
-        public static ISolrOperations<T> GetSolrOperations(string solrUrl) 
+        public static ISolrOperations<T> GetSolrOperations(string SolrURL) 
         { 
-            if (solrOperations == null) 
-            { 
-                Startup.Init<T>(solrUrl); 
-                solrOperations = ServiceLocator.Current.GetInstance<ISolrOperations<T>>(); 
+            if ( solrOperations == null )
+            {
+				Startup.Init<T>(SolrURL); 
+                solrOperations = ServiceLocator.Current.GetInstance<ISolrOperations<T>>();
             } 
             return solrOperations; 
         } 

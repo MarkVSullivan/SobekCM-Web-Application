@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.IO;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 
 #endregion
 

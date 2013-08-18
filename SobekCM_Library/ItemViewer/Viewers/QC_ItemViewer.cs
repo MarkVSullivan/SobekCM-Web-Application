@@ -16,6 +16,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.Items;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -1765,6 +1766,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string info_text = "View technical image information";
             string delete_text = "Delete this page and related files";
             string view_text = "Open this page in a new window";
+
+			//// Build the javascript to add references to the non-displayed pages
+			//StringBuilder javascriptBuilder = new StringBuilder(4000);
+			//for (int page_index = 0; page_index < page*images_per_page; page_index++)
+			//{
+			//	Page_TreeNode thisPage = (Page_TreeNode) static_pages[page_index];
+			//	javascriptBuilder.AppendLine("\t\t");
+			//}
 
 
 			// Step through each page in the item

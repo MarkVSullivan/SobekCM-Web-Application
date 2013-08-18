@@ -14,6 +14,7 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.OAI;
+using SobekCM.Library.Settings;
 
 #endregion
 

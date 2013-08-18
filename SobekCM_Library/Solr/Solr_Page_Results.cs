@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using SobekCM.Library.Settings;
 using SolrNet;
 using SolrNet.Commands.Parameters;
 

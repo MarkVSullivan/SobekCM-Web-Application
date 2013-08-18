@@ -16,6 +16,7 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.Search;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 #endregion

@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Runtime.CompilerServices;
 using SobekCM.Library;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
-using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
 
 public partial class Files : System.Web.UI.Page

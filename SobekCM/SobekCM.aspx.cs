@@ -1,27 +1,13 @@
 #region Includes 
 
 using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Web;
-using System.Net.Mail;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using SobekCM.Library.Application_State;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Navigation;
-
-using darrenjohnstone.net.FileUpload;
 
 #endregion
 
-public partial class UFDC : System.Web.UI.Page
+public partial class SobekMain : System.Web.UI.Page
 {
     private SobekCM_Page_Globals Page_Globals;
 
@@ -67,7 +53,7 @@ public partial class UFDC : System.Web.UI.Page
                 }
             }
 
-            if (SobekCM.Library.SobekCM_Library_Settings.Web_Output_Caching_Minutes > 0)
+            if (SobekCM_Library_Settings.Web_Output_Caching_Minutes > 0)
             {
                 if ((Page_Globals.currentMode.Mode != Display_Mode_Enum.Error) &&
                     (Page_Globals.currentMode.Mode != Display_Mode_Enum.My_Sobek) &&
@@ -84,7 +70,7 @@ public partial class UFDC : System.Web.UI.Page
                     ((Page_Globals.currentMode.Mode != Display_Mode_Enum.Item_Display) || ((Page_Globals.currentMode.ViewerCode.Length > 0) && (Page_Globals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (Page_Globals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
                 {
                     Response.Cache.SetCacheability(HttpCacheability.Private);
-                    Response.Cache.SetMaxAge(new TimeSpan(0, SobekCM.Library.SobekCM_Library_Settings.Web_Output_Caching_Minutes, 0));
+                    Response.Cache.SetMaxAge(new TimeSpan(0, SobekCM_Library_Settings.Web_Output_Caching_Minutes, 0));
                 }
                 else
                 {
@@ -311,8 +297,8 @@ public partial class UFDC : System.Web.UI.Page
         if ((Page_Globals.currentMode == null) || (Page_Globals.currentMode.Request_Completed))
             return;
 
-        if ( !String.IsNullOrEmpty( SobekCM.Library.SobekCM_Library_Settings.System_Name))
-            Response.Output.Write(SobekCM.Library.SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository");
+        if ( !String.IsNullOrEmpty( SobekCM_Library_Settings.System_Name))
+            Response.Output.Write(SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository");
         else
             Response.Output.Write("SobekCM Digital Repository");
     }

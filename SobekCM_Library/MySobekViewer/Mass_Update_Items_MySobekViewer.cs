@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Library.Application_State;

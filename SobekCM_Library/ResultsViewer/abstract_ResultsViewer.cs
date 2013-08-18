@@ -9,6 +9,7 @@ using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 #endregion

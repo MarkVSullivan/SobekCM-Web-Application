@@ -3,11 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Builder;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
@@ -15,12 +13,13 @@ using SobekCM.Library.Search;
 
 #endregion
 
-namespace SobekCM.Library
+namespace SobekCM.Library.Settings
 {
     /// <summary> Class provides static context to constant settings based on the basic information about this instance of the application and server information </summary>
     public class SobekCM_Library_Settings
     {
 
+        /// <summary> Name for the backup files folder within each digital resource </summary>
         public const string Backup_Files_Folder_Name = "sobek_files";
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
@@ -36,6 +35,9 @@ namespace SobekCM.Library
         /// <summary> Number of ticks that a metadata only package must age before being processed </summary>
         /// <value> This is currently set to 1 minute (in ticks) </value>
         public static long METS_Only_Package_Required_Aging = 60L * 10000000L;          // 1 Minute (in ticks)
+
+		/// <summary> Flag indicates whether checksums should be verified </summary>
+		private static readonly bool Verify_CheckSum = true;
 
         // Values pulled from database 
         private static string packageArchivalFolder, logFilesDirectory, logFilesUrl, staticPagesLocation;
@@ -63,7 +65,6 @@ namespace SobekCM.Library
         private static string imageMagickExecutable;
         private static string ghostscriptExecutable;
         private static bool statisticsCachingEnabled;
-        private static bool allowPageImageFileManagement;
         private static bool includeTreeviewOnSystemHome;
         private static bool includePartnersOnSystemHome;
         private static bool convertOfficeFilesToPdf;
@@ -103,7 +104,7 @@ namespace SobekCM.Library
         private static List<string> searchStopWords;
         private static readonly Object thisLock = new Object();
 
-        public static readonly bool Verify_CheckSum = true;
+
         private static SobekCM_Database_Type_Enum sobekDatabaseType;
 
         private static Dictionary<string, string> additionalGlobalSettings;
@@ -162,18 +163,23 @@ namespace SobekCM.Library
             }
         }
 
+		/// <summary> Reads the inficated configuration file </summary>
+		/// <exception>File is checked for existence first, otherwise all encountered exceptions will be thrown</exception>
         public static void Read_Configuration_File()
         {
             baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             Read_Configuration_File(baseDirectory + "\\config\\sobekcm.config");
         }
 
-        public static void Read_Configuration_File( string config_file )
+		/// <summary> Reads the inficated configuration file </summary>
+		/// <param name="ConfigFile"> Configuration file to read </param>
+		/// <exception>File is checked for existence first, otherwise all encountered exceptions will be thrown</exception>
+        public static void Read_Configuration_File( string ConfigFile )
         {
-            if (!File.Exists(config_file))
+            if (!File.Exists(ConfigFile))
                 return;
 
-            System.IO.StreamReader reader = new System.IO.StreamReader(config_file);
+            StreamReader reader = new StreamReader(ConfigFile);
             System.Xml.XmlTextReader xmlReader = new System.Xml.XmlTextReader(reader);
             while (xmlReader.Read())
             {
@@ -185,7 +191,7 @@ namespace SobekCM.Library
                         case "connection_string":
                             if (xmlReader.MoveToAttribute("type"))
                             {
-                                if (xmlReader.Value.ToString().ToLower() == "postgresql")
+                                if (xmlReader.Value.ToLower() == "postgresql")
                                     sobekDatabaseType = SobekCM_Database_Type_Enum.PostgreSQL;
 
                             }
@@ -252,7 +258,6 @@ namespace SobekCM.Library
                 }
 
                 // Pull all of the builder settings value ( from UFDC_Builder_Settings )
-                Get_Boolean_Value(settingsDictionary, "Allow Page Image File Management", ref allowPageImageFileManagement, ref error, false);
                 Get_String_Value(settingsDictionary, "Application Server Network", ref applicationServerNetwork, ref error);
                 Get_String_Value(settingsDictionary, "Application Server URL", ref applicationServerUrl, ref error);
                 Get_String_Value(settingsDictionary, "Archive DropBox", ref archiveDropbox, ref error);
@@ -420,7 +425,7 @@ namespace SobekCM.Library
             {
                 lock (thisLock)
                 {
-                    return dispositionFutureTypes.Values.Select(thisValue => thisValue.Value).ToList();
+                    return dispositionFutureTypes.Values.Select(ThisValue => ThisValue.Value).ToList();
                 }
             }
         }
@@ -432,7 +437,7 @@ namespace SobekCM.Library
             {
                 lock (thisLock)
                 {
-                    return dispositionPastTypes.Values.Select(thisValue => thisValue.Value).ToList();
+                    return dispositionPastTypes.Values.Select(ThisValue => ThisValue.Value).ToList();
                 }
             }
         }
@@ -444,7 +449,7 @@ namespace SobekCM.Library
             {
                 lock (thisLock)
                 {
-                    return workflowTypes.Values.Select(thisValue => thisValue.Value).ToList();
+                    return workflowTypes.Values.Select(ThisValue => ThisValue.Value).ToList();
                 }
             }
         }
@@ -509,7 +514,7 @@ namespace SobekCM.Library
         {
             lock (thisLock)
             {
-                foreach (KeyValuePair<int, string> thisValue in dispositionPastTypes.Values.Where(thisValue => Disposition_Term == thisValue.Value))
+                foreach (KeyValuePair<int, string> thisValue in dispositionPastTypes.Values.Where(ThisValue => Disposition_Term == ThisValue.Value))
                 {
                     return thisValue.Key;
                 }
@@ -524,7 +529,7 @@ namespace SobekCM.Library
         {
             lock (thisLock)
             {
-                foreach (KeyValuePair<int, string> thisValue in dispositionFutureTypes.Values.Where(thisValue => Disposition_Term == thisValue.Value))
+                foreach (KeyValuePair<int, string> thisValue in dispositionFutureTypes.Values.Where(ThisValue => Disposition_Term == ThisValue.Value))
                 {
                     return thisValue.Key;
                 }
@@ -745,7 +750,7 @@ namespace SobekCM.Library
         }
 
         /// <summary> Flag indicates if the builder should try to convert office files (Word and Powerpoint) to PDF during load and post-processing </summary>
-        public static bool Convert_Office_Files_to_PDF
+        public static bool Convert_Office_Files_To_PDF
         {
             get
             {
@@ -759,16 +764,6 @@ namespace SobekCM.Library
             get
             {
                 return ocrCommandPrompt;
-            }
-        }
-
-        /// <summary> Flag indicates if users can perform simple file management against page images, or
-        /// whether they are restricted to file management on download files only </summary>
-        public static bool Allow_Page_Image_File_Management
-        {
-            get
-            {
-                return allowPageImageFileManagement;
             }
         }
 
