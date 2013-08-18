@@ -9,6 +9,7 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 
 #endregion
 

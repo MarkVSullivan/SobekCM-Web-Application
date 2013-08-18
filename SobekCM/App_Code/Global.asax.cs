@@ -9,7 +9,6 @@ using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
-using darrenjohnstone.net.FileUpload;
 
 #endregion
 

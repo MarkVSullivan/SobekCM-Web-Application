@@ -12,6 +12,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 #endregion

@@ -11,6 +11,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 #endregion
@@ -132,20 +133,20 @@ namespace SobekCM.Library.MySobekViewer
                         // Move the folder to deletes
                         try
                         {
-                            Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Move resource files to DELETED folder");
+                            Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Move resource files to RECYCLE BIN folder");
 
-                            // Make sure upper deleted folder exists, or create it
-                            string delete_folder = SobekCM_Library_Settings.Image_Server_Network + "DELETED";
+							// Make sure upper RECYCLE BIN folder exists, or create it
+							string delete_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN";
                             if (!Directory.Exists(delete_folder))
                                 Directory.CreateDirectory(delete_folder);
 
                             // Create the bib level folder next
-                            string bib_folder = SobekCM_Library_Settings.Image_Server_Network + "DELETED\\" + currentMode.BibID;
+							string bib_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID;
                             if (!Directory.Exists(bib_folder))
                                 Directory.CreateDirectory(bib_folder);
 
                             // Ensure the VID folder does not exist
-                            string vid_folder = SobekCM_Library_Settings.Image_Server_Network + "DELETED\\" + currentMode.BibID + "\\" + currentMode.VID;
+							string vid_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID + "\\" + currentMode.VID;
                             if (Directory.Exists(vid_folder))
                                 Directory.Move(vid_folder, vid_folder + "_OLD");
 
@@ -167,7 +168,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         catch (Exception ee)
                         {
-                            Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error moving the folder and files to the DELETED folder", Custom_Trace_Type_Enum.Error);
+							Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error moving the folder and files to the RECYCLE BIN folder", Custom_Trace_Type_Enum.Error);
                             Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
                             Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                             errorCode = 4;
@@ -255,7 +256,7 @@ namespace SobekCM.Library.MySobekViewer
                         break;
 
                     case 4:
-                        Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE PARTIALLY SUCCESSFUL</strong><br /><br />Unable to move all files to the DELETED folder</center></span>");
+						Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE PARTIALLY SUCCESSFUL</strong><br /><br />Unable to move all files to the RECYCLE BIN folder</center></span>");
                         break;
                 }
 

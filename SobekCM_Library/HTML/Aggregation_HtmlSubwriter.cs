@@ -19,6 +19,7 @@ using SobekCM.Library.Email;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Users;
 using SobekCM.Library.WebContent;

@@ -13,6 +13,7 @@ using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 #endregion

@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Items;

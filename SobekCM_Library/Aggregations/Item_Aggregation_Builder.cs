@@ -6,6 +6,7 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.MemoryMgmt;
+using SobekCM.Library.Settings;
 using SobekCM.Library.WebContent;
 
 #endregion
@@ -82,7 +83,7 @@ namespace SobekCM.Library.Aggregations
 						}
 
                         // Since there was no configuration file, save one
-                        hierarchyObject.Write_Configuration_File(SobekCM.Library.SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory);
+                        hierarchyObject.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory);
 
 					}
 

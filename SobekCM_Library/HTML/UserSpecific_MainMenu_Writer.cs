@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 namespace SobekCM.Library.HTML
@@ -93,184 +94,187 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("\t\t\t<li id=\"sbkUsm_HomeAdvSearch\"><a href=\"" + advanced_url + "\">" + advanced_search_text + "</a></li>");
             Output.WriteLine("\t\t</ul></li>");
 
-            // Add the 'mySOBEK HOME' second menu option and suboptions
-            Mode.Mode = Display_Mode_Enum.My_Sobek;
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-            Output.WriteLine("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">" + my_sobek_home_text + "</a><ul id=\"sbkUsm_MySubMenu\">");
+	        if (User != null)
+	        {
+		        // Add the 'mySOBEK HOME' second menu option and suboptions
+		        Mode.Mode = Display_Mode_Enum.My_Sobek;
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+		        Output.WriteLine("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">" + my_sobek_home_text + "</a><ul id=\"sbkUsm_MySubMenu\">");
 
-            // If a user can submit, add a link to start a new item
-            if ((User.Can_Submit) && ( SobekCM_Library_Settings.Online_Edit_Submit_Enabled ))
-            {
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
-                    Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyStartNew\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "new_item.gif\" /> <div class=\"sbkUsm_TextWithImage\">Start a new item</div></a></li>");
-            }
+		        // If a user can submit, add a link to start a new item
+		        if ((User.Can_Submit) && (SobekCM_Library_Settings.Online_Edit_Submit_Enabled))
+		        {
+			        Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
+			        Mode.My_Sobek_SubMode = "1";
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyStartNew\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "new_item.gif\" /> <div class=\"sbkUsm_TextWithImage\">Start a new item</div></a></li>");
+		        }
 
-            // If the user has already submitted stuff, add a link to all submitted items
-            if (User.Items_Submitted_Count > 0)
-            {
-                Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                Mode.My_Sobek_SubMode = "Submitted Items";
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_MySubmittedItems\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "submitted_items.gif\" /> <div class=\"sbkUsm_TextWithImage\">View my submitted items</div></a></li>");
-            }
+		        // If the user has already submitted stuff, add a link to all submitted items
+		        if (User.Items_Submitted_Count > 0)
+		        {
+			        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
+			        Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+			        Mode.My_Sobek_SubMode = "Submitted Items";
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MySubmittedItems\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "submitted_items.gif\" /> <div class=\"sbkUsm_TextWithImage\">View my submitted items</div></a></li>");
+		        }
 
-            // If this user is linked to item statistics, add that link as well
-            if (User.Has_Item_Stats)
-            {
-                // Add link to folder management
-                Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Usage_Stats;
-                Mode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyItemStats\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "usage.png\" /> <div class=\"sbkUsm_TextWithImage\">View usage for my items</div></a></li>");
-            }
+		        // If this user is linked to item statistics, add that link as well
+		        if (User.Has_Item_Stats)
+		        {
+			        // Add link to folder management
+			        Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Usage_Stats;
+			        Mode.My_Sobek_SubMode = String.Empty;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyItemStats\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "usage.png\" /> <div class=\"sbkUsm_TextWithImage\">View usage for my items</div></a></li>");
+		        }
 
-            // If the user has submitted some descriptive tags, or has the kind of rights that let them
-            // view lists of tags, add that
-            if ((User.Has_Descriptive_Tags) || (User.Is_System_Admin) || (User.Is_A_Collection_Manager_Or_Admin))
-            {
-                // Add link to folder management
-                Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Tags;
-                Mode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyTags\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "chat.png\" /> <div class=\"sbkUsm_TextWithImage\">View my descriptive tags</div></a></li>");
-            }
+		        // If the user has submitted some descriptive tags, or has the kind of rights that let them
+		        // view lists of tags, add that
+		        if ((User.Has_Descriptive_Tags) || (User.Is_System_Admin) || (User.Is_A_Collection_Manager_Or_Admin))
+		        {
+			        // Add link to folder management
+			        Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Tags;
+			        Mode.My_Sobek_SubMode = String.Empty;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyTags\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "chat.png\" /> <div class=\"sbkUsm_TextWithImage\">View my descriptive tags</div></a></li>");
+		        }
 
-            // Add link to folder management
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-            Mode.My_Sobek_SubMode = String.Empty;
-            Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-            Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyBookshelf\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "bookshelf.png\" /> <div class=\"sbkUsm_TextWithImage\">View my bookshelves</div></a></li>");
+		        // Add link to folder management
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
+		        Mode.My_Sobek_SubMode = String.Empty;
+		        Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+		        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyBookshelf\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "bookshelf.png\" /> <div class=\"sbkUsm_TextWithImage\">View my bookshelves</div></a></li>");
 
-            // Add a link to view all saved searches
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
-            Output.WriteLine("\t\t\t<li id=\"sbkUsm_MySearches\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "saved_searches.gif\" /> <div class=\"sbkUsm_TextWithImage\">View my saved searches</div></a></li>");
+		        // Add a link to view all saved searches
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
+		        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MySearches\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "saved_searches.gif\" /> <div class=\"sbkUsm_TextWithImage\">View my saved searches</div></a></li>");
 
-            // Add a link to edit your preferences
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-            Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyAccount\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "settings.gif\" /> <div class=\"sbkUsm_TextWithImage\">Account preferences</div></a></li>");
+		        // Add a link to edit your preferences
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+		        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyAccount\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "settings.gif\" /> <div class=\"sbkUsm_TextWithImage\">Account preferences</div></a></li>");
 
-            // Add a log out link
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-            Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyLogOut\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "exit.gif\" /> <div class=\"sbkUsm_TextWithImage\">Log Out</div></a></li>");
+		        // Add a log out link
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
+		        Output.WriteLine("\t\t\t<li id=\"sbkUsm_MyLogOut\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "exit.gif\" /> <div class=\"sbkUsm_TextWithImage\">Log Out</div></a></li>");
 
-            Output.WriteLine("\t\t</ul></li>");
-
-
-            // Add link to my libary (repeat of option in mySobek menu)
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-            Mode.My_Sobek_SubMode = String.Empty;
-            Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-            Output.WriteLine("\t\t<li id=\"sbkUsm_Bookshelf\"><a href=\"" + Mode.Redirect_URL() + "\">My Library</a></li>");
-
-            // Add a link to my account (repeat of option in mySobek menu)
-            Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-            Output.WriteLine("\t\t\t<li id=\"sbkUsm_Account\"><a href=\"" + Mode.Redirect_URL() + "\">My Account</a></li>");
-
-            // If this user is internal, add that
-            if ((User.Is_Internal_User) || (User.Is_Portal_Admin) || (User.Is_System_Admin))
-            {
-                Mode.Mode = Display_Mode_Enum.Internal;
-                Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
-                Output.WriteLine("\t\t<li id=\"sbkUsm_Internal\"><a href=\"" + Mode.Redirect_URL() + "\">" + internal_text + "</a><ul id=\"sbkUsm_InternalSubMenu\">");
-
-                Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalAggregations\"><a href=\"" + Mode.Redirect_URL() + "\">" + collection_details_text + "</a></li>");
-
-                Mode.Internal_Type = Internal_Type_Enum.New_Items;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalNewItems\"><a href=\"" + Mode.Redirect_URL() + "\">" + new_items_text + "</a></li>");
-
-                Mode.Internal_Type = Internal_Type_Enum.Build_Failures;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalBuildFailures\"><a href=\"" + Mode.Redirect_URL() + "\">" + build_failures_text + "</a></li>");
-
-                Mode.Internal_Type = Internal_Type_Enum.Cache;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalCache\"><a href=\"" + Mode.Redirect_URL() + "\">" + memory_mgmt_text + "</a></li>");
-
-                Mode.Internal_Type = Internal_Type_Enum.Wordmarks;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalWordmarks\"><a href=\"" + Mode.Redirect_URL() + "\">" + wordmarks_text + "</a></li>");
-
-                //// The only time we don't show the standard INTERNAL view selectors is when NEW ITEMS is selected
-                //// and there are recenly added NEW ITEMS
-                //DataTable New_Items = null;
-                //if (type == Internal_Type_Enum.New_Items)
-                //    New_Items = SobekCM_Database.Tracking_Update_List(Tracer);
-
-                //// If this user is internal, add that
-                //if ((New_Items != null) && (New_Items.Rows.Count > 0))
-                //{
-                //    currentMode.Mode = Display_Mode_Enum.Internal;
-                //    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Selected_Tab_Start + internalTab + Selected_Tab_End + "</a>");
-                //    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                //}
-                //else
-                //{
-                //    Output.WriteLine(Selected_Tab_Start + internalTab + Selected_Tab_End);
-                //}
-
-                Output.WriteLine("\t\t</ul></li>");
-            }
-
-            // If this user is a sys admin or portal admin, add that
-            if ((User.Is_System_Admin) || (User.Is_Portal_Admin))
-            {
-                Mode.Mode = Display_Mode_Enum.Administrative;
-                Mode.Admin_Type = Admin_Type_Enum.Home;
-                Output.WriteLine("\t\t<li id=\"sbkUsm_Admin\"><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
-
-                // Edit item aggregations
-                Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminAggr\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Item Aggregations</div></a></li>");
-
-                // Edit interfaces
-                Mode.Admin_Type = Admin_Type_Enum.Interfaces;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSkin\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
-
-                // Edit wordmarks
-                Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wordmarks.gif\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
-
-                // Edit forwarding
-                Mode.Admin_Type = Admin_Type_Enum.Forwarding;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminForwarding\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
-
-                // Edit Projects
-                Mode.Admin_Type = Admin_Type_Enum.Projects;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminProjects\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Projects</div></a></li>");
-
-                // Edit Thematic Headings
-                Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-                Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminThematic\"><a href=\"" + Mode.Redirect_URL() + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
-
-                if (User.Is_System_Admin)
-                {
-                    // Edit users
-                    Mode.Admin_Type = Admin_Type_Enum.Users;
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminUsers\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Registered Users and Groups</div></a></li>");
-
-                    // Edit IP Restrictions
-                    Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
-
-                    // Edit URL Portals
-                    Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminPortals\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
-
-                    // Edit Settings
-                    Mode.Admin_Type = Admin_Type_Enum.Settings;
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSettings\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
-
-                    // View and set SobekCM Builder Status
-                    Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminStatus\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">SobekCM Builder Status</div></a></li>");
-
-                    // Reset cache
-                    Mode.Admin_Type = Admin_Type_Enum.Reset;
-                    Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminReset\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
-                }
-
-                Output.WriteLine("\t\t</ul></li>");
-            }
+		        Output.WriteLine("\t\t</ul></li>");
 
 
-            Output.WriteLine("\t</ul></div>");
+		        // Add link to my libary (repeat of option in mySobek menu)
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
+		        Mode.My_Sobek_SubMode = String.Empty;
+		        Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+		        Output.WriteLine("\t\t<li id=\"sbkUsm_Bookshelf\"><a href=\"" + Mode.Redirect_URL() + "\">My Library</a></li>");
+
+		        // Add a link to my account (repeat of option in mySobek menu)
+		        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+		        Output.WriteLine("\t\t\t<li id=\"sbkUsm_Account\"><a href=\"" + Mode.Redirect_URL() + "\">My Account</a></li>");
+
+		        // If this user is internal, add that
+		        if ((User.Is_Internal_User) || (User.Is_Portal_Admin) || (User.Is_System_Admin))
+		        {
+			        Mode.Mode = Display_Mode_Enum.Internal;
+			        Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
+			        Output.WriteLine("\t\t<li id=\"sbkUsm_Internal\"><a href=\"" + Mode.Redirect_URL() + "\">" + internal_text + "</a><ul id=\"sbkUsm_InternalSubMenu\">");
+
+			        Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalAggregations\"><a href=\"" + Mode.Redirect_URL() + "\">" + collection_details_text + "</a></li>");
+
+			        Mode.Internal_Type = Internal_Type_Enum.New_Items;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalNewItems\"><a href=\"" + Mode.Redirect_URL() + "\">" + new_items_text + "</a></li>");
+
+			        Mode.Internal_Type = Internal_Type_Enum.Build_Failures;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalBuildFailures\"><a href=\"" + Mode.Redirect_URL() + "\">" + build_failures_text + "</a></li>");
+
+			        Mode.Internal_Type = Internal_Type_Enum.Cache;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalCache\"><a href=\"" + Mode.Redirect_URL() + "\">" + memory_mgmt_text + "</a></li>");
+
+			        Mode.Internal_Type = Internal_Type_Enum.Wordmarks;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_InternalWordmarks\"><a href=\"" + Mode.Redirect_URL() + "\">" + wordmarks_text + "</a></li>");
+
+			        //// The only time we don't show the standard INTERNAL view selectors is when NEW ITEMS is selected
+			        //// and there are recenly added NEW ITEMS
+			        //DataTable New_Items = null;
+			        //if (type == Internal_Type_Enum.New_Items)
+			        //    New_Items = SobekCM_Database.Tracking_Update_List(Tracer);
+
+			        //// If this user is internal, add that
+			        //if ((New_Items != null) && (New_Items.Rows.Count > 0))
+			        //{
+			        //    currentMode.Mode = Display_Mode_Enum.Internal;
+			        //    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Selected_Tab_Start + internalTab + Selected_Tab_End + "</a>");
+			        //    currentMode.Mode = Display_Mode_Enum.My_Sobek;
+			        //}
+			        //else
+			        //{
+			        //    Output.WriteLine(Selected_Tab_Start + internalTab + Selected_Tab_End);
+			        //}
+
+			        Output.WriteLine("\t\t</ul></li>");
+		        }
+
+		        // If this user is a sys admin or portal admin, add that
+		        if ((User.Is_System_Admin) || (User.Is_Portal_Admin))
+		        {
+			        Mode.Mode = Display_Mode_Enum.Administrative;
+			        Mode.Admin_Type = Admin_Type_Enum.Home;
+			        Output.WriteLine("\t\t<li id=\"sbkUsm_Admin\"><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
+
+			        // Edit item aggregations
+			        Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminAggr\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Item Aggregations</div></a></li>");
+
+			        // Edit interfaces
+			        Mode.Admin_Type = Admin_Type_Enum.Interfaces;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSkin\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
+
+			        // Edit wordmarks
+			        Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wordmarks.gif\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
+
+			        // Edit forwarding
+			        Mode.Admin_Type = Admin_Type_Enum.Forwarding;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminForwarding\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+
+			        // Edit Projects
+			        Mode.Admin_Type = Admin_Type_Enum.Projects;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminProjects\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Projects</div></a></li>");
+
+			        // Edit Thematic Headings
+			        Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminThematic\"><a href=\"" + Mode.Redirect_URL() + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
+
+			        if (User.Is_System_Admin)
+			        {
+				        // Edit users
+				        Mode.Admin_Type = Admin_Type_Enum.Users;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminUsers\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Registered Users and Groups</div></a></li>");
+
+				        // Edit IP Restrictions
+				        Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
+
+				        // Edit URL Portals
+				        Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminPortals\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
+
+				        // Edit Settings
+				        Mode.Admin_Type = Admin_Type_Enum.Settings;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSettings\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
+
+				        // View and set SobekCM Builder Status
+				        Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminStatus\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">SobekCM Builder Status</div></a></li>");
+
+				        // Reset cache
+				        Mode.Admin_Type = Admin_Type_Enum.Reset;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminReset\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
+			        }
+
+			        Output.WriteLine("\t\t</ul></li>");
+		        }
+	        }
+
+
+	        Output.WriteLine("\t</ul></div>");
             Output.WriteLine();
 
             // Add the scripts needed

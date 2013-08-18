@@ -10,6 +10,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Search;
+using SobekCM.Library.Settings;
 
 #endregion
 
