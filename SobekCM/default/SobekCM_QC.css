@@ -72,6 +72,7 @@
 .sbkQc_MovePagesFloatingButton {position: fixed; bottom: 95px; right: 40px;visibility: hidden; }
 .sbkQc_DeletePagesFloatingButton {position: fixed; bottom: 95px; right: 40px;visibility: hidden;}
 
+.sbkQC_preview_title{ color: whitesmoke;font-size: 1.15em;font-weight: bold;text-align: center; }
 .popup_form_preview_div{display:inline-block; background-color: #555555;padding: 25px; border: 1px solid  black; margin: 5px;}
 
 .qcContainerDivClass {
@@ -132,7 +133,7 @@
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
 .popup_table { margin-left: 50px;margin-right: 50px; }
 
-.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:525px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
+.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:550px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
 
 .btnMovePages {
 	background-color:Yellow;

@@ -1,11 +1,12 @@
 var spanArrayObjects;
 var spanArray;
 var autonumberingMode=-1;
-var makeSortable = 3;
+var makeSortable = 3; //indicates sorting mode
 var cursorMode = 1;
 var lastSelected = -1;
 var thumbnailImageDictionary = {};
 var qc_image_folder;
+var page_index_popup='';
 
 // Function to set the full screen mode 
 function qc_set_fullscreen() {
@@ -323,7 +324,7 @@ function PaginationTextChanged(TextboxID)
 	var hidden_filename = document.getElementById(spanArray[spanArray.length - 1].replace('span', 'filename'));
 	document.getElementById('Autonumber_last_filename').value=hidden_filename.value;
 	
-    // Was there a match for numbers in the last portion?
+    // Was there a match for numbers in the last portion of the textbox value?
 	if (matches != null) 
 	{
 	   //if the number is at the end of the string, with a space before
@@ -333,7 +334,7 @@ function PaginationTextChanged(TextboxID)
 			document.getElementById('autonumber_mode_from_form').value = Mode;
 	        document.getElementById('Autonumber_number_system').value = 'decimal';
 	        textOnlyLastBox.value = textboxValue.substr(0, textboxValue.length - matches[0].length);
-			
+		
 			
 	        var number = parseInt(lastNumber);
 
@@ -640,7 +641,11 @@ function mainthumbnailicon_click()
 	    }
 	    
 	    // Set flag to thumbnail cursor mode
-		cursorMode = 2;
+	    cursorMode = 2;
+	    
+	    //Disable sorting(drag & drop)
+	    $("#allThumbnailsOuterDiv").sortable("disable");
+
 	}
 
     return false;
@@ -691,6 +696,10 @@ function ResetCursorToDefault()
 	//Also re-hide the button for moving multiple pages in case previously made visible
 	document.getElementById('divMoveOnScroll').style.visibility = 'hidden';
 	document.getElementById('divDeleteMoveOnScroll').style.visibility = 'hidden';
+    
+    //Re-enable sorting(drag & drop), if the sortable mode selected is 1(enabled) or 2(enabled with confirmation)
+    if(makeSortable==1 || makeSortable == 2)
+	  $("#allThumbnailsOuterDiv").sortable("enable");
 }
 
 //Change cursor: move pages
@@ -730,6 +739,9 @@ function movepagesicon_click()
         // Set flag to multiple move cursor mode
         cursorMode = 3;
         $('#qc_mainmenu_move').addClass('sbkQc_MainMenuIconCurrent');
+        
+        //Disable drag & drop of pages
+        $("#allThumbnailsOuterDiv").sortable("disable");
 
         ////Unhide all the checkboxes
         //for (var j = 0; j < spanArray.length; j++) {
@@ -766,6 +778,9 @@ function bulkdeleteicon_click()
         // Set flag to multiple delete cursor mode
         cursorMode = 4;
         $('#qc_mainmenu_delete').addClass('sbkQc_MainMenuIconCurrent');
+
+        //Disable drag & drop of pages while this cursor is set
+        $("#allThumbnailsOuterDiv").sortable("disable");
 
         ////Unhide all the checkboxes
         //for (var j = 0; j < spanArray.length; j++) {
@@ -995,9 +1010,13 @@ function qc_auto_save()
 						  var hours = currdate.getHours();
 						  var minutes = currdate.getMinutes();
 						  var ampm = hours >= 12 ? 'PM' : 'AM';
-						  hours = hours%12;
+
+                        //convert from 24 hour format to 12-hour format
+						  hours = hours % 12;
 						  hours = hours?hours:12;
-						  hours = hours<10?'0'+hours:hours;
+
+                        //Append a zero before single digits, for both hours and minutes
+						  hours = hours < 10 ? '0' + hours : hours;
 						  minutes=minutes<10?'0'+minutes:minutes;
 						  var time = hours+":"+minutes+' '+ampm;
 						  
@@ -1100,9 +1119,8 @@ function rbMovePagesChanged(rbValue)
 
 
 //Update the popup form based on the target page filename and relative position passed in
-function update_popup_form(page_index,pageID,before_after)
-{
-
+function update_popup_form(page_index,pageID,before_after) {
+    page_index_popup = page_index;
    //Uncheck/Check this thumbnail (since clicking on the left/right move arrows for this thumbnail reversed the original user selected option)
         var checkbox = document.getElementById('chkMoveThumbnail' + page_index);
         checkbox.checked = !checkbox.checked;
@@ -1275,9 +1293,9 @@ function update_preview() {
     var placeholderImage3 = document.getElementById('PlaceholderThumbnailImage3');
 
     //set the placeholder images
-    placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
-    placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
-    placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
+//    placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
+//    placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
+//    placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
 
   //If the 'Before' radio button is selected
     if (rb_Before.checked == true) {
@@ -1338,30 +1356,62 @@ function update_preview() {
     var placeHolderSpan1 = document.getElementById('PlaceholderThumbnail1');
     var placeHolderSpan2 = document.getElementById('PlaceholderThumbnail2');
     var placeHolderSpan3 = document.getElementById('PlaceholderThumbnail3');
-    
+    var firstCheckedFileName;
+
+
     for (var j = 0; j < spanArray.length; j++) {
         var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-        if (checkbox.checked == true)
+        if (page_index_popup.length > 0 && document.getElementById('chkMoveThumbnail' + page_index_popup).checked == true && page_index_popup == (spanArray[j].replace('span', ''))) {
+            page_index_popup = '';
+            continue;
+            
+        }
+        else if (page_index_popup.length > 0 && document.getElementById('chkMoveThumbnail' + page_index_popup).checked == false && page_index_popup == (spanArray[j].replace('span', ''))) {
             chkboxCount++;
+  //          alert(page_index_popup);
+            if (chkboxCount == 1)
+                firstCheckedFileName = document.getElementById('filename' + page_index_popup).value;
+        }
+
+        if (checkbox.checked == true) {
+            chkboxCount++;
+            if (chkboxCount == 1) {
+                firstCheckedFileName = document.getElementById(spanArray[j].replace('span', 'filename')).value;
+ //               alert(firstCheckedFileName);
+
+            }
+        }
     }
+    //  alert(firstCheckedFileName);
     if (chkboxCount == 1) {
         placeHolderSpan1.style.visibility = 'hidden';
         placeHolderSpan2.style.visibility = 'hidden';
         //set the placeholder images
-        placeholderImage1.src = qc_image_folder + "move_page_here.jpg";
-        placeholderImage2.src = qc_image_folder + "move_page_here.jpg";
-        placeholderImage3.src = qc_image_folder + "move_page_here.jpg";
-        
+    //    placeholderImage1.src = qc_image_folder + "move_page_here.jpg";
+    //    placeholderImage2.src = qc_image_folder + "move_page_here.jpg";
+   //     placeholderImage3.src = qc_image_folder + "move_page_here.jpg";
+
+
+
     }
     
     else if (chkboxCount > 1) {
         placeHolderSpan1.style.visibility = 'visible';
         placeHolderSpan2.style.visibility = 'visible';
         //set the placeholder images
-        placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
-        placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
-        placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
+    //    placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
+   //     placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
+        //     placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
+
     }
+    placeholderImage1.src = thumbnailImageDictionary[firstCheckedFileName];
+    placeholderImage2.src = thumbnailImageDictionary[firstCheckedFileName];
+    placeholderImage3.src = thumbnailImageDictionary[firstCheckedFileName];
+
+    document.getElementById('placeHolderText1').innerHTML = firstCheckedFileName;
+    document.getElementById('placeHolderText2').innerHTML = firstCheckedFileName;
+    document.getElementById('placeHolderText3').innerHTML = firstCheckedFileName;
+
 
 }
 
@@ -1539,5 +1589,6 @@ function qcspan_onclick(event, spanid) {
         qccheckbox_onchange(null, 'chkMoveThumbnail' + pageIndex);
     }
 }
+
 
 
