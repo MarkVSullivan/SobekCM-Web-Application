@@ -89,12 +89,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				return;
 			}
 
+            //If there are no pages for this item, redirect to the image upload screen
             if (qc_item.Web.Static_PageCount == 0)
             {
                 CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-  //              Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                //CurrentMode.Mode = Display_Mode_Enum.Item_Display;
                 CurrentMode.Redirect();
                 return;
             }
@@ -1287,7 +1286,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Output.WriteLine("</script>");
 	        //end shift+click checkboxes
 
-            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">Move to</button></div>");
+            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">Move</button></div>");
 
 	        //Add the button to delete pages
             Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"sbkQc_DeletePagesFloatingButton\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>");
@@ -2123,7 +2122,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Add the div for the preview section
             Output.WriteLine("<tr><td colspan=\"3\"><div id=\"popupPreviewDiv\" class=\"popup_form_preview_div\"> ");
             Output.WriteLine("<div align=\"center\" id=\"preview_title\" class=\"sbkQC_preview_title\">PREVIEW</div><br/>");
-            Output.WriteLine("<table cellpadding=\"10\"><tr>");
+            Output.WriteLine("<table cellpadding=\"15\"><tr>");
             Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><table><tr><td><span id=\"prevFileName\" class=\"sbkQc_Filename\"></span></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></td></tr></table></span></td>");
             Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -16px 0 0 16px;\"><table><tr><td><span id=\"placeHolderText1\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage1\"></img></td></tr></table></span>");
             Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -8px 0 0 8px;\"><table><tr><td><span id=\"placeHolderText2\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage2\"></img></td></tr></table></span>");

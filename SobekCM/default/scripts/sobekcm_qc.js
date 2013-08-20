@@ -50,14 +50,11 @@ function Save_Image_Folder(location) {
 }
 
 
-//Assign the thumbnail image filenames, file locations to the global dictionary
+//Add the thumbnail image filenames, file locations to the global dictionary
 function QC_Add_Image_To_Dictionary(filename, file_location) {
- //   alert(filename+' '+file_location);
+ 
     thumbnailImageDictionary[filename] = file_location;
-
-   // alert(qc_image_folder);
-    //   alert('thumbnailImageDictionary[' + filename + ']=' + thumbnailImageDictionary[filename]);
-
+    
 }
 
 
@@ -225,7 +222,7 @@ function DivisionTypeChanged(SelectID)
 	    document.getElementById('divNameTableRow' + index).style.visibility = 'visible';
 	    document.getElementById('divNameTableRow' + index).value = '';
 
-	    //Make the name textboxes of all other pages of this div visible
+	    //Make the division name textboxes of all other pages of this div visible
 	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span','selectDivType')).disabled==true))
 	    {
 	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
@@ -270,11 +267,6 @@ function DivNameTextChanged(TextboxID)
 
 
 //Autonumber subsequent textboxes on changing one textbox value
-//parameter textboxID = the ID of the pagination textbox changed by the user
-//parameter mode: the autonumbering mode passed in from the qc itemviewer. 0:auto number all the pages of the entire item, 1: all the pages of the current division only, 
-//2: No auto numbering
-//parameter MaxPageCount: the max number of pages for the current item in qc. This refers to all the pages, not just the ones displayed on the screen (though this makes no difference from the javascript point of view.)
-
 function PaginationTextChanged(TextboxID)
 {
 
@@ -282,14 +274,11 @@ function PaginationTextChanged(TextboxID)
     //Mode '1': Auto number all the thumbnail pages till the start of the next div
     //Mode '2': No auto numbering
     
-	//if there is a value assigned to the global autonumbering mode variable, use the global value insted of this one
-//	if(autonumberingMode>-1)
-//	  Mode = autonumberingMode;
+	//Get the global mode value
     var Mode=autonumberingMode;
     if (Mode == 2)
         return;
     
-//	alert('Mode:'+Mode);
 	
     var textboxValue = document.getElementById(TextboxID).value;
 	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
@@ -374,7 +363,7 @@ function PaginationTextChanged(TextboxID)
 			 isRomanLower =true;
 		  }
 		}
-//	   alert(isRomanLower);
+
 	   
    
 		var roman = lastNumber.toUpperCase().trim();
@@ -493,7 +482,6 @@ function PaginationTextChanged(TextboxID)
 		 values.push(digit);
 		 //next digit
 		 ptr++;
-//		  alert(values);
 		
 		
 		}
@@ -519,16 +507,13 @@ function PaginationTextChanged(TextboxID)
 		   //Set the QC form hidden variable with this mode
 		   var hidden_autonumber_mode = document.getElementById('autonumber_mode_from_form');
 		   hidden_autonumber_mode.value = '0';
-//		   alert('after setting the autonumber mode hidden variable');
 		   
 		   var hidden_number_system = document.getElementById('Autonumber_number_system');
 		   hidden_number_system.value='ROMAN';
 
 		 
 		  //Now autonumber all the remaining textboxes of the document
-
-  
-		  for(var i=spanArray.indexOf('span'+TextboxID.split('textbox')[1])+1;i<=spanArray.length;i++)
+            for(var i=spanArray.indexOf('span'+TextboxID.split('textbox')[1])+1;i<=spanArray.length;i++)
 			{
 			  total++;
 
@@ -539,7 +524,7 @@ function PaginationTextChanged(TextboxID)
 			  {
 			  
 				var number=total;
-				//alert('before beginning reconversion');
+				
 				//Convert decimal "total" back to a roman numeral
 				
 				//Set up the key-value arrays
@@ -560,7 +545,7 @@ function PaginationTextChanged(TextboxID)
 				  }
 				}
 				
-//				alert(result);
+
 				if(isRomanLower)
 				{
 				  result=result.toLowerCase();
@@ -569,7 +554,6 @@ function PaginationTextChanged(TextboxID)
 				
 				//End conversion to roman numeral
 
-//				alert((document.getElementById(textboxID).value.length)-(lastNumber.length)-1);
 				document.getElementById(spanArray[i].replace('span','textbox')).value = 
 				 document.getElementById(TextboxID).value.substr(0,((document.getElementById(TextboxID).value.length)-(lastNumber.length))-1)+' '+result;
 				 
@@ -627,7 +611,7 @@ function mainthumbnailicon_click()
 	else
 	{
 		//Remove the default cursor style class, and any other custom class first before setting this one, 
-		//otherwise it will override the custom cursor class
+		//otherwise the previously set class will override the new custom cursor class
 	    ResetCursorToDefault();
 	    $('#qc_mainmenu_thumb').addClass('sbkQc_MainMenuIconCurrent');
 	    
@@ -762,8 +746,8 @@ function bulkdeleteicon_click()
     }
     else
     {
-        //Remove the default cursor style class first before setting the custom one, 
-        //otherwise it will override the custom cursor class
+        //Remove the default cursor style class, and any other custom class first before setting this one, 
+        //otherwise the previously set class will override the new custom cursor class
         ResetCursorToDefault();
         
         // Step through each span and set the cursor
@@ -1011,7 +995,7 @@ function qc_auto_save()
 						  var minutes = currdate.getMinutes();
 						  var ampm = hours >= 12 ? 'PM' : 'AM';
 
-                        //convert from 24 hour format to 12-hour format
+                        //convert from 24-hour format to 12-hour format
 						  hours = hours % 12;
 						  hours = hours?hours:12;
 
@@ -1124,8 +1108,7 @@ function update_popup_form(page_index,pageID,before_after) {
    //Uncheck/Check this thumbnail (since clicking on the left/right move arrows for this thumbnail reversed the original user selected option)
         var checkbox = document.getElementById('chkMoveThumbnail' + page_index);
         checkbox.checked = !checkbox.checked;
- //  qccheckbox_onchange(null, 'chkMoveThumbnail' + pageIndex);
-   
+ 
 	 var hidden_request = document.getElementById('QC_behaviors_request');
 	 var hidden_action = document.getElementById('QC_move_relative_position');
 	 var hidden_destination = document.getElementById('QC_move_destination');
@@ -1234,8 +1217,7 @@ function cancel_move_pages() {
 //Move the selected pages
 function move_pages_submit()
 {
-   // alert('in function move_pages_submit');
-	 var hidden_request = document.getElementById('QC_behaviors_request');
+    var hidden_request = document.getElementById('QC_behaviors_request');
 	 var hidden_action = document.getElementById('QC_move_relative_position');
 	 var hidden_destination = document.getElementById('QC_move_destination');
 	 var file_name='';
@@ -1253,7 +1235,7 @@ function move_pages_submit()
 		 var selIndex = ddl.selectedIndex-1;
 		 hidden_action.value = 'After';
 		 hidden_destination.value = ddl.options[selIndex].value;
-//	     alert('in the submit function, before selected, changing to after'+hidden_destination.value);
+
 	   }
 	   else
 	   {
@@ -1272,7 +1254,7 @@ function move_pages_submit()
 	   var ddl=document.getElementById('selectDestinationPageList1');
 	   var selIndex = ddl.selectedIndex;
 	   hidden_destination.value = ddl.options[selIndex].value;
-	//   alert(hidden_destination.value);
+	
 	 }
 	 
 	 document.itemNavForm.submit();
@@ -1281,7 +1263,6 @@ function move_pages_submit()
 
 //update the preview section of the form
 function update_preview() {
-    //  alert('function update_preview  called successfully');
     var rb_Before = document.getElementById('rbMovePages2');
     var rb_After = document.getElementById('rbMovePages1');
     var ddl_Before = document.getElementById('selectDestinationPageList2');
@@ -1292,11 +1273,7 @@ function update_preview() {
     var placeholderImage2 = document.getElementById('PlaceholderThumbnailImage2');
     var placeholderImage3 = document.getElementById('PlaceholderThumbnailImage3');
 
-    //set the placeholder images
-//    placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
-//    placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
-//    placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
-
+    
   //If the 'Before' radio button is selected
     if (rb_Before.checked == true) {
         //if before the 0th option is selected
@@ -1309,13 +1286,13 @@ function update_preview() {
         else {// set the prev thumbnail
             if (ddl_Before.options[ddl_Before.selectedIndex - 1].value.length > 0 && thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value].length > 0) {
                 prevThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value];
-                document.getElementById('prevFileName').innerHTML = ddl_Before.options[ddl_Before.selectedIndex-1].value;
+                document.getElementById('prevFileName').innerHTML = filename_truncate(ddl_Before.options[ddl_Before.selectedIndex - 1].value);
             }
         }
         //set the nextThumbnail
             if (ddl_Before.options[ddl_Before.selectedIndex].value.length>0 && thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value].length>0) {
                 nextThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value];
-                document.getElementById('nextFileName').innerHTML = ddl_Before.options[ddl_Before.selectedIndex].value;
+                document.getElementById('nextFileName').innerHTML = filename_truncate(ddl_Before.options[ddl_Before.selectedIndex].value);
             } else {
                 nextThumbnail.src = qc_image_folder + "no_pages.jpg";
                 document.getElementById('nextFileName').innerHTML = '';
@@ -1333,7 +1310,7 @@ function update_preview() {
         else {// set the next thumbnail
             if (ddl_After.options[ddl_After.selectedIndex + 1].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value].length > 0) {
                 nextThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value];
-                document.getElementById('nextFileName').innerHTML = ddl_After.options[ddl_After.selectedIndex + 1].value;
+                document.getElementById('nextFileName').innerHTML = filename_truncate(ddl_After.options[ddl_After.selectedIndex + 1].value);
             }
             else {
                 nextThumbnail.src = qc_image_folder + "no_pages.jpg";
@@ -1343,7 +1320,7 @@ function update_preview() {
         //set the prevThumbnail
         if (ddl_After.options[ddl_After.selectedIndex].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value].length > 0) {
             prevThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value];
-            document.getElementById('prevFileName').innerHTML = ddl_After.options[ddl_After.selectedIndex].value;
+            document.getElementById('prevFileName').innerHTML = filename_truncate(ddl_After.options[ddl_After.selectedIndex].value);
         } else {
             prevThumbnail.src = qc_image_folder + "no_pages.jpg";
             document.getElementById('prevFileName').innerHTML = '';
@@ -1351,7 +1328,7 @@ function update_preview() {
 
     }
 
-    //Adjust the placeholder span(s) based on the number of pages(checkboxes) selected 
+    //Set the placeholder span(s) stack based on the number of pages(checkboxes) selected 
     var chkboxCount = 0;
     var placeHolderSpan1 = document.getElementById('PlaceholderThumbnail1');
     var placeHolderSpan2 = document.getElementById('PlaceholderThumbnail2');
@@ -1361,14 +1338,15 @@ function update_preview() {
 
     for (var j = 0; j < spanArray.length; j++) {
         var checkbox = document.getElementById(spanArray[j].replace('span', 'chkMoveThumbnail'));
-        if (page_index_popup.length > 0 && document.getElementById('chkMoveThumbnail' + page_index_popup).checked == true && page_index_popup == (spanArray[j].replace('span', ''))) {
+        //if a falsely checked checkbox detected,  set due to clicking on one of the 'move' arrows, ignore this checkbox and reset the page_index_popup indicator variable
+        if (page_index_popup.length > 0 && document.getElementById('chkMoveThumbnail' + page_index_popup).checked == true && page_index_popup == (spanArray[j].replace('span', '')))
+        {
             page_index_popup = '';
             continue;
-            
         }
-        else if (page_index_popup.length > 0 && document.getElementById('chkMoveThumbnail' + page_index_popup).checked == false && page_index_popup == (spanArray[j].replace('span', ''))) {
+        else if (page_index_popup.length > 0 && document.getElementById('chkMoveThumbnail' + page_index_popup).checked == false && page_index_popup == (spanArray[j].replace('span', '')))
+        {
             chkboxCount++;
-  //          alert(page_index_popup);
             if (chkboxCount == 1)
                 firstCheckedFileName = document.getElementById('filename' + page_index_popup).value;
         }
@@ -1377,40 +1355,32 @@ function update_preview() {
             chkboxCount++;
             if (chkboxCount == 1) {
                 firstCheckedFileName = document.getElementById(spanArray[j].replace('span', 'filename')).value;
- //               alert(firstCheckedFileName);
-
+ 
             }
         }
     }
-    //  alert(firstCheckedFileName);
+    //  Hide the  stacked placeHolder spans if only one page has been selected for move
     if (chkboxCount == 1) {
         placeHolderSpan1.style.visibility = 'hidden';
         placeHolderSpan2.style.visibility = 'hidden';
-        //set the placeholder images
-    //    placeholderImage1.src = qc_image_folder + "move_page_here.jpg";
-    //    placeholderImage2.src = qc_image_folder + "move_page_here.jpg";
-   //     placeholderImage3.src = qc_image_folder + "move_page_here.jpg";
-
-
-
+        
     }
-    
+    //else display the entire stack
     else if (chkboxCount > 1) {
         placeHolderSpan1.style.visibility = 'visible';
         placeHolderSpan2.style.visibility = 'visible';
-        //set the placeholder images
-    //    placeholderImage1.src = qc_image_folder + "move_pages_here.jpg";
-   //     placeholderImage2.src = qc_image_folder + "move_pages_here.jpg";
-        //     placeholderImage3.src = qc_image_folder + "move_pages_here.jpg";
+        
 
     }
+    //Set the placeholder image with the first checked thumbnail image
     placeholderImage1.src = thumbnailImageDictionary[firstCheckedFileName];
     placeholderImage2.src = thumbnailImageDictionary[firstCheckedFileName];
     placeholderImage3.src = thumbnailImageDictionary[firstCheckedFileName];
 
-    document.getElementById('placeHolderText1').innerHTML = firstCheckedFileName;
-    document.getElementById('placeHolderText2').innerHTML = firstCheckedFileName;
-    document.getElementById('placeHolderText3').innerHTML = firstCheckedFileName;
+    //update the corresponding filename as well
+    document.getElementById('placeHolderText1').innerHTML = filename_truncate(firstCheckedFileName);
+    document.getElementById('placeHolderText2').innerHTML = filename_truncate(firstCheckedFileName);
+    document.getElementById('placeHolderText3').innerHTML = filename_truncate(firstCheckedFileName);
 
 
 }
@@ -1591,4 +1561,37 @@ function qcspan_onclick(event, spanid) {
 }
 
 
+function filename_truncate(filename) {
+    var filenameTooltipText ='';
+    var truncated_length = 13;
+    var length_to_check = 16;
+    var filenameToDisplay = filename;
+ //   alert(filename);
+    if (filename.length > length_to_check)
+    {
+        // Are there numbers at the end?
+        if (!isNaN(filename[filename.length - 1]))
+        {
+            var number_length = 1;
+            while (!isNaN(filenameToDisplay[filename.length - (1 + number_length)]))
+                number_length++;
 
+            var characters = truncated_length - number_length;
+            if (characters < 2)
+                filenameToDisplay = "..." + filenameToDisplay.substring(filenameToDisplay.length - Math.min(number_length, truncated_length));
+            else
+            {
+                filenameTooltipText = filenameToDisplay;
+                filenameToDisplay = filenameToDisplay.substring(0, characters) + "..." + filenameToDisplay.substring(filenameToDisplay.length - number_length);
+            }
+        }
+        else
+        {
+            filenameTooltipText = filenameToDisplay;
+            filenameToDisplay = filenameToDisplay.substring(0, truncated_length) + "...";
+        }
+    }
+
+    //alert(filenameToDisplay);
+    return filenameToDisplay;
+}
