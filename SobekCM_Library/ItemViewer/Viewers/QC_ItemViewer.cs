@@ -89,6 +89,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				return;
 			}
 
+            //If there are no pages for this item, redirect to the image upload screen
+            if (qc_item.Web.Static_PageCount == 0)
+            {
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                CurrentMode.Redirect();
+                return;
+            }
+
 			// Get the links for the METS
 			string greenstoneLocation = Current_Object.Web.Source_URL + "/";
 			complete_mets = greenstoneLocation + Current_Object.BibID + "_" + Current_Object.VID + ".mets.xml";
@@ -119,12 +128,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			qc_item = HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] as SobekCM_Item;
 			if (qc_item == null)
 			{
+                
 				// Is there a temporary METS for this item, which is not expired?
 				if ((File.Exists(metsInProcessFile)) &&
 					(File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
 				{
 					// Read the temporary METS file, and use that to build the qc_item
 					qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, Current_Object.BibID, Current_Object.VID, null, null);
+                    qc_item.Source_Directory = Current_Object.Source_Directory;
 				}
 				else
 				{
@@ -1277,7 +1288,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Output.WriteLine("</script>");
 	        //end shift+click checkboxes
 
-            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">Move to</button></div>");
+            Output.WriteLine("<div id=\"divMoveOnScroll\" class=\"sbkQc_MovePagesFloatingButton\"><button type=\"button\" id=\"btnMovePages\" name=\"btnMovePages\" class=\"btnMovePages\" onclick=\"update_preview(); return popup('form_qcmove'); \">Move</button></div>");
 
 	        //Add the button to delete pages
             Output.WriteLine("<div id=\"divDeleteMoveOnScroll\" class=\"sbkQc_DeletePagesFloatingButton\"><button type=\"button\" id=\"btnDeletePages\" name=\"btn DeletePages\" class=\"btnDeletePages\" onclick=\"DeleteSelectedPages();\" >Delete</button></div>");
@@ -1776,23 +1787,81 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//}
 
             Output.WriteLine("<script type=\"text/javascript\">var qc_image_folder; var thumbnailImageDictionary={};</script>");
-     
+
+            //Save the global image folder location
+            Output.WriteLine("<script type=\"text/javascript\">Save_Image_Folder('" + CurrentMode.Default_Images_URL + "');</script>");
+            
             //Save all the thumbnail image locations in the JavaScript global image dictionary
+            List<string> image_by_pageindex = new List<string>();
+            List<string> file_sans_by_pageindex = new List<string>();
+            StringBuilder builder = new StringBuilder();
             for (int i = 0; i < static_pages.Count; i++)
             {
                 Page_TreeNode thisPage = (Page_TreeNode)static_pages[i];
+                string filename = String.Empty;
+                string thumbnail_filename = String.Empty;
+                string filename_sansextension = String.Empty;
+
+                // Look for a thumbnail in the actual METS
                 foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((thisFile => thisFile.System_Name.IndexOf("thm.jpg") > 0)))
                 {
                     //set the image url to fetch the small thumbnail .thm image
-                    string image_url = (qc_item.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-                    string filename = thisFile.File_Name_Sans_Extension;
-
-                    //Save the global image folder location
-                    Output.WriteLine("<script type=\"text/javascript\">Save_Image_Folder('" + CurrentMode.Default_Images_URL + "');</script>");
-                    //Add the image to the dictionary
-                    Output.WriteLine("<script type=\"text/javascript\">QC_Add_Image_To_Dictionary('" + filename + "','" + image_url + "');</script>");
-
+                    thumbnail_filename = thisFile.System_Name;
+                    filename_sansextension = thisFile.File_Name_Sans_Extension;
                 }
+
+                // Try to construct a thumbnail from the JPEG image then
+                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((thisFile => (thisFile.System_Name.IndexOf(".jpg") > 0) &&(thisFile.System_Name.IndexOf("thm.jpg") < 0))))
+                {
+                    //set the image url to fetch the small thumbnail .thm image
+                    filename = thisFile.System_Name;
+                    filename_sansextension = thisFile.File_Name_Sans_Extension;
+                }
+
+                // If a jpeg was found, but not a thumb, try to guess the thumbnail
+                if (thumbnail_filename.Length == 0)
+                    thumbnail_filename = filename.Replace(".jpg", "thm.jpg");
+
+                // Check that the thumbnail exists (TODO:  cache this so it only happens once)
+                if (thumbnail_filename.Length > 0)
+                {
+                    string thumbnail_check = CurrentItem.Source_Directory + "\\" + thumbnail_filename;
+                    if (!File.Exists(thumbnail_check))
+                    {
+                        thumbnail_filename = String.Empty;
+                    }
+                }
+
+                // Compute the thumbnail and regular URLs
+                string thumbnail_url = (qc_item.Web.Source_URL + "/" + thumbnail_filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                // If nothing found (but this is a page division) use the no thumbs image
+                if (thumbnail_filename.Length == 0)
+                {
+                    thumbnail_url = CurrentMode.Default_Images_URL + "NoThumb.jpg";
+                }
+
+                string image_url;
+                if (size_of_thumbnails > 1)
+                {
+                    image_url = (qc_item.Web.Source_URL + "/" + filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                    if (filename.Length == 0 )
+                    {
+                        image_url = CurrentMode.Default_Images_URL + "\\MissingImage.jpg";
+                    }
+                }
+                else
+                {
+                    image_url = thumbnail_url;
+                }
+
+
+
+                //Add the image to the javascript dictionary
+                builder.AppendLine("<script type=\"text/javascript\">QC_Add_Image_To_Dictionary('" + filename_sansextension + "','" + image_url + "','" + thumbnail_url + "');</script>");
+ 
+                // Add the actual image to display, by index
+                 image_by_pageindex.Add(image_url);
+                file_sans_by_pageindex.Add(filename_sansextension);
             }
 
 
@@ -1803,25 +1872,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Page_TreeNode thisPage = (Page_TreeNode) static_pages[page_index];
 				Division_TreeNode thisParent = childToParent[thisPage];
 				
-				// Find the jpeg image
-				foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.System_Name.IndexOf(".jpg") > 0))
-				{
+
 					// Get the image URL
 					CurrentMode.Page = (ushort) (page_index + 1);
 					CurrentMode.ViewerCode = (page_index + 1).ToString();
 
 					//set the image url to fetch the small thumbnail .thm image
-					string image_url = (qc_item.Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg")).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-
-					//If thumbnail size selected is large, get the full-size jpg image
-					if (size_of_thumbnails == 2 || size_of_thumbnails == 3 || size_of_thumbnails == 4)
-						image_url = (qc_item.Web.Source_URL + "/" + thisFile.System_Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
-					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
-
-                    // Get the name of the file
-                    string filename_sans_extension = thisFile.File_Name_Sans_Extension;
+			        string image_url = image_by_pageindex[page_index];
+                    string filename_sans_extension = file_sans_by_pageindex[page_index];
                     string filenameToDisplay = filename_sans_extension;
 
+					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
+
+ 
 					// Start the box for this thumbnail
                     Output.WriteLine("<!-- PAGE " + page_index + " ( " + filename_sans_extension + " ) -->");
 					Output.WriteLine("<a name=\"" + thisPage.Label + "\" id=\"" + thisPage.Label + "\"></a>");
@@ -2032,8 +2095,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                   //  Output.WriteLine("      <td colspan=\"2\">");
                     Output.WriteLine("<td>");
                     Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
-                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + filename_sans_extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + filename_sans_extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
                     Output.WriteLine("        </span>");
                     Output.WriteLine("</td>");
                     Output.WriteLine("<td>");
@@ -2054,8 +2117,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("  </table>");
                     Output.WriteLine("</span>");
 					Output.WriteLine();
-					break;
-				}
+
 
 				// Save the last parent
 				lastParent = thisParent;
@@ -2065,6 +2127,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//Close the outer div
 			Output.WriteLine("</span></div>");
+
+            // Write the javascript to add images to the dictionaries (built above)
+            Output.WriteLine(builder);
 
 			// Restore the mode
 			CurrentMode.ViewerCode = current_view_code;
@@ -2112,12 +2177,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the div for the preview section
             Output.WriteLine("<tr><td colspan=\"3\"><div id=\"popupPreviewDiv\" class=\"popup_form_preview_div\"> ");
-            Output.WriteLine("<table cellpadding=\"10\"><tr>");
+            Output.WriteLine("<div align=\"center\" id=\"preview_title\" class=\"sbkQC_preview_title\">PREVIEW</div><br/>");
+            Output.WriteLine("<table cellpadding=\"15\"><tr>");
             Output.WriteLine("<td><span id=\"PrevThumbanail\" class=\"sbkQc_Span\"><table><tr><td><span id=\"prevFileName\" class=\"sbkQc_Filename\"></span></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"prevThumbnailImage\"></img></td></tr></table></span></td>");
-            Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -16px 0 0 16px;\"><table><tr><td><span id=\"placeHolderText1\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage1\"></img></td></tr></table></span>");
-            Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -8px 0 0 8px;\"><table><tr><td><span id=\"placeHolderText2\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage2\"></img></td></tr></table></span>");
-            Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\"><table><tr><td><span id=\"placeHolderText3\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage3\"></img></td></tr></table></span></td>");
-            Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><table><tr><td><span id=\"nextFileName\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></td></tr></table></span></td>");
+            Output.WriteLine("<td><span id=\"PlaceholderThumbnail1\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -16px 0 0 16px;\"><table><tr><td><span id=\"placeHolderText1\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage1\"></img></td></tr></table></span>");
+            Output.WriteLine("<span id=\"PlaceholderThumbnail2\" class=\"sbkQc_Span\" style=\"position:absolute; margin: -8px 0 0 8px;\"><table><tr><td><span id=\"placeHolderText2\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage2\"></img></td></tr></table></span>");
+            Output.WriteLine("<span id=\"PlaceholderThumbnail3\" class=\"sbkQc_Span\" style=\"position:relative; margin: 0 0 0 0;\"><table><tr><td><span id=\"placeHolderText3\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing image\" id=\"PlaceholderThumbnailImage3\"></img></td></tr></table></span></td>");
+            Output.WriteLine("<td><span id=\"NextThumbnail\" class=\"sbkQc_Span\" style=\"margin: 0 0 0 10px;\"><table><tr><td><span id=\"nextFileName\" class=\"sbkQc_Filename\" class=\"sbkQc_Filename\"/></td></tr><tr><td><img src=\"about:blank\" alt=\"Missing thumbnail image\" id=\"nextThumbnailImage\"></img></td></tr></table></span></td>");
             Output.WriteLine("</table>");
 
             Output.WriteLine("</div></td></tr>");
