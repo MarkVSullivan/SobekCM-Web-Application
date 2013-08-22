@@ -51,9 +51,10 @@ function Save_Image_Folder(location) {
 
 
 //Add the thumbnail image filenames, file locations to the global dictionary
-function QC_Add_Image_To_Dictionary(filename, file_location) {
- 
-    thumbnailImageDictionary[filename] = file_location;
+function QC_Add_Image_To_Dictionary(filename, file_location, thumb_location) {
+    //alert(filename + ' ' + thumb_location);
+    if (thumb_location.length > 0 && thumb_location.length > 0)
+        thumbnailImageDictionary[filename] = thumb_location;
     
 }
 
@@ -1272,7 +1273,7 @@ function update_preview() {
     var placeholderImage1 = document.getElementById('PlaceholderThumbnailImage1');
     var placeholderImage2 = document.getElementById('PlaceholderThumbnailImage2');
     var placeholderImage3 = document.getElementById('PlaceholderThumbnailImage3');
-
+    var image_folder = qc_image_folder.substring(0, (qc_image_folder.indexOf('qc')));
     
   //If the 'Before' radio button is selected
     if (rb_Before.checked == true) {
@@ -1284,17 +1285,18 @@ function update_preview() {
         }
             
         else {// set the prev thumbnail
-            if (ddl_Before.options[ddl_Before.selectedIndex - 1].value.length > 0 && thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value].length > 0) {
-                prevThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value];
+            if (ddl_Before.options[ddl_Before.selectedIndex - 1].value.length > 0) {
+      //          alert(image_folder+'NoThumb.jpg');
+                prevThumbnail.src =  thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value] ? thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex - 1].value] : (image_folder+'NoThumb.jpg');
                 document.getElementById('prevFileName').innerHTML = filename_truncate(ddl_Before.options[ddl_Before.selectedIndex - 1].value);
             }
         }
         //set the nextThumbnail
-            if (ddl_Before.options[ddl_Before.selectedIndex].value.length>0 && thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value].length>0) {
-                nextThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value];
+            if (ddl_Before.options[ddl_Before.selectedIndex].value.length>0 ) {
+                nextThumbnail.src = thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value] ? thumbnailImageDictionary[ddl_Before.options[ddl_Before.selectedIndex].value] : (image_folder+'NoThumb.jpg');
                 document.getElementById('nextFileName').innerHTML = filename_truncate(ddl_Before.options[ddl_Before.selectedIndex].value);
             } else {
-                nextThumbnail.src = qc_image_folder + "no_pages.jpg";
+                nextThumbnail.src = image_folder + "NoThumb.jpg";
                 document.getElementById('nextFileName').innerHTML = '';
             }
         
@@ -1308,8 +1310,8 @@ function update_preview() {
         }
 
         else {// set the next thumbnail
-            if (ddl_After.options[ddl_After.selectedIndex + 1].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value].length > 0) {
-                nextThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value];
+            if (ddl_After.options[ddl_After.selectedIndex + 1].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value] && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value].length > 0) {
+                nextThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value] ? thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex + 1].value]: (image_folder+'NoThumb.jpg');
                 document.getElementById('nextFileName').innerHTML = filename_truncate(ddl_After.options[ddl_After.selectedIndex + 1].value);
             }
             else {
@@ -1319,7 +1321,7 @@ function update_preview() {
         }
         //set the prevThumbnail
         if (ddl_After.options[ddl_After.selectedIndex].value.length > 0 && thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value].length > 0) {
-            prevThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value];
+            prevThumbnail.src = thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value] ? (thumbnailImageDictionary[ddl_After.options[ddl_After.selectedIndex].value])  : qc_image_folder + "no_pages.jpg";
             document.getElementById('prevFileName').innerHTML = filename_truncate(ddl_After.options[ddl_After.selectedIndex].value);
         } else {
             prevThumbnail.src = qc_image_folder + "no_pages.jpg";
@@ -1373,9 +1375,9 @@ function update_preview() {
 
     }
     //Set the placeholder image with the first checked thumbnail image
-    placeholderImage1.src = thumbnailImageDictionary[firstCheckedFileName];
-    placeholderImage2.src = thumbnailImageDictionary[firstCheckedFileName];
-    placeholderImage3.src = thumbnailImageDictionary[firstCheckedFileName];
+    placeholderImage1.src = thumbnailImageDictionary[firstCheckedFileName] ? thumbnailImageDictionary[firstCheckedFileName] : (qc_image_folder + 'no_pages.jpg');
+    placeholderImage2.src = thumbnailImageDictionary[firstCheckedFileName] ? thumbnailImageDictionary[firstCheckedFileName] : (qc_image_folder + 'no_pages.jpg');
+    placeholderImage3.src = thumbnailImageDictionary[firstCheckedFileName] ? thumbnailImageDictionary[firstCheckedFileName] : (qc_image_folder + 'no_pages.jpg');
 
     //update the corresponding filename as well
     document.getElementById('placeHolderText1').innerHTML = filename_truncate(firstCheckedFileName);
