@@ -519,7 +519,7 @@ namespace SobekCM.Library.AdminViewer
                         // Build the action links
                         Output.WriteLine("  <tr align=\"left\" >");
                         Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
-                        Output.Write("<a title=\"Click to edit this item aggregation\" id=\"EDIT_" + thisAggr.Code + "\" href=\"" + currentMode.Base_URL + "my/editaggr/" + thisAggr.Code + "\">edit</a> | ");
+                        Output.Write("<a title=\"Click to edit this item aggregation\" id=\"EDIT_" + thisAggr.Code + "\" href=\"" + currentMode.Base_URL + "l/admin/editaggr/" + thisAggr.Code + "\">edit</a> | ");
                         if (thisAggr.Active)
                             Output.Write("<a title=\"Click to view this item aggregation\" href=\"" + currentMode.Base_URL + "l/" + thisAggr.Code + "\">view</a> | ");
                         else

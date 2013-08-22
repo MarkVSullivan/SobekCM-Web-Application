@@ -425,18 +425,6 @@ GO
 ALTER FULLTEXT INDEX ON SobekCM_Metadata_Basic_Search_Table ADD ( LOM_Aggregation, LOM_Context, LOM_Classification, LOM_Difficulty, LOM_Intended_End_User, LOM_Interactivity_Level, LOM_Interactivity_Type, LOM_Status, LOM_Requirement, LOM_AgeRange );
 GO
 
--- Add tracking for email sent by a userid
-ALTER TABLE SobekCM_Email_Log ADD UserID int null;
-
-/****** Object:  Index [IX_Email_Log]    Script Date: 03/21/2013 12:22:12 ******/
-CREATE NONCLUSTERED INDEX [IX_Email_Log] ON [dbo].[SobekCM_Email_Log] 
-(
-	[Sent_Date] ASC,
-	[UserID] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-GO
-
-
 -- Add generic OTHER relationship
 insert into mySobek_User_Item_Link_Relationship ( RelationshipLabel, Include_In_Results) values ( 'Other', 1 );
 

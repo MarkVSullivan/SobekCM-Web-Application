@@ -177,7 +177,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Admin_Type_Enum.Thematic_Headings:
-                    adminViewer = new Thematic_Headings_AdminViewer(user, Current_Mode, Thematic_Headings, Tracer);
+                    adminViewer = new Thematic_Headings_AdminViewer(user, Current_Mode, Thematic_Headings, codeManager, Tracer);
                     break;
 
                 case Admin_Type_Enum.Settings:
