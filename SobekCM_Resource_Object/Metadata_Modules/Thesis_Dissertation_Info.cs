@@ -26,7 +26,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             Masters,
 
             /// <summary> This is a Doctorate-level dissertation </summary>
-            Doctorate
+            Doctorate,
+
+			/// <summary> This is a Bachelors-level thesis </summary>
+			Bachelors
         }
 
         #endregion
@@ -158,11 +161,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             {
                 List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
 
-
-
-
-       
-
                 // Add the committeeChair
                 if (!String.IsNullOrEmpty(committeeChair))
                 {
@@ -220,6 +218,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     case Thesis_Degree_Level_Enum.Doctorate:
                         metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Level", "Doctorate"));
                         break;
+
+					case Thesis_Degree_Level_Enum.Bachelors:
+						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Level", "Bechelors"));
+						break;
                 }
 
                 return metadataTerms;

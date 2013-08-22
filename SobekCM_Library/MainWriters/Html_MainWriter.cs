@@ -1269,7 +1269,7 @@ namespace SobekCM.Library.MainWriters
                 base_url = base_url + "l/";
 
             // Get the skin url
-            string skin_url = currentMode.Base_Design_URL + "skins/" + currentMode.Skin + "/";
+            string skin_url = currentMode.Base_Design_URL + "skins/" + htmlSkin.Skin_Code + "/";
 
             const string version = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
             switch (currentMode.Mode)

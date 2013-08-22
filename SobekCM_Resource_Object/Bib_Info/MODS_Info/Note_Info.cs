@@ -105,6 +105,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Statement of responsibility note ( from the 245 field ) </summary>
         statement_of_responsibility,
 
+		supplements,
+
         /// <summary> System details note </summary>
         system_details,
 
@@ -288,7 +290,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                 case Note_Type_Enum.date_venue:
                     returnValue.Tag = 518;
-                    if (displayLabel.Length > 0)
+					if (!String.IsNullOrEmpty(displayLabel))
                         returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
                     break;
 
@@ -297,6 +299,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                     if (!String.IsNullOrEmpty(displayLabel))
                         returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
                     break;
+
+				case Note_Type_Enum.supplements:
+					returnValue.Tag = 525;
+					if (!String.IsNullOrEmpty(displayLabel))
+						returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
+					break;
 
                 case Note_Type_Enum.additional_physical_form:
                     returnValue.Tag = 530;
@@ -575,6 +583,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case Note_Type_Enum.electronic_access:
                         return "Electronic Access";
 
+					case Note_Type_Enum.supplements:
+						return "Supplements";
+
                     default:
                         return String.Empty;
                 }
@@ -686,6 +697,9 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     case Note_Type_Enum.electronic_access:
                         return "electronic access";
+
+					case Note_Type_Enum.supplements:
+		                return "supplements";
 
                     default:
                         return String.Empty;
@@ -828,6 +842,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case "electonic access":
                         Note_Type = Note_Type_Enum.electronic_access;
                         return;
+
+					case "supplements":
+						Note_Type = Note_Type_Enum.supplements;
+		                break;
 
                     default:
                         Note_Type = Note_Type_Enum.NONE;

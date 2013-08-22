@@ -61,6 +61,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 Output_Stream.WriteLine("<palmm:degreeDiscipline>" + base.Convert_String_To_XML_Safe(thesisInfo.Degree_Discipline) + "</palmm:degreeDiscipline>");
             if (!String.IsNullOrEmpty(thesisInfo.Degree_Grantor))
                 Output_Stream.WriteLine("<palmm:degreeGrantor>" + base.Convert_String_To_XML_Safe(thesisInfo.Degree_Grantor) + "</palmm:degreeGrantor>");
+			if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors)
+				Output_Stream.WriteLine("<palmm:degreeLevel>Bachelors</palmm:degreeLevel>");
             if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters)
                 Output_Stream.WriteLine("<palmm:degreeLevel>Masters</palmm:degreeLevel>");
             if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate)
@@ -170,6 +172,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                     thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate;
                                 if (temp == "masters")
                                     thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters;
+								if (temp == "bachelors")
+									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
                             }
                             break;
                     }

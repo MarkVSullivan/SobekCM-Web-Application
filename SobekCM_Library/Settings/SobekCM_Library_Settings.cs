@@ -37,7 +37,7 @@ namespace SobekCM.Library.Settings
         public static long METS_Only_Package_Required_Aging = 60L * 10000000L;          // 1 Minute (in ticks)
 
 		/// <summary> Flag indicates whether checksums should be verified </summary>
-		private static readonly bool Verify_CheckSum = true;
+		public static readonly bool Verify_CheckSum = true;
 
         // Values pulled from database 
         private static string packageArchivalFolder, logFilesDirectory, logFilesUrl, staticPagesLocation;

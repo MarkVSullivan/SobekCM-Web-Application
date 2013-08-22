@@ -183,6 +183,10 @@ namespace SobekCM.Library.AdminViewer
                         // Save to the database
                         itemAggregation.Save_To_Database(null);
 
+						// Save the link between this item and the thematic heading
+	                    codeManager.Set_Aggregation_Thematic_Heading(itemAggregation.Code, itemAggregation.Thematic_Heading_ID);
+
+
                         // Clear the aggregation from the cache
                         MemoryMgmt.Cached_Data_Manager.Remove_Item_Aggregation(itemAggregation.Code, null);
 

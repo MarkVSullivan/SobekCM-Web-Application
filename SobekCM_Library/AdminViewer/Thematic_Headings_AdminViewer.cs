@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Library.Aggregations;
+using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -39,11 +40,13 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="User"> Authenticated user information </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request </param>
         /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>
+		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Postback from handling an edit or new thematic heading is handled here in the constructor </remarks>
         public Thematic_Headings_AdminViewer(User_Object User,
             SobekCM_Navigation_Object Current_Mode,
             List<Thematic_Heading> Thematic_Headings,
+			Aggregation_Code_Manager Code_Manager,
             Custom_Tracer Tracer)
             : base(User)
         {
@@ -137,7 +140,8 @@ namespace SobekCM.Library.AdminViewer
 
                             case "new":
                                 int new_order = Thematic_Headings.Count + 1;
-                                if (SobekCM_Database.Edit_Thematic_Heading(-1, new_order, save_value, Tracer) < 1)
+		                        int newid = SobekCM_Database.Edit_Thematic_Heading(-1, new_order, save_value, Tracer);
+								if ( newid  < 1)
                                     actionMessage = "Unable to save new thematic heading";
                                 else
                                 {
@@ -147,6 +151,9 @@ namespace SobekCM.Library.AdminViewer
                                         // Repopulate the thematic headings list
                                         SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
                                     }
+
+									// Add this blank thematic heading to the code manager
+	                                Code_Manager.Add_Blank_Thematic_Heading(newid);
 
                                     actionMessage = "New thematic heading saved";
                                 }

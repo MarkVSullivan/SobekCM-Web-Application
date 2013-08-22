@@ -84,9 +84,16 @@ namespace SobekCM.Library.Application_State
 
         internal void Add_Collection(Item_Aggregation_Related_Aggregations New_Aggregation, int Theme)
         {
-            // Add this to the various collections
+			// Insert this into the proper spot in the item aggregation list
+	        int index = 0;
+			while ((index < allAggregations.Count) && ( string.CompareOrdinal(New_Aggregation.Code, All_Aggregations[index].Code) > 0 ))
+			{
+				index++;
+			}
+			allAggregations.Insert(index, New_Aggregation);
+
+            // Add this to the various dictionaries
             aggregationsByCode[New_Aggregation.Code] = New_Aggregation;
-            allAggregations.Add(New_Aggregation);
             if (!allTypes.Contains(New_Aggregation.Type))
             {
                 allTypes.Add(New_Aggregation.Type);
@@ -164,5 +171,54 @@ namespace SobekCM.Library.Application_State
         {
             return aggregationsByCode.ContainsKey(Aggregation_Code.ToUpper());
         }
+
+		/// <summary> Set an aggregation to be a part of an existing thematic heading id </summary>
+		/// <param name="Code"></param>
+		/// <param name="ThematicHeadingID"></param>
+	    public void Set_Aggregation_Thematic_Heading(string Code, int ThematicHeadingID)
+		{
+			// If the thematic heading ID does not exit, just return
+			if (!aggregationsByThematicheading.ContainsKey(ThematicHeadingID))
+				return;
+
+			// If this aggregation does not exist, just return
+			if (!aggregationsByCode.ContainsKey(Code.ToUpper()))
+				return;
+
+			// Get this aggregation and list for this thematic heading
+			Item_Aggregation_Related_Aggregations thisAggr = aggregationsByCode[Code.ToUpper()];
+			List<Item_Aggregation_Related_Aggregations> thematicHeadingList = aggregationsByThematicheading[ThematicHeadingID];
+
+			// If this is already a part of the thematic heading, just return
+			if (thematicHeadingList.Contains(thisAggr))
+				return;
+
+			// Ensure this aggregation is not a part of any other thematic headings
+			foreach (KeyValuePair<int, List<Item_Aggregation_Related_Aggregations>> theme in aggregationsByThematicheading)
+			{
+				if (theme.Value.Contains(thisAggr))
+					theme.Value.Remove(thisAggr);
+			}
+
+			// Now, add this to the list for this thematic heading
+			int index = 0;
+			while ((index < thematicHeadingList.Count) && (string.CompareOrdinal(thisAggr.Code, thematicHeadingList[index].Code) > 0))
+			{
+				index++;
+			}
+			thematicHeadingList.Insert(index, thisAggr);
+
+		}
+
+		/// <summary> Adds a new blank thematic heading when a user adds one through
+		/// the administrative tools </summary>
+		/// <param name="NewThematicHeadingID">ID for the new thematic heading</param>
+		public void Add_Blank_Thematic_Heading(int NewThematicHeadingID)
+	    {
+			if (!aggregationsByThematicheading.ContainsKey(NewThematicHeadingID))
+			{
+				aggregationsByThematicheading[NewThematicHeadingID] = new List<Item_Aggregation_Related_Aggregations>();
+			}
+	    }
     }
 }
