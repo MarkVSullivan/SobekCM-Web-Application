@@ -619,8 +619,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    /// <returns> Returns TRUE if successful, otherwise FALSE </returns>
 	    private bool Save_From_Form_Request_To_Item(string FilenameToMoveAfter, string FilenameToOmit)
 	    {
-	        List<QC_Viewer_Page_Division_Info> selected_page_div_from_form;
-	        return Save_From_Form_Request_To_Item(FilenameToMoveAfter, FilenameToOmit, out selected_page_div_from_form);
+            try
+            {
+                List<QC_Viewer_Page_Division_Info> selected_page_div_from_form;
+                return Save_From_Form_Request_To_Item(FilenameToMoveAfter, FilenameToOmit, out selected_page_div_from_form);
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException(e.Message);
+            }
 	    }
 
 	    /// <summary> Save all the data from form post-back into the item in memory, and 
@@ -987,7 +994,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			catch (Exception ee)
 			{
 				returnValue = false;
-			}
+            }
 
 			// Return the flag indicating success
 			return returnValue;
@@ -2011,9 +2018,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					        {
 					            Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
                                 if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-99%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-95%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                                 else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-99%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-95%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
 					            
 					        }
 							break;
