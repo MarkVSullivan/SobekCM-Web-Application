@@ -405,7 +405,7 @@ namespace SobekCM.Library.MySobekViewer
 
                             // Save the updates to this admin user
                             SobekCM_Database.Save_User(user, password, Tracer);
-                            SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, Tracer);
+                            SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, Tracer);
                             SobekCM_Database.Update_SobekCM_User_Projects(user.UserID,  new ReadOnlyCollection<string>(projects), Tracer);
                             SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), Tracer);
 

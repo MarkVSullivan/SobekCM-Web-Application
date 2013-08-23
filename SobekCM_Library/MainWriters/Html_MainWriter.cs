@@ -1140,6 +1140,10 @@ namespace SobekCM.Library.MainWriters
                         container_inner = "container-inner1215";
                     break;
 
+				case Display_Mode_Enum.Aggregation_Browse_By:
+					container_inner = "container-facets";
+		            break;
+
                 case Display_Mode_Enum.Aggregation_Browse_Map:
                     container_inner = "container-inner1000";
                     break;
@@ -1147,6 +1151,25 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Aggregation_Private_Items:
                     container_inner = "container-inner1215";
                     break;
+
+				case Display_Mode_Enum.Results:
+				case Display_Mode_Enum.Aggregation_Browse_Info:
+		            if (paged_results != null)
+		            {
+			            container_inner = "container-facets";
+		            }
+		            break;
+
+				case Display_Mode_Enum.Item_Display:
+				case Display_Mode_Enum.Item_Print:
+		            container_inner = String.Empty;
+		            break;
+
+				case Display_Mode_Enum.Simple_HTML_CMS:
+					if ( siteMap != null )
+						container_inner = String.Empty;
+					break;
+
 
             }
 
@@ -1198,34 +1221,15 @@ namespace SobekCM.Library.MainWriters
             switch (currentMode.Mode)
             {
                 case Display_Mode_Enum.Item_Display:
+				case Display_Mode_Enum.Item_Print:
                     Output.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
 
-                case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                    if (paged_results != null)
-                    {
-                        Output.WriteLine("<div id=\"container-facets\">" + Environment.NewLine + htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-                    }
-                    else
-                    {
-                        Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-                    }
-                    break;
-
-                case Display_Mode_Enum.Aggregation_Browse_By:
-                    Output.WriteLine("<div id=\"container-facets\"><div>" + Environment.NewLine + htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-                    break;
-
-                case Display_Mode_Enum.Simple_HTML_CMS:
-                    Output.WriteLine(siteMap != null
-                                         ? htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url)
-                                         : htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-                    break;
-                    
-
                 default:
-                    Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+					if ( container_inner.Length == 0 )
+						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+					else
+						Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
                     break;
             }
 
@@ -1271,37 +1275,20 @@ namespace SobekCM.Library.MainWriters
             // Get the skin url
             string skin_url = currentMode.Base_Design_URL + "skins/" + htmlSkin.Skin_Code + "/";
 
-            const string version = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
+	        bool end_div = !(( currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( siteMap != null ));
+
+	        const string version = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
             switch (currentMode.Mode)
             {
                 case Display_Mode_Enum.Item_Display:
                     Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url ) .Trim());
                     break;
 
-                case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                    if (paged_results != null)
-                    {
-                        Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
-                    }
-                    else
-                    {
-                        Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
-                    }
-                    break;
-
-                case Display_Mode_Enum.Aggregation_Browse_By:
-                    Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div></div>");
-                    break;
-
-                case Display_Mode_Enum.Simple_HTML_CMS:
-                    Output.WriteLine(siteMap != null
-                                         ? htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim()
-                                         : htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
-                    break;
-
                 default:
-                    Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+					if ( !end_div )
+	                    Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+					else
+						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
                     break;
             }
 
@@ -1314,6 +1301,8 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("table.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
                 Output.WriteLine("table.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
                 Output.WriteLine("</style>");
+				Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_TraceRouterShowLink\">show trace route (sys admin)</a>");
+				Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
 
                 Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
                 if (HttpContext.Current.Items["Original_URL"] == null)
@@ -1327,6 +1316,7 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
                 Output.WriteLine("<br /><br />Total Execution Time: " + Tracer.Milliseconds + " Milliseconds<br /><br />");
                 Output.WriteLine(Tracer.Complete_Trace + "<br />");
+				Output.WriteLine("</div>");
             }
         }
 

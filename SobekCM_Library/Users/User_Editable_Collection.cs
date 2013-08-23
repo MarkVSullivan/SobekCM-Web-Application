@@ -12,6 +12,7 @@ namespace SobekCM.Library.Users
     public class User_Editable_Collection
     {
         private readonly List<string> canEditCodes;
+		private readonly List<string> canDeleteCodes;
         private readonly List<User_Editable_Aggregation> collection;
 
         /// <summary> Constructor for a new instance of the User_Editable_Collection class </summary>
@@ -19,6 +20,7 @@ namespace SobekCM.Library.Users
         {
             collection = new List<User_Editable_Aggregation>();
             canEditCodes = new List<string>();
+			canDeleteCodes = new List<string>();
         }
 
         /// <summary> Gets the collection of user editable item aggregations </summary>
@@ -32,6 +34,7 @@ namespace SobekCM.Library.Users
         {
             collection.Clear();
             canEditCodes.Clear();
+	        canDeleteCodes.Clear();
         }
 
         /// <summary> Add a new element to this collection </summary>
@@ -41,13 +44,18 @@ namespace SobekCM.Library.Users
         /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         /// <param name="OnHomePage">Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
-        public void Add(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage)
+		/// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
+        public void Add(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage, bool IsAdmin )
         {
-            collection.Add(new User_Editable_Aggregation(Code.ToUpper(), Name, CanSelect, CanEditItems, IsCurator, OnHomePage));
+            collection.Add(new User_Editable_Aggregation(Code.ToUpper(), Name, CanSelect, CanEditItems, IsCurator, OnHomePage, IsAdmin ));
             if (CanEditItems)
             {
                 canEditCodes.Add(Code.ToUpper());
             }
+			if (IsAdmin)
+			{
+				canDeleteCodes.Add(Code.ToUpper());
+			}
         }
 
         /// <summary> Checks to see if this code exists and can be edited </summary>
@@ -57,5 +65,13 @@ namespace SobekCM.Library.Users
         {
             return canEditCodes.Contains(Code.ToUpper());
         }
+
+		/// <summary> Checks to see if this code exists and can be deleted </summary>
+		/// <param name="Code">Code for this user editable item aggregation</param>
+		/// <returns>TRUE if the element exists and can be deleted, otherwise FALSE</returns>
+		public bool Can_Delete(string Code)
+		{
+			return canDeleteCodes.Contains(Code.ToUpper());
+		}
     }
 }

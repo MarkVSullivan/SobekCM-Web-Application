@@ -158,6 +158,8 @@ namespace SobekCM.Library.AdminViewer
             {
                 text_builder.Append("Can edit all items<br />");
             }
+            if (editUser.Can_Delete_All)
+                text_builder.Append("Can delete all items<br />");
             if (editUser.Is_Portal_Admin)
                 text_builder.Append("Is portal administrator<br />");
 
@@ -429,6 +431,11 @@ namespace SobekCM.Library.AdminViewer
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" checked=\"checked\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />"
                                          : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />");
 
+                    Output.WriteLine(editUser.Can_Delete_All
+					 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_deleteall\" id=\"admin_user_deleteall\" checked=\"checked\" /> <label for=\"admin_user_deleteall\">Can delete <u>all</u> items</label> <br />"
+                     : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_deleteall\" id=\"admin_user_deleteall\" /> <label for=\"admin_user_deleteall\">Can delete <u>all</u> items</label> <br />");
+
+
                     Output.WriteLine(editUser.Is_Portal_Admin
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" checked=\"checked\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />"
                                          : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />");
@@ -594,11 +601,11 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
                         if ((aggregationType.Length > 0) && (aggregationType[aggregationType.Length - 1] != 'S'))
                         {
-                            Output.WriteLine("    <td colspan=\"7\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "S</b></span></td>");
+                            Output.WriteLine("    <td colspan=\"8\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "S</b></span></td>");
                         }
                         else
                         {
-                            Output.WriteLine("    <td colspan=\"7\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "</b></span></td>");
+                            Output.WriteLine("    <td colspan=\"8\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "</b></span></td>");
                         }
                         Output.WriteLine("  </tr>");
 
@@ -607,6 +614,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    <td width=\"57px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can select this aggregation when editing or submitting an item\">CAN<br />SELECT</acronym></span></td>");
                         Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit any item in this aggregation\">CAN<br />EDIT</acronym></span></td>");
                         Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">IS<br />CURATOR</acronym></span></td>");
+						Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can perform administrative tasks on this aggregation\">IS<br />ADMIN</acronym></span></td>");
                         Output.WriteLine("    <td align=\"left\" colspan=\"2\"><span style=\"color: White\">ITEM AGGREGATION</span></td>");
                         Output.WriteLine("   </tr>");
 
@@ -619,6 +627,7 @@ namespace SobekCM.Library.AdminViewer
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_onhome_" + thisAggr.Code + "\" id=\"admin_project_onhome_" + thisAggr.Code + "\" /></td>");
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" /></td>");
+								Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" /></td>");
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" /></td>");
                             }
                             else
@@ -639,16 +648,22 @@ namespace SobekCM.Library.AdminViewer
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" /></td>");
 
                                 if (lookup_aggs[thisAggr.Code.ToLower()].IsCurator)
-                                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                 else
-                                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" /></td>");
+
+								if (lookup_aggs[thisAggr.Code.ToLower()].IsAdmin)
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+								else
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" /></td>");
+
 
                             }
 
                             Output.WriteLine("    <td>" + thisAggr.Code + "</td>");
                             Output.WriteLine("    <td>" + thisAggr.Name + "</td>");
                             Output.WriteLine("   </tr>");
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"7\"></td></tr>");
+                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>");
                         }
                     }
 
@@ -985,6 +1000,10 @@ namespace SobekCM.Library.AdminViewer
                                         editUser.Should_Be_Able_To_Edit_All_Items = true;
                                         break;
 
+                                    case "admin_user_deleteall":
+                                        editUser.Can_Delete_All = true;
+                                        break;
+
                                     case "admin_user_sysadmin":
                                         editUser.Is_System_Admin = true;
                                         break;
@@ -1138,7 +1157,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true));
+                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true, false));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_select_") == 0)
@@ -1150,7 +1169,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false));
+                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false ));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_edit_") == 0)
@@ -1162,7 +1181,19 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false));
+                                        aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false ));
+                                    }
+                                }
+                                if (thisKey.IndexOf("admin_project_curator_") == 0)
+                                {
+                                    string admin_project = thisKey.Replace("admin_project_curator_", "");
+                                    if (aggregations.ContainsKey(admin_project))
+                                    {
+                                        aggregations[admin_project].IsCurator = true;
+                                    }
+                                    else
+                                    {
+                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false, false ));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_admin_") == 0)
@@ -1170,11 +1201,11 @@ namespace SobekCM.Library.AdminViewer
                                     string admin_project = thisKey.Replace("admin_project_admin_", "");
                                     if (aggregations.ContainsKey(admin_project))
                                     {
-                                        aggregations[admin_project].IsCurator = true;
+                                        aggregations[admin_project].IsAdmin = true;
                                     }
                                     else
                                     {
-                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false));
+                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, false, false, true));
                                     }
                                 }
                             }
@@ -1217,7 +1248,7 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     foreach (User_Editable_Aggregation dictionaryAggregation in aggregations.Values)
                                     {
-                                        editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditItems, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage);
+                                        editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditItems, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage, dictionaryAggregation.IsAdmin);
                                     }
                                 }
                             }
@@ -1231,7 +1262,7 @@ namespace SobekCM.Library.AdminViewer
                         SobekCM_Database.Save_User(editUser, String.Empty, Tracer);
 
                         // Update the basic user information
-                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);
+                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);
 
                         // Update projects, if necessary
                         if (editUser.Projects.Count > 0)

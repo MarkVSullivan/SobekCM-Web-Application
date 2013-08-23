@@ -8,11 +8,13 @@ using System.Web;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Items;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
+using SobekCM.Resource_Object;
 
 #endregion
 
@@ -53,24 +55,49 @@ namespace SobekCM.Library.MySobekViewer
             currentMode = Current_Mode;
             errorCode = -1;
 
-            // First, ensure this is a logged on user and system administrator before continuing
+            // Second, ensure this is a logged on user and system administrator before continuing
             Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate user permissions" );
-            if ((User == null) || ((!User.Is_System_Admin) && (User.UserName.ToLower() != "neldamaxs")))
-            {
+            if (User == null) 
+			{
                 Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "User does not have delete permissions", Custom_Trace_Type_Enum.Error );
                 errorCode = 1;
             }
-
-            // Second, ensure the item is valid
-            if( errorCode == -1 )
+            else
             {
-                Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate item exists" );
-                if (!All_Items_Lookup.Contains_BibID_VID( Current_Mode.BibID, Current_Mode.VID))
-                {
-                    Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error );
-                    errorCode = 2;
-                }
+	            bool canDelete = false;
+				if ((User.Can_Delete_All) || (User.Is_System_Admin))
+				{
+					canDelete = true;
+				}
+				else
+				{
+					// In this case, we actually need to build this!
+					try
+					{
+						SobekCM_Item testItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, null, Tracer);
+						if (User.Can_Delete_This_Item(testItem))
+							canDelete = true;
+					}
+					catch { }
+				}
+
+				if (!canDelete)
+				{
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "User does not have delete permissions", Custom_Trace_Type_Enum.Error);
+					errorCode = 1;
+				}
             }
+
+			// Ensure the item is valid
+			if (errorCode == -1)
+			{
+				Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate item exists");
+				if (!All_Items_Lookup.Contains_BibID_VID(Current_Mode.BibID, Current_Mode.VID))
+				{
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
+					errorCode = 2;
+				}
+			}
 
             // Get the current item details
             string bib_location = String.Empty;

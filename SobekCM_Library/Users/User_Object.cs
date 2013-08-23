@@ -77,6 +77,7 @@ namespace SobekCM.Library.Users
             Has_Item_Stats = false;
             Include_Tracking_In_Standard_Forms = true;
             userOptions = new Dictionary<string, object>();
+	        Can_Delete_All = false;
         }
 
         #endregion
@@ -226,6 +227,9 @@ namespace SobekCM.Library.Users
 
         /// <summary> Simple flag indicates if this user can submit items </summary>
         public bool Can_Submit { get; set; }
+
+		/// <summary> Simple flag indicates if this user can delete any item in this repository </summary>
+		public bool Can_Delete_All { get; set; }
 
         /// <summary> Default rights statement for this user  </summary>
         public string Default_Rights { get; set; }
@@ -381,7 +385,7 @@ namespace SobekCM.Library.Users
 
             if (Flag)
             {
-                aggregations.Add(Code, Name, false, false, false, true );
+                aggregations.Add(Code, Name, false, false, false, true, false );
             }
         }
 
@@ -493,9 +497,10 @@ namespace SobekCM.Library.Users
         /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
-        internal void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage)
+        /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
+        internal void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage, bool IsAdmin )
         {
-            aggregations.Add(Code, Name, CanSelect, CanEditItems, IsCurator, OnHomePage );
+            aggregations.Add(Code, Name, CanSelect, CanEditItems, IsCurator, OnHomePage, IsAdmin );
         }
 
         /// <summary> Adds a BibID to the list of bibid's this user can edit </summary>
@@ -634,6 +639,35 @@ namespace SobekCM.Library.Users
 
             return editableRegexes.Select(regex_string => new Regex(regex_string)).Any(myReg => myReg.IsMatch(Item.BibID.ToUpper()));
         }
+
+		/// <summary> Determines if this user can edit this item, based on several different criteria </summary>
+		/// <param name="Item">SobekCM Item to check</param>
+		/// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
+		public bool Can_Delete_This_Item(SobekCM_Item Item)
+		{
+			if ((Can_Delete_All) || ( Is_System_Admin ))
+				return true;
+
+			if (aggregations.Can_Delete("i" + Item.Bib_Info.Source.Code))
+				return true;
+
+			if (Item.Bib_Info.hasLocationInformation)
+			{
+				if (aggregations.Can_Delete("i" + Item.Bib_Info.Location.Holding_Code))
+					return true;
+			}
+
+			if (Item.Behaviors.Aggregation_Count > 0)
+			{
+				ReadOnlyCollection<Aggregation_Info> colls = Item.Behaviors.Aggregations;
+				if (colls.Any(thisCollection => aggregations.Can_Delete(thisCollection.Code)))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 
         /// <summary> Returns the security hash based on IP for this user </summary>
         /// <param name="IP">IP Address for this user request</param>

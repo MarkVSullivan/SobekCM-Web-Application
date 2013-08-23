@@ -172,7 +172,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true));
+                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true, false));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_select_") == 0)
@@ -184,7 +184,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false));
+                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_edit_") == 0)
@@ -196,7 +196,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false));
+                                        aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_admin_") == 0)
@@ -208,7 +208,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false));
+                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false, false ));
                                     }
                                 }
                                 break;

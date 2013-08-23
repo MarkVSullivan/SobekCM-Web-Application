@@ -17,7 +17,8 @@
         /// <param name="CanEditItems"> Flag indicates if this user can edit any items in this item aggregation</param>
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         /// <param name="OnHomePage"> Flag indicates if this user is an admin over this aggregation, and can edit the aggregation home, browse, and info pages</param>
-        public User_Editable_Aggregation(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage  )
+		/// <param name="IsAdmin"> Flag indicates if this user is listed as the administrator for this aggregation </param>
+        public User_Editable_Aggregation(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage, bool IsAdmin  )
         {
             this.Code = Code;
             this.Name = Name;
@@ -25,10 +26,14 @@
             this.CanEditItems = CanEditItems;
             this.IsCurator = IsCurator;
             this.OnHomePage = OnHomePage;
+	        this.IsAdmin = IsAdmin;
         }
 
         /// <summary> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </summary>
         public bool IsCurator { get; set; }
+
+		/// <summary> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </summary>
+		public bool IsAdmin { get; set; }
 
         /// <summary> Flag indicates if this user has asked to have this aggregation appear on their personalized home page </summary>
         public bool OnHomePage { get; set; }

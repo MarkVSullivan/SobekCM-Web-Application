@@ -681,7 +681,7 @@ namespace SobekCM.Library.HTML
                     {
                         currentMode.ViewerCode = "qc";
                         Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-  }
+					}
 
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
@@ -816,7 +816,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("              <button title=\"Make item private\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"set_item_access('private'); return false;\"></button>");
 
                     // Should we add ability to delete this item?
-                    if ((currentUser.Is_System_Admin) || ( currentUser.UserName.ToLower() == "neldamaxs"))
+                    if (currentUser.Can_Delete_This_Item(currentItem))
                     {
                         // Determine the delete URL
                         currentMode.Mode = Display_Mode_Enum.My_Sobek;
@@ -2095,7 +2095,8 @@ namespace SobekCM.Library.HTML
                 List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>
                     {
                         new Tuple<string, string>("onload", "itemwriter_load();"), 
-                        new Tuple<string, string>("onresize", "itemwriter_load();")
+                        new Tuple<string, string>("onresize", "itemwriter_load();"),
+						new Tuple<string, string>("id", "itembody")
                     };
 
                 // Add default script attachments

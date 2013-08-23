@@ -124,7 +124,7 @@ namespace SobekCM.Library.Users
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         internal void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditItems, bool IsCurator)
         {
-            aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditItems, IsCurator, false);
+            aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditItems, IsCurator, false, false );
         }
 
         /// <summary> Adds a template to the list of templates this user group can select </summary>
