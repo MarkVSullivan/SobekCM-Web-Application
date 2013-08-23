@@ -514,7 +514,8 @@ function PaginationTextChanged(TextboxID)
 		   var hidden_number_system = document.getElementById('Autonumber_number_system');
 		   hidden_number_system.value='ROMAN';
 
-		 
+		   numberOnlyLastBox.value = total;
+		    
 		  //Now autonumber all the remaining textboxes of the document
             for(var i=spanArray.indexOf('span'+TextboxID.split('textbox')[1])+1;i<=spanArray.length;i++)
 			{
