@@ -249,13 +249,6 @@ namespace SobekCM.Resource_Object
                     return View_Object.Viewer_Code_By_Type(View_Enum.CITATION)[0];
             }
 
-
-            if (behaviors.Item_Level_Page_Views_Count == 0)
-            {
-                behaviors.Add_Item_Level_Page_View(new View_Object(View_Enum.JPEG2000));
-                behaviors.Add_Item_Level_Page_View(new View_Object(View_Enum.JPEG));
-            }
-
             // Return the first viewer code for this page
             if ((pages_by_seq != null) && ( behaviors.Item_Level_Page_Views_Count > 0 ) && (pages_by_seq.Count >= page) && (pages_by_seq[page - 1].Files.Count > 0))
             {

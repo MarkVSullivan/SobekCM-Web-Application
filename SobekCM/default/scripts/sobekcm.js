@@ -628,3 +628,12 @@ function internal_search(root) {
 		window.location.href = url;
 	}
 }
+
+function show_trace_route() {
+	var traceroutediv = document.getElementById("sbkHmw_TraceRouter");
+	traceroutediv.style.display = 'block';
+
+	var link = document.getElementById("sbkHmw_TraceRouterShowLink");
+	link.style.visibility = 'hidden';
+	return false;
+}
