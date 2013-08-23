@@ -322,11 +322,13 @@ function PaginationTextChanged(TextboxID)
 	   {
 	        //Set the QC form hidden variable with this mode
 			document.getElementById('autonumber_mode_from_form').value = Mode;
-	        document.getElementById('Autonumber_number_system').value = 'decimal';
+			document.getElementById('Autonumber_number_system').value = 'decimal';
+	       numberOnlyLastBox.value = lastNumber;
 	        textOnlyLastBox.value = textboxValue.substr(0, textboxValue.length - matches[0].length);
 		
 			
 	        var number = parseInt(lastNumber);
+	 //      alert(number);
 
 			for(var i=spanArray.indexOf('span' + index)+1; i < spanArray.length;i++)
 			{
