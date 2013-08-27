@@ -264,10 +264,28 @@ SobekCM.Map.prototype = {
     * Method called to initiate a point select as if the user had clicked the point button.
     */
     initiatePointSelect: function() { if (this.globals.maptool) { this.globals.maptool.initiatePointSelect(); } },
-
+  
     // Add a non-selection (simple) point marker to this map
-    add_point: function(point, label) {
-        var newPoint = new google.maps.Marker({ position: point, draggable: false, map: this.globals.innermap });
+    add_point: function (point, label) {
+      var newPoint = new google.maps.Marker({ position: point, draggable: false, map: this.globals.innermap });
+      
+      //create a center point from incoming point
+      var searchString = String(point);
+      searchString = searchString.replace("(","");
+      searchString = searchString.replace(")","");
+      var commaPos = searchString.indexOf(',');
+      var coordinatesLat = parseFloat(searchString.substring(0, commaPos));
+      var coordinatesLong = parseFloat(searchString.substring(commaPos + 1, searchString.length));
+      var center2 = new google.maps.LatLng(coordinatesLat, coordinatesLong);
+      
+      //center on the point
+      this.globals.innermap.setCenter(center2);
+      
+      //create and set zoom level
+      var bounds2 = new google.maps.LatLngBounds();
+      bounds2.extend(center2);
+      this.globals.innermap.fitBounds(bounds2);
+
     },
 
     // Adds a non-selection (simple) polygon to this map
@@ -337,18 +355,17 @@ SobekCM.Map.prototype = {
     // Zooms the map to a provided bounds
     zoom_to_bounds: function(bounds) {
         if (!bounds.isEmpty()) {
-            // Set the center based on the bounds
-            this.globals.innermap.setCenter(bounds.getCenter());
+          // Set the center based on the bounds
+          this.globals.innermap.setCenter(bounds.getCenter());
 
-            // If this has only a single point, set the zoom to 8, otherwise, allow the bounds to set it
-            var ne = bounds.getNorthEast();
-            var sw = bounds.getSouthWest();
-            if ((ne.lat() == sw.lat()) && (ne.lng() == sw.lng())) {
-                this.globals.innermap.setZoom(8);
-            }
-            else {
-                this.globals.innermap.fitBounds(bounds);
-            }
+          // If this has only a single point, set the zoom to 8, otherwise, allow the bounds to set it
+          var ne = bounds.getNorthEast();
+          var sw = bounds.getSouthWest();
+          if ((ne.lat() == sw.lat()) && (ne.lng() == sw.lng())) {
+            this.globals.innermap.setZoom(8);
+          } else {
+            this.globals.innermap.fitBounds(bounds);
+          }
         }
     }
 }
