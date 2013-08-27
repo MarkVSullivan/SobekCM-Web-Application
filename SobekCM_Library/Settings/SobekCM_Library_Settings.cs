@@ -99,13 +99,13 @@ namespace SobekCM.Library.Settings
         private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByFacetName;
 
 
-        private static string mangoUnionSearchBaseUrl;  // "http://solrcits.fcla.edu/citsZ.jsp?type=search&base=uf";
+        private static string mangoUnionSearchBaseUrl; 
         private static string mangoUnionSearchText;
         private static List<string> searchStopWords;
         private static readonly Object thisLock = new Object();
 
 
-        private static SobekCM_Database_Type_Enum sobekDatabaseType;
+	    private static List<Database_Instance_Configuration> databaseInfo; 
 
         private static Dictionary<string, string> additionalGlobalSettings;
 
@@ -115,7 +115,8 @@ namespace SobekCM.Library.Settings
             try
             {
                 // Set some default values
-                sobekDatabaseType = SobekCM_Database_Type_Enum.MSSQL;
+				databaseInfo = new List<Database_Instance_Configuration>();
+                
                 Base_SobekCM_Location_Relative = String.Empty;
                 jpeg2000Server = String.Empty;
                 base_url = String.Empty;
@@ -152,7 +153,7 @@ namespace SobekCM.Library.Settings
                 if (String.IsNullOrEmpty(SobekCM_Database.Connection_String))
                 {
                     Read_Configuration_File();
-                    SobekCM_Database.Connection_String = Database_Connection_String;
+	                SobekCM_Database.Connection_String = databaseInfo[0].Connection_String;
                 }
                 
                 Refresh(SobekCM_Database.Get_Settings_Complete(null));
@@ -179,6 +180,8 @@ namespace SobekCM.Library.Settings
             if (!File.Exists(ConfigFile))
                 return;
 
+			databaseInfo.Clear();
+
             StreamReader reader = new StreamReader(ConfigFile);
             System.Xml.XmlTextReader xmlReader = new System.Xml.XmlTextReader(reader);
             while (xmlReader.Read())
@@ -189,14 +192,16 @@ namespace SobekCM.Library.Settings
                     switch (node_name)
                     {
                         case "connection_string":
+							Database_Instance_Configuration newDb = new Database_Instance_Configuration();
                             if (xmlReader.MoveToAttribute("type"))
                             {
                                 if (xmlReader.Value.ToLower() == "postgresql")
-                                    sobekDatabaseType = SobekCM_Database_Type_Enum.PostgreSQL;
+                                    newDb.Database_Type = SobekCM_Database_Type_Enum.PostgreSQL;
 
                             }
                             xmlReader.Read();
-                            Database_Connection_String = xmlReader.Value;
+                            newDb.Connection_String = xmlReader.Value;
+							databaseInfo.Add(newDb);
                             break;
 
                         case "error_emails":
@@ -1066,31 +1071,16 @@ namespace SobekCM.Library.Settings
             get { return jpeg2000Server; }
         }
 
-        /// <summary> Database connection string is built from the application config file </summary>
-        public static string Database_Connection_String { get; set; }
+	    /// <summary> Database connection string(s) built from the system config file (usually sits in a config subfolder)</summary>
+	    public static ReadOnlyCollection<Database_Instance_Configuration> Database_Connections
+	    {
+		    get
+		    {
+			    return new ReadOnlyCollection<Database_Instance_Configuration>(databaseInfo);
+		    }
+	    }
 
-        /// <summary> Database type </summary>
-        public static SobekCM_Database_Type_Enum Database_Type
-        {
-            get { return sobekDatabaseType; }
-        }
 
-        /// <summary> Database type </summary>
-        public static string Database_Type_String
-        {
-            get
-            { 
-                switch ( sobekDatabaseType )
-                {
-                    case SobekCM_Database_Type_Enum.MSSQL:
-                        return "Microsoft SQL Server";
-                       
-                    case SobekCM_Database_Type_Enum.PostgreSQL:
-                        return "PostgreSQL";
-                }
-                return "Unrecognized";
-            }
-        }
             
 
 

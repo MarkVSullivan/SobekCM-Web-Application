@@ -163,6 +163,7 @@
     <Compile Include="Citation\Elements\implemented elements\VRA_StylePeriod_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\VRA_Technique_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
+    <Compile Include="Configuration\Database_Instance_Configuration.cs" />
     <Compile Include="Configuration\Web_Language_Enum.cs" />
     <Compile Include="Configuration\QualityControl_Configuration.cs" />
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />

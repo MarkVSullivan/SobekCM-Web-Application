@@ -107,7 +107,7 @@ namespace SobekCM.Library
            // marcWriter = new MARC_Writer();
 
             // Get the list of all items
-            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String; ;
+	        SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
 
             // Build all the objects needed by the UFDC Library
             iconList = new Dictionary<string, Wordmark_Icon>();

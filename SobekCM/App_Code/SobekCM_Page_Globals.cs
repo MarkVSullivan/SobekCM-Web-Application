@@ -92,7 +92,7 @@ public class SobekCM_Page_Globals
             {
                 // Create an error message 
                 string errorMessage = "Error caught while validating application state";
-                if ( String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connection_String ))
+                if (( SobekCM_Library_Settings.Database_Connections.Count == 0 ) || ( String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connections[0].Connection_String )))
                 {
                     errorMessage = "No database connection string found!";
                     string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
@@ -118,7 +118,7 @@ public class SobekCM_Page_Globals
                     }
                     else
                     {
-                        errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + SobekCM_Library_Settings.Database_Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+                        errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + SobekCM_Library_Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
                     }
                 }
                 // Wrap this into the SobekCM Exception

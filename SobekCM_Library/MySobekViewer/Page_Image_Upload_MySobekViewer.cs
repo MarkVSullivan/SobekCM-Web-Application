@@ -226,7 +226,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
             }
-        }
+        } 
 
 		public static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
 		{
