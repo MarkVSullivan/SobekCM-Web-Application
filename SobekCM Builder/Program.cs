@@ -212,7 +212,7 @@ namespace SobekCM.Builder
 
             // Should be a config file now, so read it
             SobekCM_Library_Settings.Read_Configuration_File(config_file);
-            if (SobekCM_Library_Settings.Database_Connection_String.Length == 0)
+            if (( SobekCM_Library_Settings.Database_Connections.Count == 0 ) || (SobekCM_Library_Settings.Database_Connections[0].Connection_String.Length == 0))
             {
                 Console.WriteLine("Missing database connection string!!\n");
                 Console.Write("Would you like to run the configuration tool? [Y/N]: ");
@@ -249,7 +249,7 @@ namespace SobekCM.Builder
             }
 
             // Assign the connection string and test the connection
-            SobekCM.Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
+            SobekCM.Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
             if (!SobekCM.Library.Database.SobekCM_Database.Test_Connection())
             {
                 Console.WriteLine("Unable to connect to the database using provided connection string:");

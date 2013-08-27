@@ -32,8 +32,8 @@ namespace SobekCM.Builder
             complete_static_rebuild = false;
 
             // Assign the database connection strings
-            SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
-            SobekCM.Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
+            SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+            SobekCM.Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
 
             // Pull the values from the database and assign other setting values
             SobekCM_Library_Settings.Local_Log_Directory = System.Windows.Forms.Application.StartupPath + "\\Logs\\";

@@ -85,19 +85,20 @@ namespace SobekCM.Library.Application_State
             if (Reload_All)
             {
                 SobekCM_Library_Settings.Read_Configuration_File();
-                SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
+				if ( SobekCM_Library_Settings.Database_Connections.Count > 0 )
+	                SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
                 SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(null));
             }
 
             // If there is no database connection string, there is a problem
-            if (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connection_String))
+			if ((SobekCM_Library_Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connections[0].Connection_String)))
             {
                 throw new ApplicationException("Missing database connection string!");
             }
 
             // Set the database connection strings
-            Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
-            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
+			Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+			SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
 
             // Set the workflow and disposition types
             if ((SobekCM_Library_Settings.Need_Workflow_And_Disposition_Types) || ( Reload_All ))

@@ -4,7 +4,6 @@
 <?define ProductCode="{C6F24E30-5F7C-45EE-8D58-F07561D87C0C}"?>
 <?define ProductVersion="3.20.0.0"?>
 
-
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Product Id="$(var.ProductCode)" Name="SobekCM Builder" Language="1033" Version="$(var.ProductVersion)" Manufacturer="SobekCM" UpgradeCode="$(var.UpgradeCode)">
     <Package  Id="*"  Description="SobekCM Builder Installer" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
@@ -14,8 +13,6 @@
     <Condition Message="You need to be an administrator to install this product.">Privileged</Condition>
 
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
-
-
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="PFiles">
@@ -68,10 +65,10 @@
               <File Id="MicrosoftPracticesServiceLocDll" Name="Microsoft.Practices.ServiceLocation.dll" Source="..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll" />
             </Component>
             <Component Id="GplLicense" Guid="7DBCE146-6A4D-4F18-8241-9B8626300B61">
-              <File Id="LicenseTxt" Name="LICENSE.txt" Source="..\..\Includes\LICENSE.txt" KeyPath="yes" />
+              <File Id="LicenseTxt" Name="LICENSE.txt" Source="..\SobekCM Builder Files\LICENSE.txt" KeyPath="yes" />
             </Component>
             <Component Id="Readme" Guid="F07F09C2-BC65-407C-A63F-AEF5CEAF1EAC">
-              <File Id="ReadmeTxt" Name="README.txt" Source="..\..\Includes\README.txt" KeyPath="yes" />
+              <File Id="ReadmeTxt" Name="README.txt" Source="..\SobekCM Builder Files\README.txt" KeyPath="yes" />
             </Component>
             <Directory Id="z3950SubDir" Name="z3950">
               <Component Id="Z3950LicensesComponent" Guid="EB956B0A-293F-4A5C-BB9B-873A4940F34B">
@@ -86,9 +83,9 @@
             </Directory>
             <Directory Id="KakaduSubDir" Name="Kakadu">
               <Component Id="KakaduComponent" Guid="D21022E5-8615-4A0F-9B47-65C98D4DA6A7">
-                <File Id="KduCompressExe" Name="kdu_compress.exe" Source="..\..\Includes\Kakadu\kdu_compress.exe" KeyPath="yes" />
-                <File Id="KduCompressLibTiffExe" Name="kdu_compress_libtiff.exe" Source="..\..\Includes\Kakadu\kdu_compress_libtiff.exe" />
-                <File Id="KduV60rDll" Name="kdu_v60R.dll" Source="..\..\Includes\Kakadu\kdu_v60R.dll" />
+                <File Id="KduCompressExe" Name="kdu_compress.exe" Source="..\SobekCM Builder Files\Kakadu\kdu_compress.exe" KeyPath="yes" />
+                <File Id="KduCompressLibTiffExe" Name="kdu_compress_libtiff.exe" Source="..\SobekCM Builder Files\Kakadu\kdu_compress_libtiff.exe" />
+                <File Id="KduV60rDll" Name="kdu_v60R.dll" Source="..\SobekCM Builder Files\Kakadu\kdu_v60R.dll" />
               </Component>
             </Directory>
             <Directory Id="configSubDir" Name="config">
@@ -109,9 +106,9 @@
             </Directory>
             <Directory Id="imagesSubDir" Name="images">
               <Component Id="imagesSubDirComponent" Guid="5E332A04-EC2A-4FC2-99B6-F8656016F3CA">
-                <File Id="imagesMultimediaJpg" Name="multimedia.jpg" Source="..\..\Includes\images\multimedia.jpg" KeyPath="yes" />
-                <File Id="imagesAudioJpg" Name="audio.jpg" Source="..\..\Includes\images\audio.jpg" />
-                <File Id="imagesVideoJpg" Name="video.jpg" Source="..\..\Includes\images\video.jpg" />
+                <File Id="imagesMultimediaJpg" Name="multimedia.jpg" Source="..\SobekCM Builder Files\images\multimedia.jpg" KeyPath="yes" />
+                <File Id="imagesAudioJpg" Name="audio.jpg" Source="..\SobekCM Builder Files\images\audio.jpg" />
+                <File Id="imagesVideoJpg" Name="video.jpg" Source="..\SobekCM Builder Files\images\video.jpg" />
               </Component>
             </Directory>
           </Directory>

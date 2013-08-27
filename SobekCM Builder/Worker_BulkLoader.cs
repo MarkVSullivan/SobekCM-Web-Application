@@ -53,7 +53,7 @@ namespace SobekCM.Builder
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose);
 
             // Assign the database connection string
-            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connection_String;
+            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
 
             // Create the METS validation objects
             thisMetsValidator = new SobekCM_METS_Validator( String.Empty );
