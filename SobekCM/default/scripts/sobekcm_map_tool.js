@@ -337,6 +337,7 @@ SobekCM.Map.prototype = {
                 polygon.setOptions({ strokeWeight: strokeweight, strokeOpacity: strokeopacity });
             });
         }
+
     },
 
     // Add a rectangle
@@ -350,7 +351,13 @@ SobekCM.Map.prototype = {
         var rectangle = new google.maps.Rectangle({ strokeColor: color, strokeOpacity: 1, strokeWeight: 3, fillColor: color, fillOpacity: 0.0 });
         rectangle.setBounds(latLngBounds);
         rectangle.setMap(this.globals.innermap);
+        
+        //center on the first lat/long
+        this.globals.innermap.setCenter(new google.maps.LatLng(lat1, long1));
+
     },
+
+
 
     // Zooms the map to a provided bounds
     zoom_to_bounds: function(bounds) {
