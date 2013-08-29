@@ -68,7 +68,11 @@ var L49 = "Did Not Reset Page";
 //by listeners
 try {
     //toolbar
-    document.getElementById("content_toolbar_button_reset").title = "Reset: Reset Map To Defaults";
+  document.getElementById("content_toolbar_button_reset").className += " lytetip";
+  //document.getElementById("content_toolbar_button_reset").createAttribute("data-tip");
+  document.getElementById("content_toolbar_button_reset").title = "Reset Me";
+    //document.getElementById("content_toolbar_button_reset").createAttribute('data-tip', 'Reset: Reset Map To Defaults');
+
     document.getElementById("content_toolbar_button_toggleMapControls").title = "Controls: Toggle Map Controls";
     document.getElementById("content_toolbar_button_toggleToolbox").title = "Toolbox: Toggle Toolbox";
     document.getElementById("content_toolbar_button_layerRoadmap").title = "Roadmap: Toggle Road Map Layer";
