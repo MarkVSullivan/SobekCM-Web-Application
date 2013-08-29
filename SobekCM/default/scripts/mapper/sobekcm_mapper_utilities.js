@@ -788,8 +788,11 @@ function writeHTML(type, param1, param2, param3) {
 }
 
 //keypress shortcuts/actions
-window.onkeypress = keypress;
-function keypress(e) {
+//window.onkeypress = keypress;
+//function keypress(e) {
+window.onkeyup = keyup;
+var isCntrlDown = false;
+function keyup(e) {
   var keycode = null;
   if (window.event) {
     keycode = window.event.keyCode;
@@ -798,42 +801,6 @@ function keypress(e) {
   }
   de("key pressed: " + keycode);
   switch (keycode) {
-    case 70: //F
-      if (navigator.appName == "Microsoft Internet Explorer") {
-        var copyString = cLat.innerHTML;
-        copyString += ", " + cLong.innerHTML;
-        window.clipboardData.setData("Text", copyString);
-        displayMessage(L19);
-      } else {
-        if (cCoordsFrozen == "no") {
-          //freeze
-          cCoordsFrozen = "yes";
-          displayMessage(L20);
-        } else {
-          //unfreeze
-          cCoordsFrozen = "no";
-          displayMessage(L21);
-        }
-      }
-      break;
-    case 79: //O
-      if (overlaysCurrentlyDisplayed == true) {
-        displayMessage(L22);
-        for (var i = 0; i < incomingOverlayBounds.length; i++) {    //go through and display overlays as long as there is an overlay to display
-          overlaysOnMap[i].setMap(null);                          //hide the overlay from the map
-          ghostOverlayRectangle[i].setMap(null);                  //hide ghost from map
-          overlaysCurrentlyDisplayed = false;                     //mark that overlays are not on the map
-        }
-      } else {
-        displayMessage(L23);
-        for (var i = 0; i < incomingOverlayBounds.length; i++) {   //go through and display overlays as long as there is an overlay to display
-          overlaysOnMap[i].setMap(map);                          //set the overlay to the map
-          ghostOverlayRectangle[i].setMap(map);                  //set to map
-          overlaysCurrentlyDisplayed = true;                     //mark that overlays are on the map
-        }
-      }
-
-      break;
     case 13: //enter
       if (document.getElementById("content_toolbox_searchField").value != null) {
         var stuff = document.getElementById("content_toolbox_searchField").value;
@@ -845,16 +812,65 @@ function keypress(e) {
       }
 
       break;
-    case 68: //D (for debuggin)
-      debugs++;
-      if (debugs % 2 == 0) {
-        document.getElementById("debugs").style.display = "none";
-        debugMode = false;
-        displayMessage("Debug Mode Off");
+    case 17: //ctrl
+      if (isCntrlDown == false) {
+        isCntrlDown = true;
       } else {
-        document.getElementById("debugs").style.display = "block";
-        debugMode = true;
-        displayMessage("Debug Mode On");
+        isCntrlDown = false;
+      }
+      break;
+
+    case 70: //F
+      if (isCntrlDown == true) {
+        if (navigator.appName == "Microsoft Internet Explorer") {
+          var copyString = cLat.innerHTML;
+          copyString += ", " + cLong.innerHTML;
+          window.clipboardData.setData("Text", copyString);
+          displayMessage(L19);
+        } else {
+          if (cCoordsFrozen == "no") {
+            //freeze
+            cCoordsFrozen = "yes";
+            displayMessage(L20);
+          } else {
+            //unfreeze
+            cCoordsFrozen = "no";
+            displayMessage(L21);
+          }
+        }
+      }
+      break;
+    case 79: //O
+      if (isCntrlDown == true) {
+        if (overlaysCurrentlyDisplayed == true) {
+          displayMessage(L22);
+          for (var i = 0; i < incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+            overlaysOnMap[i].setMap(null); //hide the overlay from the map
+            ghostOverlayRectangle[i].setMap(null); //hide ghost from map
+            overlaysCurrentlyDisplayed = false; //mark that overlays are not on the map
+          }
+        } else {
+          displayMessage(L23);
+          for (var i = 0; i < incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+            overlaysOnMap[i].setMap(map); //set the overlay to the map
+            ghostOverlayRectangle[i].setMap(map); //set to map
+            overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
+          }
+        }
+      }
+      break;
+    case 68: //D (for debuggin)
+      if (isCntrlDown == true) {
+        debugs++;
+        if (debugs % 2 == 0) {
+          document.getElementById("debugs").style.display = "none";
+          debugMode = false;
+          displayMessage("Debug Mode Off");
+        } else {
+          document.getElementById("debugs").style.display = "block";
+          debugMode = true;
+          displayMessage("Debug Mode On");
+        }
       }
       break;
   }
