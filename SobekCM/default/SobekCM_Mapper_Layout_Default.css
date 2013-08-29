@@ -5,6 +5,37 @@ body
   overflow: hidden;
 }
 
+#mapper_blanket {
+  margin: 0;
+  padding: 0;
+  color: #000000;
+  background: #000000;
+  opacity: 0.75;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 5;
+}
+#mapper_blanket_loading {
+  margin: 0;
+  padding-top: 50%;
+  text-align: center;
+  /*color: #26466d;
+background: #26466d;
+opacity: 0.75;*/
+    /*color: #000000;
+background: #000000;
+opacity: 0.75;*/
+  color: #FFFFFF;
+  background: #FFFFFF;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 999999;
+}
+
 #mapper_container
 {
   color: #000000;
