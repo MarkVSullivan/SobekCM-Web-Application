@@ -1,5 +1,7 @@
 ﻿//listener actions
 
+//#region Listener Actions
+
 //reset handler
 function resetAll() {
   //warn the user
@@ -640,3 +642,6 @@ function clear(id) {
       break;
   }
 }
+
+//#endregion
+

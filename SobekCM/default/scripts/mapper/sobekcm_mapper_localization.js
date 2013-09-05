@@ -1,6 +1,7 @@
-﻿//localization
+﻿//localization support
 
-//by variables (used in fcns)
+//#region localization by variables (used in fcns)
+
 var Lerror1 = "ERROR: Failed Adding Listeners";
 var L_Marker = "Marker";
 var L_Circle = "Circle";
@@ -65,14 +66,15 @@ var L47 = "Warning! This will erase any changes you have made. Do you still want
 var L48 = "Reseting Page";
 var L49 = "Did Not Reset Page";
 
-//by listeners
+//#endregion
+
+//#region localization by listeners
 try {
     //toolbar
-  document.getElementById("content_toolbar_button_reset").className += " lytetip";
-  //document.getElementById("content_toolbar_button_reset").createAttribute("data-tip");
-  document.getElementById("content_toolbar_button_reset").title = "Reset Me";
+    document.getElementById("content_toolbar_button_reset").className += " lytetip";
+    //document.getElementById("content_toolbar_button_reset").createAttribute("data-tip");
+    document.getElementById("content_toolbar_button_reset").title = "Reset Me";
     //document.getElementById("content_toolbar_button_reset").createAttribute('data-tip', 'Reset: Reset Map To Defaults');
-
     document.getElementById("content_toolbar_button_toggleMapControls").title = "Controls: Toggle Map Controls";
     document.getElementById("content_toolbar_button_toggleToolbox").title = "Toolbox: Toggle Toolbox";
     document.getElementById("content_toolbar_button_layerRoadmap").title = "Roadmap: Toggle Road Map Layer";
@@ -156,8 +158,9 @@ try {
 } catch(err) {
     alert(L28);
 }
+//#endregion
 
-//by textual content
+//#region localization by textual content
 try {
     document.getElementById("content_minibar_header").innerHTML = "Toolbox";
     document.getElementById("content_toolbox_button_saveItem").value = "Save";
@@ -179,3 +182,5 @@ try {
 } catch (err) {
     alert(L29);
 }
+//#endregion
+
