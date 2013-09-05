@@ -1,47 +1,180 @@
 <div id="mapper_container_message">
     <div id="content_message"></div>
 </div>
+<div id="mapper_container_pane_0">
+    <ul class="sf-menu">
+        <li>
+            <a>File</a>
+            <ul>
+                <li><a id="content_menubar_save" >Save Changes</a></li>
+                <li><a id="content_menubar_cancel" >Cancel Changes</a></li>
+                <li><a id="content_menubar_reset">Reset Changes</a></li>
+            </ul>
+        </li>
+        <li>
+            <a>Controls</a>
+            <ul>
+                <li>
+                    <a>View</a>
+                    <ul>
+                        <li><a id="content_menubar_toggleMapControls">Map Controls</a></li>
+                        <li><a id="content_menubar_toggleToolbox">Toolbox</a></li>
+                        <li><a id="content_menubar_toggleToolbar">Toolbar</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a>Layers</a>
+                    <ul>
+                        <li><a id="content_menubar_layerRoadmap">Roadmap</a></li>
+                        <li><a id="content_menubar_layerSatellite">Satellite</a></li>
+                        <li><a id="content_menubar_layerHybrid">Hybrid</a></li>
+                        <li><a id="content_menubar_layerTerrain">Terrain</a></li>
+                        <li><a id="content_menubar_layerCustom">Custom</a></li>
+                        <li><a id="content_menubar_layerReset">Reset</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a>Zoom</a>
+                    <ul>
+                        <li><a id="content_menubar_zoomIn">Zoom In</a></li>
+                        <li><a id="content_menubar_zoomOut">Zoom Out</a></li>
+                        <li><a id="content_menubar_zoomReset">Reset</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a>Pan</a>
+                    <ul>
+                        <li><a id="content_menubar_panUp">Pan Up</a></li>
+                        <li><a id="content_menubar_panRight">Pan Right</a></li>
+                        <li><a id="content_menubar_panDown">Pan Down</a></li>
+                        <li><a id="content_menubar_panLeft">Pan Left</a></li>
+                        <li><a id="content_menubar_panReset">Reset</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a>Actions</a>
+            <ul>               
+                <li>
+                    <a>Find Location</a>
+                    <ul>
+                        <li>
+                            <div class="mapper_container_search">
+                                <input id="content_menubar_searchField" class="search" type="text" placeholder="" onClick="this.select();" />
+                                <div id="content_menubar_searchButton" class="searchActionHandle"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a id="content_menubar_manageItem">Manage Location</a>
+                    <ul>
+                        <li><a id="content_menubar_itemGetUserLocation">Center On Current Location</a></li>
+                        <li><a id="content_menubar_placeItem">Edit Location</a></li>
+                        <li><a id="content_menubar_useSearchAsLocation">Use Search Result As Location</a></li>
+                        <li><a id="content_menubar_convertToOverlay">Convert To Overlay</a></li>
+                        <li><a id="content_menubar_itemReset">Reset Location</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a id="content_menubar_manageOverlay">Manage Overlay</a>
+                    <ul>
+                        <li><a id="content_menubar_overlayGetUserLocation">Center On Current Location</a></li>
+                        <li><a id="content_menubar_overlayEdit">Toggle Overlay Editing</a></li>
+                        <li><a id="content_menubar_overlayPlace">Place A New Overlay</a></li>
+                        <li><a id="content_menubar_overlayToggle">Toggle All Map Overlays</a></li>
+                        <li>
+                            <a>Rotate</a>
+                            <ul>
+                                <li><a id="content_menubar_rotationClockwise">Clockwise</a></li>
+                                <li><a id="content_menubar_rotationCounterClockwise">Counter-Clockwise</a></li>
+                                <li><a id="content_menubar_rotationReset">Reset</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a>Transparency</a>
+                            <ul>
+                                <li><a id="content_menubar_transparencyDarker">Darker</a></li>
+                                <li><a id="content_menubar_transparencyLighter">Lighter</a></li>
+                                <li><a id="content_menubar_transparencyReset">Reset</a></li>
+                            </ul>
+                        </li>
+                        <li><a id="content_menubar_overlayReset" >Reset Overlays</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a id="content_menubar_managePOI">Manage POIs</a>
+                    <ul>
+                        <li><a id="content_menubar_poiGetUserLocation">Center On Current Location</a></li>
+                        <li><a id="content_menubar_poiPlace">Toggle POI Editing</a></li>
+                        <li><a id="content_menubar_poiToggle">Toggle POIs On Map</a></li>
+                        <li><a id="content_menubar_poiReset">Reset POIs</a></li>
+                        <li>
+                            <a>Place</a>
+                            <ul>
+                                <li><a id="content_menubar_poiMarker">Marker</a></li>
+                                <li><a id="content_menubar_poiCircle">Circle</a></li>
+                                <li><a id="content_menubar_poiRectangle">Rectangle</a></li>
+                                <li><a id="content_menubar_poiPolygon">Polygon</a></li>
+                                <li><a id="content_menubar_poiLine">Line</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a>Help</a>
+            <ul>
+                <li><a id="content_menubar_documentation">Documentation</a></li>
+                <li><a id="content_menubar_reportAProblem">Report A Problem</a></li>
+            </ul>
+        </li>
+    </ul>    
+</div>
 <div id="mapper_container">
+    
     <div id="mapper_container_pane_1">
-            <div id="mapper_container_toolbar">
-                <div class="toolbar_grouping">
-                    <div id="content_toolbar_button_reset" class="button"></div>
-                    <div id="content_toolbar_button_toggleMapControls" class="button"></div>
-                    <div id="content_toolbar_button_toggleToolbox" class="button"></div>
-                </div>
-                <div class="toolbar_grouping">
-                    <div id="content_toolbar_button_layerRoadmap" class="button"></div>
-                    <div id="content_toolbar_button_layerTerrain" class="button"></div>
-                    <div id="content_toolbar_button_layerSatellite" class="button"></div>
-                    <div id="content_toolbar_button_layerHybrid" class="button"></div>
-                    <div id="content_toolbar_button_layerCustom" class="button"></div>
-                    <div id="content_toolbar_button_layerReset" class="button"></div>
-                </div>
-                <div class="toolbar_grouping">
-                    <div id="content_toolbar_button_panUp" class="button"></div>
-                    <div id="content_toolbar_button_panLeft" class="button"></div>
-                    <div id="content_toolbar_button_panReset" class="button"></div>
-                    <div id="content_toolbar_button_panRight" class="button"></div>
-                    <div id="content_toolbar_button_panDown" class="button"></div>
-                </div>
-                <div class="toolbar_grouping">
-                    <div id="content_toolbar_button_zoomIn" class="button"></div>
-                    <div id="content_toolbar_button_zoomReset" class="button"></div>
-                    <div id="content_toolbar_button_zoomOut" class="button"></div>
-                </div>
-                <div class="toolbar_grouping">
-                    <div id="content_toolbar_button_manageItem" class="button"></div>
-                    <div id="content_toolbar_button_manageOverlay" class="button"></div>
-                    <div id="content_toolbar_button_managePOI" class="button"></div>
-                </div>
-                <div class="toolbar_grouping">
-                    <div class="mapper_container_search">
-                        <input id="content_toolbar_searchField" class="search" type="text" placeholder="" onClick="this.select();" />
-                        <div id="content_toolbar_searchButton" class="searchActionHandle"></div>
-                    </div>
+        <div id="mapper_container_toolbar">       
+            <div class="toolbar_grouping">
+                <div id="content_toolbar_button_reset" class="button"></div>
+                <div id="content_toolbar_button_toggleMapControls" class="button"></div>
+                <div id="content_toolbar_button_toggleToolbox" class="button"></div>
+            </div>
+            <div class="toolbar_grouping">
+                <div id="content_toolbar_button_layerRoadmap" class="button"></div>
+                <div id="content_toolbar_button_layerTerrain" class="button"></div>
+                <div id="content_toolbar_button_layerSatellite" class="button"></div>
+                <div id="content_toolbar_button_layerHybrid" class="button"></div>
+                <div id="content_toolbar_button_layerCustom" class="button"></div>
+                <div id="content_toolbar_button_layerReset" class="button"></div>
+            </div>
+            <div class="toolbar_grouping">
+                <div id="content_toolbar_button_panUp" class="button"></div>
+                <div id="content_toolbar_button_panLeft" class="button"></div>
+                <div id="content_toolbar_button_panReset" class="button"></div>
+                <div id="content_toolbar_button_panRight" class="button"></div>
+                <div id="content_toolbar_button_panDown" class="button"></div>
+            </div>
+            <div class="toolbar_grouping">
+                <div id="content_toolbar_button_zoomIn" class="button"></div>
+                <div id="content_toolbar_button_zoomReset" class="button"></div>
+                <div id="content_toolbar_button_zoomOut" class="button"></div>
+            </div>
+            <div class="toolbar_grouping">
+                <div id="content_toolbar_button_manageItem" class="button"></div>
+                <div id="content_toolbar_button_manageOverlay" class="button"></div>
+                <div id="content_toolbar_button_managePOI" class="button"></div>
+            </div>
+            <div class="toolbar_grouping">
+                <div class="mapper_container_search">
+                    <input id="content_toolbar_searchField" class="search" type="text" placeholder="" onClick="this.select();" />
+                    <div id="content_toolbar_searchButton" class="searchActionHandle"></div>
                 </div>
             </div>
         </div>
+    </div>
 
     <div id="mapper_container_toolbarGrabber">
         <div id="content_toolbarGrabber"></div>
@@ -50,8 +183,8 @@
     <div id="mapper_container_pane_2">
         
         <!--<div id="mapper_container_message">
-            <div id="content_message"></div>
-        </div>-->
+                <div id="content_message"></div>
+            </div>-->
         
         <div id="mapper_container_toolbox" class="ui-widget-content">
             <div id="mapper_container_toolboxMinibar">
@@ -88,7 +221,7 @@
                                 <div class="x"></div>
                                 <div id="content_toolbox_button_panDown" class="x button"></div>
                                 <div class="x"></div>
-							
+
                                 <div class="x y half"></div>
 
                                 <div id="content_toolbox_button_reset" class="x y button"></div>

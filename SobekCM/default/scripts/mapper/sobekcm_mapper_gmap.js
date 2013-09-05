@@ -102,6 +102,9 @@ CustomOverlay.prototype = new google.maps.OverlayView();
 
 //#endregion
 
+
+///<summary>Setups everything with user defined options</summary>
+///<param name="collection" type="string">Specify the type of collection to load</param>
 function setupInterface(collection) {
   ///<summary>Setups everything with user defined options</summary>
   ///<param name="collection" type="string">Specify the type of collection to load</param>

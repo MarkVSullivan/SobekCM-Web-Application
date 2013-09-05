@@ -1,9 +1,11 @@
 ﻿//other 
 
-//#region Supporting JS
+//#region jquery UI elements
 
 //jquery UI elements
-$(function() {
+$(function () {
+    $('ul.sf-menu').superfish();
+
     //draggable content settings
     $("#mapper_container_toolbox").draggable({
         handle: "#mapper_container_toolboxMinibar"//, //div used as handle
@@ -38,7 +40,7 @@ $(function() {
     $("#content_toolbar_button_panRight").tooltip({track:true});
     $("#content_toolbar_button_manageItem").tooltip({track:true});
     $("#content_toolbar_button_manageOverlay").tooltip({track:true});
-    $("#content_toolbar_button_managePOI").tooltip({track:true});
+    $("#content_toolbar_button_managePOI").tooltip({ track: true });
     $("#content_toolbox_button_reset").tooltip({track:true});
     $("#content_toolbox_button_toggleMapControls").tooltip({track:true});
     $("#content_toolbox_button_layerRoadmap").tooltip({track:true});
@@ -103,3 +105,4 @@ $(function() {
 });                               
 
 //#endregion
+
