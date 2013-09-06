@@ -467,7 +467,9 @@ GO
 -- DROP ALL EXISTING STORED PROCEDURES
 DECLARE @procName varchar(500);
 declare cur cursor
-for select [name] from sys.objects where type='p' and is_ms_shipped='false';
+for select [name] from sys.objects where type='p' and is_ms_shipped='false'
+and (( [name] like 'Admin_%' ) or ( [name] like 'Builder_%' ) or ( [name] like 'Edit_%' ) or ( [name] like 'FDA_%' ) or ( [name] like 'Importer_%' ) or ( [name] like 'mySobek_%' )
+or ( [name] like 'SobekCM_%' )or ( [name] like 'TEMP_%' ) or ( [name] like 'Tivoli_%' ) or ( [name] like 'Tracking_%' ));
 
 open cur;
 fetch next from cur into @procName;
