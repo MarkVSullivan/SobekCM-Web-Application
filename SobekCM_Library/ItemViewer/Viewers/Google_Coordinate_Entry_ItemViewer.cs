@@ -626,7 +626,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            Boolean rapidTest = true;
+            Boolean rapidTest = false;
             if (rapidTest == true)
             {
                 //string mapperHTMLFile = @""+ CurrentMode.Base_URL + "default/mapper.txt";

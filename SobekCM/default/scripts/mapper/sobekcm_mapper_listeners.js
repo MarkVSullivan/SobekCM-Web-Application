@@ -7,9 +7,15 @@ try {
     //menubar
     document.getElementById("content_menubar_save").addEventListener("click", function () {
         //attempt to save all three
+        save("item");
+        save("overlay");
+        save("poi");
     }, false);
     document.getElementById("content_menubar_cancel").addEventListener("click", function () {
         //attempt to cancel all three
+        clear("item");
+        clear("overlay");
+        clear("poi");
     }, false);
     document.getElementById("content_menubar_reset").addEventListener("click", function () {
         resetAll();
@@ -65,8 +71,11 @@ try {
     document.getElementById("content_menubar_zoomOut").addEventListener("click", function () {
         zoomMap("out");
     }, false);
+    document.getElementById("content_menubar_header3Sub1").addEventListener("click", function () {
+        openToolboxTab("search");
+    }, false);
     document.getElementById("content_menubar_searchField").addEventListener("click", function () {
-        
+        action("search");
     }, false);
     document.getElementById("content_menubar_searchButton").addEventListener("click", function () {
         if (document.getElementById("content_menubar_searchField").value != null) {
@@ -78,89 +87,110 @@ try {
         action("manageItem");
     }, false);
     document.getElementById("content_menubar_placeItem").addEventListener("click", function () {
+        openToolboxTab("item");
         place("item");
     }, false);
     document.getElementById("content_menubar_itemGetUserLocation").addEventListener("click", function () {
+        openToolboxTab("item");
         geolocate("item");
     }, false);
     document.getElementById("content_menubar_useSearchAsLocation").addEventListener("click", function () {
+        openToolboxTab("item");
         useSearchAsItemLocation();
     }, false);
     document.getElementById("content_menubar_convertToOverlay").addEventListener("click", function () {
-        //convert it
+        openToolboxTab("item");
         convertToOverlay();
-        //now trigger place overlay
         place("overlay");
-        //now enable editing of overlay
-        //edit("overlay");
     }, false);
     document.getElementById("content_menubar_itemReset").addEventListener("click", function () {
+        openToolboxTab("item");
         clear("item");
     }, false);
     document.getElementById("content_menubar_manageOverlay").addEventListener("click", function () {
         action("manageOverlay");
     }, false);
     document.getElementById("content_menubar_overlayPlace").addEventListener("click", function () {
+        openToolboxTab("overlay");
         place("overlay");
     }, false);
     document.getElementById("content_menubar_overlayEdit").addEventListener("click", function () {
+        openToolboxTab("overlay");
         place("overlay");
     }, false);
     document.getElementById("content_menubar_overlayGetUserLocation").addEventListener("click", function () {
+        openToolboxTab("overlay");
         geolocate("overlay");
     }, false);
     document.getElementById("content_menubar_overlayToggle").addEventListener("click", function () {
+        openToolboxTab("overlay");
         toggleVis("overlays");
     }, false);
     document.getElementById("content_menubar_rotationCounterClockwise").addEventListener("click", function () {
+        openToolboxTab("overlay");
         rotate(-0.1);
     }, false);
     document.getElementById("content_menubar_rotationReset").addEventListener("click", function () {
-        rotate(0);
+        openToolboxTab("overlay");
+        rotate(0.0);
     }, false);
     document.getElementById("content_menubar_rotationClockwise").addEventListener("click", function () {
+        openToolboxTab("overlay");
         rotate(0.1);
     }, false);
     document.getElementById("content_menubar_transparencyDarker").addEventListener("click", function () {
-        
+        openToolboxTab("overlay");
+        opacity(0.1);
     }, false);
     document.getElementById("content_menubar_transparencyLighter").addEventListener("click", function () {
-
+        openToolboxTab("overlay");
+        opacity(-0.1);
     }, false);
     document.getElementById("content_menubar_transparencyReset").addEventListener("click", function () {
-
+        openToolboxTab("overlay");
+        opacity(0.35); //change to dynamic default
     }, false);
     document.getElementById("content_menubar_overlayReset").addEventListener("click", function () {
+        openToolboxTab("overlay");
         clear("overlay");
     }, false);
     document.getElementById("content_menubar_managePOI").addEventListener("click", function () {
         action("managePOI");
     }, false);
     document.getElementById("content_menubar_poiPlace").addEventListener("click", function () {
+        openToolboxTab("poi");
         place("poi");
     }, false);
     document.getElementById("content_menubar_poiGetUserLocation").addEventListener("click", function () {
+        openToolboxTab("poi");
         geolocate("poi");
     }, false);
     document.getElementById("content_menubar_poiToggle").addEventListener("click", function () {
+        openToolboxTab("poi");
         toggleVis("pois");
     }, false);
     document.getElementById("content_menubar_poiMarker").addEventListener("click", function () {
+        openToolboxTab("poi");
         placePOI("marker");
     }, false);
     document.getElementById("content_menubar_poiCircle").addEventListener("click", function () {
+        openToolboxTab("poi");
         placePOI("circle");
     }, false);
     document.getElementById("content_menubar_poiRectangle").addEventListener("click", function () {
+        openToolboxTab("poi");
         placePOI("rectangle");
     }, false);
     document.getElementById("content_menubar_poiPolygon").addEventListener("click", function () {
+        openToolboxTab("poi");
         placePOI("polygon");
     }, false);
     document.getElementById("content_menubar_poiLine").addEventListener("click", function () {
+        openToolboxTab("poi");
         placePOI("line");
     }, false);
     document.getElementById("content_menubar_poiReset").addEventListener("click", function () {
+        openToolboxTab("poi");
         clear("poi");
     }, false);
 
@@ -226,7 +256,7 @@ try {
         action("managePOI");
     }, false);
     document.getElementById("content_toolbar_searchField").addEventListener("click", function () {
-        //currently in js
+        action("search");
     }, false);
     document.getElementById("content_toolbar_searchButton").addEventListener("click", function () {
         if (document.getElementById("content_toolbar_searchField").value != null) {
