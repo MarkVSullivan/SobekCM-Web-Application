@@ -716,7 +716,7 @@ namespace SobekCM.Library.Database
 			Multiple_Paged_Results_Args returnArgs;
 
 			// Create the connection
-			using (SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45"))
+			using (SqlConnection connect = new SqlConnection(connectionString + ";Connection Timeout=45"))
 			{
 
 				// Create the command 
