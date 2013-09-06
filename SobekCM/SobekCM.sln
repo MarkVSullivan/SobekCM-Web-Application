@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SobekCM", ".", "{6CC18931-A1FC-4C38-8378-BA2348BBCD0C}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
@@ -31,6 +31,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Object", "..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj", "{395C2621-CE19-41E0-AA1A-ABDB37F6E815}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Library", "..\SobekCM_Library\SobekCM_Library.csproj", "{4426FF50-74C7-4B88-878B-EFB9BC2317BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_PlugIn_Library", "..\Sample_PlugIn_Library\Sample_PlugIn_Library.csproj", "{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,6 +144,20 @@ Global
 		{4426FF50-74C7-4B88-878B-EFB9BC2317BD}.Release|x64.ActiveCfg = Release|x64
 		{4426FF50-74C7-4B88-878B-EFB9BC2317BD}.Release|x64.Build.0 = Release|x64
 		{4426FF50-74C7-4B88-878B-EFB9BC2317BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|.NET.ActiveCfg = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
