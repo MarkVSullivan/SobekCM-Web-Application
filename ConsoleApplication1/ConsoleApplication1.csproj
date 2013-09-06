@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{C20600D2-A982-4607-8EC1-88F0E14CC5BB}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sample_PlugIn_Library</RootNamespace>
-    <AssemblyName>Sample_PlugIn_Library</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <AssemblyName>ConsoleApplication1</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,18 +41,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sample_Custom_METS_Section_FavColor.cs" />
-    <Compile Include="Sample_FavColor_Metadata_Module.cs" />
-    <Compile Include="Sample_PostBuild_Processor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sample_PlugIn_Library\Sample_PlugIn_Library.csproj">
+      <Project>{9c7055bd-d26b-4c04-b726-d0dcfae182c6}</Project>
+      <Name>Sample_PlugIn_Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Library\SobekCM_Library.csproj">
-      <Project>{4426FF50-74C7-4B88-878B-EFB9BC2317BD}</Project>
+      <Project>{4426ff50-74c7-4b88-878b-efb9bc2317bd}</Project>
       <Name>SobekCM_Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
-      <Project>{395C2621-CE19-41E0-AA1A-ABDB37F6E815}</Project>
+      <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
       <Name>SobekCM_Resource_Object</Name>
     </ProjectReference>
   </ItemGroup>

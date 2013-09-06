@@ -124,7 +124,11 @@
     <Compile Include="Application State\Statistics_Dates.cs" />
     <Compile Include="Application State\Wordmark_Icon.cs" />
     <Compile Include="Builder\Builder_Source_Folder.cs" />
+    <Compile Include="Builder\iBuilder_PostBuild_Process.cs" />
+    <Compile Include="Builder\iBuilder_PreBuild_Process.cs" />
+    <Compile Include="Builder\iBuilder_PreValidation_Process.cs" />
     <Compile Include="Builder\Incoming_Digital_Resource.cs" />
+    <Compile Include="Builder\SobekCM_Builder_Configuration_Details.cs" />
     <Compile Include="Citation\Elements\base types\checkBox_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
