@@ -41,7 +41,7 @@ namespace SobekCM.Resource_Object
         /// <summary> Converts a basic string into an XML-safe string </summary>
         /// <param name="element"> Element data to convert </param>
         /// <returns> Data converted into an XML-safe string</returns>
-        internal string Convert_String_To_XML_Safe(string element)
+        public string Convert_String_To_XML_Safe(string element)
         {
             if (element == null)
                 return string.Empty;

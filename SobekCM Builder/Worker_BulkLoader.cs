@@ -1148,6 +1148,12 @@ namespace SobekCM.Builder
                     SobekCM.Resource_Object.Database.SobekCM_Database.Update_Digitization_Milestone(resourcePackage.Metadata.Web.ItemID, 4, DateTime.Now);
                 }
 
+                // Call the post-process custom actions
+                foreach (iBuilder_PostBuild_Process processor in SobekCM_Builder_Configuration_Details.PostBuild_Processes)
+                {
+                    processor.PostProcess(resourcePackage.Metadata, resourcePackage.Resource_Folder);
+                }
+
                 // Finally, clear the memory a little bit
                 resourcePackage.Clear_METS();
             }
