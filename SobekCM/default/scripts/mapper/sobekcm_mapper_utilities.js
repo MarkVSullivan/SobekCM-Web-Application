@@ -56,6 +56,21 @@ function initOptions() {
 //open a specific tab
 function openToolboxTab(id) {
     ///<summary>Opens a specific accordian tab</summary>
+    
+    //assign numerics to text
+    if (id == "search") {
+        id = 1;
+    }
+    if (id == "item") {
+        id = 2;
+    }
+    if (id == "overlay") {
+        id = 3;
+    }
+    if (id == "poi") {
+        id = 4;
+    }
+    
     $("#mapper_container_toolboxTabs").accordion({ active: id });
 }
 
@@ -70,6 +85,7 @@ function confirmMessage(message) {
 
 //facilitates button sticky effect
 function buttonActive(id) {
+    de("buttonActive: " + id);
     switch (id) {
         case "mapControls":
             if (mapControlsDisplayed == false) { //not present
@@ -108,8 +124,10 @@ function buttonActive(id) {
         case "action":
             de("aa: " + actionActive + "<br>" + "paa: " + prevActionActive);
             if (actionActive == "Other") {
-                document.getElementById("content_toolbar_button_manage" + prevActionActive).className = document.getElementById("content_toolbar_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
-                document.getElementById("content_toolbox_button_manage" + prevActionActive).className = document.getElementById("content_toolbox_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                if (prevActionActive != null) {
+                    document.getElementById("content_toolbar_button_manage" + prevActionActive).className = document.getElementById("content_toolbar_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                    document.getElementById("content_toolbox_button_manage" + prevActionActive).className = document.getElementById("content_toolbox_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                }
             } else {
                 if (prevActionActive != null) {
                     document.getElementById("content_toolbar_button_manage" + prevActionActive).className = document.getElementById("content_toolbar_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
@@ -121,6 +139,7 @@ function buttonActive(id) {
             }
             break;
     }
+    de("buttonAction() completed");
 }
 
 //display an inline message
@@ -473,12 +492,44 @@ $(function () {
         step: 0.01,
         slide: function (event, ui) {
             var selection = $("#overlayTransparencySlider").slider("value");
-            var div = document.getElementById("overlay" + workingOverlayIndex);
-            div.style.opacity = selection;
-            preserveOpacity = selection;
+            de("opacity selected: " + selection);
+            keepOpacity(selection);
         }
     });
 });
+
+//keeps a specific opacity
+function keepOpacity(opacityIn) {
+    de("keepOpacity: " + opacityIn);
+    var div = document.getElementById("overlay" + workingOverlayIndex);
+    div.style.opacity = opacityIn;
+    preserveOpacity = opacityIn;
+}
+
+//used to specify a variable opacity (IE adds value to existing)
+function opacity(opacityIn) {
+    
+    if (preserveOpacity <= 1 && preserveOpacity >= 0) {
+        de("add opacity: " + opacityIn + " to overlay" + workingOverlayIndex);
+        var div = document.getElementById("overlay" + workingOverlayIndex);
+        var newOpacity = preserveOpacity + opacityIn;
+        if (newOpacity > 1) {
+            newOpacity = 1;
+        }
+        if (newOpacity < 0) {
+            newOpacity = 0;
+        }
+        div.style.opacity = newOpacity;
+        de("newOpacity: " + newOpacity);
+        preserveOpacity = newOpacity;
+        de("preserveOpacity: " + preserveOpacity);
+        $("#overlayTransparencySlider").slider({value:preserveOpacity});
+    } else {
+        //could not change the opacity    
+    }
+
+    
+}
 
 //jquery rotation knob
 $(function ($) {
@@ -571,10 +622,13 @@ function testBounds() {
 function finder(stuff) {
     if (stuff.length > 0) {
         codeAddress("lookup", stuff); //find the thing
+        document.getElementById("content_menubar_searchField").value = stuff; //sync menubar
         document.getElementById("content_toolbar_searchField").value = stuff; //sync toolbar
         document.getElementById("content_toolbox_searchField").value = stuff; //sync toolbox
         action("other"); //needed to clear out any action buttons that may be active
+        de("opening");
         openToolboxTab(1); //open the actions tab
+        de("supposedly opened");
     } else {
         //do nothing and keep quiet
     }
@@ -684,6 +738,14 @@ function convertToOverlay() {
         incomingOverlaySourceURL[0] = incomingPointSourceURL[0];
         incomingOverlayRotation[0] = 0;
 
+        //adds a working overlay index
+        if (workingOverlayIndex == null) {
+            workingOverlayIndex = 0;
+        }
+        
+        //marks this overlay as converted
+        isConvertedOverlay = true;
+
         //converted
         displayMessage(L44);
     } else {
@@ -792,7 +854,7 @@ function writeHTML(type, param1, param2, param3) {
 //window.onkeypress = keypress;
 //function keypress(e) {
 window.onkeyup = keyup;
-var isCntrlDown = false;
+var isCntrlDown = false; //used for debug currently
 function keyup(e) {
     var keycode = null;
     if (window.event) {
@@ -867,11 +929,13 @@ function keyup(e) {
                 if (debugs % 2 == 0) {
                     document.getElementById("debugs").style.display = "none";
                     debugMode = false;
+                    isCntrlDown = false;
                     displayMessage("Debug Mode Off");
                 } else {
                     document.getElementById("debugs").style.display = "block";
                     debugMode = true;
                     displayMessage("Debug Mode On");
+                    isCntrlDown = false;
                 }
             }
             break;

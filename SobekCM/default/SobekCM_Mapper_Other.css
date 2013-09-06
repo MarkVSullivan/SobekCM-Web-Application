@@ -1,5 +1,10 @@
 ﻿/* Mapper Other: Contains all other css for mapper plugin */
 
+#content_menubar_searchButton
+{
+  background-image: url("images/mapper/search.png");
+}
+
 #content_toolbar_button_reset
 {
   background-image: url("images/mapper/button-reset.png");

@@ -119,6 +119,7 @@
 	*width: 12em; /* no auto sub width for IE7, see white-space comment below */
 }
 .sf-menu a {
+    cursor: pointer;
 	border-left: 1px solid #fff;
 	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
 	border-top: 1px solid rgba(255,255,255,.5);
@@ -134,6 +135,7 @@
 }
 
 .qc-menu a {
+    cursor: pointer;
 	border-left: 1px solid #fff;
 	border-top: 1px solid #dFeEFF; /* fallback colour must use full shorthand */
 	border-top: 1px solid rgba(255,255,255,.5);
