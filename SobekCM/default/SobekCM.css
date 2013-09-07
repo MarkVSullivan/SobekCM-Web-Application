@@ -1080,7 +1080,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
     cursor: hand;
 }
 
-.SobekText { font-size: 1.0em; text-align:left; }
+.SobekText { font-size: 1.0em; text-align:left;width: 750px;margin-left: auto;margin-right: auto;}
 
 .SobekText a:link { COLOR: #009; TEXT-DECORATION: none; }
 .SobekText a:visited { COLOR: #009; TEXT-DECORATION: none; }
@@ -1144,6 +1144,8 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
     border: solid 1px #ccc;
     white-space:nowrap; 
     text-align:left;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .smallinput { width: 120px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }

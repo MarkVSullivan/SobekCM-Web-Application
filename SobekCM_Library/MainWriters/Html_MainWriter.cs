@@ -922,14 +922,17 @@ namespace SobekCM.Library.MainWriters
                                 if (aggrCode.ToLower() != currentMode.Aggregation)
                                 {
                                     if ((aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Source.Code.ToUpper()) &&
-                                        (aggrCode.ToUpper() !=
-                                         "I" + currentItem.Bib_Info.Location.Holding_Code.ToUpper()))
+                                        (aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Location.Holding_Code.ToUpper()))
                                     {
-                                        breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-                                                                  aggrCode.ToLower() + modified_url_options + "\">" +
-                                                                  codeManager.Get_Collection_Short_Name(aggrCode) +
-                                                                  "</a>");
-                                        codes_added++;
+	                                    Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
+	                                    if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
+	                                    {
+		                                    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+		                                                              aggrCode.ToLower() + modified_url_options + "\">" +
+		                                                              thisAggr.ShortName +
+		                                                              "</a>");
+		                                    codes_added++;
+	                                    }
                                     }
                                 }
                                 if (codes_added == 5)
@@ -947,15 +950,20 @@ namespace SobekCM.Library.MainWriters
                                 string source_code = currentItem.Bib_Info.Source.Code;
                                 if ((source_code[0] != 'i') && (source_code[0] != 'I'))
                                     source_code = "I" + source_code;
-                                string source_name = codeManager.Get_Collection_Short_Name(source_code);
-                                if (source_name.ToUpper() != "ADDED AUTOMATICALLY")
-                                {
-                                    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-                                                              source_code.ToLower() + modified_url_options + "\">" +
-                                                              source_name + "</a>");
-                                }
+								Item_Aggregation_Related_Aggregations thisSourceAggr = codeManager[source_code];
+								if ((thisSourceAggr != null) && (!thisSourceAggr.Hidden) && (thisSourceAggr.Active))
+	                            {
+									string source_name = thisSourceAggr.ShortName;
+		                            if (source_name.ToUpper() != "ADDED AUTOMATICALLY")
+		                            {
+			                            breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+			                                                      source_code.ToLower() + modified_url_options + "\">" +
+			                                                      source_name + "</a>");
+		                            }
+	                            }
 
-                                if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
+								// Add the holding code
+	                            if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
                                     (currentItem.Bib_Info.Location.Holding_Code != currentItem.Bib_Info.Source.Code) &&
                                     (currentItem.Bib_Info.Location.Holding_Code != "UF") &&
                                     (currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
@@ -964,14 +972,19 @@ namespace SobekCM.Library.MainWriters
                                     string holding_code = currentItem.Bib_Info.Location.Holding_Code;
                                     if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
                                         holding_code = "I" + holding_code;
-                                    string holding_name = codeManager.Get_Collection_Short_Name(holding_code);
 
-                                    if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
-                                    {
-                                        breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-                                                                  holding_code.ToLower() + modified_url_options + "\">" +
-                                                                  holding_name + "</a>");
-                                    }
+									Item_Aggregation_Related_Aggregations thisAggr = codeManager[holding_code];
+	                                if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
+	                                {
+		                                string holding_name = thisAggr.ShortName;
+
+		                                if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
+		                                {
+			                                breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+			                                                          holding_code.ToLower() + modified_url_options + "\">" +
+			                                                          holding_name + "</a>");
+		                                }
+	                                }
                                 }
                             }
                             else
