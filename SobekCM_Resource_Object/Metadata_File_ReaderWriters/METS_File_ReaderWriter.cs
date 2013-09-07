@@ -2381,34 +2381,38 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 else
                                     systemName = r.Value.Replace("%20", " ");
 
-                                newFile = null;
-                                if (!files_by_fileid.ContainsKey(fileID))
-                                {
-                                    newFile = new SobekCM_File_Info(systemName);
-                                    files_by_fileid[fileID] = newFile;
-                                }
-                                else
-                                {
-                                    newFile = files_by_fileid[fileID];
-                                    newFile.System_Name = systemName;
-                                }
+	                            if (systemName.ToLower() != "web.config")
+	                            {
 
-                                if ((!Minimize_File_Info) && (!String.IsNullOrEmpty(checkSum)) && (!String.IsNullOrEmpty(checkSumType)))
-                                {
-                                    newFile.Checksum = checkSum;
-                                    newFile.Checksum_Type = checkSumType;
-                                }
+		                            newFile = null;
+		                            if (!files_by_fileid.ContainsKey(fileID))
+		                            {
+			                            newFile = new SobekCM_File_Info(systemName);
+			                            files_by_fileid[fileID] = newFile;
+		                            }
+		                            else
+		                            {
+			                            newFile = files_by_fileid[fileID];
+			                            newFile.System_Name = systemName;
+		                            }
 
-                                if (size.Length > 0)
-                                {
-                                    try
-                                    {
-                                        newFile.Size = Convert.ToInt64(size);
-                                    }
-                                    catch
-                                    {
-                                    }
-                                }
+		                            if ((!Minimize_File_Info) && (!String.IsNullOrEmpty(checkSum)) && (!String.IsNullOrEmpty(checkSumType)))
+		                            {
+			                            newFile.Checksum = checkSum;
+			                            newFile.Checksum_Type = checkSumType;
+		                            }
+
+		                            if (size.Length > 0)
+		                            {
+			                            try
+			                            {
+				                            newFile.Size = Convert.ToInt64(size);
+			                            }
+			                            catch
+			                            {
+			                            }
+		                            }
+	                            }
                             }
                         }
                         break;
