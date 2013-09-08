@@ -51,7 +51,8 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></div>");
+						string skin_url = CurrentMode.Base_Design_URL + "skins/" + CurrentMode.Skin + "/";
+						Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>");
                     }
                 }
             }

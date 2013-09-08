@@ -1224,7 +1224,7 @@ namespace SobekCM.Library.MainWriters
                             }
                             else
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "default/images/sobek.jpg\" alt=\"\" /></a></div>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
                             }
                         }
                     }
