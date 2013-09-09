@@ -394,6 +394,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //page content
             mapperBuilder.AppendLine("<td>");
 
+            mapperBuilder.AppendLine(" <div id=\"mapper_blanket_loading\">Loading...</div>");
+            
+
             //used to force doctype html5 and css3
             //mapperBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
 
@@ -626,7 +629,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            Boolean rapidTest = false;
+            Boolean rapidTest = true;
             if (rapidTest == true)
             {
                 //string mapperHTMLFile = @""+ CurrentMode.Base_URL + "default/mapper.txt";
@@ -911,6 +914,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             
             //custom js files (load order does matter)
+            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_load.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_declarations.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_localization.js\"></script>");
             mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_listeners.js\"></script>");

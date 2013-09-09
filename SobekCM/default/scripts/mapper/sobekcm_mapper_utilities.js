@@ -17,6 +17,11 @@ function initOptions() {
     toggleVis("mapDrawingManager");
     buttonActive("layer");
     document.getElementById("content_toolbarGrabber").style.display = "block";
+    
+    //menubar
+    de("[WARN]: #mapper_container_pane_0 background color must be set manually if changed from default.");
+    document.getElementById("mapper_container_pane_0").style.display = "block";
+    
     //determine ACL placer type
     if (incomingPointCenter.length > 0) {
         //there is an item
@@ -31,12 +36,14 @@ function initOptions() {
             //actionsACL("full", "poi"); //not yet implemented
         }
     }
+    
     //determine ACL maptype toggle
     if (hasCustomMapType == true) {
         actionsACL("full", "customMapType");
     } else {
         actionsACL("none", "customMapType");
     }
+    
     //set window offload fcn to remind to save
     window.onbeforeunload = function (e) {
         //check to see if we are in debug mode
@@ -51,6 +58,10 @@ function initOptions() {
             return message;
         }
     };
+    
+    //closes loading blanket
+    document.getElementById("mapper_blanket_loading").style.display = "none";
+    
 }
 
 //open a specific tab
@@ -89,34 +100,49 @@ function buttonActive(id) {
     switch (id) {
         case "mapControls":
             if (mapControlsDisplayed == false) { //not present
+                document.getElementById("content_menubar_toggleMapControls").className = document.getElementById("content_menubar_toggleMapControls").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                 document.getElementById("content_toolbar_button_toggleMapControls").className = document.getElementById("content_toolbar_button_toggleMapControls").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                 document.getElementById("content_toolbox_button_toggleMapControls").className = document.getElementById("content_toolbox_button_toggleMapControls").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
             } else { //present
+                document.getElementById("content_menubar_toggleMapControls").className += " isActive2";
                 document.getElementById("content_toolbar_button_toggleMapControls").className += " isActive";
                 document.getElementById("content_toolbox_button_toggleMapControls").className += " isActive";
             }
             break;
         case "toolbox":
             if (toolboxDisplayed == false) { //not present
+                document.getElementById("content_menubar_toggleToolbox").className = document.getElementById("content_menubar_toggleToolbox").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                 document.getElementById("content_toolbar_button_toggleToolbox").className = document.getElementById("content_toolbar_button_toggleToolbox").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
             } else { //present
+                document.getElementById("content_menubar_toggleToolbox").className += " isActive2";
                 document.getElementById("content_toolbar_button_toggleToolbox").className += " isActive";
+            }
+            break;
+        case "toolbar":
+            if (toolbarDisplayed == false) { //not present
+                document.getElementById("content_menubar_toggleToolbar").className = document.getElementById("content_menubar_toggleToolbar").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
+            } else { //present
+                document.getElementById("content_menubar_toggleToolbar").className += " isActive2";
             }
             break;
         case "layer":
             if (prevMapLayerActive != null) {
+                document.getElementById("content_menubar_layer" + prevMapLayerActive).className = document.getElementById("content_menubar_layer" + prevMapLayerActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                 document.getElementById("content_toolbar_button_layer" + prevMapLayerActive).className = document.getElementById("content_toolbar_button_layer" + prevMapLayerActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                 document.getElementById("content_toolbox_button_layer" + prevMapLayerActive).className = document.getElementById("content_toolbox_button_layer" + prevMapLayerActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
             }
+            document.getElementById("content_menubar_layer" + mapLayerActive).className += " isActive2";
             document.getElementById("content_toolbar_button_layer" + mapLayerActive).className += " isActive";
             document.getElementById("content_toolbox_button_layer" + mapLayerActive).className += " isActive";
             prevMapLayerActive = mapLayerActive; //set and hold the previous map layer active
             break;
         case "kml":
             if (kmlDisplayed == false) { //not present
+                document.getElementById("content_menubar_layerCustom").className = document.getElementById("content_menubar_layerCustom").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                 document.getElementById("content_toolbar_button_layerCustom").className = document.getElementById("content_toolbar_button_layerCustom").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                 document.getElementById("content_toolbox_button_layerCustom").className = document.getElementById("content_toolbox_button_layerCustom").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
             } else { //present
+                document.getElementById("content_menubar_layerCustom").className += " isActive2";
                 document.getElementById("content_toolbar_button_layerCustom").className += " isActive";
                 document.getElementById("content_toolbox_button_layerCustom").className += " isActive";
             }
@@ -125,14 +151,17 @@ function buttonActive(id) {
             de("aa: " + actionActive + "<br>" + "paa: " + prevActionActive);
             if (actionActive == "Other") {
                 if (prevActionActive != null) {
+                    document.getElementById("content_menubar_manage" + prevActionActive).className = document.getElementById("content_menubar_manage" + prevActionActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                     document.getElementById("content_toolbar_button_manage" + prevActionActive).className = document.getElementById("content_toolbar_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                     document.getElementById("content_toolbox_button_manage" + prevActionActive).className = document.getElementById("content_toolbox_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                 }
             } else {
                 if (prevActionActive != null) {
+                    document.getElementById("content_menubar_manage" + prevActionActive).className = document.getElementById("content_menubar_manage" + prevActionActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                     document.getElementById("content_toolbar_button_manage" + prevActionActive).className = document.getElementById("content_toolbar_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                     document.getElementById("content_toolbox_button_manage" + prevActionActive).className = document.getElementById("content_toolbox_button_manage" + prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                 }
+                document.getElementById("content_menubar_manage" + actionActive).className += " isActive2";
                 document.getElementById("content_toolbar_button_manage" + actionActive).className += " isActive";
                 document.getElementById("content_toolbox_button_manage" + actionActive).className += " isActive";
                 prevActionActive = actionActive; //set and hold the previous map layer active
@@ -780,6 +809,7 @@ function actionsACL(level, id) {
         case "item":
             switch (level) {
                 case "full":
+                    $('#content_menubar_manageOverlay').hide();
                     $('#content_toolbar_button_manageOverlay').hide();
                     $('#content_toolbox_button_manageOverlay').hide();
                     $('#content_toolbox_tab4_header').hide();
@@ -789,6 +819,7 @@ function actionsACL(level, id) {
                     //nothing yet
                     break;
                 case "none":
+                    $('#content_menubar_manageOverlay').show();
                     $('#content_toolbar_button_manageOverlay').show();
                     $('#content_toolbox_button_manageOverlay').show();
                     $('#content_toolbox_tab4_header').show();
@@ -799,6 +830,7 @@ function actionsACL(level, id) {
         case "overlay":
             switch (level) {
                 case "full":
+                    $('#content_menubar_manageItem').hide();
                     $('#content_toolbar_button_manageItem').hide();
                     $('#content_toolbox_button_manageItem').hide();
                     $('#content_toolbox_tab3_header').hide();
@@ -808,6 +840,7 @@ function actionsACL(level, id) {
                     //nothing yet
                     break;
                 case "none":
+                    $('#content_menubar_manageItem').show();
                     $('#content_toolbar_button_manageItem').show();
                     $('#content_toolbox_button_manageItem').show();
                     $('#content_toolbox_tab3_header').show();
@@ -818,9 +851,11 @@ function actionsACL(level, id) {
         case "customMapType":
             switch (level) {
                 case "full":
+                    $('#content_menubar_layerCustom').show();
                     $('#content_toolbar_button_layerCustom').show();
                     break;
                 case "none":
+                    $('#content_menubar_layerCustom').hide();
                     $('#content_toolbar_button_layerCustom').hide();
                     break;
             }

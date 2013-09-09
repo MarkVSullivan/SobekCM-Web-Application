@@ -1,7 +1,7 @@
 ﻿//#region Declarations
 
 //global defines (do not change here)
-var isConvertedOverlay = false          //holds a marker for converted overlay
+var isConvertedOverlay = false;         //holds a marker for converted overlay
 var RIBMode = false;                    //holds a marker for running in background mode (do not display messages)
 var debugMode;                          //holds debug marker
 var hasCustomMapType;                   //holds marker for determining if there is a custom map type
@@ -102,7 +102,6 @@ var editable = {                        //define options for visible and editabl
 CustomOverlay.prototype = new google.maps.OverlayView();
 
 //#endregion
-
 
 ///<summary>Setups everything with user defined options</summary>
 ///<param name="collection" type="string">Specify the type of collection to load</param>

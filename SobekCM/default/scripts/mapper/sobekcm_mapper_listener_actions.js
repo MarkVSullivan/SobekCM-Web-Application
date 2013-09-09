@@ -177,6 +177,9 @@ function changeMapLayer(layer) {
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
             //2do make this set to default
             mapLayerActive = "Roadmap";
+            if (kmlDisplayed == true) {
+                toggleVis("kml");
+            }
             break;
     }
     buttonActive("layer"); //set the is active glow for button
@@ -428,6 +431,7 @@ function placePOI(type) {
 
 //geolocation handler
 function geolocate(id) {
+    displayMessage(L50);
     switch (id) {
         case "item":
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);

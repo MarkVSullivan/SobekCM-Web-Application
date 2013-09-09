@@ -30,8 +30,12 @@ opacity: 0.75;*/
     /*color: #000000;
 background: #000000;
 opacity: 0.75;*/
-    color: #FFFFFF;
-    background: #FFFFFF;
+
+    background-image: url("images/mapper/bg1.png");
+
+    /*color: #FFFFFF;
+    background: #FFFFFF;*/
+
     position: fixed;
     width: 100%;
     height: 100%;
@@ -53,6 +57,7 @@ opacity: 0.75;*/
 
 #mapper_container_pane_0
 {
+    display: none;
     min-height: 28px;
     background-color: #7d90d5; /*from SobekCM_ItemMenus.css > .sf-menu*/
 
