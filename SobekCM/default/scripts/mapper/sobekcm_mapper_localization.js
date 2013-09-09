@@ -66,6 +66,7 @@ var L46 = L_NotCleared;
 var L47 = "Warning! This will erase any changes you have made. Do you still want to proceed?";
 var L48 = "Reseting Page";
 var L49 = "Did Not Reset Page";
+var L50 = "Finding Your Location.";
 
 //#endregion
 
@@ -201,7 +202,7 @@ try {
     document.getElementById("content_menubar_panReset").innerHTML = "Reset";
     document.getElementById("content_menubar_searchField").setAttribute('placeholder', "Find a Location");
     document.getElementById("content_menubar_itemGetUserLocation").innerHTML = "Center On Current Location";
-    document.getElementById("content_menubar_placeItem").innerHTML = "Edit Location";
+    document.getElementById("content_menubar_itemPlace").innerHTML = "Edit Location";
     document.getElementById("content_menubar_useSearchAsLocation").innerHTML = "Use Search Result As Location";
     document.getElementById("content_menubar_convertToOverlay").innerHTML = "Convert To Overlay";
     document.getElementById("content_menubar_itemReset").innerHTML = "Reset Location";

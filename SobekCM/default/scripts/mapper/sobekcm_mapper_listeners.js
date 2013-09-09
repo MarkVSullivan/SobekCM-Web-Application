@@ -86,7 +86,7 @@ try {
     document.getElementById("content_menubar_manageItem").addEventListener("click", function () {
         action("manageItem");
     }, false);
-    document.getElementById("content_menubar_placeItem").addEventListener("click", function () {
+    document.getElementById("content_menubar_itemPlace").addEventListener("click", function () {
         openToolboxTab("item");
         place("item");
     }, false);
@@ -192,6 +192,12 @@ try {
     document.getElementById("content_menubar_poiReset").addEventListener("click", function () {
         openToolboxTab("poi");
         clear("poi");
+    }, false);
+    document.getElementById("content_menubar_documentation").addEventListener("click", function () {
+        displayMessage("No Documentation Yet.");
+    }, false);
+    document.getElementById("content_menubar_documentation").addEventListener("click", function () {
+        displayMessage("No Method To Report Errors Yet.");
     }, false);
 
     //toolbar
