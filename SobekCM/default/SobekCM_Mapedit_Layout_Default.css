@@ -1,11 +1,11 @@
-﻿/* Mapper UI Layout: Contains structure of mapper plugin. */
+﻿/* mapedit UI Layout: Contains structure of mapedit plugin. */
 
 body
 {
     overflow: hidden;
 }
 
-#mapper_blanket
+#mapedit_blanket
 {
     margin: 0;
     padding: 0;
@@ -19,7 +19,7 @@ body
     z-index: 5;
 }
 
-#mapper_blanket_loading
+#mapedit_blanket_loading
 {
     margin: 0;
     padding-top: 50%;
@@ -31,7 +31,7 @@ opacity: 0.75;*/
 background: #000000;
 opacity: 0.75;*/
 
-    background-image: url("images/mapper/bg1.png");
+    background-image: url("images/mapedit/bg1.png");
 
     /*color: #FFFFFF;
     background: #FFFFFF;*/
@@ -43,7 +43,7 @@ opacity: 0.75;*/
     z-index: 999999;
 }
 
-#mapper_container
+#mapedit_container
 {
     color: #000000;
     margin: 0;
@@ -52,10 +52,10 @@ opacity: 0.75;*/
     width: 100%;
     height: 100%;
     position: absolute;
-    background-image: url("images/mapper/bg1.png");
+    background-image: url("images/mapedit/bg1.png");
 }
 
-#mapper_container_pane_0
+#mapedit_container_pane_0
 {
     display: none;
     min-height: 28px;
@@ -69,7 +69,7 @@ opacity: 0.75;*/
     
 }
 
-#mapper_container_pane_1
+#mapedit_container_pane_1
 {
     display: none;
     position: absolute;
@@ -80,10 +80,10 @@ opacity: 0.75;*/
     -webkit-box-shadow: 0px 0px 2px 2px #000000;
     -moz-box-shadow: 0px 0px 2px 2px #000000;
         box-shadow: 0px 0px 2px 2px #000000;
-    background-image: url("images/mapper/bg1.png");
+    background-image: url("images/mapedit/bg1.png");
 }
 
-#mapper_container_toolbar
+#mapedit_container_toolbar
 {
     position: absolute;
     left: 50%;
@@ -99,7 +99,7 @@ opacity: 0.75;*/
     margin: 4px 1px 4px 1px;
 }
 
-.mapper_container_search
+.mapedit_container_search
 {
     display: inline-block;
 }
@@ -112,7 +112,7 @@ opacity: 0.75;*/
     position: absolute;
 }
 
-#mapper_container_toolbarGrabber
+#mapedit_container_toolbarGrabber
 {
     position: absolute;
     left: 50%;
@@ -121,12 +121,12 @@ opacity: 0.75;*/
     z-index: 4;
 }
 
-    #mapper_container_toolbarGrabber:hover
+    #mapedit_container_toolbarGrabber:hover
     {
         cursor: pointer;
     }
 
-#mapper_container_message
+#mapedit_container_message
 {
     position: absolute;
     width: 200px;
@@ -135,7 +135,7 @@ opacity: 0.75;*/
     margin-left: -100px;
     z-index: 9999;
 }
-/*#mapper_container_message {
+/*#mapedit_container_message {
     color: black;
     font-size: 11px;
     font-weight: bold;
@@ -152,7 +152,7 @@ opacity: 0.75;*/
 	box-shadow:0 2px 3px rgba(0,0,0,0.5);
 	display:none;
 }*/
-/*#mapper_container_message {
+/*#mapedit_container_message {
     color: #000000;
 	position:fixed;
 	z-index:2;
@@ -166,12 +166,12 @@ opacity: 0.75;*/
 	box-shadow:0 1px 3px rgba(0,0,0,0.5);
 	display:none;
 }*/
-#mapper_container_pane_2
+#mapedit_container_pane_2
 {
-    background-image: url("images/mapper/bg1.png");
+    background-image: url("images/mapedit/bg1.png");
 }
 
-#mapper_container_toolboxMinibar
+#mapedit_container_toolboxMinibar
 {
     height: 15px;
     padding-right: 10px;
@@ -184,7 +184,7 @@ opacity: 0.75;*/
     border-radius: 25px;
 }
 
-#mapper_container_toolbox
+#mapedit_container_toolbox
 {
     display: none;
     /*max-height:560px;*/
@@ -200,7 +200,7 @@ opacity: 0.75;*/
     border-radius: 15px;
 }
 
-#mapper_container_toolboxTabs
+#mapedit_container_toolboxTabs
 {
     font-size: 11px;
 }
@@ -232,42 +232,42 @@ opacity: 0.75;*/
     height: 20px;
 }
 
-#mapper_container_grid
+#mapedit_container_grid
 {
     width: 100%;
 }
 
-#mapper_container_grid .x
+#mapedit_container_grid .x
 {
     float: left;
     width: 40px;
     height: 40px;
 }
 
-#mapper_container_grid .y
+#mapedit_container_grid .y
 {
     clear: both;
 }
 
-#mapper_container_grid .half
+#mapedit_container_grid .half
 {
     float: left;
     width: 20px;
     height: 20px;
 }
 
-#mapper_container_toolbox_tab1
+#mapedit_container_toolbox_tab1
 {
     margin-left: 10px;
 }
 
-#mapper_container_toolbox_overlayTools
+#mapedit_container_toolbox_overlayTools
 {
     display: inline-block;
     width: 150px;
 }
 
-#mapper_container_toolbox_rotationButtons
+#mapedit_container_toolbox_rotationButtons
 {
     margin-left: 7px;
 }

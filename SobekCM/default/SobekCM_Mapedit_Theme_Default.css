@@ -1,4 +1,4 @@
-﻿/* Mapper UI Default: Contains the default visual flavors of mapper plugin */
+﻿/* mapedit UI Default: Contains the default visual flavors of mapedit plugin */
 /* Critera: if changed/taken out, these will not effect functionality*/
 /* Common Styles Included:
 	Font/text related
@@ -31,7 +31,7 @@ a img
     width: 40px;
     height: 40px;
     border: 0;
-    /*background-image: url("images/mapper/button-base.png");*/
+    /*background-image: url("images/mapedit/button-base.png");*/
 }
 
     .button:hover
@@ -290,7 +290,7 @@ a img
     display: none;
 }
 
-.mapper_container_search
+.mapedit_container_search
 {
 }
 
