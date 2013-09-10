@@ -19,8 +19,8 @@ function initOptions() {
     document.getElementById("content_toolbarGrabber").style.display = "block";
     
     //menubar
-    de("[WARN]: #mapper_container_pane_0 background color must be set manually if changed from default.");
-    document.getElementById("mapper_container_pane_0").style.display = "block";
+    de("[WARN]: #mapedit_container_pane_0 background color must be set manually if changed from default.");
+    document.getElementById("mapedit_container_pane_0").style.display = "block";
     
     //determine ACL placer type
     if (incomingPointCenter.length > 0) {
@@ -60,7 +60,7 @@ function initOptions() {
     };
     
     //closes loading blanket
-    document.getElementById("mapper_blanket_loading").style.display = "none";
+    document.getElementById("mapedit_blanket_loading").style.display = "none";
     
 }
 
@@ -82,7 +82,7 @@ function openToolboxTab(id) {
         id = 4;
     }
     
-    $("#mapper_container_toolboxTabs").accordion({ active: id });
+    $("#mapedit_container_toolboxTabs").accordion({ active: id });
 }
 
 //confirm box
@@ -803,8 +803,8 @@ function initOverlayList() {
 //used to set acess control levels for the actions
 function actionsACL(level, id) {
     //doesnt work
-    //document.getElementById("mapper_container_toolbar").style.width = "1170px";
-    //document.getElementById("mapper_container_toolbar").style["margin-left"] = "-535px";
+    //document.getElementById("mapedit_container_toolbar").style.width = "1170px";
+    //document.getElementById("mapedit_container_toolbar").style["margin-left"] = "-535px";
     switch (id) {
         case "item":
             switch (level) {
@@ -982,11 +982,11 @@ function resizeView() {
 
     //get sizes of elements already drawn
     var totalPX = document.documentElement.clientHeight;
-    var headerPX = $("#mapper_container").offset().top;
+    var headerPX = $("#mapedit_container").offset().top;
     var widthPX = document.documentElement.clientWidth;
 
     //set the width of the sf menu pane0 container
-    document.getElementById("mapper_container_pane_0").style.width = widthPX + "px";
+    document.getElementById("mapedit_container_pane_0").style.width = widthPX + "px";
 
     //detect and handle different widths
     if (widthPX <= 800) {
@@ -1004,17 +1004,17 @@ function resizeView() {
 
     //calculate and set sizes
     var bodyPX = totalPX - headerPX;
-    document.getElementById("mapper_container").style.height = bodyPX + "px";
+    document.getElementById("mapedit_container").style.height = bodyPX + "px";
     var pane0PX = bodyPX * .05;
-    //document.getElementById("mapper_container_pane_0").style.height = pane0PX + "px";
+    //document.getElementById("mapedit_container_pane_0").style.height = pane0PX + "px";
     var pane1PX = bodyPX * .05;
-    //document.getElementById("mapper_container_pane_1").style.height = pane1PX + "px";
+    //document.getElementById("mapedit_container_pane_1").style.height = pane1PX + "px";
     var pane2PX = bodyPX * .9;
-    //document.getElementById("mapper_container_pane_2").style.height = pane2PX + "px";
+    //document.getElementById("mapedit_container_pane_2").style.height = pane2PX + "px";
 
     //calculate percentage of height
     var percentOfHeight = Math.round((bodyPX / totalPX) * 100);
-    //document.getElementById("mapper_container").style.height = percentOfHeight + "%";
+    //document.getElementById("mapedit_container").style.height = percentOfHeight + "%";
     de("percentage of height: " + percentOfHeight);
     
     de("sizes:<br>height: " + totalPX + " header: " + headerPX + " body: " + bodyPX + " pane0: " + pane0PX + " pane1: " + pane1PX + " pane2: " + pane2PX);

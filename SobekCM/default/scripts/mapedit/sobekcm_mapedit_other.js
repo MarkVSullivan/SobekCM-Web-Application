@@ -7,12 +7,12 @@ $(function () {
     $('ul.sf-menu').superfish();
 
     //draggable content settings
-    $("#mapper_container_toolbox").draggable({
-        handle: "#mapper_container_toolboxMinibar"//, //div used as handle
-        //containment: "#mapper_container" //bind to map container 
+    $("#mapedit_container_toolbox").draggable({
+        handle: "#mapedit_container_toolboxMinibar"//, //div used as handle
+        //containment: "#mapedit_container" //bind to map container 
     });
     //accordian settings
-    $("#mapper_container_toolboxTabs").accordion({
+    $("#mapedit_container_toolboxTabs").accordion({
         //animate: false, //turn off all animations (this got rid of search icon problem) //if ever set, check WORKAROUND in openToolboxTabs(id)
         active: 0, //which tab is active
         icons: false, //default icons?

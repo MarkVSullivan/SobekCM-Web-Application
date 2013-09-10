@@ -45,14 +45,14 @@ function toggleVis(id) {
 
         case "toolbox":
             if (toolboxDisplayed == true) {
-                document.getElementById("mapper_container_toolbox").style.display = "none";
-                document.getElementById("mapper_container_toolboxTabs").style.display = "none";
-                //$("#mapper_container_toolbox").effect("slide", 500);
+                document.getElementById("mapedit_container_toolbox").style.display = "none";
+                document.getElementById("mapedit_container_toolboxTabs").style.display = "none";
+                //$("#mapedit_container_toolbox").effect("slide", 500);
                 toolboxDisplayed = false;
             } else {
-                document.getElementById("mapper_container_toolbox").style.display = "block";
-                document.getElementById("mapper_container_toolboxTabs").style.display = "block";
-                document.getElementById("mapper_container_toolbox").style.height = "auto";
+                document.getElementById("mapedit_container_toolbox").style.display = "block";
+                document.getElementById("mapedit_container_toolboxTabs").style.display = "block";
+                document.getElementById("mapedit_container_toolbox").style.height = "auto";
                 toolboxDisplayed = true;
             }
             buttonActive("toolbox"); //set the is active glow for button
@@ -60,12 +60,12 @@ function toggleVis(id) {
 
         case "toolbar":
             if (toolbarDisplayed == true) {
-                $("#mapper_container_pane_1").hide();
-                document.getElementById("mapper_container_toolbarGrabber").style.marginTop = "0";
+                $("#mapedit_container_pane_1").hide();
+                document.getElementById("mapedit_container_toolbarGrabber").style.marginTop = "0";
                 toolbarDisplayed = false;
             } else {
-                $("#mapper_container_pane_1").show();
-                document.getElementById("mapper_container_toolbarGrabber").style.marginTop = "48px";
+                $("#mapedit_container_pane_1").show();
+                document.getElementById("mapedit_container_toolbarGrabber").style.marginTop = "48px";
                 toolbarDisplayed = true;
             }
             buttonActive("toolbar"); //set the is active glow for button
@@ -83,13 +83,13 @@ function toggleVis(id) {
             break;
 
         case "toolboxMin":
-            $("#mapper_container_toolboxTabs").hide();
-            document.getElementById("mapper_container_toolbox").style.height = "17px";
+            $("#mapedit_container_toolboxTabs").hide();
+            document.getElementById("mapedit_container_toolbox").style.height = "17px";
             break;
 
         case "toolboxMax":
-            $("#mapper_container_toolboxTabs").show();
-            document.getElementById("mapper_container_toolbox").style.height = "auto";
+            $("#mapedit_container_toolboxTabs").show();
+            document.getElementById("mapedit_container_toolbox").style.height = "auto";
             break;
 
         case "mapDrawingManager":

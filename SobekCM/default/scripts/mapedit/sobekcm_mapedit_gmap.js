@@ -112,7 +112,7 @@ function setupInterface(collection) {
 
     switch (collection) {
         case "default":
-            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
+            baseImagesDirURL = "default/images/mapedit/";                            //the default directory to the image files
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
@@ -121,7 +121,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
             kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParel_v6.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -136,7 +136,7 @@ function setupInterface(collection) {
             hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
             break;
         case "stAugustine":
-            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
+            baseImagesDirURL = "default/images/mapedit/";                            //the default directory to the image files
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
@@ -145,8 +145,8 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
             kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
-            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/stAugParcel_v6.kmz");  //must be pingable by google
+            //kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
             defaultZoomLevel = 14;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -164,7 +164,7 @@ function setupInterface(collection) {
             );
             break;
         case "custom":
-            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
+            baseImagesDirURL = "default/images/mapedit/";                            //the default directory to the image files
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
@@ -173,7 +173,7 @@ function setupInterface(collection) {
             toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
             toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
             kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapper/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
+            kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
             defaultZoomLevel = 13;                                                  //zoom level, starting
             maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
             minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -191,7 +191,7 @@ function setupInterface(collection) {
             );
             break;
         case "florida":
-            baseImagesDirURL = "default/images/mapper/";                            //the default directory to the image files
+            baseImagesDirURL = "default/images/mapedit/";                            //the default directory to the image files
             mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
             mapLayerActive = "Roadmap";                                             //what map layer is displayed
             mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load

@@ -423,7 +423,7 @@ try {
         toggleVis("overlays");
     }, false);
     document.getElementById("rotationKnob").addEventListener("click", function () {
-        //do nothing, (possible just mapper_container)
+        //do nothing, (possible just mapedit_container)
     }, false);
     document.getElementById("content_toolbox_rotationCounterClockwise").addEventListener("click", function () {
         rotate(-0.1);
@@ -435,10 +435,10 @@ try {
         rotate(0.1);
     }, false);
     document.getElementById("transparency").addEventListener("click", function () {
-        //nothing (possible just mapper_container)
+        //nothing (possible just mapedit_container)
     }, false);
     document.getElementById("overlayTransparencySlider").addEventListener("click", function () {
-        //nothing (possible just mapper_container)
+        //nothing (possible just mapedit_container)
     }, false);
     document.getElementById("content_toolbox_button_saveOverlay").addEventListener("click", function () {
         save("overlay");

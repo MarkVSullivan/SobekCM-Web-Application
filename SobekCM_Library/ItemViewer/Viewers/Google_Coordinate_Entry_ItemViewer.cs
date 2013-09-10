@@ -389,56 +389,56 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
             // Start to build the response
-            StringBuilder mapperBuilder = new StringBuilder();
+            StringBuilder mapeditBuilder = new StringBuilder();
 
             //page content
-            mapperBuilder.AppendLine("<td>");
+            mapeditBuilder.AppendLine("<td>");
 
-            mapperBuilder.AppendLine(" <div id=\"mapper_blanket_loading\">Loading...</div>");
+            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\">Loading...</div>");
             
 
             //used to force doctype html5 and css3
-            //mapperBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
+            //mapeditBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
 
             //standard css
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/>");
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/lytebox/lytebox.css\"/>");
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/lytebox/lytebox.css\"/>");
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_ItemMenus.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/lytebox/lytebox.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/lytebox/lytebox.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_ItemMenus.css\"/>");
 
             //custom css
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper_Theme_Default.css\"/>");
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper_Layout_Default.css\"/>");
-            mapperBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper_Other.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Layout_Default.css\"/>");
+            mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Other.css\"/>");
 
             //standard js files
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-ui-1.10.1.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-migrate-1.1.1.min.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-rotate.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-knob.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/jquery-json-2.4.min\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/lytebox/lytebox.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-infobox.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/superfish.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverintent.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-ui-1.10.1.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-migrate-1.1.1.min.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-rotate.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-knob.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-json-2.4.min\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/lytebox/lytebox.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-infobox.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/superfish.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverintent.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
 
             //custom js 
             #region
 
-            mapperBuilder.AppendLine(" ");
-            mapperBuilder.AppendLine(" <script type=\"text/javascript\"> ");
-            mapperBuilder.AppendLine(" ");
+            mapeditBuilder.AppendLine(" ");
+            mapeditBuilder.AppendLine(" <script type=\"text/javascript\"> ");
+            mapeditBuilder.AppendLine(" ");
             //set base url var
-            mapperBuilder.AppendLine(" <!-- Add Base URL Var -->");
-            mapperBuilder.AppendLine(" var baseURL = \"" + CurrentMode.Base_URL + "\"; ");
-            mapperBuilder.AppendLine(" ");
+            mapeditBuilder.AppendLine(" <!-- Add Base URL Var -->");
+            mapeditBuilder.AppendLine(" var baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            mapeditBuilder.AppendLine(" ");
             //geo objects writer section 
-            mapperBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
-            mapperBuilder.AppendLine(" function initGeoObjects(){ ");
-            mapperBuilder.AppendLine(" ");
+            mapeditBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
+            mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
+            mapeditBuilder.AppendLine(" ");
 
             #endregion
 
@@ -542,10 +542,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         bounds += bounds2 + ", " + bounds1;
                         bounds += ")";
                         polygonBounds.Add(bounds);
-                        mapperBuilder.AppendLine("      incomingOverlayBounds[" + it + "] = " + bounds + ";");
+                        mapeditBuilder.AppendLine("      incomingOverlayBounds[" + it + "] = " + bounds + ";");
 
                         //add the label of the polygon
-                        mapperBuilder.AppendLine("      incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
+                        mapeditBuilder.AppendLine("      incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
 
                         //get the image url
                         List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
@@ -562,20 +562,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                         //polygonURL[it] = first_page_complete_url;
                         polygonURL.Add(first_page_complete_url);
-                        mapperBuilder.AppendLine("      incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
+                        mapeditBuilder.AppendLine("      incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
 
                         //get and set the rotation value
                         //polygonRotation.Add(0);
-                        //mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
-                        mapperBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
+                        //mapeditBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
+                        mapeditBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
 
                         //iterate
                         it++;
 
                     }
-                    mapperBuilder.AppendLine(" ");
-                    mapperBuilder.AppendLine("      displayIncomingOverlays(); ");
-                    mapperBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine("      displayIncomingOverlays(); ");
+                    mapeditBuilder.AppendLine(" ");
                 }
 
                 // Draw all the single points 
@@ -584,8 +584,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //add each point
                     for (int point = 0; point < allPoints.Count; point++)
                     {
-                        mapperBuilder.AppendLine("      incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
-                        mapperBuilder.AppendLine("      incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+                        mapeditBuilder.AppendLine("      incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
+                        mapeditBuilder.AppendLine("      incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
 
                         try
                         {
@@ -603,27 +603,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
 
-                            mapperBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
+                            mapeditBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
                         }
                         catch (Exception)
                         {
-                            mapperBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"\" ");
+                            mapeditBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"\" ");
                             throw;
                         }
 
 
                     }
-                    mapperBuilder.AppendLine(" ");
-                    mapperBuilder.AppendLine("      displayIncomingPoints();");
-                    mapperBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine("      displayIncomingPoints();");
+                    mapeditBuilder.AppendLine(" ");
                 }
 
-                mapperBuilder.AppendLine(" }");
-                mapperBuilder.AppendLine(" ");
-                mapperBuilder.AppendLine(" <!-- End Geo Objects Writer --> ");
-                mapperBuilder.AppendLine(" ");
-                mapperBuilder.AppendLine(" </script> ");
-                mapperBuilder.AppendLine(" ");
+                mapeditBuilder.AppendLine(" }");
+                mapeditBuilder.AppendLine(" ");
+                mapeditBuilder.AppendLine(" <!-- End Geo Objects Writer --> ");
+                mapeditBuilder.AppendLine(" ");
+                mapeditBuilder.AppendLine(" </script> ");
+                mapeditBuilder.AppendLine(" ");
 
             }
 
@@ -632,12 +632,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Boolean rapidTest = true;
             if (rapidTest == true)
             {
-                //string mapperHTMLFile = @""+ CurrentMode.Base_URL + "default/mapper.txt";
-                //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapper.txt");
-                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapper.html");
+                //string mapeditHTMLFile = @""+ CurrentMode.Base_URL + "default/mapedit.txt";
+                //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapedit.txt");
+                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html");
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    mapperBuilder.AppendLine(Convert.ToString(lines[i]));
+                    mapeditBuilder.AppendLine(Convert.ToString(lines[i]));
                 }
             }
             else
@@ -645,291 +645,291 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //html page literal
                 #region html page literat
 
-                mapperBuilder.AppendLine(" <div id=\"mapper_container_message\"> ");
-                mapperBuilder.AppendLine("     <div id=\"content_message\"></div> ");
-                mapperBuilder.AppendLine(" </div> ");
-                mapperBuilder.AppendLine(" <div id=\"mapper_container_pane_0\"> ");
-                mapperBuilder.AppendLine("         <ul class=\"sf-menu\"> ");
-                mapperBuilder.AppendLine("             <li> ");
-                mapperBuilder.AppendLine("                 <a onclick=\"return false;\">File</a> ");
-                mapperBuilder.AppendLine("                 <ul> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Open</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Close</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Save</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Download</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Preferences</a></li> ");
-                mapperBuilder.AppendLine("                 </ul> ");
-                mapperBuilder.AppendLine("             </li> ");
-                mapperBuilder.AppendLine("             <li> ");
-                mapperBuilder.AppendLine("                 <a onclick=\"return false;\">Edit</a> ");
-                mapperBuilder.AppendLine("                 <ul> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapperBuilder.AppendLine("                 </ul> ");
-                mapperBuilder.AppendLine("             </li> ");
-                mapperBuilder.AppendLine("             <li> ");
-                mapperBuilder.AppendLine("                 <a onclick=\"return false;\">Views</a> ");
-                mapperBuilder.AppendLine("                 <ul> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapperBuilder.AppendLine("                 </ul> ");
-                mapperBuilder.AppendLine("             </li> ");
-                mapperBuilder.AppendLine("             <li> ");
-                mapperBuilder.AppendLine("                 <a onclick=\"return false;\">Actions</a> ");
-                mapperBuilder.AppendLine("                 <ul> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapperBuilder.AppendLine("                 </ul> ");
-                mapperBuilder.AppendLine("             </li> ");
-                mapperBuilder.AppendLine("             <li> ");
-                mapperBuilder.AppendLine("                 <a onclick=\"return false;\">Settings</a> ");
-                mapperBuilder.AppendLine("                 <ul> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapperBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapperBuilder.AppendLine("                 </ul> ");
-                mapperBuilder.AppendLine("             </li> ");
-                mapperBuilder.AppendLine("             <li></li> ");
-                mapperBuilder.AppendLine("         </ul>     ");
-                mapperBuilder.AppendLine("     </div> ");
-                mapperBuilder.AppendLine(" <div id=\"mapper_container\"> ");
-                mapperBuilder.AppendLine("      ");
-                mapperBuilder.AppendLine("     <div id=\"mapper_container_pane_1\"> ");
-                mapperBuilder.AppendLine("         <div id=\"mapper_container_toolbar\">        ");
-                mapperBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_reset\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_toggleMapControls\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_toggleToolbox\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerRoadmap\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerTerrain\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerSatellite\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerHybrid\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerCustom\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerReset\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_panUp\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_panLeft\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_panReset\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_panRight\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_panDown\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomIn\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomReset\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomOut\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageItem\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageOverlay\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbar_button_managePOI\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapperBuilder.AppendLine("                 <div class=\"mapper_container_search\"> ");
-                mapperBuilder.AppendLine("                     <input id=\"content_toolbar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
-                mapperBuilder.AppendLine("                     <div id=\"content_toolbar_searchButton\" class=\"searchActionHandle\"></div> ");
-                mapperBuilder.AppendLine("                 </div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("         </div> ");
-                mapperBuilder.AppendLine("     </div> ");
-                mapperBuilder.AppendLine("  ");
-                mapperBuilder.AppendLine("     <div id=\"mapper_container_toolbarGrabber\"> ");
-                mapperBuilder.AppendLine("         <div id=\"content_toolbarGrabber\"></div> ");
-                mapperBuilder.AppendLine("     </div>     ");
-                mapperBuilder.AppendLine("  ");
-                mapperBuilder.AppendLine("     <div id=\"mapper_container_pane_2\"> ");
-                mapperBuilder.AppendLine("          ");
-                mapperBuilder.AppendLine("         <!--<div id=\"mapper_container_message\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_message\"></div> ");
-                mapperBuilder.AppendLine("             </div>--> ");
-                mapperBuilder.AppendLine("          ");
-                mapperBuilder.AppendLine("         <div id=\"mapper_container_toolbox\" class=\"ui-widget-content\"> ");
-                mapperBuilder.AppendLine("             <div id=\"mapper_container_toolboxMinibar\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_minibar_icon\"></div>  ");
-                mapperBuilder.AppendLine("                 <div id=\"content_minibar_header\"></div>  ");
-                mapperBuilder.AppendLine("                 <div id=\"content_minibar_button_close\"></div>  ");
-                mapperBuilder.AppendLine("                 <div id=\"content_minibar_button_maximize\"></div>  ");
-                mapperBuilder.AppendLine("                 <div id=\"content_minibar_button_minimize\"></div>  ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("             <div id=\"mapper_container_toolboxTabs\"> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab1_header\" class=\"tab-title\"></div> ");
-                mapperBuilder.AppendLine("                 <div class=\"tab\"> ");
-                mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_tab1\"> ");
-                mapperBuilder.AppendLine("                             <div id=\"mapper_container_grid\"> ");
-                mapperBuilder.AppendLine("                              ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerRoadmap\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerTerrain\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panUp\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x\"></div> ");
-                mapperBuilder.AppendLine("  ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerSatellite\" class=\"x y button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerHybrid\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panLeft\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panReset\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panRight\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                              ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerCustom\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerReset\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panDown\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x\"></div> ");
-                mapperBuilder.AppendLine(" 							 ");
-                mapperBuilder.AppendLine("                                 <div class=\"x y half\"></div> ");
-                mapperBuilder.AppendLine("  ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_reset\" class=\"x y button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_toggleMapControls\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomIn\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomReset\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomOut\" class=\"x button\"></div> ");
-                mapperBuilder.AppendLine("                              ");
-                mapperBuilder.AppendLine("                             </div> ");
-                mapperBuilder.AppendLine("                         </div> ");
-                mapperBuilder.AppendLine("                     </div> ");
-                mapperBuilder.AppendLine("                 </div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab2_header\" class=\"tab-title\"></div> ");
-                mapperBuilder.AppendLine("                 <div class=\"tab\"> ");
-                mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_tab2\"> ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_manageItem\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_manageOverlay\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_managePOI\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                             <div class=\"mapper_container_search\"> ");
-                mapperBuilder.AppendLine("                                 <input id=\"content_toolbox_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
-                mapperBuilder.AppendLine("                                 <div id=\"content_toolbox_searchButton\" class=\"searchActionHandle\"></div> ");
-                mapperBuilder.AppendLine("                             </div> ");
-                mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                             <div id=\"searchResults_container\"> ");
-                mapperBuilder.AppendLine("                                 <div id=\"searchResults_scoll_container\"> ");
-                mapperBuilder.AppendLine("                                     <div id=\"searchResults_list\"></div> ");
-                mapperBuilder.AppendLine("                                 </div> ");
-                mapperBuilder.AppendLine("                             </div>  ");
-                mapperBuilder.AppendLine("                         </div> ");
-                mapperBuilder.AppendLine("                     </div> ");
-                mapperBuilder.AppendLine("                 </div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab3_header\" class=\"tab-title\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"itemACL\" class=\"tab\"> ");
-                mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_tab3\"> ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_placeItem\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_itemGetUserLocation\" class=\"button\"></div>   ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_useSearchAsLocation\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                             <div id=\"content_toolbox_button_convertToOverlay\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                             <textarea id=\"content_toolbox_posItem\" class=\"tab-field\" rows=\"2\" cols=\"24\" placeholder=\"Selected Lat/Long\"></textarea> ");
-                mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                             <textarea id=\"content_toolbox_rgItem\" class=\"tab-field\" rows=\"3\" cols=\"24\" placeholder=\"Nearest Address\"></textarea> ");
-                mapperBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveItem\" > </div> ");
-                mapperBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearItem\" > </div> ");
-                mapperBuilder.AppendLine("                         </div> ");
-                mapperBuilder.AppendLine("                     </div> ");
-                mapperBuilder.AppendLine("                 </div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab4_header\" class=\"tab-title\"></div> ");
-                mapperBuilder.AppendLine("                 <div id=\"overlayACL\" class=\"tab\"> ");
-                mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayEdit\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayPlace\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayGetUserLocation\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayToggle\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("  ");
-                mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"mapper_container_toolbox_overlayTools\"> ");
-                mapperBuilder.AppendLine("                             <div id=\"rotation\"> ");
-                mapperBuilder.AppendLine("                                 <div id=\"rotationKnob\"> ");
-                mapperBuilder.AppendLine("                                     <input class=\"knob\" data-displayInput=\"false\" data-width=\"68\" data-step=\"1\" data-min=\"0\" data-max=\"360\" data-cursor=true data-bgColor=\"#B2B2B2\" data-fgColor=\"#111111\" data-thickness=\"0.3\" value=\"0\"> ");
-                mapperBuilder.AppendLine("                                 </div> ");
-                mapperBuilder.AppendLine("                                 <div id=\"mapper_container_toolbox_rotationButtons\"> ");
-                mapperBuilder.AppendLine("                                     <div id=\"content_toolbox_rotationCounterClockwise\" class=\"button3\"></div> ");
-                mapperBuilder.AppendLine("                                     <div id=\"content_toolbox_rotationReset\" class=\"button3\"></div> ");
-                mapperBuilder.AppendLine("                                     <div id=\"content_toolbox_rotationClockwise\" class=\"button3\"></div> ");
-                mapperBuilder.AppendLine("                                 </div> ");
-                mapperBuilder.AppendLine("                             </div> ");
-                mapperBuilder.AppendLine("                             <div id=\"transparency\"> ");
-                mapperBuilder.AppendLine("                                 <div id=\"overlayTransparencySlider\"></div> ");
-                mapperBuilder.AppendLine("                             </div> ");
-                mapperBuilder.AppendLine("                         </div> ");
-                mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"overlayList_container\"> ");
-                mapperBuilder.AppendLine("                             <div id=\"overlayList_scoll_container\"> ");
-                mapperBuilder.AppendLine("                                 <div id=\"overlayList\"></div> ");
-                mapperBuilder.AppendLine("                             </div> ");
-                mapperBuilder.AppendLine("                         </div>   ");
-                mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveOverlay\" > </div> ");
-                mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearOverlay\" > </div> ");
-                mapperBuilder.AppendLine("                     </div> ");
-                mapperBuilder.AppendLine("                 </div> ");
-                mapperBuilder.AppendLine("                 <div id=\"content_toolbox_tab5_header\" class=\"tab-title\"></div> ");
-                mapperBuilder.AppendLine("                 <div class=\"tab\"> ");
-                mapperBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_placePOI\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiGetUserLocation\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiToggle\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiMarker\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiCircle\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiRectangle\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiPolygon\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiLine\" class=\"button\"></div> ");
-                mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                         <div id=\"poiList_container\"> ");
-                mapperBuilder.AppendLine("                             <div id=\"poiList_scoll_container\"> ");
-                mapperBuilder.AppendLine("                                 <div id=\"poiList\"></div> ");
-                mapperBuilder.AppendLine("                             </div> ");
-                mapperBuilder.AppendLine("                         </div>   ");
-                mapperBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
-                mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_savePOI\" > </div> ");
-                mapperBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearPOI\" > </div> ");
-                mapperBuilder.AppendLine("                     </div> ");
-                mapperBuilder.AppendLine("                 </div> ");
-                mapperBuilder.AppendLine("             </div> ");
-                mapperBuilder.AppendLine("         </div>     ");
-                mapperBuilder.AppendLine("         <div id=\"googleMap\"></div> ");
-                mapperBuilder.AppendLine("     </div> ");
-                mapperBuilder.AppendLine(" </div> ");
-                mapperBuilder.AppendLine(" <div id=\"debugs\"></div> ");
+                mapeditBuilder.AppendLine(" <div id=\"mapedit_container_message\"> ");
+                mapeditBuilder.AppendLine("     <div id=\"content_message\"></div> ");
+                mapeditBuilder.AppendLine(" </div> ");
+                mapeditBuilder.AppendLine(" <div id=\"mapedit_container_pane_0\"> ");
+                mapeditBuilder.AppendLine("         <ul class=\"sf-menu\"> ");
+                mapeditBuilder.AppendLine("             <li> ");
+                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">File</a> ");
+                mapeditBuilder.AppendLine("                 <ul> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Open</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Close</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Save</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Download</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Preferences</a></li> ");
+                mapeditBuilder.AppendLine("                 </ul> ");
+                mapeditBuilder.AppendLine("             </li> ");
+                mapeditBuilder.AppendLine("             <li> ");
+                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Edit</a> ");
+                mapeditBuilder.AppendLine("                 <ul> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
+                mapeditBuilder.AppendLine("                 </ul> ");
+                mapeditBuilder.AppendLine("             </li> ");
+                mapeditBuilder.AppendLine("             <li> ");
+                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Views</a> ");
+                mapeditBuilder.AppendLine("                 <ul> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
+                mapeditBuilder.AppendLine("                 </ul> ");
+                mapeditBuilder.AppendLine("             </li> ");
+                mapeditBuilder.AppendLine("             <li> ");
+                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Actions</a> ");
+                mapeditBuilder.AppendLine("                 <ul> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
+                mapeditBuilder.AppendLine("                 </ul> ");
+                mapeditBuilder.AppendLine("             </li> ");
+                mapeditBuilder.AppendLine("             <li> ");
+                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Settings</a> ");
+                mapeditBuilder.AppendLine("                 <ul> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
+                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
+                mapeditBuilder.AppendLine("                 </ul> ");
+                mapeditBuilder.AppendLine("             </li> ");
+                mapeditBuilder.AppendLine("             <li></li> ");
+                mapeditBuilder.AppendLine("         </ul>     ");
+                mapeditBuilder.AppendLine("     </div> ");
+                mapeditBuilder.AppendLine(" <div id=\"mapedit_container\"> ");
+                mapeditBuilder.AppendLine("      ");
+                mapeditBuilder.AppendLine("     <div id=\"mapedit_container_pane_1\"> ");
+                mapeditBuilder.AppendLine("         <div id=\"mapedit_container_toolbar\">        ");
+                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_reset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_toggleMapControls\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_toggleToolbox\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerRoadmap\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerTerrain\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerSatellite\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerHybrid\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerCustom\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerReset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panUp\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panLeft\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panReset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panRight\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panDown\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomIn\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomReset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomOut\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageItem\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageOverlay\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_managePOI\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("                 <div class=\"mapedit_container_search\"> ");
+                mapeditBuilder.AppendLine("                     <input id=\"content_toolbar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
+                mapeditBuilder.AppendLine("                     <div id=\"content_toolbar_searchButton\" class=\"searchActionHandle\"></div> ");
+                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("         </div> ");
+                mapeditBuilder.AppendLine("     </div> ");
+                mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine("     <div id=\"mapedit_container_toolbarGrabber\"> ");
+                mapeditBuilder.AppendLine("         <div id=\"content_toolbarGrabber\"></div> ");
+                mapeditBuilder.AppendLine("     </div>     ");
+                mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine("     <div id=\"mapedit_container_pane_2\"> ");
+                mapeditBuilder.AppendLine("          ");
+                mapeditBuilder.AppendLine("         <!--<div id=\"mapedit_container_message\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_message\"></div> ");
+                mapeditBuilder.AppendLine("             </div>--> ");
+                mapeditBuilder.AppendLine("          ");
+                mapeditBuilder.AppendLine("         <div id=\"mapedit_container_toolbox\" class=\"ui-widget-content\"> ");
+                mapeditBuilder.AppendLine("             <div id=\"mapedit_container_toolboxMinibar\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_minibar_icon\"></div>  ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_minibar_header\"></div>  ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_minibar_button_close\"></div>  ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_minibar_button_maximize\"></div>  ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_minibar_button_minimize\"></div>  ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("             <div id=\"mapedit_container_toolboxTabs\"> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab1_header\" class=\"tab-title\"></div> ");
+                mapeditBuilder.AppendLine("                 <div class=\"tab\"> ");
+                mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
+                mapeditBuilder.AppendLine("                         <div id=\"mapedit_container_toolbox_tab1\"> ");
+                mapeditBuilder.AppendLine("                             <div id=\"mapedit_container_grid\"> ");
+                mapeditBuilder.AppendLine("                              ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerRoadmap\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerTerrain\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panUp\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x\"></div> ");
+                mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerSatellite\" class=\"x y button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerHybrid\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panLeft\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panReset\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panRight\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                              ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerCustom\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_layerReset\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panDown\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x\"></div> ");
+                mapeditBuilder.AppendLine(" 							 ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x y half\"></div> ");
+                mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_reset\" class=\"x y button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_toggleMapControls\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div class=\"x half\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomIn\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomReset\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomOut\" class=\"x button\"></div> ");
+                mapeditBuilder.AppendLine("                              ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                         </div> ");
+                mapeditBuilder.AppendLine("                     </div> ");
+                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab2_header\" class=\"tab-title\"></div> ");
+                mapeditBuilder.AppendLine("                 <div class=\"tab\"> ");
+                mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
+                mapeditBuilder.AppendLine("                         <div id=\"mapedit_container_toolbox_tab2\"> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_manageItem\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_manageOverlay\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_managePOI\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"mapedit_container_search\"> ");
+                mapeditBuilder.AppendLine("                                 <input id=\"content_toolbox_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_searchButton\" class=\"searchActionHandle\"></div> ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"searchResults_container\"> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"searchResults_scoll_container\"> ");
+                mapeditBuilder.AppendLine("                                     <div id=\"searchResults_list\"></div> ");
+                mapeditBuilder.AppendLine("                                 </div> ");
+                mapeditBuilder.AppendLine("                             </div>  ");
+                mapeditBuilder.AppendLine("                         </div> ");
+                mapeditBuilder.AppendLine("                     </div> ");
+                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab3_header\" class=\"tab-title\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"itemACL\" class=\"tab\"> ");
+                mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
+                mapeditBuilder.AppendLine("                         <div id=\"mapedit_container_toolbox_tab3\"> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_placeItem\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_itemGetUserLocation\" class=\"button\"></div>   ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_useSearchAsLocation\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_convertToOverlay\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                             <textarea id=\"content_toolbox_posItem\" class=\"tab-field\" rows=\"2\" cols=\"24\" placeholder=\"Selected Lat/Long\"></textarea> ");
+                mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                             <textarea id=\"content_toolbox_rgItem\" class=\"tab-field\" rows=\"3\" cols=\"24\" placeholder=\"Nearest Address\"></textarea> ");
+                mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveItem\" > </div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearItem\" > </div> ");
+                mapeditBuilder.AppendLine("                         </div> ");
+                mapeditBuilder.AppendLine("                     </div> ");
+                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab4_header\" class=\"tab-title\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"overlayACL\" class=\"tab\"> ");
+                mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayEdit\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayPlace\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayGetUserLocation\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayToggle\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"mapedit_container_toolbox_overlayTools\"> ");
+                mapeditBuilder.AppendLine("                             <div id=\"rotation\"> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"rotationKnob\"> ");
+                mapeditBuilder.AppendLine("                                     <input class=\"knob\" data-displayInput=\"false\" data-width=\"68\" data-step=\"1\" data-min=\"0\" data-max=\"360\" data-cursor=true data-bgColor=\"#B2B2B2\" data-fgColor=\"#111111\" data-thickness=\"0.3\" value=\"0\"> ");
+                mapeditBuilder.AppendLine("                                 </div> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"mapedit_container_toolbox_rotationButtons\"> ");
+                mapeditBuilder.AppendLine("                                     <div id=\"content_toolbox_rotationCounterClockwise\" class=\"button3\"></div> ");
+                mapeditBuilder.AppendLine("                                     <div id=\"content_toolbox_rotationReset\" class=\"button3\"></div> ");
+                mapeditBuilder.AppendLine("                                     <div id=\"content_toolbox_rotationClockwise\" class=\"button3\"></div> ");
+                mapeditBuilder.AppendLine("                                 </div> ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"transparency\"> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"overlayTransparencySlider\"></div> ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                         </div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"overlayList_container\"> ");
+                mapeditBuilder.AppendLine("                             <div id=\"overlayList_scoll_container\"> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"overlayList\"></div> ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                         </div>   ");
+                mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveOverlay\" > </div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearOverlay\" > </div> ");
+                mapeditBuilder.AppendLine("                     </div> ");
+                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab5_header\" class=\"tab-title\"></div> ");
+                mapeditBuilder.AppendLine("                 <div class=\"tab\"> ");
+                mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_placePOI\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiGetUserLocation\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiToggle\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiMarker\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiCircle\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiRectangle\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiPolygon\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiLine\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                         <div id=\"poiList_container\"> ");
+                mapeditBuilder.AppendLine("                             <div id=\"poiList_scoll_container\"> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"poiList\"></div> ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                         </div>   ");
+                mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_savePOI\" > </div> ");
+                mapeditBuilder.AppendLine("                         <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearPOI\" > </div> ");
+                mapeditBuilder.AppendLine("                     </div> ");
+                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("             </div> ");
+                mapeditBuilder.AppendLine("         </div>     ");
+                mapeditBuilder.AppendLine("         <div id=\"googleMap\"></div> ");
+                mapeditBuilder.AppendLine("     </div> ");
+                mapeditBuilder.AppendLine(" </div> ");
+                mapeditBuilder.AppendLine(" <div id=\"debugs\"></div> ");
 
                 #endregion
 
             }
             
             //custom js files (load order does matter)
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_load.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_declarations.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_localization.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_listeners.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_listener_actions.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_gmap.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_utilities.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/sobekcm_mapper_other.js\"></script>");
-            mapperBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapper/gmaps-markerwithlabel-1.8.1.min.js\"></script>"); //must load after custom
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_load.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listener_actions.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_gmap.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_utilities.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_other.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-markerwithlabel-1.8.1.min.js\"></script>"); //must load after custom
 
             //end of custom content
-            mapperBuilder.AppendLine("</td>");
+            mapeditBuilder.AppendLine("</td>");
 
             // Add the literal to the placeholder
             Literal placeHolderText = new Literal();
-            placeHolderText.Text = mapperBuilder.ToString();
+            placeHolderText.Text = mapeditBuilder.ToString();
             placeHolder.Controls.Add(placeHolderText);
 
         }

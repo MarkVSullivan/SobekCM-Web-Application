@@ -1,10 +1,10 @@
-﻿/* Mapper Other: Contains all other css for mapper plugin */
+﻿/* mapedit Other: Contains all other css for mapedit plugin */
 
 /*menubar*/
 
 #content_menubar_save
 {
-    background: url("images/mapper/button-save.png") no-repeat 5px;
+    background: url("images/mapedit/button-save.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -13,7 +13,7 @@
 }
 #content_menubar_cancel
 {
-    background: url("images/mapper/button-cancel.png") no-repeat 5px;
+    background: url("images/mapedit/button-cancel.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -22,7 +22,7 @@
 }
 #content_menubar_reset
 {
-    background: url("images/mapper/button-reset.png") no-repeat 5px;
+    background: url("images/mapedit/button-reset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -34,7 +34,7 @@
 }
 #content_menubar_toggleMapControls
 {
-    background: url("images/mapper/button-toggleMapControls.png") no-repeat 5px;
+    background: url("images/mapedit/button-toggleMapControls.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -43,7 +43,7 @@
 }
 #content_menubar_toggleToolbar
 {
-    background: url("images/mapper/button-toggleToolbar.png") no-repeat 5px;
+    background: url("images/mapedit/button-toggleToolbar.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -52,7 +52,7 @@
 }
 #content_menubar_toggleToolbox
 {
-    background: url("images/mapper/button-toggleToolbox.png") no-repeat 5px;
+    background: url("images/mapedit/button-toggleToolbox.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -64,7 +64,7 @@
 }
 #content_menubar_layerRoadmap
 {
-    background: url("images/mapper/button-layerRoadmap.png") no-repeat 5px;
+    background: url("images/mapedit/button-layerRoadmap.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -73,7 +73,7 @@
 }
 #content_menubar_layerSatellite
 {
-    background: url("images/mapper/button-layerSatellite.png") no-repeat 5px;
+    background: url("images/mapedit/button-layerSatellite.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -82,7 +82,7 @@
 }
 #content_menubar_layerHybrid
 {
-    background: url("images/mapper/button-layerHybrid.png") no-repeat 5px;
+    background: url("images/mapedit/button-layerHybrid.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -91,7 +91,7 @@
 }
 #content_menubar_layerTerrain
 {
-    background: url("images/mapper/button-layerTerrain.png") no-repeat 5px;
+    background: url("images/mapedit/button-layerTerrain.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -100,7 +100,7 @@
 }
 #content_menubar_layerCustom
 {
-    background: url("images/mapper/button-layerCustom.png") no-repeat 5px;
+    background: url("images/mapedit/button-layerCustom.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -109,7 +109,7 @@
 }
 #content_menubar_layerReset
 {
-    background: url("images/mapper/button-layerReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-layerReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -121,7 +121,7 @@
 }
 #content_menubar_zoomIn
 {
-    background: url("images/mapper/button-zoomIn.png") no-repeat 5px;
+    background: url("images/mapedit/button-zoomIn.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -130,7 +130,7 @@
 }
 #content_menubar_zoomOut
 {
-    background: url("images/mapper/button-zoomOut.png") no-repeat 5px;
+    background: url("images/mapedit/button-zoomOut.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -139,7 +139,7 @@
 }
 #content_menubar_zoomReset
 {
-    background: url("images/mapper/button-zoomReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-zoomReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -151,7 +151,7 @@
 }
 #content_menubar_panUp
 {
-    background: url("images/mapper/button-panUp.png") no-repeat 5px;
+    background: url("images/mapedit/button-panUp.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -160,7 +160,7 @@
 }
 #content_menubar_panRight
 {
-    background: url("images/mapper/button-panRight.png") no-repeat 5px;
+    background: url("images/mapedit/button-panRight.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -169,7 +169,7 @@
 }
 #content_menubar_panDown
 {
-    background: url("images/mapper/button-panDown.png") no-repeat 5px;
+    background: url("images/mapedit/button-panDown.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -178,7 +178,7 @@
 }
 #content_menubar_panLeft
 {
-    background: url("images/mapper/button-panLeft.png") no-repeat 5px;
+    background: url("images/mapedit/button-panLeft.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -187,7 +187,7 @@
 }
 #content_menubar_panReset
 {
-    background: url("images/mapper/button-panReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-panReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -196,7 +196,7 @@
 }
 #content_menubar_header3Sub1
 {
-    background: url("images/mapper/button-search.png") no-repeat 5px;
+    background: url("images/mapedit/button-search.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -205,11 +205,11 @@
 }
 #content_menubar_searchButton
 {
-    background-image: url("images/mapper/search.png");
+    background-image: url("images/mapedit/search.png");
 }
 #content_menubar_manageItem
 {
-    background: url("images/mapper/button-manageItem.png") no-repeat 5px;
+    background: url("images/mapedit/button-manageItem.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -218,7 +218,7 @@
 }
 #content_menubar_itemGetUserLocation
 {
-    background: url("images/mapper/button-itemGetUserLocation.png") no-repeat 5px;
+    background: url("images/mapedit/button-itemGetUserLocation.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -227,7 +227,7 @@
 }
 #content_menubar_itemPlace
 {
-    background: url("images/mapper/button-itemPlace.png") no-repeat 5px;
+    background: url("images/mapedit/button-itemPlace.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -236,7 +236,7 @@
 }
 #content_menubar_useSearchAsLocation
 {
-    background: url("images/mapper/button-useSearchAsLocation.png") no-repeat 5px;
+    background: url("images/mapedit/button-useSearchAsLocation.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -245,7 +245,7 @@
 }
 #content_menubar_convertToOverlay
 {
-    background: url("images/mapper/button-convertToOverlay.png") no-repeat 5px;
+    background: url("images/mapedit/button-convertToOverlay.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -254,7 +254,7 @@
 }
 #content_menubar_itemReset
 {
-    background: url("images/mapper/button-itemReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-itemReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -263,7 +263,7 @@
 }
 #content_menubar_manageOverlay
 {
-    background: url("images/mapper/button-manageOverlay.png") no-repeat 5px;
+    background: url("images/mapedit/button-manageOverlay.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -272,7 +272,7 @@
 }
 #content_menubar_overlayGetUserLocation
 {
-    background: url("images/mapper/button-overlayGetUserLocation.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayGetUserLocation.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -281,7 +281,7 @@
 }
 #content_menubar_overlayEdit
 {
-    background: url("images/mapper/button-overlayEdit.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayEdit.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -290,7 +290,7 @@
 }
 #content_menubar_overlayPlace
 {
-    background: url("images/mapper/button-overlayPlace.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayPlace.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -299,7 +299,7 @@
 }
 #content_menubar_overlayToggle
 {
-    background: url("images/mapper/button-overlayToggle.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayToggle.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -307,7 +307,7 @@
     background-size: 25px 25px;
 }
 #content_menubar_header3Sub3Sub1 {
-    background: url("images/mapper/button-overlayRotate.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayRotate.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -316,7 +316,7 @@
 }
 #content_menubar_rotationClockwise
 {
-    background: url("images/mapper/button-rotationClockwise.png") no-repeat 5px;
+    background: url("images/mapedit/button-rotationClockwise.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -325,7 +325,7 @@
 }
 #content_menubar_rotationCounterClockwise
 {
-    background: url("images/mapper/button-rotationCounterClockwise.png") no-repeat 5px;
+    background: url("images/mapedit/button-rotationCounterClockwise.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -334,7 +334,7 @@
 }
 #content_menubar_rotationReset
 {
-    background: url("images/mapper/button-rotationReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-rotationReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -342,7 +342,7 @@
     background-size: 25px 25px;
 }
 #content_menubar_header3Sub3Sub2 {
-    background: url("images/mapper/button-overlayTransparency.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayTransparency.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -351,7 +351,7 @@
 }
 #content_menubar_transparencyDarker
 {
-    background: url("images/mapper/button-transparencyDarker.png") no-repeat 5px;
+    background: url("images/mapedit/button-transparencyDarker.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -360,7 +360,7 @@
 }
 #content_menubar_transparencyLighter
 {
-    background: url("images/mapper/button-transparencyLighter.png") no-repeat 5px;
+    background: url("images/mapedit/button-transparencyLighter.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -369,7 +369,7 @@
 }
 #content_menubar_transparencyReset
 {
-    background: url("images/mapper/button-transparencyReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-transparencyReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -378,7 +378,7 @@
 }
 #content_menubar_overlayReset
 {
-    background: url("images/mapper/button-overlayReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-overlayReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -387,7 +387,7 @@
 }
 #content_menubar_managePOI
 {
-    background: url("images/mapper/button-managePOI.png") no-repeat 5px;
+    background: url("images/mapedit/button-managePOI.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -396,7 +396,7 @@
 }
 #content_menubar_poiGetUserLocation
 {
-    background: url("images/mapper/button-poiGetUserLocation.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiGetUserLocation.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -405,7 +405,7 @@
 }
 #content_menubar_poiPlace
 {
-    background: url("images/mapper/button-poiPlace.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiPlace.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -414,7 +414,7 @@
 }
 #content_menubar_poiToggle
 {
-    background: url("images/mapper/button-poiToggle.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiToggle.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -423,7 +423,7 @@
 }
 #content_menubar_poiReset
 {
-    background: url("images/mapper/button-poiReset.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiReset.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -431,7 +431,7 @@
     background-size: 25px 25px;
 }
 #content_menubar_header3Sub4Sub1 {
-    background: url("images/mapper/button-base.png") no-repeat 5px;
+    background: url("images/mapedit/button-base.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -440,7 +440,7 @@
 }
 #content_menubar_poiMarker
 {
-    background: url("images/mapper/button-poiMarker.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiMarker.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -449,7 +449,7 @@
 }
 #content_menubar_poiCircle
 {
-    background: url("images/mapper/button-poiCircle.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiCircle.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -458,7 +458,7 @@
 }
 #content_menubar_poiRectangle
 {
-    background: url("images/mapper/button-poiRectangle.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiRectangle.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -467,7 +467,7 @@
 }
 #content_menubar_poiPolygon
 {
-    background: url("images/mapper/button-poiPolygon.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiPolygon.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -476,7 +476,7 @@
 }
 #content_menubar_poiLine
 {
-    background: url("images/mapper/button-poiLine.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiLine.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -494,102 +494,102 @@
 
 #content_toolbar_button_reset
 {
-    background-image: url("images/mapper/button-reset.png");
+    background-image: url("images/mapedit/button-reset.png");
 }
 
 #content_toolbar_button_toggleMapControls
 {
-    background-image: url("images/mapper/button-controls.png");
+    background-image: url("images/mapedit/button-controls.png");
 }
 
 #content_toolbar_button_toggleToolbox
 {
-    background-image: url("images/mapper/button-toolbox.png");
+    background-image: url("images/mapedit/button-toolbox.png");
 }
 
 #content_toolbar_button_layerRoadmap
 {
-    background-image: url("images/mapper/button-roadmap.png");
+    background-image: url("images/mapedit/button-roadmap.png");
 }
 
 #content_toolbar_button_layerTerrain
 {
-    background-image: url("images/mapper/button-terrain.png");
+    background-image: url("images/mapedit/button-terrain.png");
 }
 
 #content_toolbar_button_layerSatellite
 {
-    background-image: url("images/mapper/button-satellite.png");
+    background-image: url("images/mapedit/button-satellite.png");
 }
 
 #content_toolbar_button_layerHybrid
 {
-    background-image: url("images/mapper/button-hybrid.png");
+    background-image: url("images/mapedit/button-hybrid.png");
 }
 
 #content_toolbar_button_layerCustom
 {
-    background-image: url("images/mapper/button-blockLot.png");
+    background-image: url("images/mapedit/button-blockLot.png");
 }
 
 #content_toolbar_button_layerReset
 {
-    background-image: url("images/mapper/button-layerReset.png");
+    background-image: url("images/mapedit/button-layerReset.png");
 }
 
 #content_toolbar_button_panUp
 {
-    background-image: url("images/mapper/button-panUp.png");
+    background-image: url("images/mapedit/button-panUp.png");
 }
 
 #content_toolbar_button_panLeft
 {
-    background-image: url("images/mapper/button-panLeft.png");
+    background-image: url("images/mapedit/button-panLeft.png");
 }
 
 #content_toolbar_button_panReset
 {
-    background-image: url("images/mapper/button-panReset.png");
+    background-image: url("images/mapedit/button-panReset.png");
 }
 
 #content_toolbar_button_panRight
 {
-    background-image: url("images/mapper/button-panRight.png");
+    background-image: url("images/mapedit/button-panRight.png");
 }
 
 #content_toolbar_button_panDown
 {
-    background-image: url("images/mapper/button-panDown.png");
+    background-image: url("images/mapedit/button-panDown.png");
 }
 
 #content_toolbar_button_zoomIn
 {
-    background-image: url("images/mapper/button-zoomIn.png");
+    background-image: url("images/mapedit/button-zoomIn.png");
 }
 
 #content_toolbar_button_zoomReset
 {
-    background-image: url("images/mapper/button-zoomReset2.png");
+    background-image: url("images/mapedit/button-zoomReset2.png");
 }
 
 #content_toolbar_button_zoomOut
 {
-    background-image: url("images/mapper/button-zoomOut.png");
+    background-image: url("images/mapedit/button-zoomOut.png");
 }
 
 #content_toolbar_button_manageItem
 {
-    background-image: url("images/mapper/button-action1.png");
+    background-image: url("images/mapedit/button-action1.png");
 }
 
 #content_toolbar_button_manageOverlay
 {
-    background-image: url("images/mapper/button-action2.png");
+    background-image: url("images/mapedit/button-action2.png");
 }
 
 #content_toolbar_button_managePOI
 {
-    background-image: url("images/mapper/button-action3.png");
+    background-image: url("images/mapedit/button-action3.png");
 }
 
 #content_toolbar_searchField
@@ -598,13 +598,13 @@
 
 #content_toolbar_searchButton
 {
-    background-image: url("images/mapper/search.png");
+    background-image: url("images/mapedit/search.png");
 }
 
 #content_toolbarGrabber
 {
     display: none;
-    background-image: url("images/mapper/toolbar-toggle.png");
+    background-image: url("images/mapedit/toolbar-toggle.png");
     background-repeat: no-repeat;
     min-height: 10px;
     min-width: 40px;
@@ -613,7 +613,7 @@
 #content_minibar_icon
 {
     float: left;
-    background-image: url("images/mapper/toolbox-icon.png");
+    background-image: url("images/mapedit/toolbox-icon.png");
     background-repeat: no-repeat;
     height: 15px;
     width: 28px;
@@ -629,7 +629,7 @@
 #content_minibar_button_minimize
 {
     float: right;
-    background-image: url("images/mapper/toolbox-minimize2.png");
+    background-image: url("images/mapedit/toolbox-minimize2.png");
     background-repeat: no-repeat;
     height: 19px;
     width: 19px;
@@ -638,7 +638,7 @@
 #content_minibar_button_maximize
 {
     float: right;
-    background-image: url("images/mapper/toolbox-maximize2.png");
+    background-image: url("images/mapedit/toolbox-maximize2.png");
     background-repeat: no-repeat;
     height: 19px;
     width: 19px;
@@ -647,7 +647,7 @@
 #content_minibar_button_close
 {
     float: right;
-    background-image: url("images/mapper/toolbox-close2.png");
+    background-image: url("images/mapedit/toolbox-close2.png");
     background-repeat: no-repeat;
     height: 19px;
     width: 19px;
@@ -670,107 +670,107 @@
 
 #content_toolbox_button_reset
 {
-    background-image: url("images/mapper/button-reset.png");
+    background-image: url("images/mapedit/button-reset.png");
 }
 
 #content_toolbox_button_toggleMapControls
 {
-    background-image: url("images/mapper/button-controls.png");
+    background-image: url("images/mapedit/button-controls.png");
 }
 
 #content_toolbox_button_toggleToolbox
 {
-    background-image: url("images/mapper/button-toolbox.png");
+    background-image: url("images/mapedit/button-toolbox.png");
 }
 
 #content_toolbox_button_layerRoadmap
 {
-    background-image: url("images/mapper/button-roadmap.png");
+    background-image: url("images/mapedit/button-roadmap.png");
 }
 
 #content_toolbox_button_layerTerrain
 {
-    background-image: url("images/mapper/button-terrain.png");
+    background-image: url("images/mapedit/button-terrain.png");
 }
 
 #content_toolbox_button_layerSatellite
 {
-    background-image: url("images/mapper/button-satellite.png");
+    background-image: url("images/mapedit/button-satellite.png");
 }
 
 #content_toolbox_button_layerHybrid
 {
-    background-image: url("images/mapper/button-hybrid.png");
+    background-image: url("images/mapedit/button-hybrid.png");
 }
 
 #content_toolbox_button_layerCustom
 {
-    background-image: url("images/mapper/button-blockLot.png");
+    background-image: url("images/mapedit/button-blockLot.png");
 }
 
 #content_toolbox_button_layerReset
 {
-    background-image: url("images/mapper/button-layerReset.png");
+    background-image: url("images/mapedit/button-layerReset.png");
 }
 
 #content_toolbox_button_panUp
 {
-    background-image: url("images/mapper/button-panUp.png");
+    background-image: url("images/mapedit/button-panUp.png");
 }
 
 #content_toolbox_button_panLeft
 {
-    background-image: url("images/mapper/button-panLeft.png");
+    background-image: url("images/mapedit/button-panLeft.png");
 }
 
 #content_toolbox_button_panReset
 {
-    background-image: url("images/mapper/button-panReset.png");
+    background-image: url("images/mapedit/button-panReset.png");
 }
 
 #content_toolbox_button_panRight
 {
-    background-image: url("images/mapper/button-panRight.png");
+    background-image: url("images/mapedit/button-panRight.png");
 }
 
 #content_toolbox_button_panDown
 {
-    background-image: url("images/mapper/button-panDown.png");
+    background-image: url("images/mapedit/button-panDown.png");
 }
 
 #content_toolbox_button_zoomIn
 {
-    background-image: url("images/mapper/button-zoomIn.png");
+    background-image: url("images/mapedit/button-zoomIn.png");
 }
 
 #content_toolbox_button_zoomReset
 {
-    background-image: url("images/mapper/button-zoomReset2.png");
+    background-image: url("images/mapedit/button-zoomReset2.png");
 }
 
 #content_toolbox_button_zoomOut
 {
-    background-image: url("images/mapper/button-zoomOut.png");
+    background-image: url("images/mapedit/button-zoomOut.png");
 }
 
 #content_toolbox_button_manageItem
 {
-    background-image: url("images/mapper/button-action1.png");
+    background-image: url("images/mapedit/button-action1.png");
 }
 
 #content_toolbox_button_manageOverlay
 {
-    background-image: url("images/mapper/button-action2.png");
+    background-image: url("images/mapedit/button-action2.png");
 }
 
 #content_toolbox_button_managePOI
 {
-    background-image: url("images/mapper/button-action3.png");
+    background-image: url("images/mapedit/button-action3.png");
 }
 
 #content_toolbox_searchButton
 {
-    background-image: url("images/mapper/search.png");
+    background-image: url("images/mapedit/search.png");
 }
 
 #content_message
@@ -795,62 +795,62 @@
 
 #content_toolbox_button_itemGetUserLocation
 {
-    background-image: url("images/mapper/getUserLocation.png");
+    background-image: url("images/mapedit/getUserLocation.png");
 }
 
 #content_toolbox_button_useSearchAsLocation
 {
-    background-image: url("images/mapper/button-search.png");
+    background-image: url("images/mapedit/button-search.png");
 }
 
 #content_toolbox_button_convertToOverlay
 {
-    background-image: url("images/mapper/button-action2.png");
+    background-image: url("images/mapedit/button-action2.png");
 }
 
 #content_toolbox_button_overlayGetUserLocation
 {
-    background-image: url("images/mapper/getUserLocation.png");
+    background-image: url("images/mapedit/getUserLocation.png");
 }
 
 #content_toolbox_button_poiGetUserLocation
 {
-    background-image: url("images/mapper/getUserLocation.png");
+    background-image: url("images/mapedit/getUserLocation.png");
 }
 
 #content_toolbox_button_placeItem
 {
-    background-image: url("images/mapper/button-action1.png");
+    background-image: url("images/mapedit/button-action1.png");
 }
 
 #content_toolbox_button_overlayPlace
 {
-    background-image: url("images/mapper/button-base.png");
+    background-image: url("images/mapedit/button-base.png");
 }
 
 #content_toolbox_button_overlayEdit
 {
-    background-image: url("images/mapper/button-action2.png");
+    background-image: url("images/mapedit/button-action2.png");
 }
 
 #content_toolbox_button_overlayToggle
 {
-    background-image: url("images/mapper/button-base.png");
+    background-image: url("images/mapedit/button-base.png");
 }
 
 #content_toolbox_button_placePOI
 {
-    background-image: url("images/mapper/button-action3.png");
+    background-image: url("images/mapedit/button-action3.png");
 }
 
 #content_toolbox_button_poiToggle
 {
-    background-image: url("images/mapper/button-base.png");
+    background-image: url("images/mapedit/button-base.png");
 }
 
 #content_toolbox_rotationCounterClockwise
 {
-    background-image: url("images/mapper/rotation-counterClockwise.png");
+    background-image: url("images/mapedit/rotation-counterClockwise.png");
     height: 25px;
     width: 17px;
     float: left;
@@ -858,7 +858,7 @@
 
 #content_toolbox_rotationReset
 {
-    background-image: url("images/mapper/rotation-reset.png");
+    background-image: url("images/mapedit/rotation-reset.png");
     height: 29px;
     width: 28px;
     float: left;
@@ -866,7 +866,7 @@
 
 #content_toolbox_rotationClockwise
 {
-    background-image: url("images/mapper/rotation-clockwise.png");
+    background-image: url("images/mapedit/rotation-clockwise.png");
     height: 25px;
     width: 17px;
     float: left;
@@ -874,25 +874,25 @@
 
 #content_toolbox_button_poiMarker
 {
-    background-image: url("images/mapper/button-drawMarker.png");
+    background-image: url("images/mapedit/button-drawMarker.png");
 }
 
 #content_toolbox_button_poiCircle
 {
-    background-image: url("images/mapper/button-drawCircle.png");
+    background-image: url("images/mapedit/button-drawCircle.png");
 }
 
 #content_toolbox_button_poiRectangle
 {
-    background-image: url("images/mapper/button-drawRectangle.png");
+    background-image: url("images/mapedit/button-drawRectangle.png");
 }
 
 #content_toolbox_button_poiPolygon
 {
-    background-image: url("images/mapper/button-drawPolygon.png");
+    background-image: url("images/mapedit/button-drawPolygon.png");
 }
 
 #content_toolbox_button_poiLine
 {
-    background-image: url("images/mapper/button-drawLine.png");
+    background-image: url("images/mapedit/button-drawLine.png");
 }
