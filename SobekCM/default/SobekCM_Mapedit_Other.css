@@ -659,6 +659,11 @@
     background-image: url("images/mapedit/button-action3.png");
 }
 
+#content_toolbar_button_search
+{
+    background-image: url("images/mapedit/button-search.png");
+}
+
 #content_toolbar_searchField
 {
 }
