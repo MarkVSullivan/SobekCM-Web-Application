@@ -22,13 +22,13 @@ function toggleVis(id) {
 
     switch (id) {
         case "mapControls":
-            if (mapControlsDisplayed == true) { //not present
+            if (globalVars.mapControlsDisplayed == true) { //not present
                 map.setOptions({
                     zoomControl: false,
                     panControl: false,
                     mapTypeControl: false
                 });
-                mapControlsDisplayed = false;
+                globalVars.mapControlsDisplayed = false;
             } else { //present
                 map.setOptions({
                     zoomControl: true,
@@ -38,46 +38,46 @@ function toggleVis(id) {
                     mapTypeControl: true,
                     mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU, position: google.maps.ControlPosition.RIGHT_TOP }
                 });
-                mapControlsDisplayed = true;
+                globalVars.mapControlsDisplayed = true;
             }
             buttonActive("mapControls"); //set the is active glow for button
             break;
 
         case "toolbox":
-            if (toolboxDisplayed == true) {
+            if (globalVars.toolboxDisplayed == true) {
                 document.getElementById("mapedit_container_toolbox").style.display = "none";
                 document.getElementById("mapedit_container_toolboxTabs").style.display = "none";
                 //$("#mapedit_container_toolbox").effect("slide", 500);
-                toolboxDisplayed = false;
+                globalVars.toolboxDisplayed = false;
             } else {
                 document.getElementById("mapedit_container_toolbox").style.display = "block";
                 document.getElementById("mapedit_container_toolboxTabs").style.display = "block";
                 document.getElementById("mapedit_container_toolbox").style.height = "auto";
-                toolboxDisplayed = true;
+                globalVars.toolboxDisplayed = true;
             }
             buttonActive("toolbox"); //set the is active glow for button
             break;
 
         case "toolbar":
-            if (toolbarDisplayed == true) {
+            if (globalVars.toolbarDisplayed == true) {
                 $("#mapedit_container_pane_1").hide();
                 document.getElementById("mapedit_container_toolbarGrabber").style.marginTop = "0";
-                toolbarDisplayed = false;
+                globalVars.toolbarDisplayed = false;
             } else {
                 $("#mapedit_container_pane_1").show();
                 document.getElementById("mapedit_container_toolbarGrabber").style.marginTop = "48px";
-                toolbarDisplayed = true;
+                globalVars.toolbarDisplayed = true;
             }
             buttonActive("toolbar"); //set the is active glow for button
             break;
 
         case "kml":
-            if (kmlDisplayed == true) {
-                kmlLayer.setMap(null);
-                kmlDisplayed = false;
+            if (globalVars.kmlDisplayed == true) {
+                KmlLayer.setMap(null);
+                globalVars.kmlDisplayed = false;
             } else {
-                kmlLayer.setMap(map);
-                kmlDisplayed = true;
+                KmlLayer.setMap(map);
+                globalVars.kmlDisplayed = true;
             }
             buttonActive("kml"); //set the is active glow for button
             break;
@@ -93,31 +93,31 @@ function toggleVis(id) {
             break;
 
         case "mapDrawingManager":
-            if (mapDrawingManagerDisplayed == true) {
+            if (globalVars.mapDrawingManagerDisplayed == true) {
                 drawingManager.setMap(null);
-                mapDrawingManagerDisplayed = false;
+                globalVars.mapDrawingManagerDisplayed = false;
             } else {
                 drawingManager.setMap(map);
-                mapDrawingManagerDisplayed = true;
+                globalVars.mapDrawingManagerDisplayed = true;
             }
             //buttonActive("mapDrawingManager"); 
             break;
 
         case "overlays":
-            if (overlaysOnMap.length) {
-                if (overlaysCurrentlyDisplayed == true) {
+            if (globalVars.overlaysOnMap.length) {
+                if (globalVars.overlaysCurrentlyDisplayed == true) {
                     displayMessage(L22);
-                    for (var i = 0; i < incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
-                        overlaysOnMap[i].setMap(null); //hide the overlay from the map
-                        ghostOverlayRectangle[i].setMap(null); //hide ghost from map
-                        overlaysCurrentlyDisplayed = false; //mark that overlays are not on the map
+                    for (var i = 0; i < globalVars.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                        globalVars.overlaysOnMap[i].setMap(null); //hide the overlay from the map
+                        globalVars.ghostOverlayRectangle[i].setMap(null); //hide ghost from map
+                        globalVars.overlaysCurrentlyDisplayed = false; //mark that overlays are not on the map
                     }
                 } else {
                     displayMessage(L23);
-                    for (var i = 0; i < incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
-                        overlaysOnMap[i].setMap(map); //set the overlay to the map
-                        ghostOverlayRectangle[i].setMap(map); //set to map
-                        overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
+                    for (var i = 0; i < globalVars.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                        globalVars.overlaysOnMap[i].setMap(map); //set the overlay to the map
+                        globalVars.ghostOverlayRectangle[i].setMap(map); //set to map
+                        globalVars.overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
                     }
                 }
             } else {
@@ -127,15 +127,15 @@ function toggleVis(id) {
             break;
 
         case "pois":
-            if (poiCount) {
-                for (var i = 0; i < poiCount; i++) {
-                    if (poiToggleState == "displayed") {
+            if (globalVars.poiCount) {
+                for (var i = 0; i < globalVars.poiCount; i++) {
+                    if (globalVars.poiToggleState == "displayed") {
                         poiHideMe(i);
-                        poiToggleState = "hidden";
+                        globalVars.poiToggleState = "hidden";
                         displayMessage(L42);
                     } else {
                         poiShowMe(i);
-                        poiToggleState = "displayed";
+                        globalVars.poiToggleState = "displayed";
                         displayMessage(L43);
                     }
                 }
@@ -156,19 +156,19 @@ function changeMapLayer(layer) {
     switch (layer) {
         case "roadmap":
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-            mapLayerActive = "Roadmap";
+            globalVars.mapLayerActive = "Roadmap";
             break;
         case "terrain":
             map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-            mapLayerActive = "Terrain";
+            globalVars.mapLayerActive = "Terrain";
             break;
         case "satellite":
             map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-            mapLayerActive = "Satellite";
+            globalVars.mapLayerActive = "Satellite";
             break;
         case "hybrid":
             map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-            mapLayerActive = "Hybrid";
+            globalVars.mapLayerActive = "Hybrid";
             break;
         case "custom":
             toggleVis("kml");
@@ -176,8 +176,8 @@ function changeMapLayer(layer) {
         case "reset":
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
             //2do make this set to default
-            mapLayerActive = "Roadmap";
-            if (kmlDisplayed == true) {
+            globalVars.mapLayerActive = "Roadmap";
+            if (globalVars.kmlDisplayed == true) {
                 toggleVis("kml");
             }
             break;
@@ -205,7 +205,7 @@ function panMap(direction) {
             testBounds();
             break;
         case "reset":
-            map.panTo(mapCenter);
+            map.panTo(globalVars.mapCenter);
             break;
     }
 }
@@ -220,7 +220,7 @@ function zoomMap(direction) {
             map.setZoom(map.getZoom() - 1);
             break;
         case "reset":
-            map.setZoom(defaultZoomLevel);
+            map.setZoom(globalVars.defaultZoomLevel);
             break;
     }
 }
@@ -233,114 +233,114 @@ function action(id) {
     de("action: " + id);
     switch (id) {
         case "manageItem":
-            actionActive = "Item";  //note case (uppercase is tied to the actual div)
+            globalVars.actionActive = "Item";  //note case (uppercase is tied to the actual div)
             buttonActive("action");
-            if (toolboxDisplayed != true) {
+            if (globalVars.toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
             openToolboxTab(2);
             //force a suppression dm
-            if (mapDrawingManagerDisplayed == true) {
-                mapDrawingManagerDisplayed = true;
+            if (globalVars.mapDrawingManagerDisplayed == true) {
+                globalVars.mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-            placerType = "item";
+            globalVars.placerType = "item";
             //save 
-            RIBMode = true;
+            globalVars.RIBMode = true;
             save("overlay");
             save("poi");
-            RIBMode = false;
+            globalVars.RIBMode = false;
             place("item");
 
             break;
 
         case "manageOverlay":
-            actionActive = "Overlay"; //notice case (uppercase is tied to the actual div)
+            globalVars.actionActive = "Overlay"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
-            if (toolboxDisplayed != true) {
+            if (globalVars.toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
             openToolboxTab(3);
             //force a suppression dm
-            if (mapDrawingManagerDisplayed == true) {
-                mapDrawingManagerDisplayed = true;
+            if (globalVars.mapDrawingManagerDisplayed == true) {
+                globalVars.mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
 
             //save
-            RIBMode = true;
+            globalVars.RIBMode = true;
             save("item");
             save("poi");
-            RIBMode = false;
+            globalVars.RIBMode = false;
 
             //place
-            placerType = "overlay";
-            palce("overlay");
+            globalVars.placerType = "overlay";
+            place("overlay");
 
             break;
 
         case "managePOI":
-            actionActive = "POI"; //notice case (uppercase is tied to the actual div)
+            globalVars.actionActive = "POI"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
-            if (toolboxDisplayed != true) {
+            if (globalVars.toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
             openToolboxTab(4);
             toggleVis("mapDrawingManager");
 
             //save
-            RIBMode = true;
+            globalVars.RIBMode = true;
             save("item");
             save("overlay");
-            RIBMode = false;
+            globalVars.RIBMode = false;
 
             //place
-            placerType = "poi";
+            globalVars.placerType = "poi";
             place("poi");
             break;
 
         case "other":
             de("action Other started...");
-            actionActive = "Other";
+            globalVars.actionActive = "Other";
             buttonActive("action");
             //openToolboxTab(); //not called here, called in listerner
             //force a suppression dm
-            if (mapDrawingManagerDisplayed == true) {
-                mapDrawingManagerDisplayed = true;
+            if (globalVars.mapDrawingManagerDisplayed == true) {
+                globalVars.mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-            
+
             //save
-            RIBMode = true;
+            globalVars.RIBMode = true;
             save("item");
             save("overlay");
             save("poi");
-            RIBMode = false;
+            globalVars.RIBMode = false;
 
-            placerType = "none";
-            
+            globalVars.placerType = "none";
+
             de("action Other ended...");
-            
+
             break;
-            
+
         case "search":
             de("action search started...");
-            actionActive = "Other";
+            globalVars.actionActive = "Other";
             buttonActive("action");
-            placerType = "none";
-            
+            globalVars.placerType = "none";
+
             //force a suppression dm (unknown if we need to?)
-            if (mapDrawingManagerDisplayed == true) {
-                mapDrawingManagerDisplayed = true;
+            if (globalVars.mapDrawingManagerDisplayed == true) {
+                globalVars.mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-            
+
             //open search tab
-            de("toolboxDisplayed: " + toolboxDisplayed);
-            if (toolboxDisplayed == true) {
+            de("globalVars.toolboxDisplayed: " + globalVars.toolboxDisplayed);
+            if (globalVars.toolboxDisplayed == true) {
                 openToolboxTab(1);
             }
-            
+
             break;
     }
     de("action() completed");
@@ -350,11 +350,11 @@ function action(id) {
 function place(id) {
     switch (id) {
         case "item":
-            placerType = "item";
-            if (itemMarker != null) {
+            globalVars.placerType = "item";
+            if (globalVars.itemMarker != null) {
                 displayMessage(L30);
             } else {
-                if (searchCount > 0 && itemMarker == null) {
+                if (globalVars.searchCount > 0 && globalVars.itemMarker == null) {
                     useSearchAsItemLocation();
                     displayMessage(L18);
                 } else {
@@ -366,18 +366,18 @@ function place(id) {
             break;
 
         case "overlay":
-            placerType = "overlay";
-            if (incomingOverlayBounds.length > 0) {
-                if (pageMode == "edit") {
-                    pageMode = "view";
-                    if (savingOverlayIndex.length > 0) {
-                        for (var i = 0; i < savingOverlayIndex.length; i++) {
-                            ghostOverlayRectangle[savingOverlayIndex[i]].setOptions(ghosting); //set rectangle to ghosting    
+            globalVars.placerType = "overlay";
+            if (globalVars.incomingOverlayBounds.length > 0) {
+                if (globalVars.pageMode == "edit") {
+                    globalVars.pageMode = "view";
+                    if (globalVars.savingOverlayIndex.length > 0) {
+                        for (var i = 0; i < globalVars.savingOverlayIndex.length; i++) {
+                            globalVars.ghostOverlayRectangle[globalVars.savingOverlayIndex[i]].setOptions(globalVars.ghosting); //set globalVars.rectangle to globalVars.ghosting    
                         }
                     }
                     displayMessage(L26);
                 } else {
-                    pageMode = "edit";
+                    globalVars.pageMode = "edit";
                     displayMessage(L27);
                 }
                 //toggleOverlayEditor(); 
@@ -395,21 +395,21 @@ function place(id) {
                 drawingManager.setMap(map);
 
                 //go ahead and auto switch to editing mode
-                pageMode = "edit";
+                globalVars.pageMode = "edit";
             }
 
             break;
 
         case "poi":
             drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE] } });
-            placerType = "poi";
+            globalVars.placerType = "poi";
             break;
     }
 }
 
 //poi object placer handler
 function placePOI(type) {
-    placerType = "poi";
+    globalVars.placerType = "poi";
     switch (type) {
         case "marker":
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
@@ -435,21 +435,21 @@ function geolocate(id) {
     switch (id) {
         case "item":
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-            placerType = "item";
+            globalVars.placerType = "item";
             // Try W3C Geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                     map.setCenter(userLocation);
                     testBounds();
-                    markerCenter = userLocation;
-                    itemMarker = new google.maps.Marker({
-                        position: markerCenter,
+                    globalVars.markerCenter = userLocation;
+                    globalVars.itemMarker = new google.maps.Marker({
+                        position: globalVars.markerCenter,
                         map: map
                     });
-                    itemMarker.setMap(map);
-                    document.getElementById('content_toolbox_posItem').value = markerCenter;
-                    savingMarkerCenter = itemMarker.getPosition(); //store coords to save
+                    globalVars.itemMarker.setMap(map);
+                    document.getElementById('content_toolbox_posItem').value = globalVars.markerCenter;
+                    globalVars.savingMarkerCenter = globalVars.itemMarker.getPosition(); //store coords to save
                 });
 
             } else {
@@ -459,7 +459,7 @@ function geolocate(id) {
             break;
 
         case "overlay":
-            placerType = "overlay";
+            globalVars.placerType = "overlay";
             // Try W3C Geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -475,7 +475,7 @@ function geolocate(id) {
 
         case "poi":
             //drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-            placerType = "poi";
+            globalVars.placerType = "poi";
             // Try W3C Geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -502,14 +502,14 @@ function save(id) {
     switch (id) {
         case "item":
             //determine if there is something to save
-            if (savingMarkerCenter != null) {
+            if (globalVars.savingMarkerCenter != null) {
                 //is this the first time saving a changed item?
-                if (firstSaveItem == true) {
-                    de("saving location: " + savingMarkerCenter);
+                if (globalVars.firstSaveItem == true) {
+                    de("saving location: " + globalVars.savingMarkerCenter);
                     //save to temp xml file
-                    createSavedItem(savingMarkerCenter);
+                    createSavedItem(globalVars.savingMarkerCenter);
                     //reset first save
-                    firstSaveItem = false;
+                    globalVars.firstSaveItem = false;
                     //change save button to apply button
                     document.getElementById("content_toolbox_button_saveItem").value = L36;
                     //change save title to apply
@@ -531,18 +531,18 @@ function save(id) {
 
         case "overlay":
             //is this the first time saving a changed item?
-            de("first save overlay? " + firstSaveOverlay);
-            if (firstSaveOverlay == true) {
+            de("first save overlay? " + globalVars.firstSaveOverlay);
+            if (globalVars.firstSaveOverlay == true) {
                 //determine if there is something to save
-                de("overlay length? " + savingOverlayIndex.length);
-                if (savingOverlayIndex.length) {
-                    for (var i = 0; i < savingOverlayIndex.length; i++) {
+                de("overlay length? " + globalVars.savingOverlayIndex.length);
+                if (globalVars.savingOverlayIndex.length) {
+                    for (var i = 0; i < globalVars.savingOverlayIndex.length; i++) {
                         //save to temp xml file
-                        de("saving overlay: " + savingOverlayLabel[i] + "\nsource: " + savingOverlaySourceURL[i] + "\nbounds: " + savingOverlayBounds[i] + "\nrotation: " + savingOverlayRotation[i]);
-                        createSavedOverlay(savingOverlayLabel[i], savingOverlaySourceURL[i], savingOverlayBounds[i], savingOverlayRotation[i]); //send overlay to the server
+                        de("saving overlay: " + globalVars.savingOverlayLabel[i] + "\nsource: " + globalVars.savingOverlaySourceURL[i] + "\nbounds: " + globalVars.savingOverlayBounds[i] + "\nrotation: " + globalVars.savingOverlayRotation[i]);
+                        createSavedOverlay(globalVars.savingOverlayLabel[i], globalVars.savingOverlaySourceURL[i], globalVars.savingOverlayBounds[i], globalVars.savingOverlayRotation[i]); //send overlay to the server
                     }
                     //reset first save
-                    firstSaveOverlay = false;
+                    globalVars.firstSaveOverlay = false;
                     //change save button to apply button
                     document.getElementById("content_toolbox_button_saveOverlay").value = L36;
                     //change save title to apply
@@ -554,7 +554,7 @@ function save(id) {
             } else {
 
                 //is there something to save?
-                if (savingOverlayIndex.length) {
+                if (globalVars.savingOverlayIndex.length) {
                     //apply the changes
                     de("Applying Changes...");
                     //currently doesnt do anything
@@ -569,12 +569,12 @@ function save(id) {
             break;
 
         case "poi":
-            
+
             //save
 
             //save to temp xml file
-            if (poiObj.length > 0) {
-                de("saving " + poiObj.length + " POIs...");
+            if (globalVars.poiObj.length > 0) {
+                de("saving " + globalVars.poiObj.length + " POIs...");
                 createSavedPOI();
                 //displayMessage(L_Saved); //not used here
             } else {
@@ -584,14 +584,14 @@ function save(id) {
             //apply
 
             //is this the first time saving a changed item? (apply changes)
-            if (firstSavePOI == true) {
+            if (globalVars.firstSavePOI == true) {
                 //determine if there is something to save
-                if (poiObj.length > 0) {
+                if (globalVars.poiObj.length > 0) {
                     //save to temp xml file
-                    de("saving " + poiObj.length + " POIs...");
+                    de("saving " + globalVars.poiObj.length + " POIs...");
                     createSavedPOI();
                     //reset first save
-                    firstSavePOI = false;
+                    globalVars.firstSavePOI = false;
                     //change save button to apply button
                     document.getElementById("content_toolbox_button_savePOI").value = L36;
                     //change save title to apply
@@ -601,9 +601,9 @@ function save(id) {
                     displayMessage(L_NotSaved);
                 }
             } else {
-                if (firstSavePOI == false) {
+                if (globalVars.firstSavePOI == false) {
                     //is there something to save?
-                    if (poiObj.length > 0) {
+                    if (globalVars.poiObj.length > 0) {
                         //apply the changes
                         de("Applying Changes...");
                         //currently doesnt do anything
@@ -623,11 +623,11 @@ function save(id) {
 function clear(id) {
     switch (id) {
         case "item":
-            if (savingMarkerCenter != null) {
+            if (globalVars.savingMarkerCenter != null) {
                 //clear the current marker
-                itemMarker.setMap(null); //delete marker form map
-                itemMarker = null; //delete reference to marker
-                savingMarkerCenter = null; //reset stored coords to save
+                globalVars.itemMarker.setMap(null); //delete marker form map
+                globalVars.itemMarker = null; //delete reference to marker
+                globalVars.savingMarkerCenter = null; //reset stored coords to save
                 document.getElementById('content_toolbox_posItem').value = ""; //reset lat/long in tab
                 document.getElementById('content_toolbox_rgItem').value = ""; //reset address in tab
                 //redraw incoming marker
@@ -636,11 +636,11 @@ function clear(id) {
             } else {
                 displayMessage(L_NotCleared);
             }
-            
+
             break;
 
         case "overlay":
-            if (workingOverlayIndex != null) {
+            if (globalVars.workingOverlayIndex != null) {
                 //delete all incoming overlays
                 clearIncomingOverlays();
                 //show all the incoming overlays
@@ -660,34 +660,34 @@ function clear(id) {
             break;
 
         case "poi":
-            de("attempting to clear " + poiObj.length + "POIs...");
-            if (poiObj.length > 0) {
-                for (var i = 0; i < poiObj.length; i++) {
-                    if (poiObj[i] != null) {
-                        poiObj[i].setMap(null);
-                        poiObj[i] = null;
+            de("attempting to clear " + globalVars.poiObj.length + "POIs...");
+            if (globalVars.poiObj.length > 0) {
+                for (var i = 0; i < globalVars.poiObj.length; i++) {
+                    if (globalVars.poiObj[i] != null) {
+                        globalVars.poiObj[i].setMap(null);
+                        globalVars.poiObj[i] = null;
                     }
-                    if (poiDesc[i] != null) {
-                        poiDesc[i] = null;
+                    if (globalVars.poiDesc[i] != null) {
+                        globalVars.poiDesc[i] = null;
                     }
-                    if (poiKML[i] != null) {
-                        poiKML[i] = null;
+                    if (globalVars.poiKML[i] != null) {
+                        globalVars.poiKML[i] = null;
                     }
-                    infowindow[i].setMap(null);
-                    infowindow[i] = null;
+                    infoWindow[i].setMap(null);
+                    infoWindow[i] = null;
                     label[i].setMap(null);
                     label[i] = null;
                     var strg = "#poi" + i; //create <li> poi string
                     $(strg).remove(); //remove <li>
                 }
-                poiObj = [];
-                poi_i = -1;
-                
+                globalVars.poiObj = [];
+                globalVars.poi_i = -1;
+
                 displayMessage(L11);
             } else {
                 displayMessage(L_NotCleared);
             }
-            
+
             break;
     }
 }

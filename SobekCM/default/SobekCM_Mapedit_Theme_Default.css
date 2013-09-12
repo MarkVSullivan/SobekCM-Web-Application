@@ -51,9 +51,10 @@ a img
     border-radius: 5px;
     cursor: pointer;
 }
+
 .isActive2
 {
-    opacity:0.5;
+    opacity: 0.5;
 }
 
 .button2
