@@ -41,7 +41,7 @@ var L21 = "Coordinates Viewer UnFrozen"; //keypress(e);
 var L22 = "Hiding Overlays"; //keypress(e);
 var L23 = "Showing Overlays"; //keypress(e);
 var L24 = "Could not find within bounds.";
-var L25 = "Geocoder failed due to:";
+var L25 = "geocoder failed due to:";
 var L26 = "Overlay Editing Turned Off";
 var L27 = "Overlay Editing Turned On";
 var L28 = "ERROR: Failed Adding Titles";
@@ -67,6 +67,7 @@ var L47 = "Warning! This will erase any changes you have made. Do you still want
 var L48 = "Reseting Page";
 var L49 = "Did Not Reset Page";
 var L50 = "Finding Your Location.";
+var L51 = "Error Adding Other Listeners";
 
 //#endregion
 
@@ -151,14 +152,13 @@ try {
     document.getElementById("content_toolbox_button_poiToggle").title = "Toggle All POIs On Map";
     document.getElementById("content_toolbox_button_poiMarker").title = "Marker: Place a Point";
     document.getElementById("content_toolbox_button_poiCircle").title = "Circle: Place a Circle";
-    document.getElementById("content_toolbox_button_poiRectangle").title = "Rectangle: Place a Rectangle";
+    document.getElementById("content_toolbox_button_poiRectangle").title = "rectangle: Place a rectangle";
     document.getElementById("content_toolbox_button_poiPolygon").title = "Polygon: Place a Polygon";
     document.getElementById("content_toolbox_button_poiLine").title = "Line: Place a Line";
     document.getElementById("content_toolbox_button_savePOI").title = "Save Point Of Interest Set";
     document.getElementById("content_toolbox_button_clearPOI").title = "Clear Point Of Interest Set";
-    
-} catch(err) {
-    alert(L28);
+} catch (err) {
+    alert(L28 + ": " + err);
 }
 //#endregion
 
@@ -223,7 +223,7 @@ try {
     document.getElementById("content_menubar_poiReset").innerHTML = "Reset POIs";
     document.getElementById("content_menubar_poiMarker").innerHTML = "Marker";
     document.getElementById("content_menubar_poiCircle").innerHTML = "Circle";
-    document.getElementById("content_menubar_poiRectangle").innerHTML = "Rectangle";
+    document.getElementById("content_menubar_poiRectangle").innerHTML = "rectangle";
     document.getElementById("content_menubar_poiPolygon").innerHTML = "Polygon";
     document.getElementById("content_menubar_poiLine").innerHTML = "Line";
     document.getElementById("content_menubar_documentation").innerHTML = "Documentation";
@@ -246,7 +246,7 @@ try {
     document.getElementById("content_toolbox_searchField").setAttribute('placeholder', "Find a Location");
     document.getElementById("content_toolbox_posItem").setAttribute('placeholder', "Selected Lat/Long");
     document.getElementById("content_toolbox_rgItem").setAttribute('placeholder', "Nearest Address");
-    
+
 } catch (err) {
     alert(L29);
 }
