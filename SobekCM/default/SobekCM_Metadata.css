@@ -267,7 +267,11 @@ input.catalognum_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px
 input.oclcnum_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.oclcnum_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
+input.sudoc_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.sudoc_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
+input.lccn_input  {  margin-top: 6px; color:Blue;  width: 150px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.lccn_input_focused  {  margin-top: 6px; color:#0000a8;  width: 150px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 input.classification_input  {  color:Blue;  width: 180px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.classification_input_focused  {  color:#0000a8;  width: 180px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
