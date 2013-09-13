@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html, body{
+	margin:0;
+	padding:0;
+}
+#main{    
+
+}
+#container0
+{
+    background:#333333;
+    width:100%;
+}
+#container1
+{
+    background:#666666;
+    width:100%;
+}
+#container2
+{
+    background:#999999;
+    width:100%;
+}
+</style>
+<script type="text/javascript">
+	
+	function resize(){
+		
+		document.getElementById('container0').style.height = (window.innerHeight*.1) + "px";
+		document.getElementById('container1').style.height = (window.innerHeight*.1) + "px";
+		document.getElementById('container2').style.height = (window.innerHeight*.8) + "px";
+	}
+		
+	
+</script>
+</head>
+
+<body onload="resize();" onresize="resize();">
+
+<div id="main">
+    <div id="container0">
+        <div id="item0">Pane0</div>
+    </div>
+    <div id="container1">
+        <div id="item1">Pane1</div>
+    </div>
+    <div id="container2">
+        <div id="item2">Pane2</div>
+    </div>
+</div>
+
+</body>
+
+</html>

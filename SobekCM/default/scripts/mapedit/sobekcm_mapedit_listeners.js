@@ -3,8 +3,8 @@
 //#region Onclick Listeners
 
 try {
-    
-    //menubar
+
+    //menubarf
     document.getElementById("content_menubar_save").addEventListener("click", function () {
         //attempt to save all three
         save("item");
@@ -196,7 +196,7 @@ try {
     document.getElementById("content_menubar_documentation").addEventListener("click", function () {
         displayMessage("No Documentation Yet.");
     }, false);
-    document.getElementById("content_menubar_documentation").addEventListener("click", function () {
+    document.getElementById("content_menubar_reportAProblem").addEventListener("click", function () {
         displayMessage("No Method To Report Errors Yet.");
     }, false);
 

@@ -394,7 +394,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //page content
             mapeditBuilder.AppendLine("<td>");
 
-            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\">Loading...</div>");
+            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div>");
             
 
             //used to force doctype html5 and css3
@@ -431,10 +431,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\"> ");
             mapeditBuilder.AppendLine(" ");
-            //set base url var
-            mapeditBuilder.AppendLine(" <!-- Add Base URL Var -->");
-            mapeditBuilder.AppendLine(" var baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            
+            //setup server to client vars writer
+            mapeditBuilder.AppendLine(" <!-- Add Server Vars -->");
+            mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
+            mapeditBuilder.AppendLine("   <!-- Add Base URL Var -->");
+            mapeditBuilder.AppendLine("   globalVars.baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
+
             //geo objects writer section 
             mapeditBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
             mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
@@ -542,10 +547,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         bounds += bounds2 + ", " + bounds1;
                         bounds += ")";
                         polygonBounds.Add(bounds);
-                        mapeditBuilder.AppendLine("      incomingOverlayBounds[" + it + "] = " + bounds + ";");
+                        mapeditBuilder.AppendLine("      globalVars.incomingOverlayBounds[" + it + "] = " + bounds + ";");
 
                         //add the label of the polygon
-                        mapeditBuilder.AppendLine("      incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
+                        mapeditBuilder.AppendLine("      globalVars.incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
 
                         //get the image url
                         List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
@@ -562,12 +567,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                         //polygonURL[it] = first_page_complete_url;
                         polygonURL.Add(first_page_complete_url);
-                        mapeditBuilder.AppendLine("      incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
+                        mapeditBuilder.AppendLine("      globalVars.incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
 
                         //get and set the rotation value
                         //polygonRotation.Add(0);
-                        //mapeditBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
-                        mapeditBuilder.AppendLine("      incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
+                        //mapeditBuilder.AppendLine("      globalVars.incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
+                        mapeditBuilder.AppendLine("      globalVars.incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
 
                         //iterate
                         it++;
@@ -584,8 +589,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //add each point
                     for (int point = 0; point < allPoints.Count; point++)
                     {
-                        mapeditBuilder.AppendLine("      incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
-                        mapeditBuilder.AppendLine("      incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
 
                         try
                         {
@@ -603,11 +608,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
 
-                            mapeditBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
                         }
                         catch (Exception)
                         {
-                            mapeditBuilder.AppendLine("      incomingPointSourceURL[" + point + "] = \"\" ");
+                            mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[" + point + "] = \"\" ");
                             throw;
                         }
 
@@ -915,13 +920,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
             //custom js files (load order does matter)
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_load.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listener_actions.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_gmap.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_utilities.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_other.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listener_actions.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_gmap.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_utilities.js\"></script>");
+            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_other.js\"></script>");
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-markerwithlabel-1.8.1.min.js\"></script>"); //must load after custom
 
             //end of custom content
