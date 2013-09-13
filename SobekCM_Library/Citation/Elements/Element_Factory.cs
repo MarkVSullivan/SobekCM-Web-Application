@@ -149,6 +149,12 @@ namespace SobekCM.Library.Citation.Elements
                         return new Language_Select_Element();
                     return new Language_Element();
 
+				case Element_Type.LCCN:
+					return new LCCN_Element();
+
+				case Element_Type.Literal:
+					return new Literal_Element();
+
                 case Element_Type.LOM_Aggregation_Level:
                     return new LOM_AggregationLevel_Element();
 
@@ -267,6 +273,9 @@ namespace SobekCM.Library.Citation.Elements
                             return new Subject_Keyword_Standard_Form_Element();
 
                     }
+
+				case Element_Type.SuDOC:
+					return new SuDOC_Element();
 
                 case Element_Type.TargetAudience:
                     return new Target_Audience_Element();

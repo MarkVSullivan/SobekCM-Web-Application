@@ -143,6 +143,8 @@
     <Compile Include="Citation\Elements\implemented elements\Frequency_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Group_Title_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Language_Select_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\LCCN_Element.cs" />
+    <Compile Include="Citation\Elements\nonstandard elements\Literal_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_AggregationLevel_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_Context_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_DifficultyLevel_Element.cs" />
@@ -156,6 +158,7 @@
     <Compile Include="Citation\Elements\implemented elements\OCLC_Record_Number_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Primary_Alt_Identifier_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Scale_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\SuDOC_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Tickler_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Tracking_Box_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Visibility_Element.cs" />

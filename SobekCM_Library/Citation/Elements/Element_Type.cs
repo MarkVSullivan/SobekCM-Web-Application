@@ -160,6 +160,12 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Language element type maps to <see cref="Language_Element"/> </summary>
         Language,
 
+		/// <summary> Library of congress call number </summary>
+		LCCN,
+
+		/// <summary> Literal element just allows user to add some text </summary>
+		Literal,
+
         /// <summary> Learning object metadata - functional granularity of this learning object </summary>
         LOM_Aggregation_Level,
 
@@ -268,6 +274,9 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Subject element type maps to <see cref="Subject_Element"/>, <see cref="Subject_Scheme_Element"/>, or <see cref="Subject_Keyword_Standard_Form_Element"/> </summary>
         Subject,
+
+		/// <summary> Superintendent of Documents Classification System </summary>
+		SuDOC,
 
         /// <summary> Target audience element type maps to <see cref="Target_Audience_Element"/> </summary>
         TargetAudience,
@@ -523,6 +532,12 @@ namespace SobekCM.Library.Citation.Elements
                 case "LANGUAGE":
                     return Element_Type.Language;
 
+				case "LCCN":
+					return Element_Type.LCCN;
+
+				case "LITERAL":
+					return Element_Type.Literal;
+
                 case "LOM_AGGREGATION_LEVEL":
                     return Element_Type.LOM_Aggregation_Level;
 
@@ -632,6 +647,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "SUBJECT":
                     return Element_Type.Subject;
+
+				case "SUDOC":
+					return Element_Type.SuDOC;
 
                 case "TARGETAUDIENCE":
                     return Element_Type.TargetAudience;
@@ -870,6 +888,12 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Language:
                     return "Language";
 
+				case Element_Type.LCCN:
+					return "LCCN";
+
+				case Element_Type.Literal:
+					return "Literal";
+
                 case Element_Type.Manufacturer:
                     return "Manufacturer";
 
@@ -938,6 +962,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 case Element_Type.Subject:
                     return "Subject";
+
+				case Element_Type.SuDOC:
+					return "SuDOC";
 
                 case Element_Type.TargetAudience:
                     return "TargetAudience";
