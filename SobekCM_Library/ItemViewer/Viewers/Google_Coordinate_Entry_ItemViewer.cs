@@ -394,7 +394,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //page content
             mapeditBuilder.AppendLine("<td>");
 
-            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div>");
+            
             
 
             //used to force doctype html5 and css3
@@ -411,6 +411,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/>");
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Layout_Default.css\"/>");
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Other.css\"/>");
+
+            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div>");
 
             //standard js files
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-ui-1.10.1.js\"></script>");
@@ -919,7 +921,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             
             //custom js files (load order does matter)
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_load.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit.js\"></script>");
             //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
             //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
             //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
