@@ -86,7 +86,7 @@ opacity: 0.75;*/
 {
     position: absolute;
     left: 50%;
-    width: 1190px;
+    width: 1100px;
     margin-left: -545px;
 }
 
@@ -181,6 +181,7 @@ opacity: 0.75;*/
     text-align: right;
     background-color: #ededed;
     border-radius: 25px;
+    cursor: pointer;
 }
 
 #mapedit_container_toolbox

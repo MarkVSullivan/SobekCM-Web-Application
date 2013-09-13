@@ -62,6 +62,7 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            userMayLoseData: false,                     //holds a marker to determine if signifigant changes have been made to require a save
             baseURL: null,                              //holds place for server written vars
             defaultOpacity: 0.5,                        //holds default opacity settings
             isConvertedOverlay: false,                  //holds a marker for converted overlay
@@ -105,7 +106,7 @@ function initDeclarations() {
             searchCount: 0,                             //interates how many searches
             degree: 0,                                  //initializing degree
             firstMarker: 0,                             //used to iterate if marker placement was the first (to prevent duplicates)
-            overlayCount: 0,                            //iterater
+            overlayCount: 0,                            //iterater (contains how many overlays are not deleted)
             mapInBounds: null,                          //is the map in bounds
             searchResult: null,                         //will contain object
             circleCenter: null,                         //hold center point of circle
@@ -262,8 +263,10 @@ function initLocalization() {
     localize = function () {
         return {
             //vars
-            L52: "",
-            L53: "",
+            L52: "Reseting Overlays",
+            L53: "Reseting POIs",
+            L54: "",
+            L55: "",
             //tooltips
             byTooltips: function () {
                 //#region localization by listeners
@@ -292,6 +295,7 @@ function initLocalization() {
                     document.getElementById("content_toolbar_button_manageItem").title = "Manage Location Details";
                     document.getElementById("content_toolbar_button_manageOverlay").title = "Manage Map Coverage";
                     document.getElementById("content_toolbar_button_managePOI").title = "Manage Points of Interest";
+                    document.getElementById("content_toolbar_button_manageSearch").title = "Locate: Find A Location On The Map";
                     document.getElementById("content_toolbar_searchField").title = "Locate: Find A Location On The Map";
                     document.getElementById("content_toolbar_searchButton").title = "Locate: Find A Location On The Map";
                     document.getElementById("content_toolbarGrabber").title = "Toolbar: Toggle the Toolbar";
@@ -369,7 +373,7 @@ function initLocalization() {
                     document.getElementById("content_menubar_header2Sub3").innerHTML = "Zoom";
                     document.getElementById("content_menubar_header2Sub4").innerHTML = "Pan";
                     document.getElementById("content_menubar_header3").innerHTML = "Actions";
-                    document.getElementById("content_menubar_header3Sub1").innerHTML = "Find Location";
+                    document.getElementById("content_menubar_manageSearch").innerHTML = "Find Location";
                     document.getElementById("content_menubar_manageItem").innerHTML = "Manage Location";
                     document.getElementById("content_menubar_manageOverlay").innerHTML = "Manage Ovelays";
                     document.getElementById("content_menubar_header3Sub3Sub1").innerHTML = "Rotate";
@@ -541,8 +545,9 @@ function initListeners() {
         document.getElementById("content_menubar_zoomOut").addEventListener("click", function () {
             zoomMap("out");
         }, false);
-        document.getElementById("content_menubar_header3Sub1").addEventListener("click", function () {
-            openToolboxTab("search");
+        document.getElementById("content_menubar_manageSearch").addEventListener("click", function () {
+            action("search");
+            //openToolboxTab("search");
         }, false);
         document.getElementById("content_menubar_searchField").addEventListener("click", function () {
             action("search");
@@ -731,6 +736,9 @@ function initListeners() {
         document.getElementById("content_toolbar_button_managePOI").addEventListener("click", function () {
             action("managePOI");
         }, false);
+        document.getElementById("content_toolbar_button_manageSearch").addEventListener("click", function () {
+            action("search");
+        }, false);
         document.getElementById("content_toolbar_searchField").addEventListener("click", function () {
             action("search");
         }, false);
@@ -763,8 +771,9 @@ function initListeners() {
         }, false);
         document.getElementById("content_toolbox_tab2_header").addEventListener("click", function () {
             de("tab2 header clicked...");
-            action("other");
-            openToolboxTab(1);
+            action("search");
+            //action("other");
+            //openToolboxTab(1);
         }, false);
         document.getElementById("content_toolbox_tab3_header").addEventListener("click", function () {
             de("tab3 header clicked...");
@@ -961,14 +970,23 @@ function initListeners() {
 
 //reset handler
 function resetAll() {
-    //warn the user
-    var consent = confirmMessage(L47);
-    if (consent == true) {
-        displayMessage(L48);
-        document.location.reload(true); //refresh page
-    } else {
-        displayMessage(L49);
-    }
+    
+    document.location.reload(true); //refresh page
+
+    //if (globalVars.userMayLoseData) {
+    //    //warn the user
+    //    var consent = confirmMessage(L47);
+    //    if (consent == true) {
+    //        displayMessage(L48);
+    //        document.location.reload(true); //refresh page
+    //    } else {
+    //        displayMessage(L49);
+    //    }
+    //} else {
+    //    displayMessage(L48);
+    //    document.location.reload(true); //refresh page
+    //}
+    
 }
 
 //toggle items handler
@@ -1064,16 +1082,36 @@ function toggleVis(id) {
             if (globalVars.overlaysOnMap.length) {
                 if (globalVars.overlaysCurrentlyDisplayed == true) {
                     displayMessage(L22);
+                    
                     for (var i = 0; i < globalVars.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
-                        globalVars.overlaysOnMap[i].setMap(null); //hide the overlay from the map
-                        globalVars.ghostOverlayRectangle[i].setMap(null); //hide ghost from map
+                        de("overlay count " + globalVars.overlayCount);
+                        globalVars.RIBMode = true;
+                        if (document.getElementById("overlayToggle" + i)) {
+                            de("found: overlayToggle" + i);
+                            overlayHideMe(i);
+                        } else {
+                            de("did not find: overlayToggle" + i);
+                        }
+                        
+                        globalVars.RIBMode = false;
+                        //globalVars.overlaysOnMap[i].setMap(null); //hide the overlay from the map
+                        //globalVars.ghostOverlayRectangle[i].setMap(null); //hide ghost from map
                         globalVars.overlaysCurrentlyDisplayed = false; //mark that overlays are not on the map
                     }
                 } else {
                     displayMessage(L23);
                     for (var i = 0; i < globalVars.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
-                        globalVars.overlaysOnMap[i].setMap(map); //set the overlay to the map
-                        globalVars.ghostOverlayRectangle[i].setMap(map); //set to map
+                        de("oom " + globalVars.overlaysOnMap.length);
+                        globalVars.RIBMode = true;
+                        if (document.getElementById("overlayToggle" + i)) {
+                            de("found: overlayToggle" + i);
+                            overlayShowMe(i);
+                        } else {
+                            de("did not find: overlayToggle" + i);
+                        }
+                        globalVars.RIBMode = false;
+                        //globalVars.overlaysOnMap[i].setMap(map); //set the overlay to the map
+                        //globalVars.ghostOverlayRectangle[i].setMap(map); //set to map
                         globalVars.overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
                     }
                 }
@@ -1190,6 +1228,7 @@ function action(id) {
     de("action: " + id);
     switch (id) {
         case "manageItem":
+            globalVars.userMayLoseData = true;
             globalVars.actionActive = "Item";  //note case (uppercase is tied to the actual div)
             buttonActive("action");
             if (globalVars.toolboxDisplayed != true) {
@@ -1212,6 +1251,7 @@ function action(id) {
             break;
 
         case "manageOverlay":
+            globalVars.userMayLoseData = true;
             globalVars.actionActive = "Overlay"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
             if (globalVars.toolboxDisplayed != true) {
@@ -1237,6 +1277,7 @@ function action(id) {
             break;
 
         case "managePOI":
+            globalVars.userMayLoseData = true;
             globalVars.actionActive = "POI"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
             if (globalVars.toolboxDisplayed != true) {
@@ -1282,7 +1323,7 @@ function action(id) {
 
         case "search":
             de("action search started...");
-            globalVars.actionActive = "Other";
+            globalVars.actionActive = "Search";
             buttonActive("action");
             globalVars.placerType = "none";
 
@@ -1597,8 +1638,9 @@ function clear(id) {
             break;
 
         case "overlay":
-            if (globalVars.workingOverlayIndex != null) {
+            if ((globalVars.workingOverlayIndex != null) || (globalVars.overlayCount != globalVars.overlaysOnMap)) {
                 //delete all incoming overlays
+                displayMessage(localize.L52);
                 clearIncomingOverlays();
                 //show all the incoming overlays
                 displayIncomingOverlays();
@@ -1619,6 +1661,7 @@ function clear(id) {
         case "poi":
             de("attempting to clear " + globalVars.poiObj.length + "POIs...");
             if (globalVars.poiObj.length > 0) {
+                displayMessage(localize.L53);
                 for (var i = 0; i < globalVars.poiObj.length; i++) {
                     if (globalVars.poiObj[i] != null) {
                         globalVars.poiObj[i].setMap(null);
@@ -2512,10 +2555,15 @@ function displayIncomingOverlays() {
 //clears all incoming overlays
 function clearIncomingOverlays() {
     for (var i = 0; i < globalVars.incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
-        globalVars.overlaysOnMap[i].setMap(null);
-        globalVars.overlaysOnMap[i] = null;
-        globalVars.ghostOverlayRectangle[i].setMap(null);
-        globalVars.ghostOverlayRectangle[i] = null;
+        if (globalVars.overlaysOnMap[i] != null) {
+            globalVars.overlaysOnMap[i].setMap(null);
+            globalVars.overlaysOnMap[i] = null;
+            globalVars.ghostOverlayRectangle[i].setMap(null);
+            globalVars.ghostOverlayRectangle[i] = null;
+        } else {
+            //do nothing
+        }
+        
     }
     //globalVars.overlaysCurrentlyDisplayed = false;
     globalVars.preservedOpacity = globalVars.defaultOpacity;
@@ -2896,8 +2944,7 @@ function initOptions() {
 
     //set window offload fcn to remind to save
     window.onbeforeunload = function (e) {
-        //check to see if we are in debug mode
-        if (globalVars.debugMode != true) {
+        if (globalVars.userMayLoseData) {
             var message = L47,
                 e = e || window.event;
             // For IE and Firefox
@@ -2906,6 +2953,8 @@ function initOptions() {
             }
             // For Safari
             return message;
+        } else {
+            //do nothing
         }
     };
 
@@ -3009,11 +3058,18 @@ function buttonActive(id) {
                 if (globalVars.prevActionActive != null) {
                     document.getElementById("content_menubar_manage" + globalVars.prevActionActive).className = document.getElementById("content_menubar_manage" + globalVars.prevActionActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                     document.getElementById("content_toolbar_button_manage" + globalVars.prevActionActive).className = document.getElementById("content_toolbar_button_manage" + globalVars.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
-                    document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive).className = document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                    if (document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive)) {
+                        de("found " + globalVars.prevActionActive);
+                        document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive).className = document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                    }
+                    
                 }
                 document.getElementById("content_menubar_manage" + globalVars.actionActive).className += " isActive2";
                 document.getElementById("content_toolbar_button_manage" + globalVars.actionActive).className += " isActive";
-                document.getElementById("content_toolbox_button_manage" + globalVars.actionActive).className += " isActive";
+                if (document.getElementById("content_toolbox_button_manage" + globalVars.actionActive)) {
+                    de("found " + globalVars.actionActive);
+                    document.getElementById("content_toolbox_button_manage" + globalVars.actionActive).className += " isActive";
+                }
                 globalVars.prevActionActive = globalVars.actionActive; //set and hold the previous map layer active
             }
             break;
@@ -3207,9 +3263,12 @@ function overlayShowMe(id) {
 //delete poi from map and list
 function overlayDeleteMe(id) {
     globalVars.overlaysOnMap[id].setMap(null);
+    globalVars.overlaysOnMap[id] = null;
     globalVars.ghostOverlayRectangle[id].setMap(null);
+    globalVars.ghostOverlayRectangle[id] = null;
     var strg = "#overlayListItem" + id; //create <li> poi string
     $(strg).remove(); //remove <li>
+    globalVars.overlayCount--;
     displayMessage(id + " " + L33);
 }
 
@@ -3773,9 +3832,13 @@ function resizeView() {
     toolbarButtonIds[19] = "content_toolbar_button_managePOI";
     toolbarButtonIds[20] = "content_toolbar_button_search";
 
+    if (widthPX < 1100) {
+        //
+    }
+
     //if view width < toolbar width
     //todo make 1190 dynamic (cannot simple getelementbyid because toolbar is closed at start)
-    if (widthPX < 1190) {
+    if (widthPX < 1100) {
         var temp2 = toolbarButtonIds.length * 45;
         temp2 = widthPX - temp2 - 60;
         temp2 = Math.round(temp2 / 45);
@@ -3843,6 +3906,7 @@ function clearCacheSaveOverlay() {
         globalVars.savingOverlayRotation = [];
         de("reseting cache save overlay index");
         globalVars.csoi = 0;
+        globalVars.userMayLoseData = false;
         de("cache reset");
     } else {
         de("nothing in cache");
@@ -3988,7 +4052,7 @@ $(function () {
         });
         //tooltips (the tooltip text is the title of the element defined in localization js)
         $("#content_toolbarGrabber").tooltip({ track: true });
-        //$("#content_toolbar_button_reset").tooltip({ track: true });
+        $("#content_toolbar_button_reset").tooltip({ track: true });
         $("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
         $("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
         $("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
@@ -4009,6 +4073,7 @@ $(function () {
         $("#content_toolbar_button_manageItem").tooltip({ track: true });
         $("#content_toolbar_button_manageOverlay").tooltip({ track: true });
         $("#content_toolbar_button_managePOI").tooltip({ track: true });
+        $("#content_toolbar_button_manageSearch").tooltip({ track: true });
         $("#content_toolbox_button_reset").tooltip({ track: true });
         $("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
         $("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
