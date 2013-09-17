@@ -444,6 +444,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //geo objects writer section 
             mapeditBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
+            mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
             mapeditBuilder.AppendLine(" ");
 
@@ -597,7 +598,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         try
                         {
                             //get the image url
-                            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            List<SobekCM_File_Info> first_page_files =
+                                ((Page_TreeNode) CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
                             string first_page_jpeg = String.Empty;
                             foreach (SobekCM_File_Info thisFile in first_page_files)
                             {
@@ -615,10 +617,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         catch (Exception)
                         {
                             mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[" + point + "] = \"\" ");
-                            throw;
+                            //throw;
                         }
 
 
+                    }
+                    mapeditBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine("      displayIncomingPoints();");
+                    mapeditBuilder.AppendLine(" ");
+                }
+                else
+                {
+                    try
+                    {
+                        //get the image url
+                        List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                        string first_page_jpeg = String.Empty;
+                        foreach (SobekCM_File_Info thisFile in first_page_files)
+                        {
+                            if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                            {
+                                first_page_jpeg = thisFile.System_Name;
+                                break;
+                            }
+                        }
+                        string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[0] = \"" + first_page_complete_url + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                    }
+                    catch (Exception)
+                    {
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[0] = \"\" ");
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                        //throw;
                     }
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPoints();");
@@ -636,7 +669,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            Boolean rapidTest = true;
+            bool rapidTest = CurrentMode.Base_URL.Contains("localhost");
+
             if (rapidTest == true)
             {
                 //string mapeditHTMLFile = @""+ CurrentMode.Base_URL + "default/mapedit.txt";

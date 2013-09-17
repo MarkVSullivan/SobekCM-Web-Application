@@ -860,9 +860,11 @@
     background-image: url("images/mapedit/button-action3.png");
 }
 
-#content_toolbox_searchButton
+#content_toolbox_searchField
 {
     background-image: url("images/mapedit/search.png");
+    background-repeat:no-repeat;
+    background-position:125px center;
 }
 
 #content_toolbox_button_itemGetUserLocation

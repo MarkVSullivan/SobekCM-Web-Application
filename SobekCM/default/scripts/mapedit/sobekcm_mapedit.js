@@ -2520,24 +2520,36 @@ function initialize() {
 
 //Displays all the points sent from the C# code.
 function displayIncomingPoints() {
-    //go through and display points as long as there is a point to display (note, currently only supports one point)
-    for (var i = 0; i < globalVars.incomingPointCenter.length; i++) {
-        globalVars.firstMarker++;
-        globalVars.itemMarker = new google.maps.Marker({
-            position: globalVars.incomingPointCenter[i],
-            map: map,
-            draggable: true,
-            title: globalVars.incomingPointLabel[i]
-        });
-        document.getElementById('content_toolbox_posItem').value = globalVars.itemMarker.getPosition();
-        codeLatLng(globalVars.itemMarker.getPosition());
-        google.maps.event.addListener(globalVars.itemMarker, 'dragend', function () {
-            globalVars.firstSaveItem = true;
-            globalVars.savingMarkerCenter = globalVars.itemMarker.getPosition(); //store coords to save
+    if (globalVars.incomingPointCenter) {
+        //go through and display points as long as there is a point to display (note, currently only supports one point)
+        for (var i = 0; i < globalVars.incomingPointCenter.length; i++) {
+            globalVars.firstMarker++;
+            globalVars.itemMarker = new google.maps.Marker({
+                position: globalVars.incomingPointCenter[i],
+                map: map,
+                draggable: true,
+                title: globalVars.incomingPointLabel[i]
+            });
             document.getElementById('content_toolbox_posItem').value = globalVars.itemMarker.getPosition();
             codeLatLng(globalVars.itemMarker.getPosition());
+            google.maps.event.addListener(globalVars.itemMarker, 'dragend', function() {
+                globalVars.firstSaveItem = true;
+                globalVars.savingMarkerCenter = globalVars.itemMarker.getPosition(); //store coords to save
+                document.getElementById('content_toolbox_posItem').value = globalVars.itemMarker.getPosition();
+                codeLatLng(globalVars.itemMarker.getPosition());
+            });
+        }
+    } else {
+        globalVars.firstMarker++;
+        globalVars.itemMarker = new google.maps.Marker({
+            position: map.getCenter(), //just get the center poin of the map
+            map: null, //hide on load
+            draggable: false,
+            title: globalVars.incomingPointLabel[0]
         });
+        //nothing to display because there is no geolocation of item
     }
+    
 }
 
 //Displays all the overlays sent from the C# code. Also calls displayglobalVars.ghostOverlayRectangle.
@@ -3673,8 +3685,18 @@ function convertToOverlay() {
         openToolboxTab(3);
 
         //add what we know already
-        globalVars.incomingOverlayLabel[0] = globalVars.incomingPointLabel[0];
-        globalVars.incomingOverlaySourceURL[0] = globalVars.incomingPointSourceURL[0];
+        if (globalVars.incomingPointLabel[0]) {
+            globalVars.incomingOverlayLabel[0] = globalVars.incomingPointLabel[0];
+        } else {
+            de("no incoming point label");
+            //ask for it
+        }
+        if (globalVars.incomingPointSourceURL[0]) {
+            globalVars.incomingOverlaySourceURL[0] = globalVars.incomingPointSourceURL[0];
+        } else {
+            de("no incoming point source url");
+            //ask for it
+        }
         globalVars.incomingOverlayRotation[0] = 0;
 
         //adds a working overlay index
@@ -4045,9 +4067,10 @@ $(function () {
         });
         //accordian settings
         $("#mapedit_container_toolboxTabs").accordion({
-            //animate: false, //turn off all animations (this got rid of search icon problem) //if ever set, check WORKAROUND in openToolboxTabs(id)
+            animate: true, //turn off all animations (this got rid of search icon problem) //if ever set, check WORKAROUND in openToolboxTabs(id)
             active: 0, //which tab is active
             icons: false, //default icons?
+            //collapsible: true, //does not work
             heightStyle: "content" //set hieght to?
         });
         //tooltips (the tooltip text is the title of the element defined in localization js)
