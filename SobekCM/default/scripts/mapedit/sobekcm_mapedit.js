@@ -574,9 +574,9 @@ function initListeners() {
             useSearchAsItemLocation();
         }, false);
         document.getElementById("content_menubar_convertToOverlay").addEventListener("click", function () {
-            openToolboxTab("item");
+            //openToolboxTab("item");
             convertToOverlay();
-            place("overlay");
+            
         }, false);
         document.getElementById("content_menubar_itemReset").addEventListener("click", function () {
             openToolboxTab("item");
@@ -871,8 +871,8 @@ function initListeners() {
         document.getElementById("content_toolbox_button_convertToOverlay").addEventListener("click", function () {
             //convert it
             convertToOverlay();
-            //now trigger place overlay
-            place("overlay");
+            //now trigger place overlay (we doe this inside the cinverttooverlay fcn)
+            //place("overlay");
             //now enable editing of overlay
             //edit("overlay");
         }, false);
@@ -970,7 +970,7 @@ function initListeners() {
 
 //reset handler
 function resetAll() {
-    
+
     document.location.reload(true); //refresh page
 
     //if (globalVars.userMayLoseData) {
@@ -986,7 +986,7 @@ function resetAll() {
     //    displayMessage(L48);
     //    document.location.reload(true); //refresh page
     //}
-    
+
 }
 
 //toggle items handler
@@ -1082,7 +1082,7 @@ function toggleVis(id) {
             if (globalVars.overlaysOnMap.length) {
                 if (globalVars.overlaysCurrentlyDisplayed == true) {
                     displayMessage(L22);
-                    
+
                     for (var i = 0; i < globalVars.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
                         de("overlay count " + globalVars.overlayCount);
                         globalVars.RIBMode = true;
@@ -1092,7 +1092,7 @@ function toggleVis(id) {
                         } else {
                             de("did not find: overlayToggle" + i);
                         }
-                        
+
                         globalVars.RIBMode = false;
                         //globalVars.overlaysOnMap[i].setMap(null); //hide the overlay from the map
                         //globalVars.ghostOverlayRectangle[i].setMap(null); //hide ghost from map
@@ -2532,7 +2532,7 @@ function displayIncomingPoints() {
             });
             document.getElementById('content_toolbox_posItem').value = globalVars.itemMarker.getPosition();
             codeLatLng(globalVars.itemMarker.getPosition());
-            google.maps.event.addListener(globalVars.itemMarker, 'dragend', function() {
+            google.maps.event.addListener(globalVars.itemMarker, 'dragend', function () {
                 globalVars.firstSaveItem = true;
                 globalVars.savingMarkerCenter = globalVars.itemMarker.getPosition(); //store coords to save
                 document.getElementById('content_toolbox_posItem').value = globalVars.itemMarker.getPosition();
@@ -2549,7 +2549,7 @@ function displayIncomingPoints() {
         });
         //nothing to display because there is no geolocation of item
     }
-    
+
 }
 
 //Displays all the overlays sent from the C# code. Also calls displayglobalVars.ghostOverlayRectangle.
@@ -2575,7 +2575,7 @@ function clearIncomingOverlays() {
         } else {
             //do nothing
         }
-        
+
     }
     //globalVars.overlaysCurrentlyDisplayed = false;
     globalVars.preservedOpacity = globalVars.defaultOpacity;
@@ -3074,7 +3074,7 @@ function buttonActive(id) {
                         de("found " + globalVars.prevActionActive);
                         document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive).className = document.getElementById("content_toolbox_button_manage" + globalVars.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                     }
-                    
+
                 }
                 document.getElementById("content_menubar_manage" + globalVars.actionActive).className += " isActive2";
                 document.getElementById("content_toolbar_button_manage" + globalVars.actionActive).className += " isActive";
@@ -3704,14 +3704,21 @@ function convertToOverlay() {
             globalVars.workingOverlayIndex = 0;
         }
 
+        //add to list overlay item
+        document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", 0, globalVars.incomingOverlayLabel[0], "");
+
         //marks this overlay as converted
         globalVars.isConvertedOverlay = true;
 
         //converted
         displayMessage(L44);
+        
+        place("overlay");
     } else {
         //cannot convert
         displayMessage(L40);
+        //explicitly disallow editing after a failed convert
+        drawingManager.setDrawingMode(null);
     }
 
 }
@@ -3827,7 +3834,7 @@ function resizeView() {
 
     //set the width of the sf menu pane0 container
     document.getElementById("mapedit_container_pane_0").style.width = widthPX + "px";
-    
+
     //load all toolbar buttons into an array
     //todo make dynamic
     //todo move to onload listener
