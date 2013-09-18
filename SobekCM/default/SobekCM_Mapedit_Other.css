@@ -1,5 +1,25 @@
 ﻿/* mapedit Other: Contains all other css for mapedit plugin */
 
+#content_message
+{
+    /*something*/
+}
+
+.message
+{
+    text-align: center;
+    color: black;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 99999;
+    padding: 2px 2px 2px 2px;
+    margin: 2px 0 2px 0;
+    background-color: peachpuff;
+    -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    display: none;
+}
+
 /*menubar*/
 
 #content_menubar_save
@@ -222,7 +242,7 @@
     background-size: 25px 25px;
 }
 
-#content_menubar_header3Sub1
+#content_menubar_manageSearch
 {
     background: url("images/mapedit/button-search.png") no-repeat 5px;
     padding-left: 35px;
@@ -489,7 +509,7 @@
 
 #content_menubar_header3Sub4Sub1
 {
-    background: url("images/mapedit/button-base.png") no-repeat 5px;
+    background: url("images/mapedit/button-poiPlace.png") no-repeat 5px;
     padding-left: 35px;
     -webkit-background-size: 25px 25px;
     -o-background-size: 25px 25px;
@@ -659,7 +679,7 @@
     background-image: url("images/mapedit/button-action3.png");
 }
 
-#content_toolbar_button_search
+#content_toolbar_button_manageSearch
 {
     background-image: url("images/mapedit/button-search.png");
 }
@@ -840,29 +860,11 @@
     background-image: url("images/mapedit/button-action3.png");
 }
 
-#content_toolbox_searchButton
+#content_toolbox_searchField
 {
     background-image: url("images/mapedit/search.png");
-}
-
-#content_message
-{
-    /*something*/
-}
-
-.message
-{
-    text-align: center;
-    color: black;
-    font-size: 11px;
-    font-weight: bold;
-    z-index: 99999;
-    padding: 2px 2px 2px 2px;
-    margin: 2px 0 2px 0;
-    background-color: peachpuff;
-    -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.5);
-    box-shadow: 0 2px 3px rgba(0,0,0,0.5);
-    display: none;
+    background-repeat:no-repeat;
+    background-position:125px center;
 }
 
 #content_toolbox_button_itemGetUserLocation
@@ -897,27 +899,27 @@
 
 #content_toolbox_button_overlayPlace
 {
-    background-image: url("images/mapedit/button-base.png");
+    background-image: url("images/mapedit/button-overlayPlace.png");
 }
 
 #content_toolbox_button_overlayEdit
 {
-    background-image: url("images/mapedit/button-action2.png");
+    background-image: url("images/mapedit/button-overlayEdit.png");
 }
 
 #content_toolbox_button_overlayToggle
 {
-    background-image: url("images/mapedit/button-base.png");
+    background-image: url("images/mapedit/button-overlayToggle.png");
 }
 
 #content_toolbox_button_placePOI
 {
-    background-image: url("images/mapedit/button-action3.png");
+    background-image: url("images/mapedit/button-poiEdit.png");
 }
 
 #content_toolbox_button_poiToggle
 {
-    background-image: url("images/mapedit/button-base.png");
+    background-image: url("images/mapedit/button-poiToggle.png");
 }
 
 #content_toolbox_rotationCounterClockwise
