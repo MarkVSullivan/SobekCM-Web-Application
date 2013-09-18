@@ -103,18 +103,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Determine if there is a zoomable version of this page
-            bool isZoomable = false;
-            Page_TreeNode page = CurrentItem.Web.Pages_By_Sequence[CurrentMode.Page-1];
-            foreach (SobekCM_File_Info thisFile in page.Files)
-            {
-                if ((thisFile.Get_Viewer() != null ) && ( thisFile.Get_Viewer().View_Type == View_Enum.JPEG2000))
-                {
-                    isZoomable = true;
-                    break;
-                }
-            }
+	        bool isZoomable = false;
+	        if (CurrentItem.Web.Pages_By_Sequence.Count > CurrentMode.Page - 1)
+	        {
+		        foreach (View_Object thisPageView in CurrentItem.Behaviors.Item_Level_Page_Views)
+		        {
+			        View_Enum thisViewType = thisPageView.View_Type;
+			        foreach (SobekCM_File_Info thisFile in CurrentItem.Web.Pages_By_Sequence[CurrentMode.Page-1].Files)
+			        {
+				        View_Object fileObject = thisFile.Get_Viewer();
+				        if ((fileObject != null) && (fileObject.View_Type == View_Enum.JPEG2000))
+				        {
+					        isZoomable = true;
+					        break;
+				        }
+			        }
+		        }
+	        }
 
-            string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
+	        string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if (( CurrentItem.Behaviors.Dark_Flag ) || ( CurrentItem.Behaviors.IP_Restriction_Membership > 0 ))
                 displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
@@ -130,29 +137,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
+
             // Add the HTML for the image
-            if (isZoomable)
-            {
-                string currViewer = CurrentMode.ViewerCode;
-                CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";
-                string toZoomable = CurrentMode.Redirect_URL();
-                CurrentMode.ViewerCode = currViewer;
-                Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
-                Output.WriteLine("Click on image below to switch to zoomable version<br />");
-                Output.WriteLine("<a href=\"" + toZoomable + "\">");
-            }
-            else
-                Output.WriteLine("\t\t<td align=\"center\" id=\"sbkJiv_Image\">");
+	        if (isZoomable)
+	        {
+		        string currViewer = CurrentMode.ViewerCode;
+		        CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";
+		        string toZoomable = CurrentMode.Redirect_URL();
+		        CurrentMode.ViewerCode = currViewer;
+		        Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
+		        Output.WriteLine("Click on image below to switch to zoomable version<br />");
+		        Output.WriteLine("<a href=\"" + toZoomable + "\" title=\"Click on image to switch to zoomable version\">");
 
-            Output.Write("\t\t\t<img ");
-            if (( height > 0 ) && ( width > 0 ))
-                Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
-            Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />");
+		        Output.Write("\t\t\t<img itemprop=\"primaryImageOfPage\" ");
+		        if ((height > 0) && (width > 0))
+			        Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
+		        Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" />");
 
-            if ( isZoomable )
-                Output.WriteLine("</a>");
+		        Output.WriteLine("</a>");
+	        }
+	        else
+	        {
+		        Output.WriteLine("\t\t<td align=\"center\" id=\"sbkJiv_Image\">");
 
-            Output.WriteLine("\t\t</td>");
+		        Output.Write("\t\t\t<img itemprop=\"primaryImageOfPage\" ");
+		        if ((height > 0) && (width > 0))
+			        Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
+		        Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />");
+	        }
+
+	        Output.WriteLine("\t\t</td>");
 
         }
 	}

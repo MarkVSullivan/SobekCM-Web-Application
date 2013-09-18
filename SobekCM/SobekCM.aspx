@@ -1,12 +1,16 @@
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="SobekCM.aspx.cs" Inherits="SobekMain" validateRequest="false" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
+<!DOCTYPE html>
+<html>
 <head>
   <title><%Write_Page_Title();%></title>
     
   <!-- <% Repository_Title(); %> -->
 
 <%Write_Within_HTML_Head();%>
+	
+  <!--[if lt IE 9]>
+    <script src="default/scripts/html5shiv/html5shiv.js"></script>
+  <![endif]-->
 </head>
 <body <%Write_Body_Attributes();%>>
 
