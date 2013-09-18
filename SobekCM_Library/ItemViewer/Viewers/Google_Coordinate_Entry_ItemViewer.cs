@@ -54,6 +54,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
 
+        //init viewer instance
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
             CurrentUser = Current_User;
@@ -115,11 +116,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 int index2 = allSaves[i].LastIndexOf("|");
                 //split into save elements
                 string[] ar = allSaves[i].Substring(0, index2).Split('|');
-
                 //determine the save type (position 0 in array)
                 string saveType = ar[0];
                 //based on saveType, parse into objects
 
+                //handle save based on type
                 switch (saveType)
                 {
                     case "item":
@@ -138,6 +139,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         //add current geo
                         CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
 
+                        //save to database
+                        //resourceGeoInfo.Save_Additional_Info_To_Database(CurrentItem.id, "connectionString", CurrentItem, "Could Not Save Item To Database");
+                        
                         break;
                     case "overlay":
                         //search through existing overlays and modify if match found
@@ -165,7 +169,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
 
                             //add the label
-                            itemPolygon.Label = ar[1];
+                            if (ar[1] != "undefined")
+                            {
+                                itemPolygon.Label = ar[1];
+                            }
+                            else
+                            {
+                                itemPolygon.Label = CurrentItem.Bib_Title;
+                            }
+
 
                             //prep incoming bounds
                             string[] temp2 = ar[2].Split(',');
@@ -193,7 +205,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
 
                         //add current geo
-                        CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
+                        if (itemGeoInfo != null)
+                        {
+                            //add to item
+                            CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
+                        }
+                        else
+                        {
+                            if (resourceGeoInfo != null)
+                            {
+                                //clear previous point (if any) (used if the overlay was converted from single point)
+                                resourceGeoInfo.Clear_Points();
+                                //add to resource
+                                CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
+                            }
+                        }
+
 
                         break;
                     case "poi":
@@ -315,12 +342,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Directory.CreateDirectory(userInProcessDirectory);
             }
 
-            //add current geo
+            //add current geo (we do this inside each case
             //CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
 
             //save the item to the temporary location
             CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".xml");
 
+            //save to db (does not work)
+            //Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+            
         }
 
         /// <summary> Gets the number of pages for this viewer </summary>
@@ -394,8 +424,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //page content
             mapeditBuilder.AppendLine("<td>");
 
-            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div>");
-            
+
+
 
             //used to force doctype html5 and css3
             //mapeditBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
@@ -411,6 +441,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/>");
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Layout_Default.css\"/>");
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Other.css\"/>");
+
+            mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div>");
 
             //standard js files
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-ui-1.10.1.js\"></script>");
@@ -431,7 +463,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\"> ");
             mapeditBuilder.AppendLine(" ");
-            
+
             //setup server to client vars writer
             mapeditBuilder.AppendLine(" <!-- Add Server Vars -->");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
@@ -442,6 +474,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //geo objects writer section 
             mapeditBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
+            mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
             mapeditBuilder.AppendLine(" ");
 
@@ -590,12 +623,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     for (int point = 0; point < allPoints.Count; point++)
                     {
                         mapeditBuilder.AppendLine("      globalVars.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
-                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+                        if (allPoints[point].Label != "")
+                        {
+                            mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+                        }
+                        else
+                        {
+                            mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[" + point + "] = \"" + CurrentItem.Bib_Title + "\"; ");
+                        }
+
 
                         try
                         {
                             //get the image url
-                            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            List<SobekCM_File_Info> first_page_files =
+                                ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
                             string first_page_jpeg = String.Empty;
                             foreach (SobekCM_File_Info thisFile in first_page_files)
                             {
@@ -613,10 +655,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         catch (Exception)
                         {
                             mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[" + point + "] = \"\" ");
-                            throw;
+                            //throw;
                         }
 
 
+                    }
+                    mapeditBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine("      displayIncomingPoints();");
+                    mapeditBuilder.AppendLine(" ");
+                }
+                else
+                {
+                    try
+                    {
+                        //get the image url
+                        List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                        string first_page_jpeg = String.Empty;
+                        foreach (SobekCM_File_Info thisFile in first_page_files)
+                        {
+                            if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                            {
+                                first_page_jpeg = thisFile.System_Name;
+                                break;
+                            }
+                        }
+                        string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[0] = \"" + first_page_complete_url + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                    }
+                    catch (Exception)
+                    {
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[0] = \"\" ");
+                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                        //throw;
                     }
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPoints();");
@@ -634,7 +707,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            Boolean rapidTest = true;
+            bool rapidTest = CurrentMode.Base_URL.Contains("localhost");
+
             if (rapidTest == true)
             {
                 //string mapeditHTMLFile = @""+ CurrentMode.Base_URL + "default/mapedit.txt";
@@ -917,9 +991,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 #endregion
 
             }
-            
+
             //custom js files (load order does matter)
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_load.js\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit.js\"></script>");
             //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
             //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
             //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
