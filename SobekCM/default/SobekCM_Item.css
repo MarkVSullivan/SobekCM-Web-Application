@@ -147,13 +147,16 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 .sbkCiv_StatsTableRowSeperator { background-color: #e7e7e7; }
 .sbkCiv_StatsTableFinalSeperator { background-color: black; }
 #sbkCiv_StatsTableTotalRow {text-align: center; font-weight: bold; }
-.sbkCiv_CitationSection { border: none; width: 100%; background-color: white;line-height: 120%;padding-bottom: 15px;padding-left: 15px; }
-.sbkCiv_CitationSection td { padding-top: 5px;padding-bottom: 5px; }
-.sbkCiv_CitationSection h2 { color: #999999;font-size: 1.0em; }
-.sbkCiv_Label { vertical-align:top;font-weight:bold;padding-left: 20px; }
+.sbkCiv_CitationSection { border: none; width: 100%; background-color: white;line-height: 120%;padding-bottom: 5px; font-size: 1.0em; }
+.sbkCiv_CitationSection h2 {padding-top: 0;margin-top: 0; color: #999999; padding-left: 15px;font-size: 1.2em; }
+.sbkCiv_CitationSection dl { padding-left: 30px;font-size: 1.1em;padding-bottom: 0; }
+.sbkCiv_CitationSection dt {float: left; vertical-align:top; font-weight:bold; }
+.sbkCiv_CitationSection dd {margin-left: 150px; padding-bottom: 10px; vertical-align:top; padding-left: 10px;padding-right: 15px;line-height: 140%; }
 .sbkCiv_TextHighlight { background:yellow; font-weight:bold; }
 .sbCiv_DownloadSection { padding-bottom: 25px; }
 .sbCiv_DownloadSection p { padding-left: 40px;padding-right: 30px; }
+#Sbk_CivThumbnailDiv { float: right;padding-right: 15px;padding-left: 10px; }
+#Sbk_CivThumbnailImg { width: 150px;border: #333333 solid 1px; }
 
 /** DOWNLOAD_ITEMVIEWER (For any downloads related to the resource) */
 #sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;}

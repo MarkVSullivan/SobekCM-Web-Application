@@ -15,7 +15,7 @@
 **                                                                 
 **************************************************************************/
 
-
+article,aside,details,figcaption,figure, footer,header,hgroup,menu,nav,section {  display:block; }
 
 #sbkHmw_BannerDiv { background-color: White;width: 100%;text-align: center;}
 #sbkAhs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
