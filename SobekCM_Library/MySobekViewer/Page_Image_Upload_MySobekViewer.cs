@@ -15,6 +15,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Application_State;
@@ -305,17 +306,45 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
                 }
-          
-                //// Add the JPEG2000 and JPEG-specific viewers
-                //item.Behaviors.Clear_Views();
-                //if (jpeg_added)
-                //{
-                //    item.Behaviors.Add_View(SobekCM.Resource_Object.Behaviors.View_Enum.JPEG);
-                //}
-                //if (jp2_added)
-                //{
-                //    item.Behaviors.Add_View(SobekCM.Resource_Object.Behaviors.View_Enum.JPEG2000);
-                //}
+
+				// Add the JPEG2000 and JPEG-specific viewers
+				//item.Behaviors.Clear_Views();
+				if (jpeg_added) 
+				{
+					// Is a JPEG view already existing?
+					bool jpeg_viewer_already_exists = false;
+					foreach (View_Object thisViewer in item.Behaviors.Views)
+					{
+						if (thisViewer.View_Type == View_Enum.JPEG)
+						{
+							jpeg_viewer_already_exists = true;
+							break;
+						}
+					}
+
+					// Add the JPEG view if it did not already exists
+					if ( !jpeg_viewer_already_exists )
+						item.Behaviors.Add_View(View_Enum.JPEG);
+				}
+
+				// If a JPEG2000 file was just added, ensure it exists as a view for this item
+				if (jp2_added)
+				{
+					// Is a JPEG view already existing?
+					bool jpg2000_viewer_already_exists = false;
+					foreach (View_Object thisViewer in item.Behaviors.Views)
+					{
+						if (thisViewer.View_Type == View_Enum.JPEG2000 )
+						{
+							jpg2000_viewer_already_exists = true;
+							break;
+						}
+					}
+
+					// Add the JPEG2000 view if it did not already exists
+					if (!jpg2000_viewer_already_exists)
+						item.Behaviors.Add_View(View_Enum.JPEG2000);
+				}
 
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(final_destination);

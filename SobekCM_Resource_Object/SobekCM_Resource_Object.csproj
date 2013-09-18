@@ -157,6 +157,8 @@
     </Compile>
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="Generic_Reader.cs" />
+    <Compile Include="METS_Sec_ReaderWriters\ETD_MS_DC_METS_dmdSec_ReaderWriter.cs" />
+    <Compile Include="METS_Sec_ReaderWriters\ETD_SobekCM_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="Utilities\Image_Derivative_Creation_Processor.cs" />
     <Compile Include="iMetadataDescribable.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />
@@ -195,7 +197,7 @@
     <Compile Include="METS_Sec_ReaderWriters\DAITSS_METS_amdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\DarwinCore_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\DC_METS_dmdSec_ReaderWriter.cs" />
-    <Compile Include="METS_Sec_ReaderWriters\ETD_METS_dmdSec_ReaderWriter.cs" />
+    <Compile Include="METS_Sec_ReaderWriters\ETD_PALMM_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\GML_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\iDivision_amdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\iDivision_dmdSec_ReaderWriter.cs" />
@@ -378,9 +380,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Metadata_Modules\Oral_Interview_Info.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Metadata_Modules\PALMM_Info.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Metadata_Modules\Performing_Arts_Info.cs">

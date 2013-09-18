@@ -555,10 +555,6 @@ namespace SobekCM.Resource_Object.Testing
             daitssInfo.toArchive = true;
             testPackage.Add_Metadata_Module(GlobalVar.DAITSS_METADATA_MODULE_KEY, daitssInfo);
 
-            PALMM_Info palmmInfo = new PALMM_Info();
-            testPackage.Add_Metadata_Module("PALMM", palmmInfo);
-            palmmInfo.toPALMM = false;
-
             // Save this package
             testPackage.Source_Directory = directory;
             return testPackage;

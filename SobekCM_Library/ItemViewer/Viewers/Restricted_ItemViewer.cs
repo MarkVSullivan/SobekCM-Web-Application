@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System.IO;
-using System.Web.UI.WebControls;
 
 #endregion
 
@@ -64,7 +63,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-			Output.WriteLine("<td style=\"text-align:left;\" id=\"sbkRes_MainArea\">" + restrictedMessage + "</td>");
+			// Replace item URL in the restricted message
+	        CurrentMode.ViewerCode = string.Empty;
+	        string msg = restrictedMessage.Replace("<%ITEMURL%>", CurrentMode.Redirect_URL());
+
+			Output.WriteLine("<td style=\"text-align:left;\" id=\"sbkRes_MainArea\">" + msg + "</td>");
         }
     }
 }

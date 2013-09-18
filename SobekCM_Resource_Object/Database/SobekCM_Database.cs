@@ -78,34 +78,26 @@ namespace SobekCM.Resource_Object.Database
 			// Save the group information ( group, interfaces, links to collections ) for this item
             thisPackage.Web.GroupID = Save_Item_Group_Information(thisPackage, DateTime.Now);
 
-			// Try to get the year
+			// Get the pub date and year
+			string pubdate = thisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
 			int year = -1;
-			if (thisPackage.Bib_Info.Origin_Info.Date_Issued.Length > 0)
+			if (pubdate.Length > 0)
 			{
-				if (thisPackage.Bib_Info.Origin_Info.Date_Issued.Length == 4)
+				// Try to get the year
+				if (pubdate.Length == 4)
 				{
-					try
-					{
-						year = Convert.ToInt32(thisPackage.Bib_Info.Origin_Info.Date_Issued);
-					}
-					catch { }
+					Int32.TryParse(pubdate, out year);
 				}
 
 				if (year == -1)
 				{
-					try
+					DateTime date;
+					if (DateTime.TryParse(pubdate, out date))
 					{
-						DateTime date = Convert.ToDateTime(thisPackage.Bib_Info.Origin_Info.Date_Issued);
 						year = date.Year;
 					}
-					catch { }
 				}
 			}
-
-			// Get the display pub date
-			string pubdate = thisPackage.Bib_Info.Origin_Info.Date_Issued;
-			if (pubdate.Length == 0)
-				pubdate = thisPackage.Bib_Info.Origin_Info.Date_Created;
 
 			// Get the spatial display and subjects information
 			StringBuilder spatialDisplayBuilder = new StringBuilder();
@@ -660,7 +652,7 @@ namespace SobekCM.Resource_Object.Database
                 Save_Serial_Hierarchy_Information(thisPackage, thisPackage.Web.GroupID, thisPackage.Web.ItemID);
 			}
 
-			// Save any additional metadat present in the item
+			// Save any additional metadata present in the item
 			Save_Item_Metadata_Information(thisPackage);
 
             // Step through all the metadata modules and allow the modules to save to the database
@@ -1434,34 +1426,26 @@ namespace SobekCM.Resource_Object.Database
 		/// <returns>TRUE if successful, otherwise FALSE </returns>
 		private static bool Save_Item_Information( SobekCM_Item thisPackage, int GroupID, DateTime CreateDate )
 		{
-			// Try to get the year
+			// Get the pub date and year
+			string pubdate = thisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
 			int year = -1;
-			if ( thisPackage.Bib_Info.Origin_Info.Date_Issued.Length > 0)
+			if (pubdate.Length > 0)
 			{
-				if (thisPackage.Bib_Info.Origin_Info.Date_Issued.Length == 4)
+				// Try to get the year
+				if (pubdate.Length == 4)
 				{
-					try
-					{
-						year = Convert.ToInt32(thisPackage.Bib_Info.Origin_Info.Date_Issued);
-					}
-					catch { }
+					Int32.TryParse(pubdate, out year);
 				}
 
 				if (year == -1)
 				{
-					try
+					DateTime date;
+					if (DateTime.TryParse(pubdate, out date))
 					{
-						DateTime date = Convert.ToDateTime(thisPackage.Bib_Info.Origin_Info.Date_Issued);
 						year = date.Year;
 					}
-					catch { }
 				}
 			}
-
-			// Get the display pub date
-			string pubdate = thisPackage.Bib_Info.Origin_Info.Date_Issued;
-			if (pubdate.Length == 0)
-				pubdate = thisPackage.Bib_Info.Origin_Info.Date_Created;
 
 			// Get the spatial display and subjects information
 			StringBuilder spatialDisplayBuilder = new StringBuilder();
@@ -2013,19 +1997,7 @@ namespace SobekCM.Resource_Object.Database
 			{
                 metadataTerms.Add(new KeyValuePair<string, string>("TOC", thisTocTerm));
 			}
-
-			//WHEN 'ZT Kingdom' then 40
-			//WHEN 'ZT Phylum' then 41
-			//WHEN 'ZT Class' then 42
-			//WHEN 'ZT Order' then 43
-			//WHEN 'ZT Family' then 44
-			//WHEN 'ZT Genus' then 45
-			//WHEN 'ZT Species' then 46
-			//WHEN 'ZT Common Name' then 47
-			//WHEN 'ZT Scientific Name' then 48
-			//WHEN 'ZT All Taxonomy' then 49
-
-          
+         
 			// Just add blanks in at the end to get this to an increment of ten
             while ((metadataTerms.Count % 10) != 0)
 			{

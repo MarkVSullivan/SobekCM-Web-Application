@@ -5,17 +5,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+	/// <summary> Class reads and writes simple dublin core within a METS file </summary>
+	/// <remarks> This also looks for the ETD-MS fields used for Electronic Theses and Dissertations.
+	/// However, this will not be WRITTEN unless the <see cref="ETD_MS_DC_METS_dmdSec_ReaderWriter"/> class
+	/// is utilized in the METS writing profile </remarks>
     public class DC_METS_dmdSec_ReaderWriter : XML_Writing_Base_Type, iPackage_dmdSec_ReaderWriter
     {
         #region iPackage_dmdSec_ReaderWriter Members
 
         /// <summary> Flag indicates if this active reader/writer will write a dmdSec </summary>
         /// <param name="METS_Item"> Package with all the metadata to save</param>
+		/// <param name="Options"> Dictionary of any options which this METS section writer may utilize</param>
         /// <returns> TRUE if the package has data to be written, otherwise fALSE </returns>
         public bool Include_dmdSec(SobekCM_Item METS_Item, Dictionary<string, object> Options)
         {
@@ -28,7 +34,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <param name="METS_Item">Package with all the metadata to save</param>
         /// <param name="Options"> Dictionary of any options which this METS section writer may utilize</param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
-        public bool Write_dmdSec(TextWriter Output_Stream, SobekCM_Item METS_Item, Dictionary<string, object> Options)
+        public virtual bool Write_dmdSec(TextWriter Output_Stream, SobekCM_Item METS_Item, Dictionary<string, object> Options)
         {
             Write_Simple_Dublin_Core(Output_Stream, METS_Item.Bib_Info);
             return true;
@@ -42,7 +48,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> TRUE if successful, otherwise FALSE</returns>
         public bool Read_dmdSec(XmlReader Input_XmlReader, SobekCM_Item Return_Package, Dictionary<string, object> Options)
         {
-            Read_Simple_Dublin_Core_Info(Input_XmlReader, Return_Package.Bib_Info);
+            Read_Simple_Dublin_Core_Info(Input_XmlReader, Return_Package.Bib_Info, Return_Package);
             return true;
         }
 
@@ -78,15 +84,17 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         #region Static method to write simple dublin core from a bibliographic object to an output stream
 
-        public static void Write_Simple_Dublin_Core(TextWriter Output, Bibliographic_Info thisBibInfo)
+        /// <summary> Class writes simple dublin core to an output stream </summary>
+        /// <param name="Output"> Output stream to write to </param>
+        /// <param name="BibInfo"> Bibliographic information to write </param>
+        public static void Write_Simple_Dublin_Core(TextWriter Output, Bibliographic_Info BibInfo)
         {
             // Add all the titles
-            Output.WriteLine("<dc:title>" + thisBibInfo.Main_Title.ToString() + "</dc:title>");
-            List<string> titles = new List<string>();
-            titles.Add(thisBibInfo.Main_Title.ToString().Trim());
-            if (thisBibInfo.Other_Titles_Count > 0)
+            Output.WriteLine("<dc:title>" + BibInfo.Main_Title + "</dc:title>");
+            List<string> titles = new List<string> {BibInfo.Main_Title.ToString().Trim()};
+	        if (BibInfo.Other_Titles_Count > 0)
             {
-                foreach (Title_Info thisTitle in thisBibInfo.Other_Titles)
+                foreach (Title_Info thisTitle in BibInfo.Other_Titles)
                 {
                     if (!titles.Contains(thisTitle.ToString().Trim()))
                     {
@@ -97,26 +105,26 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Series title maps to dc:relation
-            if ((thisBibInfo.hasSeriesTitle) && (thisBibInfo.SeriesTitle.Title.Length > 0))
+            if ((BibInfo.hasSeriesTitle) && (BibInfo.SeriesTitle.Title.Length > 0))
             {
-                if (!titles.Contains(thisBibInfo.SeriesTitle.ToString().Trim()))
+                if (!titles.Contains(BibInfo.SeriesTitle.ToString().Trim()))
                 {
-                    Output.WriteLine("<dc:relation>" + Convert_String_To_XML_Safe_Static(thisBibInfo.SeriesTitle.ToString()) + "</dc:relation>");
+                    Output.WriteLine("<dc:relation>" + Convert_String_To_XML_Safe_Static(BibInfo.SeriesTitle.ToString()) + "</dc:relation>");
                 }
             }
 
             // Add all the creators
             List<string> contributors = new List<string>();
-            if ((thisBibInfo.hasMainEntityName) && (thisBibInfo.Main_Entity_Name.Full_Name.Length > 0))
+            if ((BibInfo.hasMainEntityName) && (BibInfo.Main_Entity_Name.Full_Name.Length > 0))
             {
-                if ((thisBibInfo.Main_Entity_Name.Roles.Count == 0) || (thisBibInfo.Main_Entity_Name.Roles[0].Role.ToUpper() != "CONTRIBUTOR"))
-                    Output.WriteLine("<dc:creator>" + Convert_String_To_XML_Safe_Static(thisBibInfo.Main_Entity_Name.ToString().Replace("<i>", "").Replace("</i>", "")) + "</dc:creator>");
+                if ((BibInfo.Main_Entity_Name.Roles.Count == 0) || (BibInfo.Main_Entity_Name.Roles[0].Role.ToUpper() != "CONTRIBUTOR"))
+                    Output.WriteLine("<dc:creator>" + Convert_String_To_XML_Safe_Static(BibInfo.Main_Entity_Name.ToString().Replace("<i>", "").Replace("</i>", "")) + "</dc:creator>");
                 else
-                    contributors.Add(thisBibInfo.Main_Entity_Name.ToString(false).Replace("<i>", "").Replace("</i>", ""));
+                    contributors.Add(BibInfo.Main_Entity_Name.ToString(false).Replace("<i>", "").Replace("</i>", ""));
             }
-            if (thisBibInfo.Names_Count > 0)
+            if (BibInfo.Names_Count > 0)
             {
-                foreach (Name_Info thisName in thisBibInfo.Names)
+                foreach (Name_Info thisName in BibInfo.Names)
                 {
                     if ((thisName.Roles.Count == 0) || (thisName.Roles[0].Role.ToUpper() != "CONTRIBUTOR"))
                         Output.WriteLine("<dc:creator>" + Convert_String_To_XML_Safe_Static(thisName.ToString().Replace("<i>", "").Replace("</i>", "")) + "</dc:creator>");
@@ -135,9 +143,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the coverages (hierarchical geographic)
-            if (thisBibInfo.Subjects_Count > 0)
+            if (BibInfo.Subjects_Count > 0)
             {
-                foreach (Subject_Info thisSubject in thisBibInfo.Subjects)
+                foreach (Subject_Info thisSubject in BibInfo.Subjects)
                 {
                     if (thisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial)
                     {
@@ -151,9 +159,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the coverages (temporal)
-            if (thisBibInfo.TemporalSubjects_Count > 0)
+            if (BibInfo.TemporalSubjects_Count > 0)
             {
-                foreach (Temporal_Info thisTemporal in thisBibInfo.TemporalSubjects)
+                foreach (Temporal_Info thisTemporal in BibInfo.TemporalSubjects)
                 {
                     if (thisTemporal.TimePeriod.Length > 0)
                     {
@@ -163,22 +171,22 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the date issued
-            if (thisBibInfo.Origin_Info.Date_Issued.Length > 0)
+            if (BibInfo.Origin_Info.Date_Issued.Length > 0)
             {
-                Output.WriteLine("<dc:date>" + Convert_String_To_XML_Safe_Static(thisBibInfo.Origin_Info.Date_Issued) + "</dc:date>");
+                Output.WriteLine("<dc:date>" + Convert_String_To_XML_Safe_Static(BibInfo.Origin_Info.Date_Issued) + "</dc:date>");
             }
 
             // Add all descriptions/notes
-            if ((thisBibInfo.Original_Description != null) && (thisBibInfo.Original_Description.Notes_Count > 0))
+            if ((BibInfo.Original_Description != null) && (BibInfo.Original_Description.Notes_Count > 0))
             {
-                foreach (string physicalDescNote in thisBibInfo.Original_Description.Notes)
+                foreach (string physicalDescNote in BibInfo.Original_Description.Notes)
                 {
                     Output.WriteLine("<dc:description>" + Convert_String_To_XML_Safe_Static(physicalDescNote) + "</dc:description>");
                 }
             }
-            if (thisBibInfo.Notes_Count > 0)
+            if (BibInfo.Notes_Count > 0)
             {
-                foreach (Note_Info thisNote in thisBibInfo.Notes)
+                foreach (Note_Info thisNote in BibInfo.Notes)
                 {
                     if (thisNote.Note_Type != Note_Type_Enum.source)
                         Output.WriteLine("<dc:description>" + Convert_String_To_XML_Safe_Static(thisNote.ToString().Replace("<b>", "(").Replace("</b>", ") ")) + "</dc:description>");
@@ -186,24 +194,24 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the format
-            if (thisBibInfo.Original_Description.Extent.Length > 0)
+            if (BibInfo.Original_Description.Extent.Length > 0)
             {
-                Output.WriteLine("<dc:format>" + Convert_String_To_XML_Safe_Static(thisBibInfo.Original_Description.Extent) + "</dc:format>");
+                Output.WriteLine("<dc:format>" + Convert_String_To_XML_Safe_Static(BibInfo.Original_Description.Extent) + "</dc:format>");
             }
 
             // Add all the other identifiers
-            if (thisBibInfo.Identifiers_Count > 0)
+            if (BibInfo.Identifiers_Count > 0)
             {
-                foreach (Identifier_Info thisIdentifier in thisBibInfo.Identifiers)
+                foreach (Identifier_Info thisIdentifier in BibInfo.Identifiers)
                 {
                     Output.WriteLine("<dc:identifier>" + Convert_String_To_XML_Safe_Static(thisIdentifier.Identifier) + "</dc:identifier>");
                 }
             }
 
             // Add the language information
-            if (thisBibInfo.Languages_Count > 0)
+            if (BibInfo.Languages_Count > 0)
             {
-                foreach (Language_Info thisLanguage in thisBibInfo.Languages)
+                foreach (Language_Info thisLanguage in BibInfo.Languages)
                 {
                     if (thisLanguage.Language_Text.Length > 0)
                     {
@@ -213,9 +221,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the subjects
-            if (thisBibInfo.Subjects_Count > 0)
+            if (BibInfo.Subjects_Count > 0)
             {
-                foreach (Subject_Info thisSubject in thisBibInfo.Subjects)
+                foreach (Subject_Info thisSubject in BibInfo.Subjects)
                 {
                     if (thisSubject.Class_Type != Subject_Info_Type.Hierarchical_Spatial)
                     {
@@ -260,41 +268,41 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add all the publishers from the origin info section
-            if (thisBibInfo.Origin_Info.Publishers_Count > 0)
+            if (BibInfo.Origin_Info.Publishers_Count > 0)
             {
-                foreach (string publisher in thisBibInfo.Origin_Info.Publishers)
+                foreach (string publisher in BibInfo.Origin_Info.Publishers)
                 {
                     Output.WriteLine("<dc:publisher>" + Convert_String_To_XML_Safe_Static(publisher) + "</dc:publisher>");
                 }
             }
 
             // Add all publishers held in the more complete custom section
-            if (thisBibInfo.Publishers.Count > 0)
+            if (BibInfo.Publishers.Count > 0)
             {
-                foreach (Publisher_Info thisPublisher in thisBibInfo.Publishers)
+                foreach (Publisher_Info thisPublisher in BibInfo.Publishers)
                 {
                     Output.WriteLine("<dc:publisher>" + Convert_String_To_XML_Safe_Static(thisPublisher.ToString()) + "</dc:publisher>");
                 }
             }
 
             // Add the type
-            string mods_type = thisBibInfo.Type.MODS_Type_String;
+            string mods_type = BibInfo.Type.MODS_Type_String;
             if (mods_type.Length > 0)
             {
                 Output.WriteLine("<dc:type>" + Convert_String_To_XML_Safe_Static(mods_type) + "</dc:type>");
             }
-            if (thisBibInfo.Type.Uncontrolled_Types_Count > 0)
+            if (BibInfo.Type.Uncontrolled_Types_Count > 0)
             {
-                foreach (string thisType in thisBibInfo.Type.Uncontrolled_Types)
+                foreach (string thisType in BibInfo.Type.Uncontrolled_Types)
                 {
                     Output.WriteLine("<dc:type>" + Convert_String_To_XML_Safe_Static(thisType) + "</dc:type>");
                 }
             }
 
             // Add the relations
-            if (thisBibInfo.RelatedItems_Count > 0)
+            if (BibInfo.RelatedItems_Count > 0)
             {
-                foreach (Related_Item_Info thisRelatedItem in thisBibInfo.RelatedItems)
+                foreach (Related_Item_Info thisRelatedItem in BibInfo.RelatedItems)
                 {
                     if (thisRelatedItem.Main_Title.Title.Trim().Length > 0)
                     {
@@ -304,15 +312,15 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the rights
-            if (thisBibInfo.Access_Condition.Text.Length > 0)
+            if (BibInfo.Access_Condition.Text.Length > 0)
             {
-                Output.WriteLine("<dc:rights>" + Convert_String_To_XML_Safe_Static(thisBibInfo.Access_Condition.Text) + "</dc:rights>");
+                Output.WriteLine("<dc:rights>" + Convert_String_To_XML_Safe_Static(BibInfo.Access_Condition.Text) + "</dc:rights>");
             }
 
             // Add the source note
-            if (thisBibInfo.Notes_Count > 0)
+            if (BibInfo.Notes_Count > 0)
             {
-                foreach (Note_Info thisNote in thisBibInfo.Notes)
+                foreach (Note_Info thisNote in BibInfo.Notes)
                 {
                     if (thisNote.Note_Type == Note_Type_Enum.source)
                         Output.WriteLine("<dc:source>" + Convert_String_To_XML_Safe_Static(thisNote.Note) + "</dc:source>");
@@ -320,9 +328,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             //// Add the source information
-            //if (thisBibInfo.Source.Statement.Length > 0)
+            //if (BibInfo.Source.Statement.Length > 0)
             //{
-            //    Output.WriteLine("<dc:source>" + thisBibInfo.Source.XML_Safe_Statement + "</dc:source>");
+            //    Output.WriteLine("<dc:source>" + BibInfo.Source.XML_Safe_Statement + "</dc:source>");
             //}
         }
 
@@ -331,167 +339,240 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         #region Static method to read dublin core information into a bibliographic object 
 
         /// <summary> Reads the Dublin Core-compliant section of XML and stores the data in the provided digital resource </summary>
-        /// <param name="r"> XmlTextReader from which to read the dublin core data </param>
-        /// <param name="thisBibInfo"> Digital resource object to save the data to </param>
-        public static void Read_Simple_Dublin_Core_Info(XmlReader r, Bibliographic_Info thisBibInfo)
+        /// <param name="R"> XmlTextReader from which to read the dublin core data </param>
+        /// <param name="BibInfo"> Digital resource object to save the data to </param>
+        /// <param name="Return_Package"> The return package, if this is reading a top-level section of dublin core </param>
+        public static void Read_Simple_Dublin_Core_Info(XmlReader R, Bibliographic_Info BibInfo, SobekCM_Item Return_Package )
         {
-            while (r.Read())
+            while (R.Read())
             {
-                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "METS:mdWrap") || (r.Name == "mdWrap")))
+                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "METS:mdWrap") || (R.Name == "mdWrap")))
                     return;
 
-                if (r.NodeType == XmlNodeType.Element)
+                if (R.NodeType == XmlNodeType.Element)
                 {
-                    switch (r.Name)
+                    switch (R.Name)
                     {
                         case "dc:contributor":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Add_Named_Entity(r.Value.Trim(), "Contributor");
+                                BibInfo.Add_Named_Entity(R.Value.Trim(), "Contributor");
                             }
                             break;
 
                         case "dc:coverage":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
                                 Subject_Info_Standard thisSubject = new Subject_Info_Standard();
-                                thisSubject.Add_Geographic(r.Value.Trim());
-                                thisBibInfo.Add_Subject(thisSubject);
+                                thisSubject.Add_Geographic(R.Value.Trim());
+                                BibInfo.Add_Subject(thisSubject);
                             }
                             break;
 
                         case "dc:creator":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                if (thisBibInfo.Main_Entity_Name.hasData)
+                                if (BibInfo.Main_Entity_Name.hasData)
                                 {
-                                    thisBibInfo.Add_Named_Entity(r.Value.Trim());
+                                    BibInfo.Add_Named_Entity(R.Value.Trim());
                                 }
                                 else
                                 {
-                                    thisBibInfo.Main_Entity_Name.Full_Name = r.Value.Trim();
+                                    BibInfo.Main_Entity_Name.Full_Name = R.Value.Trim();
                                 }
                             }
                             break;
 
                         case "dc:date":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Origin_Info.Date_Issued = r.Value.Trim();
+                                BibInfo.Origin_Info.Date_Issued = R.Value.Trim();
                             }
                             break;
 
                         case "dc:description":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Add_Note(r.Value.Trim());
+                                BibInfo.Add_Note(R.Value.Trim());
                             }
                             break;
 
                         case "dc:format":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Original_Description.Extent = r.Value.Trim();
+                                BibInfo.Original_Description.Extent = R.Value.Trim();
                             }
                             break;
 
                         case "dc:identifier":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Add_Identifier(r.Value.Trim());
+                                BibInfo.Add_Identifier(R.Value.Trim());
                             }
                             break;
 
                         case "dc:language":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Add_Language(r.Value.Trim());
+                                BibInfo.Add_Language(R.Value.Trim());
                             }
                             break;
 
                         case "dc:publisher":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Add_Publisher(r.Value.Trim());
+                                BibInfo.Add_Publisher(R.Value.Trim());
                             }
                             break;
 
                         case "dc:relation":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
                                 Related_Item_Info newRelatedItem = new Related_Item_Info();
-                                newRelatedItem.Main_Title.Title = r.Value.Trim();
-                                thisBibInfo.Add_Related_Item(newRelatedItem);
+                                newRelatedItem.Main_Title.Title = R.Value.Trim();
+                                BibInfo.Add_Related_Item(newRelatedItem);
                             }
                             break;
 
                         case "dc:rights":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Access_Condition.Text = r.Value.Trim();
+                                BibInfo.Access_Condition.Text = R.Value.Trim();
                             }
                             break;
 
                         case "dc:source":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Add_Note(r.Value, Note_Type_Enum.source);
+                                BibInfo.Add_Note(R.Value, Note_Type_Enum.source);
                             }
                             break;
 
                         case "dc:subject":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                if (r.Value.IndexOf(";") > 0)
+                                if (R.Value.IndexOf(";") > 0)
                                 {
-                                    string[] splitter = r.Value.Split(";".ToCharArray());
+                                    string[] splitter = R.Value.Split(";".ToCharArray());
                                     foreach (string thisSplit in splitter)
                                     {
-                                        thisBibInfo.Add_Subject(thisSplit.Trim(), String.Empty);
+                                        BibInfo.Add_Subject(thisSplit.Trim(), String.Empty);
                                     }
                                 }
                                 else
                                 {
-                                    thisBibInfo.Add_Subject(r.Value.Trim(), String.Empty);
+                                    BibInfo.Add_Subject(R.Value.Trim(), String.Empty);
                                 }
                             }
                             break;
 
                         case "dc:title":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                if (thisBibInfo.Main_Title.Title.Length == 0)
+                                if (BibInfo.Main_Title.Title.Length == 0)
                                 {
-                                    thisBibInfo.Main_Title.Title = r.Value.Trim();
+                                    BibInfo.Main_Title.Title = R.Value.Trim();
                                 }
                                 else
                                 {
-                                    thisBibInfo.Add_Other_Title(r.Value.Trim(), Title_Type_Enum.alternative);
+                                    BibInfo.Add_Other_Title(R.Value.Trim(), Title_Type_Enum.alternative);
                                 }
                             }
                             break;
 
                         case "dc:type":
-                            r.Read();
-                            if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                thisBibInfo.Type.Add_Uncontrolled_Type(r.Value.Trim());
+                                BibInfo.Type.Add_Uncontrolled_Type(R.Value.Trim());
                             }
                             break;
+
+						case "thesis.degree.name":
+							R.Read();
+							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && ( Return_Package != null ))
+							{
+								// Ensure the thesis object exists and is added
+								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+								if (thesisInfo == null)
+								{
+									thesisInfo = new Thesis_Dissertation_Info();
+									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+								}
+
+								thesisInfo.Degree = R.Value.Trim();
+							}
+							break;
+
+						case "thesis.degree.level":
+							R.Read();
+							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+							{
+								// Ensure the thesis object exists and is added
+								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+								if (thesisInfo == null)
+								{
+									thesisInfo = new Thesis_Dissertation_Info();
+									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+								}
+
+								string temp = R.Value.Trim().ToLower();
+								if ((temp == "doctorate") || (temp == "doctoral"))
+									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate;
+								if ((temp == "masters") || (temp == "master's"))
+									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters;
+								if ((temp == "bachelors") || (temp == "bachelor's"))
+									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
+								if ((temp == "post-doctorate") || (temp == "post-doctoral"))
+									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
+							}
+							break;
+
+						case "thesis.degree.discipline":
+							R.Read();
+							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+							{
+								// Ensure the thesis object exists and is added
+								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+								if (thesisInfo == null)
+								{
+									thesisInfo = new Thesis_Dissertation_Info();
+									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+								}
+
+								thesisInfo.Add_Degree_Discipline(R.Value.Trim());
+							}
+							break;
+
+						case "thesis.degree.grantor":
+							R.Read();
+							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+							{
+								// Ensure the thesis object exists and is added
+								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+								if (thesisInfo == null)
+								{
+									thesisInfo = new Thesis_Dissertation_Info();
+									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+								}
+
+								thesisInfo.Degree_Grantor = R.Value.Trim();
+							}
+							break;
                     }
                 }
             }

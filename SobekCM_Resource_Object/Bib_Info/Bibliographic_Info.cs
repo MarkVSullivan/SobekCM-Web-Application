@@ -206,7 +206,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     metadataTerms.Add(new KeyValuePair<string, string>("Edition", Origin_Info.Edition));
                 }
 
-                // Add publishers here
+                // Add publishers and the display publisher here here
                 List<string> places = new List<string>();
                 if (Publishers_Count > 0)
                 {
@@ -215,6 +215,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                         if ((thisPublisher.Name.ToLower().IndexOf("s.n") < 0) || (thisPublisher.Name.Replace(" ", "").Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").Replace(",", "").Replace(".", "").Replace(";", "").Replace(":", "").Replace(">", "").Replace("<", "").Length > 3))
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Publisher", thisPublisher.Name));
+
+							metadataTerms.Add(new KeyValuePair<string, string>("Publisher.Display", thisPublisher.ToString()));
                         }
 
                         if (thisPublisher.Places_Count > 0)
@@ -225,6 +227,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                                     places.Add(thisPlace.Place_Text);
                             }
                         }
+
+
                     }
                 }
 
@@ -293,6 +297,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                 List<string> city = new List<string>();
                 List<string> continent = new List<string>();
                 List<string> island = new List<string>();
+				List<string> spatials_display = new List<string>();
+				List<string> subjects_display = new List<string>();
                 if (Subjects_Count > 0)
                 {
                     foreach (Subject_Info thisSubject in Subjects)
@@ -304,12 +310,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                         if (thisSubject.Class_Type == Subject_Info_Type.Name)
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Name as Subject", thisSubject.ToString(false)));
+	                        string complete = thisSubject.ToString(false);
+	                        if ((complete.Length > 0) && (!subjects_display.Contains(complete)))
+		                        subjects_display.Add(complete);
                         }
 
                         // Add title subjects
                         if (thisSubject.Class_Type == Subject_Info_Type.TitleInfo)
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Title as Subject", thisSubject.ToString(false)));
+							string complete = thisSubject.ToString(false);
+							if ((complete.Length > 0) && (!subjects_display.Contains(complete)))
+								subjects_display.Add(complete);
                         }
 
                         // Add the subject keywords
@@ -327,10 +339,21 @@ namespace SobekCM.Resource_Object.Bib_Info
                             }
                             if (standSubj.Geographics_Count > 0)
                             {
+								StringBuilder thisSpatialBuilder = new StringBuilder();
                                 foreach (string geoTerm in standSubj.Geographics)
                                 {
-                                    metadataTerms.Add(new KeyValuePair<string, string>("Spatial Coverage", geoTerm));
+	                                if (geoTerm.Length > 0)
+	                                {
+		                                metadataTerms.Add(new KeyValuePair<string, string>("Spatial Coverage", geoTerm));
+		                                if (thisSpatialBuilder.Length == 0)
+			                                thisSpatialBuilder.Append(geoTerm);
+		                                else
+			                                thisSpatialBuilder.Append(" -- " + geoTerm);
+	                                }
                                 }
+	                            string complete2 = thisSpatialBuilder.ToString();
+								if ((complete2.Length > 0) && (!spatials_display.Contains(complete2)))
+									spatials_display.Add(complete2);
                             }
                             if (standSubj.Topics_Count > 0)
                             {
@@ -339,6 +362,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                                     metadataTerms.Add(new KeyValuePair<string, string>("Subject Keyword", topicTerm));
                                 }
                             }
+
+							string complete = thisSubject.ToString(false);
+							if ((complete.Length > 0) && (!subjects_display.Contains(complete)))
+								subjects_display.Add(complete);
                         }
 
                         // Add hierarchical spatial info
@@ -378,6 +405,13 @@ namespace SobekCM.Resource_Object.Bib_Info
                                 metadataTerms.Add(new KeyValuePair<string, string>("Spatial Coverage", hiero.Island));
                                 island.Add(hiero.Island);
                             }
+
+							// Add the complete spatial as a display
+	                        string complete = hiero.ToString();
+							if ((complete.Length > 0) && (!spatials_display.Contains(complete)))
+							{
+								spatials_display.Add(complete);
+				            }
                         }
                     }
                 }
@@ -399,6 +433,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     metadataTerms.Add(new KeyValuePair<string, string>("City", thisCity));
                 }
+
+				// Add the display spatial coverage
+				foreach (string thisSpatial in spatials_display)
+				{
+					metadataTerms.Add(new KeyValuePair<string, string>("Spatial Coverage.Display", thisSpatial));
+				}
+
+				// Add the display subjects
+				foreach (string thisSubject in subjects_display)
+				{
+					metadataTerms.Add(new KeyValuePair<string, string>("Subjects.Display", thisSubject));
+				}
 
                 // Add all target audiences
                 if (Target_Audiences_Count > 0)
@@ -435,7 +481,36 @@ namespace SobekCM.Resource_Object.Bib_Info
                     metadataTerms.Add(new KeyValuePair<string, string>("Edition", Origin_Info.Edition));
                 }
 
-                return metadataTerms;
+				// Get the pub date and year
+				string pubdate = Origin_Info.Date_Check_All_Fields;
+	            if (pubdate.Length > 0)
+	            {
+		            metadataTerms.Add(new KeyValuePair<string, string>("Publication Date", pubdate));
+
+		            // Try to get the year
+		            int year = -1;
+
+		            if (pubdate.Length == 4)
+		            {
+			            Int32.TryParse(pubdate, out year);
+		            }
+
+		            if (year == -1)
+		            {
+			            DateTime date;
+			            if (DateTime.TryParse(pubdate, out date))
+			            {
+				            year = date.Year;
+			            }
+		            }
+
+					if (year != -1)
+					{
+						metadataTerms.Add(new KeyValuePair<string, string>("Temporal Year", year.ToString()));
+					}
+	            }
+
+	            return metadataTerms;
             }
         }
 
@@ -1177,7 +1252,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            // Add the publishers
+            // Add the publishers 
             if (publishers != null)
             {
                 foreach (Publisher_Info thisName in publishers)
@@ -1185,6 +1260,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     thisName.Add_SobekCM_Metadata(sobekcm_namespace, "Publisher", results);
                 }
             }
+
 
             // Add the source information
             if (source != null)
@@ -1258,86 +1334,87 @@ namespace SobekCM.Resource_Object.Bib_Info
             return titleString.ToUpper();
         }
 
-        /// <summary> Calculate the sort date for this resource</summary>
-        /// <param name="dateString">Actual date of this resource</param>
-        /// <returns>Sortable date value for this resource</returns>
-        /// <remarks>This computes the number of days since year January 1, year 1</remarks>
-        public int sortSafeDate(string dateString)
-        {
-            // If there is no date, do nothing
-            if (dateString.Trim().Length == 0)
-            {
-                return -1;
-            }
+	    /// <summary> Calculate the sort date for this resource</summary>
+	    /// <param name="dateString">Actual date of this resource</param>
+	    /// <returns>Sortable date value for this resource</returns>
+	    /// <remarks>This computes the number of days since year January 1, year 1</remarks>
+	    public int sortSafeDate(string dateString)
+	    {
+		    // If there is no date, do nothing
+		    if (dateString.Trim().Length == 0)
+		    {
+			    return -1;
+		    }
 
-            // If there is already a sort date, use that
-            if (sortDate > 0)
-                return sortDate;
+		    // If there is already a sort date, use that
+		    if (sortDate > 0)
+			    return sortDate;
 
-            // First, check to see if this is a proper date already
-            try
-            {
-                // Try conversion
-                DateTime thisDate = Convert.ToDateTime(dateString);
+		    // First, check to see if this is a proper date already
 
-                // Conversion successful, so count days
-                TimeSpan timeElapsed = thisDate.Subtract(new DateTime(1, 1, 1));
-                sortDate = (int) timeElapsed.TotalDays;
-                return sortDate;
-            }
-            catch
-            {
-                // Didn't work, so need to try and find a year at least
-                dateString = dateString.Replace("[", "").Replace("]", "").Replace("(", "").Replace(")", "");
-                dateString = dateString.ToUpper();
-                dateString = dateString.Replace("circa", "").Replace("ca", "").Replace("c", "");
-                dateString = dateString.Replace(".", "").Replace(",", "").Replace("-", "").Trim();
+		    // Try conversion
+		    DateTime thisDate;
+		    if (DateTime.TryParse(dateString, out thisDate))
+		    {
+			    // Conversion successful, so count days
+			    TimeSpan timeElapsed = thisDate.Subtract(new DateTime(1, 1, 1));
+			    sortDate = (int) timeElapsed.TotalDays;
+			    return sortDate;
+		    }
+		    else
+		    {
+			    // Didn't work, so need to try and find a year at least
+			    dateString = dateString.Replace("[", "").Replace("]", "").Replace("(", "").Replace(")", "");
+			    dateString = dateString.ToUpper();
+			    dateString = dateString.Replace("circa", "").Replace("ca", "").Replace("c", "");
+			    dateString = dateString.Replace(".", "").Replace(",", "").Replace("-", "").Trim();
 
-                // Step through looking for first four digits
-                int start = -1;
-                for (int i = 0; i < dateString.Length; i++)
-                {
-                    if ((Char.IsNumber(dateString[i])) || (dateString[i] == '-') ||
-                        (dateString[i] == 'X') || (dateString[i] == '?') || (dateString[i] == 'U'))
-                    {
-                        if (start < 0)
-                        {
-                            start = i;
-                        }
-                    }
-                    else
-                    {
-                        // Did this include four digits?
-                        if ((start >= 0) && ((i - start) >= 4))
-                        {
-                            // You can stop
-                            break;
-                        }
-                        else
-                        {
-                            start = -1;
-                        }
-                    }
-                }
+			    // Step through looking for first four digits
+			    int start = -1;
+			    for (int i = 0; i < dateString.Length; i++)
+			    {
+				    if ((Char.IsNumber(dateString[i])) || (dateString[i] == '-') ||
+				        (dateString[i] == 'X') || (dateString[i] == '?') || (dateString[i] == 'U'))
+				    {
+					    if (start < 0)
+					    {
+						    start = i;
+					    }
+				    }
+				    else
+				    {
+					    // Did this include four digits?
+					    if ((start >= 0) && ((i - start) >= 4))
+					    {
+						    // You can stop
+						    break;
+					    }
+					    else
+					    {
+						    start = -1;
+					    }
+				    }
+			    }
 
-                // If a start was found, use it
-                if ((start >= 0) && ((dateString.Length - start) >= 4))
-                {
-                    string year = dateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
-                    DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
-                    TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
-                    sortDate = (int) timeElapsed.TotalDays;
-                    return sortDate;
-                }
-            }
+			    // If a start was found, use it
+			    if ((start >= 0) && ((dateString.Length - start) >= 4))
+			    {
+				    string year = dateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
+				    DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
+				    TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
+				    sortDate = (int) timeElapsed.TotalDays;
+				    return sortDate;
+			    }
+		    }
 
-            // Return this value, as empty
-            return -1;
-        }
+		    // Return this value, as empty
+		    return -1;
+	    }
 
-        #endregion
+	    #endregion
 
-        public TypeOfResource_SobekCM_Enum SobekCM_Type
+
+	    public TypeOfResource_SobekCM_Enum SobekCM_Type
         {
             get
             {
