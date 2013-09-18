@@ -127,6 +127,25 @@ namespace SobekCM.Resource_Object.Bib_Info
             // Do nothing
         }
 
+		/// <summary> Gets the first date discovered by going through all possible date fields </summary>
+		/// <remarks> This checks, in this order, Date Issues, Date Created, MARC Date Issued, MARC Date Issued Start, Date Copyrighted</remarks>
+	    public string Date_Check_All_Fields
+	    {
+		    get
+		    {
+				string pubdate = Date_Issued;
+				if (pubdate.Length == 0)
+					pubdate = Date_Created;
+				if (pubdate.Length == 0)
+					pubdate = MARC_DateIssued;
+				if (pubdate.Length == 0)
+					pubdate = MARC_DateIssued_Start;
+				if (pubdate.Length == 0)
+					pubdate = Date_Copyrighted;
+			    return pubdate;
+		    }
+	    }
+
         /// <summary> Get the number of frequencies associated with this material </summary>
         /// <remarks>This should be used rather than the Count property of the <see cref="Frequencies"/> property.  Even if 
         /// there are no frequencies, the Frequencies property creates a readonly collection to pass back out.</remarks>

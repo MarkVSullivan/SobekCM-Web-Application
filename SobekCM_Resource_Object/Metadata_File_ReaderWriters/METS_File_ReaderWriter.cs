@@ -464,16 +464,6 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 }
             }
 
-            // Indicate this will not go to PALMM
-            PALMM_Info palmmInfo = Item_To_Save.Get_Metadata_Module("PALMM") as PALMM_Info;
-            if (palmmInfo != null)
-            {
-                if (palmmInfo.toPALMM)
-                    Output_Stream.WriteLine("<?fcla dl=\"yes\"?>");
-                else
-                    Output_Stream.WriteLine("<?fcla dl=\"no\"?>");
-            }
-
             #endregion
 
             // Add a remark here with the title and type
@@ -1573,26 +1563,6 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 }
                                 daitssInfo2.toArchive = false;
                             }
-                            if (value.IndexOf("dl=\"yes\"") >= 0)
-                            {
-                                PALMM_Info palmmInfo = Return_Package.Get_Metadata_Module("PALMM") as PALMM_Info;
-                                if (palmmInfo == null)
-                                {
-                                    palmmInfo = new PALMM_Info();
-                                    Return_Package.Add_Metadata_Module("PALMM", palmmInfo);
-                                }
-                                palmmInfo.toPALMM = true;
-                            }
-                            if (value.IndexOf("dl=\"no\"") >= 0)
-                            {
-                                PALMM_Info palmmInfo2 = Return_Package.Get_Metadata_Module("PALMM") as PALMM_Info;
-                                if (palmmInfo2 == null)
-                                {
-                                    palmmInfo2 = new PALMM_Info();
-                                    Return_Package.Add_Metadata_Module("PALMM", palmmInfo2);
-                                }
-                                palmmInfo2.toPALMM = false;
-                            }
                         }
                     }
 
@@ -2212,26 +2182,6 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 case ORGANIZATION:
                                     r.Read();
                                     package.METS_Header.Add_Creator_Org_Notes(r.Value);
-                                    if (r.Value.Trim().IndexOf("projects=") == 0)
-                                    {
-                                        PALMM_Info palmmInfo = package.Get_Metadata_Module("PALMM") as PALMM_Info;
-                                        if (palmmInfo == null)
-                                        {
-                                            palmmInfo = new PALMM_Info();
-                                            package.Add_Metadata_Module("PALMM", palmmInfo);
-                                        }
-                                        palmmInfo.PALMM_Project = r.Value.Trim().Replace("projects=", "");
-                                    }
-                                    if (r.Value.Trim().IndexOf("server=") == 0)
-                                    {
-                                        PALMM_Info palmmInfo2 = package.Get_Metadata_Module("PALMM") as PALMM_Info;
-                                        if (palmmInfo2 == null)
-                                        {
-                                            palmmInfo2 = new PALMM_Info();
-                                            package.Add_Metadata_Module("PALMM", palmmInfo2);
-                                        }
-                                        palmmInfo2.PALMM_Server = r.Value.Trim().Replace("server=", "");
-                                    }
                                     break;
 
                                 case INDIVIDUAL:

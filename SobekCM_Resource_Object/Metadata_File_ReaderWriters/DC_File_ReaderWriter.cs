@@ -77,7 +77,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // create the node reader
                 nodeReader = new XmlTextReader(Input_Stream);
 
-                DC_METS_dmdSec_ReaderWriter.Read_Simple_Dublin_Core_Info(nodeReader, Return_Package.Bib_Info);
+                DC_METS_dmdSec_ReaderWriter.Read_Simple_Dublin_Core_Info(nodeReader, Return_Package.Bib_Info, Return_Package);
             }
             catch (Exception ee)
             {

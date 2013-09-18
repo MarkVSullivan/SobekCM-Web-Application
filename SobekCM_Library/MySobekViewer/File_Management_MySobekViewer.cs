@@ -261,57 +261,6 @@ namespace SobekCM.Library.MySobekViewer
                 // Step through and add each file 
                 Item_To_Complete.Divisions.Download_Tree.Clear();
 
-                // Step through each file
-                bool error_reading_file_occurred = false;
-
-                // Add the image files first
-                bool jpeg_added = false;
-                bool jp2_added = false;
-                foreach (string thisFileKey in image_files.Keys)
-                {
-                    // Get the list of files
-                    List<string> theseFiles = image_files[thisFileKey];
-
-                    // Add each file
-                    foreach (string thisFile in theseFiles)
-                    {
-                        // Create the new file object and compute a label
-                        System.IO.FileInfo fileInfo = new System.IO.FileInfo(thisFile);
-                        SobekCM.Resource_Object.Divisions.SobekCM_File_Info newFile = new SobekCM.Resource_Object.Divisions.SobekCM_File_Info(fileInfo.Name);
-                        string label = fileInfo.Name.Replace(fileInfo.Extension, "");
-                        if (System.Web.HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + thisFileKey] != null)
-                        {
-                            string possible_label = System.Web.HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + thisFileKey].ToString();
-                            if (possible_label.Length > 0)
-                                label = possible_label;
-                        }
-
-                        // Add this file
-                        item.Divisions.Physical_Tree.Add_File(newFile, label);
-
-                        // Seperate code for JP2 and JPEG type files
-                        string extension = fileInfo.Extension.ToUpper();
-                        if (extension.IndexOf("JP2") >= 0)
-                        {
-                            if (!error_reading_file_occurred)
-                            {
-                                if (!newFile.Compute_Jpeg2000_Attributes(item.Source_Directory))
-                                    error_reading_file_occurred = true;
-                            }
-                            jp2_added = true;
-                        }
-                        else
-                        {
-                            if (!error_reading_file_occurred)
-                            {
-                                if (!newFile.Compute_Jpeg_Attributes(item.Source_Directory))
-                                    error_reading_file_occurred = true;
-                            }
-                            jpeg_added = true;
-                        }
-                    }
-                }
-
                 // Add the download files next
                 foreach(string thisFileKey in download_files.Keys )
                 {
@@ -336,18 +285,6 @@ namespace SobekCM.Library.MySobekViewer
                         Item_To_Complete.Divisions.Download_Tree.Add_File(newFile, label);
                     }
                 }
-
-                // Add the JPEG2000 and JPEG-specific viewers
-                item.Behaviors.Clear_Views();
-                if (jpeg_added)
-                {
-                    item.Behaviors.Add_View(SobekCM.Resource_Object.Behaviors.View_Enum.JPEG);
-                }
-                if (jp2_added)
-                {
-                    item.Behaviors.Add_View(SobekCM.Resource_Object.Behaviors.View_Enum.JPEG2000);
-                }
-                
 
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(digitalResourceDirectory);

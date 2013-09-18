@@ -966,15 +966,6 @@ namespace SobekCM.Resource_Object
                 //    }
                 //}
 
-                // If this is destined for PALMM, and there is no PALMM Project, just copy 
-                // over the SobekCM Primary code
-                PALMM_Info palmmInfo = Get_Metadata_Module("PALMM") as PALMM_Info;
-                if (palmmInfo != null)
-                {
-                    if ((palmmInfo.toPALMM) && (palmmInfo.PALMM_Project.Length == 0) && (behaviorInfo.Aggregation_Count > 0))
-                        palmmInfo.PALMM_Project = behaviorInfo.Aggregations[0].Code;
-                }
-
                 // Save the old METS
                 string[] metsFiles = Directory.GetFiles(Source_Directory, "*.mets*");
                 if (metsFiles.Length == 1)

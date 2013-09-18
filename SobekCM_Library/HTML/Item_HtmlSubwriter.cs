@@ -1982,22 +1982,21 @@ namespace SobekCM.Library.HTML
 
             // None of the sharing options are available if the user is restricted from this item
             // or if we are generating this as a static page source for robots
-            if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
-            {
-                // Add the hidden field
-                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-                Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
-                Output.WriteLine();
+	        if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
+	        {
+		        // Add the hidden field
+		        Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+		        Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+		        Output.WriteLine();
+	        }
 
-                // Add the scripts needed
-                Output.WriteLine("<!-- Add references to the sobekcm javascript files and libraries needed for the user menu -->");
-
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
-                Output.WriteLine();
-            }
+	        // Add the scripts needed
+            Output.WriteLine("<!-- Add references to the sobekcm javascript files and libraries needed for the user menu -->");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
+            Output.WriteLine();
         }
 
         /// <summary> Spot to write any final HTML to the response stream  </summary>

@@ -29,7 +29,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             Doctorate,
 
 			/// <summary> This is a Bachelors-level thesis </summary>
-			Bachelors
+			Bachelors,
+
+			/// <summary> This is a Post-Doctorate-level dissertation </summary>
+            PostDoctorate
         }
 
         #endregion
@@ -38,7 +41,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         private string committeeCoChair;
         private List<string> committeeMember;
         private string degree;
-        private string degreeDiscipline;
+		private List<string> degreeDiscipline;
+		private List<string> degreeDivision;
         private string degreeGrantor;
         private Thesis_Degree_Level_Enum degreeLevel;
         private Nullable<DateTime> graduationDate;
@@ -63,17 +67,15 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             set { committeeCoChair = value; }
         }
 
-        /// <summary> Returns the number of committee members </summary>
+		#region Committee member collection properties and methods
+
+		/// <summary> Returns the number of committee members </summary>
         /// <remarks>This should be used rather than the Count property of the <see cref="Committee_Members"/> property.  Even if 
         /// there are no commitee members, the Committee_Members property creates a readonly collection to pass back out.</remarks>
         public int Committee_Members_Count
         {
-            get
-            {
-                if (committeeMember == null)
-                    return 0;
-                else
-                    return committeeMember.Count;
+            get {
+	            return committeeMember == null ? 0 : committeeMember.Count;
             }
         }
 
@@ -90,8 +92,25 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             }
         }
 
+		/// <summary> Clears the list of committee members </summary>
+		public void Clear_Committee_Members()
+		{
+			committeeMember.Clear();
+		}
 
-        /// <summary> The type of degree granted. For mapping to MARC, catalogers prefer the 
+		/// <summary> Adds the name for a single committee member </summary>
+		/// <param name="Name"> Name of the committee member to add, surname first </param>
+		public void Add_Committee_Member(string Name)
+		{
+			if (committeeMember == null)
+				committeeMember = new List<string>();
+			if (!committeeMember.Contains(Name))
+				committeeMember.Add(Name);
+		}
+
+		#endregion
+
+		/// <summary> The type of degree granted. For mapping to MARC, catalogers prefer the 
         /// abbreviated form, that is "M.A." rather than "Master of Arts". </summary>
         public string Degree
         {
@@ -99,15 +118,119 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             set { degree = value; }
         }
 
-        /// <summary> Name of the college or department. This is used to create two fields 
-        /// in the cataloging record, a non-standard subject heading and a note. </summary>
-        public string Degree_Discipline
-        {
-            get { return degreeDiscipline ?? String.Empty; }
-            set { degreeDiscipline = value; }
-        }
+		#region Degree discipline collection properties and methods
 
-        /// <summary> The name of the institution in standard form </summary>
+		/// <summary> Returns the number of disciplines which best describes
+		/// the degree/materials's content </summary>
+		/// <remarks>This should be used rather than the Count property of the <see cref="Degree_Disciplines"/> property.  Even if 
+		/// there are no degree disciplines, the Degree_Disciplines property creates a readonly collection to pass back out.</remarks>
+		public int Degree_Disciplines_Count
+		{
+			get
+			{
+				return degreeDiscipline == null ? 0 : degreeDiscipline.Count;
+			}
+		}
+
+		/// <summary> Gets the collection of disciplines which best describes
+		/// the degree/materials's content </summary>
+		/// <remarks> You should check the count of degree disciplines first using the <see cref="Degree_Disciplines_Count"/> property before using this property.
+		/// Even if there are no degree disciplines, this property creates a readonly collection to pass back out.</remarks>
+		public ReadOnlyCollection<string> Degree_Disciplines
+		{
+			get
+			{
+				if (degreeDiscipline == null)
+					degreeDiscipline = new List<string>();
+				return new ReadOnlyCollection<string>(degreeDiscipline);
+			}
+		}
+
+		/// <summary> Adds a new degree discipline which best describes
+		/// the degree/materials's content </summary>
+		/// <param name="NewDiscipline"> New discipline to add to the collection </param>
+		public void Add_Degree_Discipline(string NewDiscipline)
+		{
+			// If empty, do nothing
+			if (String.IsNullOrEmpty(NewDiscipline))
+				return;
+
+			// Ensure the collection was already built
+			if (degreeDiscipline == null)
+				degreeDiscipline = new List<string>();
+
+			// If it does not exist, add it
+			if (!degreeDiscipline.Contains(NewDiscipline))
+				degreeDiscipline.Add(NewDiscipline);
+		}
+
+		/// <summary> Clears the list of associated degree disciplines which best
+		/// describes the degree/materials's content </summary>
+		public void Clear_Degree_Disciplines()
+		{
+			if (degreeDiscipline != null)
+				degreeDiscipline.Clear();
+		}
+
+		#endregion
+
+		#region Degree divisions collection properties and methods
+
+		/// <summary> Returns the number of divisions within the college which granted 
+		/// the degree or worked on the material </summary>
+		/// <remarks>This should be used rather than the Count property of the <see cref="Degree_Divisions"/> property.  Even if 
+		/// there are no degree divisions, the Degree_Divisions property creates a readonly collection to pass back out.</remarks>
+		public int Degree_Divisions_Count
+		{
+			get
+			{
+				return degreeDivision == null ? 0 : degreeDivision.Count;
+			}
+		}
+
+		/// <summary> Gets the collection of the divisions within the college which granted
+		/// the degree or worked on the material </summary>
+		/// <remarks> You should check the count of degree divisions first using the <see cref="Degree_Divisions_Count"/> property before using this property.
+		/// Even if there are no degree divisions, this property creates a readonly collection to pass back out.</remarks>
+		public ReadOnlyCollection<string> Degree_Divisions
+		{
+			get
+			{
+				if (degreeDivision == null)
+					degreeDivision = new List<string>();
+				return new ReadOnlyCollection<string>(degreeDivision);
+			}
+		}
+
+		/// <summary> Adds a new degree division within the college which granted the
+		/// degre or worked on the material in some way </summary>
+		/// <param name="NewDivision"> New division to add to the collection </param>
+		public void Add_Degree_Division(string NewDivision)
+		{
+			// If empty, do nothing
+			if (String.IsNullOrEmpty(NewDivision))
+				return;
+
+			// Ensure the collection was already built
+			if (degreeDivision == null)
+				degreeDivision = new List<string>();
+
+			// If it does not exist, add it
+			if ( !degreeDivision.Contains(NewDivision))
+				degreeDivision.Add(NewDivision);
+		}
+
+		/// <summary> Clears the list of associated degree divisions within the college
+		/// which granted the degree or worked on the material in some way  </summary>
+		public void Clear_Degree_Divisions()
+		{
+			if (degreeDivision != null)
+				degreeDivision.Clear();
+		}
+
+		#endregion
+
+		/// <summary> The name of the institution in standard form </summary>
         public string Degree_Grantor
         {
             get { return degreeGrantor ?? String.Empty; }
@@ -135,9 +258,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             get
             {
                 if ((!String.IsNullOrEmpty(committeeChair)) || (!String.IsNullOrEmpty(committeeCoChair)) ||
-                    (!String.IsNullOrEmpty(degree)) || (!String.IsNullOrEmpty(degreeDiscipline)) || (!String.IsNullOrEmpty(degreeGrantor)) ||
+					(!String.IsNullOrEmpty(degree)) || (!String.IsNullOrEmpty(degreeGrantor)) ||
                     (degreeLevel != Thesis_Degree_Level_Enum.Unknown) || (graduationDate.HasValue) ||
-                    ((committeeMember != null) && (committeeMember.Count > 0)))
+                    ((committeeMember != null) && (committeeMember.Count > 0)) ||
+					((degreeDiscipline != null) && (degreeDiscipline.Count > 0)) ||
+					((degreeDivision != null) && (degreeDivision.Count > 0)))
                     return true;
                 else
                     return false;
@@ -186,21 +311,19 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree", degree));
                 }
 
-                // Add the degree discipline
-                if (!String.IsNullOrEmpty(degreeDiscipline))
-                {
-                    if (degreeDiscipline.IndexOf(";") > 0)
-                    {
-                        string[] splitter = degreeDiscipline.Split(";".ToCharArray());
-                        foreach( string thisSplit in splitter )
-                            metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Discipline", thisSplit.Trim()));
-                    }
-                    else
-                    {
-                        metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Discipline", degreeDiscipline));
-                    }
-                    
-                }
+                // Add the degree disciplines
+				if (degreeDiscipline != null)
+				{
+					foreach (string thisSplit in degreeDiscipline)
+						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Discipline", thisSplit.Trim()));
+				}
+
+				// Add the degree divisions
+				if (degreeDivision != null)
+				{
+					foreach (string thisSplit in degreeDivision)
+						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Division", thisSplit.Trim()));
+				}
 
                 // Add the degree grantor
                 if (!String.IsNullOrEmpty(degreeGrantor))
@@ -220,7 +343,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                         break;
 
 					case Thesis_Degree_Level_Enum.Bachelors:
-						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Level", "Bechelors"));
+						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Level", "Bachelors"));
+						break;
+
+					case Thesis_Degree_Level_Enum.PostDoctorate:
+						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Level", "Post-Doctorate"));
 						break;
                 }
 
@@ -262,20 +389,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules
 
         #endregion
 
-        /// <summary> Clears the list of committee members </summary>
-        public void Clear_Committee_Members()
-        {
-            committeeMember.Clear();
-        }
 
-        /// <summary> Adds the name for a single committee member </summary>
-        /// <param name="Name"> Name of the committee member to add, surname first </param>
-        public void Add_Committee_Member(string Name)
-        {
-            if (committeeMember == null)
-                committeeMember = new List<string>();
-            if (!committeeMember.Contains(Name))
-                committeeMember.Add(Name);
-        }
     }
 }

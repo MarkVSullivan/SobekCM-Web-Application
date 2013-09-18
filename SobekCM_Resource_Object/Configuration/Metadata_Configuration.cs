@@ -463,18 +463,30 @@ namespace SobekCM.Resource_Object.Configuration
             Darwin_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DARWINCORE", "DarwinCore Zoological Taxonomic Information", true));
             Add_METS_Section_ReaderWriter(Darwin_Section);
 
+			// Add the ETD section reader/writer
+			METS_Section_ReaderWriter_Config ETD_Section = new METS_Section_ReaderWriter_Config();
+			ETD_Section.ID = "ETD";
+			ETD_Section.Label = "ETD";
+			ETD_Section.Code_Assembly = String.Empty;
+			ETD_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
+			ETD_Section.Code_Class = "ETD_SobekCM_METS_dmdSec_ReaderWriter";
+			ETD_Section.isActive = true;
+			ETD_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
+			ETD_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_ETD", "SobekCM ETD Extension", true));
+			Add_METS_Section_ReaderWriter(ETD_Section);
+
             // Add the ETD section reader/writer
-            METS_Section_ReaderWriter_Config ETD_Section = new METS_Section_ReaderWriter_Config();
-            ETD_Section.ID = "ETD";
-            ETD_Section.Label = "ETD";
-            ETD_Section.Code_Assembly = String.Empty;
-            ETD_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            ETD_Section.Code_Class = "ETD_METS_dmdSec_ReaderWriter";
-            ETD_Section.isActive = true;
-            ETD_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            ETD_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM", "PALMM ETD Extension", true));
-            ETD_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM Extensions", "PALMM ETD Extension", false));
-            Add_METS_Section_ReaderWriter(ETD_Section);
+            METS_Section_ReaderWriter_Config ETD2_Section = new METS_Section_ReaderWriter_Config();
+            ETD2_Section.ID = "ETD2";
+            ETD2_Section.Label = "ETD2";
+            ETD2_Section.Code_Assembly = String.Empty;
+            ETD2_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
+            ETD2_Section.Code_Class = "ETD_PALMM_METS_dmdSec_ReaderWriter";
+            ETD2_Section.isActive = true;
+            ETD2_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
+            ETD2_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM", "PALMM ETD Extension", true));
+            ETD2_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM Extensions", "PALMM ETD Extension", false));
+            Add_METS_Section_ReaderWriter(ETD2_Section);
 
             // Add the SobekCM section reader/writer
             METS_Section_ReaderWriter_Config SobekCM_Section = new METS_Section_ReaderWriter_Config();
