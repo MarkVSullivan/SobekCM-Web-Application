@@ -468,7 +468,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <!-- Add Server Vars -->");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
             mapeditBuilder.AppendLine("   <!-- Add Base URL Var -->");
-            mapeditBuilder.AppendLine("   globalVars.baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            mapeditBuilder.AppendLine("   globalVar.baseURL = \"" + CurrentMode.Base_URL + "\"; ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
 
@@ -580,10 +580,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         bounds += bounds2 + ", " + bounds1;
                         bounds += ")";
                         polygonBounds.Add(bounds);
-                        mapeditBuilder.AppendLine("      globalVars.incomingOverlayBounds[" + it + "] = " + bounds + ";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayBounds[" + it + "] = " + bounds + ";");
 
                         //add the label of the polygon
-                        mapeditBuilder.AppendLine("      globalVars.incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
 
                         //get the image url
                         List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
@@ -600,12 +600,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                         //polygonURL[it] = first_page_complete_url;
                         polygonURL.Add(first_page_complete_url);
-                        mapeditBuilder.AppendLine("      globalVars.incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
 
                         //get and set the rotation value
                         //polygonRotation.Add(0);
-                        //mapeditBuilder.AppendLine("      globalVars.incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
-                        mapeditBuilder.AppendLine("      globalVars.incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
+                        //mapeditBuilder.AppendLine("      globalVar.incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
 
                         //iterate
                         it++;
@@ -622,14 +622,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //add each point
                     for (int point = 0; point < allPoints.Count; point++)
                     {
-                        mapeditBuilder.AppendLine("      globalVars.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
                         if (allPoints[point].Label != "")
                         {
-                            mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
                         }
                         else
                         {
-                            mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[" + point + "] = \"" + CurrentItem.Bib_Title + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + CurrentItem.Bib_Title + "\"; ");
                         }
 
 
@@ -650,11 +650,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
 
-                            mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
                         }
                         catch (Exception)
                         {
-                            mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[" + point + "] = \"\" ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"\" ");
                             //throw;
                         }
 
@@ -682,13 +682,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
 
-                        mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[0] = \"" + first_page_complete_url + "\"; ");
-                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"" + first_page_complete_url + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
                     }
                     catch (Exception)
                     {
-                        mapeditBuilder.AppendLine("      globalVars.incomingPointSourceURL[0] = \"\" ");
-                        mapeditBuilder.AppendLine("      globalVars.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"\" ");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
                         //throw;
                     }
                     mapeditBuilder.AppendLine(" ");
@@ -728,60 +728,137 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("     <div id=\"content_message\"></div> ");
                 mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine(" <div id=\"mapedit_container_pane_0\"> ");
-                mapeditBuilder.AppendLine("         <ul class=\"sf-menu\"> ");
-                mapeditBuilder.AppendLine("             <li> ");
-                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">File</a> ");
-                mapeditBuilder.AppendLine("                 <ul> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Open</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Close</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Save</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Download</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">Preferences</a></li> ");
-                mapeditBuilder.AppendLine("                 </ul> ");
-                mapeditBuilder.AppendLine("             </li> ");
-                mapeditBuilder.AppendLine("             <li> ");
-                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Edit</a> ");
-                mapeditBuilder.AppendLine("                 <ul> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapeditBuilder.AppendLine("                 </ul> ");
-                mapeditBuilder.AppendLine("             </li> ");
-                mapeditBuilder.AppendLine("             <li> ");
-                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Views</a> ");
-                mapeditBuilder.AppendLine("                 <ul> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapeditBuilder.AppendLine("                 </ul> ");
-                mapeditBuilder.AppendLine("             </li> ");
-                mapeditBuilder.AppendLine("             <li> ");
-                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Actions</a> ");
-                mapeditBuilder.AppendLine("                 <ul> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapeditBuilder.AppendLine("                 </ul> ");
-                mapeditBuilder.AppendLine("             </li> ");
-                mapeditBuilder.AppendLine("             <li> ");
-                mapeditBuilder.AppendLine("                 <a onclick=\"return false;\">Settings</a> ");
-                mapeditBuilder.AppendLine("                 <ul> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt1</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt2</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt3</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt4</a></li> ");
-                mapeditBuilder.AppendLine("                     <li><a href=\"#\" onclick=\"\">opt5</a></li> ");
-                mapeditBuilder.AppendLine("                 </ul> ");
-                mapeditBuilder.AppendLine("             </li> ");
-                mapeditBuilder.AppendLine("             <li></li> ");
-                mapeditBuilder.AppendLine("         </ul>     ");
-                mapeditBuilder.AppendLine("     </div> ");
+                mapeditBuilder.AppendLine("     <ul class=\"sf-menu\"> ");
+                mapeditBuilder.AppendLine("         <li> ");
+                mapeditBuilder.AppendLine("             <a id=\"content_menubar_header1\"></a> ");
+                mapeditBuilder.AppendLine("             <ul> ");
+                mapeditBuilder.AppendLine("                 <li><a id=\"content_menubar_save\"></a></li> ");
+                mapeditBuilder.AppendLine("                 <li><a id=\"content_menubar_cancel\"></a></li> ");
+                mapeditBuilder.AppendLine("                 <li><a id=\"content_menubar_reset\"></a></li> ");
+                mapeditBuilder.AppendLine("             </ul> ");
+                mapeditBuilder.AppendLine("         </li> ");
+                mapeditBuilder.AppendLine("         <li> ");
+                mapeditBuilder.AppendLine("             <a id=\"content_menubar_header2\"></a> ");
+                mapeditBuilder.AppendLine("             <ul> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_header2Sub1\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_toggleMapControls\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_toggleToolbox\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_toggleToolbar\"></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_header2Sub2\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_layerRoadmap\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_layerSatellite\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_layerHybrid\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_layerTerrain\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_layerCustom\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_layerReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_header2Sub3\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_zoomIn\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_zoomOut\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_zoomReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_header2Sub4\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_panUp\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_panRight\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_panDown\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_panLeft\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_panReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("             </ul> ");
+                mapeditBuilder.AppendLine("         </li> ");
+                mapeditBuilder.AppendLine("         <li> ");
+                mapeditBuilder.AppendLine("             <a id=\"content_menubar_header3\"></a> ");
+                mapeditBuilder.AppendLine("             <ul>                ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_manageSearch\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li> ");
+                mapeditBuilder.AppendLine("                             <div class=\"mapedit_container_search\"> ");
+                mapeditBuilder.AppendLine("                                 <input id=\"content_menubar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
+                mapeditBuilder.AppendLine("                                 <div id=\"content_menubar_searchButton\" class=\"searchActionHandle\"></div> ");
+                mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                         </li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_manageItem\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemGetUserLocation\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemPlace\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_useSearchAsLocation\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_convertToOverlay\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_manageOverlay\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayGetUserLocation\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayEdit\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayPlace\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayToggle\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li> ");
+                mapeditBuilder.AppendLine("                             <a id=\"content_menubar_header3Sub3Sub1\"></a> ");
+                mapeditBuilder.AppendLine("                             <ul> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_rotationClockwise\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_rotationCounterClockwise\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_rotationReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                             </ul> ");
+                mapeditBuilder.AppendLine("                         </li> ");
+                mapeditBuilder.AppendLine("                         <li> ");
+                mapeditBuilder.AppendLine("                             <a id=\"content_menubar_header3Sub3Sub2\"></a> ");
+                mapeditBuilder.AppendLine("                             <ul> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_transparencyDarker\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_transparencyLighter\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_transparencyReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                             </ul> ");
+                mapeditBuilder.AppendLine("                         </li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayReset\" ></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("                 <li> ");
+                mapeditBuilder.AppendLine("                     <a id=\"content_menubar_managePOI\"></a> ");
+                mapeditBuilder.AppendLine("                     <ul> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiGetUserLocation\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiPlace\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiToggle\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li> ");
+                mapeditBuilder.AppendLine("                             <a id=\"content_menubar_header3Sub4Sub1\"></a> ");
+                mapeditBuilder.AppendLine("                             <ul> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_poiMarker\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_poiCircle\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_poiRectangle\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_poiPolygon\"></a></li> ");
+                mapeditBuilder.AppendLine("                                 <li><a id=\"content_menubar_poiLine\"></a></li> ");
+                mapeditBuilder.AppendLine("                             </ul> ");
+                mapeditBuilder.AppendLine("                         </li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                     </ul> ");
+                mapeditBuilder.AppendLine("                 </li> ");
+                mapeditBuilder.AppendLine("             </ul> ");
+                mapeditBuilder.AppendLine("         </li> ");
+                mapeditBuilder.AppendLine("         <li> ");
+                mapeditBuilder.AppendLine("             <a id=\"content_menubar_header4\"></a> ");
+                mapeditBuilder.AppendLine("             <ul> ");
+                mapeditBuilder.AppendLine("                 <li><a id=\"content_menubar_documentation\"></a></li> ");
+                mapeditBuilder.AppendLine("                 <li><a id=\"content_menubar_reportAProblem\"></a></li> ");
+                mapeditBuilder.AppendLine("             </ul> ");
+                mapeditBuilder.AppendLine("         </li> ");
+                mapeditBuilder.AppendLine("     </ul>     ");
+                mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine(" <div id=\"mapedit_container\"> ");
                 mapeditBuilder.AppendLine("      ");
                 mapeditBuilder.AppendLine("     <div id=\"mapedit_container_pane_1\"> ");
@@ -815,6 +892,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageItem\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageOverlay\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_managePOI\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageSearch\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("             </div> ");
                 mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
                 mapeditBuilder.AppendLine("                 <div class=\"mapedit_container_search\"> ");
@@ -870,7 +948,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                                 <div class=\"x\"></div> ");
                 mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_panDown\" class=\"x button\"></div> ");
                 mapeditBuilder.AppendLine("                                 <div class=\"x\"></div> ");
-                mapeditBuilder.AppendLine(" 							 ");
+                mapeditBuilder.AppendLine("  ");
                 mapeditBuilder.AppendLine("                                 <div class=\"x y half\"></div> ");
                 mapeditBuilder.AppendLine("  ");
                 mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_reset\" class=\"x y button\"></div> ");
@@ -909,7 +987,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                 <div id=\"itemACL\" class=\"tab\"> ");
                 mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
                 mapeditBuilder.AppendLine("                         <div id=\"mapedit_container_toolbox_tab3\"> ");
-                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_placeItem\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_itemPlace\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_itemGetUserLocation\" class=\"button\"></div>   ");
                 mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_useSearchAsLocation\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                             <div id=\"content_toolbox_button_convertToOverlay\" class=\"button\"></div> ");
@@ -987,6 +1065,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("     </div> ");
                 mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine(" <div id=\"debugs\"></div> ");
+
 
                 #endregion
 

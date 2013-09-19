@@ -130,12 +130,12 @@ a img
     text-align: left;
 }
 
-.searchResults_listItem
+.searchResultListItem
 {
     height: 16px;
 }
 
-.searchResults_actionButton
+.searchResultActionButton
 {
     float: right;
     clear: both;
