@@ -1456,7 +1456,7 @@ namespace SobekCM.Library.HTML
                 // Start the item viewer
                 Output.WriteLine("<!-- Begin the left navigational bar -->");
 
-                Output.WriteLine(PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000 || showToc ? "<div id=\"sbkIsw_Leftnavbar_hack\">" : "<div id=\"sbkIsw_Leftnavbar\">");
+                Output.WriteLine(PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000 || showToc ? "<nav id=\"sbkIsw_Leftnavbar_hack\">" : "<nav id=\"sbkIsw_Leftnavbar\">");
 
                 //// Compute the URL options which may be needed
                 //string url_options = currentMode.URL_Options();
@@ -1601,7 +1601,7 @@ namespace SobekCM.Library.HTML
                 }
 
 
-                Output.WriteLine("</div>");
+                Output.WriteLine("</nav>");
                 Output.WriteLine();
             }
 

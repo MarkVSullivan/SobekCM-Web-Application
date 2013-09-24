@@ -851,7 +851,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					if (jpeg.Length > 0)
 					{
 						result.AppendLine();
-						result.AppendLine("<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "\\" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+						result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "\\" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
 						result.AppendLine();
 						thumb_added = true;
 					}
@@ -863,7 +863,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{					
 				string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
 				result.AppendLine();
-				result.AppendLine("<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "\\" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+				result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "\\" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
 				result.AppendLine();
 			}
 
@@ -1074,11 +1074,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						language_text = from_possible_code;
 					if (language_text.ToUpper().IndexOf("ENGLISH") == 0)
 					{
-						languageList.Add(Convert_String_To_XML_Safe(language_text));
+						languageList.Add("<span itemprop=\"inLanguage\">" + Convert_String_To_XML_Safe(language_text) + "</span>");
 					}
 					else
 					{
-						languageList.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(language_text)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "LA") + Convert_String_To_XML_Safe(language_text) + search_link_end);
+						languageList.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(language_text)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "LA") + "<span itemprop=\"inLanguage\">" + Convert_String_To_XML_Safe(language_text) + "</span>" + search_link_end);
 
 					}
 				}
@@ -1445,7 +1445,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						tempList.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisMember)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thisMember) + search_link_end);
 					}
 					string text = "Committee Members";
-					if (CurrentMode.Skin == "NCF")
+					if (CurrentMode.Skin.ToLower() == "ncf")
 						text = "Faculty Sponsor";
 					Add_Citation_HTML_Rows(text, tempList, INDENT, result);
 				}
@@ -1906,12 +1906,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							{
 								if ((thisNote.Note_Type != Note_Type_Enum.internal_comments) || (CurrentMode.Internal_User))
 								{
-									result.Append(Single_Citation_HTML_Row(thisNote.Note_Type_Display_String, Convert_String_To_XML_Safe(thisNote.Note), INDENT));
+									result.Append(Single_Citation_HTML_Row(thisNote.Note_Type_Display_String, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
 								}
 							}
 							else
 							{
-								result.Append(Single_Citation_HTML_Row("General Note", Convert_String_To_XML_Safe(thisNote.Note), INDENT));
+								result.Append(Single_Citation_HTML_Row("General Note", "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
 							}
 						}
 					}

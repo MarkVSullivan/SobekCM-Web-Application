@@ -47,84 +47,51 @@ namespace SobekCM.Library.Database
         /// <summary> Group title for this title result </summary>
         public string GroupTitle { get; internal set; }
 
-        /// <summary> Publisher for this title result </summary>
-        public string Publisher { get; internal set; }
+		/// <summary> Local OPAC cataloging number for this title result </summary>
+		public long OPAC_Number { get; internal set; }
 
-        /// <summary> Author for this title result </summary>
-        public string Author { get; internal set; }
+		/// <summary> OCLC cataloging number for this title result </summary>
+		public long OCLC_Number { get; internal set; }
 
-        /// <summary> Format for this title result </summary>
-        public string Format { get; internal set; }
+		/// <summary> Group-wide thumbnail for this title result </summary>
+		public string GroupThumbnail { get; internal set; }
 
-        /// <summary> Spatial coverage for this title result </summary>
-        public string Spatial_Coverage { get; internal set; }
+		/// <summary> Material type for this title result </summary>
+		public string MaterialType
+		{
+			get
+			{
+				return materialtype ?? String.Empty;
+			}
+			internal set
+			{
+				materialtype = value;
+			}
+		}
+
+		/// <summary> Type of the primary alternate identifier for this resource ( i.e. 'Accession Number', etc.. )</summary>
+		public string Primary_Identifier_Type { get; internal set; }
+
+		/// <summary> Primary alternate identifier for this resource</summary>
+		public string Primary_Identifier { get; internal set; }
 
         /// <summary> Spatial coverage for this title result in terms of coordinates for map display </summary>
         public string Spatial_Coordinates { get; internal set; }
 
-        /// <summary> Edition for this title result </summary>
-        public string Edition { get; internal set; }
+		/// <summary> User notes for this title result, if it is in a bookshelf </summary>
+		public string UserNotes { get; internal set; }
 
-        /// <summary> Institution for this title result </summary>
-        public string Institution { get; internal set; }
+		/// <summary> Highlighted snippet of text from this document </summary>
+		public string Snippet
+		{
+			get
+			{
+				return String.Empty;
+			}
+		}
 
-        /// <summary> Material information (not type, rather for museum objects) for this title result </summary>
-        public string Material { get; internal set; }
-
-        /// <summary> Measurement for this title result </summary>
-        public string Measurement { get; internal set; }
-
-        /// <summary> Style/Period for this title result </summary>
-        public string Style_Period { get; internal set; }
-
-        /// <summary> Technique used for this title result </summary>
-        public string Technique { get; internal set; }
-
-        /// <summary> Subjects associated with this title result </summary>
-        public string Subjects { get; internal set; }
-
-        /// <summary> Donor for this title result </summary>
-        public string Donor { get; internal set; }
-
-        /// <summary> ALEPH cataloging number for this title result </summary>
-        public long ALEPH_Number { get; internal set; }
-
-        /// <summary> OCLC cataloging number for this title result </summary>
-        public long OCLC_Number { get; internal set; }
-
-        /// <summary> Group-wide thumbnail for this title result </summary>
-        public string GroupThumbnail { get; internal set; }
-
-        /// <summary> User notes for this title result, if it is in a bookshelf </summary>
-        public string UserNotes { get; internal set; }
-
-        /// <summary> Material type for this title result </summary>
-        public string MaterialType
-        {
-            get
-            {
-                return materialtype ?? String.Empty;
-            }
-            internal set
-            {
-                materialtype = value;
-            }
-        }
-
-        /// <summary> Highlighted snippet of text from this document </summary>
-        public string Snippet
-        {
-            get
-            {
-                return String.Empty;
-            }
-        }
-
-        /// <summary> Type of the primary alternate identifier for this resource ( i.e. 'Accession Number', etc.. )</summary>
-        public string Primary_Identifier_Type { get; internal set; }
-
-        /// <summary> Primary alternate identifier for this resource</summary>
-        public string Primary_Identifier { get; internal set; }
+		/// <summary> Metadata values to display for this item title result </summary>
+		public string[] Metadata_Display_Values { get; internal set; }
 
         #endregion
 
@@ -155,7 +122,7 @@ namespace SobekCM.Library.Database
         }
 
         /// <summary> Builds the tree of items under this title, for multiple item titles </summary>
-        public void Build_Item_Tree( string resultsIndex )
+        public void Build_Item_Tree( string ResultsIndex )
         {
             // Create the tree
             itemTree = new Search_Result_Item_Tree();

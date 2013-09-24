@@ -1420,7 +1420,7 @@ namespace SobekCM.Library
             // If this is an exact match, just do the search
             if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
             {
-                Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], includePrivate, Current_Mode.Aggregation, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], includePrivate, Current_Mode.Aggregation, -1, -1, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                 if (Need_Search_Statistics)
                     Complete_Result_Set_Info = returnArgs.Statistics;
                 Paged_Results = returnArgs.Paged_Results;
@@ -1477,7 +1477,7 @@ namespace SobekCM.Library
 
 
 
-                    Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), includePrivate, Current_Mode.Aggregation, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                    Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), includePrivate, Current_Mode.Aggregation, -1, -1, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
@@ -1487,7 +1487,7 @@ namespace SobekCM.Library
                     // Perform search in the database
                     Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(db_terms[0], db_fields[0], links[0], db_terms[1], db_fields[1], links[1], db_terms[2], db_fields[2], links[2], db_terms[3],
                                                                                                             db_fields[3], links[3], db_terms[4], db_fields[4], links[4], db_terms[5], db_fields[5], links[5], db_terms[6], db_fields[6], links[6], db_terms[7], db_fields[7], links[7], db_terms[8], db_fields[8],
-                                                                                                            links[8], db_terms[9], db_fields[9], includePrivate, Current_Mode.Aggregation, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                                                                                                            links[8], db_terms[9], db_fields[9], includePrivate, Current_Mode.Aggregation, -1, -1, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;

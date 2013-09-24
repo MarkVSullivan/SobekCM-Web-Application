@@ -8,6 +8,8 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
+using SobekCM.Library.Search;
+using SobekCM.Library.Settings;
 
 #endregion
 
@@ -43,10 +45,10 @@ namespace SobekCM.Library.ResultsViewer
         //}
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -108,7 +110,7 @@ namespace SobekCM.Library.ResultsViewer
                     if (( titleResult.Spatial_Coordinates.Length == 0 ) || ( coords.Length == 0 ) || (titleResult.Spatial_Coordinates[0] == 'A') || (titleResult.Spatial_Coordinates[0] != coords[0]))
                     {
                         // Write the information
-                        Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, placeHolder, builder);
+                        Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, MainPlaceHolder, builder);
 
                         // Get ready for the next item
                         map_number++;
@@ -128,7 +130,7 @@ namespace SobekCM.Library.ResultsViewer
             if (titles_for_current_map.Count > 0)
             {
                 // Write the information
-                Add_Item_Info_And_Map( textRedirectStem, base_url, map_number, titles_for_current_map, placeHolder, builder);
+                Add_Item_Info_And_Map( textRedirectStem, base_url, map_number, titles_for_current_map, MainPlaceHolder, builder);
             }
 
             // Close out this map table 
@@ -142,21 +144,20 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add this to the page
             Literal writeData = new Literal {Text = builder + mapScriptHtml.ToString()};
-            placeHolder.Controls.Add(writeData);
+            MainPlaceHolder.Controls.Add(writeData);
         }
 
-        private void Add_Item_Info_And_Map(string textRedirectStem, string base_url, int map_number, List<iSearch_Title_Result> titles_for_current_map, PlaceHolder placeHolder, StringBuilder builder)
+        private void Add_Item_Info_And_Map(string TextRedirectStem, string BaseURL, int MapNumber, List<iSearch_Title_Result> TitlesForCurrentMap, PlaceHolder MainPlaceHolder, StringBuilder Builder)
         {
             // Set some values before iterating through the item rows
-
-            const string variesString = "<span style=\"color:Gray\">( varies )</span>";
+			const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
 
             // Step through each collection of items by bib id for this coordinate and see if this is a collection of points
             bool point_collection_map = false;
             bool polygon_map = false;
-            if (titles_for_current_map[0].Spatial_Coordinates.Length > 0)
+            if (TitlesForCurrentMap[0].Spatial_Coordinates.Length > 0)
             {
-                if (titles_for_current_map[0].Spatial_Coordinates[0] == 'P')
+                if (TitlesForCurrentMap[0].Spatial_Coordinates[0] == 'P')
                 {
                     point_collection_map = true;
                 }
@@ -167,53 +168,53 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Add the map division here
-            builder.AppendLine("  <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
-            builder.AppendLine("  <tr valign=\"top\">");
+            Builder.AppendLine("  <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
+            Builder.AppendLine("  <tr valign=\"top\">");
 
             if (point_collection_map)
             {
-                builder.AppendLine("    <td colspan=\"2\"><div id=\"map" + map_number + "\" style=\"width: 450px; height: 450px\"></div></td>");
-                builder.AppendLine("    <td>");
-                builder.AppendLine("      <table width=\"380px\">");
+                Builder.AppendLine("    <td colspan=\"2\"><div id=\"map" + MapNumber + "\" style=\"width: 450px; height: 450px\"></div></td>");
+                Builder.AppendLine("    <td>");
+                Builder.AppendLine("      <table width=\"380px\">");
             }
 
             if( polygon_map )
             {
-                builder.AppendLine("    <td align=\"center\"><div id=\"map" + map_number + "\" style=\"width: 250px; height: 250px\"></div></td>");
-                builder.AppendLine("    <td colspan=\"2\">");
-                builder.AppendLine("      <table width=\"580px\">");
+                Builder.AppendLine("    <td align=\"center\"><div id=\"map" + MapNumber + "\" style=\"width: 250px; height: 250px\"></div></td>");
+                Builder.AppendLine("    <td colspan=\"2\">");
+                Builder.AppendLine("      <table width=\"580px\">");
 
                 // Put a note here about the number of matches
-                if (titles_for_current_map.Count > 1)
+                if (TitlesForCurrentMap.Count > 1)
                 {
-                    int total_items = titles_for_current_map.Sum(title_in_map => title_in_map.Item_Count);
-                    if (total_items != titles_for_current_map.Count)
+                    int total_items = TitlesForCurrentMap.Sum(TitleInMap => TitleInMap.Item_Count);
+                    if (total_items != TitlesForCurrentMap.Count)
                     {
-                        builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches in " + titles_for_current_map.Count + " sets share the same coordinate information</em></center></span></td></tr>");
+                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches in " + TitlesForCurrentMap.Count + " sets share the same coordinate information</em></center></span></td></tr>");
                     }
                     else
                     {
-                        builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches share the same coordinate information</em></center></span></td></tr>");
+                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches share the same coordinate information</em></center></span></td></tr>");
                     }
                 }
             }
 
             if ((!point_collection_map) && (!polygon_map))
             {
-                builder.AppendLine("    <td colspan=\"3\">");
-                builder.AppendLine("      <table width=\"100%\">");
+                Builder.AppendLine("    <td colspan=\"3\">");
+                Builder.AppendLine("      <table width=\"100%\">");
 
                 // Put a note here about the number of matches
-                if (titles_for_current_map.Count > 1)
+                if (TitlesForCurrentMap.Count > 1)
                 {
-                    int total_items = titles_for_current_map.Sum(title_in_map => title_in_map.Item_Count);
-                    if (total_items != titles_for_current_map.Count)
+                    int total_items = TitlesForCurrentMap.Sum(TitleInMap => TitleInMap.Item_Count);
+                    if (total_items != TitlesForCurrentMap.Count)
                     {
-                        builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches in " + titles_for_current_map.Count + " sets have no coordinate information</em></center></span></td></tr>");
+                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches in " + TitlesForCurrentMap.Count + " sets have no coordinate information</em></center></span></td></tr>");
                     }
                     else
                     {
-                        builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches have no coordinate information</em></center></span></td></tr>");
+                        Builder.AppendLine("        <tr><td colspan=\"3\"><span style=\"color: gray;\"><center><em>The following " + total_items + " matches have no coordinate information</em></center></span></td></tr>");
                     }
                 }
             }
@@ -226,7 +227,7 @@ namespace SobekCM.Library.ResultsViewer
             int polygons_added_to_this_map = 0;
             int coordinates_per_this_map = 1;
             string coords = String.Empty;
-            foreach (iSearch_Title_Result titleResult in titles_for_current_map)
+            foreach (iSearch_Title_Result titleResult in TitlesForCurrentMap)
             {
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
@@ -239,11 +240,11 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     if ((polygon_map) || (titleResult.Spatial_Coordinates != coords))
                     {
-                        builder.AppendLine("        <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
+                        Builder.AppendLine("        <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
                     }
                     else
                     {
-                        builder.AppendLine("        <tr><td></td><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
+                        Builder.AppendLine("        <tr><td></td><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
                     }
                 }
 
@@ -258,7 +259,7 @@ namespace SobekCM.Library.ResultsViewer
                     multiple = true;
 
                     // This will not include the item details, just the tree
-                    builder.AppendLine("        <tr>");
+                    Builder.AppendLine("        <tr>");
 
                     // If this is a point (and the first point of this coordinate) add the point information here
                     if (point_collection_map)
@@ -266,14 +267,14 @@ namespace SobekCM.Library.ResultsViewer
                         if (titleResult.Spatial_Coordinates != coords)
                         {
                             // Add the icon for the google marker
-                            builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
+                            Builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
 
                             // Look ahead to see if multiple items have the same coordinate
-                            int index = titles_for_current_map.IndexOf(titleResult);
+                            int index = TitlesForCurrentMap.IndexOf(titleResult);
                             int matching_titles_for_this_point = 1;
-                            while ((index >= 0) && ((index + 1) < titles_for_current_map.Count))
+                            while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
                             {
-                                if (titles_for_current_map[index + 1].Spatial_Coordinates == titleResult.Spatial_Coordinates)
+                                if (TitlesForCurrentMap[index + 1].Spatial_Coordinates == titleResult.Spatial_Coordinates)
                                 {
                                     matching_titles_for_this_point++;
                                 }
@@ -285,10 +286,10 @@ namespace SobekCM.Library.ResultsViewer
                             }
                             if (matching_titles_for_this_point > 1)
                             {
-                                builder.AppendLine("            <td colspan=\"2\"><span style=\"color: gray;\"><center><em>The following " + matching_titles_for_this_point + " titles have the same coordinate point</em></center></span></td>");
-                                builder.AppendLine("          </tr>");
-                                builder.AppendLine("          <tr>");
-                                builder.AppendLine("            <td>&nbsp;</td>");
+                                Builder.AppendLine("            <td colspan=\"2\"><span style=\"color: gray;\"><center><em>The following " + matching_titles_for_this_point + " titles have the same coordinate point</em></center></span></td>");
+                                Builder.AppendLine("          </tr>");
+                                Builder.AppendLine("          <tr>");
+                                Builder.AppendLine("            <td>&nbsp;</td>");
                             }
 
                             coords = titleResult.Spatial_Coordinates;
@@ -296,28 +297,28 @@ namespace SobekCM.Library.ResultsViewer
                         }
                         else
                         {
-                            builder.AppendLine("          <td>&nbsp;</td>");
+                            Builder.AppendLine("          <td>&nbsp;</td>");
                         }
                     }
                     else
                     {
-                        builder.AppendLine("          <td>&nbsp;</td>");
+                        Builder.AppendLine("          <td>&nbsp;</td>");
                     }
 
-                    builder.AppendLine("          <td colspan=\"2\">");
+                    Builder.AppendLine("          <td colspan=\"2\">");
 
                     // Write all the collected HTML to a literal, since we will be adding a 
                     // tree view control to the web page next
-                    Literal literal = new Literal {Text = builder.ToString()};
-                    placeHolder.Controls.Add(literal);
-                    builder.Remove(0, builder.Length);
+                    Literal literal = new Literal {Text = Builder.ToString()};
+                    MainPlaceHolder.Controls.Add(literal);
+                    Builder.Remove(0, Builder.Length);
 
                     // Draw the tree of all matching issues
-                    Add_Issue_Tree(placeHolder, titleResult, currentResultCount, textRedirectStem, base_url);
+                    Add_Issue_Tree(MainPlaceHolder, titleResult, currentResultCount, TextRedirectStem, BaseURL);
 
                     // Finish this table in the item results view                                                       
-                    builder.AppendLine("          </td>");
-                    builder.AppendLine("        </tr>");
+                    Builder.AppendLine("          </td>");
+                    Builder.AppendLine("        </tr>");
 
                     // Check if the pub date is the same for all items
                     if ((pubdate.Length > 0) && (pubdate != "-1"))
@@ -340,14 +341,14 @@ namespace SobekCM.Library.ResultsViewer
                         if (titleResult.Spatial_Coordinates != coords)
                         {
                             // Add the icon for the google marker
-                            builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
+                            Builder.AppendLine("          <tr><td width=\"30\"><img src=\"" + icon_by_number(coordinates_per_this_map) + "\" /></td>");
 
                             // Look ahead to see if multiple items have the same coordinate
-                            int index = titles_for_current_map.IndexOf(titleResult);
+                            int index = TitlesForCurrentMap.IndexOf(titleResult);
                             int matching_titles_for_this_point = 1;
-                            while ((index >= 0) && ((index + 1) < titles_for_current_map.Count))
+                            while ((index >= 0) && ((index + 1) < TitlesForCurrentMap.Count))
                             {
-                                if (titles_for_current_map[index + 1].Spatial_Coordinates == titleResult.Spatial_Coordinates)
+                                if (TitlesForCurrentMap[index + 1].Spatial_Coordinates == titleResult.Spatial_Coordinates)
                                 {
                                     matching_titles_for_this_point++;
                                 }
@@ -359,10 +360,10 @@ namespace SobekCM.Library.ResultsViewer
                             }
                             if (matching_titles_for_this_point > 1)
                             {
-                                builder.AppendLine("            <td colspan=\"2\"><span style=\"color: gray;\"><center><em>The following " + matching_titles_for_this_point + " titles have the same coordinate point</em></center></span></td>");
-                                builder.AppendLine("          </tr>");
-                                builder.AppendLine("          <tr>");
-                                builder.AppendLine("            <td>&nbsp;</td>");
+                                Builder.AppendLine("            <td colspan=\"2\"><span style=\"color: gray;\"><center><em>The following " + matching_titles_for_this_point + " titles have the same coordinate point</em></center></span></td>");
+                                Builder.AppendLine("          </tr>");
+                                Builder.AppendLine("          <tr>");
+                                Builder.AppendLine("            <td>&nbsp;</td>");
                             }
 
                             coords = titleResult.Spatial_Coordinates;
@@ -370,120 +371,86 @@ namespace SobekCM.Library.ResultsViewer
                         }
                         else
                         {
-                            builder.AppendLine("          <td>&nbsp;</td>");
+                            Builder.AppendLine("          <td>&nbsp;</td>");
                         }
 
-                        builder.AppendLine("<td colspan=\"2\"><a href=\"" + base_url + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + textRedirectStem + "\">" + firstItemResult.Title + "</a>");
+                        Builder.AppendLine("<td colspan=\"2\"><a href=\"" + BaseURL + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + TextRedirectStem + "\">" + firstItemResult.Title + "</a>");
 
                     }
                     else
                     {
-                        builder.AppendLine("            <tr><td></td><td colspan=\"2\"><a href=\"" + base_url + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + textRedirectStem + "\">" + firstItemResult.Title + "</a>");
+                        Builder.AppendLine("            <tr><td></td><td colspan=\"2\"><a href=\"" + BaseURL + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + TextRedirectStem + "\">" + firstItemResult.Title + "</a>");
 
                         // Save this link, just in case it is the only area in this map
-                        last_link = base_url + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + textRedirectStem;
+                        last_link = BaseURL + titleResult.BibID.ToUpper() + "/" + firstItemResult.VID + TextRedirectStem;
                     }
                 }
 
                 // Add the bib id and vid
                 if (CurrentMode.Internal_User)
                 {
-                    builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>BibID:</td><td>" + titleResult.BibID.ToUpper() + "</td></tr>");
+                    Builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>BibID:</td><td>" + titleResult.BibID.ToUpper() + "</td></tr>");
                     if (!multiple)
                     {
-                        builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>VID:</td><td>" + firstItemResult.VID + "</td></tr>");
+                        Builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>VID:</td><td>" + firstItemResult.VID + "</td></tr>");
                     }
                 }
 
-                // Add the publication date
-                if ((pubdate.Length > 0) && (pubdate != "-1"))
-                    builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Date", CurrentMode.Language) + ":</td><td>" + pubdate + "</td></tr>");
+				for (int i = 0; i < Results_Statistics.Metadata_Labels.Count; i++)
+				{
+					string field = Results_Statistics.Metadata_Labels[i];
+					string value = titleResult.Metadata_Display_Values[i];
+					Metadata_Search_Field thisField = SobekCM_Library_Settings.Metadata_Search_Field_By_Name(field);
+					string display_field = string.Empty;
+					if (thisField != null)
+						display_field = thisField.Display_Term;
+					if (display_field.Length == 0)
+						display_field = field.Replace("_", " ");
 
-                // Add any authors
-                if (titleResult.Author.Length > 0)
-                {
-                    if (titleResult.Author == "*")
-                    {
-                        builder.AppendLine("            <tr valign=\"top\" height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Author", CurrentMode.Language) + ":</td><td>" + variesString + "</td></tr>");
-                    }
-                    else
-                    {
-                        bool author_found = false;
-                        string[] author_split = titleResult.Author.Split("|".ToCharArray());
+					if (value == "*")
+					{
+						Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>" + VARIES_STRING + "</td></tr>");
+					}
+					else if (value.Trim().Length > 0)
+					{
+						if (value.IndexOf("|") > 0)
+						{
+							bool value_found = false;
+							string[] value_split = value.Split("|".ToCharArray());
 
-                        foreach (string thisAuthor in author_split)
-                        {
-                            if (thisAuthor.ToUpper().IndexOf("PUBLISHER") < 0)
-                            {
-                                if (!author_found)
-                                {
-                                    builder.AppendLine("            <tr valign=\"top\" height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Author", CurrentMode.Language) + ":</td><td>");
-                                    author_found = true;
-                                }
-                                builder.Append(thisAuthor + "<br />");
-                            }
-                        }
+							foreach (string thisValue in value_split)
+							{
+								if (thisValue.Trim().Trim().Length > 0)
+								{
+									if (!value_found)
+									{
+										Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>");
+										value_found = true;
+									}
+									Builder.Append(System.Web.HttpUtility.HtmlEncode(thisValue) + "<br />");
+								}
+							}
 
-                        if (author_found)
-                        {
-                            builder.AppendLine("</td></tr>");
-                        }
-                    }
-                }
-
-                // Add any publishers
-                if (titleResult.Publisher.Length > 0)
-                {
-                    if (titleResult.Publisher == "*")
-                    {
-                        builder.AppendLine("            <tr valign=\"top\" height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Publisher", CurrentMode.Language) + ":</td><td>" + variesString + "</td></tr>");
-                    }
-                    else
-                    {
-                        string[] publisher_split = titleResult.Publisher.Split("|".ToCharArray());
-                        builder.AppendLine("            <tr valign=\"top\" height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Publisher", CurrentMode.Language) + ":</td><td>");
-                        foreach (string thisPublisher in publisher_split)
-                        {
-                            builder.Append(thisPublisher.Replace("&lt;", "").Replace("&gt;", "") + "<br />");
-                        }
-                        builder.AppendLine();
-                    }
-                }
-
-                // Add the format
-                if ((!multiple) && (titleResult.Format.Length > 0))
-                {
-                    if (titleResult.Format == "*")
-                    {
-                        builder.AppendLine("            <tr valign=\"top\" height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Format", CurrentMode.Language) + ":</td><td>" + variesString + "</td></tr>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Format", CurrentMode.Language) + ":</td><td>" + titleResult.Format.Replace("[", " ").Replace("]", " ") + "</td></tr>");
-                    }
-                }
-
-                // Add the donor
-                if (titleResult.Donor.Length > 0)
-                {
-                    if (titleResult.Donor == "*")
-                    {
-                        builder.AppendLine("            <tr valign=\"top\" height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Donor", CurrentMode.Language) + ":</td><td>" + variesString + "</td></tr>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation("Donor", CurrentMode.Language) + ":</td><td>" + titleResult.Donor + "</td></tr>");
-                    }
-                }
+							if (value_found)
+							{
+								Builder.AppendLine("</td></tr>");
+							}
+						}
+						else
+						{
+							Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>" + System.Web.HttpUtility.HtmlEncode(value) + "</td></tr>");
+						}
+					}
+				}
 
                 // Increment the row counter
                 currentResultCount++;
             }
 
             // End this map row
-            builder.AppendLine("      </table>");
-            builder.AppendLine("    </td>");
-            builder.AppendLine("  </tr>");
+            Builder.AppendLine("      </table>");
+            Builder.AppendLine("    </td>");
+            Builder.AppendLine("  </tr>");
 
             if ((point_collection_map) || (polygon_map))
             {
@@ -495,14 +462,14 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Now, start to add the map javascript information to the building javascript
                 mapScriptHtml.AppendLine();
-                mapScriptHtml.AppendLine("    var map" + map_number + "_center = new google.maps.LatLng(<%CENTERINFO" + map_number + "%>);");
-                mapScriptHtml.AppendLine("    var map" + map_number + "_options = { zoom: <%ZOOMINFO" + map_number + "%>, center: map" + map_number + "_center, mapTypeId: google.maps.MapTypeId.ROADMAP, mapTypeControl: false, streetViewControl: false };");
-                mapScriptHtml.AppendLine("    var map" + map_number + " = new google.maps.Map(document.getElementById(\"map" + map_number + "\"), map" + map_number + "_options);");
+                mapScriptHtml.AppendLine("    var map" + MapNumber + "_center = new google.maps.LatLng(<%CENTERINFO" + MapNumber + "%>);");
+                mapScriptHtml.AppendLine("    var map" + MapNumber + "_options = { zoom: <%ZOOMINFO" + MapNumber + "%>, center: map" + MapNumber + "_center, mapTypeId: google.maps.MapTypeId.ROADMAP, mapTypeControl: false, streetViewControl: false };");
+                mapScriptHtml.AppendLine("    var map" + MapNumber + " = new google.maps.Map(document.getElementById(\"map" + MapNumber + "\"), map" + MapNumber + "_options);");
 
                 // Step through each coordinate/title collection for this map
                 int point_index = 1;
                 coords = "A";
-                foreach (iSearch_Title_Result items_per_bib in titles_for_current_map)
+                foreach (iSearch_Title_Result items_per_bib in TitlesForCurrentMap)
                 {
                     // Add this coordinate information to the 
                     if (items_per_bib.Spatial_Coordinates.Length > 0)
@@ -517,7 +484,7 @@ namespace SobekCM.Library.ResultsViewer
                                 coords = items_per_bib.Spatial_Coordinates;
 
                                 // Add the marker to the map script
-                                mapScriptHtml.AppendLine("    var marker" + map_number + "_" + point_index + " = new google.maps.Marker({ position: new google.maps.LatLng(" + coords_splitter[1] + ", " + coords_splitter[2] + "), map: map" + map_number + ", icon: \"" + icon_by_number(point_index) + "\" });");
+                                mapScriptHtml.AppendLine("    var marker" + MapNumber + "_" + point_index + " = new google.maps.Marker({ position: new google.maps.LatLng(" + coords_splitter[1] + ", " + coords_splitter[2] + "), map: map" + MapNumber + ", icon: \"" + icon_by_number(point_index) + "\" });");
                                 point_index++;
 
                                 // Check the new boundaries
@@ -533,7 +500,7 @@ namespace SobekCM.Library.ResultsViewer
                                 {
                                     mapScriptHtml.AppendLine("    var polygon" + polyCount + "_outline = [ new google.maps.LatLng(" + coords_splitter[1] + "," + coords_splitter[2] + "), new google.maps.LatLng(" + coords_splitter[1] + "," + coords_splitter[4] + "), new google.maps.LatLng(" + coords_splitter[3] + "," + coords_splitter[4] + "),  new google.maps.LatLng(" + coords_splitter[3] + "," + coords_splitter[2] + "), new google.maps.LatLng(" + coords_splitter[1] + "," + coords_splitter[2] + ")];");
                                     mapScriptHtml.AppendLine("    var polygon" + polyCount + " = new google.maps.Polygon({ paths: polygon" + polyCount + "_outline, strokeColor: \"#f33f00\", strokeOpacity: 1, strokeWeight: 5, fillColor: \"#ff0000\", fillOpacity: 0.2 });");
-                                    mapScriptHtml.AppendLine("    polygon" + polyCount + ".setMap(map" + map_number + ");");
+                                    mapScriptHtml.AppendLine("    polygon" + polyCount + ".setMap(map" + MapNumber + ");");
 
                                     check_boundaries(coords_splitter[1], coords_splitter[2], ref max_lat, ref max_long, ref min_lat, ref min_long);
                                     check_boundaries(coords_splitter[3], coords_splitter[4], ref max_lat, ref max_long, ref min_lat, ref min_long);
@@ -559,7 +526,7 @@ namespace SobekCM.Library.ResultsViewer
                                     }
                                     mapScriptHtml.AppendLine("];");
                                     mapScriptHtml.AppendLine("    var polygon" + polyCount + " = new google.maps.Polygon({ paths: polygon" + polyCount + "_outline, strokeColor: \"#f33f00\", strokeOpacity: 1, strokeWeight: 5, fillColor: \"#ff0000\", fillOpacity: 0.2 });");
-                                    mapScriptHtml.AppendLine("    polygon" + polyCount + ".setMap(map" + map_number + ");");
+                                    mapScriptHtml.AppendLine("    polygon" + polyCount + ".setMap(map" + MapNumber + ");");
                                 }
 
                                 // Finish the last polygon by adding the link, if there should be one
@@ -586,23 +553,23 @@ namespace SobekCM.Library.ResultsViewer
                     if ((polygons_added_to_this_map == 0) && (point_index <= 1))
                         zoom = 6;
 
-                    mapScriptHtml.Replace("<%CENTERINFO" + map_number + "%>", mid_lat + ", " + mid_long);
-                    mapScriptHtml.Replace("<%ZOOMINFO" + map_number + "%>", zoom.ToString());
+                    mapScriptHtml.Replace("<%CENTERINFO" + MapNumber + "%>", mid_lat + ", " + mid_long);
+                    mapScriptHtml.Replace("<%ZOOMINFO" + MapNumber + "%>", zoom.ToString());
                 }
                 catch
                 {
-                    mapScriptHtml.Replace("<%CENTERINFO" + map_number + "%>", "0, 0");
-                    mapScriptHtml.Replace("<%ZOOMINFO" + map_number + "%>", "8");
+                    mapScriptHtml.Replace("<%CENTERINFO" + MapNumber + "%>", "0, 0");
+                    mapScriptHtml.Replace("<%ZOOMINFO" + MapNumber + "%>", "8");
                 }
             }
         }
 
-        private static int compute_zoom(double max_lat, double max_long, double min_lat, double min_long)
+        private static int compute_zoom(double MaxLat, double MaxLong, double MinLat, double MinLong)
         {
             try
             {
-                double miles_lat = 69.167 * (max_lat - min_lat);
-                double miles_long = 69.167 * (max_long - min_long);
+                double miles_lat = 69.167 * (MaxLat - MinLat);
+                double miles_long = 69.167 * (MaxLong - MinLong);
                 double miles = Math.Max(miles_lat, miles_long);
                 if (miles < 0.5)
                     return 16;
@@ -639,23 +606,23 @@ namespace SobekCM.Library.ResultsViewer
             return 2;
         }
 
-        private static void check_boundaries(string latitude, string longitude, ref double max_lat, ref double max_long, ref double min_lat, ref double min_long)
+        private static void check_boundaries(string Latitude, string Longitude, ref double MaxLat, ref double MaxLong, ref double MinLat, ref double MinLong)
         {
-            double point_lat = Convert.ToDouble(latitude);
-            double point_long = Convert.ToDouble(longitude);
-            if (point_long > max_long)
-                max_long = point_long;
-            if (point_long < min_long)
-                min_long = point_long;
-            if (point_lat > max_lat)
-                max_lat = point_lat;
-            if (point_lat < min_lat)
-                min_lat = point_lat;
+            double point_lat = Convert.ToDouble(Latitude);
+            double point_long = Convert.ToDouble(Longitude);
+            if (point_long > MaxLong)
+                MaxLong = point_long;
+            if (point_long < MinLong)
+                MinLong = point_long;
+            if (point_lat > MaxLat)
+                MaxLat = point_lat;
+            if (point_lat < MinLat)
+                MinLat = point_lat;
         }
 
-        private static string icon_by_number(int icon_number)
+        private static string icon_by_number(int IconNumber)
         {
-            switch (icon_number)
+            switch (IconNumber)
             {
                 case 1:
                     return "http://www.google.com/mapfiles/markerA.png";

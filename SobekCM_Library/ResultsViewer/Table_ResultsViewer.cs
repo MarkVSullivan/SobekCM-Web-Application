@@ -23,10 +23,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -135,10 +135,10 @@ namespace SobekCM.Library.ResultsViewer
                     // Add this to the place holder
                     Literal thisLiteral = new Literal
                                               { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-                    placeHolder.Controls.Add(thisLiteral);
+                    MainPlaceHolder.Controls.Add(thisLiteral);
                     resultsBldr.Remove(0, resultsBldr.Length);
 
-                    Add_Issue_Tree(placeHolder, titleResult, current_row, textRedirectStem, base_url);
+                    Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
                     resultsBldr.AppendLine("\t</td></tr>" );
                 }
 
@@ -156,7 +156,7 @@ namespace SobekCM.Library.ResultsViewer
             // Add this to the html table
             Literal mainLiteral = new Literal
                                       {  Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>")  };
-            placeHolder.Controls.Add(mainLiteral);
+            MainPlaceHolder.Controls.Add(mainLiteral);
         }
     }
 }

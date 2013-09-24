@@ -40,10 +40,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -91,7 +91,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Add this to the page
                 Literal mainLiteral = new Literal {Text = resultsBldr.ToString()};
-                placeHolder.Controls.Add(mainLiteral);
+                MainPlaceHolder.Controls.Add(mainLiteral);
 
             }
             else
@@ -208,23 +208,23 @@ namespace SobekCM.Library.ResultsViewer
                         excelSheet.Cells[row, columnSelector + 2].Value = titleResult.GroupTitle.Replace("<i>","").Replace("</i>","").Replace("&amp;","&");
                         excelSheet.Cells[row, columnSelector + 3].Value = itemResult.Title.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
                         excelSheet.Cells[row, columnSelector + 4].Value = itemResult.PubDate.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 5].Value = titleResult.Author.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 6].Value = titleResult.Publisher.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 7].Value = titleResult.Format.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 8].Value = titleResult.Edition.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 9].Value = titleResult.Subjects.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 10].Value = titleResult.Measurement.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 11].Value = titleResult.Style_Period.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 12].Value = titleResult.Technique.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 13].Value = titleResult.Institution.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 14].Value = titleResult.Donor.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        if (titleResult.OCLC_Number > 1)
-                            excelSheet.Cells[row, columnSelector + 15].Value = titleResult.OCLC_Number.ToString();
-                        if (titleResult.ALEPH_Number > 1)
-                            excelSheet.Cells[row, columnSelector + 16].Value = titleResult.ALEPH_Number.ToString();
-                        excelSheet.Cells[row, columnSelector + 17].Value = itemResult.Level1_Text.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 18].Value = itemResult.Level2_Text.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 19].Value = itemResult.Level3_Text.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 5].Value = titleResult.Author.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 6].Value = titleResult.Publisher.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 7].Value = titleResult.Format.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 8].Value = titleResult.Edition.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 9].Value = titleResult.Subjects.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 10].Value = titleResult.Measurement.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 11].Value = titleResult.Style_Period.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 12].Value = titleResult.Technique.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 13].Value = titleResult.Institution.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 14].Value = titleResult.Donor.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//if (titleResult.OCLC_Number > 1)
+						//	excelSheet.Cells[row, columnSelector + 15].Value = titleResult.OCLC_Number.ToString();
+						//if (titleResult.ALEPH_Number > 1)
+						//	excelSheet.Cells[row, columnSelector + 16].Value = titleResult.ALEPH_Number.ToString();
+						//excelSheet.Cells[row, columnSelector + 17].Value = itemResult.Level1_Text.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 18].Value = itemResult.Level2_Text.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 19].Value = itemResult.Level3_Text.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
  
                         row++;
                     }
