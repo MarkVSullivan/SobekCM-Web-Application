@@ -89,7 +89,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 // Add the donor information
                 if ((hasDonor) && (Donor.hasData))
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("Donor", Donor.ToString()));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Donor", Donor.ToString(false)));
                 }
 
                 // Add the genre information
@@ -216,7 +216,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Publisher", thisPublisher.Name));
 
-							metadataTerms.Add(new KeyValuePair<string, string>("Publisher.Display", thisPublisher.ToString()));
+							metadataTerms.Add(new KeyValuePair<string, string>("Publisher.Display", thisPublisher.ToString().Replace("["," ").Replace("]"," ")));
                         }
 
                         if (thisPublisher.Places_Count > 0)

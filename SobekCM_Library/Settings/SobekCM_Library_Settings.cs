@@ -97,7 +97,7 @@ namespace SobekCM.Library.Settings
         private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByCode;
         private static readonly Dictionary<short, Metadata_Search_Field> metadataFieldsByID;
         private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByFacetName;
-
+		private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByName;
 
         private static string mangoUnionSearchBaseUrl; 
         private static string mangoUnionSearchText;
@@ -145,6 +145,7 @@ namespace SobekCM.Library.Settings
                 metadataFieldsByCode = new Dictionary<string, Metadata_Search_Field>();
                 metadataFieldsByID = new Dictionary<short, Metadata_Search_Field>();
                 metadataFieldsByFacetName = new Dictionary<string, Metadata_Search_Field>();
+				metadataFieldsByName = new Dictionary<string, Metadata_Search_Field>();
                 incomingFolders = new List<Builder_Source_Folder>();
                 searchStopWords = new List<string>();
                 additionalGlobalSettings = new Dictionary<string, string>();
@@ -602,6 +603,7 @@ namespace SobekCM.Library.Settings
                 DataColumn displayColumn = MetadataTypesTable.Columns["DisplayTerm"];
                 DataColumn facetColumn = MetadataTypesTable.Columns["FacetTerm"];
                 DataColumn solrColumn = MetadataTypesTable.Columns["SolrCode"];
+				DataColumn nameColumn = MetadataTypesTable.Columns["MetadataName"];
 
                 // Now add the rest of the fields
                 foreach (DataRow thisRow in MetadataTypesTable.Rows)
@@ -615,6 +617,7 @@ namespace SobekCM.Library.Settings
                     string display = thisRow[displayColumn].ToString();
                     string facet = thisRow[facetColumn].ToString();
                     string solr = thisRow[solrColumn].ToString();
+	                string name = thisRow[nameColumn].ToString();
 
                     // Create the new field object
                     Metadata_Search_Field newField = new Metadata_Search_Field(id, facet, display, code, solr);
@@ -623,6 +626,7 @@ namespace SobekCM.Library.Settings
                     metadataFields.Add(newField);
                     metadataFieldsByCode[code] = newField;
                     metadataFieldsByID[id] = newField;
+	                metadataFieldsByName[name.ToLower().Replace("_", " ")] = newField;
 
                     if (facet.Length > 0)
                     {
@@ -642,6 +646,17 @@ namespace SobekCM.Library.Settings
                 return metadataFieldsByCode.ContainsKey(SobekCM_Code) ? metadataFieldsByCode[SobekCM_Code] : null;
             }
         }
+
+		/// <summary> Gets a single metadata search field, by the metadata column name </summary>
+		/// <param name="Metadata_Name"> Name for this field and name of the column in the database </param>
+		/// <returns> Metadata search field, or else NULL </returns>
+		public static Metadata_Search_Field Metadata_Search_Field_By_Name(string Metadata_Name)
+		{
+			lock (thisLock)
+			{
+				return metadataFieldsByName.ContainsKey(Metadata_Name.Replace("_", " ").ToLower()) ? metadataFieldsByName[Metadata_Name.Replace("_", " ").ToLower()] : null;
+			}
+		}
 
         /// <summary> Gets a single metadata search field, by the facet name </summary>
         /// <param name="Facet_Name"> Name for this field for faceting purposes </param>

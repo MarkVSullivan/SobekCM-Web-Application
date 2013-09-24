@@ -20,10 +20,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -233,7 +233,7 @@ namespace SobekCM.Library.ResultsViewer
 
             //    System.Web.UI.LiteralControl newLiteral = new System.Web.UI.LiteralControl();
             //    newLiteral.Text = resultsBldr.ToString();
-            //    placeHolder.Controls.Add(newLiteral);
+            //    MainPlaceHolder.Controls.Add(newLiteral);
             //}
             //else
             //{
@@ -245,7 +245,7 @@ namespace SobekCM.Library.ResultsViewer
 
             //    System.Web.UI.LiteralControl errorLiteral = new System.Web.UI.LiteralControl();
             //    errorLiteral.Text = errorBldr.ToString();
-            //    placeHolder.Controls.Add(errorLiteral);
+            //    MainPlaceHolder.Controls.Add(errorLiteral);
             //}
 
         }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -13,8 +14,11 @@ namespace SobekCM.Library.Results
      [Serializable]
     public class Search_Results_Statistics
     {
+	    private List<string> metadataLabels;
+ 
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
-        public Search_Results_Statistics()
+        /// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
+		public Search_Results_Statistics(List<string> Metadata_Labels)
         {
             // Set default facet types
             First_Facets_MetadataTypeID = -1;
@@ -43,6 +47,7 @@ namespace SobekCM.Library.Results
             All_Collections_Titles = -1;
             QueryTime = 0;
 
+	        metadataLabels = Metadata_Labels;
         }
 
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
@@ -50,7 +55,8 @@ namespace SobekCM.Library.Results
         /// <param name="Facet_Types"> Types of facets requested from the database for the related item aggreagtion </param>
         /// <param name="Total_Items"> Total number of items within the greater set of matching items/titles </param>
         /// <param name="Total_Titles"> Total number of titles within the greater set of matching items/titles</param>
-        public Search_Results_Statistics(DataSet Facet_Data, List<short> Facet_Types, int Total_Items, int Total_Titles)
+		/// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
+		public Search_Results_Statistics(DataSet Facet_Data, List<short> Facet_Types, int Total_Items, int Total_Titles, List<string> Metadata_Labels)
         {            
             // Set default facet types
             First_Facets_MetadataTypeID = -1;
@@ -79,6 +85,8 @@ namespace SobekCM.Library.Results
             All_Collections_Items = -1;
             All_Collections_Titles = -1;
 
+			metadataLabels = Metadata_Labels;
+
             // Convert facet table to facet lists
             Convert_Facet_Tables_To_Facet_Lists(Facet_Data, Facet_Types);
         }
@@ -86,7 +94,8 @@ namespace SobekCM.Library.Results
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
         /// <param name="Facet_Data"> DataReader containg all the facet information to include within this class </param>
         /// <param name="Facet_Types"> Types of facets requested from the database for the related item aggreagtion </param>
-        public Search_Results_Statistics( SqlDataReader Facet_Data, List<short> Facet_Types)
+		/// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
+		public Search_Results_Statistics(SqlDataReader Facet_Data, List<short> Facet_Types, List<string> Metadata_Labels)
         {
             // Set default facet types
             First_Facets_MetadataTypeID = -1;
@@ -115,6 +124,8 @@ namespace SobekCM.Library.Results
             All_Collections_Items = -1;
             All_Collections_Titles = -1;
 
+			metadataLabels = Metadata_Labels;
+
             if (Facet_Types != null)
             {
                 // Convert facet table to facet lists
@@ -138,6 +149,19 @@ namespace SobekCM.Library.Results
 
         /// <summary> Number of items matching the search parameters, if the search is expanded to the all collections </summary>
         public int All_Collections_Items { get; internal set; }
+
+		/// <summary> List of the metadata labels associated with each of the values
+		/// found in the title results in the page of results </summary>
+		/// <remarks> This allows each aggregation to customize which values are returned
+		/// in searches and browses.  This is used to add the labels for each metadata value
+		/// in the table and brief views. </remarks>
+	    public ReadOnlyCollection<string> Metadata_Labels
+	    {
+		    get
+		    {
+			    return new ReadOnlyCollection<string>(metadataLabels);
+		    }
+	    }
 
         #endregion
 
@@ -291,7 +315,6 @@ namespace SobekCM.Library.Results
             // Go to the next table
             if (!reader.NextResult())
                 return;
-
 
             // Incrementor going through tables (and skipping aggregation table maybe)
             if (reader.FieldCount > 2)

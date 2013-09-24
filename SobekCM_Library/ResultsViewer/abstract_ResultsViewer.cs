@@ -125,10 +125,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public abstract void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer);
+        public abstract void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
 
         /// <summary> Set the current mode / navigation information for the current request </summary>
         public SobekCM_Navigation_Object CurrentMode { protected get; set; }

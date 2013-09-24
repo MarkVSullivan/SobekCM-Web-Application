@@ -188,33 +188,33 @@ namespace SobekCM.Library.Database
 		#region Methods relating to the build error logs
 
 		/// <summary> Gets the list of build errors that have been encountered between two dates </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <param name="startDate"> Beginning of the date range </param>
-		/// <param name="endDate"> End of the date range</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="StartDate"> Beginning of the date range </param>
+		/// <param name="EndDate"> End of the date range</param>
 		/// <returns> Datatable of all the build errors encountered </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Build_Error_Logs' stored procedure </remarks>
-		public static DataTable Get_Build_Error_Logs(Custom_Tracer tracer, DateTime startDate, DateTime endDate )
+		public static DataTable Get_Build_Error_Logs(Custom_Tracer Tracer, DateTime StartDate, DateTime EndDate )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", "Pulling data from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", "Pulling data from database");
 			}
 
 			try
 			{
 				// Execute this query stored procedure
 				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@firstdate", startDate);
-				paramList[1] = new SqlParameter("@seconddate", endDate);
+				paramList[0] = new SqlParameter("@firstdate", StartDate);
+				paramList[1] = new SqlParameter("@seconddate", EndDate);
 				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Build_Error_Logs", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
 			{
 				lastException = ee;
-				if (tracer != null)
+				if (Tracer != null)
 				{
-					tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", "Exception encounted", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", "Exception encounted", Custom_Trace_Type_Enum.Error);
 				}
 				return null;
 			}
@@ -284,15 +284,15 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Pulls the most often hit titles and items, by item aggregation  </summary>
 		/// <param name="AggregationCode"> Code for the item aggregation of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with the most often hit items and titles and the number of hits </returns>
 		/// <remarks> This calls the 'SobekCM_Statistics_Aggregation_Titles' stored procedure <br /><br />
 		/// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
-		public static DataSet Statistics_Aggregation_Titles( string AggregationCode, Custom_Tracer tracer )
+		public static DataSet Statistics_Aggregation_Titles( string AggregationCode, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Pulling data from database");
+				Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Pulling data from database");
 			}
 
 			try
@@ -315,15 +315,15 @@ namespace SobekCM.Library.Database
 		/// <param name="Early_Month">Month portion of the start date</param>
 		/// <param name="Last_Year">Year portion of the last date</param>
 		/// <param name="Last_Month">Month portion of the last date</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Complete usage statistics, broken down by each level of the item aggregation hierarchy, between the provided dates</returns>
 		/// <remarks> This calls the 'SobekCM_Statistics_By_Date_Range' stored procedure <br /><br />
 		/// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
-		public static DataTable Statistics_By_Date_Range(int Early_Year, int Early_Month, int Last_Year, int Last_Month, Custom_Tracer tracer)
+		public static DataTable Statistics_By_Date_Range(int Early_Year, int Early_Month, int Last_Year, int Last_Month, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Pulling data from database");
+				Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Pulling data from database");
 			}
 
 			try
@@ -346,15 +346,15 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Populates the date range from the database for which statistical information exists </summary>
 		/// <param name="Stats_Date_Object"> Statistical range object to hold the beginning and ending of the statistical information </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Statistics_By_Date_Range' stored procedure <br /><br />
 		/// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
-		public static bool Populate_Statistics_Dates(Statistics_Dates Stats_Date_Object, Custom_Tracer tracer)
+		public static bool Populate_Statistics_Dates(Statistics_Dates Stats_Date_Object, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Pulling statistics date information from database");
+				Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Pulling statistics date information from database");
 			}
 
 			try
@@ -379,16 +379,16 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Returns the month-by-month usage statistics details by item aggregation </summary>
 		/// <param name="AggregationCode"> Code for the item aggregation of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Month-by-month usage statistics for item aggregation of interest </returns>
 		/// <remarks> Passing 'ALL' in as the aggregation code returns the statistics for all item aggregations within this library <br /><br />
 		/// This calls the 'SobekCM_Get_Collection_Statistics_History' stored procedure <br /><br />
 		/// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Aggregation_Statistics_History(string AggregationCode, Custom_Tracer tracer)
+		public static DataTable Get_Aggregation_Statistics_History(string AggregationCode, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Collection_Statistics_History", "Pulling history for '" + AggregationCode + "' from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Collection_Statistics_History", "Pulling history for '" + AggregationCode + "' from database");
 			}
 
 			try
@@ -409,14 +409,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Returns the month-by-month usage statistics details by item and item group </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item group of interest </param>
 		/// <param name="VID"> Volume identifier for the item of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Month-by-month usage statistics for item and item-group </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Statistics' stored procedure  </remarks>
-		public static DataSet Get_Item_Statistics_History(string BibID, string VID, Custom_Tracer tracer)
+		public static DataSet Get_Item_Statistics_History(string BibID, string VID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", "Pulling history for '" + BibID + "_" + VID + "' from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", "Pulling history for '" + BibID + "_" + VID + "' from database");
 			}
 
 			try
@@ -436,15 +436,15 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the current title, item, and page count for each item aggregation in the item aggregation hierarchy </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datatable with all the current title, item, and page count for each item aggregation</returns>
 		/// <remarks> This calls the 'SobekCM_Item_Count_By_Collection' stored procedure  <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Item_Aggregation_Count(Custom_Tracer tracer)
+		public static DataTable Get_Item_Aggregation_Count(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling list from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling list from database");
 			}
 
 			try
@@ -461,23 +461,23 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the title, item, and page count for each item aggregation currently and at some previous point of time </summary>
-		/// <param name="date1"> Date from which to additionally include item count </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Date1"> Date from which to additionally include item count </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datatable with all the  title, item, and page count for each item aggregation currently and at some previous point of time </returns>
 		/// <remarks> This calls the 'SobekCM_Item_Count_By_Collection_By_Dates' stored procedure  <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Item_Aggregation_Count(DateTime date1, Custom_Tracer tracer)
+		public static DataTable Get_Item_Aggregation_Count(DateTime Date1, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling from database ( includes fytd starting " + date1.ToShortDateString() + ")");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling from database ( includes fytd starting " + Date1.ToShortDateString() + ")");
 			}
 
 			try
 			{
 				// Build the parameter list
 				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@date1", date1);
+				paramList[0] = new SqlParameter("@date1", Date1);
 				paramList[1] = new SqlParameter("@date2", DBNull.Value);
 
 				// Execute this query stored procedure
@@ -492,25 +492,25 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the title, item, and page count for each item aggregation currently and at some previous point of time </summary>
-		/// <param name="date1"> Date from which to additionally include item count </param>
-		/// <param name="date2"> Date to which to additionally include item count </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Date1"> Date from which to additionally include item count </param>
+		/// <param name="Date2"> Date to which to additionally include item count </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datatable with all the  title, item, and page count for each item aggregation at some previous point of time and then the increase in these counts between the two provided dates </returns>
 		/// <remarks> This calls the 'SobekCM_Item_Count_By_Collection_By_Date_Range' stored procedure  <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Item_Aggregation_Count_DateRange(DateTime date1, DateTime date2, Custom_Tracer tracer)
+		public static DataTable Get_Item_Aggregation_Count_DateRange(DateTime Date1, DateTime Date2, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Pulling from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Pulling from database");
 			}
 
 			try
 			{
 				// Build the parameter list
 				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@date1", date1);
-				paramList[1] = new SqlParameter("@date2", date2);
+				paramList[0] = new SqlParameter("@date1", Date1);
+				paramList[1] = new SqlParameter("@date2", Date2);
 
 				// Execute this query stored procedure
 				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
@@ -524,15 +524,15 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary>Method used to get the hierarchical relationship between all aggregations, to be displayed in the 'aggregations' tab in the internal screen</summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with relationships between all aggregations</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Collection_Hierarchies' stored procedure <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Aggregation_Hierarchies(Custom_Tracer tracer)
+		public static DataTable Get_Aggregation_Hierarchies(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", "Pulling from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", "Pulling from database");
 			}
 
 			try
@@ -557,14 +557,14 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the item and page count loaded to this digital library by month and year </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable of the count of all items and pages loaded to this digital library by month and year </returns>
 		/// <remarks> This calls the 'SobekCM_Page_Item_Count_History' stored procedure </remarks>
-		public static DataTable Get_Page_Item_Count_History( Custom_Tracer tracer )
+		public static DataTable Get_Page_Item_Count_History( Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Pulling from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Pulling from database");
 			}
 
 			try
@@ -590,14 +590,14 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary> Gets the list of all users that are linked to items which may have usage statistics  </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable of all the users linked to items </returns>
 		/// <remarks> This calls the 'SobekCM_Stats_Get_Users_Linked_To_Items' stored procedure </remarks>
-		public static DataTable Get_Users_Linked_To_Items( Custom_Tracer tracer)
+		public static DataTable Get_Users_Linked_To_Items( Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Users_Linked_To_Items", "Pulling from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Users_Linked_To_Items", "Pulling from database");
 			}
 
 			try
@@ -626,14 +626,14 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for the user of interest, for which to pull the item usage stats </param>
 		/// <param name="Month"> Month for which to pull the usage information </param>
 		/// <param name="Year"> Year for which to pull the usage information </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable of the basic usage statistics for all items linked to a user for a single month and year </returns>
 		/// <remarks> This calls the 'SobekCM_Stats_Get_User_Linked_Items_Stats' stored procedure </remarks>
-		public static DataTable Get_User_Linked_Items_Stats( int UserID, int Month, int Year, Custom_Tracer tracer)
+		public static DataTable Get_User_Linked_Items_Stats( int UserID, int Month, int Year, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User_Linked_Items_Stats", "Pulling from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_User_Linked_Items_Stats", "Pulling from database");
 			}
 
 			try
@@ -677,21 +677,21 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information </returns>
 		/// <remarks> This calls either the 'SobekCM_Get_All_Browse_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Get_All_Browse_Paged( bool Only_New_Items, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Get_All_Browse_Paged( bool Only_New_Items, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
 			if (Only_New_Items)
 			{
 				// Get the date string to use
 				DateTime sinceDate = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
 				string dateString = sinceDate.Year.ToString().PadLeft(4, '0') + "-" + sinceDate.Month.ToString().PadLeft(2, '0') + "-" + sinceDate.Day.ToString().PadLeft(2, '0');
-				return Get_All_Browse_Paged( dateString, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, tracer);
+				return Get_All_Browse_Paged( dateString, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
 			}
 			
 			// 1/1/2000 is a special date in the database, which means NO DATE
-			return Get_All_Browse_Paged( String.Empty, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, tracer);
+			return Get_All_Browse_Paged( String.Empty, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
 		}
 
 		/// <summary> Gets the collection of all (public) items in the library </summary>
@@ -703,118 +703,129 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information </returns>
 		/// <remarks> This calls the 'SobekCM_Get_All_Browse_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Get_All_Browse_Paged( string Since_Date, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Get_All_Browse_Paged( string Since_Date, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.SobekCM_Get_All_Browse_Paged", "Pulling browse from database");
+				Tracer.Add_Trace("SobekCM_Database.SobekCM_Get_All_Browse_Paged", "Pulling browse from database");
 			}
+
 
 			Multiple_Paged_Results_Args returnArgs;
 
-			// Create the connection
-			using (SqlConnection connect = new SqlConnection(connectionString + ";Connection Timeout=45"))
+			try
 			{
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Get_All_Browse_Paged", connect)
-												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 
-				if ( Since_Date.Length > 0 )
-					executeCommand.Parameters.AddWithValue("@date", Since_Date);
-				else
-					executeCommand.Parameters.AddWithValue("@date", DBNull.Value);
-				executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-				executeCommand.Parameters.AddWithValue("@sort", Sort);
-				executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-				executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-				executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
-				if ((Include_Facets) && (Facet_Types != null))
+				// Create the connection
+				using (SqlConnection connect = new SqlConnection(connectionString + ";Connection Timeout=45"))
 				{
-					if (Facet_Types.Count > 0)
-						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
+
+					// Create the command 
+					SqlCommand executeCommand = new SqlCommand("SobekCM_Get_All_Browse_Paged2", connect) {CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
+
+					if (Since_Date.Length > 0)
+						executeCommand.Parameters.AddWithValue("@date", Since_Date);
 					else
+						executeCommand.Parameters.AddWithValue("@date", DBNull.Value);
+					executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
+					executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
+					executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
+					executeCommand.Parameters.AddWithValue("@sort", Sort);
+					executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
+					executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
+					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
+					executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
+					if ((Include_Facets) && (Facet_Types != null))
+					{
+						if (Facet_Types.Count > 0)
+							executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype1", -1);
+						if (Facet_Types.Count > 1)
+							executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype2", -1);
+						if (Facet_Types.Count > 2)
+							executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype3", -1);
+						if (Facet_Types.Count > 3)
+							executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype4", -1);
+						if (Facet_Types.Count > 4)
+							executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype5", -1);
+						if (Facet_Types.Count > 5)
+							executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype6", -1);
+						if (Facet_Types.Count > 6)
+							executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype7", -1);
+						if (Facet_Types.Count > 7)
+							executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
+						else
+							executeCommand.Parameters.AddWithValue("@facettype8", -1);
+					}
+					else
+					{
 						executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					if (Facet_Types.Count > 1)
-						executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					if (Facet_Types.Count > 2)
-						executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					if (Facet_Types.Count > 3)
-						executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					if (Facet_Types.Count > 4)
-						executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					if (Facet_Types.Count > 5)
-						executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					if (Facet_Types.Count > 6)
-						executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					if (Facet_Types.Count > 7)
-						executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-					else
 						executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
-				executeCommand.Parameters.AddWithValue("@item_count_to_use_cached", 1000);
-
-				// Add parameters for total items and total titles
-				SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-				totalItemsParameter.Direction = ParameterDirection.InputOutput;
-
-				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
-
-
-				// Create the data reader
-				connect.Open();
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
-				{
-
-					// Create the return argument object
-					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
-
-					// Create the overall search statistics?
-					if (Return_Search_Statistics)
-					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
-						returnArgs.Statistics = stats;
-						reader.Close();
-						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-						stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
 					}
-					else
+					executeCommand.Parameters.AddWithValue("@item_count_to_use_cached", 1000);
+
+					// Add parameters for total items and total titles
+					SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
+					totalItemsParameter.Direction = ParameterDirection.InputOutput;
+
+					SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
+					totalTitlesParameter.Direction = ParameterDirection.InputOutput;
+
+
+					// Create the data reader
+					connect.Open();
+					using (SqlDataReader reader = executeCommand.ExecuteReader())
 					{
-						reader.Close();
+
+						// Create the return argument object
+						List<string> metadataLabels = new List<string>();
+						returnArgs = new Multiple_Paged_Results_Args {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
+
+						// Create the overall search statistics?
+						if (Return_Search_Statistics)
+						{
+							Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
+							returnArgs.Statistics = stats;
+							reader.Close();
+							stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+							stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+						}
+						else
+						{
+							reader.Close();
+						}
 					}
+					connect.Close();
 				}
-				connect.Close();
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+
+				throw;
 			}
 
 			// Return the built result arguments
@@ -835,21 +846,21 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information </returns>
 		/// <remarks> This calls either the 'SobekCM_Get_Aggregation_Browse_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, bool Only_New_Items, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, bool Only_New_Items, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
 			if (Only_New_Items)
 			{
 				// Get the date string to use
 				DateTime sinceDate = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
 				string dateString = sinceDate.Year.ToString().PadLeft(4, '0') + "-" + sinceDate.Month.ToString().PadLeft(2, '0') + "-" + sinceDate.Day.ToString().PadLeft(2, '0');
-				return Get_Item_Aggregation_Browse_Paged(AggregationCode, dateString, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, tracer);
+				return Get_Item_Aggregation_Browse_Paged(AggregationCode, dateString, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
 			}
 			
 			// 1/1/2000 is a special date in the database, which means NO DATE
-			return Get_Item_Aggregation_Browse_Paged(AggregationCode, "2000-01-01", Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, tracer);
+			return Get_Item_Aggregation_Browse_Paged(AggregationCode, "2000-01-01", Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
 		}
 
 		/// <summary> Gets the collection of all (public) items linked to an item aggregation </summary>
@@ -862,14 +873,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Aggregation_Browse_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, string Since_Date, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, string Since_Date, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Browse_Paged", "Pulling browse from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Browse_Paged", "Pulling browse from database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -879,7 +890,7 @@ namespace SobekCM.Library.Database
 			{
 
 				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Aggregation_Browse_Paged", connect)
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Aggregation_Browse_Paged2", connect)
 												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 
 				executeCommand.Parameters.AddWithValue("@code", AggregationCode);
@@ -905,7 +916,7 @@ namespace SobekCM.Library.Database
 
 				if ((Include_Facets) && (Facet_Types != null))
 				{
-					executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
+					executeCommand.Parameters.AddWithValue("@include_facets", true);
 					if (Facet_Types.Count > 0)
 						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
 					else
@@ -967,13 +978,13 @@ namespace SobekCM.Library.Database
 				{
 
 					// Create the return argument object
-					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+					List<string> metadataLabels = new List<string>(); 
+					returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels) };
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -994,14 +1005,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets the list of all data for a particular metadata field in a particular aggregation </summary>
 		/// <param name="Aggregation_Code"> Code for the item aggregation </param>
 		/// <param name="Metadata_Code"> Metadata code for the field of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> List with all the metadata fields in alphabetical order </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Metadata_Browse' stored procedure </remarks>
-		public static List<string> Get_Item_Aggregation_Metadata_Browse(string Aggregation_Code, string Metadata_Code, Custom_Tracer tracer )
+		public static List<string> Get_Item_Aggregation_Metadata_Browse(string Aggregation_Code, string Metadata_Code, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Metadata_Browse", "Pull the metadata browse");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Metadata_Browse", "Pull the metadata browse");
 			}
 
 			// Build the parameter list
@@ -1024,14 +1035,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
 		/// item aggregation </summary>
 		/// <param name="Aggregation_Code"> Code for the item aggregation </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all the coordinate values </returns>
 		/// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
-		public static DataTable Get_All_Coordinate_Points_By_Aggregation(string Aggregation_Code, Custom_Tracer tracer)
+		public static DataTable Get_All_Coordinate_Points_By_Aggregation(string Aggregation_Code, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_All_Coordinate_Points_By_Aggregation", "Pull the coordinate list");
+				Tracer.Add_Trace("SobekCM_Database.Get_All_Coordinate_Points_By_Aggregation", "Pull the coordinate list");
 			}
 
 			// Build the parameter list
@@ -1048,14 +1059,14 @@ namespace SobekCM.Library.Database
 		#region Method to perform a metadata search of items in the database
 
 		/// <summary> Gets the list of metadata fields searchable in the database, along with field number </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all of the search fields and search field id's for metadata searching </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Metadata_Fields' stored procedure  </remarks>
-		public static DataTable Get_Metadata_Fields(Custom_Tracer tracer)
+		public static DataTable Get_Metadata_Fields(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Metadata_Fields", "Pulling from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Metadata_Fields", "Pulling from database");
 			}
 
 			try
@@ -1114,22 +1125,25 @@ namespace SobekCM.Library.Database
 		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
 		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
 		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
+		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
 		/// <param name="Include_Facets"> Flag indicates whether to include facets </param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
 		/// <remarks> This calls the 'SobekCM_Metadata_Search_Paged' stored procedure </remarks>
 		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged(string Term1, int Field1,
 																				int Link2, string Term2, int Field2, int Link3, string Term3, int Field3, int Link4, string Term4, int Field4,
 																				int Link5, string Term5, int Field5, int Link6, string Term6, int Field6, int Link7, string Term7, int Field7,
 																				int Link8, string Term8, int Field8, int Link9, string Term9, int Field9, int Link10, string Term10, int Field10,
-																				bool Include_Private_Items, string AggregationCode, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, 
-																				List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+																				bool Include_Private_Items, string AggregationCode, long DateRange_Start, long DateRange_End, 
+																				int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, 
+																				List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Search_Paged", "Performing search in database");
+				Tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Search_Paged", "Performing search in database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -1139,7 +1153,7 @@ namespace SobekCM.Library.Database
 			{
 
 				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Search_Paged", connect)
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Search_Paged2", connect)
 												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 
 				executeCommand.Parameters.AddWithValue("@term1", Term1);
@@ -1175,6 +1189,8 @@ namespace SobekCM.Library.Database
 				if (AggregationCode.ToUpper() == "ALL")
 					AggregationCode = String.Empty;
 				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
+				executeCommand.Parameters.AddWithValue("@daterange_start", DateRange_Start);
+				executeCommand.Parameters.AddWithValue("@daterange_end", DateRange_End);
 				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
 				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
 				executeCommand.Parameters.AddWithValue("@sort", Sort);
@@ -1195,7 +1211,7 @@ namespace SobekCM.Library.Database
 
 				if ((Include_Facets) && (Facet_Types != null) && ( Facet_Types.Count > 0 ) && (Return_Search_Statistics))
 				{
-					executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
+					executeCommand.Parameters.AddWithValue("@include_facets", true);
 					if (Facet_Types.Count > 0)
 						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
 					else
@@ -1262,13 +1278,14 @@ namespace SobekCM.Library.Database
 				{
 
 					// Create the return argument object
+					List<string> metadataLabels = new List<string>(); 
 					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+									 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -1292,20 +1309,22 @@ namespace SobekCM.Library.Database
 		/// <param name="Search_Condition"> Search condition string to be run against the databasse </param>
 		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
 		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
+		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
 		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
 		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
 		/// <param name="Include_Facets"> Flag indicates whether to include facets in the result set </param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
 		/// <remarks> This calls the 'SobekCM_Metadata_Basic_Search_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged( string Search_Condition, bool Include_Private_Items, string AggregationCode, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged( string Search_Condition, bool Include_Private_Items, string AggregationCode, long DateRange_Start, long DateRange_End, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
+				Tracer.Add_Trace("SobekCM_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -1315,7 +1334,7 @@ namespace SobekCM.Library.Database
 			{
 
 				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Basic_Search_Paged", connect)
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Basic_Search_Paged2", connect)
 												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 
 				executeCommand.Parameters.AddWithValue("@searchcondition", Search_Condition.Replace("''","'"));
@@ -1323,6 +1342,8 @@ namespace SobekCM.Library.Database
 				if (AggregationCode.ToUpper() == "ALL")
 					AggregationCode = String.Empty;
 				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
+				executeCommand.Parameters.AddWithValue("@daterange_start", DateRange_Start);
+				executeCommand.Parameters.AddWithValue("@daterange_end", DateRange_End);
 				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
 				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
 				executeCommand.Parameters.AddWithValue("@sort", Sort);
@@ -1343,7 +1364,7 @@ namespace SobekCM.Library.Database
 
 				if ((Include_Facets) && (Facet_Types != null) && ( Facet_Types.Count > 0 ) && (Return_Search_Statistics))
 				{
-					executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
+					executeCommand.Parameters.AddWithValue("@include_facets", true);
 					if (Facet_Types.Count > 0)
 						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
 					else
@@ -1409,13 +1430,14 @@ namespace SobekCM.Library.Database
 				using (SqlDataReader reader = executeCommand.ExecuteReader())
 				{
 					// Create the return argument object
+					List<string> metadataLabels = new List<string>(); 
 					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+									 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -1440,20 +1462,22 @@ namespace SobekCM.Library.Database
 		/// <param name="FieldID"> Primary key for the field to search in the database </param>
 		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
 		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
+		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
 		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
 		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
 		/// <param name="Include_Facets"> Flag indicates whether to include facets in the result set </param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
 		/// <remarks> This calls the 'SobekCM_Metadata_Exact_Search_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Perform_Metadata_Exact_Search_Paged(string Search_Term, int FieldID, bool Include_Private_Items, string AggregationCode, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Perform_Metadata_Exact_Search_Paged(string Search_Term, int FieldID, bool Include_Private_Items, string AggregationCode, long DateRange_Start, long DateRange_End, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
+				Tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -1463,7 +1487,7 @@ namespace SobekCM.Library.Database
 			{
 
 				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Exact_Search_Paged", connect)
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Exact_Search_Paged2", connect)
 												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 
 				executeCommand.Parameters.AddWithValue("@term1", Search_Term);
@@ -1472,6 +1496,8 @@ namespace SobekCM.Library.Database
 				if (AggregationCode.ToUpper() == "ALL")
 					AggregationCode = String.Empty;
 				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
+				executeCommand.Parameters.AddWithValue("@daterange_start", DateRange_Start);
+				executeCommand.Parameters.AddWithValue("@daterange_end", DateRange_End);
 				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
 				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
 				executeCommand.Parameters.AddWithValue("@sort", Sort);
@@ -1492,7 +1518,7 @@ namespace SobekCM.Library.Database
 
 				if ((Include_Facets) && (Facet_Types != null) && ( Facet_Types.Count > 0 ) && (Return_Search_Statistics))
 				{
-					executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
+					executeCommand.Parameters.AddWithValue("@include_facets", true);
 					if (Facet_Types.Count > 0)
 						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
 					else
@@ -1557,14 +1583,20 @@ namespace SobekCM.Library.Database
 				connect.Open();
 				using (SqlDataReader reader = executeCommand.ExecuteReader())
 				{
+					if (Tracer != null)
+					{
+						Tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Exact_Search_Paged", "Building result object from returned value");
+					}
+
 					// Create the return argument object
+					List<string> metadataLabels = new List<string>(); 
 					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+									 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -1584,39 +1616,39 @@ namespace SobekCM.Library.Database
 			return returnArgs;
 		}
 
-		private static List<List<iSearch_Title_Result>> DataReader_To_Result_List_With_LookAhead(SqlDataReader reader, int ResultsPerPage )
+		private static List<List<iSearch_Title_Result>> DataReader_To_Result_List_With_LookAhead2(IDataReader Reader, int ResultsPerPage, List<string> Metadata_Field_Names )
 		{
 			// Create return list
 			List<List<iSearch_Title_Result>> returnValue = new List<List<iSearch_Title_Result>>();
 
-			Dictionary<int, iSearch_Title_Result> lookup = new Dictionary<int, iSearch_Title_Result>();
+			// Create some lists used during the construction
+			Dictionary<int, Database_Title_Result> titleLookupByRowNumber = new Dictionary<int, Database_Title_Result>();
+			Dictionary<int, Database_Item_Result> itemLookupByItemID = new Dictionary<int, Database_Item_Result>();
+			Dictionary<int, int> rowNumberLookupByItemID = new Dictionary<int, int>();
 
 			// May have not values returned
-			if (reader.FieldCount < 5)
+			if (Reader.FieldCount < 5)
 				return null;
 
 			// Get all the main title values first
 			int minimumRownumber = -1;
-			while (reader.Read())
+			while (Reader.Read())
 			{
 				// Create new database title object for this
 				Database_Title_Result result = new Database_Title_Result
-												   {
-													   RowNumber = reader.GetInt32(0),
-													   BibID = reader.GetString(1),
-													   GroupTitle = reader.GetString(2),
-													   ALEPH_Number = reader.GetInt32(3),
-													   OCLC_Number = reader.GetInt64(4),
-													   GroupThumbnail = reader.GetString(5),
-													   MaterialType = reader.GetString(6)
-												   };
-				if (reader.FieldCount > 7)
-				{
-					result.Primary_Identifier_Type = reader.GetString(7);
-					result.Primary_Identifier = reader.GetString(8);
-				}
+					{
+						RowNumber = Reader.GetInt32(0),
+						BibID = Reader.GetString(1),
+						GroupTitle = Reader.GetString(2),
+						OPAC_Number = Reader.GetInt32(3),
+						OCLC_Number = Reader.GetInt64(4),
+						GroupThumbnail = Reader.GetString(5),
+						MaterialType = Reader.GetString(6),
+						Primary_Identifier_Type = Reader.GetString(7),
+						Primary_Identifier = Reader.GetString(8)
+					};
 
-				lookup.Add(result.RowNumber, result);
+				titleLookupByRowNumber.Add(result.RowNumber, result);
 
 				if (minimumRownumber == -1)
 				{
@@ -1624,60 +1656,27 @@ namespace SobekCM.Library.Database
 				}
 			}
 
-			// Move to the item table
-			reader.NextResult();
+			// Move to the item system-required information table
+			Reader.NextResult();
 
 			// If there were no titles, then there are no results
-			if (lookup.Count == 0)
+			if (titleLookupByRowNumber.Count == 0)
 				return returnValue;
 
-			// Set some values for checking for uniformity of values
-			const int itemsToCheckInEachTitle = 20;
-			bool checkingPublisher = true;
-			bool checkingAuthor = true;
-			bool checkingFormat = true;
-			bool checkingSpatial = true;
-			bool checkingEdition = true;
-			bool checkingInstitution = true;
-			bool checkingMaterial = true;
-			bool checkingMeasurement = true;
-			bool checkingStyleperiod = true;
-			bool checkingTechnique = true;
-			bool checkingDonor = true;
-			bool checkingSubjects = true;
-			bool checkingCoordinates = true;
-
 			// Step through all the item rows, build the item, and add to the title 
-			Database_Title_Result titleResult = (Database_Title_Result)lookup[minimumRownumber];
-			List<iSearch_Title_Result> currentList = new List<iSearch_Title_Result> {titleResult};
+			Database_Title_Result titleResult = titleLookupByRowNumber[minimumRownumber];
+			List<iSearch_Title_Result> currentList = new List<iSearch_Title_Result> { titleResult };
 			returnValue.Add(currentList);
 			int lastRownumber = titleResult.RowNumber;
-			int itemcount = 0;
 			int titlesInCurrentList = 1;
-			while (reader.Read())
+			while (Reader.Read())
 			{
 				// Ensure this is the right title for this item 
-				int thisRownumber = reader.GetInt32(0);
+				int thisRownumber = Reader.GetInt32(0);
 				if (thisRownumber != lastRownumber)
 				{
-					titleResult = (Database_Title_Result)lookup[thisRownumber];
+					titleResult = titleLookupByRowNumber[thisRownumber];
 					lastRownumber = thisRownumber;
-					itemcount = 0;
-
-					// Reset some values
-					checkingPublisher = true;
-					checkingAuthor = true;
-					checkingFormat = true;
-					checkingSpatial = true;
-					checkingEdition = true;
-					checkingInstitution = true;
-					checkingMaterial = true;
-					checkingMeasurement = true;
-					checkingStyleperiod = true;
-					checkingTechnique = true;
-					checkingDonor = true;
-					checkingSubjects = true;
-					checkingCoordinates = true;
 
 					// If this is now twenty in the current list, add this to the returnvalue
 					if (titlesInCurrentList == ResultsPerPage)
@@ -1692,423 +1691,347 @@ namespace SobekCM.Library.Database
 					titlesInCurrentList++;
 				}
 
+				int ItemID = Reader.GetInt32(1);
+				string VID = Reader.GetString(2);
+				string Title = Reader.GetString(3);
+				short IP_Restriction_Mask = Reader.GetInt16(4);
+				string MainThumbnail = Reader.GetString(5);
+				short Level1_Index = (short) Reader.GetInt32(6);
+				string Level1_Text = Reader.GetString(7);
+				short Level2_Index = (short) Reader.GetInt32(8);
+				string Level2_Text = Reader.GetString(9);
+				short Level3_Index = (short) Reader.GetInt32(10);
+				string Level3_Text = Reader.GetString(11);
+				string PubDate = Reader.GetString(12);
+				int PageCount = Reader.GetInt32(13);
+				string Link = Reader.GetString(14);
+				string Spatial_KML = Reader.GetString(15);
+				string COinS_OpenURL = Reader.GetString(16);
+
+				titleResult.Spatial_Coordinates = Spatial_KML;
+
+
 				// Create new database item object for this
 				Database_Item_Result result = new Database_Item_Result
-												  {
-													  VID = reader.GetString(1),
-													  Title = reader.GetString(2),
-													  IP_Restriction_Mask = reader.GetInt16(3),
-													  MainThumbnail = reader.GetString(4),
-													  Level1_Index = (short) reader.GetInt32(5),
-													  Level1_Text = reader.GetString(6),
-													  Level2_Index = (short) reader.GetInt32(7),
-													  Level2_Text = reader.GetString(8),
-													  Level3_Index = (short) reader.GetInt32(9),
-													  Level3_Text = reader.GetString(10),
-													  PubDate = reader.GetString(11),
-													  PageCount = reader.GetInt32(12),
-													  Link = reader.GetString(13)
-												  };
-
-				if (itemcount == 0)
 				{
-					titleResult.Publisher = reader.GetString(14);
-					titleResult.Author = reader.GetString(15);
-					titleResult.Format = reader.GetString(16);
-					titleResult.Donor = reader.GetString(17);
-					titleResult.Spatial_Coverage = reader.GetString(18);
-					titleResult.Edition = reader.GetString(19);
-					titleResult.Institution = reader.GetString(20);
-					titleResult.Material = reader.GetString(21);
-					titleResult.Measurement = reader.GetString(22);
-					titleResult.Style_Period = reader.GetString(23);
-					titleResult.Technique = reader.GetString(24);
-					titleResult.Subjects = reader.GetString(25);
-					titleResult.Spatial_Coordinates = reader.GetString(26);
-				}
-				else if (itemcount < itemsToCheckInEachTitle)
-				{
-					if (checkingPublisher)
-					{
-						if (titleResult.Publisher != reader.GetString(14))
-						{
-							titleResult.Publisher = "*";
-							checkingPublisher = false;
-						}
-					}
+					ItemID = ItemID,
+					VID = VID,
+					Title = Title,
+					IP_Restriction_Mask = IP_Restriction_Mask,
+					MainThumbnail = MainThumbnail,
+					Level1_Index = Level1_Index,
+					Level1_Text = Level1_Text,
+					Level2_Index = Level2_Index,
+					Level2_Text = Level2_Text,
+					Level3_Index = Level3_Index,
+					Level3_Text = Level3_Text,
+					PubDate = PubDate,
+					PageCount = PageCount,
+					Link = Link,
+					Spatial_KML = Spatial_KML,
+					COinS_OpenURL = COinS_OpenURL
+				};
 
-					if (checkingAuthor)
-					{
-						if (titleResult.Author != reader.GetString(15))
-						{
-							titleResult.Author = "*";
-							checkingAuthor = false;
-						}
-					}
+				//// Create new database item object for this
+				//Database_Item_Result result = new Database_Item_Result
+				//{
+				//	ItemID = Reader.GetInt32(1),
+				//	VID = Reader.GetString(2),
+				//	Title = Reader.GetString(3),
+				//	IP_Restriction_Mask = Reader.GetInt16(4),
+				//	MainThumbnail = Reader.GetString(5),
+				//	Level1_Index = (short)Reader.GetInt32(6),
+				//	Level1_Text = Reader.GetString(7),
+				//	Level2_Index = (short)Reader.GetInt32(8),
+				//	Level2_Text = Reader.GetString(9),
+				//	Level3_Index = (short)Reader.GetInt32(10),
+				//	Level3_Text = Reader.GetString(11),
+				//	PubDate = Reader.GetString(12),
+				//	PageCount = Reader.GetInt32(13),
+				//	Link = Reader.GetString(14),
+				//	Spatial_KML = Reader.GetString(15),
+				//	COinS_OpenURL = Reader.GetString(16)
+				//};
 
-					if (checkingFormat)
-					{
-						if (titleResult.Format != reader.GetString(16))
-						{
-							titleResult.Format = "*";
-							checkingFormat = false;
-						}
-					}
-
-					if (checkingDonor)
-					{
-						if (titleResult.Donor != reader.GetString(17))
-						{
-							titleResult.Donor = "*";
-							checkingDonor = false;
-						}
-					}
-
-					if (checkingSpatial)
-					{
-						if (titleResult.Spatial_Coverage != reader.GetString(18))
-						{
-							titleResult.Spatial_Coverage = "*";
-							checkingSpatial = false;
-						}
-					}
-
-					if (checkingEdition)
-					{
-						if (titleResult.Edition != reader.GetString(19))
-						{
-							titleResult.Edition = "*";
-							checkingEdition = false;
-						}
-					}
-
-					if (checkingInstitution)
-					{
-						if (titleResult.Institution != reader.GetString(20))
-						{
-							titleResult.Institution = "*";
-							checkingInstitution = false;
-						}
-					}
-
-					if (checkingMaterial)
-					{
-						if (titleResult.Material != reader.GetString(21))
-						{
-							titleResult.Material = "*";
-							checkingMaterial = false;
-						}
-					}
-
-					if (checkingMeasurement)
-					{
-						if (titleResult.Measurement != reader.GetString(22))
-						{
-							titleResult.Measurement = "*";
-							checkingMeasurement = false;
-						}
-					}
-
-					if (checkingStyleperiod)
-					{
-						if (titleResult.Style_Period != reader.GetString(23))
-						{
-							titleResult.Style_Period = "*";
-							checkingStyleperiod = false;
-						}
-					}
-
-					if (checkingTechnique)
-					{
-						if (titleResult.Technique != reader.GetString(24))
-						{
-							titleResult.Technique = "*";
-							checkingTechnique = false;
-						}
-					}
-
-					if (checkingSubjects)
-					{
-						if (titleResult.Subjects != reader.GetString(25))
-						{
-							titleResult.Subjects = "*";
-							checkingSubjects = false;
-						}
-					}
-
-					if (checkingCoordinates)
-					{
-						if (titleResult.Spatial_Coordinates != reader.GetString(26))
-						{
-							titleResult.Spatial_Coordinates = "*";
-							checkingCoordinates = false;
-						}
-					}
-				}
-
+				// Save to the hash lookup for adding display metadata
+				itemLookupByItemID[result.ItemID] = result;
+				rowNumberLookupByItemID[result.ItemID] = thisRownumber;
 
 				// Add this to the title object
 				titleResult.Add_Item_Result(result);
+			}
 
-				// Increment the item count
-				itemcount++;
+			// Move to the item aggregation-configured display information table
+			Reader.NextResult();
+
+			// Set some values for checking for uniformity of values
+			const int ITEMS_TO_CHECK_IN_EACH_TITLE = 20;
+			bool first_item_analyzed = true;
+			List<bool> checking_fields = new List<bool>();
+			int display_fields_count = 0;
+			int itemcount = 0;
+			int lastRowNumber = -1;
+			while (Reader.Read())
+			{
+				// Get the item id and then work back to the local title id
+				int itemId = Reader.GetInt32(0);
+				int rowNumber = rowNumberLookupByItemID[itemId];
+
+				// If this is the very first item analyzed, need to do some work first
+				if (first_item_analyzed)
+				{
+					// Save the number of display fields
+					display_fields_count = Reader.FieldCount - 1;
+
+					// Add a boolean for each display field
+					for (int i = 0; i < display_fields_count; i++)
+					{
+						// Add the default boolean value here
+						checking_fields.Add(true);
+
+						// Save the metadata label
+						Metadata_Field_Names.Add(Reader.GetName(i+1));
+					}
+
+					// Done with the first row analysis, so ensure it does not repeat
+					first_item_analyzed = false;
+				}
+
+				// Is this is the start of a new title row?
+				if (lastRowNumber != rowNumber)
+				{
+					// Get this title object
+					titleResult = titleLookupByRowNumber[rowNumber];
+
+					// Set items analyzed for this title to zero
+					itemcount = 0;
+
+					// Back to checking each metadata field since this is a new title
+					for (int i = 0; i < display_fields_count; i++)
+						checking_fields[i] = true;
+
+					// Save this row numbe as the last row number analyzed
+					lastRowNumber = rowNumber;
+				}
+
+				if (itemcount == 0)
+				{
+					// Set all the initial display values (at the title level) from
+					// this item's display information 
+					titleResult.Metadata_Display_Values = new string[display_fields_count];
+					for (int i = 0; i < display_fields_count; i++)
+					{
+						if (Reader.IsDBNull(i + 1))
+							titleResult.Metadata_Display_Values[i] = String.Empty;
+						else
+							titleResult.Metadata_Display_Values[i] = Reader.GetString(i + 1);
+					}
+				}
+				else if (itemcount < ITEMS_TO_CHECK_IN_EACH_TITLE)
+				{
+					// Compare the values attached with each display piece of metadata
+					// from the title with this additional, individual item.  If the 
+					// values are the same, it should display at the title level, but 
+					// if they are different, we will not display the values at that level
+					for (int i = 0; i < display_fields_count; i++)
+					{
+						// If we already found a mismatch for this metadata field, then
+						// no need to continue checking
+						if (checking_fields[i])
+						{
+							string thisField = String.Empty;
+							if (!Reader.IsDBNull(i + 1))
+								titleResult.Metadata_Display_Values[i] = Reader.GetString(i + 1);
+
+							if (String.Compare(titleResult.Metadata_Display_Values[i], thisField, StringComparison.InvariantCultureIgnoreCase) != 0)
+							{
+								titleResult.Metadata_Display_Values[i] = "*";
+								checking_fields[i] = false;
+							}
+						}
+					}
+				}
 			}
 
 			return returnValue;
 		}
 
-		private static List<iSearch_Title_Result> DataReader_To_Simple_Result_List(SqlDataReader reader)
+		private static List<iSearch_Title_Result> DataReader_To_Simple_Result_List2(SqlDataReader Reader, List<string> Metadata_Field_Names)
 		{
 			// Create return list
 			List<iSearch_Title_Result> returnValue = new List<iSearch_Title_Result>();
 
-			Dictionary<int, int> lookup = new Dictionary<int, int>();
+			// Create some lists used during the construction
+			Dictionary<int, Database_Title_Result> titleLookupByRowNumber = new Dictionary<int, Database_Title_Result>();
+			Dictionary<int, Database_Item_Result> itemLookupByItemID = new Dictionary<int, Database_Item_Result>();
+			Dictionary<int, int> rowNumberLookupByItemID = new Dictionary<int, int>();
+
+			// May have not values returned
+			if (Reader.FieldCount < 5)
+				return null;
 
 			// Get all the main title values first
-			while (reader.Read())
+			int minimumRownumber = -1;
+			while (Reader.Read())
 			{
 				// Create new database title object for this
 				Database_Title_Result result = new Database_Title_Result
-												   {
-													   RowNumber = (short) reader.GetInt32(0),
-													   BibID = reader.GetString(1),
-													   GroupTitle = reader.GetString(2),
-													   ALEPH_Number = reader.GetInt32(3),
-													   OCLC_Number = reader.GetInt64(4),
-													   GroupThumbnail = reader.GetString(5),
-													   MaterialType = reader.GetString(6)
-												   };
-				if (reader.FieldCount > 7)
 				{
-					result.Primary_Identifier_Type = reader.GetString(7);
-					result.Primary_Identifier = reader.GetString(8);
-				}
-				else
-				{
-					result.Primary_Identifier = String.Empty;
-					result.Primary_Identifier_Type = String.Empty;
-				}
-				returnValue.Add(result);
+					RowNumber = Reader.GetInt32(0),
+					BibID = Reader.GetString(1),
+					GroupTitle = Reader.GetString(2),
+					OPAC_Number = Reader.GetInt32(3),
+					OCLC_Number = Reader.GetInt64(4),
+					GroupThumbnail = Reader.GetString(5),
+					MaterialType = Reader.GetString(6),
+					Primary_Identifier_Type = Reader.GetString(7),
+					Primary_Identifier = Reader.GetString(8)
+				};
 
-				lookup.Add(result.RowNumber, returnValue.Count - 1);
+				titleLookupByRowNumber.Add(result.RowNumber, result);
+
+				if (minimumRownumber == -1)
+				{
+					minimumRownumber = result.RowNumber;
+				}
 			}
 
-			// Move to the item table
-			reader.NextResult();
+			// Move to the item system-required information table
+			Reader.NextResult();
 
 			// If there were no titles, then there are no results
-			if (returnValue.Count == 0)
+			if (titleLookupByRowNumber.Count == 0)
 				return returnValue;
 
-			// Set some values for checking for uniformity of values
-			const int itemsToCheckInEachTitle = 20;
-			bool checkingPublisher = true;
-			bool checkingAuthor = true;
-			bool checkingFormat = true;
-			bool checkingSpatial = true;
-			bool checkingEdition = true;
-			bool checkingInstitution = true;
-			bool checkingMaterial = true;
-			bool checkingMeasurement = true;
-			bool checkingStyleperiod = true;
-			bool checkingTechnique = true;
-			bool checkingDonor = true;
-			bool checkingSubjects = true;
-			bool checkingCoordinates = true;
-
 			// Step through all the item rows, build the item, and add to the title 
-			Database_Title_Result titleResult = (Database_Title_Result)returnValue[0];
-			int lastRowNumber = titleResult.RowNumber;
-			int itemcount = 0;
-			while (reader.Read())
+			Database_Title_Result titleResult = titleLookupByRowNumber[minimumRownumber];
+			returnValue.Add(titleResult);
+			int lastRownumber = titleResult.RowNumber;
+			while (Reader.Read())
 			{
 				// Ensure this is the right title for this item 
-				int thisRowNumber = reader.GetInt32(0);
-				if (thisRowNumber != lastRowNumber)
+				int thisRownumber = Reader.GetInt32(0);
+				if (thisRownumber != lastRownumber)
 				{
-					titleResult = (Database_Title_Result)returnValue[lookup[thisRowNumber]];
-					lastRowNumber = thisRowNumber;
-					itemcount = 0;
+					titleResult = titleLookupByRowNumber[thisRownumber];
+					lastRownumber = thisRownumber;
 
-					// Reset some values
-					checkingPublisher = true;
-					checkingAuthor = true;
-					checkingFormat = true;
-					checkingSpatial = true;
-					checkingEdition = true;
-					checkingInstitution = true;
-					checkingMaterial = true;
-					checkingMeasurement = true;
-					checkingStyleperiod = true;
-					checkingTechnique = true;
-					checkingDonor = true;
-					checkingSubjects = true;
-					checkingCoordinates = true;
+					// Add this title to the list
+					returnValue.Add(titleResult);
 				}
 
 				// Create new database item object for this
 				Database_Item_Result result = new Database_Item_Result
-												  {
-													  VID = reader.GetString(1),
-													  Title = reader.GetString(2),
-													  IP_Restriction_Mask = reader.GetInt16(3),
-													  MainThumbnail = reader.GetString(4),
-													  Level1_Index = (short) reader.GetInt32(5),
-													  Level1_Text = reader.GetString(6),
-													  Level2_Index = (short) reader.GetInt32(7),
-													  Level2_Text = reader.GetString(8),
-													  Level3_Index = (short) reader.GetInt32(9),
-													  Level3_Text = reader.GetString(10),
-													  PubDate = reader.GetString(11),
-													  PageCount = reader.GetInt32(12),
-													  Link = reader.GetString(13)
-												  };
-
-				if (itemcount == 0)
 				{
-					titleResult.Publisher = reader.GetString(14);
-					titleResult.Author = reader.GetString(15);
-					titleResult.Format = reader.GetString(16);
-					titleResult.Donor = reader.GetString(17);
-					titleResult.Spatial_Coverage = reader.GetString(18);
-					titleResult.Edition = reader.GetString(19);
-					titleResult.Institution = reader.GetString(20);
-					titleResult.Material = reader.GetString(21);
-					titleResult.Measurement = reader.GetString(22);
-					titleResult.Style_Period = reader.GetString(23);
-					titleResult.Technique = reader.GetString(24);
-					titleResult.Subjects = reader.GetString(25);
-					titleResult.Spatial_Coordinates = reader.GetString(26);
+					ItemID = Reader.GetInt32(1),
+					VID = Reader.GetString(2),
+					Title = Reader.GetString(3),
+					IP_Restriction_Mask = Reader.GetInt16(4),
+					MainThumbnail = Reader.GetString(5),
+					Level1_Index = (short)Reader.GetInt32(6),
+					Level1_Text = Reader.GetString(7),
+					Level2_Index = (short)Reader.GetInt32(8),
+					Level2_Text = Reader.GetString(9),
+					Level3_Index = (short)Reader.GetInt32(10),
+					Level3_Text = Reader.GetString(11),
+					PubDate = Reader.GetString(12),
+					PageCount = Reader.GetInt32(13),
+					Link = Reader.GetString(14),
+					Spatial_KML = Reader.GetString(15),
+					COinS_OpenURL = Reader.GetString(16)
+				};
 
-					if (reader.FieldCount > 27)
-						titleResult.UserNotes = reader.GetString(27);
-				}
-				else if ( itemcount < itemsToCheckInEachTitle )
-				{
-					if (checkingPublisher)
-					{
-						if (titleResult.Publisher != reader.GetString(14))
-						{
-							titleResult.Publisher = "*";
-							checkingPublisher = false;
-						}
-					}
-
-					if (checkingAuthor)
-					{
-						if (titleResult.Author != reader.GetString(15))
-						{
-							titleResult.Author = "*";
-							checkingAuthor = false;
-						}
-					}
-
-					if (checkingFormat)
-					{
-						if (titleResult.Format != reader.GetString(16))
-						{
-							titleResult.Format = "*";
-							checkingFormat = false;
-						}
-					}
-
-					if (checkingDonor)
-					{
-						if (titleResult.Donor != reader.GetString(17))
-						{
-							titleResult.Donor = "*";
-							checkingDonor = false;
-						}
-					}
-
-					if (checkingSpatial)
-					{
-						if (titleResult.Spatial_Coverage != reader.GetString(18))
-						{
-							titleResult.Spatial_Coverage = "*";
-							checkingSpatial = false;
-						}
-					}
-
-					if (checkingEdition)
-					{
-						if (titleResult.Edition != reader.GetString(19))
-						{
-							titleResult.Edition = "*";
-							checkingEdition = false;
-						}
-					}
-
-					if (checkingInstitution)
-					{
-						if (titleResult.Institution != reader.GetString(20))
-						{
-							titleResult.Institution = "*";
-							checkingInstitution = false;
-						}
-					}
-
-					if (checkingMaterial)
-					{
-						if (titleResult.Material != reader.GetString(21))
-						{
-							titleResult.Material = "*";
-							checkingMaterial = false;
-						}
-					}
-
-					if (checkingMeasurement)
-					{
-						if (titleResult.Measurement != reader.GetString(22))
-						{
-							titleResult.Measurement = "*";
-							checkingMeasurement = false;
-						}
-					}
-
-					if (checkingStyleperiod)
-					{
-						if (titleResult.Style_Period != reader.GetString(23))
-						{
-							titleResult.Style_Period = "*";
-							checkingStyleperiod = false;
-						}
-					}
-
-					if (checkingTechnique)
-					{
-						if (titleResult.Technique != reader.GetString(24))
-						{
-							titleResult.Technique = "*";
-							checkingTechnique = false;
-						}
-					}
-
-					if (checkingSubjects)
-					{
-						if (titleResult.Subjects != reader.GetString(25))
-						{
-							titleResult.Subjects = "*";
-							checkingSubjects = false;
-						}
-					}
-
-					if (checkingCoordinates)
-					{
-						if (titleResult.Spatial_Coordinates != reader.GetString(26))
-						{
-							titleResult.Spatial_Coordinates = "*";
-							checkingCoordinates = false;
-						}
-					}
-				}
-
+				// Save to the hash lookup for adding display metadata
+				itemLookupByItemID[result.ItemID] = result;
+				rowNumberLookupByItemID[result.ItemID] = thisRownumber;
 
 				// Add this to the title object
 				titleResult.Add_Item_Result(result);
+			}
 
-				// Increment the item count
-				itemcount++;
+			// Move to the item aggregation-configured display information table
+			Reader.NextResult();
+
+			// Set some values for checking for uniformity of values
+			const int ITEMS_TO_CHECK_IN_EACH_TITLE = 20;
+			bool first_item_analyzed = true;
+			List<bool> checking_fields = new List<bool>();
+			int display_fields_count = 0;
+			int itemcount = 0;
+			int lastRowNumber = -1;
+			while (Reader.Read())
+			{
+				// Get the item id and then work back to the local title id
+				int itemId = Reader.GetInt32(0);
+				int rowNumber = rowNumberLookupByItemID[itemId];
+
+				// If this is the very first item analyzed, need to do some work first
+				if (first_item_analyzed)
+				{
+					// Save the number of display fields
+					display_fields_count = Reader.FieldCount - 1;
+
+					// Add a boolean for each display field
+					for (int i = 0; i < display_fields_count; i++)
+					{
+						// Add the default boolean value here
+						checking_fields.Add(true);
+
+						// Save the metadata label
+						Metadata_Field_Names.Add(Reader.GetName(i + 1));
+					}
+
+					// Done with the first row analysis, so ensure it does not repeat
+					first_item_analyzed = false;
+				}
+
+				// Is this is the start of a new title row?
+				if (lastRowNumber != rowNumber)
+				{
+					// Get this title object
+					titleResult = titleLookupByRowNumber[rowNumber];
+
+					// Set items analyzed for this title to zero
+					itemcount = 0;
+
+					// Back to checking each metadata field since this is a new title
+					for (int i = 0; i < display_fields_count; i++)
+						checking_fields[i] = true;
+
+					// Save this row numbe as the last row number analyzed
+					lastRowNumber = rowNumber;
+				}
+
+				if (itemcount == 0)
+				{
+					// Set all the initial display values (at the title level) from
+					// this item's display information 
+					titleResult.Metadata_Display_Values = new string[display_fields_count];
+					for (int i = 0; i < display_fields_count; i++)
+					{
+						titleResult.Metadata_Display_Values[i] = Reader.GetString(i + 1);
+					}
+				}
+				else if (itemcount < ITEMS_TO_CHECK_IN_EACH_TITLE)
+				{
+					// Compare the values attached with each display piece of metadata
+					// from the title with this additional, individual item.  If the 
+					// values are the same, it should display at the title level, but 
+					// if they are different, we will not display the values at that level
+					for (int i = 0; i < display_fields_count; i++)
+					{
+						// If we already found a mismatch for this metadata field, then
+						// no need to continue checking
+						if (checking_fields[i])
+						{
+							if (String.Compare(titleResult.Metadata_Display_Values[i], Reader.GetString(i + 1), StringComparison.InvariantCultureIgnoreCase) != 0)
+							{
+								titleResult.Metadata_Display_Values[i] = "*";
+								checking_fields[i] = false;
+							}
+						}
+					}
+				}
 			}
 
 			return returnValue;
@@ -2131,14 +2054,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the result set </param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information within provided bounding box </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Items_By_Coordinates' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Get_Items_By_Coordinates(string AggregationCode, double Latitude_1, double Longitude_1, double Latitude_2, double Longitude_2, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Get_Items_By_Coordinates(string AggregationCode, double Latitude_1, double Longitude_1, double Latitude_2, double Longitude_2, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Items_By_Coordinates", "Pulling data from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Items_By_Coordinates", "Pulling data from database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -2222,15 +2145,14 @@ namespace SobekCM.Library.Database
 				connect.Open();
 				using (SqlDataReader reader = executeCommand.ExecuteReader())
 				{
-
+					List<string> metadataFields = new List<string>();
 					// Create the return argument object
-					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+					returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataFields);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -2258,14 +2180,14 @@ namespace SobekCM.Library.Database
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
 		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information which matches the OCLC number </returns>
 		/// <remarks> This calls the 'SobekCM_Items_By_OCLC' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Items_By_OCLC_Number(long OCLC_Number, bool Include_Private_Items, int ResultsPerPage, int Sort, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Items_By_OCLC_Number(long OCLC_Number, bool Include_Private_Items, int ResultsPerPage, int Sort, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
+				Tracer.Add_Trace("SobekCM_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
 			}
 
 			// Build the parameter list
@@ -2280,14 +2202,15 @@ namespace SobekCM.Library.Database
 			Multiple_Paged_Results_Args returnArgs;
 			using (SqlDataReader reader = SqlHelper.ExecuteReader(connectionString, CommandType.StoredProcedure, "SobekCM_Items_By_OCLC", paramList))
 			{
+				List<string>  metadataFields = new List<string>();
+
 				// Create the return argument object
-				returnArgs = new Multiple_Paged_Results_Args
-								 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+				returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
 
 				// Create the overall search statistics?
 				if (Return_Search_Statistics)
 				{
-					Search_Results_Statistics stats = new Search_Results_Statistics(reader, null);
+					Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
 					returnArgs.Statistics = stats;
 					reader.Close();
 					stats.Total_Items = Convert.ToInt32(paramList[3].Value);
@@ -2309,14 +2232,14 @@ namespace SobekCM.Library.Database
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
 		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information which matches the ALEPH number </returns>
 		/// <remarks> This calls the 'SobekCM_Items_By_ALEPH' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Items_By_ALEPH_Number(int ALEPH_Number, bool Include_Private_Items, int ResultsPerPage, int Sort, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Multiple_Paged_Results_Args Items_By_ALEPH_Number(int ALEPH_Number, bool Include_Private_Items, int ResultsPerPage, int Sort, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
+				Tracer.Add_Trace("SobekCM_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
 			}
 
 			// Build the parameter list
@@ -2331,14 +2254,16 @@ namespace SobekCM.Library.Database
 			Multiple_Paged_Results_Args returnArgs;
 			using (SqlDataReader reader = SqlHelper.ExecuteReader(connectionString, CommandType.StoredProcedure, "SobekCM_Items_By_ALEPH", paramList))
 			{
+				List<string> metadataFields = new List<string>();
+					
 				// Create the return argument object
 				returnArgs = new Multiple_Paged_Results_Args
-								 {Paged_Results = DataReader_To_Result_List_With_LookAhead(reader, ResultsPerPage)};
+								 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields)};
 
 				// Create the overall search statistics?
 				if (Return_Search_Statistics)
 				{
-					Search_Results_Statistics stats = new Search_Results_Statistics(reader, null);
+					Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
 					returnArgs.Statistics = stats;
 					reader.Close();
 					stats.Total_Items = Convert.ToInt32(paramList[3].Value);
@@ -2360,14 +2285,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets some basic information about an item group before displaying it, such as the descriptive notes from the database, ability to add notes, etc.. </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item group to retrieve </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with detailed information about this item group from the database </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Details2' stored procedure, passing in NULL for the volume id </remarks> 
-		public static DataSet Get_Item_Group_Details(string BibID, Custom_Tracer tracer)
+		public static DataSet Get_Item_Group_Details(string BibID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", "");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", "");
 			}
 
 			try
@@ -2392,14 +2317,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets some basic information about an item before displaying it, such as the descriptive notes from the database, ability to add notes, etc.. </summary>
 		/// <param name="BibID"> Bibliographic identifier for the volume to retrieve </param>
 		/// <param name="VID"> Volume identifier for the volume to retrieve </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with detailed information about this item from the database </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Details' stored procedure </remarks> 
-		public static DataSet Get_Item_Details(string BibID, string VID, Custom_Tracer tracer)
+		public static DataSet Get_Item_Details(string BibID, string VID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Details", "");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", "");
 			}
 
 			try
@@ -2424,14 +2349,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets some basic information about an item before displaing it, such as the descriptive notes from the database, ability to add notes, etc.. </summary>
 		/// <param name="ItemID"> Bibliographic identifier for the volume to retrieve </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with detailed information about this item from the database </returns>
 		/// <remarks> This calls the 'SobekCM_Get_BibID_VID_From_ItemID' stored procedure </remarks> 
-		public static DataRow Lookup_Item_By_ItemID( int ItemID, Custom_Tracer tracer)
+		public static DataRow Lookup_Item_By_ItemID( int ItemID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Trying to pull information for " + ItemID );
+				Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Trying to pull information for " + ItemID );
 			}
 
 			try
@@ -2564,14 +2489,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the list of all items within this item group, indicated by BibID </summary>
 		/// <param name="BibID"> Bibliographic identifier for the title of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Strongly typed dataset with information about the title (item group), including volumes, icons, and skins</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Multiple_Volumes' stored procedure </remarks>
-		public static SobekCM_Items_In_Title Get_Multiple_Volumes(string BibID, Custom_Tracer tracer)
+		public static SobekCM_Items_In_Title Get_Multiple_Volumes(string BibID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
 			}
 
 			try
@@ -2616,14 +2541,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Adds the title, item, and page counts to this item aggregation object </summary>
 		/// <param name="Aggregation"> Mostly built item aggregation object </param>
-		/// <param name="tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-		public static bool Get_Item_Aggregation_Counts(Item_Aggregation Aggregation, Custom_Tracer tracer)
+		public static bool Get_Item_Aggregation_Counts(Item_Aggregation Aggregation, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", "Add the title, item, and page count to the item aggregation object");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", "Add the title, item, and page count to the item aggregation object");
 			}
 
 			try
@@ -2657,15 +2582,15 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets the database information about a single item aggregation </summary>
 		/// <param name="Code"> Code specifying the item aggregation to retrieve </param>
 		/// <param name="Include_Counts"> Flag indicates whether to pull the title/item/page counts for this aggregation </param>
-		/// <param name="tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Is_Robot"> Flag indicates if this is a request from an indexing robot, which leaves out a good bit of the work </param>
 		/// <returns> Arguments which include the <see cref="Item_Aggregation"/> object and a DataTable of the search field information</returns>
 		/// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-		public static Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, bool Is_Robot, Custom_Tracer tracer)
+		public static Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, bool Is_Robot, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", "Pulling item aggregation data from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", "Pulling item aggregation data from database");
 			}
 
 			try
@@ -2714,23 +2639,23 @@ namespace SobekCM.Library.Database
 			}
 			catch (Exception ee)
 			{
-				if (tracer != null)
+				if (Tracer != null)
 				{
-					tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
 				}
 				throw;
 			}
 		}
 
 		/// <summary> Gets the database information about the main aggregation, representing the entire web page </summary>
-		/// <param name="tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Arguments which include the <see cref="Item_Aggregation"/> object and a DataTable of the search field information</returns>
 		/// <remarks> This method calls the stored procedure 'SobekCM_Get_All_Groups'. </remarks>
-		public static Item_Aggregation Get_Main_Aggregation(Custom_Tracer tracer)
+		public static Item_Aggregation Get_Main_Aggregation(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", "Pulling item aggregation data from database");
+				Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", "Pulling item aggregation data from database");
 			}
 
 			try
@@ -2759,38 +2684,38 @@ namespace SobekCM.Library.Database
 			}
 			catch (Exception ee)
 			{
-				if (tracer != null)
+				if (Tracer != null)
 				{
-					tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
 				}
 				throw;
 			}
 		}
 
 		/// <summary> Adds the entire collection hierarchy under the ALL aggregation object </summary>
-		/// <param name="allInfoObject"> All aggregations object within which to populate the hierarchy </param>
+		/// <param name="AllInfoObject"> All aggregations object within which to populate the hierarchy </param>
 		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This is postponed until it is needed for the TREE VIEW on the home page, to allow the system to start
 		/// faster, even with a great number of item aggregations in the hierarchy </remarks>
-		public static bool Add_Children_To_Main_Agg( Item_Aggregation allInfoObject, Custom_Tracer Tracer )
+		public static bool Add_Children_To_Main_Agg( Item_Aggregation AllInfoObject, Custom_Tracer Tracer )
 		{
 			DataTable childInfo = Get_Aggregation_Hierarchies(Tracer);
 			if ( childInfo == null )
 				return false;
 
-			add_children(allInfoObject,  childInfo);
+			add_children(AllInfoObject,  childInfo);
 			return true;
 		}
 
 		/// <summary> Creates the item aggregation object from the datatable extracted from the database </summary>
-		/// <param name="basicInfo">Datatable from database calls ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
+		/// <param name="BasicInfo">Datatable from database calls ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
 		/// <returns>Minimally built aggregation object</returns>
 		/// <remarks>The child and parent information is not yet added to the returned object </remarks>
-		private static Item_Aggregation create_basic_aggregation_from_datatable( DataTable basicInfo )
+		private static Item_Aggregation create_basic_aggregation_from_datatable( DataTable BasicInfo )
 		{
 			// Pull out this row
-			DataRow thisRow = basicInfo.Rows[0];
+			DataRow thisRow = BasicInfo.Rows[0];
 
 			string displayOptions = thisRow[15].ToString();
 			DateTime lastAdded = new DateTime(2000, 1, 1);
@@ -2817,7 +2742,7 @@ namespace SobekCM.Library.Database
 												External_Link = thisRow[19].ToString()
 											};
 
-            if (basicInfo.Columns.Contains("ThematicHeadingID"))
+            if (BasicInfo.Columns.Contains("ThematicHeadingID"))
                 aggrInfo.Thematic_Heading_ID = Convert.ToInt32(thisRow["ThematicHeadingID"]);
 
 			// return the built object
@@ -2825,15 +2750,15 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
-		/// <param name="aggrInfo">Partially built item aggregation object</param>
-		/// <param name="childInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
-		private static void add_children(Item_Aggregation aggrInfo, DataTable childInfo)
+		/// <param name="AggrInfo">Partially built item aggregation object</param>
+		/// <param name="ChildInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
+		private static void add_children(Item_Aggregation AggrInfo, DataTable ChildInfo)
 		{
 			// Build a dictionary of nodes while building this tree
-			Dictionary<string, Item_Aggregation_Related_Aggregations> nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(childInfo.Rows.Count);
+			Dictionary<string, Item_Aggregation_Related_Aggregations> nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
 			
 			// Step through each row of children
-			foreach (DataRow thisRow in childInfo.Rows)
+			foreach (DataRow thisRow in ChildInfo.Rows)
 			{
 				// pull some of the basic data out
 				int hierarchyLevel = Convert.ToInt16(thisRow[5]);
@@ -2850,10 +2775,10 @@ namespace SobekCM.Library.Database
 					nodes.Add(code, childObject);
 
 					// If this is not ALL, no need to add the full hierarchy
-					if ((aggrInfo.Code == "all") || (hierarchyLevel == -1))
+					if ((AggrInfo.Code == "all") || (hierarchyLevel == -1))
 					{
 						// Check for parent in the node list
-						if ((parentCode.Length > 0) && (aggrInfo.Code != parentCode) && (nodes.ContainsKey(parentCode)))
+						if ((parentCode.Length > 0) && (AggrInfo.Code != parentCode) && (nodes.ContainsKey(parentCode)))
 						{
 							nodes[parentCode].Add_Child_Aggregation(childObject);
 						}
@@ -2862,83 +2787,83 @@ namespace SobekCM.Library.Database
 					// If this is the first hierarchy, add to the main item aggregation object
 					if (hierarchyLevel == -1)
 					{
-						aggrInfo.Add_Child_Aggregation(childObject);
+						AggrInfo.Add_Child_Aggregation(childObject);
 					}
 				}
 			}
 		}
 
         /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
-		/// <param name="aggrInfo">Partially built item aggregation object</param>
-        /// <param name="parentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
-        private static void add_parents(Item_Aggregation aggrInfo, DataTable parentInfo)
+		/// <param name="AggrInfo">Partially built item aggregation object</param>
+        /// <param name="ParentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
+        private static void add_parents(Item_Aggregation AggrInfo, DataTable ParentInfo)
         {
-            foreach (DataRow parentRow in parentInfo.Rows)
+            foreach (DataRow parentRow in ParentInfo.Rows)
             {
                 Item_Aggregation_Related_Aggregations parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
-                aggrInfo.Add_Parent_Aggregation(parentObject);
+                AggrInfo.Add_Parent_Aggregation(parentObject);
             }
         }
 
 		/// <summary> Adds the search terms to display under advanced search from the datatable extracted from the database 
 		/// and also the list of browseable fields for this collection </summary>
-		/// <param name="aggrInfo">Partially built item aggregation object</param>
-		/// <param name="searchTermsTable"> Table of all advanced search values </param>
-		private static void add_advanced_terms(Item_Aggregation aggrInfo, DataTable searchTermsTable )
+		/// <param name="AggrInfo">Partially built item aggregation object</param>
+		/// <param name="SearchTermsTable"> Table of all advanced search values </param>
+		private static void add_advanced_terms(Item_Aggregation AggrInfo, DataTable SearchTermsTable )
 		{
 			// Add ANYWHERE first
-			aggrInfo.Advanced_Search_Fields.Add(-1);
+			AggrInfo.Advanced_Search_Fields.Add(-1);
 
 			// Add values either default values or from the table
-			if (( searchTermsTable == null ) || ( searchTermsTable.Rows.Count == 0 ))
+			if (( SearchTermsTable == null ) || ( SearchTermsTable.Rows.Count == 0 ))
 			{
-				aggrInfo.Advanced_Search_Fields.Add(4);
-				aggrInfo.Advanced_Search_Fields.Add(3);
-				aggrInfo.Advanced_Search_Fields.Add(6);
-				aggrInfo.Advanced_Search_Fields.Add(5);
-				aggrInfo.Advanced_Search_Fields.Add(7);
-				aggrInfo.Advanced_Search_Fields.Add(1);
-				aggrInfo.Advanced_Search_Fields.Add(2);
+				AggrInfo.Advanced_Search_Fields.Add(4);
+				AggrInfo.Advanced_Search_Fields.Add(3);
+				AggrInfo.Advanced_Search_Fields.Add(6);
+				AggrInfo.Advanced_Search_Fields.Add(5);
+				AggrInfo.Advanced_Search_Fields.Add(7);
+				AggrInfo.Advanced_Search_Fields.Add(1);
+				AggrInfo.Advanced_Search_Fields.Add(2);
 
-                aggrInfo.Browseable_Fields.Add(4);
-                aggrInfo.Browseable_Fields.Add(3);
-                aggrInfo.Browseable_Fields.Add(6);
-                aggrInfo.Browseable_Fields.Add(5);
-                aggrInfo.Browseable_Fields.Add(7);
-                aggrInfo.Browseable_Fields.Add(1);
-                aggrInfo.Browseable_Fields.Add(2);   
+                AggrInfo.Browseable_Fields.Add(4);
+                AggrInfo.Browseable_Fields.Add(3);
+                AggrInfo.Browseable_Fields.Add(6);
+                AggrInfo.Browseable_Fields.Add(5);
+                AggrInfo.Browseable_Fields.Add(7);
+                AggrInfo.Browseable_Fields.Add(1);
+                AggrInfo.Browseable_Fields.Add(2);   
 
 			}
 			else
 			{
 				short lastTypeId = -1;
-				foreach( DataRow thisRow in searchTermsTable.Rows )
+				foreach( DataRow thisRow in SearchTermsTable.Rows )
 				{
 					short thisTypeId = Convert.ToInt16(thisRow[0]);
-					if ((thisTypeId != lastTypeId) && (!aggrInfo.Advanced_Search_Fields.Contains(thisTypeId)))
+					if ((thisTypeId != lastTypeId) && (!AggrInfo.Advanced_Search_Fields.Contains(thisTypeId)))
 					{
-						aggrInfo.Advanced_Search_Fields.Add(thisTypeId);
+						AggrInfo.Advanced_Search_Fields.Add(thisTypeId);
 						lastTypeId = thisTypeId;
 					}
 				    bool canBrowse = Convert.ToBoolean(thisRow[1]);
-                    if ((canBrowse) && (!aggrInfo.Browseable_Fields.Contains(thisTypeId)))
+                    if ((canBrowse) && (!AggrInfo.Browseable_Fields.Contains(thisTypeId)))
                     {
-                        aggrInfo.Browseable_Fields.Add(thisTypeId);
+                        AggrInfo.Browseable_Fields.Add(thisTypeId);
                     }
 				}
 			}
 		}
 
 		/// <summary> Adds the page count, item count, and title count to the item aggregation object from the datatable extracted from the database </summary>
-		/// <param name="aggrInfo">Partially built item aggregation object</param>
-		/// <param name="countInfo">Datatable from database calls with page count, item count, and title count ( from either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
-		private static void add_counts(Item_Aggregation aggrInfo, DataTable countInfo)
+		/// <param name="AggrInfo">Partially built item aggregation object</param>
+		/// <param name="CountInfo">Datatable from database calls with page count, item count, and title count ( from either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
+		private static void add_counts(Item_Aggregation AggrInfo, DataTable CountInfo)
 		{
-			if (countInfo.Rows.Count > 0)
+			if (CountInfo.Rows.Count > 0)
 			{
-				aggrInfo.Page_Count = Convert.ToInt32(countInfo.Rows[0]["Page_Count"]);
-				aggrInfo.Item_Count = Convert.ToInt32(countInfo.Rows[0]["Item_Count"]);
-				aggrInfo.Title_Count = Convert.ToInt32(countInfo.Rows[0]["Title_Count"]);
+				AggrInfo.Page_Count = Convert.ToInt32(CountInfo.Rows[0]["Page_Count"]);
+				AggrInfo.Item_Count = Convert.ToInt32(CountInfo.Rows[0]["Item_Count"]);
+				AggrInfo.Title_Count = Convert.ToInt32(CountInfo.Rows[0]["Title_Count"]);
 			}
 		}
 
@@ -2947,14 +2872,14 @@ namespace SobekCM.Library.Database
 		#region Methods to get the support objects.. Interfaces, Portals, Search stop words, and Search Fields
 
 		/// <summary> Gets the list of all search stop words which are ignored during searching ( such as 'The', 'A', etc.. ) </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> List of all the search stop words from the database </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Search_Stop_Words' stored procedure </remarks>
-		public static List<string> Search_Stop_Words( Custom_Tracer tracer )
+		public static List<string> Search_Stop_Words( Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", "Pull search stop words from the database");
+				Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", "Pull search stop words from the database");
 			}
 
 			// Build return list
@@ -2993,15 +2918,15 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Populates the collection of the thematic headings for the main home page </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Thematic_Heading_List"> List to populate with the thematic headings from the database</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Manager_Get_Thematic_Headings' stored procedure </remarks> 
-		public static bool Populate_Thematic_Headings(List<Thematic_Heading> Thematic_Heading_List, Custom_Tracer tracer)
+		public static bool Populate_Thematic_Headings(List<Thematic_Heading> Thematic_Heading_List, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", "Pull thematic heading information from the database");
+				Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", "Pull thematic heading information from the database");
 			}
 
 			try
@@ -3031,15 +2956,15 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Populates the lookup tables for aliases which point to live aggregations </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Aggregation_Alias_List"> List of aggregation aliases to populate from the database</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Aggregation_Aliases' stored procedure </remarks> 
-		public static bool Populate_Aggregation_Aliases(Dictionary<string, string> Aggregation_Alias_List, Custom_Tracer tracer)
+		public static bool Populate_Aggregation_Aliases(Dictionary<string, string> Aggregation_Alias_List, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", "Pull item aggregation aliases from the database");
+				Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", "Pull item aggregation aliases from the database");
 			}
 
 			try
@@ -3069,14 +2994,14 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Datatable with the information for every html skin from the database </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datatable with all the html skin information to be loaded into the <see cref="Skins.SobekCM_Skin_Collection"/> object. </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Web_Skins' stored procedure </remarks> 
-		public static DataTable Get_All_Web_Skins(Custom_Tracer tracer)
+		public static DataTable Get_All_Web_Skins(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_All_Skins", "Pull display skin information from the database");
+				Tracer.Add_Trace("SobekCM_Database.Get_All_Skins", "Pull display skin information from the database");
 			}
 
 			// Define a temporary dataset
@@ -3100,14 +3025,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Populates the collection of possible portals from the database </summary>
 		/// <param name="Portals"> List of possible URL portals into this library/cms </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successul, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Get_All_Portals' stored procedure </remarks>
-		public static bool Populate_URL_Portals(Portal_List Portals, Custom_Tracer tracer)
+		public static bool Populate_URL_Portals(Portal_List Portals, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Pull URL portal information from the database");
+				Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Pull URL portal information from the database");
 			}
 
 			try
@@ -3188,14 +3113,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Delete a URL Portal from the database, by primary key </summary>
 		/// <param name="Portal_ID"> Primary key for the URL portal to be deleted </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successul, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Portal' stored procedure </remarks>
-		public static bool Delete_URL_Portal( int Portal_ID, Custom_Tracer tracer)
+		public static bool Delete_URL_Portal( int Portal_ID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Delete a URL Portal by portal id ( " + Portal_ID + " )");
+				Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Delete a URL Portal by portal id ( " + Portal_ID + " )");
 			}
 
 			try
@@ -3219,20 +3144,20 @@ namespace SobekCM.Library.Database
 		/// <param name="Portal_ID"> Primary key for the URL portal to be edited, or -1 if this is a new URL portal </param>
 		/// <param name="Default_Aggregation"> Default aggregation for this URL portal </param>
 		/// <param name="Default_Web_Skin"> Default web skin for this URL portal </param>
-		/// <param name="Base_PURL"> Base PURL , used to override the default PURL built from the current URL</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="BasePurl"> Base PURL , used to override the default PURL built from the current URL</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Base_URL"> URL used to match the incoming request with this URL portal</param>
-		/// <param name="isActive"> Flag indicates if this URL portal is active</param>
-		/// <param name="isDefault"> Flag indicates if this is the default URL portal, if no other portal match is found</param>
+		/// <param name="IsActive"> Flag indicates if this URL portal is active</param>
+		/// <param name="IsDefault"> Flag indicates if this is the default URL portal, if no other portal match is found</param>
 		/// <param name="Abbreviation"> Abbreviation for this system, when referenced by this URL portal</param>
 		/// <param name="Name"> Name of this system, when referenced by this URL portal </param>
 		/// <returns> New primary key (or existing key) for the URL portal added or edited </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_Portal' stored procedure </remarks>
-		public static int Edit_URL_Portal(int Portal_ID, string Base_URL, bool isActive, bool isDefault, string Abbreviation, string Name, string Default_Aggregation, string Default_Web_Skin, string Base_PURL, Custom_Tracer tracer)
+		public static int Edit_URL_Portal(int Portal_ID, string Base_URL, bool IsActive, bool IsDefault, string Abbreviation, string Name, string Default_Aggregation, string Default_Web_Skin, string BasePurl, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Edit an existing URL portal, or add a new one");
+				Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Edit an existing URL portal, or add a new one");
 			}
 
 			try
@@ -3241,12 +3166,12 @@ namespace SobekCM.Library.Database
 				SqlParameter[] paramList = new SqlParameter[10];
 				paramList[0] = new SqlParameter("@PortalID", Portal_ID);
 				paramList[1] = new SqlParameter("@Base_URL", Base_URL);
-				paramList[2] = new SqlParameter("@isActive", isActive);
-				paramList[3] = new SqlParameter("@isDefault", isDefault);
+				paramList[2] = new SqlParameter("@isActive", IsActive);
+				paramList[3] = new SqlParameter("@isDefault", IsDefault);
 				paramList[4] = new SqlParameter("@Abbreviation", Abbreviation);
 				paramList[5] = new SqlParameter("@Name", Name);
 				paramList[6] = new SqlParameter("@Default_Aggregation", Default_Aggregation);
-				paramList[7] = new SqlParameter("@Base_PURL", Base_PURL);
+				paramList[7] = new SqlParameter("@Base_PURL", BasePurl);
 				paramList[8] = new SqlParameter("@Default_Web_Skin", Default_Web_Skin);
 				paramList[9] = new SqlParameter("@NewID", Portal_ID) {Direction = ParameterDirection.InputOutput};
 
@@ -3267,14 +3192,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Populates the translation / language support object for translating common UI terms </summary>
 		/// <param name="Translations"> Translations object to populate from the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Translation' stored procedure </remarks> 
-		public static bool Populate_Translations( Language_Support_Info Translations, Custom_Tracer tracer)
+		public static bool Populate_Translations( Language_Support_Info Translations, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Translations", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Populate_Translations", String.Empty);
 			}
 
 			try
@@ -3313,15 +3238,15 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Populates the code manager object for translating SobekCM codes to greenstone collection codes </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Codes"> Code object to populate with the all the code and aggregation information</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Codes' stored procedure </remarks> 
-		public static bool Populate_Code_Manager(Aggregation_Code_Manager Codes, Custom_Tracer tracer)
+		public static bool Populate_Code_Manager(Aggregation_Code_Manager Codes, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Code_Manager", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Populate_Code_Manager", String.Empty);
 			}
 
 			// Create the connection
@@ -3337,36 +3262,36 @@ namespace SobekCM.Library.Database
 					Codes.Clear();
 
 					// get the column indexes out
-					const int codeCol = 0;
-					const int typeCol = 1;
-					const int nameCol = 2;
-					const int shortNameCol = 3;
-					const int isActiveCol = 4;
-					const int hiddenCol = 5;
-					const int idCol = 6;
-					const int descCol = 7;
-					const int themeCol = 8;
-					const int linkCol = 9;
+					const int CODE_COL = 0;
+					const int TYPE_COL = 1;
+					const int NAME_COL = 2;
+					const int SHORT_NAME_COL = 3;
+					const int IS_ACTIVE_COL = 4;
+					const int HIDDEN_COL = 5;
+					const int ID_COL = 6;
+					const int DESC_COL = 7;
+					const int THEME_COL = 8;
+					const int LINK_COL = 9;
 
 					while (reader.Read())
 					{
 						// Get the list key values out 
-						string code = reader.GetString(codeCol).ToUpper();
-						string type = reader.GetString( typeCol);
-						int theme = reader.GetInt32(themeCol);
+						string code = reader.GetString(CODE_COL).ToUpper();
+						string type = reader.GetString( TYPE_COL);
+						int theme = reader.GetInt32(THEME_COL);
 
 						// Only do anything else if this is not somehow a repeat
 						if ( !Codes.isValidCode(code))
 						{
 							// Create the object
 							Item_Aggregation_Related_Aggregations thisAggr =
-								new Item_Aggregation_Related_Aggregations(code, reader.GetString(nameCol),
-																		  reader.GetString(shortNameCol), type,
-																		  reader.GetBoolean(isActiveCol),
-																		  reader.GetBoolean(hiddenCol),
-																		  reader.GetString(descCol),
-																		  (ushort) reader.GetInt32(idCol))
-									{External_Link = reader.GetString(linkCol)};
+								new Item_Aggregation_Related_Aggregations(code, reader.GetString(NAME_COL),
+																		  reader.GetString(SHORT_NAME_COL), type,
+																		  reader.GetBoolean(IS_ACTIVE_COL),
+																		  reader.GetBoolean(HIDDEN_COL),
+																		  reader.GetString(DESC_COL),
+																		  (ushort) reader.GetInt32(ID_COL))
+									{External_Link = reader.GetString(LINK_COL)};
 
 							// Add this to the codes manager
 							Codes.Add_Collection(thisAggr, theme );
@@ -3383,15 +3308,15 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Populates the dictionary of all icons from the database </summary>
 		/// <param name="Icon_List"> List of icons to be populated with a successful database pulll </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Icon_List' stored procedure <br /><br />
 		/// The lookup values in this dictionary are the icon code uppercased.</remarks> 
-		public static bool Populate_Icon_List(Dictionary<string, Wordmark_Icon> Icon_List, Custom_Tracer tracer)
+		public static bool Populate_Icon_List(Dictionary<string, Wordmark_Icon> Icon_List, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Icon_List", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Populate_Icon_List", String.Empty);
 			}
 
 			// Create the connection
@@ -3424,15 +3349,15 @@ namespace SobekCM.Library.Database
 
         /// <summary> Populates the dictionary of all files and MIME types from the database </summary>
         /// <param name="MIME_List"> List of files and MIME types to be populated with a successful database pulll </param>
-        /// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
         /// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
-        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer tracer)
+        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer Tracer)
         {
-            if (tracer != null)
+            if (Tracer != null)
             {
-                tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
+                Tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
             }
 
             // Create the connection
@@ -3465,14 +3390,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
 		/// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
 		/// <param name="VID"> Volume identifiers for the item of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datarow with additional information about an item, including spatial details, publisher, donor, etc.. </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Brief_Info' stored procedure </remarks> 
-		public static DataRow Get_Item_Information(string BibID, string VID, Custom_Tracer tracer)
+		public static DataRow Get_Item_Information(string BibID, string VID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
 			}
 
 			try
@@ -3505,14 +3430,14 @@ namespace SobekCM.Library.Database
 		/// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
 		/// <param name="VID"> Volume identifiers for the item of interest </param>
 		/// <param name="Include_Aggregations"> Flag indicates whether to include the aggregations </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datarow with additional information about an item, including spatial details, publisher, donor, etc.. </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Brief_Info' stored procedure </remarks> 
-		public static DataSet Get_Item_Information(string BibID, string VID, bool Include_Aggregations, Custom_Tracer tracer)
+		public static DataSet Get_Item_Information(string BibID, string VID, bool Include_Aggregations, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
 			}
 
 			try
@@ -3543,15 +3468,15 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Verified the item lookup object is filled, or populates the item lookup object with all the valid bibids and vids in the system </summary>
 		/// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
-		/// <param name="itemLookupObject"> [REF] Item lookup object to directly populate from the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="ItemLookupObject"> [REF] Item lookup object to directly populate from the database </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful or if the object is already filled, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-		public static bool Verify_Item_Lookup_Object(bool Include_Private, ref Item_Lookup_Object itemLookupObject, Custom_Tracer tracer)
+		public static bool Verify_Item_Lookup_Object(bool Include_Private, ref Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Verify_Item_Lookup_Object", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Verify_Item_Lookup_Object", String.Empty);
 			}
 
             // If no database string, don't try to connect
@@ -3561,9 +3486,9 @@ namespace SobekCM.Library.Database
 			lock (itemListPopulationLock)
 			{
 				bool updateList = true;
-				if (itemLookupObject != null)
+				if (ItemLookupObject != null)
 				{
-					TimeSpan sinceLastUpdate = DateTime.Now.Subtract(itemLookupObject.Last_Updated);
+					TimeSpan sinceLastUpdate = DateTime.Now.Subtract(ItemLookupObject.Last_Updated);
 					if (sinceLastUpdate.TotalMinutes <= 1)
 						updateList = false;
 				}
@@ -3573,13 +3498,13 @@ namespace SobekCM.Library.Database
 					return true;
 				}
 				
-				if (itemLookupObject == null)
-					itemLookupObject = new Item_Lookup_Object();
+				if (ItemLookupObject == null)
+					ItemLookupObject = new Item_Lookup_Object();
 
 				// Have the database popoulate the little bit of bibid/vid information we retain
-				bool returnValue = Populate_Item_Lookup_Object(Include_Private, itemLookupObject, tracer);
+				bool returnValue = Populate_Item_Lookup_Object(Include_Private, ItemLookupObject, Tracer);
 				if (returnValue)
-					itemLookupObject.Last_Updated = DateTime.Now;
+					ItemLookupObject.Last_Updated = DateTime.Now;
 				return returnValue;
 			}
 		}
@@ -3587,15 +3512,15 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Populates the item lookup object with all the valid bibids and vids in the system </summary>
 		/// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
-		/// <param name="itemLookupObject"> Item lookup object to directly populate from the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="ItemLookupObject"> Item lookup object to directly populate from the database </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-		public static bool Populate_Item_Lookup_Object(bool Include_Private, Item_Lookup_Object itemLookupObject, Custom_Tracer tracer)
+		public static bool Populate_Item_Lookup_Object(bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", String.Empty);
 			}
 
 			try
@@ -3614,8 +3539,8 @@ namespace SobekCM.Library.Database
 					using (SqlDataReader reader = executeCommand.ExecuteReader())
 					{
 						// Clear existing volumes
-						itemLookupObject.Clear();
-						itemLookupObject.Last_Updated = DateTime.Now;
+						ItemLookupObject.Clear();
+						ItemLookupObject.Last_Updated = DateTime.Now;
 
 						string currentBibid = String.Empty;
 						Multiple_Volume_Item currentVolume = null;
@@ -3632,7 +3557,7 @@ namespace SobekCM.Library.Database
 							{
 								currentBibid = newBib;
 								currentVolume = new Multiple_Volume_Item(newBib);
-								itemLookupObject.Add_Title(currentVolume);
+								ItemLookupObject.Add_Title(currentVolume);
 							}
 
 							// Add this volume
@@ -3678,14 +3603,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the dataset of all public items and item groups </summary>
 		/// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Dataset of all items and item groups </returns>
 		/// <remarks> This calls the 'SobekCM_Item_List_Brief2' stored procedure </remarks> 
-		public static DataSet Get_Item_List( bool Include_Private, Custom_Tracer tracer)
+		public static DataSet Get_Item_List( bool Include_Private, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Item_List", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_List", String.Empty);
 			}
 
 			// Define a temporary dataset
@@ -3709,17 +3634,17 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the simple list of items for a single item aggregation, or the list of all items in the library </summary>
 		/// <param name="Aggregation_Code"> Code for the item aggregation of interest, or an empty string</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Dataset with the simple list of items, including BibID, VID, Title, CreateDate, and Resource Link </returns>
 		/// <remarks> This calls the 'SobekCM_Simple_Item_List' stored procedure </remarks> 
-		public static DataSet Simple_Item_List(string Aggregation_Code, Custom_Tracer tracer )
+		public static DataSet Simple_Item_List(string Aggregation_Code, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
 				if ( Aggregation_Code.Length == 0 )
-					tracer.Add_Trace("SobekCM_Database.Simple_Item_List", "Pulling simple item list for all items");
+					Tracer.Add_Trace("SobekCM_Database.Simple_Item_List", "Pulling simple item list for all items");
 				else
-					tracer.Add_Trace("SobekCM_Database.Simple_Item_List", "Pulling simple item list for '" + Aggregation_Code + "'");
+					Tracer.Add_Trace("SobekCM_Database.Simple_Item_List", "Pulling simple item list for '" + Aggregation_Code + "'");
 			}
 
 			// Define a temporary dataset
@@ -3734,14 +3659,14 @@ namespace SobekCM.Library.Database
 		#region Methods to support the restriction by IP addresses
 
 		/// <summary> Gets the list of all the IP ranges for restriction, including each single IP information in those ranges </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all the data about the IP ranges used for restrictions </returns>
 		/// <remarks> This calls the 'SobekCM_Get_All_IP_Restrictions' stored procedure </remarks> 
-		public static DataTable Get_IP_Restriction_Ranges( Custom_Tracer tracer )
+		public static DataTable Get_IP_Restriction_Ranges( Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range", "Pulls all the IP restriction range inforamtion");
+				Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range", "Pulls all the IP restriction range inforamtion");
 			}
 
 			try
@@ -3761,14 +3686,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the details for a single IP restriction ranges, including each single IP and the complete notes associated with the range </summary>
 		/// <param name="PrimaryID"> Primary id to the IP restriction range to pull details for </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all the data about the IP ranges used for restrictions </returns>
 		/// <remarks> This calls the 'SobekCM_Get_IP_Restriction_Range' stored procedure </remarks> 
-		public static DataSet Get_IP_Restriction_Range_Details(int PrimaryID, Custom_Tracer tracer)
+		public static DataSet Get_IP_Restriction_Range_Details(int PrimaryID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Pulls all the IP restriction range details for range #" + PrimaryID );
+				Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Pulls all the IP restriction range details for range #" + PrimaryID );
 			}
 
 			try
@@ -3797,14 +3722,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes a single IP address information from an IP restriction range </summary>
 		/// <param name="PrimaryID"> Primary key for this single IP address information to delete </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Single_IP' stored procedure </remarks> 
-		public static bool Delete_Single_IP(int PrimaryID, Custom_Tracer tracer )
+		public static bool Delete_Single_IP(int PrimaryID, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", "Delete single IP information within a range");
+				Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", "Delete single IP information within a range");
 			}
 
 			try
@@ -3831,14 +3756,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Start_IP"> Beginning of the IP range, or the complete IP address </param>
 		/// <param name="End_IP"> End of the IP range, if this was a true range </param>
 		/// <param name="Note"> Any note associated with this single IP information </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for the single IP address information, if no primary key was originally provided </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_Single_IP' stored procedure </remarks> 
-		public static int Edit_Single_IP(int PrimaryID, int IP_RangeID, string Start_IP, string End_IP, string Note, Custom_Tracer tracer)
+		public static int Edit_Single_IP(int PrimaryID, int IP_RangeID, string Start_IP, string End_IP, string Note, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", "Edit a single IP within a restriction range");
+				Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", "Edit a single IP within a restriction range");
 			}
 
 			try
@@ -3870,14 +3795,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Title"> Title for this IP Restriction Range </param>
 		/// <param name="Notes"> Notes about this IP Restriction Range (for system admins)</param>
 		/// <param name="Item_Restricted_Statement"> Statement used when a user directly requests an item for which they do not the pre-requisite access </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_IP_Range' stored procedure </remarks> 
-		public static bool Edit_IP_Range(int IP_RangeID, string Title, string Notes, string Item_Restricted_Statement, Custom_Tracer tracer)
+		public static bool Edit_IP_Range(int IP_RangeID, string Title, string Notes, string Item_Restricted_Statement, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", "Edit an existing IP restriction range");
+				Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", "Edit an existing IP restriction range");
 			}
 
 			try
@@ -3908,10 +3833,10 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the list of all map features linked to a particular item  </summary>
 		/// <param name="ItemID"> ItemID for the item of interest</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> List of all features linked to the item of interest </returns>
 		/// <remarks> This calls the 'Auth_Get_All_Features_By_Item' stored procedure </remarks> 
-		public static Map_Features_DataSet Get_All_Features_By_Item(int ItemID, Custom_Tracer tracer)
+		public static Map_Features_DataSet Get_All_Features_By_Item(int ItemID, Custom_Tracer Tracer)
 		{
 			try
 			{
@@ -3947,10 +3872,10 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the list of all streets linked to a particular item  </summary>
 		/// <param name="ItemID"> ItemID for the item of interest</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> List of all streets linked to the item of interest </returns>
 		/// <remarks> This calls the 'Auth_Get_All_Streets_By_Item' stored procedure </remarks> 
-		public static Map_Streets_DataSet Get_All_Streets_By_Item(int ItemID, Custom_Tracer tracer)
+		public static Map_Streets_DataSet Get_All_Streets_By_Item(int ItemID, Custom_Tracer Tracer)
 		{
 			try
 			{
@@ -3989,59 +3914,59 @@ namespace SobekCM.Library.Database
 		#region My Sobek database calls
 
 		/// <summary> Saves information about a single user </summary>
-		/// <param name="user"> <see cref="Users.User_Object"/> with all the information about the single user</param>
+		/// <param name="User"> <see cref="Users.User_Object"/> with all the information about the single user</param>
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to saving</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_Save_User2' stored procedure</remarks> 
-		public static bool Save_User(User_Object user, string Password, Custom_Tracer tracer)
+		public static bool Save_User(User_Object User, string Password, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_User", String.Empty);
 			}
 
-			const string salt = "This is my salt to add to the password";
-			string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + salt);
+			const string SALT = "This is my salt to add to the password";
+			string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
 
 			try
 			{
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[20];
-				paramList[0] = new SqlParameter("@userid", user.UserID);
-				paramList[1] = new SqlParameter("@ufid", user.UFID);
-				paramList[2] = new SqlParameter("@username", user.UserName);
+				paramList[0] = new SqlParameter("@userid", User.UserID);
+				paramList[1] = new SqlParameter("@ufid", User.UFID);
+				paramList[2] = new SqlParameter("@username", User.UserName);
 				paramList[3] = new SqlParameter("@password", encryptedPassword);
-				paramList[4] = new SqlParameter("@emailaddress", user.Email);
-				paramList[5] = new SqlParameter("@firstname", user.Given_Name);
-				paramList[6] = new SqlParameter("@lastname", user.Family_Name);
-				paramList[7] = new SqlParameter("@cansubmititems", user.Can_Submit);
-				paramList[8] = new SqlParameter("@nickname", user.Nickname);
-				paramList[9] = new SqlParameter("@organization", user.Organization);
-				paramList[10] = new SqlParameter("@college", user.College);
-				paramList[11] = new SqlParameter("@department", user.Department);
-				paramList[12] = new SqlParameter("@unit", user.Unit);
-				paramList[13] = new SqlParameter("@rights", user.Default_Rights);
-				paramList[14] = new SqlParameter("@sendemail", user.Send_Email_On_Submission);
-				paramList[15] = new SqlParameter("@language", user.Preferred_Language);
-				if (user.Templates.Count > 0)
+				paramList[4] = new SqlParameter("@emailaddress", User.Email);
+				paramList[5] = new SqlParameter("@firstname", User.Given_Name);
+				paramList[6] = new SqlParameter("@lastname", User.Family_Name);
+				paramList[7] = new SqlParameter("@cansubmititems", User.Can_Submit);
+				paramList[8] = new SqlParameter("@nickname", User.Nickname);
+				paramList[9] = new SqlParameter("@organization", User.Organization);
+				paramList[10] = new SqlParameter("@college", User.College);
+				paramList[11] = new SqlParameter("@department", User.Department);
+				paramList[12] = new SqlParameter("@unit", User.Unit);
+				paramList[13] = new SqlParameter("@rights", User.Default_Rights);
+				paramList[14] = new SqlParameter("@sendemail", User.Send_Email_On_Submission);
+				paramList[15] = new SqlParameter("@language", User.Preferred_Language);
+				if (User.Templates.Count > 0)
 				{
-					paramList[16] = new SqlParameter("@default_template", user.Templates[0]);
+					paramList[16] = new SqlParameter("@default_template", User.Templates[0]);
 				}
 				else
 				{
 					paramList[16] = new SqlParameter("@default_template", String.Empty);
 				}
-				if (user.Projects.Count > 0)
+				if (User.Projects.Count > 0)
 				{
-					paramList[17] = new SqlParameter("@default_project", user.Projects[0]);
+					paramList[17] = new SqlParameter("@default_project", User.Projects[0]);
 				}
 				else
 				{
 					paramList[17] = new SqlParameter("@default_project", String.Empty);
 				}
-				paramList[18] = new SqlParameter("@organization_code", user.Organization_Code);
-				paramList[19] = new SqlParameter("@receivestatsemail", user.Receive_Stats_Emails);
+				paramList[18] = new SqlParameter("@organization_code", User.Organization_Code);
+				paramList[19] = new SqlParameter("@receivestatsemail", User.Receive_Stats_Emails);
 
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User2", paramList);
 				return true;
@@ -4080,31 +4005,31 @@ namespace SobekCM.Library.Database
         }
 
 		/// <summary> Change an existing user's password </summary>
-		/// <param name="username"> Username for the user </param>
-		/// <param name="current_password"> Old plain-text password, which is then encrypted prior to saving</param>
-		/// <param name="new_password"> New plain-text password, which is then encrypted prior to saving</param>
-		/// <param name="is_temporary"> Flag indicates if the new password is temporary and must be changed on the next logon</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Username"> Username for the user </param>
+		/// <param name="CurrentPassword"> Old plain-text password, which is then encrypted prior to saving</param>
+		/// <param name="NewPassword"> New plain-text password, which is then encrypted prior to saving</param>
+		/// <param name="IsTemporary"> Flag indicates if the new password is temporary and must be changed on the next logon</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_Change_Password' stored procedure</remarks> 
-		public static bool Change_Password(string username, string current_password, string new_password, bool is_temporary,  Custom_Tracer tracer )
+		public static bool Change_Password(string Username, string CurrentPassword, string NewPassword, bool IsTemporary,  Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Change_Password", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Change_Password", String.Empty);
 			}
 
-			const string salt = "This is my salt to add to the password";
-			string encryptedCurrentPassword = SecurityInfo.SHA1_EncryptString(current_password + salt);
-			string encryptedNewPassword = SecurityInfo.SHA1_EncryptString(new_password + salt);
+			const string SALT = "This is my salt to add to the password";
+			string encryptedCurrentPassword = SecurityInfo.SHA1_EncryptString(CurrentPassword + SALT);
+			string encryptedNewPassword = SecurityInfo.SHA1_EncryptString(NewPassword + SALT);
 			try
 			{
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@username", username);
+				paramList[0] = new SqlParameter("@username", Username);
 				paramList[1] = new SqlParameter("@current_password", encryptedCurrentPassword);
 				paramList[2] = new SqlParameter("@new_password", encryptedNewPassword);
-				paramList[3] = new SqlParameter("@isTemporaryPassword", is_temporary);
+				paramList[3] = new SqlParameter("@isTemporaryPassword", IsTemporary);
 				paramList[4] = new SqlParameter("@password_changed", false) {Direction = ParameterDirection.InputOutput};
 
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Change_Password", paramList);
@@ -4121,41 +4046,41 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Checks to see if a username or email exist </summary>
-		/// <param name="userName"> Username to check</param>
+		/// <param name="UserName"> Username to check</param>
 		/// <param name="Email"> Email address to check</param>
-		/// <param name="username_exists"> [OUT] Flag indicates if the username exists</param>
-		/// <param name="email_exists"> [OUT] Flag indicates if the email exists </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="UserName_Exists"> [OUT] Flag indicates if the username exists</param>
+		/// <param name="Email_Exists"> [OUT] Flag indicates if the email exists </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_UserName_Exists' stored procedure<br /><br />
 		/// This is used to enforce uniqueness during registration </remarks> 
-		public static bool UserName_Exists(string userName, string Email, out bool username_exists, out bool email_exists, Custom_Tracer tracer )
+		public static bool UserName_Exists(string UserName, string Email, out bool UserName_Exists, out bool Email_Exists, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.UserName_Exists", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.UserName_Exists", String.Empty);
 			}
 
 			try
 			{
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@username", userName);
+				paramList[0] = new SqlParameter("@username", UserName);
 				paramList[1] = new SqlParameter("@email", Email);
-				paramList[2] = new SqlParameter("@username_exists", true) {Direction = ParameterDirection.InputOutput};
-				paramList[3] = new SqlParameter("@email_exists", true) {Direction = ParameterDirection.InputOutput};
+				paramList[2] = new SqlParameter("@UserName_Exists", true) {Direction = ParameterDirection.InputOutput};
+				paramList[3] = new SqlParameter("@Email_Exists", true) {Direction = ParameterDirection.InputOutput};
 
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_UserName_Exists", paramList);
 
-				username_exists = Convert.ToBoolean(paramList[2].Value);
-				email_exists = Convert.ToBoolean(paramList[3].Value);
+				UserName_Exists = Convert.ToBoolean(paramList[2].Value);
+				Email_Exists = Convert.ToBoolean(paramList[3].Value);
 				return true;
 			}
 			catch ( Exception ee )
 			{
 				lastException = ee;
-				username_exists = true;
-				email_exists = true;
+				UserName_Exists = true;
+				Email_Exists = true;
 				return false;
 			}
 		}
@@ -4163,14 +4088,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Updates the flag that indicates the user would like to receive a monthly usage statistics email </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="New_Flag"> New value for the flag </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_Set_Receive_Stats_Email_Flag' stored procedure</remarks> 
-		public static bool Set_User_Receive_Stats_Email( int UserID, bool New_Flag, Custom_Tracer tracer)
+		public static bool Set_User_Receive_Stats_Email( int UserID, bool New_Flag, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", String.Empty);
 			}
 
 			try
@@ -4192,15 +4117,15 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets basic user information by UserID </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Fully built <see cref="Users.User_Object"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_By_UserID' stored procedure<br /><br />
 		/// This is called when a user's cookie exists in a web request</remarks> 
-		public static User_Object Get_User(int UserID, Custom_Tracer tracer)
+		public static User_Object Get_User(int UserID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_User", String.Empty);
 			}
 
 			try
@@ -4226,17 +4151,17 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Gets basic user information by UFID </summary>
-		/// <param name="UFID"> UFID for the user </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <summary> Gets basic user information by the Shibboleth-provided user identifier </summary>
+		/// <param name="Shibboleth_ID"> Shibboleth ID (UFID) for the user </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Fully built <see cref="Users.User_Object"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_By_UFID' stored procedure<br /><br />
 		/// This method is called when user's logon through the Gatorlink Shibboleth service</remarks> 
-		public static User_Object Get_User(string UFID, Custom_Tracer tracer)
+		public static User_Object Get_User(string Shibboleth_ID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_User", String.Empty);
 			}
 
 			try
@@ -4244,7 +4169,7 @@ namespace SobekCM.Library.Database
 
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@ufid", UFID);
+				paramList[0] = new SqlParameter("@ufid", Shibboleth_ID);
 
 				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_UFID", paramList);
 
@@ -4267,21 +4192,21 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets basic user information by Username (or email) and Password </summary>
 		/// <param name="UserName"> UserName (or email address) for the user </param>
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to sending to database</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Fully built <see cref="Users.User_Object"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_By_UserName_Password' stored procedure<br /><br />
 		/// This is used when a user logs on through the mySobek authentication</remarks> 
-		public static User_Object Get_User(string UserName, string Password, Custom_Tracer tracer)
+		public static User_Object Get_User(string UserName, string Password, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_User", String.Empty);
 			}
 
 			try
 			{
-				const string salt = "This is my salt to add to the password";
-				string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + salt);
+				const string SALT = "This is my salt to add to the password";
+				string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
 
 
 				// Execute this non-query stored procedure
@@ -4307,11 +4232,11 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		private static User_Object build_user_object_from_dataset(DataSet resultSet )
+		private static User_Object build_user_object_from_dataset(DataSet ResultSet )
 		{
 			User_Object user = new User_Object();
 
-			DataRow userRow = resultSet.Tables[0].Rows[0];
+			DataRow userRow = ResultSet.Tables[0].Rows[0];
 			user.UFID = userRow["UFID"].ToString();
 			user.UserID = Convert.ToInt32(userRow["UserID"]);
 			user.UserName = userRow["username"].ToString();
@@ -4342,31 +4267,31 @@ namespace SobekCM.Library.Database
 			if (Convert.ToInt32(userRow["descriptions"]) > 0)
 				user.Has_Descriptive_Tags = true;
 
-			foreach (DataRow thisRow in resultSet.Tables[1].Rows)
+			foreach (DataRow thisRow in ResultSet.Tables[1].Rows)
 			{
 				user.Add_Template(thisRow["TemplateCode"].ToString());
 			}
 
-			foreach (DataRow thisRow in resultSet.Tables[2].Rows)
+			foreach (DataRow thisRow in ResultSet.Tables[2].Rows)
 			{
 				user.Add_Project(thisRow["ProjectCode"].ToString());
 			}
 
-			user.Items_Submitted_Count = resultSet.Tables[3 ].Rows.Count;
-			foreach (DataRow thisRow in resultSet.Tables[3 ].Rows)
+			user.Items_Submitted_Count = ResultSet.Tables[3 ].Rows.Count;
+			foreach (DataRow thisRow in ResultSet.Tables[3 ].Rows)
 			{
 				if (!user.BibIDs.Contains(thisRow["BibID"].ToString().ToUpper()))
 					user.Add_BibID(thisRow["BibID"].ToString().ToUpper());
 			}
 
 			// Add links to regular expressions
-			foreach (DataRow thisRow in resultSet.Tables[4 ].Rows)
+			foreach (DataRow thisRow in ResultSet.Tables[4 ].Rows)
 			{
 				user.Add_Editable_Regular_Expression(thisRow["EditableRegex"].ToString());
 			}
 
 			// Add links to aggregations
-			foreach (DataRow thisRow in resultSet.Tables[5 ].Rows)
+			foreach (DataRow thisRow in ResultSet.Tables[5 ].Rows)
 			{
 				user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditItems"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]));
 			}
@@ -4374,7 +4299,7 @@ namespace SobekCM.Library.Database
 			// Add the current folder names
 			Dictionary<int, User_Folder> folderNodes = new Dictionary<int, User_Folder>();
 			List<User_Folder> parentNodes = new List<User_Folder>();
-			foreach (DataRow folderRow in resultSet.Tables[6 ].Rows)
+			foreach (DataRow folderRow in ResultSet.Tables[6 ].Rows)
 			{
 				string folderName = folderRow["FolderName"].ToString();
 				int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
@@ -4386,7 +4311,7 @@ namespace SobekCM.Library.Database
 					parentNodes.Add(newFolderNode);
 				folderNodes.Add(folderid, newFolderNode);
 			}
-			foreach (DataRow folderRow in resultSet.Tables[6 ].Rows)
+			foreach (DataRow folderRow in ResultSet.Tables[6 ].Rows)
 			{
 				int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
 				int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
@@ -4398,12 +4323,12 @@ namespace SobekCM.Library.Database
 			foreach (User_Folder rootFolder in parentNodes)
 				user.Add_Folder(rootFolder);
 
-			foreach (DataRow itemRow in resultSet.Tables[7 ].Rows)
+			foreach (DataRow itemRow in ResultSet.Tables[7 ].Rows)
 			{
 				user.Add_Bookshelf_Item(itemRow["BibID"].ToString(), itemRow["VID"].ToString());
 			}
 
-			foreach (DataRow groupRow in resultSet.Tables[8].Rows)
+			foreach (DataRow groupRow in ResultSet.Tables[8].Rows)
 			{
 				user.Add_User_Group(groupRow[0].ToString());
 			}
@@ -4471,14 +4396,14 @@ namespace SobekCM.Library.Database
 		
 		/// <summary> Gets basic information about all the folders and searches saved for a single user </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Information about all folders (and number of items) and saved searches for a user </returns>
 		/// <remarks> This calls the 'mySobek_Get_Folder_Search_Information' stored procedure</remarks> 
-		public static DataSet Get_Folder_Search_Information(int UserID, Custom_Tracer tracer)
+		public static DataSet Get_Folder_Search_Information(int UserID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", String.Empty);
 			}
 
 			try
@@ -4502,14 +4427,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes a user search from the collection of saved searches </summary>
 		/// <param name="UserSearchID"> Primary key for this saved search </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_User_Search' stored procedure</remarks> 
-		public static bool Delete_User_Search(int UserSearchID, Custom_Tracer tracer)
+		public static bool Delete_User_Search(int UserSearchID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_User_Search", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", String.Empty);
 			}
 
 			try
@@ -4533,14 +4458,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the list of all saved user searches and any user comments </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table of all the saved searches for this user </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_Searches' stored procedure</remarks> 
-		public static DataTable Get_User_Searches(int UserID, Custom_Tracer tracer)
+		public static DataTable Get_User_Searches(int UserID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User_Searches", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", String.Empty);
 			}
 
 			try
@@ -4567,14 +4492,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Search_Description"> Programmatic description of this search</param>
 		/// <param name="ItemOrder"> Order for this search within the folder</param>
 		/// <param name="UserNotes"> Notes from the user about this search </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> New UserSearchID, or -1 if this edits an existing one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Search' stored procedure</remarks> 
-		public static int Save_User_Search(int UserID, string Search_URL, string Search_Description, int ItemOrder, string UserNotes, Custom_Tracer tracer)
+		public static int Save_User_Search(int UserID, string Search_URL, string Search_Description, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_User_Search", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_User_Search", String.Empty);
 			}
 
 			try
@@ -4607,14 +4532,14 @@ namespace SobekCM.Library.Database
 		/// <param name="FolderName"> Name of this user's folder </param>
 		/// <param name="BibID"> Bibliographic identifier for this title / item group </param>
 		/// <param name="VID"> Volume identifier for this one volume within a title / item group </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_Item_From_User_Folder' stored procedure</remarks> 
-		public static bool Delete_Item_From_User_Folder(int UserID, string FolderName, string BibID, string VID, Custom_Tracer tracer )
+		public static bool Delete_Item_From_User_Folder(int UserID, string FolderName, string BibID, string VID, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
 			}
 
 			try
@@ -4643,14 +4568,14 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="BibID"> Bibliographic identifier for this title / item group </param>
 		/// <param name="VID"> Volume identifier for this one volume within a title / item group </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_Item_From_All_User_Folders' stored procedure</remarks> 
-		public static bool Delete_Item_From_User_Folders(int UserID, string BibID, string VID, Custom_Tracer tracer)
+		public static bool Delete_Item_From_User_Folders(int UserID, string BibID, string VID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
 			}
 
 			try
@@ -4681,14 +4606,14 @@ namespace SobekCM.Library.Database
 		/// <param name="VID"> Volume identifier for this one volume within a title / item group </param>
 		/// <param name="ItemOrder"> Order for this item within the folder</param>
 		/// <param name="UserNotes"> Notes from the user about this item </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_Item_To_User_Folder' stored procedure</remarks> 
-		public static bool Add_Item_To_User_Folder(int UserID, string FolderName, string BibID, string VID, int ItemOrder, string UserNotes, Custom_Tracer tracer)
+		public static bool Add_Item_To_User_Folder(int UserID, string FolderName, string BibID, string VID, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", String.Empty);
 			}
 
 			try
@@ -4723,14 +4648,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> List of items matching search </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_Folder_Browse' stored procedure</remarks> 
-		public static Single_Paged_Results_Args Get_User_Folder_Browse(int UserID, string FolderName, int ResultsPerPage, int ResultsPage, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Single_Paged_Results_Args Get_User_Folder_Browse(int UserID, string FolderName, int ResultsPerPage, int ResultsPage, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User_Folder_Browse", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_User_Folder_Browse", String.Empty);
 			}
 
 			Single_Paged_Results_Args returnArgs;
@@ -4807,15 +4732,15 @@ namespace SobekCM.Library.Database
 				connect.Open();
 				using (SqlDataReader reader = executeCommand.ExecuteReader())
 				{
-
 					// Create the return argument object
+					List<string> metadataLabels = new List<string>(); 
 					returnArgs = new Single_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Simple_Result_List(reader)};
+									 {Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels)};
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -4841,14 +4766,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
 		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
 		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> List of items matching search </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_Folder_Browse' stored procedure</remarks> 
-		public static Single_Paged_Results_Args Get_Public_Folder_Browse(int UserFolderID, int ResultsPerPage, int ResultsPage, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer tracer)
+		public static Single_Paged_Results_Args Get_Public_Folder_Browse(int UserFolderID, int ResultsPerPage, int ResultsPage, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Public_Folder_Browse", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_Public_Folder_Browse", String.Empty);
 			}
 
 			Single_Paged_Results_Args returnArgs;
@@ -4925,13 +4850,14 @@ namespace SobekCM.Library.Database
 				{
 
 					// Create the return argument object
+					List<string> metadataLabels = new List<string>(); 
 					returnArgs = new Single_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Simple_Result_List(reader)};
+									 {Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels)};
 
 					// Create the overall search statistics?
 					if (Return_Search_Statistics)
 					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types);
+						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
 						returnArgs.Statistics = stats;
 						reader.Close();
 						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -4952,14 +4878,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Deletes a folder from a user </summary>
 		/// <param name="UserID"> Primary key for this user from the database</param>
 		/// <param name="UserFolderID"> Primary key for this folder from the database</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_User_Folder' stored procedure</remarks> 
-		public static bool Delete_User_Folder(int UserID, int UserFolderID, Custom_Tracer tracer)
+		public static bool Delete_User_Folder(int UserID, int UserFolderID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", String.Empty);
 			}
 
 			try
@@ -4987,16 +4913,16 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for this user from the database</param>
 		/// <param name="ParentFolderID"> Key for the parent folder for this new folder</param>
 		/// <param name="FolderName"> Name for this new folder</param>
-		/// <param name="isPublic"> Flag indicates if this folder is public </param>
+		/// <param name="IsPublic"> Flag indicates if this folder is public </param>
 		/// <param name="Description"> Description for this folder </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for this new folder, or -1 if an error occurred </returns>
 		/// <remarks> This calls the 'mySobek_Edit_User_Folder' stored procedure</remarks> 
-		public static int Edit_User_Folder(int UserFolderID, int UserID, int ParentFolderID, string FolderName, bool isPublic, string Description, Custom_Tracer tracer)
+		public static int Edit_User_Folder(int UserFolderID, int UserID, int ParentFolderID, string FolderName, bool IsPublic, string Description, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", String.Empty);
 			}
 
 			try
@@ -5007,7 +4933,7 @@ namespace SobekCM.Library.Database
 				paramList[1] = new SqlParameter("@userid", UserID);
 				paramList[2] = new SqlParameter("@parentfolderid", ParentFolderID);
 				paramList[3] = new SqlParameter("@foldername", FolderName);
-				paramList[4] = new SqlParameter("@is_public", isPublic);
+				paramList[4] = new SqlParameter("@is_public", IsPublic);
 				paramList[5] = new SqlParameter("@description", Description);
 				paramList[6] = new SqlParameter("@new_folder_id", 0) {Direction = ParameterDirection.InputOutput};
 
@@ -5028,14 +4954,14 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for the user</param>
 		/// <param name="AggregationID"> Primary key for the aggregation </param>
 		/// <param name="NewFlag"> New flag indicates if this should be on the home page </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Set_Aggregation_Home_Page_Flag' stored procedure</remarks> 
-		public static bool User_Set_Aggregation_Home_Page_Flag(int UserID, int AggregationID, bool NewFlag, Custom_Tracer tracer)
+		public static bool User_Set_Aggregation_Home_Page_Flag(int UserID, int AggregationID, bool NewFlag, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", String.Empty);
 			}
 
 			try
@@ -5061,14 +4987,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the information about a folder which should be public </summary>
 		/// <param name="UserFolderID"> ID for the user folder to retrieve </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Built public user folder regardless if it is public or not.  A non-public folder will only be populated with FALSE for the isPublic field. </returns>
 		/// <remarks> This calls the 'mySobek_Get_Folder_Information' stored procedure</remarks> 
-		public static Public_User_Folder Get_Public_User_Folder(int UserFolderID, Custom_Tracer tracer)
+		public static Public_User_Folder Get_Public_User_Folder(int UserFolderID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", String.Empty);
 			}
 
 			try
@@ -5112,14 +5038,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the information about a single user group </summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Fully built <see cref="Users.User_Group"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_Group' stored procedure </remarks> 
-		public static User_Group Get_User_Group(int UserGroupID, Custom_Tracer tracer)
+		public static User_Group Get_User_Group(int UserGroupID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_User_Group", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_User_Group", String.Empty);
 			}
 
 			try
@@ -5206,14 +5132,14 @@ namespace SobekCM.Library.Database
 		/// <param name="TagID"> Primary key for a descriptive tag, if this is an edit </param>
 		/// <param name="ItemID"> Primary key for the digital resource to tag </param>
 		/// <param name="Added_Description"> User-entered descriptive tag </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> New tag id if this is a new descriptive tag </returns>
 		/// <remarks> This calls the 'mySobek_Add_Description_Tag' stored procedure</remarks> 
-		public static int Add_Description_Tag(int UserID, int TagID, int ItemID, string Added_Description, Custom_Tracer tracer)
+		public static int Add_Description_Tag(int UserID, int TagID, int ItemID, string Added_Description, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", String.Empty);
 			}
 
 			try
@@ -5242,14 +5168,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Delete's a user's descriptive tage </summary>
 		/// <param name="TagID"> Primary key for the entered the descriptive tag </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successul, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_Description_Tag' stored procedure</remarks> 
-		public static bool Delete_Description_Tag(int TagID, Custom_Tracer tracer)
+		public static bool Delete_Description_Tag(int TagID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", String.Empty);
 			}
 
 			try
@@ -5273,14 +5199,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> List all descriptive tags added by a single user </summary>
 		/// <param name="UserID"> Primary key for the user that entered the descriptive tags (or -1 to get ALL tags)</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all of the user's descriptive tags </returns>
 		/// <remarks> This calls the 'mySobek_View_All_User_Tags' stored procedure</remarks> 
-		public static DataTable View_Tags_By_User(int UserID, Custom_Tracer tracer)
+		public static DataTable View_Tags_By_User(int UserID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", String.Empty);
 			}
 
 			try
@@ -5303,14 +5229,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> List all descriptive tags added by a single user </summary>
 		/// <param name="AggregationCode"> Aggregation code for which to pull all descriptive tags added </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all of the descriptive tags added to items within the aggregation of interest </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Description_Tags_By_Aggregation' stored procedure  </remarks> 
-		public static DataTable View_Tags_By_Aggregation( string AggregationCode, Custom_Tracer tracer)
+		public static DataTable View_Tags_By_Aggregation( string AggregationCode, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", String.Empty);
 			}
 
 			try
@@ -5356,11 +5282,11 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets all the data necessary for the Builder, including file destination information,
 		/// general settings, server information, and the list of each BibID and File_Root </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with all the data necessary for the Builder, including file destination information,
 		/// general settings, server information, and the list of each BibID and File_Root</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Builder_Settings' stored procedure </remarks> 
-		public static DataSet Get_Builder_Settings_Complete(Custom_Tracer tracer)
+		public static DataSet Get_Builder_Settings_Complete(Custom_Tracer Tracer)
 		{
 			try
 			{
@@ -5378,11 +5304,11 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets all the data necessary for the Builder, including file destination information,
 		/// general settings, server information, and the list of each BibID and File_Root </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with all the data necessary for the Builder, including file destination information,
 		/// general settings, server information, and the list of each BibID and File_Root</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
-		public static DataSet Get_Settings_Complete(Custom_Tracer tracer)
+		public static DataSet Get_Settings_Complete(Custom_Tracer Tracer)
 		{
 			try
 			{
@@ -5399,10 +5325,10 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the values from the builder settings table in the database </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Dictionary of all the keys and values in the builder settings table </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
-		public static Dictionary<string,string> Get_Settings(Custom_Tracer tracer)
+		public static Dictionary<string,string> Get_Settings(Custom_Tracer Tracer)
 		{
 			Dictionary<string, string> returnValue = new Dictionary<string, string>();
 
@@ -5505,17 +5431,17 @@ namespace SobekCM.Library.Database
 
 		/// <summary>method used to set the new items flag of a specified item aggregation</summary>
 		/// <param name="AggregationCode">Code for this SobekCM item aggregation</param>
-		/// <param name="newItemFlag">Status for the new item flag</param>
+		/// <param name="NewItemFlag">Status for the new item flag</param>
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This method calls the stored procedure 'SobekCM_Set_Aggregation_NewItem_Flag'. </remarks>
-		public static bool Set_Aggregation_NewItem_Flag(string AggregationCode, bool newItemFlag)
+		public static bool Set_Aggregation_NewItem_Flag(string AggregationCode, bool NewItemFlag)
 		{
 			try
 			{
 				// Build the parameter list
 				SqlParameter[] paramList = new SqlParameter[2];
 				paramList[0] = new SqlParameter("@code", AggregationCode);
-				paramList[1] = new SqlParameter("@newitemflag", newItemFlag);
+				paramList[1] = new SqlParameter("@newitemflag", NewItemFlag);
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Aggregation_NewItem_Flag", paramList);
 				return true;
@@ -5601,14 +5527,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Update the additional work neeed flag, which flag an item for additional follow up work in the builder </summary>
 		/// <param name="ItemID"> Primary key for the item for which to update the additional work needed flag</param>
 		/// <param name="New_Flag"> New flag for the additional follow up work </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successul, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Additional_Work_Needed_Flag' stored procedure</remarks> 
-		public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool New_Flag, Custom_Tracer tracer)
+		public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool New_Flag, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_Additional_Work_Needed_Flag", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_Additional_Work_Needed_Flag", String.Empty);
 			}
 
 			try
@@ -5641,14 +5567,14 @@ namespace SobekCM.Library.Database
 		/// <param name="ThematicHeadingID"> Primary key for the existing thematic heading, or -1 for a new heading </param>
 		/// <param name="ThemeOrder"> Order of this thematic heading, within the rest of the headings </param>
 		/// <param name="ThemeName"> Display name for this thematic heading</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Thematic heading id, or -1 if there was an error </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_Thematic_Heading' stored procedure </remarks> 
-		public static int Edit_Thematic_Heading( int ThematicHeadingID, int ThemeOrder, string ThemeName, Custom_Tracer tracer)
+		public static int Edit_Thematic_Heading( int ThematicHeadingID, int ThemeOrder, string ThemeName, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Edit_Thematic_Heading", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Edit_Thematic_Heading", String.Empty);
 			}
 
 			try
@@ -5673,14 +5599,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes a thematic heading from the database  </summary>
 		/// <param name="ThematicHeadingID"> Primary key for the thematic heading to delete </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Thematic_Heading' stored procedure </remarks> 
-		public static bool Delete_Thematic_Heading( int ThematicHeadingID, Custom_Tracer tracer)
+		public static bool Delete_Thematic_Heading( int ThematicHeadingID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Thematic_Heading", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Thematic_Heading", String.Empty);
 			}
 
 			try
@@ -5771,14 +5697,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Saves a item aggregation alias for future use </summary>
 		/// <param name="Alias"> Alias string which will forward to a item aggregation </param>
 		/// <param name="Aggregation_Code"> Code for the item aggregation to forward to </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation_Alias' stored procedure </remarks> 
-		public static bool Save_Aggregation_Alias(string Alias, string Aggregation_Code, Custom_Tracer tracer)
+		public static bool Save_Aggregation_Alias(string Alias, string Aggregation_Code, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", String.Empty);
 			}
 
 			try
@@ -5800,14 +5726,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes an item aggregation alias by alias code </summary>
 		/// <param name="Alias"> Alias string which forwarded to a item aggregation </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Item_Aggregation_Alias' stored procedure </remarks> 
-		public static bool Delete_Aggregation_Alias(string Alias, Custom_Tracer tracer)
+		public static bool Delete_Aggregation_Alias(string Alias, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", String.Empty);
 			}
 
 			try
@@ -5829,20 +5755,20 @@ namespace SobekCM.Library.Database
 		/// <summary> Saves a HTML skin to the database </summary>
 		/// <param name="Skin_Code"> Code for this HTML skin </param>
 		/// <param name="Base_Skin_Code"> Base skin code from which this html skin inherits </param>
-		/// <param name="overrideBanner"> Flag indicates this skin overrides the default banner </param>
-		/// <param name="overrideHeaderFooter"> Flag indicates this skin overrides the default header/footer</param>
+		/// <param name="OverrideBanner"> Flag indicates this skin overrides the default banner </param>
+		/// <param name="OverrideHeaderFooter"> Flag indicates this skin overrides the default header/footer</param>
 		/// <param name="Banner_Link"> Link to which the banner sends the user </param>
 		/// <param name="Notes"> Notes on this skin ( name, use, etc...) </param>
 		/// <param name="Build_On_Launch"> Flag indicates if this skin should be built upon launch ( i.e., is this a heavily used web skin? )</param>
 		/// <param name="Suppress_Top_Navigation"> Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? )</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_Web_Skin' stored procedure </remarks> 
-		public static bool Save_Web_Skin(string Skin_Code, string Base_Skin_Code, bool overrideBanner, bool overrideHeaderFooter, string Banner_Link, string Notes, bool Build_On_Launch, bool Suppress_Top_Navigation, Custom_Tracer tracer)
+		public static bool Save_Web_Skin(string Skin_Code, string Base_Skin_Code, bool OverrideBanner, bool OverrideHeaderFooter, string Banner_Link, string Notes, bool Build_On_Launch, bool Suppress_Top_Navigation, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_Skin", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Skin", String.Empty);
 			}
 
 			try
@@ -5851,8 +5777,8 @@ namespace SobekCM.Library.Database
 				SqlParameter[] paramList = new SqlParameter[8];
 				paramList[0] = new SqlParameter("@webskincode", Skin_Code);
 				paramList[1] = new SqlParameter("@basewebskin", Base_Skin_Code);
-				paramList[2] = new SqlParameter("@overridebanner", overrideBanner);
-				paramList[3] = new SqlParameter("@overrideheaderfooter", overrideHeaderFooter);
+				paramList[2] = new SqlParameter("@overridebanner", OverrideBanner);
+				paramList[3] = new SqlParameter("@overrideheaderfooter", OverrideHeaderFooter);
 				paramList[4] = new SqlParameter("@bannerlink", Banner_Link);
 				paramList[5] = new SqlParameter("@notes", Notes);
 				paramList[6] = new SqlParameter("@build_on_launch", Build_On_Launch);
@@ -5870,14 +5796,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes a HTML web skin fromo the database </summary>
 		/// <param name="Skin_Code"> Code for the  HTML web skin to delete </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Web_Skin' stored procedure </remarks> 
-		public static bool Delete_Web_Skin(string Skin_Code, Custom_Tracer tracer)
+		public static bool Delete_Web_Skin(string Skin_Code, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", String.Empty);
 			}
 
 			try
@@ -5901,12 +5827,12 @@ namespace SobekCM.Library.Database
 		/// <param name="Icon_File"> Filename for this icon/wordmark</param>
 		/// <param name="Icon_Link">  Link that clicking on this icon/wordmark will forward the user to</param>
 		/// <param name="Icon_Title"> Title for this icon, which appears when you hover over the icon </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for this new icon (or wordmark), or -1 if this action failed</returns>
 		/// <remarks> This calls the 'SobekCM_Save_Icon' stored procedure </remarks> 
-		public static int Save_Icon(string Icon_Name, string Icon_File, string Icon_Link, string Icon_Title, Custom_Tracer tracer)
+		public static int Save_Icon(string Icon_Name, string Icon_File, string Icon_Link, string Icon_Title, Custom_Tracer Tracer)
 		{
-			return Save_Icon( Icon_Name, Icon_File, Icon_Link, 80, Icon_Title, tracer);
+			return Save_Icon( Icon_Name, Icon_File, Icon_Link, 80, Icon_Title, Tracer);
 		}
 
 		/// <summary> Saves information about a new icon/wordmark or modify an existing one </summary>
@@ -5915,14 +5841,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Icon_Link">  Link that clicking on this icon/wordmark will forward the user to</param>
 		/// <param name="Height"> Height for this icon/wordmark </param>
 		/// <param name="Icon_Title"> Title for this icon, which appears when you hover over the icon </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for this new icon (or wordmark), or -1 if this action failed</returns>
 		/// <remarks> This calls the 'SobekCM_Save_Icon' stored procedure </remarks> 
-		public static int Save_Icon(string Icon_Name, string Icon_File, string Icon_Link, int Height, string Icon_Title, Custom_Tracer tracer)
+		public static int Save_Icon(string Icon_Name, string Icon_File, string Icon_Link, int Height, string Icon_Title, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_Icon", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Icon", String.Empty);
 			}
 
 			try
@@ -5952,14 +5878,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes an existing wordmark/icon if it is not linked to any titles in the database </summary>
 		/// <param name="Icon_Code"> Wordmark/icon code for the wordmark to delete </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successfully deleted, otherwise FALSE indicating the icon is linked to some titles and cannot be deleted </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Icon' stored procedure </remarks> 
-		public static bool Delete_Icon( string Icon_Code, Custom_Tracer tracer )
+		public static bool Delete_Icon( string Icon_Code, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Delete_Icon", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Delete_Icon", String.Empty);
 			}
 
 			try
@@ -5989,14 +5915,14 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the datatable of all item aggregation codes </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with list of all item aggregations' code, type, name, and mapping to Greenstone </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Codes' stored procedure </remarks> 
-		public static DataTable Get_Codes_Item_Aggregations(Custom_Tracer tracer)
+		public static DataTable Get_Codes_Item_Aggregations(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_Codes_Item_Aggregations", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_Codes_Item_Aggregations", String.Empty);
 			}
 
 			// Define a temporary dataset
@@ -6005,14 +5931,14 @@ namespace SobekCM.Library.Database
 		}
 			   
 		/// <summary> Gets the datatable of all users from the mySobek / personalization database </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with list of all users' id, full name, and username </returns>
 		/// <remarks> This calls the 'mySobek_Get_All_Users' stored procedure</remarks> 
-		public static DataTable Get_All_Users(Custom_Tracer tracer)
+		public static DataTable Get_All_Users(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_All_Users", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_All_Users", String.Empty);
 			}
 
 			// Define a temporary dataset
@@ -6021,14 +5947,14 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the datatable of all user groups from the mySobek / personalization database </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with list of all user groups' id, name, descriptiont, etc.. </returns>
 		/// <remarks> This calls the 'mySobek_Get_All_User_Groups' stored procedure</remarks> 
-		public static DataTable Get_All_User_Groups(Custom_Tracer tracer)
+		public static DataTable Get_All_User_Groups(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", String.Empty);
 			}
 
 			// Define a temporary dataset
@@ -6038,14 +5964,14 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary> Gets the dataset with all projects and all templates </summary>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with list of all projects and tables </returns>
 		/// <remarks> This calls the 'mySobek_Get_All_Projects_Templates' stored procedure</remarks> 
-		public static DataSet Get_All_Projects_Templates(Custom_Tracer tracer)
+		public static DataSet Get_All_Projects_Templates(Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Get_All_Projects_Templates", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_All_Projects_Templates", String.Empty);
 			}
 
 			// Define a temporary dataset
@@ -6057,17 +5983,17 @@ namespace SobekCM.Library.Database
 		/// <param name="Code"> Code for this item aggregation </param>
 		/// <param name="Name"> Name for this item aggregation </param>
 		/// <param name="ShortName"> Short version of this item aggregation </param>
-		/// <param name="isActive"> Flag indicates if this item aggregation is active</param>
-		/// <param name="isHidden"> Flag indicates if this item is hidden</param>
+		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
+		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
 		/// <param name="External_Link">External link for this item aggregation (usually used for institutional aggregations)</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Update_Item_Aggregation(string Code, string Name, string ShortName, bool isActive, bool isHidden, string External_Link, Custom_Tracer tracer)
+		public static bool Update_Item_Aggregation(string Code, string Name, string ShortName, bool IsActive, bool IsHidden, string External_Link, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", String.Empty);
 			}
 
 			try
@@ -6077,8 +6003,8 @@ namespace SobekCM.Library.Database
 				paramList[0] = new SqlParameter("@code", Code);
 				paramList[1] = new SqlParameter("@name", Name);
 				paramList[2] = new SqlParameter("@shortname", ShortName);
-				paramList[3] = new SqlParameter("@isActive", isActive);
-				paramList[4] = new SqlParameter("@hidden", isHidden);
+				paramList[3] = new SqlParameter("@isActive", IsActive);
+				paramList[4] = new SqlParameter("@hidden", IsHidden);
 				paramList[5] = new SqlParameter("@externallink", External_Link);
 
 				// Execute this query stored procedure
@@ -6100,16 +6026,16 @@ namespace SobekCM.Library.Database
 		/// <param name="ShortName"> Short version of this item aggregation </param>
 		/// <param name="Description"> Description of this item aggregation </param>
 		/// <param name="Type"> Type of item aggregation (i.e., Collection Group, Institution, Exhibit, etc..)</param>
-		/// <param name="isActive"> Flag indicates if this item aggregation is active</param>
-		/// <param name="isHidden"> Flag indicates if this item is hidden</param>
+		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
+		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
 		/// <param name="ParentID"> ID for the item aggregation parent</param>
 		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregations to provide a link back to the institution's actual home page)</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, string Type, bool isActive, bool isHidden, string ExternalLink, int ParentID, Custom_Tracer tracer)
+		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, Custom_Tracer Tracer)
 		{
-			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, -1, Type, isActive, isHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, tracer);
+			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, -1, Type, IsActive, IsHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, Tracer);
 		}
 
 		/// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
@@ -6120,8 +6046,8 @@ namespace SobekCM.Library.Database
 		/// <param name="Description"> Description of this item aggregation </param>
 		/// <param name="ThematicHeadingID"> Thematic heading id for this item aggregation (or -1)</param>
 		/// <param name="Type"> Type of item aggregation (i.e., Collection Group, Institution, Exhibit, etc..)</param>
-		/// <param name="isActive"> Flag indicates if this item aggregation is active</param>
-		/// <param name="isHidden"> Flag indicates if this item is hidden</param>
+		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
+		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
 		/// <param name="DisplayOptions"> Display options for this item aggregation </param>
 		/// <param name="Map_Search"> Map Search value indicates if there is a map search, and the type of search </param>
 		/// <param name="Map_Display"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
@@ -6131,14 +6057,14 @@ namespace SobekCM.Library.Database
 		/// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregations)</param>
 		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregations to provide a link back to the institution's actual home page)</param>
 		/// <param name="ParentID"> ID for the item aggregation parent</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool isActive, bool isHidden, string DisplayOptions, int Map_Search, int Map_Display, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, Custom_Tracer tracer )
+		public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Display, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, Custom_Tracer Tracer )
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", String.Empty);
 			}
 
 			try
@@ -6152,8 +6078,8 @@ namespace SobekCM.Library.Database
 				paramList[4] = new SqlParameter("@description", Description);
 				paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeadingID);
 				paramList[6] = new SqlParameter("@type", Type);
-				paramList[7] = new SqlParameter("@isActive", isActive);
-				paramList[8] = new SqlParameter("@hidden", isHidden);
+				paramList[7] = new SqlParameter("@isActive", IsActive);
+				paramList[8] = new SqlParameter("@hidden", IsHidden);
 				paramList[9] = new SqlParameter("@display_options", DisplayOptions);
 				paramList[10] = new SqlParameter("@map_search", Map_Search);
 				paramList[11] = new SqlParameter("@map_display", Map_Display);
@@ -6183,18 +6109,18 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for this user from the database </param>
 		/// <param name="New_Password"> New password (unencrypted) to set for this user </param>
 		/// <param name="Is_Temporary_Password"> Flag indicates if this is a temporary password that must be reset the first time the user logs on</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwsie FALSE  </returns>
 		/// <remarks> This calls the 'mySobek_Reset_User_Password' stored procedure</remarks> 
-		public static bool Reset_User_Password(int UserID, string New_Password, bool Is_Temporary_Password, Custom_Tracer tracer)
+		public static bool Reset_User_Password(int UserID, string New_Password, bool Is_Temporary_Password, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Reset_User_Password", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", String.Empty);
 			}
 
-			const string salt = "This is my salt to add to the password";
-			string encryptedPassword = SecurityInfo.SHA1_EncryptString(New_Password + salt);
+			const string SALT = "This is my salt to add to the password";
+			string encryptedPassword = SecurityInfo.SHA1_EncryptString(New_Password + SALT);
 
 			try
 			{
@@ -6202,7 +6128,7 @@ namespace SobekCM.Library.Database
 				SqlParameter[] paramList = new SqlParameter[3];
 				paramList[0] = new SqlParameter("@userid", UserID);
 				paramList[1] = new SqlParameter("@password", encryptedPassword);
-				paramList[2] = new SqlParameter("@is_temporary", Is_Temporary_Password);
+				paramList[2] = new SqlParameter("@IsTemporary", Is_Temporary_Password);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Reset_User_Password", paramList);
@@ -6223,6 +6149,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Is_Internal"> Flag indicates if this user is considered an 'internal user'</param>
 		/// <param name="Can_Edit_All"> Flag indicates if this user is authorized to edit all items in the library</param>
 		/// <param name="Is_Portal_Admin"> Flag indicates if this user is a portal Administrator </param>
+		/// <param name="Can_Delete_All"> Flag indicates if this user can delete anything in the repository </param>
 		/// <param name="Is_System_Admin"> Flag indicates if this user is a system Administrator</param>
 		/// <param name="Include_Tracking_Standard_Forms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
 		/// <param name="Edit_Template"> Template name for editing non-MARC records </param>
@@ -6230,14 +6157,14 @@ namespace SobekCM.Library.Database
 		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user </param>
 		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user</param>
 		/// <param name="Clear_User_Groups"> Flag indicates whether to clear user group membership for this user </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Update_UFDC_User' stored procedure</remarks> 
-		public static bool Update_SobekCM_User(int UserID, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Can_Delete_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, string Edit_Template, string Edit_Template_MARC, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_User_Groups, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User(int UserID, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Can_Delete_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, string Edit_Template, string Edit_Template_MARC, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_User_Groups, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_UFDC_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_UFDC_User", String.Empty);
 			}
 
 			try
@@ -6274,14 +6201,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Sets the list of templates possible for a given user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
 		/// <param name="Templates"> List of templates to link to this user </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_User_Templates_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Templates(int UserID, ReadOnlyCollection<string> Templates, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User_Templates(int UserID, ReadOnlyCollection<string> Templates, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", String.Empty);
 			}
 
 			// Call the routine
@@ -6363,14 +6290,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Sets the list of projects possible for a given user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
 		/// <param name="Projects"> List of projects to link to this user</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_User_Projects_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Projects(int UserID, ReadOnlyCollection<string> Projects, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User_Projects(int UserID, ReadOnlyCollection<string> Projects, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Projects", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Projects", String.Empty);
 			}
 
 			// Call the routine
@@ -6451,14 +6378,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Sets the list of aggregations and permissions tagged to a given user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
 		/// <param name="Aggregations"> List of aggregations and permissions to link to this user </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_User_Aggregations_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Aggregations(int UserID, ReadOnlyCollection<User_Editable_Aggregation> Aggregations, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User_Aggregations(int UserID, ReadOnlyCollection<User_Editable_Aggregation> Aggregations, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", String.Empty);
 			}
 
 			// Call the routine
@@ -6615,18 +6542,19 @@ namespace SobekCM.Library.Database
 		/// <param name="Is_Internal"> Flag indicates if this user group is considered an 'internal user'</param>
 		/// <param name="Can_Edit_All"> Flag indicates if this user group is authorized to edit all items in the library</param>
 		/// <param name="Is_System_Admin"> Flag indicates if this user group is a system Administrator</param>
-        /// <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
+		/// <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
+		/// <param name="Include_Tracking_Standard_Forms"> Should this user's settings include the tracking form portions? </param>
 		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user group </param>
 		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user group </param>
 		/// <param name="Clear_Editable_Links"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, Custom_Tracer tracer)
+		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_User_Group", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_User_Group", String.Empty);
 			}
 
 			try
@@ -6663,14 +6591,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Sets the list of templates possible for a given user group </summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
 		/// <param name="Templates"> List of templates to link to this user group </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_User_Group_Templates_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Group_Templates(int UserGroupID, List<string> Templates, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User_Group_Templates(int UserGroupID, List<string> Templates, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", String.Empty);
 			}
 
 			// Ensure five values
@@ -6723,14 +6651,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Sets the list of projects possible for a given user group </summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
 		/// <param name="Projects"> List of projects to link to this user group</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_User_Group_Projects_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Group_Projects(int UserGroupID, List<string> Projects, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User_Group_Projects(int UserGroupID, List<string> Projects, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Projects", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Projects", String.Empty);
 			}
 
 			// Ensure five values
@@ -6783,14 +6711,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Sets the list of aggregations and permissions tagged to a given user group</summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
 		/// <param name="Aggregations"> List of aggregations and permissions to link to this user group </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_User_Group_Aggregations_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Group_Aggregations(int UserGroupID, List<User_Editable_Aggregation> Aggregations, Custom_Tracer tracer)
+		public static bool Update_SobekCM_User_Group_Aggregations(int UserGroupID, List<User_Editable_Aggregation> Aggregations, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", String.Empty);
 			}
 
 			// Ensure five values
@@ -6865,14 +6793,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Saves a new project, or edits an existing project name </summary>
 		/// <param name="Code"> Code for the new project, or project to edit </param>
 		/// <param name="Name"> Descriptive name for this project </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Save_Project' stored procedure</remarks> 
-		public static bool Save_Project(string Code, string Name, Custom_Tracer tracer)
+		public static bool Save_Project(string Code, string Name, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_Project", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Project", String.Empty);
 			}
 
 			try
@@ -6898,14 +6826,14 @@ namespace SobekCM.Library.Database
 		/// <summary> Saves a new template, or edits an existing template name </summary>
 		/// <param name="Code"> Code for the new template, or template to edit </param>
 		/// <param name="Name"> Descriptive name for this template </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Save_Template' stored procedure</remarks> 
-		public static bool Save_Template(string Code, string Name, Custom_Tracer tracer)
+		public static bool Save_Template(string Code, string Name, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Save_Template", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Template", String.Empty);
 			}
 
 			try
@@ -7295,10 +7223,10 @@ namespace SobekCM.Library.Database
         /// <param name="TivoliRequestID">Primary key for the tivolie request which either completed or failed </param>
         /// <param name="Email_Body"> Body of the response email </param>
         /// <param name="Email_Subject">Subject line to use for the response email </param>
-        /// <param name="isFailure"> Flag indicates if this represents a failure to retrieve the material from TIVOLI</param>
+        /// <param name="IsFailure"> Flag indicates if this represents a failure to retrieve the material from TIVOLI</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
-        public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Email_Body, string Email_Subject, bool isFailure)
+        public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Email_Body, string Email_Subject, bool IsFailure)
         {
             try
             {
@@ -7307,7 +7235,7 @@ namespace SobekCM.Library.Database
                 paramList[0] = new SqlParameter("@tivolirequestid", TivoliRequestID);
                 paramList[1] = new SqlParameter("@email_body", Email_Body);
                 paramList[2] = new SqlParameter("@email_subject", Email_Subject);
-                paramList[3] = new SqlParameter("@isFailure", isFailure);
+                paramList[3] = new SqlParameter("@isFailure", IsFailure);
 
                 // Define a temporary dataset
                 SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
@@ -7448,7 +7376,7 @@ namespace SobekCM.Library.Database
 			return returnArgs;
 		}
 
-		private static List<Private_Items_List_Title> DataReader_To_Private_Items_List(SqlDataReader reader)
+		private static List<Private_Items_List_Title> DataReader_To_Private_Items_List(SqlDataReader Reader)
 		{
 			// Create return list
 			List<Private_Items_List_Title> returnValue = new List<Private_Items_List_Title>();
@@ -7456,22 +7384,22 @@ namespace SobekCM.Library.Database
 			Dictionary<int, int> lookup = new Dictionary<int, int>();
 
 			// Get all the main title values first
-			while (reader.Read())
+			while (Reader.Read())
 			{
 				// Create new database title object for this
 				Private_Items_List_Title result = new Private_Items_List_Title
 													  {
-														  RowNumber = reader.GetInt32(0),
-														  BibID = reader.GetString(1),
-														  Group_Title = reader.GetString(2),
-														  Type = reader.GetString(3),
-														  ALEPH_Number = reader.GetInt32(4),
-														  OCLC_Number = reader.GetInt64(5),
-														  Last_Activity_Date = reader.GetDateTime(6),
-														  Last_Milestone_Date = reader.GetDateTime(7),
-														  Complete_Item_Count = reader.GetInt32(8),
-														  Primary_Identifier_Type = reader.GetString(9),
-														  Primary_Identifier = reader.GetString(10)
+														  RowNumber = Reader.GetInt32(0),
+														  BibID = Reader.GetString(1),
+														  Group_Title = Reader.GetString(2),
+														  Type = Reader.GetString(3),
+														  ALEPH_Number = Reader.GetInt32(4),
+														  OCLC_Number = Reader.GetInt64(5),
+														  Last_Activity_Date = Reader.GetDateTime(6),
+														  Last_Milestone_Date = Reader.GetDateTime(7),
+														  Complete_Item_Count = Reader.GetInt32(8),
+														  Primary_Identifier_Type = Reader.GetString(9),
+														  Primary_Identifier = Reader.GetString(10)
 													  };
 
 				returnValue.Add(result);
@@ -7480,7 +7408,7 @@ namespace SobekCM.Library.Database
 			}
 
 			// Move to the item table
-			reader.NextResult();
+			Reader.NextResult();
 
 			// If there were no titles, then there are no results
 			if (returnValue.Count == 0)
@@ -7490,10 +7418,10 @@ namespace SobekCM.Library.Database
 			// Step through all the item rows, build the item, and add to the title 
 			Private_Items_List_Title titleResult = returnValue[0];
 			int lastRownumber = titleResult.RowNumber;
-			while (reader.Read())
+			while (Reader.Read())
 			{
 				// Ensure this is the right title for this item 
-				int thisRownumber = reader.GetInt32(0);
+				int thisRownumber = Reader.GetInt32(0);
 				if (thisRownumber != lastRownumber)
 				{
 					titleResult = returnValue[lookup[thisRownumber]];
@@ -7503,17 +7431,17 @@ namespace SobekCM.Library.Database
 				// Create new database item object for this
 				Private_Items_List_Item result = new Private_Items_List_Item
 													 {
-														 VID = reader.GetString(1),
-														 Title = reader.GetString(2),
-														 Internal_Comments = reader.GetString(3),
-														 PubDate = reader.GetString(4),
-														 Locally_Archived = reader.GetBoolean(5),
-														 Remotely_Archived = reader.GetBoolean(6),
-														 Aggregation_Codes = reader.GetString(7),
-														 Last_Activity_Date = reader.GetDateTime(8),
-														 Last_Activity_Type = reader.GetString(9),
-														 Last_Milestone = reader.GetInt32(10),
-														 Last_Milestone_Date = reader.GetDateTime(11)
+														 VID = Reader.GetString(1),
+														 Title = Reader.GetString(2),
+														 Internal_Comments = Reader.GetString(3),
+														 PubDate = Reader.GetString(4),
+														 Locally_Archived = Reader.GetBoolean(5),
+														 Remotely_Archived = Reader.GetBoolean(6),
+														 Aggregation_Codes = Reader.GetString(7),
+														 Last_Activity_Date = Reader.GetDateTime(8),
+														 Last_Activity_Type = Reader.GetString(9),
+														 Last_Milestone = Reader.GetInt32(10),
+														 Last_Milestone_Date = Reader.GetDateTime(11)
 													 };
 
 				// Add this to the title object
@@ -7679,17 +7607,17 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Returns the list of all items/titles which match a given OCLC number </summary>
 		/// <param name="OCLC_Number"> OCLC number to look for matching items </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information which matches the OCLC number </returns>
 		/// <remarks> This calls the 'Tracking_Items_By_OCLC' stored procedure <br /><br />
 		/// This is very similar to the <see cref="SobekCM_Database.Items_By_OCLC_Number" /> method, except it returns more information, since
 		/// the tracking application does not have basic information about each item/title in its cache, unlike the
 		/// web server application, which does cache this information. </remarks>
-		public static DataSet Tracking_Items_By_OCLC_Number(long OCLC_Number, Custom_Tracer tracer)
+		public static DataSet Tracking_Items_By_OCLC_Number(long OCLC_Number, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
+				Tracer.Add_Trace("SobekCM_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
 			}
 
 			// Build the parameter list
@@ -7705,17 +7633,17 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Returns the list of all items/titles which match a given ALEPH number </summary>
 		/// <param name="ALEPH_Number"> ALEPH number to look for matching items </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information which matches the ALEPH number </returns>
 		/// <remarks> This calls the 'Tracking_Items_By_ALEPH' stored procedure. <br /><br />
 		/// This is very similar to the <see cref="SobekCM_Database.Items_By_ALEPH_Number" /> method, except it returns more information, since
 		/// the tracking application does not have basic information about each item/title in its cache, unlike the
 		/// web server application, which does cache this information. </remarks>
-		public static DataSet Tracking_Items_By_ALEPH_Number(int ALEPH_Number, Custom_Tracer tracer)
+		public static DataSet Tracking_Items_By_ALEPH_Number(int ALEPH_Number, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
+				Tracer.Add_Trace("SobekCM_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
 			}
 
 			// Build the parameter list
@@ -7731,17 +7659,17 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the list of all items within this item group, indicated by BibID, including additional information for the SMaRT tracking application </summary>
 		/// <param name="BibID"> Bibliographic identifier for the title of interest </param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Strongly typed dataset with information about the title (item group), including volumes, icons, and skins</returns>
 		/// <remarks> This calls the 'Tracking_Get_Multiple_Volumes' stored procedure <br /><br />
 		/// This is very similar to the <see cref="SobekCM_Database.Get_Multiple_Volumes" /> method, except it returns more information, since
 		/// the tracking application does not have basic information about each item/title in its cache, unlike the
 		/// web server application, which does cache this information. </remarks>
-		public static SobekCM_Items_In_Title Tracking_Multiple_Volumes(string BibID, Custom_Tracer tracer)
+		public static SobekCM_Items_In_Title Tracking_Multiple_Volumes(string BibID, Custom_Tracer Tracer)
 		{
-			if (tracer != null)
+			if (Tracer != null)
 			{
-				tracer.Add_Trace("SobekCM_Database.Tracking_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
+				Tracer.Add_Trace("SobekCM_Database.Tracking_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
 			}
 
 			try
@@ -8159,12 +8087,13 @@ namespace SobekCM.Library.Database
 		/// <param name="Recipient_List"> List of recepients, seperated by a semi-colon </param>
 		/// <param name="Subject_Line"> Subject line for the email to send </param>
 		/// <param name="Email_Body"> Body of the email to send</param>
-		/// <param name="isHTML"> Flag indicates if the email body is HTML-encoded, or plain text </param>
-		/// <param name="isContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
+		/// <param name="IsHtml"> Flag indicates if the email body is HTML-encoded, or plain text </param>
+		/// <param name="IsContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
 		/// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
+		/// <param name="UserID"> UserID that sent this message.  This is used to restrict the number of messages sent by the same user in the same day </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Send_Email' stored procedure to send and log this email. </remarks>
-		public static bool Send_Database_Email(string Recipient_List, string Subject_Line, string Email_Body, bool isHTML, bool isContactUs, int ReplyToEmailID, int UserID )
+		public static bool Send_Database_Email(string Recipient_List, string Subject_Line, string Email_Body, bool IsHtml, bool IsContactUs, int ReplyToEmailID, int UserID )
 		{
 			try
 			{
@@ -8173,8 +8102,8 @@ namespace SobekCM.Library.Database
 				paramList[0] = new SqlParameter("@recipients_list", Recipient_List);
 				paramList[1] = new SqlParameter("@subject_line", Subject_Line);
 				paramList[2] = new SqlParameter("@email_body", Email_Body);
-				paramList[3] = new SqlParameter("@html_format", isHTML);
-				paramList[4] = new SqlParameter("@contact_us", isContactUs);
+				paramList[3] = new SqlParameter("@html_format", IsHtml);
+				paramList[4] = new SqlParameter("@contact_us", IsContactUs);
 				if (ReplyToEmailID > 0)
 				{
 					paramList[5] = new SqlParameter("@replytoemailid", ReplyToEmailID);
@@ -8203,12 +8132,12 @@ namespace SobekCM.Library.Database
 		/// <param name="Recipient_List"> List of recepients, seperated by a semi-colon </param>
 		/// <param name="Subject_Line"> Subject line for the email to log </param>
 		/// <param name="Email_Body"> Body of the email to log</param>
-		/// <param name="isHTML"> Flag indicates if the email body is HTML-encoded, or plain text </param>
-		/// <param name="isContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
+		/// <param name="IsHtml"> Flag indicates if the email body is HTML-encoded, or plain text </param>
+		/// <param name="IsContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
 		/// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Log_Email' stored procedure. </remarks>
-		public static bool Log_Sent_Email( string Sender, string Recipient_List, string Subject_Line, string Email_Body, bool isHTML, bool isContactUs, int ReplyToEmailID)
+		public static bool Log_Sent_Email( string Sender, string Recipient_List, string Subject_Line, string Email_Body, bool IsHtml, bool IsContactUs, int ReplyToEmailID)
 		{
 			try
 			{
@@ -8218,8 +8147,8 @@ namespace SobekCM.Library.Database
 				paramList[1] = new SqlParameter("@recipients_list", Recipient_List);
 				paramList[2] = new SqlParameter("@subject_line", Subject_Line);
 				paramList[3] = new SqlParameter("@email_body", Email_Body);
-				paramList[4] = new SqlParameter("@html_format", isHTML);
-				paramList[5] = new SqlParameter("@contact_us", isContactUs);
+				paramList[4] = new SqlParameter("@html_format", IsHtml);
+				paramList[5] = new SqlParameter("@contact_us", IsContactUs);
 				if (ReplyToEmailID > 0)
 				{
 					paramList[6] = new SqlParameter("@replytoemailid", ReplyToEmailID);
@@ -8293,35 +8222,19 @@ namespace SobekCM.Library.Database
 			executeCommand.Parameters.AddWithValue("@pagenumber", Page_Number);
 			executeCommand.Parameters.AddWithValue("@include_data", Include_Record);
 
-			// Determine the column for the date
-			int date_column = 2;
-			if ( Include_Record )
-				date_column = 3;
-
 			// Create the data reader
 			connect.Open();
 			List<OAI.OAI_Record> returnVal = new List<OAI.OAI_Record>();
-			try
+			using (SqlDataReader reader = executeCommand.ExecuteReader())
 			{
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
+				// Read in each row
+				while (reader.Read())
 				{
-					// Read in each row
-					while (reader.Read())
-					{
-						if (Include_Record)
-							returnVal.Add(new OAI.OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)));
-						else
-							returnVal.Add(new OAI.OAI_Record(reader.GetString(1), reader.GetDateTime(2)));
-					}
-
-					// Close the reader
-					reader.Close();
+					returnVal.Add(Include_Record ? new OAI.OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)) : new OAI.OAI_Record(reader.GetString(1), reader.GetDateTime(2)));
 				}
-			}
-			catch (Exception ee )
-			{
-			    string message = ee.Message;
-			    bool error = true;
+
+				// Close the reader
+				reader.Close();
 			}
 			connect.Close();
 
@@ -8348,23 +8261,16 @@ namespace SobekCM.Library.Database
 			// Create the data reader
 			connect.Open();
 			OAI.OAI_Record returnRecord = null;
-			try
+			using (SqlDataReader reader = executeCommand.ExecuteReader())
 			{
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
+				// Read in the first row
+				if (reader.Read())
 				{
-					// Read in the first row
-					if (reader.Read())
-					{
-						returnRecord = new OAI.OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3));
-					}
-
-					// Close the reader
-					reader.Close();
+					returnRecord = new OAI.OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3));
 				}
-			}
-			catch
-			{
-				
+
+				// Close the reader
+				reader.Close();
 			}
 			connect.Close();
 
@@ -8409,31 +8315,23 @@ namespace SobekCM.Library.Database
         /// <returns> Large dataset with several tables ( all items, all titles, aggregations, etc.. )</returns>
         public static DataSet Get_Statistics_Lookup_Tables()
         {
-            try
-            {
-                // Create the connection
-                SqlConnection connect = new SqlConnection(connectionString);
+	        // Create the connection
+	        SqlConnection connect = new SqlConnection(connectionString);
 
-                // Create the command 
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect);
-                executeCommand.CommandType = CommandType.StoredProcedure;
+	        // Create the command 
+	        SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect) {CommandType = CommandType.StoredProcedure};
 
-                // Create the adapter
-                SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
+	        // Create the adapter
+	        SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
 
-                // Create the dataset
-                DataSet returnValue = new DataSet();
+	        // Create the dataset
+	        DataSet returnValue = new DataSet();
 
-                // Fill the dataset
-                adapter.Fill(returnValue);
+	        // Fill the dataset
+	        adapter.Fill(returnValue);
 
-                // Return the results
-                return returnValue;
-            }
-            catch (Exception ee)
-            {
-                throw ee;
-            }
+	        // Return the results
+	        return returnValue;
         }
 
 

@@ -26,10 +26,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -73,7 +73,7 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add this to the place holder
             Literal startLiteral = new Literal {Text = resultsBldr.ToString()};
-            placeHolder.Controls.Add(startLiteral);
+            MainPlaceHolder.Controls.Add(startLiteral);
             resultsBldr.Remove(0, resultsBldr.Length);
 
             // Determine if this is an internal user
@@ -101,7 +101,7 @@ namespace SobekCM.Library.ResultsViewer
             // Add this to the html table
             Literal mainLiteral = new Literal
                                       { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-            placeHolder.Controls.Add(mainLiteral);
+            MainPlaceHolder.Controls.Add(mainLiteral);
         }
 
         private void Write_Single_Row(StringBuilder resultsBldr, iSearch_Title_Result titleRow, int index_in_page, string textRedirectStem, string base_url, bool internal_user)

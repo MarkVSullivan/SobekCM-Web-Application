@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
+using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
 
 #endregion
@@ -24,10 +25,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -58,11 +59,9 @@ namespace SobekCM.Library.ResultsViewer
             int current_row = 0;
             foreach (iSearch_Title_Result titleResult in Paged_Results)
             {
-                bool multiple_title = false;
-                if (titleResult.Item_Count > 1)
-                    multiple_title = true;
+	            bool multiple_title = titleResult.Item_Count > 1;
 
-                // Always get the first item for things like the main link and thumbnail
+	            // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
 
                 // Determine the internal link to the first (possibly only) item
@@ -136,9 +135,9 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     resultsBldr.AppendLine("\t\t\t\t<tr><td>BibID:</td><td>&nbsp;</td><td>" + titleResult.BibID + "</td></tr>");
 
-                    if (titleResult.ALEPH_Number > 1)
+                    if (titleResult.OPAC_Number > 1)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>ALEPH:</td><td>&nbsp;</td><td>" +titleResult.ALEPH_Number + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OPAC:</td><td>&nbsp;</td><td>" +titleResult.OPAC_Number + "</td></tr>");
                     }
 
                     if (titleResult.OCLC_Number > 1)
@@ -147,180 +146,89 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-                if ((!multiple_title) && (firstItemResult.PubDate.Length > 0) && (firstItemResult.PubDate != "-1"))
-                {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Date", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + firstItemResult.PubDate + "</td></tr>");
-                }
+				for (int i = 0 ; i < Results_Statistics.Metadata_Labels.Count ; i++ )
+				{
+					string field = Results_Statistics.Metadata_Labels[i];
+					string value = titleResult.Metadata_Display_Values[i];
+					Metadata_Search_Field thisField = SobekCM_Library_Settings.Metadata_Search_Field_By_Name(field);
+					string display_field = string.Empty;
+					if ( thisField != null )
+						display_field = thisField.Display_Term;
+					if (display_field.Length == 0)
+						display_field = field.Replace("_", " ");
 
-                if (titleResult.Author.Length > 0)
-                {
-                    string creatorString = "Author";
-                    if (titleResult.MaterialType.ToUpper().IndexOf("ARTIFACT") == 0)
-                    {
-                        creatorString = "Creator";
-                    }
+					if (value == "*")
+					{
+						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
+					}
+					else if ( value.Trim().Length > 0 )
+					{
+						if (value.IndexOf("|") > 0)
+						{
+							bool value_found = false;
+							string[] value_split = value.Split("|".ToCharArray());
 
-                    if (titleResult.Author == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(creatorString, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        bool author_found = false;
-                        string[] author_split = titleResult.Author.Split("|".ToCharArray());
+							foreach (string thisValue in value_split)
+							{
+								if (thisValue.Trim().Trim().Length > 0)
+								{
+									if (!value_found)
+									{
+										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
+										value_found = true;
+									}
+									resultsBldr.Append(System.Web.HttpUtility.HtmlEncode(thisValue) + "<br />");
+								}
+							}
 
-                        foreach (string thisAuthor in author_split)
-                        {
-                            if (thisAuthor.ToUpper().IndexOf("PUBLISHER") < 0)
-                            {
-                                if (!author_found)
-                                {
-                                    resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" +Translator.Get_Translation(creatorString, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
-                                    author_found = true;
-                                }
-                                resultsBldr.Append(thisAuthor + "<br />");
-                            }
-                        }
+							if (value_found)
+							{
+								resultsBldr.AppendLine("</td></tr>");
+							}
+						}
+						else
+						{
+							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlEncode(value) + "</td></tr>");
+						}
+					}
+				}
 
-                        if (author_found)
-                        {
-                            resultsBldr.AppendLine("</td></tr>");
-                        }
-                    }
-                }
-                if (titleResult.Publisher.Length > 0)
-                {
-                    if (titleResult.Publisher == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Publisher", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        string[] publisher_split = titleResult.Publisher.Split("|".ToCharArray());
-                        resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation("Publisher", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
-                        foreach (string thisPublisher in publisher_split)
-                        {
-                            resultsBldr.Append(thisPublisher + "<br />");
-                        }
-                        resultsBldr.AppendLine("</td></tr>");
-                    }
-                }
-                if (titleResult.Format.Length > 0)
-                {
-                    if (titleResult.Format == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Format", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" +
-                                               Translator.Get_Translation("Format", CurrentMode.Language) +
-                                               ":</td><td>&nbsp;</td><td>" +
-                                               titleResult.Format.Replace("[", " ").Replace("]", " ") + "</td></tr>");
-                    }
-                }
-                if (titleResult.Edition.Length > 0)
-                {
-                    if (titleResult.Edition == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Edition", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr height=\"10px\"><td>" +Translator.Get_Translation("Edition", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Edition + "</td></tr>");
-                    }
-                }
-                if (titleResult.Material.Length > 0)
-                {
-                    if (titleResult.Material == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" +Translator.Get_Translation("Material", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" +Translator.Get_Translation("Material", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Material + "</td></tr>");
-                    }
-                }
+				//if (titleResult.Author.Length > 0)
+				//{
+				//	string creatorString = "Author";
+				//	if (titleResult.MaterialType.ToUpper().IndexOf("ARTIFACT") == 0)
+				//	{
+				//		creatorString = "Creator";
+				//	}
 
-                if (titleResult.Measurement.Length > 0)
-                {
-                    if (titleResult.Measurement == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Measurement", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        string[] measurement_split = titleResult.Measurement.Split("|".ToCharArray());
-                        resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation("Measurement", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
-                        resultsBldr.AppendLine(measurement_split[0] + "<br />");
-                        //foreach (string thisMeasurement in measurement_split)
-                        //{
-                        //    resultsBldr.Append(thisMeasurement + "<br />");
-                        //}
-                        resultsBldr.AppendLine("</td></tr>");
-                    }
-                }
-                if (titleResult.Style_Period.Length > 0)
-                {
-                    if (titleResult.Style_Period == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" +Translator.Get_Translation("Style/Period", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Style/Period", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Style_Period + "</td></tr>");
-                    }
-                }
-                if (titleResult.Technique.Length > 0)
-                {
-                    if (titleResult.Technique == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" +Translator.Get_Translation("Technique", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Technique", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Technique + "</td></tr>");
-                    }
-                }
-                if (titleResult.Subjects.Length > 0)
-                {
-                    if (titleResult.Subjects == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Subject", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        string[] subject_split = titleResult.Subjects.Split("|".ToCharArray());
-                        resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" +Translator.Get_Translation("Subject", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
-                        foreach (string thisSubject in subject_split)
-                        {
-                            resultsBldr.Append(thisSubject + "<br />");
-                        }
-                        resultsBldr.AppendLine("</td></tr>");
-                    }
-                }
-                if (titleResult.Institution.Length > 0)
-                {
-                    if (titleResult.Institution == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Institution", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Institution", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Institution + "</td></tr>");
-                    }
-                }
-                if (titleResult.Donor.Length > 0)
-                {
-                    if (titleResult.Donor == "*")
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation("Donor", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>"); 
-                    }
-                    else
-                    {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" +Translator.Get_Translation("Donor", CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Donor + "</td></tr>");
-                    }
-                }
+				//	if (titleResult.Author == "*")
+				//	{
+				//		resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(creatorString, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
+				//	}
+				//	else
+				//	{
+				//		bool author_found = false;
+				//		string[] author_split = titleResult.Author.Split("|".ToCharArray());
+
+				//		foreach (string thisAuthor in author_split)
+				//		{
+				//			if (thisAuthor.ToUpper().IndexOf("PUBLISHER") < 0)
+				//			{
+				//				if (!author_found)
+				//				{
+				//					resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" +Translator.Get_Translation(creatorString, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
+				//					author_found = true;
+				//				}
+				//				resultsBldr.Append(thisAuthor + "<br />");
+				//			}
+				//		}
+
+				//		if (author_found)
+				//		{
+				//			resultsBldr.AppendLine("</td></tr>");
+				//		}
+				//	}
+				//}
 
                 if (titleResult.Snippet.Length > 0)
                 {
@@ -338,10 +246,10 @@ namespace SobekCM.Library.ResultsViewer
                     // Add this to the place holder
                     Literal thisLiteral = new Literal
                                               { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-                    placeHolder.Controls.Add(thisLiteral);
+                    MainPlaceHolder.Controls.Add(thisLiteral);
                     resultsBldr.Remove(0, resultsBldr.Length);
 
-                    Add_Issue_Tree(placeHolder, titleResult, current_row, textRedirectStem, base_url);
+                    Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
                 }
 
                 resultsBldr.AppendLine("\t\t</td>");
@@ -361,7 +269,7 @@ namespace SobekCM.Library.ResultsViewer
             // Add this to the HTML page
             Literal mainLiteral = new Literal
                                       { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-            placeHolder.Controls.Add(mainLiteral);
+            MainPlaceHolder.Controls.Add(mainLiteral);
         }
     }
 }
