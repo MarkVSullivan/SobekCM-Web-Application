@@ -90,6 +90,17 @@ img { border: 0; }
     background-color:#fff;
 }
 
+#container-innerfull {
+    margin: 0 auto;
+    padding:0;
+	width: 100%;
+    position: relative;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    background-color:#fff;
+}
+
 #container-inner1000 {
     margin: 0 auto;
     padding:0;
@@ -254,7 +265,7 @@ visibility: hidden; /*leave as is*/
 position: absolute; /*leave as is*/
 left: 0;  /*leave as is*/
 top: 0;  /*leave as is*/
-xpadding: 5px;
+padding: 5px;
 background: white;
 /* width: 204px; /*width of content DIVs within slider. */
 height: 100%;
@@ -802,9 +813,6 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 
 /* Used for the STATISTICS page */
-.SobekStatsCollectionSelector { color: Blue; width: 500px; background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-.SobekStatsDateSelector { color: Blue; background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-
 
 
 .statsTable { font-size: 0.95em; }

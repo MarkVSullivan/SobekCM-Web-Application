@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using SobekCM.Library.Aggregations;
 
 #endregion
@@ -41,6 +42,57 @@ namespace SobekCM.Library.Application_State
         {
             get { return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(allAggregations); }
         }
+
+		/// <summary>
+		///   Read-only collection of all the aggregation information sorted by code
+		/// </summary>
+		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_Code_Sorted
+		{
+			get { return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(allAggregations); }
+		}
+
+		/// <summary>
+		///   Read-only collection of all the aggregation information sorted by full name
+		/// </summary>
+		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_Name_Sorted
+		{
+			get 
+			{ 
+				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+				foreach (Item_Aggregation_Related_Aggregations thisAggr in allAggregations)
+				{
+					sorter[thisAggr.Name.ToUpper()] = thisAggr;
+				}
+				List<Item_Aggregation_Related_Aggregations> returnVal = new List<Item_Aggregation_Related_Aggregations>();
+				foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> dictEntry in sorter)
+				{
+					returnVal.Add(dictEntry.Value);
+				}
+				return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(returnVal);
+			}
+		}
+
+		/// <summary>
+		///   Read-only collection of all the aggregation information sorted by short name
+		/// </summary>
+		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_ShortName_Sorted
+		{
+			get
+			{
+				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+				foreach (Item_Aggregation_Related_Aggregations thisAggr in allAggregations)
+				{
+					sorter[thisAggr.ShortName.ToUpper()] = thisAggr;
+				}
+				List<Item_Aggregation_Related_Aggregations> returnVal = new List<Item_Aggregation_Related_Aggregations>();
+				foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> dictEntry in sorter)
+				{
+					returnVal.Add(dictEntry.Value);
+				}
+				return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(returnVal);
+			}
+		}
+
 
         /// <summary>
         ///   Read-only collection of all the aggregation types

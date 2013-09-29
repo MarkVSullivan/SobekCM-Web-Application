@@ -1313,17 +1313,31 @@ namespace SobekCM.Library.Navigation
 							}
 						}
 
-                        //// Look for non-map type search information
-                        //if ( navigator.Coordinates.Length == 0 )
-                        //{
-                        //    // Collect any search value
-                        //    if (QueryString["t"] != null)
-                        //        navigator.Search_String = QueryString["t"].Trim();
-
-                        //    // Collect any fields value
-                        //    if (QueryString["f"] != null)
-                        //        navigator.Search_Fields = QueryString["f"].Trim();
-                        //}
+                        // Collect any date range that may have existed
+						if (QueryString["yr1"] != null)
+						{
+							short year1;
+							if (Int16.TryParse(QueryString["yr1"], out year1))
+								navigator.DateRange_Year1 = year1;
+						}
+						if (QueryString["yr2"] != null)
+						{
+							short year2;
+							if (Int16.TryParse(QueryString["yr2"], out year2))
+								navigator.DateRange_Year2 = year2;
+						}
+						if (QueryString["da1"] != null)
+						{
+							long date1;
+							if (Int64.TryParse(QueryString["da1"], out date1))
+								navigator.DateRange_Date1 = date1;
+						}
+						if (QueryString["da2"] != null)
+						{
+							long date2;
+							if (Int64.TryParse(QueryString["da2"], out date2))
+								navigator.DateRange_Date2 = date2;
+						}
 
 						// Was a search string and fields included?
 						if ((navigator.Search_String.Length > 0) && (navigator.Search_Fields.Length > 0))

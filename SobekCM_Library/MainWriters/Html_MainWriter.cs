@@ -1128,17 +1128,12 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Statistics:
                     switch (currentMode.Statistics_Type)
                     {
+						case Statistics_Type_Enum.Item_Count_Standard_View:
                         case Statistics_Type_Enum.Item_Count_Growth_View:
                         case Statistics_Type_Enum.Item_Count_Arbitrary_View:
-                            container_inner = "container-inner1000";
-                            break;
-
-                        case Statistics_Type_Enum.Usage_Collections_By_Date:
-                            container_inner = "container-inner1040";
-                            break;
-
-                        case Statistics_Type_Enum.Usage_Item_Views_By_Date:
-                            container_inner = "container-inner1215";
+						case Statistics_Type_Enum.Usage_Collections_By_Date:
+						case Statistics_Type_Enum.Usage_Item_Views_By_Date:
+							container_inner = "container-innerfull";
                             break;
 
                     }

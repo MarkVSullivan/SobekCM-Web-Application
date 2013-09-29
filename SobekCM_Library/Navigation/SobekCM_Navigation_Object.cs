@@ -154,6 +154,11 @@ namespace SobekCM.Library.Navigation
 			ItemID_DEPRECATED = -1;
 		    Thumbnails_Per_Page = -100;
 		    Size_Of_Thumbnails = -1;
+			DateRange_Year1 = -1;
+			DateRange_Year2 = -1;
+			DateRange_Date1 = -1;
+			DateRange_Date2 = -1;
+
 
 			Invalid_Item = false;
 			Skin_in_URL = false;
@@ -478,6 +483,27 @@ namespace SobekCM.Library.Navigation
 			get { return searchFields ?? String.Empty;	}
 			set	{	searchFields = value;	}
 		}
+
+		/// <summary> Beginning of the year range, if the search includes
+		/// a date range between two years </summary>
+		/// <value>-1 if no year range</value>
+		public short DateRange_Year1 { get; set; }
+
+		/// <summary> End of the year range, if the search includes
+		/// a date range between two years </summary>
+		/// <value>-1 if no year range</value>
+		public short DateRange_Year2 { get; set; }
+
+		/// <summary> Beginning of a date range, if the search includes
+		/// a date range between two arbitrary dates </summary>
+		/// <value>-1 if no year range</value>
+		public long DateRange_Date1 { get; set; }
+
+		/// <summary> End of a date range, if the search includes
+		/// a date range between two arbitrary dates </summary>
+		/// <value>-1 if no year range</value>
+		public long DateRange_Date2 { get; set; }
+
 
 		/// <summary> Sort type employed for displaying result sets </summary>
 		public short Sort { get; set; }
@@ -1288,12 +1314,16 @@ namespace SobekCM.Library.Navigation
 					{
 						results_url_builder.Append(Page.ToString() + "/");
 					}
+
+					bool queryStringBegun = false;
+
 					// Add the search terms onto the search results URL
 					if ((Search_String.Length > 0) || !string.IsNullOrEmpty(searchFields))
 					{
 						if ((Search_Type == Search_Type_Enum.Basic) && (Search_String.Length > 0))
 						{
 							results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Search_String).Replace("%2c", ","));
+							queryStringBegun = true;
 						}
 
 						if (Search_Type == Search_Type_Enum.Advanced)
@@ -1306,22 +1336,59 @@ namespace SobekCM.Library.Navigation
 							{
 								results_url_builder.Append("?f=" + searchFields);
 							}
+							queryStringBegun = true;
 						}
 
 						if (Search_Type == Search_Type_Enum.Full_Text)
 						{
 							results_url_builder.Append("?text=" + HttpUtility.UrlEncode(Search_String).Replace("%2c", ","));
+							queryStringBegun = true;
 						}
 
 						if (Search_Type == Search_Type_Enum.Map)
 						{
 							results_url_builder.Append("?coord=" + HttpUtility.UrlEncode(Coordinates).Replace("%2c", ","));
+							queryStringBegun = true;
 						}
 
 						// Add the sort order
 						if (Sort > 0)
 						{
 							results_url_builder.Append("&o=" + Sort);
+						}
+					}
+
+					// Add the year or date values
+					if (DateRange_Date1 >= 0)
+					{
+						if (!queryStringBegun)
+						{
+							results_url_builder.Append("?dt1=" + DateRange_Date1);
+							//queryStringBegun = true;
+						}
+						else
+						{
+							results_url_builder.Append("&dt1=" + DateRange_Date1);
+						}
+						if (DateRange_Date2 >= 0)
+						{
+							results_url_builder.Append("&dt2=" + DateRange_Date2);
+						}
+					}
+					else if ( DateRange_Year1 >= 0 )
+					{
+						if (!queryStringBegun)
+						{
+							results_url_builder.Append("?yr1=" + DateRange_Year1);
+							//queryStringBegun = true;
+						}
+						else
+						{
+							results_url_builder.Append("&yr1=" + DateRange_Year1);
+						}
+						if (DateRange_Year2 >= 0)
+						{
+							results_url_builder.Append("&yr2=" + DateRange_Year2);
 						}
 					}
 

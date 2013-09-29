@@ -70,9 +70,9 @@ namespace SobekCM.Library
 
             // Now, check for any "server-side include" directorives in the source text
             int include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE");
-            while(( include_index > 0 ) && ( Simple_Web_Content.Static_Text.IndexOf("%>", include_index ) > 0 ))
+            while(( include_index > 0 ) && ( Simple_Web_Content.Static_Text.IndexOf("%>", include_index, StringComparison.Ordinal) > 0 ))
             {
-                int include_finish_index = Simple_Web_Content.Static_Text.IndexOf("%>", include_index) + 2;
+                int include_finish_index = Simple_Web_Content.Static_Text.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
                 string include_statement = Simple_Web_Content.Static_Text.Substring(include_index, include_finish_index - include_index);
                 string include_statement_upper = include_statement.ToUpper();
                 int file_index = include_statement_upper.IndexOf("FILE");
@@ -156,13 +156,13 @@ namespace SobekCM.Library
 
                     // Replace the text with the include file
                     Simple_Web_Content.Static_Text = Simple_Web_Content.Static_Text.Replace(include_statement, include_text);
-                    include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE", include_index + include_text.Length - 1 );
+                    include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
                 }
                 else
                 {
                     // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
                     Simple_Web_Content.Static_Text = Simple_Web_Content.Static_Text.Replace(include_statement, "");
-                    include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE", include_index );
+                    include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
                 }
             }
 
@@ -808,41 +808,41 @@ namespace SobekCM.Library
                     Current_Page = SobekCM_Item_Factory.Get_Current_Page(Current_Item, Current_Mode.Page, Tracer);
                 }
             }
-            else if (item_group_display)
+            else
             {
-                // Try to get this from the cache
-                Current_Item = Cached_Data_Manager.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
+	            // Try to get this from the cache
+	            Current_Item = Cached_Data_Manager.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
 
-                // Have to build this item group information then
-                if (Current_Item == null)
-                {
-                    string bibID = Current_Mode.BibID;
-                    SobekCM_Item_Factory.Get_Item_Group(bibID, Tracer, out Items_In_Title, out Current_Item );
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "TEST LOG ENTRY");
-                    }
+	            // Have to build this item group information then
+	            if (Current_Item == null)
+	            {
+		            string bibID = Current_Mode.BibID;
+		            SobekCM_Item_Factory.Get_Item_Group(bibID, Tracer, out Items_In_Title, out Current_Item );
+		            if (Tracer != null)
+		            {
+			            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "TEST LOG ENTRY");
+		            }
 
-                    if (Current_Item == null)
-                    {
-                        Exception ee = SobekCM_Database.Last_Exception;
-                        if (Tracer != null)
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", ee != null ? ee.Message : "NO DATABASE EXCEPTION", Custom_Trace_Type_Enum.Error);
+		            if (Current_Item == null)
+		            {
+			            Exception ee = SobekCM_Database.Last_Exception;
+			            if (Tracer != null)
+				            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", ee != null ? ee.Message : "NO DATABASE EXCEPTION", Custom_Trace_Type_Enum.Error);
 
-                        Current_Mode.Invalid_Item = true;
-                        return false;
-                    }
+			            Current_Mode.Invalid_Item = true;
+			            return false;
+		            }
 
 
 
-                    // Put this back on the cache
-                    Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
-                    Cached_Data_Manager.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
-                    Cached_Data_Manager.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
-                }
+		            // Put this back on the cache
+		            Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
+		            Cached_Data_Manager.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
+		            Cached_Data_Manager.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
+	            }
             }
 
-            return true;
+	        return true;
         }
 
         #endregion
@@ -879,135 +879,178 @@ namespace SobekCM.Library
 
 
             // Depending on type of search, either go to database or Greenstone
-            if (Current_Mode.Search_Type == Search_Type_Enum.Map)
-            {
-                try
-                {
-                    double lat1 = 1000;
-                    double long1 = 1000;
-                    double lat2 = 1000;
-                    double long2 = 1000;
-                    string[] terms = Current_Mode.Coordinates.Split(",".ToCharArray());
-                    if (terms.Length < 2)
-                    {
-                        Current_Mode.Mode = Display_Mode_Enum.Search;
-                        Current_Mode.Redirect();
-                        return;
-                    }
-                    if (terms.Length < 4)
-                    {
-                        lat1 = Convert.ToDouble(terms[0]);
-                        lat2 = lat1;
-                        long1 = Convert.ToDouble(terms[1]);
-                        long2 = long1;
-                    }
-                    if (terms.Length >= 4)
-                    {
-                        if (terms[0].Length > 0)
-                            lat1 = Convert.ToDouble(terms[0]);
-                        if (terms[1].Length > 0)
-                            long1 = Convert.ToDouble(terms[1]);
-                        if (terms[2].Length > 0)
-                            lat2 = Convert.ToDouble(terms[2]);
-                        if (terms[3].Length > 0)
-                            long2 = Convert.ToDouble(terms[3]);
-                    }
+	        if (Current_Mode.Search_Type == Search_Type_Enum.Map)
+	        {
+		        try
+		        {
+			        double lat1 = 1000;
+			        double long1 = 1000;
+			        double lat2 = 1000;
+			        double long2 = 1000;
+			        string[] terms = Current_Mode.Coordinates.Split(",".ToCharArray());
+			        if (terms.Length < 2)
+			        {
+				        Current_Mode.Mode = Display_Mode_Enum.Search;
+				        Current_Mode.Redirect();
+				        return;
+			        }
+			        if (terms.Length < 4)
+			        {
+				        lat1 = Convert.ToDouble(terms[0]);
+				        lat2 = lat1;
+				        long1 = Convert.ToDouble(terms[1]);
+				        long2 = long1;
+			        }
+			        if (terms.Length >= 4)
+			        {
+				        if (terms[0].Length > 0)
+					        lat1 = Convert.ToDouble(terms[0]);
+				        if (terms[1].Length > 0)
+					        long1 = Convert.ToDouble(terms[1]);
+				        if (terms[2].Length > 0)
+					        lat2 = Convert.ToDouble(terms[2]);
+				        if (terms[3].Length > 0)
+					        long2 = Convert.ToDouble(terms[3]);
+			        }
 
-                    // If neither point is valid, return
-                    if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
-                    {
-                        Current_Mode.Mode = Display_Mode_Enum.Search;
-                        Current_Mode.Redirect();
-                        return;
-                    }
+			        // If neither point is valid, return
+			        if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
+			        {
+				        Current_Mode.Mode = Display_Mode_Enum.Search;
+				        Current_Mode.Redirect();
+				        return;
+			        }
 
-                    // If just the first point is valid, use that
-                    if ((lat2 == 1000) || (long2 == 1000))
-                    {
-                        lat2 = lat1;
-                        long2 = long1;
-                    }
+			        // If just the first point is valid, use that
+			        if ((lat2 == 1000) || (long2 == 1000))
+			        {
+				        lat2 = lat1;
+				        long2 = long1;
+			        }
 
-                    // If just the second point is valid, use that
-                    if ((lat1 == 1000) || (long1 == 1000))
-                    {
-                        lat1 = lat2;
-                        long1 = long2;
-                    }
+			        // If just the second point is valid, use that
+			        if ((lat1 == 1000) || (long1 == 1000))
+			        {
+				        lat1 = lat2;
+				        long1 = long2;
+			        }
 
-                    // Perform the search against the database
-                    try
-                    {
-                        // Try to pull more than one page, so we can cache the next page or so
+			        // Perform the search against the database
+			        try
+			        {
+				        // Try to pull more than one page, so we can cache the next page or so
 
-                        Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, Current_Mode.Page, sort, false, new List<short>(), true, Tracer);
-                        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
-                        Complete_Result_Set_Info = returnArgs.Statistics;
+				        Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, Current_Mode.Page, sort, false, new List<short>(), true, Tracer);
+				        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
+				        Complete_Result_Set_Info = returnArgs.Statistics;
 
-                        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                            Paged_Results = pagesOfResults[0];
-                    }
-                    catch (Exception ee)
-                    {
-                        // Next, show the message to the user
-                        Current_Mode.Mode = Display_Mode_Enum.Error;
-                        string error_message = ee.Message;
-                        if (error_message.ToUpper().IndexOf("TIMEOUT") >= 0)
-                        {
-                            error_message = "Database Timeout Occurred<br /><br />Try again in a few minutes.<br /><br />";
-                        }
-                        Current_Mode.Error_Message = error_message;
-                        Current_Mode.Caught_Exception = ee;
-                    }
-                }
-                catch
-                {
-                    Current_Mode.Mode = Display_Mode_Enum.Search;
-                    Current_Mode.Redirect();
-                }
-            }
-            else
-            {
-                List<string> terms = new List<string>();
-                List<string> web_fields = new List<string>();
+				        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+					        Paged_Results = pagesOfResults[0];
+			        }
+			        catch (Exception ee)
+			        {
+				        // Next, show the message to the user
+				        Current_Mode.Mode = Display_Mode_Enum.Error;
+				        string error_message = ee.Message;
+				        if (error_message.ToUpper().IndexOf("TIMEOUT") >= 0)
+				        {
+					        error_message = "Database Timeout Occurred<br /><br />Try again in a few minutes.<br /><br />";
+				        }
+				        Current_Mode.Error_Message = error_message;
+				        Current_Mode.Caught_Exception = ee;
+			        }
+		        }
+		        catch
+		        {
+			        Current_Mode.Mode = Display_Mode_Enum.Search;
+			        Current_Mode.Redirect();
+		        }
+	        }
+	        else
+	        {
+		        List<string> terms = new List<string>();
+		        List<string> web_fields = new List<string>();
 
-                // Split the terms correctly ( only use the database stop words for the split if this will go to the database ultimately)
-                if ((Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (Current_Mode.Search_Fields.IndexOf("TX") >= 0))
-                {
-                    Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
-                }
-                else
-                {
-                    Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, SobekCM_Library_Settings.Search_Stop_Words, Current_Mode.Search_Precision, ',');
-                }
+		        // Split the terms correctly ( only use the database stop words for the split if this will go to the database ultimately)
+		        if ((Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (Current_Mode.Search_Fields.IndexOf("TX") >= 0))
+		        {
+			        Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
+		        }
+		        else
+		        {
+			        Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, SobekCM_Library_Settings.Search_Stop_Words, Current_Mode.Search_Precision, ',');
+		        }
 
-                // Get the count that will be used
-                int actualCount = Math.Min(terms.Count, web_fields.Count);
+		        // Get the count that will be used
+		        int actualCount = Math.Min(terms.Count, web_fields.Count);
 
-                // Determine if this is a special search type which returns more rows and is not cached.
-                // This is used to return the results as XML and DATASET
-                bool special_search_type = false;
-                int results_per_page = 20;
-                if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
-                {
-                    results_per_page = 1000;
-                    special_search_type = true;
-                    sort = 2; // Sort by BibID always for these
-                }
+		        // Determine if this is a special search type which returns more rows and is not cached.
+		        // This is used to return the results as XML and DATASET
+		        bool special_search_type = false;
+		        int results_per_page = 20;
+		        if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
+		        {
+			        results_per_page = 1000;
+			        special_search_type = true;
+			        sort = 2; // Sort by BibID always for these
+		        }
 
-                // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
+		        // Determine if a date range was provided
+		        long date1 = -1;
+		        long date2 = -1;
+		        if (Current_Mode.DateRange_Date1 >= 0)
+		        {
+			        date1 = Current_Mode.DateRange_Date1;
+			        if (Current_Mode.DateRange_Date2 >= 0)
+			        {
+				        if (Current_Mode.DateRange_Date2 >= Current_Mode.DateRange_Date1)
+					        date2 = Current_Mode.DateRange_Date2;
+				        else
+				        {
+					        date1 = Current_Mode.DateRange_Date2;
+					        date2 = Current_Mode.DateRange_Date1;
+				        }
+			        }
+			        else
+			        {
+				        date2 = date1;
+			        }
+		        }
+				if (date1 < 0)
+				{
+					if (Current_Mode.DateRange_Year1 >= 0)
+					{
+						DateTime startDate = new DateTime(Current_Mode.DateRange_Year1, 1, 1);
+						TimeSpan timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
+						date1 = (long)timeElapsed.TotalDays;
+						if (Current_Mode.DateRange_Year2 >= 0)
+						{
+							startDate = new DateTime(Current_Mode.DateRange_Year2, 12, 31);
+							timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
+							date2 = (long)timeElapsed.TotalDays;
+						}
+						else
+						{
+							startDate = new DateTime(Current_Mode.DateRange_Year1, 12, 31);
+							timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
+							date2 = (long) timeElapsed.TotalDays;
+						}
+					}
+				}
+
+				// Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
                 // perhaps just the next page of results ( as opposed to pulling facets again).
                 bool need_search_statistics = true;
                 bool need_paged_results = true;
                 if (!special_search_type)
                 {
                     // Look to see if the search statistics are available on any cache..
-                    Complete_Result_Set_Info = Cached_Data_Manager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, Tracer);
+                    Complete_Result_Set_Info = Cached_Data_Manager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Tracer);
                     if (Complete_Result_Set_Info != null)
                         need_search_statistics = false;
 
                     // Look to see if the paged results are available on any cache..
-                    Paged_Results = Cached_Data_Manager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, Tracer);
+                    Paged_Results = Cached_Data_Manager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Tracer);
                     if (Paged_Results != null)
                         need_paged_results = false;
                 }
@@ -1039,13 +1082,13 @@ namespace SobekCM.Library
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                Cached_Data_Manager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, Complete_Result_Set_Info, Tracer);
+                                Cached_Data_Manager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Cache the search results
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                Cached_Data_Manager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, Paged_Results, Tracer);
+                                Cached_Data_Manager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -1058,7 +1101,7 @@ namespace SobekCM.Library
                         try
                         {
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Database_Search(Tracer, terms, web_fields, actualCount, Current_Mode, sort, Aggregation_Object, All_Items_Lookup, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, All_Items_Lookup, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
 
@@ -1084,13 +1127,13 @@ namespace SobekCM.Library
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                Cached_Data_Manager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, Complete_Result_Set_Info, Tracer);
+                                Cached_Data_Manager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Cache the search results
                             if ((need_paged_results) && (pagesOfResults != null))
                             {
-                                Cached_Data_Manager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, pagesOfResults, Tracer);
+                                Cached_Data_Manager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
                             }
                         }
                     }
@@ -1185,8 +1228,8 @@ namespace SobekCM.Library
             else
             {
                 // For advanced, just add all the terms
-                Output_Terms.AddRange(searchSplit.Select(thisTerm => thisTerm.Trim().Replace("\"", "").Replace("+", " ")));
-                Output_Fields.AddRange(fieldSplit.Select(thisField => thisField.Trim()));
+                Output_Terms.AddRange(searchSplit.Select(ThisTerm => ThisTerm.Trim().Replace("\"", "").Replace("+", " ")));
+                Output_Fields.AddRange(fieldSplit.Select(ThisField => ThisField.Trim()));
             }
 
             // Some special work for basic searches here
@@ -1223,7 +1266,7 @@ namespace SobekCM.Library
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, SobekCM_Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, Item_Lookup_Object All_Items_Lookup, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, SobekCM_Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, Item_Lookup_Object All_Items_Lookup, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1238,7 +1281,7 @@ namespace SobekCM.Library
             // Set the return values to NULL initially
             Complete_Result_Set_Info = null;
 
-            const bool includePrivate = false;
+            const bool INCLUDE_PRIVATE = false;
            
             // Special code for searching by bibid, oclc, or aleph
             if (ActualCount == 1)
@@ -1420,7 +1463,7 @@ namespace SobekCM.Library
             // If this is an exact match, just do the search
             if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
             {
-                Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], includePrivate, Current_Mode.Aggregation, -1, -1, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                 if (Need_Search_Statistics)
                     Complete_Result_Set_Info = returnArgs.Statistics;
                 Paged_Results = returnArgs.Paged_Results;
@@ -1436,7 +1479,7 @@ namespace SobekCM.Library
                     db_terms.Add(String.Empty);
 
                 // See if this is a simple search, which can use a more optimized search routine
-                bool simplified_search = db_fields.All(field => (field <= 0));
+                bool simplified_search = db_fields.All(Field => (Field <= 0));
 
                 // Perform either the simpler metadata search, or the more complex
                 if (simplified_search)
@@ -1477,7 +1520,7 @@ namespace SobekCM.Library
 
 
 
-                    Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), includePrivate, Current_Mode.Aggregation, -1, -1, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                    Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
@@ -1486,18 +1529,17 @@ namespace SobekCM.Library
                 {
                     // Perform search in the database
                     Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(db_terms[0], db_fields[0], links[0], db_terms[1], db_fields[1], links[1], db_terms[2], db_fields[2], links[2], db_terms[3],
-                                                                                                            db_fields[3], links[3], db_terms[4], db_fields[4], links[4], db_terms[5], db_fields[5], links[5], db_terms[6], db_fields[6], links[6], db_terms[7], db_fields[7], links[7], db_terms[8], db_fields[8],
-                                                                                                            links[8], db_terms[9], db_fields[9], includePrivate, Current_Mode.Aggregation, -1, -1, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
-                    if (Need_Search_Statistics)
+                                                                                                            db_fields[3], links[3], db_terms[4], db_fields[4], links[4], db_terms[5], db_fields[5], links[5], db_terms[6], db_fields[6], links[6], db_terms[7], db_fields[7], links[7], db_terms[8], db_fields[8],                                                                                        links[8], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+					if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
                 }
             }
         }
 
-        private static short Metadata_Field_Number( string field_code )
+        private static short Metadata_Field_Number( string FieldCode )
         {
-            Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_Code(field_code);
+            Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_Code(FieldCode);
             return (field == null) ? (short) -1 : field.ID;
         }
 
@@ -1614,7 +1656,6 @@ namespace SobekCM.Library
 
             // Use this built query to query against Solr
             Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort) Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
-            return;
         }
 
 
@@ -1678,18 +1719,18 @@ namespace SobekCM.Library
         /// <summary> Pulls an item aggregation object representing an item aggregation from the database (Collection Group or smaller) </summary>
         /// <param name="Aggregation_Code"> Code for the aggregation to pull </param>
         /// <param name="Language_Code"> Current language code (item aggregation instances are currently language-specific)</param>
-        /// <param name="isRobot"> Flag indicates if this is a robot request (may cache differently)</param>
+        /// <param name="IsRobot"> Flag indicates if this is a robot request (may cache differently)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully-built object for the provided aggregation code</returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache. </remarks>
-        public Item_Aggregation Get_Item_Aggregation(string Aggregation_Code, string Language_Code, bool isRobot, Custom_Tracer Tracer)
+        public Item_Aggregation Get_Item_Aggregation(string Aggregation_Code, string Language_Code, bool IsRobot, Custom_Tracer Tracer)
         {
             // Try to pull this from the cache
-            Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation(Aggregation_Code, Language_Code, !isRobot, Tracer);
+            Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation(Aggregation_Code, Language_Code, !IsRobot, Tracer);
 
             // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, isRobot, Tracer);
+            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, Tracer);
 
             // If the collection is null, then this subcollection code was invalid.
             if (returned == null) 
@@ -1703,20 +1744,20 @@ namespace SobekCM.Library
 
         /// <summary> Pulls an item aggregation object representing all collections within this digital library  </summary>
         /// <param name="Language_Code"> Current language code (item aggregation instances are currently language-specific)</param>
-        /// <param name="isRobot"> Flag indicates if this is a robot request (may cache differently)</param>
+        /// <param name="IsRobot"> Flag indicates if this is a robot request (may cache differently)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully-built object representing all collections within this digital library </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache. </remarks>
-        public Item_Aggregation Get_All_Collections(string Language_Code, bool isRobot, Custom_Tracer Tracer)
+        public Item_Aggregation Get_All_Collections(string Language_Code, bool IsRobot, Custom_Tracer Tracer)
         {
             try
             {
                 // Try to pull this from the cache
-                Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation("all", Language_Code, !isRobot, Tracer);
+                Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation("all", Language_Code, !IsRobot, Tracer);
 
                 // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, isRobot, Tracer);
+                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, Tracer);
 
                 // If the object is null, then this group code was invalid.
                 if (returned == null) 
