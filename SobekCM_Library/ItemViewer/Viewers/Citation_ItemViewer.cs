@@ -1241,7 +1241,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					result.Append(Single_Citation_HTML_Row("Publication Date", "<span itemprop=\"datePublished\">" + CurrentItem.Bib_Info.Origin_Info.Date_Issued + "</span>", INDENT));
 				}
 			}
-			else
+			else if ( CurrentItem.Bib_Info.Origin_Info.MARC_DateIssued.Length > 0 )
 			{
 				result.Append(Single_Citation_HTML_Row("Publication Date", "<span itemprop=\"datePublished\">" + CurrentItem.Bib_Info.Origin_Info.MARC_DateIssued + "</span>", INDENT));
 			}

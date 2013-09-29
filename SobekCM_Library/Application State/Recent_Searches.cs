@@ -44,69 +44,11 @@ namespace SobekCM.Library.Application_State
 
 			searches.Add( newSearch );
 
-			// If this exceeds 50 remove the first
-			if ( searches.Count > 50 )
+			// If this exceeds 100 remove the first
+			if ( searches.Count > 100 )
 			{
 				searches.RemoveAt( 0 );
 			}
-		}
-
-		/// <summary> Returns the list of recent searches as a HTML table for display online </summary>
-		/// <param name="language"> Current language of the user's interface </param>
-		/// <returns> HTML for a table of the recent searches ( collection, type, terms, time )</returns>
-		public string ToHTML( Web_Language_Enum language)
-		{
-			if (searches.Count == 0)
-			{
-				return "<br /><br /><br /><b>NO SEARCHES SINCE LAST SYSTEM RESTART</b><br /><br /><br />";
-			}
-
-			// Build this in a string builder
-			StringBuilder builder = new StringBuilder(5000);
-
-			// Add the header information
-			builder.Append("<table width=\"100%\" border=\"0px\" cellspacing=\"0px\" >" + Environment.NewLine );
-			builder.Append("  <tr align=\"left\" bgcolor=\"#0022a7\" >" + Environment.NewLine );
-
-			switch ( language )
-			{
-                case Web_Language_Enum.French:
-					builder.Append("    <th><span style=\"color: White\">COLLECTION</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TYPE</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TERMES</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">HEURE</span></th>" + Environment.NewLine );
-					break;
-
-                case Web_Language_Enum.Spanish:
-					builder.Append("    <th><span style=\"color: White\">COLECCION</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TIPO</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TERMINOS</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">FECHA</span></th>" + Environment.NewLine );
-					break;
-
-				default:
-					builder.Append("    <th><span style=\"color: White\">COLLECTION</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TYPE</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TERMS</span></th>" + Environment.NewLine );
-					builder.Append("    <th><span style=\"color: White\">TIME</span></th>" + Environment.NewLine );
-					break;
-			}
-			builder.Append("  </tr>" + Environment.NewLine );
-
-			// Now, add each row
-			foreach( Search thisSearch in searches )
-			{
-				builder.Append("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>" + Environment.NewLine );
-				builder.Append("  <tr align=\"left\">" + Environment.NewLine );
-				builder.Append("    <td>" + thisSearch.Aggregation + "</td>" + Environment.NewLine );
-				builder.Append("    <td>" + thisSearch.Search_Type + "</td>" + Environment.NewLine );
-				builder.Append("    <td>" + thisSearch.Search_Terms + "</td>" + Environment.NewLine );
-				builder.Append("    <td>" + thisSearch.Time + "</td>" + Environment.NewLine );
-				builder.Append("  </tr>" + Environment.NewLine );
-			}
-			builder.Append("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>" + Environment.NewLine );
-			builder.Append("</table>" + Environment.NewLine );
-			return builder.ToString();
 		}
 
 		#region Nested type: Search

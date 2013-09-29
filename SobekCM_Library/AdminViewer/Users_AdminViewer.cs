@@ -41,6 +41,518 @@ namespace SobekCM.Library.AdminViewer
         private readonly User_Object editUser;
         private readonly Users_Admin_Mode_Enum mode;
 
+		#region Constructor and code to handle any post backs
+
+		/// <summary> Constructor for a new instance of the Users_AdminViewer class </summary>
+		/// <param name="User"> Authenticated user information </param>
+		/// <param name="currentMode"> Mode / navigation information for the current request</param>
+		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
+		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <remarks> Postback from a user edit or from reseting a user's password is handled here in the constructor </remarks>
+		public Users_AdminViewer(User_Object User, SobekCM_Navigation_Object currentMode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer)
+			: base(User)
+		{
+			Tracer.Add_Trace("Users_AdminViewer.Constructor", String.Empty);
+
+			this.currentMode = currentMode;
+
+			// Ensure the user is the system admin
+			if ((User == null) || (!User.Is_System_Admin))
+			{
+				currentMode.Mode = Display_Mode_Enum.My_Sobek;
+				currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+				currentMode.Redirect();
+				return;
+			}
+
+			// Set the action message to clear initially
+			actionMessage = String.Empty;
+			codeManager = Code_Manager;
+
+			// Get the user to edit, if there was a user id in the submode
+			editUser = null;
+			if (currentMode.My_Sobek_SubMode.Length > 0)
+			{
+				try
+				{
+					int edit_userid = Convert.ToInt32(currentMode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("v", ""));
+
+					// Check this admin's session for this user object
+					Object sessionEditUser = HttpContext.Current.Session["Edit_User_" + edit_userid];
+					if (sessionEditUser != null)
+						editUser = (User_Object)sessionEditUser;
+					else
+					{
+						editUser = SobekCM_Database.Get_User(edit_userid, Tracer);
+						editUser.Should_Be_Able_To_Edit_All_Items = false;
+						if (editUser.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"))
+						{
+							editUser.Should_Be_Able_To_Edit_All_Items = true;
+						}
+					}
+				}
+				catch (Exception)
+				{
+					actionMessage = "Error while handing your request";
+				}
+			}
+
+			// Determine the mode
+			mode = Users_Admin_Mode_Enum.List_Users_And_Groups;
+			if (editUser != null)
+			{
+				mode = currentMode.My_Sobek_SubMode.IndexOf("v") > 0 ? Users_Admin_Mode_Enum.View_User : Users_Admin_Mode_Enum.Edit_User;
+			}
+			else
+			{
+				currentMode.My_Sobek_SubMode = String.Empty;
+			}
+
+			// Perform post back work
+			if (currentMode.isPostBack)
+			{
+				if (mode == Users_Admin_Mode_Enum.List_Users_And_Groups)
+				{
+					try
+					{
+						string reset_value = HttpContext.Current.Request.Form["admin_user_reset"];
+						if (reset_value.Length > 0)
+						{
+							int userid = Convert.ToInt32(reset_value);
+							User_Object reset_user = SobekCM_Database.Get_User(userid, Tracer);
+
+							// Create the random password
+							StringBuilder passwordBuilder = new StringBuilder();
+							Random randomGenerator = new Random(DateTime.Now.Millisecond);
+							while (passwordBuilder.Length < 12)
+							{
+								switch (randomGenerator.Next(0, 3))
+								{
+									case 0:
+										int randomNumber = randomGenerator.Next(65, 91);
+										if ((randomNumber != 79) && (randomNumber != 75)) // Omit the 'O' and the 'K', confusing
+											passwordBuilder.Append((char)randomNumber);
+										break;
+
+									case 1:
+										int randomNumber2 = randomGenerator.Next(97, 123);
+										if ((randomNumber2 != 111) && (randomNumber2 != 108) && (randomNumber2 != 107))  // Omit the 'o' and the 'l' and the 'k', confusing
+											passwordBuilder.Append((char)randomNumber2);
+										break;
+
+									case 2:
+										// Zero and one is omitted in this range, confusing
+										int randomNumber3 = randomGenerator.Next(50, 58);
+										passwordBuilder.Append((char)randomNumber3);
+										break;
+								}
+							}
+							string password = passwordBuilder.ToString();
+
+							// Reset this password
+							if (!SobekCM_Database.Reset_User_Password(userid, password, true, Tracer))
+							{
+								actionMessage = "ERROR reseting password";
+							}
+							else
+							{
+
+								if (SobekCM_Database.Send_Database_Email(reset_user.Email, "my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + SobekCM_Library_Settings.System_Email + ", or reply to this email.\n\n" + currentMode.Base_URL + "my/home\n", false, false, -1, -1))
+								{
+									if ((user.UserID == 1) || (user.UserID == 2))
+										actionMessage = "Reset of password (" + password + ") for '" + reset_user.Full_Name + "' complete";
+									else
+										actionMessage = "Reset of password for '" + reset_user.Full_Name + "' complete";
+								}
+								else
+								{
+									if ((user.UserID == 1) || (user.UserID == 2))
+										actionMessage = "ERROR while sending new password (" + password + ") to '" + reset_user.Full_Name + "'!";
+									else
+										actionMessage = "ERROR while sending new password to '" + reset_user.Full_Name + "'!";
+								}
+							}
+						}
+					}
+					catch
+					{
+						actionMessage = "ERROR while checking postback";
+					}
+				}
+
+				if ((mode == Users_Admin_Mode_Enum.Edit_User) && (editUser != null))
+				{
+					// Determine which page you are on
+					int page = 1;
+					if (currentMode.My_Sobek_SubMode.IndexOf("b") > 0)
+						page = 2;
+					else if (currentMode.My_Sobek_SubMode.IndexOf("c") > 0)
+						page = 3;
+
+					// Get a reference to this form
+					NameValueCollection form = HttpContext.Current.Request.Form;
+					string[] getKeys = form.AllKeys;
+
+					// Get the curret action
+					string action = form["admin_user_save"];
+
+					bool successful_save = true;
+					switch (page)
+					{
+						case 1:
+							string editTemplate = "Standard";
+							List<string> projects = new List<string>();
+							List<string> templates = new List<string>();
+
+							// First, set some flags to FALSE
+							editUser.Can_Submit = false;
+							editUser.Is_Internal_User = false;
+							editUser.Should_Be_Able_To_Edit_All_Items = false;
+							editUser.Is_System_Admin = false;
+							editUser.Is_Portal_Admin = false;
+							editUser.Include_Tracking_In_Standard_Forms = false;
+
+							// Step through each key
+							foreach (string thisKey in getKeys)
+							{
+								switch (thisKey)
+								{
+									case "admin_user_submit":
+										editUser.Can_Submit = true;
+										break;
+
+									case "admin_user_internal":
+										editUser.Is_Internal_User = true;
+										break;
+
+									case "admin_user_editall":
+										editUser.Should_Be_Able_To_Edit_All_Items = true;
+										break;
+
+									case "admin_user_deleteall":
+										editUser.Can_Delete_All = true;
+										break;
+
+									case "admin_user_sysadmin":
+										editUser.Is_System_Admin = true;
+										break;
+
+									case "admin_user_portaladmin":
+										editUser.Is_Portal_Admin = true;
+										break;
+
+									case "admin_user_includetracking":
+										editUser.Include_Tracking_In_Standard_Forms = true;
+										break;
+
+									case "admin_user_edittemplate":
+										editTemplate = form["admin_user_edittemplate"];
+										break;
+
+									case "admin_user_organization":
+										editUser.Organization = form["admin_user_organization"];
+										break;
+
+									case "admin_user_college":
+										editUser.College = form["admin_user_college"];
+										break;
+
+									case "admin_user_department":
+										editUser.Department = form["admin_user_department"];
+										break;
+
+									case "admin_user_unit":
+										editUser.Unit = form["admin_user_unit"];
+										break;
+
+									case "admin_user_org_code":
+										editUser.Organization_Code = form["admin_user_org_code"];
+										break;
+
+									default:
+										if (thisKey.IndexOf("admin_user_template_") == 0)
+										{
+											templates.Add(thisKey.Replace("admin_user_template_", ""));
+										}
+										if (thisKey.IndexOf("admin_user_project_") == 0)
+										{
+											projects.Add(thisKey.Replace("admin_user_project_", ""));
+										}
+										break;
+								}
+							}
+
+							// Determine the name for the actual edit templates from the combo box selection
+							editUser.Edit_Template_Code = "edit";
+							editUser.Edit_Template_MARC_Code = "editmarc";
+							if (editTemplate == "internal")
+							{
+								editUser.Edit_Template_Code = "edit_internal";
+								editUser.Edit_Template_MARC_Code = "editmarc_internal";
+							}
+
+							// Determine if the projects and templates need to be updated
+							bool update_templates_projects = false;
+							if ((templates.Count != editUser.Templates.Count) || (projects.Count != editUser.Projects.Count))
+							{
+								update_templates_projects = true;
+							}
+							else
+							{
+								// Check all of the templates
+								if (templates.Any(template => !editUser.Templates.Contains(template)))
+								{
+									update_templates_projects = true;
+								}
+
+								// Check all the projects
+								if (!update_templates_projects)
+								{
+									if (projects.Any(project => !editUser.Projects.Contains(project)))
+									{
+										update_templates_projects = true;
+									}
+								}
+							}
+
+							// Update the templates and projects, if requested
+							if (update_templates_projects)
+							{
+								// Get the last defaults
+								string default_project = String.Empty;
+								string default_template = String.Empty;
+								if (editUser.Projects.Count > 0)
+									default_project = editUser.Projects[0];
+								if (editUser.Templates.Count > 0)
+									default_template = editUser.Templates[0];
+
+								// Now, set the user's template and projects
+								editUser.Clear_Projects();
+								editUser.Clear_Templates();
+								foreach (string thisProject in projects)
+								{
+									editUser.Add_Project(thisProject);
+								}
+								foreach (string thisTemplate in templates)
+								{
+									editUser.Add_Template(thisTemplate);
+								}
+
+								// Try to add back the defaults, which won't do anything if 
+								// the old defaults aren't in the new list
+								editUser.Set_Default_Project(default_project);
+								editUser.Set_Default_Template(default_template);
+							}
+							break;
+
+						case 2:
+							// Check the user groups for update
+							bool update_user_groups = false;
+							DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+							List<string> newGroups = new List<string>();
+							foreach (DataRow thisRow in userGroup.Rows)
+							{
+								if (form["group_" + thisRow["UserGroupID"]] != null)
+								{
+									newGroups.Add(thisRow["GroupName"].ToString());
+								}
+							}
+
+							// Should we add the new user groups?  Did it change?
+							if (newGroups.Count != editUser.User_Groups.Count)
+							{
+								update_user_groups = true;
+							}
+							if (update_user_groups)
+							{
+								editUser.Clear_UserGroup_Membership();
+								foreach (string thisUserGroup in newGroups)
+									editUser.Add_User_Group(thisUserGroup);
+							}
+							break;
+
+						case 3:
+							Dictionary<string, User_Editable_Aggregation> aggregations = new Dictionary<string, User_Editable_Aggregation>();
+
+							// Step through each key
+							foreach (string thisKey in getKeys)
+							{
+								if (thisKey.IndexOf("admin_project_onhome_") == 0)
+								{
+									string select_project = thisKey.Replace("admin_project_onhome_", "");
+									if (aggregations.ContainsKey(select_project))
+									{
+										aggregations[select_project].OnHomePage = true;
+									}
+									else
+									{
+										aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true, false));
+									}
+								}
+								if (thisKey.IndexOf("admin_project_select_") == 0)
+								{
+									string select_project = thisKey.Replace("admin_project_select_", "");
+									if (aggregations.ContainsKey(select_project))
+									{
+										aggregations[select_project].CanSelect = true;
+									}
+									else
+									{
+										aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false));
+									}
+								}
+								if (thisKey.IndexOf("admin_project_edit_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_edit_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanEditItems = true;
+									}
+									else
+									{
+										aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false));
+									}
+								}
+								if (thisKey.IndexOf("admin_project_curator_") == 0)
+								{
+									string admin_project = thisKey.Replace("admin_project_curator_", "");
+									if (aggregations.ContainsKey(admin_project))
+									{
+										aggregations[admin_project].IsCurator = true;
+									}
+									else
+									{
+										aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false, false));
+									}
+								}
+								if (thisKey.IndexOf("admin_project_admin_") == 0)
+								{
+									string admin_project = thisKey.Replace("admin_project_admin_", "");
+									if (aggregations.ContainsKey(admin_project))
+									{
+										aggregations[admin_project].IsAdmin = true;
+									}
+									else
+									{
+										aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, false, false, true));
+									}
+								}
+							}
+
+							// Determine if the aggregations need to be edited
+							bool update_aggregations = false;
+							if (aggregations.Count != editUser.Aggregations.Count)
+							{
+								update_aggregations = true;
+							}
+							else
+							{
+								// Build a dictionary of the user aggregations as well
+								Dictionary<string, User_Editable_Aggregation> existingAggr = editUser.Aggregations.ToDictionary(thisAggr => thisAggr.Code);
+
+								// Check all the aggregations
+								foreach (User_Editable_Aggregation adminAggr in aggregations.Values)
+								{
+									if (existingAggr.ContainsKey(adminAggr.Code))
+									{
+										if ((adminAggr.CanSelect != existingAggr[adminAggr.Code].CanSelect) || (adminAggr.CanEditItems != existingAggr[adminAggr.Code].CanEditItems) || (adminAggr.IsCurator != existingAggr[adminAggr.Code].IsCurator) || (adminAggr.OnHomePage != existingAggr[adminAggr.Code].OnHomePage))
+										{
+											update_aggregations = true;
+											break;
+										}
+									}
+									else
+									{
+										update_aggregations = true;
+										break;
+									}
+								}
+							}
+
+							// Update the aggregations, if requested
+							if (update_aggregations)
+							{
+								editUser.Clear_Aggregations();
+								if (aggregations.Count > 0)
+								{
+									foreach (User_Editable_Aggregation dictionaryAggregation in aggregations.Values)
+									{
+										editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditItems, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage, dictionaryAggregation.IsAdmin);
+									}
+								}
+							}
+							break;
+					}
+
+					// Should this be saved to the database?
+					if (action == "save")
+					{
+						// Save this user
+						SobekCM_Database.Save_User(editUser, String.Empty, Tracer);
+
+						// Update the basic user information
+						SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);
+
+						// Update projects, if necessary
+						if (editUser.Projects.Count > 0)
+						{
+							if (!SobekCM_Database.Update_SobekCM_User_Projects(editUser.UserID, editUser.Projects, Tracer))
+							{
+								successful_save = false;
+							}
+						}
+
+						// Update templates, if necessary
+						if (editUser.Templates.Count > 0)
+						{
+							if (!SobekCM_Database.Update_SobekCM_User_Templates(editUser.UserID, editUser.Templates, Tracer))
+							{
+								successful_save = false;
+							}
+						}
+
+						// Save the aggregations linked to this user
+						if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.Aggregations, Tracer))
+						{
+							successful_save = false;
+						}
+
+						// Save the user group links
+						DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+						Dictionary<string, int> groupnames_to_id = new Dictionary<string, int>();
+						foreach (DataRow thisRow in userGroup.Rows)
+						{
+							groupnames_to_id[thisRow["GroupName"].ToString()] = Convert.ToInt32(thisRow["UserGroupID"]);
+						}
+						foreach (string userGroupName in editUser.User_Groups)
+						{
+							SobekCM_Database.Link_User_To_User_Group(editUser.UserID, groupnames_to_id[userGroupName]);
+						}
+
+						// Forward back to the list of users, if this was successful
+						if (successful_save)
+						{
+							// Clear the user from the sessions
+							HttpContext.Current.Session["Edit_User_" + editUser.UserID] = null;
+
+							// Redirect the user
+							currentMode.My_Sobek_SubMode = String.Empty;
+							currentMode.Redirect();
+						}
+					}
+					else
+					{
+						// Save to the admins session
+						HttpContext.Current.Session["Edit_User_" + editUser.UserID] = editUser;
+						currentMode.My_Sobek_SubMode = action;
+						currentMode.Redirect();
+					}
+				}
+			}
+		}
+
+		#endregion
+
         ///// <summary> Property indicates the standard navigation to be included at the top of the page by the
         ///// main MySobek html subwriter. </summary>
         ///// <value> This returns either NONE or ADMIN, depending on whether an individual user is being edited
@@ -812,516 +1324,5 @@ namespace SobekCM.Library.AdminViewer
 
         #endregion
 
-        #region Constructor and code to handle any post backs
-
-        /// <summary> Constructor for a new instance of the Users_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="currentMode"> Mode / navigation information for the current request</param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> Postback from a user edit or from reseting a user's password is handled here in the constructor </remarks>
-        public Users_AdminViewer(User_Object User, SobekCM_Navigation_Object currentMode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer)
-            : base(User)
-        {
-            Tracer.Add_Trace("Users_AdminViewer.Constructor", String.Empty);
-
-            this.currentMode = currentMode;
-
-            // Ensure the user is the system admin
-            if ((User == null) || (!User.Is_System_Admin))
-            {
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
-                return;
-            }
-
-            // Set the action message to clear initially
-            actionMessage = String.Empty;
-            codeManager = Code_Manager;
-
-            // Get the user to edit, if there was a user id in the submode
-            editUser = null;
-            if (currentMode.My_Sobek_SubMode.Length > 0)
-            {
-                try
-                {
-                    int edit_userid = Convert.ToInt32(currentMode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("v", ""));
-
-                    // Check this admin's session for this user object
-                    Object sessionEditUser = HttpContext.Current.Session["Edit_User_" + edit_userid];
-                    if (sessionEditUser != null)
-                        editUser = (User_Object)sessionEditUser;
-                    else
-                    {
-                        editUser = SobekCM_Database.Get_User(edit_userid, Tracer);
-                        editUser.Should_Be_Able_To_Edit_All_Items = false;
-                        if (editUser.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"))
-                        {
-                            editUser.Should_Be_Able_To_Edit_All_Items = true;
-                        }
-                    }
-                }
-                catch ( Exception)
-                {
-                    actionMessage = "Error while handing your request";
-                }
-            }
-
-            // Determine the mode
-            mode = Users_Admin_Mode_Enum.List_Users_And_Groups;
-            if (editUser != null)
-            {
-                mode = currentMode.My_Sobek_SubMode.IndexOf("v") > 0 ? Users_Admin_Mode_Enum.View_User : Users_Admin_Mode_Enum.Edit_User;
-            }
-            else
-            {
-                currentMode.My_Sobek_SubMode = String.Empty;
-            }
-
-            // Perform post back work
-            if (currentMode.isPostBack)
-            {
-                if ( mode == Users_Admin_Mode_Enum.List_Users_And_Groups )
-                {
-                    try
-                    {
-                        string reset_value = HttpContext.Current.Request.Form["admin_user_reset"];
-                        if (reset_value.Length > 0)
-                        {
-                            int userid = Convert.ToInt32(reset_value);
-                            User_Object reset_user = SobekCM_Database.Get_User(userid, Tracer);
-
-                            // Create the random password
-                            StringBuilder passwordBuilder = new StringBuilder();
-                            Random randomGenerator = new Random(DateTime.Now.Millisecond);
-                            while (passwordBuilder.Length < 12)
-                            {
-                                switch (randomGenerator.Next(0, 3))
-                                {
-                                    case 0:
-                                        int randomNumber = randomGenerator.Next(65, 91);
-                                        if ((randomNumber != 79) && (randomNumber != 75)) // Omit the 'O' and the 'K', confusing
-                                            passwordBuilder.Append((char)randomNumber);
-                                        break;
-
-                                    case 1:
-                                        int randomNumber2 = randomGenerator.Next(97, 123);
-                                        if ((randomNumber2 != 111) && (randomNumber2 != 108) && (randomNumber2 != 107))  // Omit the 'o' and the 'l' and the 'k', confusing
-                                            passwordBuilder.Append((char)randomNumber2);
-                                        break;
-
-                                    case 2:
-                                        // Zero and one is omitted in this range, confusing
-                                        int randomNumber3 = randomGenerator.Next(50, 58);
-                                        passwordBuilder.Append((char)randomNumber3);
-                                        break;
-                                }
-                            }
-                            string password = passwordBuilder.ToString();
-
-                            // Reset this password
-                            if (!SobekCM_Database.Reset_User_Password(userid, password, true, Tracer))
-                            {
-                                actionMessage = "ERROR reseting password";
-                            }
-                            else
-                            {
-
-                                if (SobekCM_Database.Send_Database_Email(reset_user.Email, "my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + SobekCM_Library_Settings.System_Email + ", or reply to this email.\n\n" + currentMode.Base_URL + "my/home\n", false, false, -1, -1))
-                                {
-                                    if ((user.UserID == 1) || (user.UserID == 2))
-                                        actionMessage = "Reset of password (" + password + ") for '" + reset_user.Full_Name + "' complete";
-                                    else
-                                        actionMessage = "Reset of password for '" + reset_user.Full_Name + "' complete";
-                                }
-                                else
-                                {
-                                    if ((user.UserID == 1) || (user.UserID == 2))
-                                        actionMessage = "ERROR while sending new password (" + password + ") to '" + reset_user.Full_Name + "'!";
-                                    else
-                                        actionMessage = "ERROR while sending new password to '" + reset_user.Full_Name + "'!";
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        actionMessage = "ERROR while checking postback";
-                    }
-                }
-
-                if (( mode == Users_Admin_Mode_Enum.Edit_User ) && ( editUser != null ))
-                {
-                    // Determine which page you are on
-                    int page = 1;
-                    if (currentMode.My_Sobek_SubMode.IndexOf("b") > 0)
-                        page = 2;
-                    else if (currentMode.My_Sobek_SubMode.IndexOf("c") > 0)
-                        page = 3;
-
-                    // Get a reference to this form
-                    NameValueCollection form = HttpContext.Current.Request.Form;
-                    string[] getKeys = form.AllKeys;
-
-                    // Get the curret action
-                    string action = form["admin_user_save"];
-
-                    bool successful_save = true;
-                    switch (page)
-                    {
-                        case 1:
-                            string editTemplate = "Standard";
-                            List<string> projects = new List<string>();
-                            List<string> templates = new List<string>();
-
-                            // First, set some flags to FALSE
-                            editUser.Can_Submit = false;
-                            editUser.Is_Internal_User = false;
-                            editUser.Should_Be_Able_To_Edit_All_Items = false;
-                            editUser.Is_System_Admin = false;
-                            editUser.Is_Portal_Admin = false;
-                            editUser.Include_Tracking_In_Standard_Forms = false;
-
-                            // Step through each key
-                            foreach (string thisKey in getKeys)
-                            {
-                                switch (thisKey)
-                                {
-                                    case "admin_user_submit":
-                                        editUser.Can_Submit = true;
-                                        break;
-
-                                    case "admin_user_internal":
-                                        editUser.Is_Internal_User = true;
-                                        break;
-
-                                    case "admin_user_editall":
-                                        editUser.Should_Be_Able_To_Edit_All_Items = true;
-                                        break;
-
-                                    case "admin_user_deleteall":
-                                        editUser.Can_Delete_All = true;
-                                        break;
-
-                                    case "admin_user_sysadmin":
-                                        editUser.Is_System_Admin = true;
-                                        break;
-
-                                    case "admin_user_portaladmin":
-                                        editUser.Is_Portal_Admin = true;
-                                        break;
-
-                                    case "admin_user_includetracking":
-                                        editUser.Include_Tracking_In_Standard_Forms = true;
-                                        break;
-
-                                    case "admin_user_edittemplate":
-                                        editTemplate = form["admin_user_edittemplate"];
-                                        break;
-
-                                    case "admin_user_organization":
-                                        editUser.Organization = form["admin_user_organization"];
-                                        break;
-
-                                    case "admin_user_college":
-                                        editUser.College = form["admin_user_college"];
-                                        break;
-
-                                    case "admin_user_department":
-                                        editUser.Department = form["admin_user_department"];
-                                        break;
-
-                                    case "admin_user_unit":
-                                        editUser.Unit = form["admin_user_unit"];
-                                        break;
-
-                                    case "admin_user_org_code":
-                                        editUser.Organization_Code = form["admin_user_org_code"];
-                                        break;
-
-                                    default:
-                                        if (thisKey.IndexOf("admin_user_template_") == 0)
-                                        {
-                                            templates.Add(thisKey.Replace("admin_user_template_", ""));
-                                        }
-                                        if (thisKey.IndexOf("admin_user_project_") == 0)
-                                        {
-                                            projects.Add(thisKey.Replace("admin_user_project_", ""));
-                                        }
-                                        break;
-                                }
-                            }
-
-                            // Determine the name for the actual edit templates from the combo box selection
-                            editUser.Edit_Template_Code = "edit";
-                            editUser.Edit_Template_MARC_Code = "editmarc";
-                            if (editTemplate == "internal")
-                            {
-                                editUser.Edit_Template_Code = "edit_internal";
-                                editUser.Edit_Template_MARC_Code = "editmarc_internal";
-                            }
-
-                            // Determine if the projects and templates need to be updated
-                            bool update_templates_projects = false;
-                            if ((templates.Count != editUser.Templates.Count) || (projects.Count != editUser.Projects.Count))
-                            {
-                                update_templates_projects = true;
-                            }
-                            else
-                            {
-                                // Check all of the templates
-                                if (templates.Any(template => !editUser.Templates.Contains(template)))
-                                {
-                                    update_templates_projects = true;
-                                }
-
-                                // Check all the projects
-                                if (!update_templates_projects)
-                                {
-                                    if (projects.Any(project => !editUser.Projects.Contains(project)))
-                                    {
-                                        update_templates_projects = true;
-                                    }
-                                }
-                            }
-
-                            // Update the templates and projects, if requested
-                            if (update_templates_projects)
-                            {
-                                // Get the last defaults
-                                string default_project = String.Empty;
-                                string default_template = String.Empty;
-                                if (editUser.Projects.Count > 0)
-                                    default_project = editUser.Projects[0];
-                                if (editUser.Templates.Count > 0)
-                                    default_template = editUser.Templates[0];
-
-                                // Now, set the user's template and projects
-                                editUser.Clear_Projects();
-                                editUser.Clear_Templates();
-                                foreach (string thisProject in projects)
-                                {
-                                    editUser.Add_Project(thisProject);
-                                }
-                                foreach (string thisTemplate in templates)
-                                {
-                                    editUser.Add_Template(thisTemplate);
-                                }
-
-                                // Try to add back the defaults, which won't do anything if 
-                                // the old defaults aren't in the new list
-                                editUser.Set_Default_Project(default_project);
-                                editUser.Set_Default_Template(default_template);
-                            }
-                            break;
-
-                        case 2:
-                            // Check the user groups for update
-                            bool update_user_groups = false;
-                            DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
-                            List<string> newGroups = new List<string>();
-                            foreach (DataRow thisRow in userGroup.Rows)
-                            {
-                                if ( form["group_" + thisRow["UserGroupID"]] != null )
-                                {
-                                    newGroups.Add( thisRow["GroupName"].ToString());
-                                }
-                            }
-
-                            // Should we add the new user groups?  Did it change?
-                            if ( newGroups.Count != editUser.User_Groups.Count )
-                            {
-                                update_user_groups = true;
-                            }
-                            if (update_user_groups)
-                            {
-                                editUser.Clear_UserGroup_Membership();
-                                foreach( string thisUserGroup in newGroups )
-                                    editUser.Add_User_Group( thisUserGroup );
-                            }
-                            break;
-
-                        case 3:
-                            Dictionary<string, User_Editable_Aggregation> aggregations = new Dictionary<string, User_Editable_Aggregation>();
-
-                            // Step through each key
-                            foreach (string thisKey in getKeys)
-                            {
-                                if (thisKey.IndexOf("admin_project_onhome_") == 0)
-                                {
-                                    string select_project = thisKey.Replace("admin_project_onhome_", "");
-                                    if (aggregations.ContainsKey(select_project))
-                                    {
-                                        aggregations[select_project].OnHomePage = true;
-                                    }
-                                    else
-                                    {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true, false));
-                                    }
-                                }
-                                if (thisKey.IndexOf("admin_project_select_") == 0)
-                                {
-                                    string select_project = thisKey.Replace("admin_project_select_", "");
-                                    if (aggregations.ContainsKey(select_project))
-                                    {
-                                        aggregations[select_project].CanSelect = true;
-                                    }
-                                    else
-                                    {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false ));
-                                    }
-                                }
-                                if (thisKey.IndexOf("admin_project_edit_") == 0)
-                                {
-                                    string edit_project = thisKey.Replace("admin_project_edit_", "");
-                                    if (aggregations.ContainsKey(edit_project))
-                                    {
-                                        aggregations[edit_project].CanEditItems = true;
-                                    }
-                                    else
-                                    {
-                                        aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false ));
-                                    }
-                                }
-                                if (thisKey.IndexOf("admin_project_curator_") == 0)
-                                {
-                                    string admin_project = thisKey.Replace("admin_project_curator_", "");
-                                    if (aggregations.ContainsKey(admin_project))
-                                    {
-                                        aggregations[admin_project].IsCurator = true;
-                                    }
-                                    else
-                                    {
-                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false, false ));
-                                    }
-                                }
-                                if (thisKey.IndexOf("admin_project_admin_") == 0)
-                                {
-                                    string admin_project = thisKey.Replace("admin_project_admin_", "");
-                                    if (aggregations.ContainsKey(admin_project))
-                                    {
-                                        aggregations[admin_project].IsAdmin = true;
-                                    }
-                                    else
-                                    {
-                                        aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, false, false, true));
-                                    }
-                                }
-                            }
-
-                            // Determine if the aggregations need to be edited
-                            bool update_aggregations = false;
-                            if (aggregations.Count != editUser.Aggregations.Count)
-                            {
-                                update_aggregations = true;
-                            }
-                            else
-                            {
-                                // Build a dictionary of the user aggregations as well
-                                Dictionary<string, User_Editable_Aggregation> existingAggr = editUser.Aggregations.ToDictionary(thisAggr => thisAggr.Code);
-
-                                // Check all the aggregations
-                                foreach (User_Editable_Aggregation adminAggr in aggregations.Values)
-                                {
-                                    if (existingAggr.ContainsKey(adminAggr.Code))
-                                    {
-                                        if ((adminAggr.CanSelect != existingAggr[adminAggr.Code].CanSelect) || (adminAggr.CanEditItems != existingAggr[adminAggr.Code].CanEditItems) || (adminAggr.IsCurator != existingAggr[adminAggr.Code].IsCurator) || (adminAggr.OnHomePage != existingAggr[adminAggr.Code].OnHomePage))
-                                        {
-                                            update_aggregations = true;
-                                            break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        update_aggregations = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            // Update the aggregations, if requested
-                            if (update_aggregations)
-                            {
-                                editUser.Clear_Aggregations();
-                                if (aggregations.Count > 0)
-                                {
-                                    foreach (User_Editable_Aggregation dictionaryAggregation in aggregations.Values)
-                                    {
-                                        editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditItems, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage, dictionaryAggregation.IsAdmin);
-                                    }
-                                }
-                            }
-                            break;
-                    }
-
-                    // Should this be saved to the database?
-                    if (action == "save")
-                    {
-                        // Save this user
-                        SobekCM_Database.Save_User(editUser, String.Empty, Tracer);
-
-                        // Update the basic user information
-                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);
-
-                        // Update projects, if necessary
-                        if (editUser.Projects.Count > 0)
-                        {
-                            if (!SobekCM_Database.Update_SobekCM_User_Projects(editUser.UserID, editUser.Projects, Tracer))
-                            {
-                                successful_save = false;
-                            }
-                        }
-
-                        // Update templates, if necessary
-                        if (editUser.Templates.Count > 0)
-                        {
-                            if (!SobekCM_Database.Update_SobekCM_User_Templates(editUser.UserID, editUser.Templates, Tracer))
-                            {
-                                successful_save = false;
-                            }
-                        }
-
-                        // Save the aggregations linked to this user
-                        if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.Aggregations, Tracer))
-                        {
-                            successful_save = false;
-                        }
-
-                        // Save the user group links
-                        DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
-                        Dictionary<string, int> groupnames_to_id = new Dictionary<string,int>();
-                        foreach (DataRow thisRow in userGroup.Rows)
-                        {
-                            groupnames_to_id[ thisRow["GroupName"].ToString()] = Convert.ToInt32( thisRow["UserGroupID"]);
-                         }
-                        foreach( string userGroupName in editUser.User_Groups )
-                        {
-                            SobekCM_Database.Link_User_To_User_Group( editUser.UserID, groupnames_to_id[userGroupName]);
-                        }
-
-                        // Forward back to the list of users, if this was successful
-                        if (successful_save)
-                        {                       
-                            // Clear the user from the sessions
-                            HttpContext.Current.Session["Edit_User_" + editUser.UserID] = null;
-
-                            // Redirect the user
-                            currentMode.My_Sobek_SubMode = String.Empty;
-                            currentMode.Redirect();
-        }
-                    }
-                    else
-                    {
-                        // Save to the admins session
-                        HttpContext.Current.Session["Edit_User_" + editUser.UserID] = editUser;
-                        currentMode.My_Sobek_SubMode = action;
-                        currentMode.Redirect();
-                    }
-                }
-            }
-        }
-
-        #endregion
     }
 }

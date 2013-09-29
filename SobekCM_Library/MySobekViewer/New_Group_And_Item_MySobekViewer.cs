@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -255,11 +257,49 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Item found in session cache");
                 item = (SobekCM_Item)HttpContext.Current.Session["Item"];
-            }
+			}
 
-            #region Handle any other post back requests
+			#region Special code to handle any uploaded files
 
-            // If this is post-back, handle it
+			// Any post-processing to do?
+	        if ((currentProcessStep == 8) && (Directory.Exists(userInProcessDirectory)))
+	        {
+		        string[] processFiles = Directory.GetFiles(userInProcessDirectory);
+		        foreach (string thisFile in processFiles)
+		        {
+			        FileInfo thisFileInfo = new FileInfo(thisFile);
+			        if ((thisFileInfo.Extension.ToUpper() == ".TIF") || (thisFileInfo.Extension.ToUpper() == ".TIFF"))
+			        {
+				        // Is there a JPEG and/or thumbnail?
+				        string jpeg = userInProcessDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + ".jpg";
+				        string jpeg_thumbnail = userInProcessDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + "thm.jpg";
+
+				        // Is one missing?
+				        if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
+				        {
+					        try
+					        {
+						        var tiffImg = System.Drawing.Image.FromFile(thisFile);
+						        var mainImg = ScaleImage(tiffImg, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height);
+						        mainImg.Save(jpeg, ImageFormat.Jpeg);
+						        var thumbnailImg = ScaleImage(tiffImg, 150, 400);
+						        thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+
+					        }
+					        catch (Exception)
+					        {
+						        bool error = true;
+					        }
+				        }
+			        }
+		        }
+	        }
+
+	        #endregion
+
+			#region Handle any other post back requests
+
+			// If this is post-back, handle it
             if (currentMode.isPostBack)
             {
                 // If this is a request from stage 8, save the new labels and url first
@@ -556,9 +596,33 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        #region Method commpletes the item submission on the way to the congratulations screen
+		#region Code to re-scale an image
 
-        private bool complete_item_submission(SobekCM_Item Item_To_Complete,  Custom_Tracer Tracer )
+		/// <summary> Scales an existing SourceImage to a new max width / max height </summary>
+		/// <param name="SourceImage"> Source image </param>
+		/// <param name="MaxWidth"> Maximum width for the new image </param>
+		/// <param name="maxHeight"> Maximum height for the new image </param>
+		/// <returns> Newly scaled image, without changing the original source image </returns>
+		public static System.Drawing.Image ScaleImage(System.Drawing.Image SourceImage, int MaxWidth, int maxHeight)
+		{
+			var ratioX = (double)MaxWidth / SourceImage.Width;
+			var ratioY = (double)maxHeight / SourceImage.Height;
+			var ratio = Math.Min(ratioX, ratioY);
+
+			var newWidth = (int)(SourceImage.Width * ratio);
+			var newHeight = (int)(SourceImage.Height * ratio);
+
+			var newImage = new Bitmap(newWidth, newHeight);
+			Graphics.FromImage(newImage).DrawImage(SourceImage, 0, 0, newWidth, newHeight);
+			return newImage;
+		}
+
+		#endregion
+
+
+		#region Method commpletes the item submission on the way to the congratulations screen
+
+		private bool complete_item_submission(SobekCM_Item Item_To_Complete,  Custom_Tracer Tracer )
         {
             // Set an initial flag 
             criticalErrorEncountered = false;

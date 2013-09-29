@@ -221,19 +221,19 @@ namespace SobekCM.Library.ResultsViewer
  
         /// <summary> Builds the tree view control for all the issues related to a single result title and
         /// adds the tree view to the provided place holder </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the results are being built for display</param>
-        /// <param name="titleRow"> Title row for this title to be displayed, from the dataset of results </param>
-        /// <param name="calculatedTextRedirectStem"> Redirect string specifically for textual items, which includes the search terms to pass to the final item viewer </param>
-        /// <param name="base_url"> Writer-adjusted base_url ( i.e., may include /l at the end if logged in currently ) </param>
-        /// <param name="currentResultRow"> Counter indicates which result number this is within the current page of results </param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the results are being built for display</param>
+        /// <param name="TitleRow"> Title row for this title to be displayed, from the dataset of results </param>
+        /// <param name="CalculatedTextRedirectStem"> Redirect string specifically for textual items, which includes the search terms to pass to the final item viewer </param>
+        /// <param name="BaseURL"> Writer-adjusted base_url ( i.e., may include /l at the end if logged in currently ) </param>
+        /// <param name="CurrentResultRow"> Counter indicates which result number this is within the current page of results </param>
         /// <remarks> This only adds the root node for the tree.  Any further computations and tree-creation are left for the tree node populate event when the user requests any issue information.</remarks>
-        protected void Add_Issue_Tree( PlaceHolder placeHolder, iSearch_Title_Result titleRow, int currentResultRow, string calculatedTextRedirectStem, string base_url )
+        protected void Add_Issue_Tree( PlaceHolder MainPlaceHolder, iSearch_Title_Result TitleRow, int CurrentResultRow, string CalculatedTextRedirectStem, string BaseURL )
         {
             // Determine term to use
             string single_item_term = "item";
             string multi_item_term = "items";
 
-            string multiple_type_upper = titleRow.MaterialType.ToUpper();
+            string multiple_type_upper = TitleRow.MaterialType.ToUpper();
             switch (multiple_type_upper)
             {
                 case "NEWSPAPER":
@@ -276,15 +276,15 @@ namespace SobekCM.Library.ResultsViewer
 
             // Set the actual term
             string multi_term = multi_item_term;
-            if (titleRow.Item_Count <= 1)
+            if (TitleRow.Item_Count <= 1)
                 multi_term = single_item_term;
 
             // Create the root node first
             TreeNode rootNode = new TreeNode
                                     {
                                         SelectAction = TreeNodeSelectAction.Expand,
-                                        Value = currentResultRow + "_" + titleRow.BibID,
-                                        Text = (titleRow.GroupTitle.Length < 70) ? titleRow.GroupTitle + " ( " + titleRow.Item_Count + " " + multi_term + " )" : titleRow.GroupTitle.Substring(0, 65) + "... ( " + titleRow.Item_Count + " " + multi_term + " )"
+                                        Value = CurrentResultRow + "_" + TitleRow.BibID,
+                                        Text = (TitleRow.GroupTitle.Length < 70) ? TitleRow.GroupTitle + " ( " + TitleRow.Item_Count + " " + multi_term + " )" : TitleRow.GroupTitle.Substring(0, 65) + "... ( " + TitleRow.Item_Count + " " + multi_term + " )"
                                     };
 
             // Build the tree view object and tree view nodes now
@@ -296,21 +296,21 @@ namespace SobekCM.Library.ResultsViewer
             treeView1.Nodes.Add(rootNode);
 
             // Add this tree view to the place holder
-            placeHolder.Controls.Add(treeView1);
+            MainPlaceHolder.Controls.Add(treeView1);
         }
 
         /// <summary> Event handler loads the nodes on request to the serial hierarchy trees when the user requests them
         /// by expanding a node </summary>
-        /// <param name="sender"> TreeView object that fired this event </param>
-        /// <param name="e"> Event arguments includes the tree node which was expanded </param>
-        void treeView1_TreeNodePopulate(object sender, TreeNodeEventArgs e)
+        /// <param name="Sender"> TreeView object that fired this event </param>
+        /// <param name="E"> Event arguments includes the tree node which was expanded </param>
+        void treeView1_TreeNodePopulate(object Sender, TreeNodeEventArgs E)
         {
             // Determine the index of this result within the entire page of results
-            string resultsIndex = e.Node.Value;
-            string node_value = e.Node.Value;
-            if (e.Node.Value.IndexOf("_") > 0)
+            string resultsIndex = E.Node.Value;
+            string node_value = E.Node.Value;
+            if (E.Node.Value.IndexOf("_") > 0)
             {
-                resultsIndex = e.Node.Value.Substring(0, e.Node.Value.IndexOf("_"));
+                resultsIndex = E.Node.Value.Substring(0, E.Node.Value.IndexOf("_"));
                 node_value = node_value.Substring(resultsIndex.Length + 1);
             }
 
@@ -360,7 +360,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     childViewNode.PopulateOnDemand = true;
                 }
-                e.Node.ChildNodes.Add(childViewNode);
+                E.Node.ChildNodes.Add(childViewNode);
             }
         }
     }

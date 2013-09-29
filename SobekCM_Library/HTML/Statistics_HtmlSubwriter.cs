@@ -58,32 +58,6 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            string title = currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " HOME";
-            string item_count = "ITEM COUNT";
-            const string usage = "USAGE STATISTICS";
-            string item_count_title = "Resource Count in " + currentMode.SobekCM_Instance_Abbreviation;
-            string recent_searches = "RECENT SEARCHES";
-            string recent_searches_title = "Recent Searches in " + currentMode.SobekCM_Instance_Abbreviation;
-            string usage_title = "Usage Statistics for " + currentMode.SobekCM_Instance_Abbreviation;
-
-            if (currentMode.Language == Web_Language_Enum.Spanish)
-            {
-                title = "INICIO";
-                item_count = "NUMERO DE OBJETOS";
-                item_count_title = "Numero de Recursos en " + currentMode.SobekCM_Instance_Abbreviation;
-                recent_searches = "BÚSQUEDAS RECIENTES";
-                recent_searches_title = "Búsquedas Recientes en " + currentMode.SobekCM_Instance_Abbreviation;
-            }
-
-            if (currentMode.Language == Web_Language_Enum.French)
-            {
-                title = "PAGE D'ACCUEIL";
-                item_count = "NOMBRE DE DOCUMENTS";
-                item_count_title = "Nombre de Ressources en " + currentMode.SobekCM_Instance_Abbreviation;
-                recent_searches = "RECHERCHES RÉCENTES";
-                recent_searches_title = "Recherches Récentes en " + currentMode.SobekCM_Instance_Abbreviation;
-            }
-
             // Add the banner
             Add_Banner(Output, "sbkShs_BannerDiv", currentMode, htmlSkin, Hierarchy_Object);
 
@@ -105,8 +79,25 @@ namespace SobekCM.Library.HTML
             const string items_date_text = "Item Views by Date";
             const string collection_history_text = "Collection History";
             const string top_titles_text = "Top Titles";
+			const string top_items_text = "Top Items";
             const string definitions_text = "Definitions";
             const string recent_searches_text = "Recent Searches";
+
+			string item_count_title = "Resource Count in " + currentMode.SobekCM_Instance_Abbreviation;
+			string recent_searches_title = "Recent Searches in " + currentMode.SobekCM_Instance_Abbreviation;
+			string usage_title = "Usage Statistics for " + currentMode.SobekCM_Instance_Abbreviation;
+
+			if (currentMode.Language == Web_Language_Enum.Spanish)
+			{
+				item_count_title = "Numero de Recursos en " + currentMode.SobekCM_Instance_Abbreviation;
+				recent_searches_title = "Búsquedas Recientes en " + currentMode.SobekCM_Instance_Abbreviation;
+			}
+
+			if (currentMode.Language == Web_Language_Enum.French)
+			{
+				item_count_title = "Nombre de Ressources en " + currentMode.SobekCM_Instance_Abbreviation;
+				recent_searches_title = "Recherches Récentes en " + currentMode.SobekCM_Instance_Abbreviation;
+			}
 
             Output.WriteLine("<!-- Add the statistics menu -->");
             Output.WriteLine("<div id=\"sf-menubar\">");
@@ -176,6 +167,9 @@ namespace SobekCM.Library.HTML
                 Mode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History;
                 Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageCollHistory\"><a href=\"" + Mode.Redirect_URL() + "\">" + collection_history_text + "</a></li>");
 
+				Mode.Statistics_Type = Statistics_Type_Enum.Usage_Items_By_Collection;
+				Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageTopItems\"><a href=\"" + Mode.Redirect_URL() + "\">" + top_items_text + "</a></li>");
+
                 Mode.Statistics_Type = Statistics_Type_Enum.Usage_Titles_By_Collection;
                 Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageTopTitles\"><a href=\"" + Mode.Redirect_URL() + "\">" + top_titles_text + "</a></li>");
             }
@@ -235,7 +229,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<div id=\"pagecontainer\">");
             Output.WriteLine("<br />");
 
-            Output.WriteLine("<div class=\"SobekSearchPanel\">");
+			Output.WriteLine("<div id=\"sbkShw_TitleDiv\">");
             Output.WriteLine("  <h1>" + stat_title + "</h1>");
             Output.WriteLine("</div>");
 
@@ -300,10 +294,14 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Statistics_Type_Enum.Recent_Searches:
-                    if (searches != null)
-                    {
-                        Output.WriteLine(((Recent_Searches)searches).ToHTML( currentMode.Language));
-                    }
+					if ((searches == null) || (((Recent_Searches)searches).Searches.Count == 0))
+					{
+						Output.WriteLine("<br /><br /><br /><b>NO SEARCHES SINCE LAST SYSTEM RESTART</b><br /><br /><br />");
+					}
+                    else
+					{
+						add_recent_searches(Output);
+					}
                     Output.WriteLine("<br />");
                     Output.WriteLine();
                     break;
@@ -315,28 +313,28 @@ namespace SobekCM.Library.HTML
                 case Statistics_Type_Enum.Usage_Collection_History:
                     string collection = currentMode.Info_Browse_Mode.ToUpper();
                     if ((collection.Length == 0) || (!codeManager.isValidCode(collection)))
-                        collection = "AFRICA1";
+						collection = codeManager.All_Aggregations[0].Code;
                     add_collection_history(Output, collection, SobekCM_Database.Get_Aggregation_Statistics_History(collection, Tracer), Tracer);
                     break;
 
                 case Statistics_Type_Enum.Usage_Items_By_Collection:
                     string collection2 = currentMode.Info_Browse_Mode.ToUpper();
                     if ((collection2.Length == 0) || (!codeManager.isValidCode(collection2)))
-                        collection2 = "AFRICA1";
+						collection2 = codeManager.All_Aggregations[0].Code;
                     add_items_by_collection(Output, collection2, Tracer);
                     break;
 
                 case Statistics_Type_Enum.Usage_Titles_By_Collection:
                     string collection5 = currentMode.Info_Browse_Mode.ToUpper();
                     if ((collection5.Length == 0) || (!codeManager.isValidCode(collection5)))
-                        collection5 = "AFRICA1";
+						collection5 = codeManager.All_Aggregations[0].Code;
                     add_titles_by_collection(Output, collection5, Tracer);
                     break;
 
                 case Statistics_Type_Enum.Usage_Collection_History_Text:
                     string collection_text = currentMode.Info_Browse_Mode.ToUpper();
-                    if (((collection_text.Length == 0) || (!codeManager.isValidCode(collection_text))) && (collection_text.ToUpper() != "ALL"))
-                        collection_text = "AFRICA1";
+		            if (((collection_text.Length == 0) || (!codeManager.isValidCode(collection_text))) && (collection_text.ToUpper() != "ALL"))
+			            collection_text = codeManager.All_Aggregations[0].Code;
                     add_collection_history_text(Output, collection_text, SobekCM_Database.Get_Aggregation_Statistics_History(collection_text, Tracer), Tracer);
                     break;
 
@@ -419,9 +417,63 @@ namespace SobekCM.Library.HTML
             return monthString1;
         }
 
-        #region Method to add the list of most used items by collection
+		#region Method to add the recent searches
 
-        private void add_items_by_collection(TextWriter Output, string Collection, Custom_Tracer Tracer)
+		/// <summary> Adds the list of recent searches as a HTML table for display online to the output stream </summary>
+		private void add_recent_searches(TextWriter Output)
+		{
+			Recent_Searches recentSearches = (Recent_Searches) searches;
+
+			// Add the header information
+			Output.WriteLine("<table id=\"sbkShw_RecentSearchesTbl\">");
+			Output.WriteLine("  <tr>");
+
+			switch (currentMode.Language)
+			{
+				case Web_Language_Enum.French:
+					Output.WriteLine("    <th>COLLECTION</th>");
+					Output.WriteLine("    <th>TYPE</th>");
+					Output.WriteLine("    <th>TERMES</th>");
+					Output.WriteLine("    <th>HEURE</th>");
+					break;
+
+				case Web_Language_Enum.Spanish:
+					Output.WriteLine("    <th>COLECCION</th>");
+					Output.WriteLine("    <th>TIPO</th>");
+					Output.WriteLine("    <th>TERMINOS</th>");
+					Output.WriteLine("    <th>FECHA</th>");
+					break;
+
+				default:
+					Output.WriteLine("    <th>COLLECTION</th>");
+					Output.WriteLine("    <th>TYPE</th>");
+					Output.WriteLine("    <th>TERMS</th>");
+					Output.WriteLine("    <th>TIME</th>");
+					break;
+			}
+			Output.WriteLine("  </tr>");
+
+			// Now, add each row
+			foreach (Recent_Searches.Search thisSearch in recentSearches.Searches )
+			{
+				Output.WriteLine("  <tr><td class=\"sbkShw_RecentSearchesRule\" colspan=\"4\"></td></tr>");
+				Output.WriteLine("  <tr>");
+				Output.WriteLine("    <td>" + thisSearch.Aggregation + "</td>");
+				Output.WriteLine("    <td>" + thisSearch.Search_Type + "</td>");
+				Output.WriteLine("    <td>" + thisSearch.Search_Terms + "</td>");
+				Output.WriteLine("    <td>" + thisSearch.Time + "</td>");
+				Output.WriteLine("  </tr>");
+			}
+			Output.WriteLine("  <tr><td class=\"sbkShw_RecentSearchesRule\" colspan=\"4\"></td></tr>");
+			Output.WriteLine("</table>");
+		}
+
+
+		#endregion
+
+		#region Method to add the list of most used items by collection
+
+		private void add_items_by_collection(TextWriter Output, string Collection, Custom_Tracer Tracer)
         {
             DataSet itemsListSet;
             if (codeManager.isValidCode(Collection))
@@ -453,23 +505,42 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<p>The most commonly accessed items below are displayed is for the following collection:</p>");
             Output.WriteLine("<form name=\"statistics_form\" action=\"Javascript:collection_jump_sobekcm('" + redirect_url + "')\" id=\"addedForm\">");
             Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    From: <select name=\"collection_selector\" class=\"SobekStatsCollectionSelector\">");
 
-            string collection_lower = Collection.ToLower();
-            foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations)
+			Output.WriteLine("    By Name: <select name=\"collection_selector\" class=\"sbkShw_CollectionSelector\">");
+
+			string collection_lower = Collection.ToLower();
+			foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations_ShortName_Sorted)
+			{
+				if (thisAggr.Code.ToLower() == collection_lower)
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + "</option>");
+				}
+				else
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + "</option>");
+				}
+			}
+			Output.WriteLine("    </select>");
+			Output.WriteLine("    &nbsp; &nbsp;");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("<br /><br />");
+
+			Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
+
+            foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations_Code_Sorted)
             {
-                if (thisAggr.Code == collection_lower)
+                if (thisAggr.Code.ToLower() == collection_lower)
                 {
-                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + " ( " + thisAggr.Code + " ) </option>");
+                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.Code.ToUpper() + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + " ( " + thisAggr.Code + " ) </option>");
+                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code.ToUpper() + "</option>");
                 }
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"go_button\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
@@ -482,14 +553,16 @@ namespace SobekCM.Library.HTML
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Items_By_Collection;
 
 
-            Output.WriteLine("<center>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">BIBID</span></th>");
-            Output.WriteLine("    <th width=\"50px\"><span style=\"color: White\">VID</span></th>");
-            Output.WriteLine("    <th width=\"430px\"><span style=\"color: White\">TITLE</span></th>");
-            Output.WriteLine("    <th width=\"90px\" align=\"right\"><span style=\"color: White\">VIEWS</span></th>");
-            Output.WriteLine("  </tr>");
+            Output.WriteLine("<table id=\"sbkShw_AccessedItemsTbl\">");
+			Output.WriteLine("  <thead>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th style=\"width:90px;\">BIBID</th>");
+            Output.WriteLine("      <th style=\"width:50px;\">VID</th>");
+            Output.WriteLine("      <th>TITLE</th>");
+            Output.WriteLine("      <th style=\"width=:90px;\">VIEWS</th>");
+            Output.WriteLine("    </tr>");
+			Output.WriteLine("  </thead>");
+			Output.WriteLine("  <tbody>");
 
             if (itemsList != null)
             {
@@ -499,19 +572,31 @@ namespace SobekCM.Library.HTML
                     if (itemCount == 100)
                         break;
 
-                    Output.WriteLine("  <tr align=\"left\" >");
-                    Output.WriteLine("    <td>" + thisRow[0] + "</td>");
-                    Output.WriteLine("    <td>" + thisRow[1] + "</td>");
-                    Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[2].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                    Output.WriteLine("    <td align=\"right\">" + thisRow[3] + "</td>");
-                    Output.WriteLine("  </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+                    Output.WriteLine("      <td>" + thisRow[1] + "</td>");
+                    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "/" + thisRow[1] + "/usage\">" + thisRow[2].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
+					Output.WriteLine("      <td class=\"sbkShw_AccessedItemsRight\">" + thisRow[3] + "</td>");
+                    Output.WriteLine("    </tr>");
                     itemCount++;
                 }
             }
 
+			Output.WriteLine("  </tbody>");
             Output.WriteLine("</table>");
-            Output.WriteLine("</center>");
+			Output.WriteLine();
+			Output.WriteLine("<script type=\"text/javascript\">");
+			Output.WriteLine("  jQuery(document).ready(function() {");
+			Output.WriteLine("      var oTable = jQuery('#sbkShw_AccessedItemsTbl').dataTable({");
+			Output.WriteLine("           \"iDisplayLength\": 1000,");
+			Output.WriteLine("           \"bFilter\": false,");
+			Output.WriteLine("           \"sDom\": '<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+			Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			Output.WriteLine("           \"aaSorting\": [[ 3, 'desc' ]],");
+			Output.WriteLine("           \"bAutoWidth\": false });");
+			Output.WriteLine("  } );");
+			Output.WriteLine("</script>");
+			Output.WriteLine();
             Output.WriteLine("<br /> <br />");
             Output.WriteLine("</div>");
         }
@@ -551,27 +636,46 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
             Output.WriteLine("<h2>Selected Collection</h2>");
             Output.WriteLine("<p>The most commonly accessed titles below are displayed is for the following collection:</p>");
-            Output.WriteLine("<form name=\"statistics_form\" action=\"Javascript:collection_jump_sobekcm('" + redirect_url + "')\" id=\"addedForm\">");
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    From: <select name=\"collection_selector\" class=\"SobekStatsCollectionSelector\">");
+			Output.WriteLine("<form name=\"statistics_form\" action=\"Javascript:collection_jump_sobekcm('" + redirect_url + "')\" id=\"addedForm\">");
+			Output.WriteLine("  <blockquote>");
 
-            string collection_lower = Collection.ToLower();
-            foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations)
-            {
-                if (thisAggr.Code == collection_lower)
-                {
-                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + " ( " + thisAggr.Code + " ) </option>");
-                }
-                else
-                {
-                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + " ( " + thisAggr.Code + " ) </option>");
-                }
-            }
-            Output.WriteLine("    </select>");
-            Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"go_button\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
-            Output.WriteLine("  </blockquote>");
-            Output.WriteLine("</form>");
+			Output.WriteLine("    By Name: <select name=\"collection_selector\" class=\"sbkShw_CollectionSelector\">");
+
+			string collection_lower = Collection.ToLower();
+			foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations_ShortName_Sorted)
+			{
+				if (thisAggr.Code.ToLower() == collection_lower)
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + "</option>");
+				}
+				else
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + "</option>");
+				}
+			}
+			Output.WriteLine("    </select>");
+			Output.WriteLine("    &nbsp; &nbsp;");
+			Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("<br /><br />");
+
+			Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
+
+			foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations_Code_Sorted)
+			{
+				if (thisAggr.Code.ToLower() == collection_lower)
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.Code.ToUpper() + "</option>");
+				}
+				else
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code.ToUpper() + "</option>");
+				}
+			}
+			Output.WriteLine("    </select>");
+			Output.WriteLine("    &nbsp; &nbsp;");
+			Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("  </blockquote>");
+			Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
             Output.WriteLine();
             Output.WriteLine("<h2>Most Accessed Titles</h2>");
@@ -582,36 +686,51 @@ namespace SobekCM.Library.HTML
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Titles_By_Collection;
 
 
-            Output.WriteLine("<center>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">BIBID</span></th>");
-            Output.WriteLine("    <th width=\"480px\"><span style=\"color: White\">TITLE</span></th>");
-            Output.WriteLine("    <th width=\"90px\" align=\"right\"><span style=\"color: White\">VIEWS</span></th>");
-            Output.WriteLine("  </tr>");
 
-            if (titleList != null)
-            {
-                int itemCount = 0;
-                foreach (DataRow thisRow in titleList.Rows)
-                {
-                    if (itemCount == 100)
-                        break;
+			Output.WriteLine("<table id=\"sbkShw_AccessedItemsTbl\">");
+			Output.WriteLine("  <thead>");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th style=\"width:90px;\">BIBID</th>");
+			Output.WriteLine("      <th>TITLE</th>");
+			Output.WriteLine("      <th style=\"width=:90px;\">VIEWS</th>");
+			Output.WriteLine("    </tr>");
+			Output.WriteLine("  </thead>");
+			Output.WriteLine("  <tbody>");
 
-                    Output.WriteLine("  <tr align=\"left\" >");
-                    Output.WriteLine("    <td>" + thisRow[0] + "</td>");
-                    Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "\">" + thisRow[1].ToString().Replace("&", "&amp;").Replace("\"","&quot;") + "</a></td>");
-                    Output.WriteLine("    <td align=\"right\">" + thisRow[2] + "</td>");
-                    Output.WriteLine("  </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
-                    itemCount++;
-                }
-            }
+			if (titleList != null)
+			{
+				int itemCount = 0;
+				foreach (DataRow thisRow in titleList.Rows)
+				{
+					if (itemCount == 100)
+						break;
 
-            Output.WriteLine("</table>");
-            Output.WriteLine("</center>");
-            Output.WriteLine("<br /> <br />");
-            Output.WriteLine("</div>");
+					Output.WriteLine("    <tr>");
+					Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+					Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "\">" + thisRow[1].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
+					Output.WriteLine("      <td class=\"sbkShw_AccessedItemsRight\">" + thisRow[2] + "</td>");
+					Output.WriteLine("    </tr>");
+					itemCount++;
+				}
+			}
+
+			Output.WriteLine("  </tbody>");
+			Output.WriteLine("</table>");
+			Output.WriteLine();
+			Output.WriteLine("<script type=\"text/javascript\">");
+			Output.WriteLine("  jQuery(document).ready(function() {");
+			Output.WriteLine("      var oTable = jQuery('#sbkShw_AccessedItemsTbl').dataTable({");
+			Output.WriteLine("           \"iDisplayLength\": 1000,");
+			Output.WriteLine("           \"bFilter\": false,");
+			Output.WriteLine("           \"sDom\": '<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+			Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			Output.WriteLine("           \"aaSorting\": [[ 2, 'desc' ]],");
+			Output.WriteLine("           \"bAutoWidth\": false });");
+			Output.WriteLine("  } );");
+			Output.WriteLine("</script>");
+			Output.WriteLine();
+			Output.WriteLine("<br /> <br />");
+			Output.WriteLine("</div>");
         }
 
 
@@ -661,7 +780,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<p>The following terms are defined below:</p>");
 
-                Output.WriteLine("<table width=\"600px\" border=\"0\" align=\"center\">");
+                Output.WriteLine("<table style=\"width:600px; border: 0; margin-left:auto; margin-right:auto;\">");
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td><a href=\"#Collection_Hierarchy\">Collection Hierarchy</a></td>");
                 Output.WriteLine("    <td><a href=\"#Collection_Groups\">Collection Groups</a></td>");
@@ -768,7 +887,7 @@ namespace SobekCM.Library.HTML
 
         #region Method to add the by date range data as text
 
-        private void add_usage_by_date_text(TextWriter Output, DataTable stats, int first_month, int first_year, int second_month, int second_year, Custom_Tracer Tracer)
+        private void add_usage_by_date_text(TextWriter Output, DataTable Stats, int FirstMonth, int FirstYear, int SecondMonth, int SecondYear, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_usage_by_date_text", "Rendering HTML");
 
@@ -779,13 +898,13 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
             Output.WriteLine("START DATE, END DATE, GROUP CODE, COLLECTION CODE, SUBCOLLECTION CODE, NAME, TOTAL VIEWS, VISITS, MAIN PAGES, BROWSES, SEARCH RESUTLS, TITLE VIEWS, ITEM VIEWS, JPEG VIEWS, ZOOMABLE VIEWS, CITATION VIEWS, THUMBNAIL VIEWS, TEXT SEARCHES, FLASH VIEWS, MAP VIEWS, DOWNLOAD VIEWS, STATIC VIEWS");
 
-            if (stats != null)
+            if (Stats != null)
             {
                 // Get a couple totals
                 int main_page_total = 0;
                 int browses_total = 0;
                 int search_results_total = 0;
-                DataRow[] totalRows = stats.Select("Row_Type='z' and Item_Hits='0'");
+                DataRow[] totalRows = Stats.Select("Row_Type='z' and Item_Hits='0'");
                 foreach (DataRow thisRow in totalRows)
                 {
                     main_page_total += Convert.ToInt32(thisRow[7]) + Convert.ToInt32(thisRow[9]);
@@ -794,7 +913,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Now, add each line
-                foreach (DataRow thisRow in stats.Rows)
+                foreach (DataRow thisRow in Stats.Rows)
                 {
                     int main_pages = Convert.ToInt32(thisRow[7]) + Convert.ToInt32(thisRow[9]);
 
@@ -802,24 +921,24 @@ namespace SobekCM.Library.HTML
                     switch (thisRow[0].ToString())
                     {
                         case "g":
-                            Output.Write(Month_From_Int(first_month) + " " + first_year + "," + Month_From_Int(second_month) + " " + second_year + ",");
+                            Output.Write(Month_From_Int(FirstMonth) + " " + FirstYear + "," + Month_From_Int(SecondMonth) + " " + SecondYear + ",");
                             Output.WriteLine(thisRow[1] + ",,," + thisRow[4].ToString().Replace("'", "").Replace("\"", "").Replace(",", "") + "," + thisRow[5] + "," + thisRow[6] + "," + main_pages + "," + thisRow[8] + "," + thisRow[10] + ",,,,,,,,,,,");
                             break;
 
                         case "c":
-                            Output.Write(Month_From_Int(first_month) + " " + first_year + "," + Month_From_Int(second_month) + " " + second_year + ",");
+                            Output.Write(Month_From_Int(FirstMonth) + " " + FirstYear + "," + Month_From_Int(SecondMonth) + " " + SecondYear + ",");
                             Output.WriteLine(thisRow[1] + "," + thisRow[2] + ",," + thisRow[4].ToString().Replace("'", "").Replace("\"", "").Replace(",", "") + "," + thisRow[5] + "," + thisRow[6] + "," + main_pages + "," + thisRow[8] + "," + thisRow[10] + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
                             break;
 
                         case "s":
-                            Output.Write(Month_From_Int(first_month) + " " + first_year + "," + Month_From_Int(second_month) + " " + second_year + ",");
+                            Output.Write(Month_From_Int(FirstMonth) + " " + FirstYear + "," + Month_From_Int(SecondMonth) + " " + SecondYear + ",");
                             Output.WriteLine(thisRow[1] + "," + thisRow[2] + "," + thisRow[3] + "," + thisRow[4].ToString().Replace("'", "").Replace("\"", "").Replace(",", "") + "," + thisRow[5] + "," + thisRow[6] + "," + main_pages + "," + thisRow[8] + "," + thisRow[10] + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
                             break;
 
                         case "z":
                             if (Convert.ToInt32(thisRow[11]) > 0)
                             {
-                                Output.Write(Month_From_Int(first_month) + " " + first_year + "," + Month_From_Int(second_month) + " " + second_year + ",");
+                                Output.Write(Month_From_Int(FirstMonth) + " " + FirstYear + "," + Month_From_Int(SecondMonth) + " " + SecondYear + ",");
                                 Output.WriteLine(currentMode.SobekCM_Instance_Abbreviation + ",,," + currentMode.SobekCM_Instance_Name + "," + thisRow[5] + "," + thisRow[6] + "," + main_page_total + "," + browses_total + "," + search_results_total + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
                             }
                             break;
@@ -843,14 +962,14 @@ namespace SobekCM.Library.HTML
 
         #region Method to add items by date information
 
-        private void add_item_views_by_date(TextWriter Output, DataTable stats, int first_month, int first_year, int second_month, int second_year, Custom_Tracer Tracer)
+        private void add_item_views_by_date(TextWriter Output, DataTable Stats, int FirstMonth, int FirstYear, int SecondMonth, int SecondYear, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_item_views_by_date", "Rendering HTML");
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>Below are the details about the specialized views for items aggregated at the collection levels.</p>");
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collections_By_Date;
-            string range_string = first_year.ToString() + first_month.ToString().PadLeft(2, '0') + second_year.ToString() + second_month.ToString().PadLeft(2, '0');
+            string range_string = FirstYear.ToString() + FirstMonth.ToString().PadLeft(2, '0') + SecondYear.ToString() + SecondMonth.ToString().PadLeft(2, '0');
             Output.WriteLine("<p>For the number of times collections were viewed or searched, see <a href=\"" + currentMode.Redirect_URL() + range_string + "\">Collections by Date</a>.");
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Definitions;
             Output.WriteLine("The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
@@ -873,7 +992,7 @@ namespace SobekCM.Library.HTML
             int select_year = statsDates.Earliest_Year;
             while ((select_month != statsDates.Latest_Month) || (select_year != statsDates.Latest_Year))
             {
-                if ((first_month == select_month) && (first_year == select_year))
+                if ((FirstMonth == select_month) && (FirstYear == select_year))
                 {
                     Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
                 }
@@ -889,7 +1008,7 @@ namespace SobekCM.Library.HTML
                     select_year++;
                 }
             }
-            if ((first_month == select_month) && (first_year == select_year))
+            if ((FirstMonth == select_month) && (FirstYear == select_year))
             {
                 Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
             }
@@ -905,7 +1024,7 @@ namespace SobekCM.Library.HTML
             select_year = statsDates.Earliest_Year;
             while ((select_month != statsDates.Latest_Month) || (select_year != statsDates.Latest_Year))
             {
-                if ((second_month == select_month) && (second_year == select_year))
+                if ((SecondMonth == select_month) && (SecondYear == select_year))
                 {
                     Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
                 }
@@ -921,7 +1040,7 @@ namespace SobekCM.Library.HTML
                     select_year++;
                 }
             }
-            if ((second_month == select_month) && (second_year == select_year))
+            if ((SecondMonth == select_month) && (SecondYear == select_year))
             {
                 Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
             }
@@ -932,140 +1051,205 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"go_button\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
+			Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
             Output.WriteLine();
             Output.WriteLine("<h2>Summary by Collection</h2>");
 
-            if ((stats != null) && (stats.Rows.Count > 0))
-            {
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_By_Date_Text;
-                Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + range_string + "\"><i>Export as CSV</i></a>");
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Item_Views_By_Date;
-            }
+			//if ((Stats != null) && (Stats.Rows.Count > 0))
+			//{
+			//	currentMode.Statistics_Type = Statistics_Type_Enum.Usage_By_Date_Text;
+			//	Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + range_string + "\"><i>Export as CSV</i></a>");
+			//	currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Item_Views_By_Date;
+			//}
 
-            if (stats == null)
-            {
-                Output.WriteLine("<center>");
-                Output.WriteLine("<b>NO USAGE STATISTICS EXIST FOR YOUR SELECTION</b>");
-                Output.WriteLine("</center>");
-                Output.WriteLine("<br /><br />");
-                Output.WriteLine("</div>");
-                return;
-            }
+			if (Stats == null)
+			{
+				Output.WriteLine("<div style=\"margin-left:auto; margin-right:auto; text-align:center; width:100%;\">");
+				Output.WriteLine("<b>NO USAGE STATISTICS EXIST FOR YOUR SELECTION</b>");
+				Output.WriteLine("</div>");
+				Output.WriteLine("<br /><br />");
+				Output.WriteLine("</div>");
+				return;
+			}
 
             Output.WriteLine("</div>");
             Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
             Output.WriteLine();
 
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" width=\"1215px\" class=\"statsTable2\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"70\"><span style=\"color: White\">GROUP<br />CODE</span></th>");
-            Output.WriteLine("    <th width=\"70\"><span style=\"color: White\">COLL<br />CODE</span></th>");
-            Output.WriteLine("    <th width=\"70\"><span style=\"color: White\">SUB<br />CODE</span></th>");
-            Output.WriteLine("    <th width=\"280\"><span style=\"color: White\">NAME</span></th>");
-            Output.WriteLine("    <th width=\"70px\" align=\"right\"><span style=\"color: White\">JPEG<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"90px\" align=\"right\"><span style=\"color: White\">ZOOMABLE<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"80px\" align=\"right\"><span style=\"color: White\">CITATION<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"90px\" align=\"right\"><span style=\"color: White\">THUMBNAIL<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"90px\" align=\"right\"><span style=\"color: White\">TEXT<br />SEARCHES</span></th>");
-            Output.WriteLine("    <th width=\"70px\" align=\"right\"><span style=\"color: White\">FLASH<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"70px\" align=\"right\"><span style=\"color: White\">MAP<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"90px\" align=\"right\"><span style=\"color: White\">DOWNLOAD<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"75px\" align=\"right\"><span style=\"color: White\">STATIC<br />VIEWS</span></th>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"13\"></td></tr>");
+			Output.WriteLine("<table id=\"sbkShw_StatsByDateTable\">");
+			Output.WriteLine("  <thead>");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th>NUMBER</th>");
+			Output.WriteLine("      <th id=\"code1\" style=\"width:100px;\">GROUP<br />CODE</th>");
+			Output.WriteLine("      <th style=\"width:100px;\">COLL<br />CODE</th>");
+			Output.WriteLine("      <th id=\"code3\" style=\"width:100px;\">SUB<br />CODE</th>");
+			Output.WriteLine("      <th>CODES</th>");
+			Output.WriteLine("      <th>NAME</th>");
+			Output.WriteLine("      <th style=\"width:70px; text-align:right;\">JPEG<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px; text-align:right;\">ZOOMABLE<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">CITATION<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px; text-align:right;\">THUMBNAIL<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px; text-align:right;\">TEXT<br />SEARCHES</th>");
+			Output.WriteLine("      <th style=\"width:70px; text-align:right;\">FLASH<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:70px; text-align:right;\">MAP<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px; text-align:right;\">DOWNLOAD<br />VIEWS</th>");
+			Output.WriteLine("    </tr>");
 
-            // Now, add each line
-            const int rule = 13;
-            foreach (DataRow thisRow in stats.Rows)
-            {
-                if (Convert.ToBoolean(thisRow[5]))
-                {
-                    switch (thisRow[0].ToString())
-                    {
-                        case "g":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\" colspan=\"" + ( rule - 4 ) + "\">&nbsp;</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+			Output.WriteLine("  </thead>");
+			Output.WriteLine("  <tbody>");
 
-                        case "c":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2] + "\">" + thisRow[2] + "</a></td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2] + "\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[13] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[14] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[15] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[16] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[17] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[18] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[19] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[20] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[21] + "</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+			// Now, add each line
+			int count = 0;
+			foreach (DataRow thisRow in Stats.Rows)
+			{
+				count++;
 
-                        case "s":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[2] + "</span></td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3] + "\">" + thisRow[3] + "</a></td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3] + "\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[13] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[14] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[15] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[16] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[17] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[18] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[19] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[20] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[21] + "</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+				string code1 = thisRow[0].ToString().ToUpper();
+				string code2 = thisRow[1].ToString().ToUpper();
+				string code3 = thisRow[2].ToString().ToUpper();
+				string thisCode = thisRow[3].ToString().ToUpper();
+				string name = thisRow[5].ToString();
+				bool active = Convert.ToBoolean(thisRow[7]);
 
-                        case "z":
-                            if (Convert.ToInt32(thisRow[7]) == 0)
-                            {
-                                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                                Output.WriteLine("    <td colspan=\"4\"><span style=\"color: White\">ALL ITEMS IN " + currentMode.SobekCM_Instance_Abbreviation + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[13] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[14] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[15] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[16] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[17] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[18] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[19] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[20] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[21] + "</span></td>");
-                                Output.WriteLine("  </tr>");
-                            }
-                            break;
-                    }
-                }
-            }
+				// Skip the ALL collection here
+				if (thisCode == "ALL")
+					continue;
 
-            Output.WriteLine("</table>");
-            Output.WriteLine("<br /><br />");
-            Output.WriteLine("<div id=\"pagecontainer_resumed\">");
+				if (code1 == "ZZZ")
+				{
+					Output.WriteLine("    <tr id=\"sbkShw_StatsByDateTotalRow\">");
+					Output.WriteLine("      <td>" + count + "</td>");
+					Output.WriteLine("      <td>TOTAL</td>");
+					Output.WriteLine("      <td>&nbsp;</td>");
+					Output.WriteLine("      <td>&nbsp;</td>");
+					Output.WriteLine("      <td>ZZZ</td>");
+					Output.WriteLine("      <td>TOTAL</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[15] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[16] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[17] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[18] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[19] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[20] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[21] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[22] + "</td>");
+					Output.WriteLine("    </tr>");
+				}
+				else
+				{
+					Output.WriteLine("    <tr>");
+					Output.WriteLine("      <td>" + count + "</td>");
+
+					// Add the first code, rendering differently if there is a CODE2
+					if (code2.Length == 0)
+					{
+						if (active)
+							Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code1 + "\">" + code1 + "</a></td>");
+						else
+							Output.WriteLine("      <td>" + code1 + "</td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td class=\"sbkShw_ItemCountDimmed\" >" + code1 + "</td>");
+					}
+
+					// Add the second code
+					if (code2.Length > 0)
+					{
+						if (code3.Length == 0)
+						{
+							if (active)
+								Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code2 + "\">" + code2 + "</a></td>");
+							else
+								Output.WriteLine("      <td>" + code2 + "</td>");
+						}
+						else
+						{
+							Output.WriteLine("      <td><span class=\"sbkShw_ItemCountDimmed\">" + code2 + "</span></td>");
+						}
+					}
+					else
+					{
+						Output.WriteLine("      <td>&nbsp;</td>");
+					}
+
+					// Add the third code
+					if (code3.Length > 0)
+					{
+						if (active)
+							Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code3 + "\">" + code3 + "</a></td>");
+						else
+							Output.WriteLine("      <td>" + code3 + "</td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td>&nbsp;</td>");
+					}
+
+					Output.WriteLine("      <td>" + thisCode + "</td>");
+
+					if (active)
+					{
+						Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "\">" + name.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td>" + name + "</td>");
+					}
+
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[15] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[16] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[17] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[18] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[19] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[20] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[21] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[22] + "</td>");
+					Output.WriteLine("    </tr>");
+				}
+				//  Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
+			}
+
+			// Close out this table
+			Output.WriteLine("  </tbody>");
+			Output.WriteLine("</table>");
+
+			Output.WriteLine();
+			Output.WriteLine("<script type=\"text/javascript\">");
+			Output.WriteLine("  jQuery(document).ready(function() {");
+			Output.WriteLine("      var oTable = jQuery('#sbkShw_StatsByDateTable').dataTable({");
+			Output.WriteLine("           \"iDisplayLength\": 1000,");
+			//  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
+			Output.WriteLine("           \"bFilter\": false,");
+			Output.WriteLine("           \"sDom\": '<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+			Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			Output.WriteLine("           \"bAutoWidth\": false,");
+			Output.WriteLine("           \"aoColumns\": [{ \"bVisible\": false }, null, { \"bSortable\": false }, null, { \"bVisible\": false }, null, null, null, null, null, null, null, null, null ] });");
+			Output.WriteLine();
+			Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code3\"), 2);");
+			Output.WriteLine("      $(\"#code3\").click( function () {");
+			Output.WriteLine("         oTable.fnSort( [[4,\"asc\"]] );");
+			Output.WriteLine("      });");
+			Output.WriteLine();
+			Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code1\"), 2);");
+			Output.WriteLine("      $(\"#code1\").click( function () {");
+			Output.WriteLine("         oTable.fnSort( [[0,\"asc\"]] );");
+			Output.WriteLine("      });");
+			Output.WriteLine("  } );");
+			Output.WriteLine("</script>");
+			Output.WriteLine();
+
+			Output.WriteLine("<br /><br />");
+			Output.WriteLine("<div id=\"pagecontainer_resumed\">");
         }
 
         #endregion
 
         #region Method to add collections by date information
 
-        private void add_collections_by_date(TextWriter Output, DataTable stats, int first_month, int first_year, int second_month, int second_year, Custom_Tracer Tracer)
+        private void add_collections_by_date(TextWriter Output, DataTable Stats, int FirstMonth, int FirstYear, int SecondMonth, int SecondYear, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_collections_by_date", "Rendering HTML");
 
@@ -1085,7 +1269,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <li>viewed titles and items contained within the collection</li>");
             Output.WriteLine("</ul>");
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Item_Views_By_Date;
-            string range_string = first_year.ToString() + first_month.ToString().PadLeft(2, '0') + second_year.ToString() + second_month.ToString().PadLeft(2, '0');
+            string range_string = FirstYear.ToString() + FirstMonth.ToString().PadLeft(2, '0') + SecondYear.ToString() + SecondMonth.ToString().PadLeft(2, '0');
             Output.WriteLine("<p>For the specialized item-level view details, see <a href=\"" + currentMode.Redirect_URL() + range_string + "\">Item Views by Date</a>.");
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Definitions;
             Output.WriteLine("The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
@@ -1102,7 +1286,7 @@ namespace SobekCM.Library.HTML
             int select_year = statsDates.Earliest_Year;
             while ((select_month != statsDates.Latest_Month) || (select_year != statsDates.Latest_Year))
             {
-                if ((first_month == select_month) && (first_year == select_year))
+                if ((FirstMonth == select_month) && (FirstYear == select_year))
                 {
                     Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
                 }
@@ -1118,7 +1302,7 @@ namespace SobekCM.Library.HTML
                     select_year++;
                 }
             }
-            if ((first_month == select_month) && (first_year == select_year))
+            if ((FirstMonth == select_month) && (FirstYear == select_year))
             {
                 Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
             }
@@ -1134,7 +1318,7 @@ namespace SobekCM.Library.HTML
             select_year = statsDates.Earliest_Year;
             while ((select_month != statsDates.Latest_Month) || (select_year != statsDates.Latest_Year))
             {
-                if (( second_month == select_month) && (second_year == select_year))
+                if (( SecondMonth == select_month) && (SecondYear == select_year))
                 {
                     Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
                 }
@@ -1150,7 +1334,7 @@ namespace SobekCM.Library.HTML
                     select_year++;
                 }
             }
-            if ((second_month == select_month) && (second_year == select_year))
+            if ((SecondMonth == select_month) && (SecondYear == select_year))
             {
                 Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
             }
@@ -1161,27 +1345,27 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Range\" class=\"go_button\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
+			Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
             Output.WriteLine();
             Output.WriteLine("<h2>Summary by Collection</h2>");
 
-            if ((stats != null) && (stats.Rows.Count > 0))
-            {
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_By_Date_Text;
-                Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + range_string + "\"><i>Export as CSV</i></a>>");
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collections_By_Date;
-            }
+			//if ((Stats != null) && (Stats.Rows.Count > 0))
+			//{
+			//	currentMode.Statistics_Type = Statistics_Type_Enum.Usage_By_Date_Text;
+			//	Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + range_string + "\"><i>Export as CSV</i></a>>");
+			//	currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collections_By_Date;
+			//}
             Output.WriteLine("<br />");
             Output.WriteLine();
 
-            if (stats == null)
+            if (Stats == null)
             {
-                Output.WriteLine("<center>");
+                Output.WriteLine("<div style=\"margin-left:auto; margin-right:auto; text-align:center; width:100%;\">");
                 Output.WriteLine("<b>NO USAGE STATISTICS EXIST FOR YOUR SELECTION</b>");
-                Output.WriteLine("</center>");
+                Output.WriteLine("</div>");
                 Output.WriteLine("<br /><br />");
                 Output.WriteLine("</div>");
                 return;
@@ -1191,144 +1375,171 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
             Output.WriteLine();
 
-            Output.WriteLine("<center>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" width=\"1040px\" class=\"statsTable2\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"70\"><span style=\"color: White\">GROUP<br />CODE</span></th>");
-            Output.WriteLine("    <th width=\"70\"><span style=\"color: White\">COLL<br />CODE</span></th>");
-            Output.WriteLine("    <th width=\"70\"><span style=\"color: White\">SUB<br />CODE</span></th>");
-            Output.WriteLine("    <th width=\"280\"><span style=\"color: White\">NAME</span></th>");
-            Output.WriteLine("    <th width=\"70\" align=\"right\"><span style=\"color: White\">TOTAL<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">VISITS</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">MAIN<br />PAGES</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">BROWSES</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">SEARCH<br />RESULTS</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">TITLE<br />VIEWS</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">ITEM<br />VIEWS</span></th>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"11\"></td></tr>");
+			Output.WriteLine("<table id=\"sbkShw_StatsByDateTable\">");
+			Output.WriteLine("  <thead>");
+            Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th>NUMBER</th>");
+			Output.WriteLine("      <th id=\"code1\" style=\"width:100px;\">GROUP<br />CODE</th>");
+			Output.WriteLine("      <th style=\"width:100px;\">COLL<br />CODE</th>");
+			Output.WriteLine("      <th id=\"code3\" style=\"width:100px;\">SUB<br />CODE</th>");
+			Output.WriteLine("      <th>CODES</th>");
+            Output.WriteLine("      <th>NAME</th>");
+            Output.WriteLine("      <th style=\"width:70px; text-align:right;\">TOTAL<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">VISITS</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">MAIN<br />PAGES</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">BROWSES</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">SEARCH<br />RESULTS</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">TITLE<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:80px; text-align:right;\">ITEM<br />VIEWS</th>");
+            Output.WriteLine("    </tr>");
 
-            // Get the total number of item and title views
-            DataRow[] total_rows = stats.Select("Row_Type='z'");
-            int total_hits = 0;
-            int total_sessions = 0;
-            int title_hits = 0;
-            int item_hits = 0;
-            foreach (DataRow totalRow in total_rows)
-            {
-                if (Convert.ToInt32(totalRow[7]) == 0)
-                {
-                    total_hits = Convert.ToInt32(totalRow[5]);
-                    total_sessions = Convert.ToInt32(totalRow[6]);
-                    title_hits = Convert.ToInt32(totalRow[11]);
-                    item_hits = Convert.ToInt32(totalRow[12]);
-                }
-            }
+			Output.WriteLine("  </thead>");
+			Output.WriteLine("  <tbody>");
+
+			// Now, add each line
+			int count = 0;
+			foreach (DataRow thisRow in Stats.Rows)
+			{
+				count++;
+
+				string code1 = thisRow[0].ToString().ToUpper();
+				string code2 = thisRow[1].ToString().ToUpper();
+				string code3 = thisRow[2].ToString().ToUpper();
+				string thisCode = thisRow[3].ToString().ToUpper();
+				string name = thisRow[5].ToString();
+				bool active = Convert.ToBoolean(thisRow[7]);
 
 
-            // Now, add each line
-            const int rule = 11;
-            string last_group = String.Empty;
-            foreach (DataRow thisRow in stats.Rows)
-            {
-                if (Convert.ToBoolean(thisRow[5]))
-                {
-                    int main_pages = Convert.ToInt32(thisRow[7]) + Convert.ToInt32(thisRow[9]);
-                    switch (thisRow[0].ToString())
-                    {
-                        case "g":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[1] + "</span></td>");
-                            last_group = thisRow[1].ToString();
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"","&quot;") + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[5] + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[6] + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + main_pages + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[8] + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[10] + "</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                            Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+				if (code1 == "ZZZ")
+				{
+					Output.WriteLine("    <tr id=\"sbkShw_StatsByDateTotalRow\">");
+					Output.WriteLine("      <td>" + count + "</td>");
+					Output.WriteLine("      <td>TOTAL</td>");
+					Output.WriteLine("      <td>&nbsp;</td>");
+					Output.WriteLine("      <td>&nbsp;</td>");
+					Output.WriteLine("      <td>ZZZ</td>");
+					Output.WriteLine("      <td>TOTAL</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[8] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[9] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[10] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[11] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[12] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[13] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[14] + "</td>");
+					Output.WriteLine("    </tr>");
+				}
+				else
+				{
+					Output.WriteLine("    <tr>");
+					Output.WriteLine("      <td>" + count + "</td>");
 
-                        case "c":
-                            // Was there a group change (which occurs if the new group has no stats)
-                            if (thisRow[1].ToString() != last_group)
-                            {
-                                // Insert a group row now
-                                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                                Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[1] + "</span></td>");
-                                last_group = thisRow[1].ToString();
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                                Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[1] + " Collections</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">&nbsp;</span></td>");
-                                Output.WriteLine("  </tr>");
-                            }
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL  + thisRow[2] + "\">" + thisRow[2] + "</a></td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2] + "\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[5] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[6] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + main_pages + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[8] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[10] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[11] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[12] + "</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+					// Add the first code, rendering differently if there is a CODE2
+					if (code2.Length == 0)
+					{
+						if (active)
+							Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code1 + "\">" + code1 + "</a></td>");
+						else
+							Output.WriteLine("      <td>" + code1 + "</td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td class=\"sbkShw_ItemCountDimmed\" >" + code1 + "</td>");
+					}
 
-                        case "s":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[2] + "</span></td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3] + "\">" + thisRow[3] + "</a></td>");
-                            Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3] + "\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[5] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[6] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + main_pages + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[8] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[10] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[11] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[12] + "</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+					// Add the second code
+					if (code2.Length > 0)
+					{
+						if (code3.Length == 0)
+						{
+							if (active)
+								Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code2 + "\">" + code2 + "</a></td>");
+							else
+								Output.WriteLine("      <td>" + code2 + "</td>");
+						}
+						else
+						{
+							Output.WriteLine("      <td><span class=\"sbkShw_ItemCountDimmed\">" + code2 + "</span></td>");
+						}
+					}
+					else
+					{
+						Output.WriteLine("      <td>&nbsp;</td>");
+					}
 
-                        case "z":
-                            if (main_pages > 0)
-                            {
-                                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                                Output.WriteLine("    <td colspan=\"4\"><span style=\"color: White\">ALL COLLECTION GROUPS</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + total_hits + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + total_sessions + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + main_pages + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[8] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + thisRow[10] + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + title_hits + "</span></td>");
-                                Output.WriteLine("    <td align=\"right\"><span style=\"color: White\">" + item_hits + "</span></td>");
-                                Output.WriteLine("  </tr>");
-                            }
-                            break;
-                    }
-                }
-            }
+					// Add the third code
+					if (code3.Length > 0)
+					{
+						if (active)
+							Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code3 + "\">" + code3 + "</a></td>");
+						else
+							Output.WriteLine("      <td>" + code3 + "</td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td>&nbsp;</td>");
+					}
 
-            Output.WriteLine("</table>");
-            Output.WriteLine("</center>");
+					Output.WriteLine("      <td>" + thisCode + "</td>");
+
+					if (active)
+					{
+						Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "\">" + name.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td>" + name + "</td>");
+					}
+
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[8] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[9] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[10] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[11] + "</td>");
+					Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[12] + "</td>");
+					if (thisCode == "ALL")
+					{
+						Output.WriteLine("      <td></td>");
+						Output.WriteLine("      <td></td>");
+					}
+					else
+					{
+						Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[13] + "</td>");
+						Output.WriteLine("      <td style=\"text-align:right;\">" + thisRow[14] + "</td>");
+					}
+
+					Output.WriteLine("    </tr>");
+				}
+				//  Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
+			}
+
+			// Close out this table
+			Output.WriteLine("  </tbody>");
+			Output.WriteLine("</table>");
+
+			Output.WriteLine();
+			Output.WriteLine("<script type=\"text/javascript\">");
+			Output.WriteLine("  jQuery(document).ready(function() {");
+			Output.WriteLine("      var oTable = jQuery('#sbkShw_StatsByDateTable').dataTable({");
+			Output.WriteLine("           \"iDisplayLength\": 1000,");
+			//  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
+			Output.WriteLine("           \"bFilter\": false,");
+			Output.WriteLine("           \"sDom\": '<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+			Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			Output.WriteLine("           \"bAutoWidth\": false,");
+			Output.WriteLine("           \"aoColumns\": [{ \"bVisible\": false }, null, { \"bSortable\": false }, null, { \"bVisible\": false }, null, null, null, null, null, null, null, null ] });");
+			Output.WriteLine();
+			Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code3\"), 2);");
+			Output.WriteLine("      $(\"#code3\").click( function () {");
+			Output.WriteLine("         oTable.fnSort( [[4,\"asc\"]] );");
+			Output.WriteLine("      });");
+			Output.WriteLine();
+			Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code1\"), 2);");
+			Output.WriteLine("      $(\"#code1\").click( function () {");
+			Output.WriteLine("         oTable.fnSort( [[0,\"asc\"]] );");
+			Output.WriteLine("      });");
+			Output.WriteLine("  } );");
+			Output.WriteLine("</script>");
+			Output.WriteLine();
+
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<div id=\"pagecontainer_resumed\">");
 
@@ -1338,7 +1549,7 @@ namespace SobekCM.Library.HTML
 
         #region Method to add collection history as html
 
-        private void add_collection_history(TextWriter Output, string Collection, DataTable statsCount, Custom_Tracer Tracer)
+        private void add_collection_history(TextWriter Output, string Collection, DataTable StatsCount, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_collection_history", "Rendering HTML");
 
@@ -1357,53 +1568,71 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<p>The usage displayed is for the following collection:</p>");
             Output.WriteLine("<form name=\"statistics_form\" action=\"Javascript:collection_jump_sobekcm('" + redirect_url + "')\" id=\"addedForm\">");
             Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    From: <select name=\"collection_selector\" class=\"SobekStatsCollectionSelector\" >");
 
-            string collection_lower = Collection.ToLower();
-            foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations)
-            {
-                if (thisAggr.Code == collection_lower)
-                {
-                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + " ( " + thisAggr.Code + " ) </option>");
-                }
-                else
-                {
-                    Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.ShortName.Replace("&","&amp;").Replace("\"","&quot;") + " ( " + thisAggr.Code + " ) </option>");
-                }
-            }
+			Output.WriteLine("    By Name: <select name=\"collection_selector\" class=\"sbkShw_CollectionSelector\">");
 
-            Output.WriteLine("    </select>");
-            Output.WriteLine("    &nbsp; &nbsp;");
-            Output.WriteLine("    <button title=\"Select Collection\" class=\"go_button\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\"></button>");
+			string collection_lower = Collection.ToLower();
+			foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations_ShortName_Sorted)
+			{
+				if (thisAggr.Code.ToLower() == collection_lower)
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + "</option>");
+				}
+				else
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.ShortName.Replace("&", "&amp;").Replace("\"", "&quot;") + "</option>");
+				}
+			}
+			Output.WriteLine("    </select>");
+			Output.WriteLine("    &nbsp; &nbsp;");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("<br /><br />");
+
+			Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
+
+			foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations_Code_Sorted)
+			{
+				if (thisAggr.Code.ToLower() == collection_lower)
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.Code.ToUpper() + "</option>");
+				}
+				else
+				{
+					Output.WriteLine("      <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code.ToUpper() + "</option>");
+				}
+			}
+			Output.WriteLine("    </select>");
+			Output.WriteLine("    &nbsp; &nbsp;");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
 
 
             Output.WriteLine();
-            Output.WriteLine("<h2>Collection Work_History</h2>");
+            Output.WriteLine("<h2>Collection History</h2>");
 
-            if ((statsCount != null) && (statsCount.Rows.Count > 0))
-            {
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History_Text;
-                Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + Collection + "\"><i>Export as CSV</i></a>");
-                currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History;
-            }
+			//if ((StatsCount != null) && (StatsCount.Rows.Count > 0))
+			//{
+			//	currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History_Text;
+			//	Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + Collection + "\"><i>Export as CSV</i></a>");
+			//	currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Collection_History;
+			//}
             Output.WriteLine("<p>The data below shows the collection history for the selected collection.  The first table shows the summary of all views of this collection and items contained in the collection.  The second table includes the details for specialized item-level views.</p>");
             Output.WriteLine("</div>");
-            Output.WriteLine("<center>");
 
-            Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("    <tr align=\"right\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\">DATE</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">TOTAL<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">VISITS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">MAIN <br />PAGES</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">BROWSES</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">SEARCH<br />RESULTS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">TITLE<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">ITEM<br />VIEWS</span></th>");
-            Output.WriteLine("    </tr>");
+			Output.WriteLine("  <table id=\"sbkShw_CollectionHistoryTbl\">");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th style=\"width:120px;text-align:left;\">DATE</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">TOTAL<br />VIEWS</span></th>");
+			Output.WriteLine("      <th style=\"width:90px;\">VISITS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">MAIN <br />PAGES</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">BROWSES</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">SEARCH<br />RESULTS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">TITLE<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">ITEM<br />VIEWS</th>");
+			Output.WriteLine("    </tr>");
 
             int columns = 8;
             string last_year = String.Empty;
@@ -1422,24 +1651,23 @@ namespace SobekCM.Library.HTML
             int download_views = 0;
             int citation_views = 0;
             int text_search_views = 0;
-            int static_views = 0;
 
             // Add the collection level information
-            if (statsCount != null)
+            if (StatsCount != null)
             {
-                foreach (DataRow thisRow in statsCount.Rows)
+                foreach (DataRow thisRow in StatsCount.Rows)
                 {
-                    if (thisRow[0].ToString() != last_year)
-                    {
-                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
-                        last_year = thisRow[0].ToString();
-                    }
-                    else
-                    {
-                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
-                    }
-                    Output.WriteLine("    <tr align=\"right\" >");
-                    Output.WriteLine("      <td align=\"left\">" + Month_From_Int( Convert.ToInt32( thisRow[1] )) + " " + thisRow[0] + "</td>");
+					if (thisRow[0].ToString() != last_year)
+					{
+						Output.WriteLine("    <tr><td class=\"sbkShw_CollectionHistoryNewYear\" colspan=\"" + columns + "\">" + thisRow[0] + " STATISTICS</td></tr>");
+						last_year = thisRow[0].ToString();
+					}
+					else
+					{
+						Output.WriteLine("    <tr><td class=\"sbkShw_CollectionHistoryRule\" colspan=\"" + columns + "\"></td></tr>");
+					}
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td style=\"text-align: left;\">" + Month_From_Int( Convert.ToInt32( thisRow[1] )) + " " + thisRow[0] + "</td>");
 
                     hits += Convert.ToInt32(thisRow[2]);
                     Output.WriteLine("      <td>" + thisRow[2] + "</td>");
@@ -1478,9 +1706,9 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("    </tr>");
                 }
-                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
-                Output.WriteLine("    <tr align=\"right\" style=\"font-weight:bold\" >");
-                Output.WriteLine("      <td align=\"left\"><b>TOTAL</b></td>");
+				Output.WriteLine("    <tr><td class=\"sbkShw_CollectionHistoryTotalRule\" colspan=\"" + columns + "\"></td></tr>");
+				Output.WriteLine("    <tr class=\"sbkShw_CollectionHistoryTotalRow\" >");
+				Output.WriteLine("      <td style=\"text-align:left;\">TOTAL</td>");
                 Output.WriteLine("      <td>" + hits + "</td>");
                 Output.WriteLine("      <td>" + sessions + "</td>");
                 Output.WriteLine("      <td>" + main_pages + "</td>");
@@ -1494,37 +1722,36 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("<br /><br />");
 
-            Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("    <tr align=\"right\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\">DATE</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">JPEG<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">ZOOMABLE<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">CITATION<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">THUMBNAIL<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">TEXT<br />SEARCHES</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">FLASH<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">MAP<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">DOWNLOAD<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">STATIC<br />VIEWS</span></th>");
+			Output.WriteLine("  <table id=\"sbkShw_CollectionHistoryTbl2\">");
+            Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th style=\"width:120px;text-align:left;\">DATE</th>");
+            Output.WriteLine("      <th style=\"width:90px;\">JPEG<br />VIEWS</span></th>");
+			Output.WriteLine("      <th style=\"width:90px;\">ZOOMABLE<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">CITATION<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">THUMBNAIL<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">TEXT<br />SEARCHES</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">FLASH<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">MAP<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:90px;\">DOWNLOAD<br />VIEWS</th>");
             Output.WriteLine("    </tr>");
 
-            columns = 10;
+            columns = 9;
             last_year = String.Empty;
-            if (statsCount != null)
+            if (StatsCount != null)
             {
-                foreach (DataRow thisRow in statsCount.Rows)
+                foreach (DataRow thisRow in StatsCount.Rows)
                 {
                     if (thisRow[0].ToString() != last_year)
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
+						Output.WriteLine("    <tr><td class=\"sbkShw_CollectionHistoryNewYear\" colspan=\"" + columns + "\">" + thisRow[0] + " STATISTICS</td></tr>");
                         last_year = thisRow[0].ToString();
                     }
                     else
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
+						Output.WriteLine("    <tr><td class=\"sbkShw_CollectionHistoryRule\" colspan=\"" + columns + "\"></td></tr>");
                     }
-                    Output.WriteLine("    <tr align=\"right\" >");
-                    Output.WriteLine("      <td align=\"left\">" + Month_From_Int( Convert.ToInt32( thisRow[1] )) + " " + thisRow[0] + "</td>");
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td style=\"text-align:left;\">" + Month_From_Int( Convert.ToInt32( thisRow[1] )) + " " + thisRow[0] + "</td>");
 
                     if (thisRow[10] != DBNull.Value)
                     {
@@ -1598,21 +1825,12 @@ namespace SobekCM.Library.HTML
                     {
                         Output.WriteLine("      <td>0</td>");
                     }
-                    if (thisRow[18] != DBNull.Value)
-                    {
-                        static_views += Convert.ToInt32(thisRow[18]);
-                        Output.WriteLine("      <td>" + thisRow[18] + "</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("      <td>0</td>");
-                    }
                     Output.WriteLine("    </tr>");
                 }
 
-                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
-                Output.WriteLine("    <tr align=\"right\" style=\"font-weight:bold\" >");
-                Output.WriteLine("      <td align=\"left\"><b>TOTAL</b></td>");
+				Output.WriteLine("    <tr><td class=\"sbkShw_CollectionHistoryTotalRule\" colspan=\"" + columns + "\"></td></tr>");
+				Output.WriteLine("    <tr class=\"sbkShw_CollectionHistoryTotalRow\" >");
+                Output.WriteLine("      <td style=\"text-align:left;\">TOTAL</td>");
                 Output.WriteLine("      <td>" + jpeg_views + "</td>");
                 Output.WriteLine("      <td>" + zoom_views + "</td>");
                 Output.WriteLine("      <td>" + citation_views + "</td>");
@@ -1621,19 +1839,17 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      <td>" + flash_views + "</td>");
                 Output.WriteLine("      <td>" + google_map_views + "</td>");
                 Output.WriteLine("      <td>" + download_views + "</td>");
-                Output.WriteLine("      <td>" + static_views + "</td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </table>");
             }
             Output.WriteLine("  <br /> <br />");
-            Output.WriteLine("</center>");
         }
 
         #endregion
 
         #region Method to add collection history as text
 
-        private void add_collection_history_text(TextWriter Output, string Collection, DataTable statsCount, Custom_Tracer Tracer)
+        private void add_collection_history_text(TextWriter Output, string Collection, DataTable StatsCount, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_collection_history_text", "Rendering HTML");
 
@@ -1646,9 +1862,9 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("CODE, MONTH, TOTAL VIEWS, VISITS, MAIN PAGES, BROWSES, SEARCH RESULTS, TITLE VIEWS, ITEM VIEWS, JPEG VIEWS, ZOOMABLE VIEWS, CITATION VIEWS, THUMBNAIL VIEWS, TEXT SEARCHES, FLASH VIEWS, MAP VIEWS, DOWNLOAD VIEWS, STATIC VIEWS");
 
             // Add the collection level information
-            if (statsCount != null)
+            if (StatsCount != null)
             {
-                foreach (DataRow thisRow in statsCount.Rows)
+                foreach (DataRow thisRow in StatsCount.Rows)
                 {
                     string month = Month_From_Int( Convert.ToInt32(thisRow[1]) );
                     Output.Write(Collection + "," + month + " " + thisRow[0] + ",");
@@ -1859,18 +2075,17 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
             Output.WriteLine("<p>Below are the most up to date numbers for overall utilization of " + currentMode.SobekCM_Instance_Abbreviation + ".  The first table shows the summary of views against all collections.  The second table includes the details for specialized item-level views.</p>");
             Output.WriteLine("</div>");
-            Output.WriteLine("<center>");
-
-            Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("    <tr align=\"right\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\">DATE</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">TOTAL<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">VISITS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">MAIN <br />PAGES</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">BROWSES</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">SEARCH<br />RESULTS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">TITLE<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">ITEM<br />VIEWS</span></th>");
+ 
+			Output.WriteLine("  <table id=\"sbkShw_OverallStatsTbl\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th style=\"width:140px;\">DATE</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">TOTAL<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">VISITS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">MAIN <br />PAGES</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">BROWSES</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">SEARCH<br />RESULTS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">TITLE<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">ITEM<br />VIEWS</th>");
             Output.WriteLine("    </tr>");
 
             int columns = 8;
@@ -1890,7 +2105,6 @@ namespace SobekCM.Library.HTML
             int download_views = 0;
             int citation_views = 0;
             int text_search_views = 0;
-            int static_views = 0;
 
             // Add the collection level information
             if (statsCount != null)
@@ -1899,15 +2113,15 @@ namespace SobekCM.Library.HTML
                 {
                     if (thisRow[0].ToString() != last_year)
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
+						Output.WriteLine("    <tr><td class=\"sbkShw_OverallStatsNewYear\" colspan=\"" + columns + "\">" + thisRow[0] + " STATISTICS</td></tr>");
                         last_year = thisRow[0].ToString();
                     }
                     else
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
+						Output.WriteLine("    <tr><td class=\"sbkShw_OverallStatsRule\" colspan=\"" + columns + "\"></td></tr>");
                     }
-                    Output.WriteLine("    <tr align=\"right\" >");
-                    Output.WriteLine("      <td align=\"left\">" + Month_From_Int(Convert.ToInt32(thisRow[1].ToString())) + " " + thisRow[0] + "</td>");
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>" + Month_From_Int(Convert.ToInt32(thisRow[1].ToString())) + " " + thisRow[0] + "</td>");
                    
                     hits += Convert.ToInt32(thisRow[2]);
                     Output.WriteLine("      <td>" + thisRow[2] + "</td>");
@@ -1946,9 +2160,10 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("    </tr>");
                 }
-                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
-                Output.WriteLine("    <tr align=\"right\" style=\"font-weight:bold\" >");
-                Output.WriteLine("      <td align=\"left\"><b>TOTAL</b></td>");
+
+				Output.WriteLine("    <tr><td class=\"sbkShw_OverallStatsTotalRule\" colspan=\"" + columns + "\"></td></tr>");
+				Output.WriteLine("    <tr class=\"sbkShw_OverallStatsTotalRow\">");
+                Output.WriteLine("      <td>TOTAL</td>");
                 Output.WriteLine("      <td>" + hits + "</td>");
                 Output.WriteLine("      <td>" + sessions + "</td>");
                 Output.WriteLine("      <td>" + main_pages + "</td>");
@@ -1962,37 +2177,36 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("<br /><br />");
 
-            Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("    <tr align=\"right\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\">DATE</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">JPEG<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">ZOOMABLE<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">CITATION<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">THUMBNAIL<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">TEXT<br />SEARCHES</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">FLASH<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">MAP<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">DOWNLOAD<br />VIEWS</span></th>");
-            Output.WriteLine("      <th width=\"90px\"><span style=\"color: White\">STATIC<br />VIEWS</span></th>");
-            Output.WriteLine("    </tr>");
+			Output.WriteLine("  <table id=\"sbkShw_OverallStatsTbl2\">");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th style=\"width:140px;\">DATE</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">JPEG<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">ZOOMABLE<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">CITATION<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">THUMBNAIL<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">TEXT<br />SEARCHES</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">FLASH<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">MAP<br />VIEWS</th>");
+			Output.WriteLine("      <th style=\"width:85px;\">DOWNLOAD<br />VIEWS</th>");
+			Output.WriteLine("    </tr>");
 
-            columns = 10;
+            columns = 9;
             last_year = String.Empty;
             if (statsCount != null)
             {
                 foreach (DataRow thisRow in statsCount.Rows)
                 {
-                    if (thisRow[0].ToString() != last_year)
-                    {
-                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
-                        last_year = thisRow[0].ToString();
-                    }
-                    else
-                    {
-                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
-                    }
-                    Output.WriteLine("    <tr align=\"right\" >");
-                    Output.WriteLine("      <td align=\"left\">" + Month_From_Int(Convert.ToInt32(thisRow[1].ToString())) + " " + thisRow[0] + "</td>");
+					if (thisRow[0].ToString() != last_year)
+					{
+						Output.WriteLine("    <tr><td class=\"sbkShw_OverallStatsNewYear\" colspan=\"" + columns + "\">" + thisRow[0] + " STATISTICS</td></tr>");
+						last_year = thisRow[0].ToString();
+					}
+					else
+					{
+						Output.WriteLine("    <tr><td class=\"sbkShw_OverallStatsRule\" colspan=\"" + columns + "\"></td></tr>");
+					}
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>" + Month_From_Int(Convert.ToInt32(thisRow[1].ToString())) + " " + thisRow[0] + "</td>");
 
                     if (thisRow[10] != DBNull.Value)
                     {
@@ -2066,21 +2280,12 @@ namespace SobekCM.Library.HTML
                     {
                         Output.WriteLine("      <td>0</td>");
                     }
-                    if (thisRow[18] != DBNull.Value)
-                    {
-                        static_views += Convert.ToInt32(thisRow[18]);
-                        Output.WriteLine("      <td>" + thisRow[18] + "</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("      <td>0</td>");
-                    }
                     Output.WriteLine("    </tr>");
                 }
 
-                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
-                Output.WriteLine("    <tr align=\"right\" style=\"font-weight:bold\" >");
-                Output.WriteLine("      <td align=\"left\"><b>TOTAL</b></td>");
+				Output.WriteLine("    <tr><td class=\"sbkShw_OverallStatsTotalRule\" colspan=\"" + columns + "\"></td></tr>");
+				Output.WriteLine("    <tr class=\"sbkShw_OverallStatsTotalRow\">");
+                Output.WriteLine("      <td>TOTAL</td>");
                 Output.WriteLine("      <td>" + jpeg_views + "</td>");
                 Output.WriteLine("      <td>" + zoom_views + "</td>");
                 Output.WriteLine("      <td>" + citation_views + "</td>");
@@ -2089,19 +2294,17 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      <td>" + flash_views + "</td>");
                 Output.WriteLine("      <td>" + google_map_views + "</td>");
                 Output.WriteLine("      <td>" + download_views + "</td>");
-                Output.WriteLine("      <td>" + static_views + "</td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </table>");
             }
             Output.WriteLine("  <br /> <br />");
-            Output.WriteLine("</center>");
         }
 
         #endregion
 
         #region Method to add the item count information as HTML
 
-        private void add_item_count_html(TextWriter Output, bool includesFYTD, Custom_Tracer Tracer )
+        private void add_item_count_html(TextWriter Output, bool IncludesFytd, Custom_Tracer Tracer )
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_item_count_html", "Rendering HTML");
 
@@ -2109,7 +2312,7 @@ namespace SobekCM.Library.HTML
             DataTable itemCount = null;
             string possible_source_file = SobekCM_Library_Settings.Base_Temporary_Directory + "item_count.xml";
             string possible_source_url = currentMode.Base_URL + "temp/item_count.xml";
-            if (includesFYTD)
+            if (IncludesFytd)
             {
                 possible_source_file = SobekCM_Library_Settings.Base_Temporary_Directory + "item_count_growth.xml";
                 possible_source_url = currentMode.Base_URL + "temp/item_count_growth.xml";
@@ -2138,7 +2341,7 @@ namespace SobekCM.Library.HTML
             if (itemCount == null)
             {
                 // Pull from database 
-                if (includesFYTD)
+                if (IncludesFytd)
                 {
                     DateTime fiscalStart = new DateTime(DateTime.Now.Year, 7, 1);
                     if (DateTime.Compare(DateTime.Now, fiscalStart) < 0)
@@ -2172,12 +2375,12 @@ namespace SobekCM.Library.HTML
             int ytd_pages = 0;
 
             // Add the text first
-            DataRow[] total_row = itemCount.Select("Row_Type='z'");
+            DataRow[] total_row = itemCount.Select("code1='ZZZ'");
             if (total_row.Length > 0)
             {
-                int titles = Convert.ToInt32(total_row[0][7]);
-                int items = Convert.ToInt32(total_row[0][8]);
-                int pages = Convert.ToInt32(total_row[0][9]);
+                int titles = Convert.ToInt32(total_row[0][6]);
+                int items = Convert.ToInt32(total_row[0][7]);
+                int pages = Convert.ToInt32(total_row[0][8]);
 
                 int million_pages = (pages / 1000000);
                 string page_string = million_pages.ToString();
@@ -2224,14 +2427,14 @@ namespace SobekCM.Library.HTML
                         break;
                 }
 
-                Output.WriteLine("<div class=\"SobekText\">");
+				Output.WriteLine("<div class=\"sbkShw_MainText\">");
                 Output.WriteLine("<p>The " + currentMode.SobekCM_Instance_Name + " ( " + currentMode.SobekCM_Instance_Abbreviation + " ) is comprised of collections, organized into collection groups and subdivided into subcollections.  Currently, there are " + items + " total items in " + currentMode.SobekCM_Instance_Abbreviation + ", which make up " + titles + " different titles.   In all, there are over " + page_string + " million pages in " + currentMode.SobekCM_Instance_Abbreviation + ".</p>");
 
-                if (includesFYTD)
+                if (IncludesFytd)
                 {
-                    ytd_titles = titles - Convert.ToInt32(total_row[0][10]);
-                    ytd_items = items - Convert.ToInt32(total_row[0][11]);
-                    ytd_pages = pages - Convert.ToInt32(total_row[0][12]);
+                    ytd_titles = titles - Convert.ToInt32(total_row[0][9]);
+                    ytd_items = items - Convert.ToInt32(total_row[0][10]);
+                    ytd_pages = pages - Convert.ToInt32(total_row[0][11]);
 
                     Output.WriteLine("<p>During the current fiscal year (which starts on July 1st), " + ytd_items + " items in " + ytd_titles + " titles have been added to " + currentMode.SobekCM_Instance_Abbreviation + ".  This has added " + ytd_pages + " pages to this digital collection.</p>");
                 }
@@ -2241,162 +2444,199 @@ namespace SobekCM.Library.HTML
             }
 
             // Add the header information
-            if (includesFYTD)
-            {
-                Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
-                Output.WriteLine("<center>");
-                Output.WriteLine("<table width=\"1000px\" border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            }
-            else
-            {
-                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            }
+			string tablename = "sbkShw_ItemCountTable";
+	        if (IncludesFytd)
+		        tablename = "sbkShw_ItemCountTableFytd";
 
-            int rule = 7;
-            if (includesFYTD)
-                rule = 10;
+            Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
+			Output.WriteLine("<table id=\"" + tablename + "\">");
 
             if (itemCount.Rows.Count > 0)
             {
                 currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Text;
-                Output.WriteLine("  <tr align=\"right\"><td align=\"right\" colspan=\"" + rule + "\"><a href=\"" + currentMode.Redirect_URL() + "\"><i>Export as CSV</i></a>&nbsp; </td></tr>");
+                //Output.WriteLine("  <tr align=\"right\"><td align=\"right\" colspan=\"" + rule + "\"><a href=\"" + currentMode.Redirect_URL() + "\"><i>Export as CSV</i></a>&nbsp; </td></tr>");
             }
 
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th><span style=\"color: White\">GROUP CODE</span></th>");
-            Output.WriteLine("    <th><span style=\"color: White\">COLL CODE</span></th>");
-            Output.WriteLine("    <th><span style=\"color: White\">SUB CODE</span></th>");
-            Output.WriteLine("    <th width=\"250\"><span style=\"color: White\">NAME</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White; text-align: right\">TITLES</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White; text-align: right\">ITEMS</span></th>");
-            Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White; text-align: right\">PAGES</span></th>");
+			Output.WriteLine("  <thead>");
+            Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th>NUMBER</th>");
+            Output.WriteLine("      <th id=\"code1\" style=\"width:100px;\">GROUP CODE</span></th>");
+			Output.WriteLine("      <th style=\"width:100px;\">COLL CODE</th>");
+			Output.WriteLine("      <th id=\"code3\" style=\"width:100px;\">SUB CODE</th>");
+			Output.WriteLine("      <th style=\"width:100px;\">CODES</th>");
+            Output.WriteLine("      <th>NAME</th>");
+			Output.WriteLine("      <th style=\"width:80px;\">TITLES</th>");
+			Output.WriteLine("      <th style=\"width:80px;\">ITEMS</th>");
+			Output.WriteLine("      <th style=\"width:80px;\">PAGES</th>");
 
 
-            if (includesFYTD)
+            if (IncludesFytd)
             {
-                Output.WriteLine("    <th align=\"right\"><span style=\"color: White; text-align: right\">FYTD TITLES</span></th>");
-                Output.WriteLine("    <th align=\"right\"><span style=\"color: White; text-align: right\">FYTD ITEMS</span></th>");
-                Output.WriteLine("    <th align=\"right\"><span style=\"color: White; text-align: right\">FYTD PAGES</span></th>");
+				Output.WriteLine("      <th style=\"width:80px;\">FYTD TITLES</th>");
+				Output.WriteLine("      <th style=\"width:80px;\">FYTD ITEMS</th>");
+				Output.WriteLine("      <th style=\"width:80px;\">FYTD PAGES</th>");
             }
-            Output.WriteLine("  </tr>");
+            Output.WriteLine("    </tr>");
+			Output.WriteLine("  </thead>");
+			Output.WriteLine("  <tbody>");
 
             // Now, add each line
-            foreach (DataRow thisRow in itemCount.Rows)
-            {
-                if (includesFYTD)
-                {
-                    ytd_titles = Convert.ToInt32(thisRow[7]) - Convert.ToInt32(thisRow[10]);
-                    ytd_items = Convert.ToInt32(thisRow[8]) - Convert.ToInt32(thisRow[11]);
-                    ytd_pages = Convert.ToInt32(thisRow[9]) - Convert.ToInt32(thisRow[12]);
-                }
+	        int count = 0;
+	        foreach (DataRow thisRow in itemCount.Rows)
+	        {
+		        count++;
 
-                bool active = false;
-                if (Convert.ToBoolean(thisRow[5]))
-                    active = true;
-                if (( includesFYTD ) || (active))
-                {
-                    switch (thisRow[0].ToString())
-                    {
-                        case "g":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</span></td>");
-                            Output.WriteLine("    <td colspan=\"" + ( rule - 4 ) + "\" >&nbsp;</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+		        if (IncludesFytd)
+		        {
+			        ytd_titles = Convert.ToInt32(thisRow[6]) - Convert.ToInt32(thisRow[9]);
+			        ytd_items = Convert.ToInt32(thisRow[7]) - Convert.ToInt32(thisRow[10]);
+			        ytd_pages = Convert.ToInt32(thisRow[8]) - Convert.ToInt32(thisRow[11]);
+		        }
 
-                        case "c":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            if (active)
-                            {
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "\">" + thisRow[2] + "</a></td>");
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "/all\">" + thisRow[7] + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "/all\">" + thisRow[8] + "</a></td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>" + thisRow[2] + "</td>");
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                                Output.WriteLine("    <td>" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[7] + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[8] + "</td>");
-                            }
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[9] + "</td>");
-                            if (includesFYTD)
-                            {
-                                Output.WriteLine("    <td align=\"right\">" + ytd_titles + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + ytd_items + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + ytd_pages + "</td>");
-                            }
 
-                            Output.WriteLine("  </tr>");
-                            break;
+		        string code1 = thisRow[0].ToString().ToUpper();
+		        string code2 = thisRow[1].ToString().ToUpper();
+		        string code3 = thisRow[2].ToString().ToUpper();
+		        string thisCode = thisRow[3].ToString().ToUpper();
+		        string name = thisRow[4].ToString();
+		        bool active = Convert.ToBoolean(thisRow[5]);
 
-                        case "s":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[2] + "</span></td>");
-                            if (active)
-                            {
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "\">" + thisRow[3] + "</a></td>");
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "\">" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "/all\">" + thisRow[7] + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "/all\">" + thisRow[8] + "</a></td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>" + thisRow[3] + "</td>");
-                                Output.WriteLine("    <td>" + thisRow[4].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[7] + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[8] + "</td>");
-                            }
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[9] + "</td>");
-                            if (includesFYTD)
-                            {
-                                Output.WriteLine("    <td align=\"right\">" + ytd_titles + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + ytd_items + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + ytd_pages + "</td>");
-                            }
-                            Output.WriteLine("  </tr>");
-                            break;
+		        if (code1 == "ZZZ")
+		        {
+					Output.WriteLine("    <tr id=\"sbkShw_ItemCountTotalRow\">");
+			        Output.WriteLine("      <td>" + count + "</td>");
+			        Output.WriteLine("      <td>TOTAL</td>");
+			        Output.WriteLine("      <td>&nbsp;</td>");
+			        Output.WriteLine("      <td>&nbsp;</td>");
+			        Output.WriteLine("      <td>ZZZ</td>");
+					Output.WriteLine("      <td>TOTAL</td>");
+				    Output.WriteLine("      <td>" + thisRow[6] + "</td>");
+				    Output.WriteLine("      <td>" + thisRow[7] + "</td>");
+			        Output.WriteLine("      <td>" + thisRow[8] + "</td>");
 
-                        case "z":
-                            Output.WriteLine("  <tr><td bgcolor=\"Black\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td colspan=\"4\"><b>" + SobekCM_Library_Settings.System_Name.ToUpper().Replace("&","&amp;").Replace("\"","&quot;") + "</b></td>");
-                            Output.WriteLine("    <td align=\"right\"><b>" + thisRow[7] + "</b></td>");
-                            Output.WriteLine("    <td align=\"right\"><b>" + thisRow[8] + "</b></td>");
-                            Output.WriteLine("    <td align=\"right\"><b>" + thisRow[9] + "</b></td>");
+			        if (IncludesFytd)
+			        {
+				        Output.WriteLine("      <td>" + ytd_titles + "</td>");
+				        Output.WriteLine("      <td>" + ytd_items + "</td>");
+				        Output.WriteLine("      <td>" + ytd_pages + "</td>");
+			        }
 
-                            if (includesFYTD)
-                            {
-                                Output.WriteLine("    <td align=\"right\">" + ytd_titles + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + ytd_items + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + ytd_pages + "</td>");
-                            }
+			        Output.WriteLine("    </tr>");
+		        }
+		        else
+		        {
+			        Output.WriteLine("    <tr>");
+			        Output.WriteLine("      <td>" + count + "</td>");
 
-                            Output.WriteLine("  </tr>");
-                            break;
-                    }
-                }
-            }
+			        // Add the first code, rendering differently if there is a CODE2
+			        if (code2.Length == 0) 
+			        {
+				        if (active)
+					        Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code1 + "\">" + code1 + "</a></td>");
+				        else
+					        Output.WriteLine("      <td>" + code1 + "</td>");
+			        }
+			        else
+			        {
+				        Output.WriteLine("      <td class=\"sbkShw_ItemCountDimmed\" >" + code1 + "</td>");
+			        }
 
-            // Close out this table
+			        // Add the second code
+			        if (code2.Length > 0)
+			        {
+				        if (code3.Length == 0)
+				        {
+					        if (active)
+						        Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code2 + "\">" + code2 + "</a></td>");
+					        else
+						        Output.WriteLine("      <td>" + code2 + "</td>");
+				        }
+				        else
+				        {
+					        Output.WriteLine("      <td><span class=\"sbkShw_ItemCountDimmed\">" + code2 + "</span></td>");
+				        }
+			        }
+			        else
+			        {
+				        Output.WriteLine("      <td>&nbsp;</td>");
+			        }
+
+			        // Add the third code
+			        if (code3.Length > 0)
+			        {
+				        if (active)
+					        Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code3 + "\">" + code3 + "</a></td>");
+				        else
+					        Output.WriteLine("      <td>" + code3 + "</td>");
+			        }
+			        else
+			        {
+				        Output.WriteLine("      <td>&nbsp;</td>");
+			        }
+
+			        Output.WriteLine("      <td>" + thisCode + "</td>");
+
+			        if (active)
+			        {
+				        Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "\">" + name.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
+				        Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[6] + "</a></td>");
+				        Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[7] + "</a></td>");
+			        }
+			        else
+			        {
+				        Output.WriteLine("      <td>" + name + "</td>");
+				        Output.WriteLine("      <td>" + thisRow[6] + "</td>");
+				        Output.WriteLine("      <td>" + thisRow[7] + "</td>");
+			        }
+			        Output.WriteLine("      <td>" + thisRow[8] + "</td>");
+			        if (IncludesFytd)
+			        {
+				        Output.WriteLine("      <td>" + ytd_titles + "</td>");
+				        Output.WriteLine("      <td>" + ytd_items + "</td>");
+				        Output.WriteLine("      <td>" + ytd_pages + "</td>");
+			        }
+			        Output.WriteLine("    </tr>");
+		        }
+		        //  Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
+	        }
+
+	        // Close out this table
+			Output.WriteLine("  </tbody>");
             Output.WriteLine("</table>");
-            if (includesFYTD)
-            {
-                Output.WriteLine("</center>");
-                Output.WriteLine("<div id=\"pagecontainer_resumed\">");
-            }
 
+			Output.WriteLine();
+			Output.WriteLine("<script type=\"text/javascript\">");
+	        Output.WriteLine("  jQuery(document).ready(function() {");
+	        Output.WriteLine("      var oTable = jQuery('#" + tablename + "').dataTable({");
+	        Output.WriteLine("           \"iDisplayLength\": 1000,");
+	      //  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
+	        Output.WriteLine("           \"bFilter\": false,");
+			Output.WriteLine("           \"sDom\": '<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+	        Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			Output.WriteLine("           \"bAutoWidth\": false,");
+			if ( IncludesFytd )
+				Output.WriteLine("           \"aoColumns\": [{ \"bVisible\": false }, null, { \"bSortable\": false }, null, { \"bVisible\": false }, null, null, null, null, null, null, null ] });");
+			else
+				Output.WriteLine("           \"aoColumns\": [{ \"bVisible\": false }, null, { \"bSortable\": false }, null, { \"bVisible\": false }, null, null, null, null ] });");
+
+			Output.WriteLine();
+			Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code3\"), 2);");
+			Output.WriteLine("      $(\"#code3\").click( function () {");
+			Output.WriteLine("         oTable.fnSort( [[4,\"asc\"]] );");
+			Output.WriteLine("      });");
+			Output.WriteLine();
+			Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code1\"), 2);");
+			Output.WriteLine("      $(\"#code1\").click( function () {");
+			Output.WriteLine("         oTable.fnSort( [[0,\"asc\"]] );");
+			Output.WriteLine("      });");
+			Output.WriteLine("  } );");
+			Output.WriteLine("</script>");
+	        Output.WriteLine();
+
+	        
+
+
+            Output.WriteLine("<div id=\"pagecontainer_resumed\">");
             Output.WriteLine("<br />");
             Output.WriteLine();
         }
@@ -2405,7 +2645,7 @@ namespace SobekCM.Library.HTML
 
         #region Method to add the item count information as TEXT
 
-        private void add_item_count_textual(TextWriter Output, bool includesFYTD, Custom_Tracer Tracer)
+        private void add_item_count_textual(TextWriter Output, bool IncludesFytd, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Statistics_HtmlSubwriter.add_item_count_textual", "Rendering HTML");
 
@@ -2413,7 +2653,7 @@ namespace SobekCM.Library.HTML
             DataTable itemCount = null;
             string possible_source_file = SobekCM_Library_Settings.Base_Temporary_Directory + "item_count.xml";
             string possible_source_url = currentMode.Base_URL + "temp/item_count.xml";
-            if (includesFYTD)
+            if (IncludesFytd)
             {
                 possible_source_file = SobekCM_Library_Settings.Base_Temporary_Directory + "item_count_growth.xml";
                 possible_source_url = currentMode.Base_URL + "temp/item_count_growth.xml";
@@ -2442,7 +2682,7 @@ namespace SobekCM.Library.HTML
             if (itemCount == null)
             {
                 // Pull from database 
-                if (includesFYTD)
+                if (IncludesFytd)
                 {
                     DateTime fiscalStart = new DateTime(DateTime.Now.Year, 7, 1);
                     if (DateTime.Compare(DateTime.Now, fiscalStart) < 0)
@@ -2521,280 +2761,339 @@ namespace SobekCM.Library.HTML
 
         #region Method to add the item count between two arbitrary dates as HTML
 
-        private void add_item_count_arbitrary_html(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Statistics_HtmlSubwriter.add_item_count_arbitrary_html", "Rendering HTML");
+	    private void add_item_count_arbitrary_html(TextWriter Output, Custom_Tracer Tracer)
+	    {
+		    Tracer.Add_Trace("Statistics_HtmlSubwriter.add_item_count_arbitrary_html", "Rendering HTML");
 
-            //Output.WriteLine("<div id=\"calendardiv\" style=\"position:absolute;visibility:hidden;background-color:white;layer-background-color:white;\"></div>");
-            //Output.WriteLine();
+		    //Output.WriteLine("<div id=\"calendardiv\" style=\"position:absolute;visibility:hidden;background-color:white;layer-background-color:white;\"></div>");
+		    //Output.WriteLine();
 
-            //Output.WriteLine("<SCRIPT LANGUAGE=\"JavaScript\">");
-            //Output.WriteLine("  document.write(getCalendarStyles());");
-            //Output.WriteLine("  var cal1x = new CalendarPopup(\"calendardiv\");");
-            //Output.WriteLine("  var cal2x = new CalendarPopup(\"calendardiv\");");
-            //Output.WriteLine("</SCRIPT>");
-            Output.WriteLine();
+		    //Output.WriteLine("<SCRIPT LANGUAGE=\"JavaScript\">");
+		    //Output.WriteLine("  document.write(getCalendarStyles());");
+		    //Output.WriteLine("  var cal1x = new CalendarPopup(\"calendardiv\");");
+		    //Output.WriteLine("  var cal2x = new CalendarPopup(\"calendardiv\");");
+		    //Output.WriteLine("</SCRIPT>");
+		    Output.WriteLine();
 
-            Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("  <p>This option allows the complete title count, item count, and page count to be viewed for a previous time and to additionally see the growth between two arbitrary dates.</p>");
-            Output.WriteLine();
-            Output.WriteLine("  <h2>Selected Date Range</h2>");
-            Output.WriteLine();
+		    Output.WriteLine("<div class=\"SobekText\">");
+		    Output.WriteLine("  <p>This option allows the complete title count, item count, and page count to be viewed for a previous time and to additionally see the growth between two arbitrary dates.</p>");
+		    Output.WriteLine();
+		    Output.WriteLine("  <h2>Selected Date Range</h2>");
+		    Output.WriteLine();
 
-            // Get the browse info mode, and also the redirect url without the mode information
-            string currentInfoBrowseMode = currentMode.Info_Browse_Mode;
-            currentMode.Info_Browse_Mode = String.Empty;
-            string redirect_url = currentMode.Redirect_URL();
-            currentMode.Info_Browse_Mode = currentInfoBrowseMode;
-
-
-            // Get the two dates
-            DataTable itemCount = null;
-            DateTime? date1 = null;
-            DateTime? date2 = null;
-            if (currentInfoBrowseMode.Length > 0)
-            {
-                try
-                {
-                    string[] splitter = currentInfoBrowseMode.Split("-".ToCharArray());
-                    if (splitter.Length == 3)
-                    {
-                        int year1;
-                        Int32.TryParse(splitter[2], out year1);
-                        if (year1 < 100)
-                            year1 = 2000 + year1;
-                        date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
-                        itemCount = SobekCM_Database.Get_Item_Aggregation_Count_DateRange(date1.Value, date1.Value, Tracer);
-                    }
-                    else if (splitter.Length == 6)
-                    {
-                        int year1;
-                        Int32.TryParse(splitter[2], out year1);
-                        if (year1 < 100)
-                            year1 = 2000 + year1;
-                        int year2;
-                        Int32.TryParse(splitter[5], out year2);
-                        if (year2 < 100)
-                            year2 = 2000 + year2;
-                        date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
-                        date2 = new DateTime(year2, Convert.ToInt32(splitter[3]), Convert.ToInt32(splitter[4]));
-
-                        if (date1.Value.CompareTo(date2.Value) > 0)
-                        {
-                            DateTime? tempDate = date1;
-                            date1 = date2;
-                            date2 = tempDate;
-                        }
-
-                        DateTime modifiedDate = date2.Value.AddDays(1);
-                        itemCount = SobekCM_Database.Get_Item_Aggregation_Count_DateRange(date1.Value, modifiedDate, Tracer);
-                    }
-
-                }
-                catch(Exception)
-                {
-                    // If the parsing of the date from the URL fails, no item count information is pulled from the database
-                }
-            }
-
-           
-            Output.WriteLine("  <p>The title count, item count, and page count appear below for the following two arbitrary dates:</p>");
-
-            Output.WriteLine("  <script type=\"text/javascript\">");
-            Output.WriteLine("    window.onload = function() { ");
-            if (date1.HasValue)
-            {
-                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date1.Value.Year + ", month:" + date1.Value.Month + ", day:" + date1.Value.Day + "	} 	});");
-            }
-            else
-            {
-                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
-            }
-
-            if (date2.HasValue)
-            {
-                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date2.Value.Year + ", month:" + date2.Value.Month + ", day:" + date2.Value.Day + "	} 	});");
-            }
-            else
-            {
-                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
-            }
-            Output.WriteLine("    }; ");
-            Output.WriteLine("  </script>");
-
-            Output.WriteLine("  <form name=\"statistics_form\" id=\"addedForm\">");
-            Output.WriteLine("    <table>");
-            Output.WriteLine("      <tr height=\"45px\" valign=\"middle\">");
-            Output.WriteLine("        <td width=\"100px\">&nbsp;</td>");
-            Output.WriteLine("        <td>From:</td>");
-            if (date1.HasValue)
-            {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"smallinput\" value=\"" + date1.Value.ToShortDateString() + "\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
-            }
-            else
-            {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"smallinput_initial\" value=\"mm/dd/yyyy\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
-            }
-            Output.WriteLine("        <td width=\"50px\"><img src=\"" + currentMode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
-            Output.WriteLine("        <td>&nbsp;</td>");
-            Output.WriteLine("      </tr>");
-
-            Output.WriteLine("      <tr height=\"45px\" valign=\"middle\">");
-            Output.WriteLine("        <td>&nbsp;</td>");
-            Output.WriteLine("        <td>To:</td>");
-            if (date2.HasValue)
-            {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"smallinput\" value=\"" + date2.Value.ToShortDateString() + "\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
-            }
-            else
-            {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"smallinput_initial\" value=\"mm/dd/yyyy\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
-            }
-            Output.WriteLine("        <td><img src=\"" + currentMode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
-            Output.WriteLine("        <td>");
-            Output.WriteLine("          <button title=\"Select Range\" class=\"go_button\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\"></button>");
-            Output.WriteLine("        <td>");
-            Output.WriteLine("      </tr>");
-            Output.WriteLine("    </table>");
-            Output.WriteLine("  </form>");
-            Output.WriteLine("  <p>To change the dates shown, choose your dates above and hit the GO button.</p>");
-            Output.WriteLine();
-
-            if (itemCount != null)
-            {
-                Output.WriteLine("<h2>Item Count and Growth</h2>");
-                Output.Write("<p>Below are the number of titles, items, and pages in each collection and subcollection.  The &quot;INITIAL&quot; values are the values that were present at midnight on " + date1.Value.ToShortDateString() + " before any new items were processed that day.");
-                if (date2.HasValue)
-                {
-                    Output.Write(" The &quot;ADDED&quot; values are the number of titles, items, and pages that were added between " + date1.Value.ToShortDateString() + " and " + date2.Value.ToShortDateString() + " inclusive.");
-                }
-                Output.WriteLine("</p>");
-                Output.WriteLine();
-                Output.WriteLine("</div>");
-
-                const int rule = 10;
-                Output.WriteLine("</div>");
-                Output.WriteLine("<center>");
-                Output.WriteLine("<table width=\"1000px\" border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-                //   Output.WriteLine("  <tr align=\"right\"><td align=\"right\" colspan=\"" + rule + "\"><a href=\"" + currentMode.Redirect_URL() + "\"><i>Export as CSV</i></a>&nbsp; </td></tr>");
-
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-                Output.WriteLine("    <th><span style=\"color: White\">GROUP CODE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">COLL CODE</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">SUB CODE</span></th>");
-                Output.WriteLine("    <th width=\"250\"><span style=\"color: White\">NAME</span></th>");
-                Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">INITIAL<br />TITLES</span></th>");
-                Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">INITIAL<br />ITEMS</span></th>");
-                Output.WriteLine("    <th width=\"80\" align=\"right\"><span style=\"color: White\">INITIAL<br />PAGES</span></th>");
+		    // Get the browse info mode, and also the redirect url without the mode information
+		    string currentInfoBrowseMode = currentMode.Info_Browse_Mode;
+		    currentMode.Info_Browse_Mode = String.Empty;
+		    string redirect_url = currentMode.Redirect_URL();
+		    currentMode.Info_Browse_Mode = currentInfoBrowseMode;
 
 
-                Output.WriteLine("    <th align=\"right\"><span style=\"color: White\">ADDED<br />TITLES</span></th>");
-                Output.WriteLine("    <th align=\"right\"><span style=\"color: White\">ADDED<br />ITEMS</span></th>");
-                Output.WriteLine("    <th align=\"right\"><span style=\"color: White\">ADDED<br />PAGES</span></th>");
-                Output.WriteLine("  </tr>");
+		    // Get the two dates
+		    DataTable itemCount = null;
+		    DateTime? date1 = null;
+		    DateTime? date2 = null;
+		    if (currentInfoBrowseMode.Length > 0)
+		    {
+			    try
+			    {
+				    string[] splitter = currentInfoBrowseMode.Split("-".ToCharArray());
+				    if (splitter.Length == 3)
+				    {
+					    int year1;
+					    Int32.TryParse(splitter[2], out year1);
+					    if (year1 < 100)
+						    year1 = 2000 + year1;
+					    date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
+					    itemCount = SobekCM_Database.Get_Item_Aggregation_Count_DateRange(date1.Value, date1.Value, Tracer);
+				    }
+				    else if (splitter.Length == 6)
+				    {
+					    int year1;
+					    Int32.TryParse(splitter[2], out year1);
+					    if (year1 < 100)
+						    year1 = 2000 + year1;
+					    int year2;
+					    Int32.TryParse(splitter[5], out year2);
+					    if (year2 < 100)
+						    year2 = 2000 + year2;
+					    date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
+					    date2 = new DateTime(year2, Convert.ToInt32(splitter[3]), Convert.ToInt32(splitter[4]));
 
-                // Now, add each line
-                foreach (DataRow thisRow in itemCount.Rows)
-                {
-                    bool active = false;
-                    if (Convert.ToBoolean(thisRow[5]))
-                        active = true;
+					    if (date1.Value.CompareTo(date2.Value) > 0)
+					    {
+						    DateTime? tempDate = date1;
+						    date1 = date2;
+						    date2 = tempDate;
+					    }
 
-                    switch (thisRow[0].ToString())
-                    {
-                        case "g":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td><span style=\"color: White\">" + thisRow[4] + "</span></td>");
-                            Output.WriteLine("    <td colspan=\"" + (rule - 4) + "\" >&nbsp;</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+					    DateTime modifiedDate = date2.Value.AddDays(1);
+					    itemCount = SobekCM_Database.Get_Item_Aggregation_Count_DateRange(date1.Value, modifiedDate, Tracer);
+				    }
 
-                        case "c":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            if (active)
-                            {
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "\">" + thisRow[2] + "</a></td>");
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "\">" + thisRow[4] + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "/all\">" + thisRow[7] + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[2].ToString().ToLower() + "/all\">" + thisRow[8] + "</a></td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>" + thisRow[2] + "</td>");
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                                Output.WriteLine("    <td>" + thisRow[4] + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[7] + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[8] + "</td>");
-                            }
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[9] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[10] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[11] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[12] + "</td>");
+			    }
+			    catch (Exception)
+			    {
+				    // If the parsing of the date from the URL fails, no item count information is pulled from the database
+			    }
+		    }
 
-                            Output.WriteLine("  </tr>");
-                            break;
 
-                        case "s":
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[1] + "</span></td>");
-                            Output.WriteLine("    <td><span style=\"color: #999999\">" + thisRow[2] + "</span></td>");
-                            if (active)
-                            {
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "\">" + thisRow[3] + "</a></td>");
-                                Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "\">" + thisRow[4] + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "/all\">" + thisRow[7] + "</a></td>");
-                                Output.WriteLine("    <td align=\"right\"><a href=\"" + currentMode.Base_URL + thisRow[3].ToString().ToLower() + "/all\">" + thisRow[8] + "</a></td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>" + thisRow[3] + "</td>");
-                                Output.WriteLine("    <td>" + thisRow[4] + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[7] + "</td>");
-                                Output.WriteLine("    <td align=\"right\">" + thisRow[8] + "</td>");
-                            }
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[9] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[10] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[11] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[12] + "</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
+		    Output.WriteLine("  <p>The title count, item count, and page count appear below for the following two arbitrary dates:</p>");
 
-                        case "z":
-                            Output.WriteLine("  <tr><td bgcolor=\"Black\" colspan=\"" + rule + "\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td colspan=\"4\"><b>UNIVERSITY OF FLORIDA DIGITAL COLLECTIONS</b></td>");
-                            Output.WriteLine("    <td align=\"right\"><b>" + thisRow[7] + "</b></td>");
-                            Output.WriteLine("    <td align=\"right\"><b>" + thisRow[8] + "</b></td>");
-                            Output.WriteLine("    <td align=\"right\"><b>" + thisRow[9] + "</b></td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[10] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[11] + "</td>");
-                            Output.WriteLine("    <td align=\"right\">" + thisRow[12] + "</td>");
-                            Output.WriteLine("  </tr>");
-                            break;
-                    }
-                }
+		    Output.WriteLine("  <script type=\"text/javascript\">");
+		    Output.WriteLine("    window.onload = function() { ");
+		    if (date1.HasValue)
+		    {
+			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date1.Value.Year + ", month:" + date1.Value.Month + ", day:" + date1.Value.Day + "	} 	});");
+		    }
+		    else
+		    {
+			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
+		    }
 
-                // Close out this table
-                Output.WriteLine("</table>");
-                Output.WriteLine("</center>");
-                Output.WriteLine("<div id=\"pagecontainer_resumed\">");
-            }
-            else
-            {
-                Output.WriteLine("<br /><br />");
-                Output.WriteLine("</div>");
-            }
-        }
+		    if (date2.HasValue)
+		    {
+			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date2.Value.Year + ", month:" + date2.Value.Month + ", day:" + date2.Value.Day + "	} 	});");
+		    }
+		    else
+		    {
+			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + currentMode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
+		    }
+		    Output.WriteLine("    }; ");
+		    Output.WriteLine("  </script>");
 
-        #endregion
+		    Output.WriteLine("  <form name=\"statistics_form\" id=\"addedForm\">");
+		    Output.WriteLine("    <table>");
+			Output.WriteLine("      <tr style=\"height:45px;vertical-align:middle;\">");
+			Output.WriteLine("        <td style=\"width:100px;\">&nbsp;</td>");
+		    Output.WriteLine("        <td>From:</td>");
+		    if (date1.HasValue)
+		    {
+			    Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"smallinput\" value=\"" + date1.Value.ToShortDateString() + "\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+		    }
+		    else
+		    {
+			    Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"smallinput_initial\" value=\"mm/dd/yyyy\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+		    }
+		    Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + currentMode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
+		    Output.WriteLine("        <td>&nbsp;</td>");
+		    Output.WriteLine("      </tr>");
+
+			Output.WriteLine("      <tr style=\"height:45px;vertical-align:middle;\">");
+		    Output.WriteLine("        <td>&nbsp;</td>");
+		    Output.WriteLine("        <td>To:</td>");
+		    if (date2.HasValue)
+		    {
+			    Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"smallinput\" value=\"" + date2.Value.ToShortDateString() + "\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+		    }
+		    else
+		    {
+			    Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"smallinput_initial\" value=\"mm/dd/yyyy\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+		    }
+		    Output.WriteLine("        <td><img src=\"" + currentMode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
+		    Output.WriteLine("        <td>");
+			Output.WriteLine("          <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">GO <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+		    Output.WriteLine("        <td>");
+		    Output.WriteLine("      </tr>");
+		    Output.WriteLine("    </table>");
+		    Output.WriteLine("  </form>");
+		    Output.WriteLine("  <p>To change the dates shown, choose your dates above and hit the GO button.</p>");
+		    Output.WriteLine();
+
+			if (itemCount == null)
+			{
+				Output.WriteLine("</div>");
+			}
+			else
+		    {
+			    Output.WriteLine("<h2>Item Count and Growth</h2>");
+			    Output.Write("<p>Below are the number of titles, items, and pages in each collection and subcollection.  The &quot;INITIAL&quot; values are the values that were present at midnight on " + date1.Value.ToShortDateString() + " before any new items were processed that day.");
+			    if (date2.HasValue)
+			    {
+				    Output.Write(" The &quot;ADDED&quot; values are the number of titles, items, and pages that were added between " + date1.Value.ToShortDateString() + " and " + date2.Value.ToShortDateString() + " inclusive.");
+			    }
+			    Output.WriteLine("</p>");
+			    Output.WriteLine();
+			    Output.WriteLine("</div>");
+
+			    const int RULE = 10;
+			    Output.WriteLine("</div>");
+
+
+			    Output.WriteLine("<table id=\"sbkShw_ItemCountTableArbitrary\">");
+
+			    if (itemCount.Rows.Count > 0)
+			    {
+				    currentMode.Statistics_Type = Statistics_Type_Enum.Item_Count_Text;
+				    //Output.WriteLine("  <tr align=\"right\"><td align=\"right\" colspan=\"" + rule + "\"><a href=\"" + currentMode.Redirect_URL() + "\"><i>Export as CSV</i></a>&nbsp; </td></tr>");
+			    }
+
+			    Output.WriteLine("  <thead>");
+			    Output.WriteLine("    <tr>");
+			    Output.WriteLine("      <th>NUMBER</th>");
+			    Output.WriteLine("      <th id=\"code1\" style=\"width:100px;\">GROUP CODE</span></th>");
+			    Output.WriteLine("      <th style=\"width:100px;\">COLL CODE</th>");
+			    Output.WriteLine("      <th id=\"code3\" style=\"width:100px;\">SUB CODE</th>");
+			    Output.WriteLine("      <th>CODES</th>");
+			    Output.WriteLine("      <th>NAME</th>");
+			    Output.WriteLine("      <th style=\"width:80px;\">INITIAL TITLES</th>");
+			    Output.WriteLine("      <th style=\"width:80px;\">INTIAL ITEMS</th>");
+			    Output.WriteLine("      <th style=\"width:80px;\">INITIAL PAGES</th>");
+			    Output.WriteLine("      <th style=\"width:80px;\">ADDED TITLES</th>");
+			    Output.WriteLine("      <th style=\"width:80px;\">ADDED ITEMS</th>");
+			    Output.WriteLine("      <th style=\"width:80px;\">ADDED PAGES</th>");
+			    Output.WriteLine("    </tr>");
+			    Output.WriteLine("  </thead>");
+			    Output.WriteLine("  <tbody>");
+
+			    // Now, add each line
+			    int count = 0;
+			    foreach (DataRow thisRow in itemCount.Rows)
+			    {
+				    count++;
+
+				    string code1 = thisRow[0].ToString().ToUpper();
+				    string code2 = thisRow[1].ToString().ToUpper();
+				    string code3 = thisRow[2].ToString().ToUpper();
+				    string thisCode = thisRow[3].ToString().ToUpper();
+				    string name = thisRow[4].ToString();
+				    bool active = Convert.ToBoolean(thisRow[5]);
+				    int added_titles = Convert.ToInt32(thisRow[6]) - Convert.ToInt32(thisRow[9]);
+				    int added_items = Convert.ToInt32(thisRow[7]) - Convert.ToInt32(thisRow[10]);
+				    int added_pages = Convert.ToInt32(thisRow[8]) - Convert.ToInt32(thisRow[11]);
+
+				    if (code1 == "ZZZ")
+				    {
+					    Output.WriteLine("    <tr id=\"sbkShw_ItemCountTotalRow\">");
+					    Output.WriteLine("      <td>" + count + "</td>");
+					    Output.WriteLine("      <td>TOTAL</td>");
+					    Output.WriteLine("      <td>&nbsp;</td>");
+					    Output.WriteLine("      <td>&nbsp;</td>");
+					    Output.WriteLine("      <td>ZZZ</td>");
+					    Output.WriteLine("      <td>TOTAL</td>");
+					    Output.WriteLine("      <td>" + thisRow[6] + "</td>");
+					    Output.WriteLine("      <td>" + thisRow[7] + "</td>");
+					    Output.WriteLine("      <td>" + thisRow[8] + "</td>");
+					    Output.WriteLine("      <td>" + added_titles + "</td>");
+					    Output.WriteLine("      <td>" + added_items + "</td>");
+					    Output.WriteLine("      <td>" + added_pages + "</td>");
+
+
+					    Output.WriteLine("    </tr>");
+				    }
+				    else
+				    {
+					    Output.WriteLine("    <tr>");
+					    Output.WriteLine("      <td>" + count + "</td>");
+
+					    // Add the first code, rendering differently if there is a CODE2
+					    if (code2.Length == 0)
+					    {
+						    if (active)
+							    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code1 + "\">" + code1 + "</a></td>");
+						    else
+							    Output.WriteLine("      <td>" + code1 + "</td>");
+					    }
+					    else
+					    {
+						    Output.WriteLine("      <td class=\"sbkShw_ItemCountDimmed\" >" + code1 + "</td>");
+					    }
+
+					    // Add the second code
+					    if (code2.Length > 0)
+					    {
+						    if (code3.Length == 0)
+						    {
+							    if (active)
+								    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code2 + "\">" + code2 + "</a></td>");
+							    else
+								    Output.WriteLine("      <td>" + code2 + "</td>");
+						    }
+						    else
+						    {
+							    Output.WriteLine("      <td><span class=\"sbkShw_ItemCountDimmed\">" + code2 + "</span></td>");
+						    }
+					    }
+					    else
+					    {
+						    Output.WriteLine("      <td>&nbsp;</td>");
+					    }
+
+					    // Add the third code
+					    if (code3.Length > 0)
+					    {
+						    if (active)
+							    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + code3 + "\">" + code3 + "</a></td>");
+						    else
+							    Output.WriteLine("      <td>" + code3 + "</td>");
+					    }
+					    else
+					    {
+						    Output.WriteLine("      <td>&nbsp;</td>");
+					    }
+
+					    Output.WriteLine("      <td>" + thisCode + "</td>");
+
+					    if (active)
+					    {
+						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "\">" + name.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
+						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[6] + "</a></td>");
+						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[7] + "</a></td>");
+					    }
+					    else
+					    {
+						    Output.WriteLine("      <td>" + name + "</td>");
+						    Output.WriteLine("      <td>" + thisRow[6] + "</td>");
+						    Output.WriteLine("      <td>" + thisRow[7] + "</td>");
+					    }
+					    Output.WriteLine("      <td>" + thisRow[8] + "</td>");
+					    Output.WriteLine("      <td>" + added_titles + "</td>");
+					    Output.WriteLine("      <td>" + added_items + "</td>");
+					    Output.WriteLine("      <td>" + added_pages + "</td>");
+					    Output.WriteLine("    </tr>");
+				    }
+				    //  Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + rule + "\"></td></tr>");
+			    }
+
+			    // Close out this table
+			    Output.WriteLine("  </tbody>");
+			    Output.WriteLine("</table>");
+
+			    Output.WriteLine();
+			    Output.WriteLine("<script type=\"text/javascript\">");
+			    Output.WriteLine("  jQuery(document).ready(function() {");
+			    Output.WriteLine("      var oTable = jQuery('#sbkShw_ItemCountTableArbitrary').dataTable({");
+			    Output.WriteLine("           \"iDisplayLength\": 1000,");
+			    //  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
+			    Output.WriteLine("           \"bFilter\": false,");
+			    Output.WriteLine("           \"sDom\": '<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+			    Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			    Output.WriteLine("           \"bAutoWidth\": false,");
+			    Output.WriteLine("           \"aoColumns\": [{ \"bVisible\": false }, null, { \"bSortable\": false }, null, { \"bVisible\": false }, null, null, null, null, null, null, null ] });");
+			    Output.WriteLine();
+			    Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code3\"), 2);");
+			    Output.WriteLine("      $(\"#code3\").click( function () {");
+			    Output.WriteLine("         oTable.fnSort( [[4,\"asc\"]] );");
+			    Output.WriteLine("      });");
+			    Output.WriteLine();
+			    Output.WriteLine("      oTable.fnSortListener( document.getElementById(\"code1\"), 2);");
+			    Output.WriteLine("      $(\"#code1\").click( function () {");
+			    Output.WriteLine("         oTable.fnSort( [[0,\"asc\"]] );");
+			    Output.WriteLine("      });");
+			    Output.WriteLine("  } );");
+			    Output.WriteLine("</script>");
+			    Output.WriteLine();
+
+
+
+
+			    Output.WriteLine("<div id=\"pagecontainer_resumed\">");
+			    Output.WriteLine("<br />");
+			    Output.WriteLine();
+		    }
+	    }
+
+	    #endregion
 
         /// <summary> Title for this web page </summary>
         public override string WebPage_Title
@@ -2810,7 +3109,11 @@ namespace SobekCM.Library.HTML
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Stats.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.js\" ></script>");
+		//	Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datatables/js/ColReorderWithResize.js\" />");
 
             // Add the code for the calendar pop-up if it may be required
             if (currentMode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
@@ -2822,7 +3125,7 @@ namespace SobekCM.Library.HTML
 
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum>() {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }
         }
     }
 }

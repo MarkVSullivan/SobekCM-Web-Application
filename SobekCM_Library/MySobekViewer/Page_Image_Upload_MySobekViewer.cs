@@ -229,17 +229,22 @@ namespace SobekCM.Library.MySobekViewer
             }
         } 
 
-		public static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
+		/// <summary> Scales an existing SourceImage to a new max width / max height </summary>
+		/// <param name="SourceImage"> Source image </param>
+		/// <param name="MaxWidth"> Maximum width for the new image </param>
+		/// <param name="maxHeight"> Maximum height for the new image </param>
+		/// <returns> Newly scaled image, without changing the original source image </returns>
+		public static System.Drawing.Image ScaleImage(System.Drawing.Image SourceImage, int MaxWidth, int maxHeight)
 		{
-			var ratioX = (double)maxWidth / image.Width;
-			var ratioY = (double)maxHeight / image.Height;
+			var ratioX = (double)MaxWidth / SourceImage.Width;
+			var ratioY = (double)maxHeight / SourceImage.Height;
 			var ratio = Math.Min(ratioX, ratioY);
 
-			var newWidth = (int)(image.Width * ratio);
-			var newHeight = (int)(image.Height * ratio);
+			var newWidth = (int)(SourceImage.Width * ratio);
+			var newHeight = (int)(SourceImage.Height * ratio);
 
 			var newImage = new Bitmap(newWidth, newHeight);
-			Graphics.FromImage(newImage).DrawImage(image, 0, 0, newWidth, newHeight);
+			Graphics.FromImage(newImage).DrawImage(SourceImage, 0, 0, newWidth, newHeight);
 			return newImage;
 		}
 
@@ -264,7 +269,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Step through each file
                 bool error_reading_file_occurred = false;
 
-                // Add the image files first
+                // Add the SourceImage files first
                 bool jpeg_added = false;
                 bool jp2_added = false;
                 foreach (string thisFile in image_files)
@@ -639,7 +644,7 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder filesBuilder = new StringBuilder(2000);
             filesBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            filesBuilder.AppendLine("Add a new page image for this package:");
+            filesBuilder.AppendLine("Add a new page SourceImage for this package:");
             filesBuilder.AppendLine("<blockquote>");
 
             LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());

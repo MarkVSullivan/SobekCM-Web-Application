@@ -577,6 +577,14 @@ function collection_jump_sobekcm( root )
 	window.location.href = url;
 }
 
+// Function is used for pulling the statistical information for a new collection
+function collection_jump_sobekcm2(root) {
+	// Collect the values from the drop boxes
+	var collection_selected = document.statistics_form.collection_selector2.value;
+	var url = root + '/' + collection_selected;
+	window.location.href = url;
+}
+
 // INTERNAL HEADER FUNCTIONS
 function internalTrapKD(event, root) {
 

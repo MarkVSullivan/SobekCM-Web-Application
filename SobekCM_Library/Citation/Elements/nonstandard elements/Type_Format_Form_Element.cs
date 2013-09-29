@@ -162,6 +162,10 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
+			// Correction for aerials
+	        if (instance_value == "Aerial Photography")
+		        instance_value = "Aerial";
+
             bool found_option = false;
             foreach (string thisOption in items)
             {

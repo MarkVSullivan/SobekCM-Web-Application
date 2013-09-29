@@ -481,7 +481,7 @@ namespace SobekCM.Library.Database
 				paramList[1] = new SqlParameter("@date2", DBNull.Value);
 
 				// Execute this query stored procedure
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Dates", paramList);
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -6128,7 +6128,7 @@ namespace SobekCM.Library.Database
 				SqlParameter[] paramList = new SqlParameter[3];
 				paramList[0] = new SqlParameter("@userid", UserID);
 				paramList[1] = new SqlParameter("@password", encryptedPassword);
-				paramList[2] = new SqlParameter("@IsTemporary", Is_Temporary_Password);
+				paramList[2] = new SqlParameter("@is_temporary", Is_Temporary_Password);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Reset_User_Password", paramList);
