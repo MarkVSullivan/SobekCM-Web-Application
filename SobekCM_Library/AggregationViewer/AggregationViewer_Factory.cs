@@ -26,6 +26,10 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
                     return new Advanced_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
+				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
+					return new Advanced_Search_YearRange_AggregationViewer(Current_Aggregation, Current_Mode);
+
+
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
                     string frontBannerImage = Current_Aggregation.Front_Banner_Image(Current_Mode.Language);
                     if ((frontBannerImage.Length > 0) && (Current_Aggregation.Highlights.Count > 0))
@@ -33,6 +37,9 @@ namespace SobekCM.Library.AggregationViewer
                         return new Rotating_Highlight_Search_AggregationViewer(Current_Aggregation, Current_Mode);
                     }
                     return new Basic_Search_AggregationViewer(Current_Aggregation, Current_Mode);
+
+				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
+					return new Basic_Search_YearRange_AggregationViewer(Current_Aggregation, Current_Mode);
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
                     return new Full_Text_Search_AggregationViewer(Current_Aggregation, Current_Mode );
