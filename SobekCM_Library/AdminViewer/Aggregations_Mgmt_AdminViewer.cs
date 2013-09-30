@@ -276,7 +276,7 @@ namespace SobekCM.Library.AdminViewer
 
                                             // Now, try to create the item aggregation and write the configuration file
                                             Item_Aggregation itemAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, Tracer);
-                                            itemAggregation.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + itemAggregation.objDirectory);
+                                            itemAggregation.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory);
                                         }
                                     }
                                     catch { }

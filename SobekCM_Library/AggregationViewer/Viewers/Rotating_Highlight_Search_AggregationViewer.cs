@@ -137,7 +137,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (currentCollection.Front_Banner_Left_Side)
             {
-                string banner_image = currentMode.Base_URL + "design/" + currentCollection.objDirectory + currentCollection.Front_Banner_Image(currentMode.Language);
+                string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + currentCollection.Front_Banner_Image(currentMode.Language);
                 Output.Write("    <td style=\"background-image: url( " + banner_image + "); width: " + currentCollection.Front_Banner_Width + "px; height: " + currentCollection.Front_Banner_Height + "px;\" ");
                 Output.WriteLine("align=\"left\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
@@ -251,7 +251,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (!currentCollection.Front_Banner_Left_Side)
             {
-                string banner_image = currentMode.Base_URL + "design/" + currentCollection.objDirectory + currentCollection.Front_Banner_Image(currentMode.Language);
+                string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + currentCollection.Front_Banner_Image(currentMode.Language);
                 Output.Write("    <td style=\"background-image: url( " + banner_image + "); width: " + currentCollection.Front_Banner_Width + "px; height: " + currentCollection.Front_Banner_Height + "px;\" ");
                 Output.WriteLine("align=\"left\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));

@@ -279,7 +279,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML))
             {
                 // Read the content file for this browse
-                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + currentCollection.objDirectory, Tracer);
+                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + currentCollection.ObjDirectory, Tracer);
            
                 // Apply current user settings for this
                 string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Static_Text, currentCollection, htmlSkin.Skin_Code, htmlSkin.Base_Skin_Code, currentMode.Base_URL, currentMode.URL_Options(), Tracer);

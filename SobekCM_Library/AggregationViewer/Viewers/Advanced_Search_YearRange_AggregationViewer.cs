@@ -1,14 +1,10 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
-using System.Web.Caching;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -19,23 +15,24 @@ using SobekCM.Library.Settings;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
-    /// <summary> Renders the advanced search page for a given item aggregation </summary>
-    /// <remarks> This class implements the <see cref="iAggregationViewer"/> interface and extends the <see cref="abstractAggregationViewer"/> class.<br /><br />
-    /// Aggregation viewers are used when displaying aggregation home pages, searches, browses, and information pages.<br /><br />
-    /// During a valid html request to display the advanced search page, the following steps occur:
-    /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
-    /// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
-    /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
-    /// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
-    /// </ul></remarks>
-    public class Advanced_Search_AggregationViewer : abstractAggregationViewer
+	/// <summary> Renders the advanced search with year range options for a given item aggregation </summary>
+	/// <remarks> This class implements the <see cref="iAggregationViewer"/> interface and extends the <see cref="abstractAggregationViewer"/> class.<br /><br />
+	/// Aggregation viewers are used when displaying aggregation home pages, searches, browses, and information pages.<br /><br />
+	/// During a valid html request to display the advanced search page, the following steps occur:
+	/// <ul>
+	/// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
+	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
+	/// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
+	/// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
+	/// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
+	/// </ul></remarks>
+	public class Advanced_Search_YearRange_AggregationViewer: abstractAggregationViewer
     {
-        /// <summary> Constructor for a new instance of the Advanced_Search_AggregationViewer class </summary>
+        /// <summary> Constructor for a new instance of the Advanced_Search_YearRange_AggregationViewer class </summary>
         /// <param name="Current_Aggregation"> Current item aggregation object </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        public Advanced_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
+		public Advanced_Search_YearRange_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode)
+			: base(Current_Aggregation, Current_Mode)
         {
             // Compute the redirect stem to use
             string fields = currentMode.Search_Fields;
@@ -57,7 +54,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //script_action_name = "Javascript:advanced_select_search_sobekcm('" + redirect_stem + "', '" + sub_code + "')";
             //script_include_name = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
 
-			scriptActionName = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "')";
+            scriptActionName = "Javascript:advanced_search_sobekcm('" + redirectStem + "')";
             scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
 
         }
@@ -66,7 +63,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search"/> enumerational value </value>
         public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search; }
+            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange; }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -98,23 +95,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Tracer.Add_Trace("Advanced_Search_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
             }
-
-			// Get the list of years for this aggregation
-			string aggrCode = currentCollection.Code.ToLower();
-			string key = aggrCode + "_YearRanges";
-			List<int> yearRange = HttpContext.Current.Cache[key] as List<int>;
-			if (yearRange == null)
-			{
-				yearRange = new List<int>();
-				List<string> yearRangeString = SobekCM_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
-				foreach (string thisYear in yearRangeString)
-				{
-					int result;
-					if (Int32.TryParse(thisYear, out result))
-						yearRange.Add(result);
-				}
-				HttpContext.Current.Cache.Insert(key, yearRange, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
-			}
 
             string searchLanguage = "Search for:";
             string inLanguage = "in";
@@ -277,95 +257,22 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
-			// Show the year range data, if there are any years in this
-			const string YEAR_RANGE = "Limit by Year";
-			if (yearRange.Count > 0)
-			{
-				Output.WriteLine("    <tr style=\"align:right; height:50px;\">");
-				Output.WriteLine("      <td align=\"right\">" + YEAR_RANGE + ":</td>");
-				Output.WriteLine("      <td>&nbsp;</td>");
-				Output.WriteLine("      <td align=\"left\" colspan=\"2\">");
-
-				Output.WriteLine("        <select name=\"YearDropDown1\" id=\"YearDropDown1\" >");
-				//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-				int currYear1 = currentMode.DateRange_Year1;
-				if ((currYear1 != -1) && (!yearRange.Contains(currYear1)))
-					Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear1 + "\">" + currYear1 + "</option>");
-				if (currYear1 == -1)
-					currYear1 = yearRange[0];
-				foreach (int thisYear in yearRange)
-				{
-					if (thisYear == currYear1)
-					{
-						Output.WriteLine("          <option selected=\"selected\" value=\"" + thisYear + "\">" + thisYear + "</option>");
-					}
-					else
-					{
-						Output.WriteLine("          <option value=\"" + thisYear + "\">" + thisYear + "</option>");
-					}
-				}
-				Output.WriteLine("        </select>");
-
-				Output.WriteLine("&nbsp; through &nbsp;");
-
-				Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" >");
-				//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-				int currYear2 = currentMode.DateRange_Year1;
-				if ((currYear2 != -1) && (!yearRange.Contains(currYear2)))
-					Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear2 + "\">" + currYear2 + "</option>");
-				if (currYear2 == -1)
-					currYear2 = yearRange[yearRange.Count - 1];
-				foreach (int thisYear in yearRange)
-				{
-					if (thisYear == currYear2)
-					{
-						Output.WriteLine("          <option selected=\"selected\" value=\"" + thisYear + "\">" + thisYear + "</option>");
-					}
-					else
-					{
-						Output.WriteLine("          <option value=\"" + thisYear + "\">" + thisYear + "</option>");
-					}
-				}
-				Output.WriteLine("        </select>");
-
-				Output.WriteLine("      </td>");
-				Output.WriteLine("      <td align=\"right\">");
-				Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
+            Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
+            Output.WriteLine("      <td colspan=\"5\" align=\"right\">");
+            Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
 
-				if (currentCollection.Children_Count > 0)
-				{
-					Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
-				}
-				else
-				{
-					Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
-				}
+            if (currentCollection.Children_Count > 0)
+            {
+                Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
+            }
+            else
+            {
+                Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
+            }
 
-				Output.WriteLine("      </td>");
-				Output.WriteLine("    </tr>");
-			}
-			else
-			{
-				Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
-				Output.WriteLine("      <td colspan=\"5\" align=\"right\">");
-				Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
-
-
-				if (currentCollection.Children_Count > 0)
-				{
-					Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
-				}
-				else
-				{
-					Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
-				}
-
-				Output.WriteLine("      </td>");
-				Output.WriteLine("    </tr>");
-			}
-
-
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
             Output.WriteLine("      <td colspan=\"2\" align=\"right\" valign=\"middle\"><span style=\"color:#888; font-size:1.1em\"><b>" + searchOptions + "</b></span></td>");
             Output.WriteLine("      <td valign=\"middle\" align=\"left\"> &nbsp; &nbsp; <a href=\"" + currentMode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/help_button.jpg\" border=\"0px\" alt=\"HELP\" /></a></td>");

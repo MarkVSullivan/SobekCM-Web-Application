@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
@@ -35,97 +34,67 @@ namespace SobekCM.Library.Aggregations
         [Serializable]
         public enum CollectionViewsAndSearchesEnum : byte
         {
-            /// <summary>
-            ///   No collcetion view or search
-            /// </summary>
-            /// <remarks>
-            ///   This enum value is needed for serialization of some item aggregations
-            /// </remarks>
+            /// <summary> No collcetion view or search </summary>
+            /// <remarks> This enum value is needed for serialization of some item aggregations </remarks>
             NONE = 0,
 
-            /// <summary>
-            ///   Admin view gives access to aggregation administrative features
-            /// </summary>
+            /// <summary> Admin view gives access to aggregation administrative features  </summary>
             Admin_View = 1,
 
-            /// <summary>
-            ///   Advanced search type allows boolean searching with four different search fields
-            /// </summary>
+            /// <summary> Advanced search type allows boolean searching with four different search fields </summary>
             Advanced_Search,
 
-            /// <summary>
-            ///   Browse the list of all items or new items
-            /// </summary>
+			/// <summary> Advanced search type allows boolean searching with four different search fields 
+			/// and allows a range of years to be included in the search </summary>
+			Advanced_Search_YearRange,
+
+            /// <summary> Browse the list of all items or new items </summary>
             All_New_Items,
 
-            /// <summary>
-            ///   Basic search type allows metadata and full text searching with one search field
-            /// </summary>
+            /// <summary> Basic search type allows metadata searching with one search field </summary>
             Basic_Search,
 
-            /// <summary>
-            ///   Browse from a dataset which is pulled in some manner
-            /// </summary>
+			/// <summary> Basic search type allows metadata searching with one search field and allows a
+			/// range of years to be included in the search </summary>
+			Basic_Search_YearRange,
+
+            /// <summary> Browse from a dataset which is pulled in some manner </summary>
             DataSet_Browse,
 
-            /// <summary>
-            ///   dLOC search is a basic search which also includes a check box to exclude or include newspapers
-            /// </summary>
+            /// <summary> dLOC search is a basic search which also includes a check box to exclude or include newspapers </summary>
             dLOC_FullText_Search,
 
-            /// <summary>
-            ///   Full text search allows the full text of the documents to be searched
-            /// </summary>
+            /// <summary> Full text search allows the full text of the documents to be searched </summary>
             FullText_Search,
 
-            /// <summary>
-            ///   View the item count information for this single aggregation from within the collection viewer wrapper
-            /// </summary>
+            /// <summary> View the item count information for this single aggregation from within the collection viewer wrapper </summary>
             Item_Count,
 
-            /// <summary>
-            ///   View all of the coordinates points present for an item aggregation
-            /// </summary>
+            /// <summary> View all of the coordinates points present for an item aggregation </summary>
             Map_Browse,
 
-            /// <summary>
-            ///   Map searching employs a map to allow the user to select a rectangle of interest
-            /// </summary>
+            /// <summary> Map searching employs a map to allow the user to select a rectangle of interest </summary>
             Map_Search,
 
-            /// <summary>
-            ///   Browse by metadata feature allows a user to see every piece of data in a particular metadata field
-            /// </summary>
+            /// <summary> Browse by metadata feature allows a user to see every piece of data in a particular metadata field </summary>
             Metadata_Browse,
 
-            /// <summary>
-            ///   Newspaper search type allows searching with one search field and suggests several metadata fields to search (i.e., newspaper title, full text, location, etc..)
-            /// </summary>
+            /// <summary> Newspaper search type allows searching with one search field and suggests several metadata fields to search (i.e., newspaper title, full text, location, etc..) </summary>
             Newspaper_Search,
 
-            /// <summary>
-            ///   Home page which has no searching enabled
-            /// </summary>
+            /// <summary> Home page which has no searching enabled </summary>
             No_Home_Search,
 
-            /// <summary>
-            ///   Home page search which includes the rotating highlight to the left of a special banner
-            /// </summary>
+            /// <summary> Home page search which includes the rotating highlight to the left of a special banner </summary>
             Rotating_Highlight_Search,
 
-            /// <summary>
-            ///   Static browse or info view with simply displays static html within the collection wrapper
-            /// </summary>
+            /// <summary> Static browse or info view with simply displays static html within the collection wrapper </summary>
             Static_Browse_Info,
 
-            /// <summary>
-            ///   View the usage statistics for this single aggregation from within the collection viewer wrapper
-            /// </summary>
+            /// <summary> View the usage statistics for this single aggregation from within the collection viewer wrapper </summary>
             Usage_Statistics,
 
-            /// <summary>
-            ///   Views the list of all private items which are in this aggregation from within the collection viewer wrapper
-            /// </summary>
+            /// <summary> Views the list of all private items which are in this aggregation from within the collection viewer wrapper </summary>
             View_Private_Items
         }
 
@@ -301,47 +270,57 @@ namespace SobekCM.Library.Aggregations
             {
                 switch (thisViewSearch)
                 {
+					case '0':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.No_Home_Search);
+						home_search_found = true;
+						break;
+
+					case 'A':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Advanced_Search);
+						break;
+
                     case 'B':
                     case 'D':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Basic_Search);
                         home_search_found = true;
                         break;
 
-                    case 'A':
-                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Advanced_Search);
-                        break;
+					case 'C':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.dLOC_FullText_Search);
+						home_search_found = true;
+						break;
 
                     case 'F':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.FullText_Search);
                         home_search_found = true;
                         break;
 
+					case 'G':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Browse);
+						break;
+
+					case 'I':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.All_New_Items);
+						break;
+
+					case 'M':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Search);
+						break;
+
                     case 'N':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Newspaper_Search);
                         home_search_found = true;
                         break;
 
-                    case 'M':
-                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Search);
-                        break;
+					case 'Y':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Basic_Search_YearRange);
+						home_search_found = true;
+						break;
 
-                    case '0':
-                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.No_Home_Search);
-                        home_search_found = true;
-                        break;
-
-                    case 'I':
-                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.All_New_Items);
-                        break;
-
-                    case 'C':
-                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.dLOC_FullText_Search);
-                        home_search_found = true;
-                        break;
-
-                    case 'G':
-                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Browse);
-                        break;
+					case 'Z':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Advanced_Search_YearRange);
+						break;
+						
                 }
             }
 
@@ -466,7 +445,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks>
         ///   This always returns the string 'aggregations/[Code]/' with the code for this item aggregation
         /// </remarks>
-        public string objDirectory
+        public string ObjDirectory
         {
             get { return "aggregations/" + Code + "/"; }
         }
@@ -581,7 +560,7 @@ namespace SobekCM.Library.Aggregations
             {
                 return
                     browseInfoHash.Values.Any(
-                        thisBrowse => thisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By);
+                        ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By);
             }
         }
 
@@ -597,7 +576,7 @@ namespace SobekCM.Library.Aggregations
             {
                 SortedList<string, Item_Aggregation_Browse_Info> otherInfos =
                     new SortedList<string, Item_Aggregation_Browse_Info>();
-                foreach (Item_Aggregation_Browse_Info thisInfo in browseInfoHash.Values.Where(thisInfo => thisInfo.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Info))
+                foreach (Item_Aggregation_Browse_Info thisInfo in browseInfoHash.Values.Where(ThisInfo => ThisInfo.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Info))
                 {
                     otherInfos[thisInfo.Code] = thisInfo;
                 }
@@ -613,9 +592,7 @@ namespace SobekCM.Library.Aggregations
             get { return new ReadOnlyCollection<CollectionViewsAndSearchesEnum>(viewsAndSearches); }
         }
 
-        /// <summary>
-        ///   Read-only list of searches types for this item aggregation
-        /// </summary>
+        /// <summary> Read-only list of searches types for this item aggregation </summary>
         public ReadOnlyCollection<Search_Type_Enum> Search_Types
         {
             get
@@ -623,6 +600,8 @@ namespace SobekCM.Library.Aggregations
                 List<Search_Type_Enum> returnValue = new List<Search_Type_Enum>();
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Basic_Search))
                     returnValue.Add(Search_Type_Enum.Basic);
+				if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Basic_Search_YearRange))
+					returnValue.Add(Search_Type_Enum.Basic);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Newspaper_Search))
                     returnValue.Add(Search_Type_Enum.Newspaper);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Map_Search))
@@ -633,6 +612,8 @@ namespace SobekCM.Library.Aggregations
                     returnValue.Add(Search_Type_Enum.dLOC_Full_Text);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Advanced_Search))
                     returnValue.Add(Search_Type_Enum.Advanced);
+				if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Advanced_Search_YearRange))
+					returnValue.Add(Search_Type_Enum.Advanced);
 
                 return new ReadOnlyCollection<Search_Type_Enum>(returnValue);
             }
@@ -667,7 +648,7 @@ namespace SobekCM.Library.Aggregations
             {
                 if (children == null)
                     return -1;
-                return children.Count(thisChild => (thisChild.Active) && (!thisChild.Hidden));
+                return children.Count(ThisChild => (ThisChild.Active) && (!ThisChild.Hidden));
             }
         }
 
@@ -791,7 +772,7 @@ namespace SobekCM.Library.Aggregations
         {
             SortedList<string, Item_Aggregation_Browse_Info> otherBrowses =
                 new SortedList<string, Item_Aggregation_Browse_Info>();
-            foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(thisBrowse => thisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home))
+            foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home))
             {
                 otherBrowses[thisBrowse.Get_Label(Current_Language)] = thisBrowse;
             }
@@ -808,7 +789,7 @@ namespace SobekCM.Library.Aggregations
         public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_By_Pages(Web_Language_Enum Current_Language)
         {
             SortedList<string, Item_Aggregation_Browse_Info> otherBrowses =new SortedList<string, Item_Aggregation_Browse_Info>();
-            foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(thisBrowse => thisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By))
+            foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By))
             {
                 otherBrowses[thisBrowse.Code] = thisBrowse;
             }
@@ -824,13 +805,13 @@ namespace SobekCM.Library.Aggregations
         /// </summary>
         /// <param name = "Browse_Type">Flag indicates if this is a BROWSE or INFO object</param>
         /// <param name = "Browse_Code">SubMode indicator for this object</param>
-        /// <param name = "Static_HTML_Source">Any static HTML source to be used for display</param>
+        /// <param name = "StaticHtmlSource">Any static HTML source to be used for display</param>
         /// <param name = "Text">Text to display for this browse</param>
         /// <returns>The built data object</returns>
-        internal Item_Aggregation_Browse_Info Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type Browse_Type, string Browse_Code, string Static_HTML_Source, string Text)
+        internal Item_Aggregation_Browse_Info Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type Browse_Type, string Browse_Code, string StaticHtmlSource, string Text)
         {
             // Create the new Browse_Info object
-            Item_Aggregation_Browse_Info newBrowse = new Item_Aggregation_Browse_Info(Browse_Type, Item_Aggregation_Browse_Info.Source_Type.Database, Browse_Code, Static_HTML_Source, Text);
+            Item_Aggregation_Browse_Info newBrowse = new Item_Aggregation_Browse_Info(Browse_Type, Item_Aggregation_Browse_Info.Source_Type.Database, Browse_Code, StaticHtmlSource, Text);
 
             // Add this to the Hash table
             browseInfoHash[Browse_Code] = newBrowse;
@@ -841,11 +822,11 @@ namespace SobekCM.Library.Aggregations
         /// <summary>
         ///   Add a new browse or info object to this hierarchical object
         /// </summary>
-        /// <param name = "newBrowse">Completely assembled browse or info object</param>
-        internal void Add_Browse_Info(Item_Aggregation_Browse_Info newBrowse)
+        /// <param name = "NewBrowse">Completely assembled browse or info object</param>
+        internal void Add_Browse_Info(Item_Aggregation_Browse_Info NewBrowse)
         {
             // Add this to the Hash table
-            browseInfoHash[newBrowse.Code] = newBrowse;
+            browseInfoHash[NewBrowse.Code] = NewBrowse;
         }
 
         /// <summary>
@@ -988,31 +969,31 @@ namespace SobekCM.Library.Aggregations
         ///   Gets the banner image for this aggregation, by language
         /// </summary>
         /// <param name = "Language"> Language code </param>
-        /// <param name = "thisWebSkin"> Web skin object which may override the banner</param>
+        /// <param name = "ThisWebSkin"> Web skin object which may override the banner</param>
         /// <returns> Either the language-specific banner image, or else the default banner image</returns>
         /// <remarks>
         ///   If NO banner images were included in the aggregation XML, then this could be the empty string.<br /><br />
         ///   If the provided web skin overrides the banner, then use that web skin's banner.
         /// </remarks>
-        public string Banner_Image(Web_Language_Enum Language, SobekCM_Skin_Object thisWebSkin)
+        public string Banner_Image(Web_Language_Enum Language, SobekCM_Skin_Object ThisWebSkin)
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations
             // use the web skin banner HTML instead of the aggregation's banner
-            if ((thisWebSkin != null) && (thisWebSkin.Override_Banner) && (Aggregation_Type.ToLower().IndexOf("institution") < 0))
+            if ((ThisWebSkin != null) && (ThisWebSkin.Override_Banner) && (Aggregation_Type.ToLower().IndexOf("institution") < 0))
             {
-                return thisWebSkin.Banner_HTML;
+                return ThisWebSkin.Banner_HTML;
             }
 
             // Does this language exist in the banner image lookup dictionary?
             if (bannerImagesByLanguage.ContainsKey(Language))
             {
-                return "design/" + objDirectory + bannerImagesByLanguage[Language];
+                return "design/" + ObjDirectory + bannerImagesByLanguage[Language];
             }
 
             // Default to the system language then
             if (bannerImagesByLanguage.ContainsKey(SobekCM_Library_Settings.Default_UI_Language))
             {
-                return "design/" + objDirectory + bannerImagesByLanguage[SobekCM_Library_Settings.Default_UI_Language];
+                return "design/" + ObjDirectory + bannerImagesByLanguage[SobekCM_Library_Settings.Default_UI_Language];
             }
 
             // Just return the first, assuming one exists
@@ -1099,17 +1080,17 @@ namespace SobekCM.Library.Aggregations
         ///   Method gets the HOME PAGE html for the appropriate UI settings
         /// </summary>
         /// <param name = "Language"> Current language of the user interface </param>
-        /// <param name = "tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns>Home page HTML</returns>
-        public string Get_Home_HTML(Web_Language_Enum Language, Custom_Tracer tracer)
+        public string Get_Home_HTML(Web_Language_Enum Language, Custom_Tracer Tracer)
         {
-            if (tracer != null)
+            if (Tracer != null)
             {
-                tracer.Add_Trace("Item_Aggregation.Get_Home_HTML", "Reading home text source file");
+                Tracer.Add_Trace("Item_Aggregation.Get_Home_HTML", "Reading home text source file");
             }
 
             // Get the home file source
-            string homeFileSource = SobekCM_Library_Settings.Base_Design_Location + objDirectory +
+            string homeFileSource = SobekCM_Library_Settings.Base_Design_Location + ObjDirectory +
                                     Home_Page_File(Language);
 
             // If no home file source even found, return a message to that affect
@@ -1144,21 +1125,12 @@ namespace SobekCM.Library.Aggregations
                     if (Highlights.Count > 0)
                     {
                         if (Highlights.Count == 1)
-                            highlightHtml = Highlights[0].ToHTML(Language, "<%BASEURL%>" + objDirectory);
+                            highlightHtml = Highlights[0].ToHTML(Language, "<%BASEURL%>" + ObjDirectory);
                         else
                         {
                             int dayInteger = DateTime.Now.DayOfYear + 1;
                             int highlightToUse = dayInteger%Highlights.Count;
-                            if (Rotating_Highlights)
-                            {
-                                // WILL NEED TO DO SOME SPECIAL WORK HERE IN THE FUTURE TO SUPPORT 
-                                // ROTATING HIGHLIGHT IMAGES IN THE TEXT OF THE PAGE
-                                highlightHtml = Highlights[highlightToUse].ToHTML(Language, "<%BASEURL%>" + objDirectory);
-                            }
-                            else
-                            {
-                                highlightHtml = Highlights[highlightToUse].ToHTML(Language, "<%BASEURL%>" + objDirectory);
-                            }
+                            highlightHtml = Highlights[highlightToUse].ToHTML(Language, "<%BASEURL%>" + ObjDirectory);
                         }
                     }
 
@@ -1178,6 +1150,8 @@ namespace SobekCM.Library.Aggregations
 
         #region Methods to support BROWSE and INFO objects
 
+        /// <summary> Remove an existing browse or info object from this item aggregation </summary>
+        /// <param name="Browse_Page"></param>
         public void Remove_Browse_Info_Page( Item_Aggregation_Browse_Info Browse_Page )
         {
             if (browseInfoHash.ContainsKey(Browse_Page.Code))
@@ -1204,16 +1178,18 @@ namespace SobekCM.Library.Aggregations
             return browseInfoHash.ContainsKey(Browse_Code);
         }
 
-        /// <summary>
-        ///   Method returns the table of results for the browse indicated
-        /// </summary>
-        /// <param name = "BrowseInfoObject">Object with all the information about the browse</param>
-        /// <param name = "Page"> Page of results requested for the indicated browse </param>
-        /// <param name = "Sort"> Sort applied to the results before being returned </param>
-        /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
-        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Resutls for the browse or info in table form </returns>
-        public Results.Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation_Browse_Info BrowseInfoObject,
+	    /// <summary>
+	    ///   Method returns the table of results for the browse indicated
+	    /// </summary>
+	    /// <param name = "BrowseInfoObject">Object with all the information about the browse</param>
+	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
+	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
+	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
+	    /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
+	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
+	    /// <returns> Resutls for the browse or info in table form </returns>
+	    public Results.Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation_Browse_Info BrowseInfoObject,
                                                                       int Page, int Sort, int Results_Per_Page, bool Potentially_Include_Facets, bool Need_Browse_Statistics,
                                                                       Custom_Tracer Tracer)
         {
@@ -1512,7 +1488,7 @@ namespace SobekCM.Library.Aggregations
                     List<Item_Aggregation_Browse_Info> browseBys = new List<Item_Aggregation_Browse_Info>();
                     List<Item_Aggregation_Browse_Info> infos = new List<Item_Aggregation_Browse_Info>();
                     List<Item_Aggregation_Browse_Info> browses = new List<Item_Aggregation_Browse_Info>();
-                    foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(thisBrowse => (String.Compare(thisBrowse.Code, "all", true) != 0) && (String.Compare(thisBrowse.Code, "new", true) != 0)))
+                    foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(ThisBrowse => (String.Compare(ThisBrowse.Code, "all", StringComparison.OrdinalIgnoreCase) != 0) && (String.Compare(ThisBrowse.Code, "new", StringComparison.OrdinalIgnoreCase) != 0)))
                     {
                         switch (thisBrowse.Browse_Type)
                         {
@@ -1585,7 +1561,7 @@ namespace SobekCM.Library.Aggregations
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         public bool Save_To_Database( Custom_Tracer Tracer )
         {
-            return SobekCM.Library.Database.SobekCM_Database.Save_Item_Aggregation(Aggregation_ID, Code, Name, ShortName,
+            return Database.SobekCM_Database.Save_Item_Aggregation(Aggregation_ID, Code, Name, ShortName,
                 Description, Thematic_Heading_ID, Aggregation_Type, Is_Active, Hidden, Display_Options, Map_Search, Map_Display, OAI_Flag,
                 OAI_Metadata, Contact_Email,  String.Empty, External_Link, -1, Tracer );
         }

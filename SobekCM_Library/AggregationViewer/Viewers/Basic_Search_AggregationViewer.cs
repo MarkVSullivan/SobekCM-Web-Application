@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -37,7 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Basic_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
         {
             // Determine the sub text to use
-            const string subCode = "s=";
+            const string SUB_CODE = "s=";
 
             // Save the search term
             if (currentMode.Search_String.Length > 0)
@@ -67,8 +66,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             } 
             else
             {
-                scriptActionName = "basic_select_search_sobekcm('" + arg1 + "', '" + subCode + "')";
-                arg2 = subCode;
+                scriptActionName = "basic_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "')";
+                arg2 = SUB_CODE;
                 scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
             }
             currentMode.Mode = displayMode;
@@ -105,7 +104,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             string search_collection = "Search Collection";
-            const string includePrivates = "Include non-public items";
+            const string INCLUDE_PRIVATES = "Include non-public items";
             if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 search_collection = "Buscar en la colección";
@@ -139,7 +138,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("    <tr align=\"right\">");
                 Output.WriteLine("      <td>&nbsp;</td>");
                 Output.WriteLine("      <td align=\"left\" colspan=\"4\">");
-                Output.WriteLine("          &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + includePrivates + "</label>");
+                Output.WriteLine("          &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
             }

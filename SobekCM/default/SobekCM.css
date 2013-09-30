@@ -506,6 +506,8 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;
 }
 
+#jsbutton { cursor: pointer; }
+
 #SimpleSearchPanel 
 {
     height: 60px;
@@ -516,10 +518,6 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     height: 60px;
 }
 
-#BasicSearchPanel 
-{
-    
-}
 
 #FullTextSearchPanel
 {
@@ -722,6 +720,10 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 #andOrNotBox1 { width: 75px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 #andOrNotBox2 { width: 75px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 #andOrNotBox3 { width: 75px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+#YearDropDown1 { width: 80px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+#YearDropDown2 { width: 80px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
 
 
 /* This allows visited links to appear visited in the results panel, but not the sort text */

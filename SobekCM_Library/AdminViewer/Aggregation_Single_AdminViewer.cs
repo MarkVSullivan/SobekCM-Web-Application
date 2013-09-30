@@ -178,7 +178,7 @@ namespace SobekCM.Library.AdminViewer
                         bool successful_save = true;
 
                         // Save the new configuration file
-                        itemAggregation.Write_Configuration_File(  SobekCM_Library_Settings.Base_Design_Location + itemAggregation.objDirectory );
+                        itemAggregation.Write_Configuration_File(  SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory );
 
                         // Save to the database
                         itemAggregation.Save_To_Database(null);
@@ -414,7 +414,9 @@ namespace SobekCM.Library.AdminViewer
             // Build the display options string
             StringBuilder displayOptionsBldr = new StringBuilder();
             if (form["admin_aggr_basicsearch"] != null) displayOptionsBldr.Append("B");
+			if (form["admin_aggr_basicsearch_years"] != null) displayOptionsBldr.Append("Y");
             if (form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
+			if (form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
             if (form["admin_aggr_textsearch"] != null) displayOptionsBldr.Append("F");
             if (form["admin_aggr_newspsearch"] != null) displayOptionsBldr.Append("N");
             if (form["admin_aggr_dloctextsearch"] != null) displayOptionsBldr.Append("C");
@@ -545,6 +547,22 @@ namespace SobekCM.Library.AdminViewer
             
             Output.WriteLine("\t</tr>");
             Output.WriteLine("\t<tr>");
+
+			Output.WriteLine("\t<tr>");
+
+			Output.Write("\t\t<td><input class=\"admin_aggr_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_years\" id=\"admin_aggr_basicsearch_years\"");
+			if (itemAggregation.Display_Options.IndexOf("Y") >= 0)
+				Output.Write(" checked=\"checked\"");
+			Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_years\">Basic Search (Year Range)</label></td>");
+
+			Output.Write("\t\t<td><input class=\"admin_aggr_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_years\" id=\"admin_aggr_advsearch_years\"");
+			if (itemAggregation.Display_Options.IndexOf("Z") >= 0)
+				Output.Write(" checked=\"checked\"");
+			Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_years\">Advanced Search (Year Range)</label></td>");
+
+			Output.WriteLine("\t</tr>");
+			Output.WriteLine("\t<tr>");
+
 
             Output.Write("\t\t<td><input class=\"admin_aggr_checkbox\" type=\"checkbox\" name=\"admin_aggr_textsearch\" id=\"admin_aggr_textsearch\"");
             if ( itemAggregation.Display_Options.IndexOf("F") >= 0 ) 
@@ -1118,7 +1136,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void Home_Writer_Helper(TextWriter Output, string HomeID, Web_Language_Enum Language, string Source)
         {
-            string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.objDirectory).ToLower().Replace("/", "\\");
+            string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory).ToLower().Replace("/", "\\");
 
             Output.Write("<select class=\"admin_aggr_select2\" name=\"" + HomeID + "_lang\" id=\"" + HomeID + "_lang\">");
 
@@ -1150,7 +1168,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void Banner_Writer_Helper(TextWriter Output, string BannerID, Web_Language_Enum Language, string Source)
         {
-            string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.objDirectory).ToLower().Replace("/", "\\");
+            string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory).ToLower().Replace("/", "\\");
 
             Output.Write("<select class=\"admin_aggr_select2\" name=\"" + BannerID + "_lang\" id=\"" + BannerID + "_lang\">");
 
@@ -1286,7 +1304,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void Browse_Writer_Helper(TextWriter Output, int BrowseCounter, Item_Aggregation_Browse_Info thisBrowse, int Max_Labels, int Max_Sources)
         {
-            string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.objDirectory).ToLower().Replace("/", "\\");
+            string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory).ToLower().Replace("/", "\\");
 
             // Add the code line
             Output.WriteLine("<tr><td width=\"120px\"> &nbsp; &nbsp; <label for=\"admin_aggr_browse_code_" + BrowseCounter + "\">Code:</label></td><td><input class=\"admin_aggr_small_input\" name=\"admin_aggr_browse_code_" + BrowseCounter + "\" id=\"admin_aggr_browse_code_" + BrowseCounter + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisBrowse.Code) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_browse_code_" + BrowseCounter + "', 'admin_aggr_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_browse_code_" + BrowseCounter + "', 'admin_aggr_small_input')\" /></td></tr>");

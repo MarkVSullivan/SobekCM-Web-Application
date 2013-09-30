@@ -1195,7 +1195,7 @@ namespace SobekCM.Library.HTML
                 // Add the highlights
                 if ((Hierarchy_Object.Highlights.Count > 0) && (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
                 {
-                    Output.WriteLine(Hierarchy_Object.Highlights[0].ToHTML(currentMode.Language, currentMode.Base_Design_URL + Hierarchy_Object.objDirectory).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                    Output.WriteLine(Hierarchy_Object.Highlights[0].ToHTML(currentMode.Language, currentMode.Base_Design_URL + Hierarchy_Object.ObjDirectory).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
                 }
 
                 // Get the raw home hteml text
