@@ -1395,7 +1395,7 @@ function update_preview() {
 
 
 function ImageDeleteClicked(Filename) {
-	var input_box = confirm("Are you sure you want to delete this page and apply all changes up to this point?");
+	var input_box = confirm("Are you sure you want to delete this page and all files associated with it? All changes up to this point will be applied.");
 	if (input_box == true) {
 	    document.getElementById('QC_behaviors_request').value = 'delete_page';
 	    document.getElementById('QC_affected_file').value = Filename;
@@ -1427,7 +1427,7 @@ function DeleteSelectedPages() {
         }
 
     } else {
-        var input_box = confirm("Are you sure you want to delete these " + checked_found + " pages and apply all changes up to this point?");
+        var input_box = confirm("Are you sure you want to delete these " + checked_found + " pages and all files associated with them? All changes up to this point will be applied.");
         if (input_box == true) {
 
             document.getElementById('QC_behaviors_request').value = 'delete_selected_pages';
