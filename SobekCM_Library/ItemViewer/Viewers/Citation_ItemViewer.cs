@@ -1417,6 +1417,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							divisionBuilder.Append(", ");
 						divisionBuilder.Append(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisDivision)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EJ") + Convert_String_To_XML_Safe(thisDivision) + search_link_end);
 					}
+
 					result.Append(Single_Citation_HTML_Row("Degree Divisions", divisionBuilder.ToString(), INDENT));
 				}
 				
@@ -1429,7 +1430,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							disciplinesBuilder.Append(", ");
 						disciplinesBuilder.Append(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisDiscipline)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EI") + Convert_String_To_XML_Safe(thisDiscipline) + search_link_end);
 					}
-					result.Append(Single_Citation_HTML_Row("Degree Disciplines", disciplinesBuilder.ToString(), INDENT));
+					string text_disciplines = "Degree Disciplines";
+					if (CurrentMode.Skin.ToLower() == "ncf")
+						text_disciplines = "Area of Concentration";
+					result.Append(Single_Citation_HTML_Row(text_disciplines, disciplinesBuilder.ToString(), INDENT));
 				}
 
 				if ( thesisInfo.Committee_Chair.Length > 0 )

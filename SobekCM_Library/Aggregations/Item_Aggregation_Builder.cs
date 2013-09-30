@@ -49,7 +49,7 @@ namespace SobekCM.Library.Aggregations
 				if (hierarchyObject != null)
 				{
 					// Add all the values to this object
-					string xmlDataFile = SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory + "\\" + hierarchyObject.Code + ".xml";
+					string xmlDataFile = SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
 					if (File.Exists(xmlDataFile))
 					{
 						if (tracer != null)
@@ -83,7 +83,7 @@ namespace SobekCM.Library.Aggregations
 						}
 
                         // Since there was no configuration file, save one
-                        hierarchyObject.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.objDirectory);
+                        hierarchyObject.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.ObjDirectory);
 
 					}
 
@@ -158,9 +158,9 @@ namespace SobekCM.Library.Aggregations
 		protected static void Add_Browse_Files( Item_Aggregation thisObject, Custom_Tracer tracer  )
 		{
 			// Collect the list of items in the browse folder
-			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/browse"))
+			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/browse"))
 			{
-				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/browse", "*.htm*");
+				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/browse", "*.htm*");
 				foreach (string thisFile in files)
 				{
 					// Get the new browse info object
@@ -173,9 +173,9 @@ namespace SobekCM.Library.Aggregations
 			}
 
 			// Collect the list of items in the info folder
-			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/info"))
+			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/info"))
 			{
-				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/info", "*.htm*");
+				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/info", "*.htm*");
 				foreach (string thisFile in files)
 				{
 					// Get the title for this file
@@ -208,27 +208,27 @@ namespace SobekCM.Library.Aggregations
 		protected static void Add_HTML( Item_Aggregation thisObject )
 		{
 			// Just use the standard home text
-            if ( File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text.html"))
+            if ( File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text.html"))
     			thisObject.Add_Home_Page_File(  "html/home/text.html", SobekCM_Library_Settings.Default_UI_Language );
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_en.html"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_en.html"))
                 thisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English );
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_fr.html"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_fr.html"))
                 thisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_es.html"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_es.html"))
                 thisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "html/home/text_sp.html"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_sp.html"))
                 thisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish);
 
 			// Just use the standard banner image
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll.jpg"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll.jpg"))
                 thisObject.Add_Banner_Image("images/banners/coll.jpg", SobekCM_Library_Settings.Default_UI_Language);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_en.jpg"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_en.jpg"))
                 thisObject.Add_Banner_Image("images/banners/coll_en.jpg", Web_Language_Enum.English);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_fr.jpg"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_fr.jpg"))
                 thisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Web_Language_Enum.French);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_es.jpg"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_es.jpg"))
                 thisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.objDirectory + "images/banners/coll_sp.jpg"))
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
                 thisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
 		}
 	}

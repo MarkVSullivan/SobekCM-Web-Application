@@ -313,7 +313,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                 Output.WriteLine("  <tr align=\"left\">");
                 Output.WriteLine("    <td>objDirectory</td>");
-                Output.WriteLine("    <td>" + currentCollection.objDirectory + "</td>");
+                Output.WriteLine("    <td>" + currentCollection.ObjDirectory + "</td>");
                 Output.WriteLine("  </tr>");
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                 Output.WriteLine("  <tr align=\"left\">");
