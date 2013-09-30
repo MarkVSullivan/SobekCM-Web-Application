@@ -545,7 +545,7 @@ namespace SobekCM.Library
                     break;
 
                 case Item_Aggregation_Browse_Info.Result_Data_Type.Text:
-                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + Aggregation_Object.objDirectory, Tracer);
+                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
                     break;
             }
             return true;

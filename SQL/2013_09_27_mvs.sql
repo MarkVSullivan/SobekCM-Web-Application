@@ -8,7 +8,7 @@ FROM  dbo.SobekCM_Item_Aggregation_Item_Link CL, dbo.SobekCM_Item I
 WHERE ( CL.ItemID = I.ItemID )
   and ( I.Deleted = 'false' )
   and ( Milestone_OnlineComplete is not null );
-GO;
+GO
 
 
 /****** Object:  Index [Statistics_Item_Aggregation_Link]    Script Date: 09/27/2013 14:21:13 ******/

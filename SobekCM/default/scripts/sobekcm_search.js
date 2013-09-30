@@ -24,7 +24,9 @@ function fnTrapKD(event, type, arg1, arg2, browseurl) {
 
             if (arg2.length == 0) {
                 if (type == 'basic')
-                    basic_search_sobekcm(arg1, browseurl);
+                	basic_search_sobekcm(arg1, browseurl);
+                if (type == 'basicyears')
+                	basic_search_years_sobekcm(arg1, browseurl);
                 if (type == 'metadata')
                     metadata_search_sobekcm(arg1, browseurl);
                 if (type == 'newspaper')
@@ -170,6 +172,58 @@ function advanced_select_search_sobekcm( root, next_level )
 	}
 }
 
+// Advanced search
+function advanced_search_years_sobekcm(root) {
+	// Collect and trim the users's search string
+	var term = trimString(document.search_form.Textbox1.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox2.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox3.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox4.value).replace(",", "+").replace(" ", "+");
+	var fields = document.search_form.Dropdownlist1.value + "," + document.search_form.andOrNotBox1.value + document.search_form.Dropdownlist2.value + "," + document.search_form.andOrNotBox2.value + document.search_form.Dropdownlist3.value + "," + document.search_form.andOrNotBox3.value + document.search_form.Dropdownlist4.value;
+
+	// Get the year range data first
+	var year1 = document.search_form.YearDropDown1.value;
+	var year2 = document.search_form.YearDropDown2.value;
+	var year_url_append = '';
+	if ((year1.length > 0) && (year1 != 'ZZ')) {
+		year_url_append = "&yr1=" + year1;
+
+		if ((year2.length > 0) && (year2 != 'ZZ')) {
+			year_url_append = year_url_append + "&yr2=" + year2;
+		} else {
+			year_url_append = year_url_append + "&yr2=" + new Date().getFullYear();
+		}
+	}
+	
+	if (term.length > 0) {
+		// Show the progress spinner
+		var circular_div = document.getElementById("circular_progress");
+		circular_div.className = "shown_progress_gray";
+
+		// replace ' or ' and ' and ' and ' not ' in the query
+		// STILL NEED TO REPLACE THESE FOR FRENCH AND SPANISH
+		//term = term.toLowerCase().replace(" or "," =").replace(" and ", " ").replace(" not "," -");
+
+		// Determine if a precision was selected
+		var contains_radio = document.getElementById('precisionContains');
+		if ((contains_radio != null) && (contains_radio.checked == true))
+			root = root.replace("results", contains_radio.value);
+
+		var results_radio = document.getElementById('precisionResults');
+		if ((results_radio != null) && (results_radio.checked == true))
+			root = root.replace("results", results_radio.value);
+
+		var like_radio = document.getElementById('precisionLike');
+		if ((like_radio != null) && (like_radio.checked == true))
+			root = root.replace("results", like_radio.value);
+
+		// Build the destination url by placing the selection option first
+		var url = root + "?t=" + term + "&f=" + fields + year_url_append;
+		if (root.indexOf("?") > 0)
+			url = root + "&t=" + term + "&f=" + fields + year_url_append;
+
+		// Change the the browser location to the new url
+		window.location.href = url;
+	}
+}
+
 // Full text
 function fulltext_search_sobekcm(root, browseurl) {
     // Collect and trim the users's search string
@@ -274,6 +328,7 @@ function basic_search_sobekcm(root, browseurl)
 	}
 }
 
+
 // Basic search in an aggregation with children selectable
 function basic_select_search_sobekcm( root, next_level )
 {    
@@ -291,8 +346,8 @@ function basic_select_search_sobekcm( root, next_level )
 
         // Build the destination url by placing the selection option first
         var url = root + "?t=" + term;
-        if (root.indexOf("?") > 0)
-            url = root + "&t=" + term
+		if (root.indexOf("?") > 0)
+			url = root + "&t=" + term;
 		
 		// Do additional work if there are checkboxes on this form
 		if ( document.search_form.checkgroup.length > 0 )
@@ -325,6 +380,55 @@ function basic_select_search_sobekcm( root, next_level )
 
 		// Change the the browser location to the new url
 	    window.location.href = url.replace('m=hrb','m=hrd');
+	}
+}
+
+// The basic search with year range limiting as well
+function basic_search_years_sobekcm(root, browseurl) {
+	// Collect and trim the users's search string
+	var term = trimString(document.search_form.u_search.value).replace(",", " ");
+	
+	// Get the year range data first
+	var year1 = document.search_form.YearDropDown1.value;
+	var year2 = document.search_form.YearDropDown2.value;
+	var year_url_append = '';
+	if ((year1.length > 0) && (year1 != 'ZZ')) {
+		year_url_append = "&yr1=" + year1;
+
+		if ((year2.length > 0) && (year2 != 'ZZ')) {
+			year_url_append = year_url_append + "&yr2=" + year2;
+		} else  {
+			year_url_append = year_url_append + "&yr2=" + new Date().getFullYear();
+		}
+	}
+
+
+	if ((term.length > 0) && (term != '*')) {
+
+		if (term.toLowerCase() == "floridaxx") {
+			alert('Please narrow your search by entering additional search terms.');
+		}
+		else {
+			// Show the progress spinner
+			var circular_div = document.getElementById("circular_progress");
+			if (circular_div != null) {
+				circular_div.className = "shown_progress_gray";
+			}
+
+			// replace ' or ' and ' and ' and ' not ' in the query
+			// STILL NEED TO REPLACE THESE FOR FRENCH AND SPANISH
+			term = term.toLowerCase().replace(" or ", " =").replace(" and ", " ").replace(" not ", " -").replace(" y no ", " -").replace(" y ", " =").replace(" o ", " ").replace(" no ", " -");
+
+			// Build the destination url by placing the selection option first and redirect
+			var url = root + "?t=" + term + year_url_append;
+			if (root.indexOf("?") > 0)
+				url = root + "&t=" + term + year_url_append;
+
+			window.location.href = url;
+		}
+	}
+	else if (browseurl.length > 0) {
+		window.location.href = browseurl;
 	}
 }
 

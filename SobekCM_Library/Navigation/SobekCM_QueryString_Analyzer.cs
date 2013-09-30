@@ -1326,6 +1326,12 @@ namespace SobekCM.Library.Navigation
 							if (Int16.TryParse(QueryString["yr2"], out year2))
 								navigator.DateRange_Year2 = year2;
 						}
+						if (navigator.DateRange_Year1 > navigator.DateRange_Year2)
+						{
+							short temp = navigator.DateRange_Year1;
+							navigator.DateRange_Year1 = navigator.DateRange_Year2;
+							navigator.DateRange_Year2 = temp;
+						}
 						if (QueryString["da1"] != null)
 						{
 							long date1;
