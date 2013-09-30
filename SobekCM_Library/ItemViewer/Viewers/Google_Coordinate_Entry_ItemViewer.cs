@@ -1,27 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.Services;
 using System.Web.UI.WebControls;
 using System.IO;
-using System.Web.UI;
-using System.Windows.Forms;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Users;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.Navigation;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
 using SobekCM.Resource_Object;
+using SobekCM.Library.Settings;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -32,34 +22,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
-
-        private bool googleItemSearch;
         private StringBuilder mapBuilder;
         private List<string> matchingTilesList;
-        private double providedMaxLat;
-        private double providedMaxLong;
-        private double providedMinLat;
-        private double providedMinLong;
-        private bool validCoordinateSearchFound;
-
-        //private static GeoSpatial_Information geoInfo;
         private static User_Object CurrentUser;
         private static SobekCM_Item CurrentItem;
         private static GeoSpatial_Information geoInfo2;
-
         private static GeoSpatial_Information itemGeoInfo;
         private static List<Coordinate_Polygon> itemPolygons;
-
-        private static List<Coordinate_Polygon> allPolygons;
+        List<Coordinate_Polygon> allPolygons;
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
 
+        //private static string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+        //private static string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
+        
         //init viewer instance
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
             CurrentUser = Current_User;
             CurrentItem = Current_Item;
             this.CurrentMode = Current_Mode;
+
+            //string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+            //string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
 
             // If there is no user, send to the login
             if (CurrentUser == null)
@@ -70,11 +55,34 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
+
+            string action = HttpContext.Current.Request.Form["action"] ?? String.Empty;
+            string payload = HttpContext.Current.Request.Form["payload"] ?? String.Empty;
+
+
+            // See if there were hidden requests
+            if (!String.IsNullOrEmpty(action))
+            {
+               if ( action == "save")
+                   SaveContent(payload);
+            }
+
+            ////create a backup of the mets
+            //string backup_directory = SobekCM_Library_Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
+            //string backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
+            //File.Copy(current_mets, backup_mets_name);
         }
 
         //parse and save incoming message 
         public static void SaveContent(String sendData)
         {
+            //get rid of excess string
+            sendData = sendData.Replace("{\"sendData\": \"", "").Replace("{\"sendData\":\"", "");
+
+            //validate
+            if (sendData.Length == 0)
+                return;
+
             //ensure we have a geo-spatial module in the digital resource
             GeoSpatial_Information resourceGeoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
             //if there was no geo-spatial module
@@ -109,15 +117,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             int index1 = sendData.LastIndexOf("~");
             //split into each save message
             string[] allSaves = sendData.Substring(0, index1).Split('~');
-
+            //hold save type handle
+            string saveTypeHandle = null;
+            
             for (int i = 0; i < allSaves.Length; i++)
             {
                 //get the length of save message
                 int index2 = allSaves[i].LastIndexOf("|");
                 //split into save elements
                 string[] ar = allSaves[i].Substring(0, index2).Split('|');
-                //determine the save type (position 0 in array)
-                string saveType = ar[0];
+                //determine the save type handle (position 0 in array)
+                saveTypeHandle = ar[0];
+                //determine the save type (position 1 in array)
+                string saveType = ar[1];
                 //based on saveType, parse into objects
 
                 //handle save based on type
@@ -126,7 +138,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     case "item":
 
                         //prep incoming lat/long
-                        string[] temp1 = ar[1].Split(',');
+                        string[] temp1 = ar[2].Split(',');
                         double temp1Lat = Convert.ToDouble(temp1[0].Replace("(", ""));
                         double temp1Long = Convert.ToDouble(temp1[1].Replace(")", ""));
 
@@ -135,9 +147,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                         //add the new point 
                         resourceGeoInfo.Add_Point(temp1Lat, temp1Long, CurrentItem.METS_Header.ObjectID);
-
-                        //add current geo
-                        CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
 
                         //save to database
                         //resourceGeoInfo.Save_Additional_Info_To_Database(CurrentItem.id, "connectionString", CurrentItem, "Could Not Save Item To Database");
@@ -149,17 +158,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             foreach (Coordinate_Polygon itemPolygon in itemPolygons)
                             {
-                                if (itemPolygon.Label == ar[1])
+                                if (itemPolygon.Label == ar[2])
                                 {
                                     //prep incoming bounds
-                                    string[] temp2 = ar[2].Split(',');
+                                    string[] temp2 = ar[3].Split(',');
                                     itemPolygon.Clear_Edge_Points();
                                     itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
                                     itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
                                     itemPolygon.Recalculate_Bounding_Box();
 
                                     //add the rotation
-                                    itemPolygon.Add_Rotation(Convert.ToDouble(ar[4]));
+                                    itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
                                 }
                             }
                         }
@@ -169,9 +178,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
 
                             //add the label
-                            if (ar[1] != "undefined")
+                            if (ar[2] != "undefined")
                             {
-                                itemPolygon.Label = ar[1];
+                                itemPolygon.Label = ar[2];
                             }
                             else
                             {
@@ -180,13 +189,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
                             //prep incoming bounds
-                            string[] temp2 = ar[2].Split(',');
+                            string[] temp2 = ar[3].Split(',');
                             itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
                             itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
                             itemPolygon.Recalculate_Bounding_Box();
 
                             //add the rotation
-                            itemPolygon.Add_Rotation(Convert.ToDouble(ar[4]));
+                            itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
+
+                            //clear previous point (if any)
+                            resourceGeoInfo.Clear_Points();
+
+                            //clear previous overlay (if any)
+                            resourceGeoInfo.Clear_User_Polygons_And_Lines();
 
                             //check to see if there is a lower level geo info
                             if (itemGeoInfo != null)
@@ -199,8 +214,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //add the polygon to the resource level geo info
                                 resourceGeoInfo.Add_Polygon(itemPolygon);
                             }
-
-
 
                         }
 
@@ -226,22 +239,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     case "poi":
 
                         //assign values
-                        string savedPOIType = ar[1];
-                        string savedPOIDesc = ar[2];
-                        string savedPOIKML = ar[3];
+                        string savedPOIType = ar[2];
+                        string savedPOIDesc = ar[3];
+                        string savedPOIKML = ar[4];
 
                         //get specific geometry (KML Standard)
-                        switch (ar[1])
+                        switch (ar[2])
                         {
                             case "marker":
 
                                 //prep incoming lat/long
-                                string[] temp2 = ar[3].Split(',');
+                                string[] temp2 = ar[4].Split(',');
                                 double temp2Lat = Convert.ToDouble(temp2[0].Replace("(", ""));
                                 double temp2Long = Convert.ToDouble(temp2[1].Replace(")", ""));
 
                                 //add the new point 
-                                resourceGeoInfo.Add_POI_Point(temp2Lat, temp2Long, ar[2]);
+                                resourceGeoInfo.Add_POI_Point(temp2Lat, temp2Long, ar[3]);
 
                                 break;
                             case "circle":
@@ -250,13 +263,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 Coordinate_Polygon poiCircle = new Coordinate_Polygon();
 
                                 //set the label
-                                poiCircle.Label = ar[2];
+                                poiCircle.Label = ar[3];
 
                                 //set the radius
-                                poiCircle.Add_Radius(Convert.ToDouble(ar[4]));
+                                poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
 
                                 //prep incoming lat/long
-                                string[] temp3 = ar[3].Split(',');
+                                string[] temp3 = ar[4].Split(',');
                                 double temp3Lat = Convert.ToDouble(temp3[0].Replace("(", ""));
                                 double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
 
@@ -273,10 +286,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 Coordinate_Polygon poiRectangle = new Coordinate_Polygon();
 
                                 //add the label
-                                poiRectangle.Label = ar[2];
+                                poiRectangle.Label = ar[3];
 
                                 //prep incoming bounds
-                                string[] temp4 = ar[3].Split(',');
+                                string[] temp4 = ar[4].Split(',');
                                 poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[0].Replace("(", "")), Convert.ToDouble(temp4[1].Replace(")", "")));
                                 poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[2].Replace("(", "")), Convert.ToDouble(temp4[3].Replace(")", "")));
                                 poiRectangle.Recalculate_Bounding_Box();
@@ -291,10 +304,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 Coordinate_Polygon poiPolygon = new Coordinate_Polygon();
 
                                 //add the label
-                                poiPolygon.Label = ar[2];
+                                poiPolygon.Label = ar[3];
 
                                 //add the edge points
-                                for (int i2 = 4; i2 < ar.Length; i2++)
+                                for (int i2 = 5; i2 < ar.Length; i2++)
                                 {
                                     string[] temp5 = ar[i2].Split(',');
                                     poiPolygon.Add_Edge_Point(Convert.ToDouble(temp5[0].Replace("(", "")), Convert.ToDouble(temp5[1].Replace(")", "")));
@@ -310,10 +323,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 Coordinate_Line poiLine = new Coordinate_Line();
 
                                 //add the label
-                                poiLine.Label = ar[2];
+                                poiLine.Label = ar[3];
 
                                 //add the edge points
-                                for (int i2 = 4; i2 < ar.Length; i2++)
+                                for (int i2 = 5; i2 < ar.Length; i2++)
                                 {
                                     Coordinate_Point tempPoint = new Coordinate_Point();
 
@@ -327,9 +340,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 break;
                         }
 
-                        //add current geo
-                        CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
-
                         break;
                 }
             }
@@ -342,15 +352,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Directory.CreateDirectory(userInProcessDirectory);
             }
 
-            //add current geo (we do this inside each case
-            //CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
-
-            //save the item to the temporary location
-            CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".xml");
-
-            //save to db (does not work)
-            //Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
-            
+            //determine what to do from here
+            switch (saveTypeHandle)
+            {
+                case "save":
+                    //save the item to the temporary location
+                    CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
+                    CurrentItem.Save_SobekCM_METS(); //save the mets
+                    break;
+                case "apply":
+                    //in theory, this should only be called after the 'save' thus we do not need to save only apply (but we still save temp here just in case)
+                    //save the item to the temporary location
+                    CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
+                    CurrentItem.Save_SobekCM_METS(); //save the mets
+                    //save to db
+                    Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                    //move temp mets to prod
+                    string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+                    string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
+                    string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
+                    File.Copy(metsInProcessFile, current_mets, true);
+                    break;
+                case "reset":
+                    //currently not used
+                    //reset temp mets
+                    //if (File.Exists(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml"))
+                    //{
+                    //    File.Delete(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
+                    //}
+                    break;
+            }
         }
 
         /// <summary> Gets the number of pages for this viewer </summary>
@@ -429,6 +460,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //used to force doctype html5 and css3
             //mapeditBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
+
+            mapeditBuilder.AppendLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
+            mapeditBuilder.AppendLine("<input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" />");
 
             //standard css
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
@@ -566,16 +600,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string bounds2 = "new google.maps.LatLng";
                         foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
                         {
-                            if (localit == 0)
+                            if (itemPolygon.Edge_Points_Count == 2)
                             {
-                                bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                if (localit == 0)
+                                {
+                                    bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                }
+                                if (localit == 1)
+                                {
+                                    bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                }
+                                localit++;
                             }
-                            if (localit == 2)
+                            if (itemPolygon.Edge_Points_Count == 4)
                             {
-                                bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                if (localit == 0)
+                                {
+                                    bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                }
+                                if (localit == 2)
+                                {
+                                    bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                }
+                                localit++;
                             }
-                            localit++;
-
                         }
                         bounds += bounds2 + ", " + bounds1;
                         bounds += ")";
@@ -666,34 +714,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
-                    try
+                    if (allPoints.Count > 0)
                     {
-                        //get the image url
-                        List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
-                        string first_page_jpeg = String.Empty;
-                        foreach (SobekCM_File_Info thisFile in first_page_files)
+                        try
                         {
-                            if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
-                                (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                            //get the image url
+                            List<SobekCM_File_Info> first_page_files =
+                                ((Page_TreeNode) CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            string first_page_jpeg = String.Empty;
+                            foreach (SobekCM_File_Info thisFile in first_page_files)
                             {
-                                first_page_jpeg = thisFile.System_Name;
-                                break;
+                                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                    (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                                {
+                                    first_page_jpeg = thisFile.System_Name;
+                                    break;
+                                }
                             }
-                        }
-                        string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+                            string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
 
-                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"" + first_page_complete_url + "\"; ");
-                        mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"" +
+                                                      first_page_complete_url + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" +
+                                                      CurrentItem.Bib_Title + "\"; ");
+
+                        }
+                        catch (Exception)
+                        {
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"\" ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" +
+                                                      CurrentItem.Bib_Title + "\"; ");
+                            //throw;
+                        }
+                        mapeditBuilder.AppendLine(" ");
+                        mapeditBuilder.AppendLine("      displayIncomingPoints();");
+                        mapeditBuilder.AppendLine(" ");
                     }
-                    catch (Exception)
-                    {
-                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"\" ");
-                        mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
-                        //throw;
-                    }
-                    mapeditBuilder.AppendLine(" ");
-                    mapeditBuilder.AppendLine("      displayIncomingPoints();");
-                    mapeditBuilder.AppendLine(" ");
                 }
 
                 mapeditBuilder.AppendLine(" }");
