@@ -37,14 +37,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -106,11 +106,11 @@ namespace SobekCM.Library.Citation.Elements
             // Add the link for the main title
             if (Bib.Bib_Info.Main_Title.Title.Length == 0)
             {
-                Output.Write("              <a title=\"Click to edit the main title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_maintitle_term')\" onblur=\"link_blurred2('form_maintitle_term')\" onkeypress=\"return popup_keypress_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675, '" + isMozilla.ToString() + "');\" onclick=\"return popup_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675);\"><div class=\"form_linkline_empty form_title_main_line\" id=\"form_maintitle_term\"><i>Empty Main Title</i>");
+                Output.Write("              <a title=\"Click to edit the main title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_maintitle_term')\" onblur=\"link_blurred2('form_maintitle_term')\" onkeypress=\"return popup_keypress_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675, '" + IsMozilla.ToString() + "');\" onclick=\"return popup_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675);\"><div class=\"form_linkline_empty form_title_main_line\" id=\"form_maintitle_term\"><i>Empty Main Title</i>");
             }
             else
             {
-                Output.Write("              <a title=\"Click to edit the main title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_maintitle_term')\" onblur=\"link_blurred2('form_maintitle_term')\" onkeypress=\"return popup_keypress_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675, '" + isMozilla.ToString() + "');\" onclick=\"return popup_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675);\"><div class=\"form_linkline form_title_main_line\" id=\"form_maintitle_term\">" + Bib.Bib_Info.Main_Title.NonSort + Bib.Bib_Info.Main_Title.Title);
+                Output.Write("              <a title=\"Click to edit the main title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_maintitle_term')\" onblur=\"link_blurred2('form_maintitle_term')\" onkeypress=\"return popup_keypress_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675, '" + IsMozilla.ToString() + "');\" onclick=\"return popup_focus('form_maintitle', 'form_maintitle_term', 'formmaintitletitle', 195, 675);\"><div class=\"form_linkline form_title_main_line\" id=\"form_maintitle_term\">" + Bib.Bib_Info.Main_Title.NonSort + Bib.Bib_Info.Main_Title.Title);
                 if (Bib.Bib_Info.Main_Title.Subtitle.Length > 0)
                     Output.Write(" : " + Bib.Bib_Info.Main_Title.Subtitle);
             }
@@ -128,74 +128,74 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine();
 
             // Add the popup form
-            popup_form_builder.AppendLine("<!-- Main Title Form -->");
-            popup_form_builder.AppendLine("<div class=\"title_main_popup_div\" id=\"form_maintitle\" style=\"display:none;\">");
-            popup_form_builder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT MAIN TITLE</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_maintitle_form('form_maintitle')\">X</a> &nbsp; </td></tr></table></div>");
-            popup_form_builder.AppendLine("  <br />");
-            popup_form_builder.AppendLine("  <table class=\"popup_table\">");
+            PopupFormBuilder.AppendLine("<!-- Main Title Form -->");
+            PopupFormBuilder.AppendLine("<div class=\"title_main_popup_div\" id=\"form_maintitle\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT MAIN TITLE</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_maintitle_form('form_maintitle')\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("  <br />");
+            PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
 
             // Add the title type (and optionally display label)
-            popup_form_builder.AppendLine("    <tr><td width=\"90px\">Title Type:</td><td colspan=\"2\"><span style=\"color: Blue; padding-bottom: 7px;\" >Main Title</span></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td width=\"90px\">Title Type:</td><td colspan=\"2\"><span style=\"color: Blue; padding-bottom: 7px;\" >Main Title</span></td></tr>");
 
             // Add the nonsort and language text boxes
-            popup_form_builder.Append("    <tr><td>Non Sort:</td><td>");
-            popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlenonsort\" id=\"formmainttitlenonsort\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.NonSort) + "\"  onfocus=\"javascript:textbox_enter('formmainttitlenonsort', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmainttitlenonsort', 'formtitle_small_input')\" />");
-            popup_form_builder.Append("</td><td width=\"255px\" >Language: &nbsp; ");
-            popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlelanguage\" id=\"formmainttitlelanguage\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Language) + "\" onfocus=\"javascript:textbox_enter('formmainttitlelanguage', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmainttitlelanguage', 'formtitle_small_input')\" />");
-            popup_form_builder.AppendLine("</td></tr>");
+            PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
+            PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlenonsort\" id=\"formmainttitlenonsort\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.NonSort) + "\"  onfocus=\"javascript:textbox_enter('formmainttitlenonsort', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmainttitlenonsort', 'formtitle_small_input')\" />");
+            PopupFormBuilder.Append("</td><td width=\"255px\" >Language: &nbsp; ");
+            PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlelanguage\" id=\"formmainttitlelanguage\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Language) + "\" onfocus=\"javascript:textbox_enter('formmainttitlelanguage', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmainttitlelanguage', 'formtitle_small_input')\" />");
+            PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the title, subtitle, and statement of responsibility
-            popup_form_builder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formmaintitletitle\" id=\"formmaintitletitle\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Title) + "\" onfocus=\"javascript:textbox_enter('formmaintitletitle', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitletitle', 'formtitle_large_input')\" /></td></tr>");
-            popup_form_builder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formmaintitlesubtitle\" id=\"formmaintitlesubtitle\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Subtitle) + "\" onfocus=\"javascript:textbox_enter('formmaintitlesubtitle', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlesubtitle', 'formtitle_large_input')\" /></td></tr>");
-            popup_form_builder.AppendLine("    <tr><td colspan=\"3\">Statement of Responsibility: &nbsp; &nbsp; <input class=\"formtitle_medium_input\" name=\"formmaintitlestatement\" id=\"formmaintitlestatement\" type=\"text\" value=\"" + statement_responsibility + "\" onfocus=\"javascript:textbox_enter('formmaintitlestatement', 'formtitle_medium_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlestatement', 'formtitle_medium_input')\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formmaintitletitle\" id=\"formmaintitletitle\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Title) + "\" onfocus=\"javascript:textbox_enter('formmaintitletitle', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitletitle', 'formtitle_large_input')\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formmaintitlesubtitle\" id=\"formmaintitlesubtitle\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Subtitle) + "\" onfocus=\"javascript:textbox_enter('formmaintitlesubtitle', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlesubtitle', 'formtitle_large_input')\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\">Statement of Responsibility: &nbsp; &nbsp; <input class=\"formtitle_medium_input\" name=\"formmaintitlestatement\" id=\"formmaintitlestatement\" type=\"text\" value=\"" + statement_responsibility + "\" onfocus=\"javascript:textbox_enter('formmaintitlestatement', 'formtitle_medium_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlestatement', 'formtitle_medium_input')\" /></td></tr>");
 
             // Add the part numbers
-            popup_form_builder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
+            PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
             if ( Bib.Bib_Info.Main_Title.Part_Numbers_Count > 0 )
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[0]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum1', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[0]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum1', 'formtitle_small_input')\" />");
             }
             else
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum1', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum1', 'formtitle_small_input')\" />");
             }
             if (Bib.Bib_Info.Main_Title.Part_Numbers_Count > 1)
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[1]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum2', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[1]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum2', 'formtitle_small_input')\" />");
             }
             else
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum2', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartnum2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartnum2', 'formtitle_small_input')\" />");
             }
-            popup_form_builder.AppendLine("</td></tr>");
+            PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the part names and authority
-            popup_form_builder.Append("    <tr><td>Part Names:</td><td>");
+            PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
             if (Bib.Bib_Info.Main_Title.Part_Names_Count > 0)
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[0]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartname1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname1', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[0]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartname1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname1', 'formtitle_small_input')\" />");
             }
             else
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartname1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname1', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartname1', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname1', 'formtitle_small_input')\" />");
             }
             if (Bib.Bib_Info.Main_Title.Part_Names_Count > 1)
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[1]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartname2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname2', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[1]) + "\" onfocus=\"javascript:textbox_enter('formmaintitlepartname2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname2', 'formtitle_small_input')\" />");
             }
             else
             {
-                popup_form_builder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartname2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname2', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formmaintitlepartname2', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitlepartname2', 'formtitle_small_input')\" />");
             }
-            popup_form_builder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input\" name=\"formmaintitleauthority\" id=\"formmaintitleauthority\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Authority) + "\"  onfocus=\"javascript:textbox_enter('formmaintitleauthority', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitleauthority', 'formtitle_small_input')\" />");
-            popup_form_builder.AppendLine("</td></tr>");
-            popup_form_builder.AppendLine("  </table>");
-            popup_form_builder.AppendLine("  <br />");
+            PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input\" name=\"formmaintitleauthority\" id=\"formmaintitleauthority\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Authority) + "\"  onfocus=\"javascript:textbox_enter('formmaintitleauthority', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formmaintitleauthority', 'formtitle_small_input')\" />");
+            PopupFormBuilder.AppendLine("</td></tr>");
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("  <br />");
 
             // Add the close button
-            popup_form_builder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_maintitle_form('form_maintitle');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-            popup_form_builder.AppendLine("</div>");
-            popup_form_builder.AppendLine();
+            PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_maintitle_form('form_maintitle');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -266,9 +266,9 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             // Do nothing
         }

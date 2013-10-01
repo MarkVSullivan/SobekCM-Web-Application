@@ -33,14 +33,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -87,12 +87,12 @@ namespace SobekCM.Library.Citation.Elements
             // Write the EAD popup link 
             if (( !Bib.Bib_Info.hasLocationInformation ) || ((Bib.Bib_Info.Location.EAD_Name.Length == 0) && (Bib.Bib_Info.Location.EAD_URL.Length == 0 )))
             {
-                Output.Write("              <a title=\"Click to edit the related EAD information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_ead_term')\" onblur=\"link_blurred2('form_ead_term')\" onkeypress=\"return popup_keypress_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620 );\"><div class=\"form_linkline_empty form_ead_line\" id=\"form_ead_term\">");
+                Output.Write("              <a title=\"Click to edit the related EAD information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_ead_term')\" onblur=\"link_blurred2('form_ead_term')\" onkeypress=\"return popup_keypress_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620 );\"><div class=\"form_linkline_empty form_ead_line\" id=\"form_ead_term\">");
                 Output.Write("<i>Empty Related EAD</i>");
             }
             else
             {
-                Output.Write("              <a title=\"Click to edit the related EAD information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_ead_term')\" onblur=\"link_blurred2('form_ead_term')\" onkeypress=\"return popup_keypress_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620 );\"><div class=\"form_linkline form_ead_line\" id=\"form_ead_term\">");
+                Output.Write("              <a title=\"Click to edit the related EAD information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_ead_term')\" onblur=\"link_blurred2('form_ead_term')\" onkeypress=\"return popup_keypress_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_ead', 'form_ead_term', 'formead_name', 175, 620 );\"><div class=\"form_linkline form_ead_line\" id=\"form_ead_term\">");
                 Output.Write(Bib.Bib_Info.Location.EAD_Name.Length > 0
                                  ? HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name)
                                  : HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL));
@@ -110,22 +110,22 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine();
 
             // Add the popup form
-            popup_form_builder.AppendLine("<!-- Related EAD Form -->");
-            popup_form_builder.AppendLine("<div class=\"ead_popup_div\" id=\"form_ead\" style=\"display:none;\">");
-            popup_form_builder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT RELATED EAD / FINDING GUIDE</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_ead_form()\">X</a> &nbsp; </td></tr></table></div>");
-            popup_form_builder.AppendLine("  <br />");
-            popup_form_builder.AppendLine("  <table class=\"popup_table\">");
+            PopupFormBuilder.AppendLine("<!-- Related EAD Form -->");
+            PopupFormBuilder.AppendLine("<div class=\"ead_popup_div\" id=\"form_ead\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT RELATED EAD / FINDING GUIDE</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_ead_form()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("  <br />");
+            PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
 
             // Add the rows of data
-            popup_form_builder.AppendLine("    <tr><td width=\"90px\">EAD Name:</td><td><input class=\"formead_input\" name=\"formead_name\" id=\"formead_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name) + "\" onfocus=\"javascript:textbox_enter('formead_name', 'formead_input_focused')\" onblur=\"javascript:textbox_leave('formead_name', 'formead_input')\" /></td></tr>");
-            popup_form_builder.AppendLine("    <tr><td>EAD URL:</td><td><input class=\"formead_input\" name=\"formead_url\" id=\"formead_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL) + "\" onfocus=\"javascript:textbox_enter('formead_url', 'formead_input_focused')\" onblur=\"javascript:textbox_leave('formead_url', 'formead_input')\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td width=\"90px\">EAD Name:</td><td><input class=\"formead_input\" name=\"formead_name\" id=\"formead_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name) + "\" onfocus=\"javascript:textbox_enter('formead_name', 'formead_input_focused')\" onblur=\"javascript:textbox_leave('formead_name', 'formead_input')\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>EAD URL:</td><td><input class=\"formead_input\" name=\"formead_url\" id=\"formead_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL) + "\" onfocus=\"javascript:textbox_enter('formead_url', 'formead_input_focused')\" onblur=\"javascript:textbox_leave('formead_url', 'formead_input')\" /></td></tr>");
 
             // Finish the popup form
-            popup_form_builder.AppendLine("  </table>");
-            popup_form_builder.AppendLine("  <br />");
-            popup_form_builder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_ead_form()\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-            popup_form_builder.AppendLine("</div>");
-            popup_form_builder.AppendLine();
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("  <br />");
+            PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_ead_form()\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -150,9 +150,9 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             // Do nothing
         }

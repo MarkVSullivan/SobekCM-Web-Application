@@ -53,14 +53,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -380,24 +380,24 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the type combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             default_values.Clear();
-            while (xmlReader.Read())
+            while (XMLReader.Read())
             {
-                if ((xmlReader.NodeType == XmlNodeType.Element) && ((xmlReader.Name.ToLower() == "value") || (xmlReader.Name.ToLower() == "options")))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && ((XMLReader.Name.ToLower() == "value") || (XMLReader.Name.ToLower() == "options")))
                 {
-                    if (xmlReader.Name.ToLower() == "value")
+                    if (XMLReader.Name.ToLower() == "value")
                     {
-                        xmlReader.Read();
-                        default_values.Add(xmlReader.Value.Trim());
+                        XMLReader.Read();
+                        default_values.Add(XMLReader.Value.Trim());
                     }
                     else
                     {
-                        xmlReader.Read();
-                        string options = xmlReader.Value.Trim();
+                        XMLReader.Read();
+                        string options = XMLReader.Value.Trim();
                         items.Clear();
                         if (options.Length > 0)
                         {

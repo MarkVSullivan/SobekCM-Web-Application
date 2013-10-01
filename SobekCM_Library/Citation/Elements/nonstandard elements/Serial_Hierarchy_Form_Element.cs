@@ -37,14 +37,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -90,11 +90,11 @@ namespace SobekCM.Library.Citation.Elements
             string serial_hierarchy_string = show_hierarchy_value(Bib.Behaviors.Serial_Info);
             if (serial_hierarchy_string.Length == 0)
             {
-                Output.WriteLine("              <a title=\"Click to edit the serial hierarchy\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_serial_hierarchy_term')\" onblur=\"return link_blurred2('form_serial_hierarchy_term')\" onkeypress=\"return popup_keypress_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565 );\"><div class=\"form_linkline_empty form_serial_hierarchy_line\" id=\"form_serial_hierarchy_term\"><i>Empty Serial Hierarchy</i></div></a>");
+                Output.WriteLine("              <a title=\"Click to edit the serial hierarchy\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_serial_hierarchy_term')\" onblur=\"return link_blurred2('form_serial_hierarchy_term')\" onkeypress=\"return popup_keypress_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565 );\"><div class=\"form_linkline_empty form_serial_hierarchy_line\" id=\"form_serial_hierarchy_term\"><i>Empty Serial Hierarchy</i></div></a>");
             }
             else
             {
-                Output.WriteLine("              <a title=\"Click to edit the serial hierarchy\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_serial_hierarchy_term')\" onblur=\"link_blurred2('form_serial_hierarchy_term')\" onkeypress=\"return popup_keypress_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565 );\"><div class=\"form_linkline form_serial_hierarchy_line\" id=\"form_serial_hierarchy_term\">" + serial_hierarchy_string + "</div></a>");
+                Output.WriteLine("              <a title=\"Click to edit the serial hierarchy\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_serial_hierarchy_term')\" onblur=\"link_blurred2('form_serial_hierarchy_term')\" onkeypress=\"return popup_keypress_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_serial_hierarchy', 'form_serial_hierarchy_term', 'form_serialhierarchy_enum1text', 395, 565 );\"><div class=\"form_linkline form_serial_hierarchy_line\" id=\"form_serial_hierarchy_term\">" + serial_hierarchy_string + "</div></a>");
             }
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
@@ -126,20 +126,20 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Add the popup form
-            popup_form_builder.AppendLine("<!-- Serial Hierarchy Form -->");
-            popup_form_builder.AppendLine("<div class=\"serial_hierarchy_popup_div\" id=\"form_serial_hierarchy\" style=\"display:none;\">");
-            popup_form_builder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT SERIAL HIERARCHY</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_serial_hierarchy()\">X</a> &nbsp; </td></tr></table></div>");
-            popup_form_builder.AppendLine("  <br />");
-            popup_form_builder.AppendLine("  <table class=\"popup_table\">");
+            PopupFormBuilder.AppendLine("<!-- Serial Hierarchy Form -->");
+            PopupFormBuilder.AppendLine("<div class=\"serial_hierarchy_popup_div\" id=\"form_serial_hierarchy\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT SERIAL HIERARCHY</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_serial_hierarchy()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("  <br />");
+            PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
 
             // Add the Enumeration Information title
-            popup_form_builder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle_first\" >Enumeration Information</td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle_first\" >Enumeration Information</td></tr>");
 
             // Add the enumeration as primary radio button
-            popup_form_builder.Append("    <tr><td colspan=\"2\"> &nbsp; &nbsp; <input type=\"radio\" id=\"form_serialhierarchy_primary_enum\" name=\"form_serialhierarchy_primary\" value=\"enum\"");
+            PopupFormBuilder.Append("    <tr><td colspan=\"2\"> &nbsp; &nbsp; <input type=\"radio\" id=\"form_serialhierarchy_primary_enum\" name=\"form_serialhierarchy_primary\" value=\"enum\"");
             if (enum_primary)
-                popup_form_builder.Append(" checked=\"checked\"");
-            popup_form_builder.AppendLine(" onclick=\"focus_element( 'form_serialhierarchy_enum1text');\" /> <label for=\"form_serialhierarchy_primary_enum\">Primary</label> </td><td><span style=\"color:Gray;padding-left:55px;\">Display Text</span></td><td><span style=\"color:Gray;\"> &nbsp; Display Order</span></td></tr>");
+                PopupFormBuilder.Append(" checked=\"checked\"");
+            PopupFormBuilder.AppendLine(" onclick=\"focus_element( 'form_serialhierarchy_enum1text');\" /> <label for=\"form_serialhierarchy_primary_enum\">Primary</label> </td><td><span style=\"color:Gray;padding-left:55px;\">Display Text</span></td><td><span style=\"color:Gray;\"> &nbsp; Display Order</span></td></tr>");
 
             // determine the first enumeration data
             string enum1 = Bib.Bib_Info.Series_Part_Info.Enum1;
@@ -147,64 +147,64 @@ namespace SobekCM.Library.Citation.Elements
                 enum1 = "[TITLE]";
 
             // Add the rows of enumeration data
-            popup_form_builder.Append("    <tr><td width=\"90px\">&nbsp;</td><td width=\"100px\">(Volume):</td>");
-            popup_form_builder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(enum1) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input')\" ></td>");
+            PopupFormBuilder.Append("    <tr><td width=\"90px\">&nbsp;</td><td width=\"100px\">(Volume):</td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(enum1) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input')\" ></td>");
             if ( Bib.Bib_Info.Series_Part_Info.Enum1_Index >= 0 )
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum1_Index.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum1_Index.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             else
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
 
-            popup_form_builder.Append("    <tr><td>&nbsp;</td><td>(Issue):</td>");
-            popup_form_builder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input')\" ></td>");
+            PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Issue):</td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input')\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Enum2_Index >= 0)
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2_Index.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\"></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2_Index.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\"></td></tr>");
             else
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
 
-            popup_form_builder.Append("    <tr><td>&nbsp;</td><td>(Part):</td>");
-            popup_form_builder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input')\" ></td>");
+            PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Part):</td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input')\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Enum3_Index >= 0)
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3_Index.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3_Index.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             else
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
 
             // Add the Chronological Information title
-            popup_form_builder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle\" >Chronological Information</td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle\" >Chronological Information</td></tr>");
 
             // Add the chronology as primary radio button
-            popup_form_builder.Append("    <tr><td colspan=\"2\"> &nbsp; &nbsp; <input type=\"radio\" id=\"form_serialhierarchy_primary_chrono\" name=\"form_serialhierarchy_primary\" value=\"chrono\"");
+            PopupFormBuilder.Append("    <tr><td colspan=\"2\"> &nbsp; &nbsp; <input type=\"radio\" id=\"form_serialhierarchy_primary_chrono\" name=\"form_serialhierarchy_primary\" value=\"chrono\"");
             if (!enum_primary)
-                popup_form_builder.Append(" checked=\"checked\"");
-            popup_form_builder.AppendLine(" onclick=\"focus_element( 'form_serialhierarchy_chrono1text');\" /> <label for=\"form_serialhierarchy_primary_chrono\">Primary</label> </td><td><span style=\"color:Gray;padding-left:55px;\">Display Text</span></td><td><span style=\"color:Gray;\"> &nbsp; Display Order</span></td></tr>");
+                PopupFormBuilder.Append(" checked=\"checked\"");
+            PopupFormBuilder.AppendLine(" onclick=\"focus_element( 'form_serialhierarchy_chrono1text');\" /> <label for=\"form_serialhierarchy_primary_chrono\">Primary</label> </td><td><span style=\"color:Gray;padding-left:55px;\">Display Text</span></td><td><span style=\"color:Gray;\"> &nbsp; Display Order</span></td></tr>");
 
             // Add the rows of chronological data
-            popup_form_builder.Append("    <tr><td>&nbsp;</td><td>Year:</td>");
-            popup_form_builder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_chrono1text\" name=\"form_serialhierarchy_chrono1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono1text', 'form_serialhierarchy_text_input')\" ></td>");
+            PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>Year:</td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_chrono1text\" name=\"form_serialhierarchy_chrono1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono1text', 'form_serialhierarchy_text_input')\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Year_Index >= 0)
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year_Index.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year_Index.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             else
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
 
-            popup_form_builder.Append("    <tr><td>&nbsp;</td><td>(Month):</td>");
-            popup_form_builder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_chrono2text\" name=\"form_serialhierarchy_chrono2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono2text', 'form_serialhierarchy_text_input')\" ></td>");
+            PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Month):</td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_chrono2text\" name=\"form_serialhierarchy_chrono2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono2text', 'form_serialhierarchy_text_input')\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Month_Index >= 0)
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month_Index.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month_Index.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             else
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
 
-            popup_form_builder.Append("    <tr><td>&nbsp;</td><td>(Day):</td>");
-            popup_form_builder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_chrono3text\" name=\"form_serialhierarchy_chrono3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono3text', 'form_serialhierarchy_text_input')\" ></td>");
+            PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Day):</td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_chrono3text\" name=\"form_serialhierarchy_chrono3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono3text', 'form_serialhierarchy_text_input')\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Day_Index >= 0)
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day_Index.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day_Index.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
             else
-                popup_form_builder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_chrono3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
 
 
-            popup_form_builder.AppendLine("  </table>");
-            popup_form_builder.AppendLine("  <br />");
-            popup_form_builder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_serial_hierarchy();\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-            popup_form_builder.AppendLine("</div>");
-            popup_form_builder.AppendLine();
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("  <br />");
+            PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_serial_hierarchy();\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -397,9 +397,9 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             // Do nothing
         }

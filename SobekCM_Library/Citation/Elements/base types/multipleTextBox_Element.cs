@@ -220,16 +220,16 @@ namespace SobekCM.Library.Citation.Elements
 
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data( XmlTextReader xmlReader )
+        protected override void Inner_Read_Data( XmlTextReader XMLReader )
         {
-            while ( xmlReader.Read() )
+            while ( XMLReader.Read() )
             {
-                if (( xmlReader.NodeType == XmlNodeType.Element ) && ( xmlReader.Name.ToLower() == "value" ))
+                if (( XMLReader.NodeType == XmlNodeType.Element ) && ( XMLReader.Name.ToLower() == "value" ))
                 {
-                    xmlReader.Read();
-                    default_values.Add(xmlReader.Value.Trim());
+                    XMLReader.Read();
+                    default_values.Add(XMLReader.Value.Trim());
                     return;
                 }
             }

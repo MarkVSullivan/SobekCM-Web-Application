@@ -108,11 +108,26 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.CITATION:
                     return new string[] {"citation", "marc", "metadata", "usage"};
 
-                case View_Enum.TRACKING:
-                    return new string[] {"milestones", "tracking", "directory", "media", "archive"};
+				case View_Enum.DATASET_CODEBOOK:
+					return new string[] { "dscodebook" };
+
+				case View_Enum.DATASET_REPORTS:
+					return new string[] { "dsreports" };
+
+				case View_Enum.DATASET_VIEWDATA:
+					return new string[] { "dsview" };
 
                 case View_Enum.DOWNLOADS:
                     return new string[] {"downloads"};
+
+				case View_Enum.EAD_CONTAINER_LIST:
+					return new string[] { "container" };
+
+				case View_Enum.EAD_DESCRIPTION:
+					return new string[] { "description" };
+
+				case View_Enum.EMBEDDED_VIDEO:
+					return new string[] { "video" };
 
                 case View_Enum.EPHEMERAL_CITIES:
                     return new string[] {"ep"};
@@ -135,14 +150,23 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.JPEG:
                     return new string[] {"j"};
 
+				case View_Enum.JPEG_TEXT_TWO_UP:
+					return new string[] { "u" };
+
                 case View_Enum.JPEG2000:
                     return new string[] {"x"};
 
+				case View_Enum.PAGE_TURNER:
+					return new string[] { "pageturner" };
+
+				case View_Enum.PDF:
+					return new string[] { "pdf" };
+
+				case View_Enum.QUALITY_CONTROL:
+					return new string[] { "qc" };
+
                 case View_Enum.RELATED_IMAGES:
                     return new string[] {"thumbs"};
-
-                case View_Enum.QUALITY_CONTROL:
-                    return new string[] { "qc" };
 
                 case View_Enum.SEARCH:
                     return new string[] {"search"};
@@ -159,23 +183,11 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.TOC:
                     return new string[] {"toc"};
 
-                case View_Enum.PDF:
-                    return new string[] {"pdf"};
-
-                case View_Enum.EAD_CONTAINER_LIST:
-                    return new string[] {"container"};
-
-                case View_Enum.EAD_DESCRIPTION:
-                    return new string[] {"description"};
-
-                case View_Enum.PAGE_TURNER:
-                    return new string[] {"pageturner"};
+				case View_Enum.TRACKING:
+					return new string[] { "milestones", "tracking", "directory", "media", "archive" };
 
                 case View_Enum.YOUTUBE_VIDEO:
                     return new string[] {"youtube"};
-
-                case View_Enum.EMBEDDED_VIDEO:
-                    return new string[] { "video" };
 
                 case View_Enum.TEST:
                     return new string[] { "test" };
