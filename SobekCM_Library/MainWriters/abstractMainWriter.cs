@@ -113,9 +113,9 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
         /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="myUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
+        /// <param name="MyUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public virtual void Add_Controls(PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder myUfdcUploadPlaceHolder, Custom_Tracer Tracer)
+        public virtual void Add_Controls(PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder MyUfdcUploadPlaceHolder, Custom_Tracer Tracer)
         {
             // Do nothing
         }

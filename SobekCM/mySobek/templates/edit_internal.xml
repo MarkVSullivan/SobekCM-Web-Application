@@ -26,7 +26,7 @@
         <element type="OtherTitle" subtype="simple" mandatory="false" acronym="Enter the any additional titles for your material here." />
         <element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material." >
           <element_data>
-            <options>Aerial, Archival, Artifact, Audio, Book, Map, Newspaper, Photograph, Serial, Video</options>
+            <options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
           </element_data>
         </element>
         <element type="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material." />

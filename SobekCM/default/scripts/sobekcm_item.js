@@ -134,7 +134,9 @@ function print_form_open() {
     // Load the content from the server dynamically first, if currently no content
     var d = $('#form_print');
     if (d.text().trim().length === 0) {
-        var toload = document.URL + '?fragment=printform #printform_content';
+    	var toload = document.URL + '?fragment=printform #printform_content';
+    	if (document.URL.indexOf('?') > 0 )
+    		toload = document.URL + '&fragment=printform #printform_content';
         $('#form_print').load(toload);
     }
 
@@ -225,7 +227,9 @@ function email_form_open() {
     // Load the content from the server dynamically first, if currently no content
     var d = $('#form_email');
     if (d.text().trim().length === 0) {
-        var toload = document.URL + '?fragment=sendform #emailform_content';
+    	var toload = document.URL + '?fragment=sendform #emailform_content';
+    	if (document.URL.indexOf('?') > 0)
+    		toload = document.URL + '&fragment=sendform #emailform_content';
         $('#form_email').load(toload);
     }
 
@@ -280,7 +284,9 @@ function add_item_form_open() {
     // Load the content from the server dynamically first, if currently no content
     var d = $('#add_item_form');
     if (d.text().trim().length === 0) {
-        var toload = document.URL + '?fragment=addform #addform_content';
+    	var toload = document.URL + '?fragment=addform #addform_content';
+    	if (document.URL.indexOf('?') > 0)
+    		toload = document.URL + '&fragment=addform #addform_content';
         $('#add_item_form').load(toload);
     }
 
@@ -328,7 +334,9 @@ function toggle_share_form(linkname) {
     // Load the content from the server dynamically first, if currently no content
     var d = $('#share_form');
     if (d.text().trim().length === 0) {
-        var toload = document.URL + '?fragment=shareform #shareform_content';
+    	var toload = document.URL + '?fragment=shareform #shareform_content';
+    	if (document.URL.indexOf('?') > 0)
+    		toload = document.URL + '&fragment=shareform #shareform_content';
         $('#share_form').load(toload);
     }
 

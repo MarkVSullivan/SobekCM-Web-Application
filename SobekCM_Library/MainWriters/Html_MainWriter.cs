@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Web;
@@ -38,8 +37,7 @@ namespace SobekCM.Library.MainWriters
         private readonly Checked_Out_Items_List checkedItems;
         private readonly Aggregation_Code_Manager codeManager;
         private readonly User_Object currentUser;
-        private bool finishPageInAddFinalHtmlMethod;
-        private readonly SobekCM_Skin_Object htmlSkin;
+	    private readonly SobekCM_Skin_Object htmlSkin;
         private readonly Dictionary<string, Wordmark_Icon> iconList;
         private readonly IP_Restriction_Ranges ipRestrictionInfo;
         private readonly Item_Lookup_Object itemList;
@@ -54,35 +52,36 @@ namespace SobekCM.Library.MainWriters
         private readonly SobekCM_Skin_Collection webSkins;
 
         // Special HTML sub-writers that need to have some persistance between methods
-        private abstractHtmlSubwriter subwriter;
+        private readonly abstractHtmlSubwriter subwriter;
 
-        /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-        /// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-        /// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-        /// <param name="Browse_Object"> Object contains all the basic information about any browse or info display </param>
-        /// <param name="Current_Item"> Current item to display </param>
-        /// <param name="Current_Page"> Current page within the item</param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Current_User"> Currently logged on user </param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Item_List"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
-        /// <param name="Search_History"> List of recent searches performed against this digital library </param>
-        /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the wordmarks subpage </param>
-        /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the main home page are organized </param>
-        /// <param name="Public_Folder"> Object contains the information about the public folder to display </param>
-        /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations </param>
-        /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
-        /// <param name="Checked_Items"> List of all items which are currently checked out for single fair use and the IP address currently viewing the item</param>
-        /// <param name="IP_Restrictions"> Any possible restriction on item access by IP ranges </param>
-        /// <param name="URL_Portals"> List of all web portals into this system </param>
-        /// <param name="Site_Map"> Optional site map object used to render a navigational tree-view on left side of static web content pages </param>
-        /// <param name="Items_In_Title"> List of items within the current title ( used for the Item Group display )</param>
-        /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
-        public Html_MainWriter(SobekCM_Navigation_Object Current_Mode,
+	    /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
+	    /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+	    /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
+	    /// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
+	    /// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
+	    /// <param name="Browse_Object"> Object contains all the basic information about any browse or info display </param>
+	    /// <param name="Current_Item"> Current item to display </param>
+	    /// <param name="Current_Page"> Current page within the item</param>
+	    /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
+	    /// <param name="Current_User"> Currently logged on user </param>
+	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
+	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
+	    /// <param name="Item_List"> Lookup object used to pull basic information about any item loaded into this library </param>
+	    /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
+	    /// <param name="Search_History"> List of recent searches performed against this digital library </param>
+	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the wordmarks subpage </param>
+	    /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the main home page are organized </param>
+	    /// <param name="Public_Folder"> Object contains the information about the public folder to display </param>
+	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations </param>
+	    /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
+	    /// <param name="Checked_Items"> List of all items which are currently checked out for single fair use and the IP address currently viewing the item</param>
+	    /// <param name="IP_Restrictions"> Any possible restriction on item access by IP ranges </param>
+	    /// <param name="URL_Portals"> List of all web portals into this system </param>
+	    /// <param name="Site_Map"> Optional site map object used to render a navigational tree-view on left side of static web content pages </param>
+	    /// <param name="Items_In_Title"> List of items within the current title ( used for the Item Group display )</param>
+	    /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    public Html_MainWriter(SobekCM_Navigation_Object Current_Mode,
             Item_Aggregation Hierarchy_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
@@ -130,9 +129,8 @@ namespace SobekCM.Library.MainWriters
             itemsInTitle = Items_In_Title;
 
             // Set some defaults
-            finishPageInAddFinalHtmlMethod = false;
 
-            // Handle basic events which may be fired by the internal header
+		    // Handle basic events which may be fired by the internal header
 
             if (HttpContext.Current.Request.Form["internal_header_action"] != null)
             {
@@ -323,7 +321,6 @@ namespace SobekCM.Library.MainWriters
                         // Create the item viewer writer
                         subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2_Server.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer); 
                         ((Item_HtmlSubwriter) subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
-                        break;
                     }
                     else
                     {
@@ -410,10 +407,10 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
         /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="myUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
+        /// <param name="MyUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder myUfdcUploadPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder MyUfdcUploadPlaceHolder, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
             if (currentMode.Request_Completed)
@@ -441,7 +438,7 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.My_Sobek:
 
-                    if ((subwriter != null) && (subwriter is MySobek_HtmlSubwriter))
+                    if (subwriter is MySobek_HtmlSubwriter)
                     {
                         MySobek_HtmlSubwriter mySobekWriter = (MySobek_HtmlSubwriter) subwriter;
 
@@ -456,7 +453,7 @@ namespace SobekCM.Library.MainWriters
                         }
 
                         // Add any necessary controls
-                        mySobekWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
+                        mySobekWriter.Add_Controls(Main_Place_Holder, MyUfdcUploadPlaceHolder, Tracer);
 
                         // Finally, add the footer
                         if (mySobekWriter.Contains_Popup_Forms)
@@ -476,7 +473,7 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.Administrative:
 
-                    if ((subwriter != null) && (subwriter is Admin_HtmlSubwriter))
+                    if (subwriter is Admin_HtmlSubwriter)
                     {
                         // Build the my sobek subwriter
                         Admin_HtmlSubwriter adminWriter = (Admin_HtmlSubwriter) subwriter;
@@ -492,7 +489,7 @@ namespace SobekCM.Library.MainWriters
                         }
 
                         // Add any necessary controls
-                        adminWriter.Add_Controls(Main_Place_Holder, myUfdcUploadPlaceHolder, Tracer);
+                        adminWriter.Add_Controls(Main_Place_Holder, MyUfdcUploadPlaceHolder, Tracer);
 
                         // Finally, add the footer
                         if (adminWriter.Contains_Popup_Forms)
@@ -512,7 +509,7 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and add controls for RESULTS mode
 
                 case Display_Mode_Enum.Results:
-                    if ((subwriter != null) && (subwriter is Search_Results_HtmlSubwriter))
+                    if (subwriter is Search_Results_HtmlSubwriter)
                     {
                         // Make sure the corresponding 'search' is the latest
                         currentMode.Mode = Display_Mode_Enum.Search;
@@ -530,7 +527,7 @@ namespace SobekCM.Library.MainWriters
                 #region Add HTML and controls for PUBLIC FOLDER mode
 
                 case Display_Mode_Enum.Public_Folder:
-                    if ((subwriter != null) && (subwriter is Public_Folder_HtmlSubwriter))
+                    if (subwriter is Public_Folder_HtmlSubwriter)
                     {
                         // Also try to add any controls
                         ((Public_Folder_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer, null);
@@ -550,7 +547,7 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Aggregation_Item_Count:
                 case Display_Mode_Enum.Aggregation_Usage_Statistics:
                 case Display_Mode_Enum.Aggregation_Admin_View:
-                    if ((subwriter != null) && (subwriter is Aggregation_HtmlSubwriter))
+                    if (subwriter is Aggregation_HtmlSubwriter)
                     {
                         // Also try to add any controls
                         ((Aggregation_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer);
@@ -562,7 +559,7 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and add controls for ITEM DISPLAY mode
 
                 case Display_Mode_Enum.Item_Display:
-                    if ((subwriter != null) && (subwriter is Item_HtmlSubwriter))
+                    if (subwriter is Item_HtmlSubwriter)
                     {
                         Item_HtmlSubwriter itemWriter = (Item_HtmlSubwriter) subwriter;
 
@@ -925,7 +922,7 @@ namespace SobekCM.Library.MainWriters
                                         (aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Location.Holding_Code.ToUpper()))
                                     {
 	                                    Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
-	                                    if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
+	                                    if ((thisAggr != null) && (thisAggr.Active))
 	                                    {
 		                                    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
 		                                                              aggrCode.ToLower() + modified_url_options + "\">" +
@@ -1285,18 +1282,18 @@ namespace SobekCM.Library.MainWriters
 
 	        bool end_div = !(( currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( siteMap != null ));
 
-	        const string version = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
+	        const string VERSION = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
             switch (currentMode.Mode)
             {
                 case Display_Mode_Enum.Item_Display:
-                    Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url ) .Trim());
+                    Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url ) .Trim());
                     break;
 
                 default:
 					if ( !end_div )
-	                    Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+	                    Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
 					else
-						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
+						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
                     break;
             }
 
@@ -1332,7 +1329,7 @@ namespace SobekCM.Library.MainWriters
 
         #region Method to email information during an error
 
-        private static void Email_Information(string email_title, Exception objErr, Custom_Tracer Tracer, bool Redirect )
+        private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect )
         {
             // Is ther an error email address in the configuration?
             if (SobekCM_Library_Settings.System_Error_Email.Length > 0)
@@ -1341,27 +1338,27 @@ namespace SobekCM.Library.MainWriters
                 {
                     // Build the error message
                     string err;
-                    if (objErr != null)
+                    if (ObjErr != null)
                     {
-                        if (objErr.InnerException != null)
+                        if (ObjErr.InnerException != null)
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
                                   "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
-                                  "Error Message: " + objErr.Message + "<br /><br />" +
-                                  "Inner Exception: " + objErr.InnerException.Message + "<br /><br />" +
-                                  "Stack Trace: " + objErr.InnerException.StackTrace + "<br /><br />";
+                                  "Error Message: " + ObjErr.Message + "<br /><br />" +
+                                  "Inner Exception: " + ObjErr.InnerException.Message + "<br /><br />" +
+                                  "Stack Trace: " + ObjErr.InnerException.StackTrace + "<br /><br />";
                         }
                         else
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
                                   "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
-                                  "Error Message: " + objErr.Message + "<br /><br />" +
-                                  "Stack Trace: " + objErr.StackTrace + "<br /><br />";
+                                  "Error Message: " + ObjErr.Message + "<br /><br />" +
+                                  "Stack Trace: " + ObjErr.StackTrace + "<br /><br />";
 
                         }
 
-                        if (objErr.Message.IndexOf("Timeout expired") >= 0)
-                            email_title = "Database Timeout Expired";
+                        if (ObjErr.Message.IndexOf("Timeout expired") >= 0)
+                            EmailTitle = "Database Timeout Expired";
                     }
                     else
                     {
@@ -1371,11 +1368,11 @@ namespace SobekCM.Library.MainWriters
                     // Email the error message
                     if (Tracer != null)
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
                     }
                     else
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, email_title, err, true, false, -1, -1);
+                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
                     }
                 }
                 catch (Exception)

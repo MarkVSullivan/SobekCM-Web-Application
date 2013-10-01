@@ -443,12 +443,12 @@ namespace SobekCM.Resource_Object.Database
 				param_list[i++] = new SqlParameter("@PageCount", thisPackage.Divisions.Page_Count);
 				param_list[i++] = new SqlParameter("@FileCount", thisPackage.Divisions.Files.Count);
 				param_list[i++] = new SqlParameter("@Title", thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title);
-				param_list[i++] = new SqlParameter("@SortTitle", thisPackage.Bib_Info.sortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false));
+				param_list[i++] = new SqlParameter("@SortTitle", thisPackage.Bib_Info.SortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false));
 				param_list[i++] = new SqlParameter("@AccessMethod", 1);
 				param_list[i++] = new SqlParameter("@Link", link);
 				param_list[i++] = new SqlParameter("@CreateDate", DateTime.Now);
 				param_list[i++] = new SqlParameter("@PubDate", pubdate);
-				param_list[i++] = new SqlParameter("@SortDate", thisPackage.Bib_Info.sortSafeDate(pubdate));
+				param_list[i++] = new SqlParameter("@SortDate", thisPackage.Bib_Info.SortSafeDate(pubdate));
 				param_list[i++] = new SqlParameter("@Author", author_builder.ToString());
 				param_list[i++] = new SqlParameter("@Spatial_KML", spatial_kml);
 				param_list[i++] = new SqlParameter("@Spatial_KML_Distance", spatial_distance);
@@ -1313,7 +1313,7 @@ namespace SobekCM.Resource_Object.Database
 			}           
 
 			// Save the main information, and keep the item id
-            Save_Item_Group_Args saveArgs = Save_Item_Group(thisPackage.BibID, groupTitle, thisPackage.Bib_Info.sortSafeTitle(groupTitle, true), thisPackage.Bib_Info.SobekCM_Type_String, thisPackage.Web.File_Root, String.Empty, false, createDate, OCLC_Number, ALEPH_Number, thisPackage.Tracking.Large_Format, thisPackage.Tracking.Track_By_Month, thisPackage.Tracking.Never_Overlay_Record, primary_alternate_type, primary_alternate_id);
+            Save_Item_Group_Args saveArgs = Save_Item_Group(thisPackage.BibID, groupTitle, thisPackage.Bib_Info.SortSafeTitle(groupTitle, true), thisPackage.Bib_Info.SobekCM_Type_String, thisPackage.Web.File_Root, String.Empty, false, createDate, OCLC_Number, ALEPH_Number, thisPackage.Tracking.Large_Format, thisPackage.Tracking.Track_By_Month, thisPackage.Tracking.Never_Overlay_Record, primary_alternate_type, primary_alternate_id);
             thisPackage.Web.GroupID = saveArgs.GroupID;
 			thisPackage.BibID = saveArgs.New_BibID;
 
@@ -1587,8 +1587,8 @@ namespace SobekCM.Resource_Object.Database
 
 			// Save the main information, and return the item id
 			Save_Item_Args returnVal = Save_Item( GroupID, thisPackage.VID, thisPackage.Divisions.Page_Count, thisPackage.Divisions.Files.Count,
-				thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title, thisPackage.Bib_Info.sortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false),
-				link, CreateDate, pubdate, thisPackage.Bib_Info.sortSafeDate(pubdate), holding_code, 
+				thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title, thisPackage.Bib_Info.SortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false),
+				link, CreateDate, pubdate, thisPackage.Bib_Info.SortSafeDate(pubdate), holding_code, 
 				source_code, author_builder.ToString(), spatial_kml, spatial_distance, thisPackage.DiskSize_MB, donor, publisher_builder.ToString(),
 				spatialDisplayBuilder.ToString(),institutionDisplayBuilder.ToString(), thisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
 				measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());

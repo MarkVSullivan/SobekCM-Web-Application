@@ -37,6 +37,99 @@ namespace SobekCM.Library.Database
 
 		private static readonly Object itemListPopulationLock = new Object();
 
+		#region Temporary dataset work 
+
+		//static SobekCM_Database()
+		//{
+		//	DataSet set = EPC_Export;
+
+		//	set.DataSetName = "Key_West_City_Directory";
+		//	set.Tables[0].TableName = "Person";
+		//	set.Tables[1].TableName = "Corporation";
+		//	set.Tables[2].TableName = "Person_Occupation_Link";
+
+		//	// Declare parent column and child column variables.
+		//	DataColumn parentColumn;
+		//	DataColumn childColumn;
+		//	ForeignKeyConstraint foreignKeyConstraint;
+
+		//	// Set parent and child column variables.
+		//	parentColumn = set.Tables[0].Columns[0];
+		//	childColumn = set.Tables[2].Columns[0];
+		//	UniqueConstraint uniqueCon = new UniqueConstraint("PersonIdUniqueConstraint", parentColumn);
+		//	set.Tables[0].Constraints.Add(uniqueCon);
+		//	foreignKeyConstraint = new ForeignKeyConstraint ("PersonOccupationForeignKeyConstraint", parentColumn, childColumn);
+
+		//	set.Tables[2].Constraints.Add(foreignKeyConstraint);
+
+			
+				 
+
+		//	// Declare parent column and child column variables.
+		//	DataColumn parentColumn2;
+		//	DataColumn childColumn2;
+		//	ForeignKeyConstraint foreignKeyConstraint2;
+
+		//	// Set parent and child column variables.
+		//	parentColumn2 = set.Tables[1].Columns[0];
+		//	childColumn2 = set.Tables[2].Columns[1];
+		//	UniqueConstraint uniqueCon2 = new UniqueConstraint("CorporationIdUniqueConstraint", parentColumn2);
+		//	set.Tables[1].Constraints.Add(uniqueCon2);
+		//	foreignKeyConstraint2 = new ForeignKeyConstraint("CorporationOccupationForeignKeyConstraint", parentColumn2, childColumn2);
+
+		//	set.Tables[2].Constraints.Add(foreignKeyConstraint2);
+
+		//	set.Tables[0].ExtendedProperties.Add("Description", "Table contains information about all of the people which appeared within the city directory.  These may also be linked to a corporate body and/or an historic occupation.");
+		//	set.Tables[0].Columns[0].Caption = "Unique key for this person within the dataset";
+		//	set.Tables[0].Columns[0].AllowDBNull = false;
+		//	set.Tables[0].Columns[0].AutoIncrement = true;
+		//	set.Tables[0].Columns[1].Caption = "Title of the city directory from which this person's data was derived";
+		//	set.Tables[0].Columns[1].AllowDBNull = false;
+		//	set.Tables[0].Columns[2].Caption = "Year of the city directory from which this person's data was derived";
+		//	set.Tables[0].Columns[2].AllowDBNull = false;
+		//	set.Tables[0].Columns[3].Caption = "Page sequence within the city directory that this person's data was derived";
+		//	set.Tables[0].Columns[4].Caption = "Original source line from which this person's data was derived";
+		//	set.Tables[0].Columns[5].Caption = "Last or family name of this person";
+		//	set.Tables[0].Columns[5].AllowDBNull = false;
+		//	set.Tables[0].Columns[6].Caption = "First or given name of this person";
+		//	set.Tables[0].Columns[6].AllowDBNull = false;
+		//	set.Tables[0].Columns[7].Caption = "Middle name of this person";
+		//	set.Tables[0].Columns[8].Caption = "Title associated with this person ( i.e., Mr., Reverand, etc..)";
+		//	set.Tables[0].Columns[9].Caption = "Normalized racial-ethno affiliation associated with this person by the city directory";
+		//	set.Tables[0].Columns[10].Caption = "Name of any spouse (usually just the first name)";
+		//	set.Tables[0].Columns[11].Caption = "General note field";
+		//	set.Tables[0].Columns[12].Caption = "Location of the home, usually cross-streets or an street address";
+
+		//	set.Tables[1].ExtendedProperties.Add("Description", "Table contains all the corporate bodies from the city directory which were linked directly to a person.");
+		//	set.Tables[1].Columns[0].Caption = "Unique key for this corporate body within the dataset";
+		//	set.Tables[1].Columns[0].AllowDBNull = false;
+		//	set.Tables[1].Columns[0].AutoIncrement = true;
+		//	set.Tables[1].Columns[1].Caption = "Name of the corporate body";
+		//	set.Tables[1].Columns[1].AllowDBNull = false;
+
+		//	set.Tables[2].ExtendedProperties.Add("Description", "Table joins the people from the city directory with any occupation which was recorded in the directory and also to any corporate body from the directory.");
+		//	set.Tables[2].Columns[0].Caption = "Link to a person derived from a city directory";
+		//	set.Tables[2].Columns[0].AllowDBNull = false;
+		//	set.Tables[2].Columns[1].Caption = "Possible link to a corporate body";
+		//	set.Tables[2].Columns[2].Caption = "Historic occupation, as recorded within the city directory";
+
+		//	set.WriteXml(@"C:\GitRepository\SobekCM\SobekCM-Web-Application\SobekCM\temp\keywest_epc.xml", XmlWriteMode.WriteSchema);
+		//}
+
+
+		///// <summary> Gets the datatable containging all possible disposition types </summary>
+		///// <remarks> This calls the 'Tracking_Get_All_Possible_Disposition_Types' stored procedure. </remarks>
+		//public static DataSet EPC_Export
+		//{
+		//	get
+		//	{
+		//		DataSet returnSet = SqlHelper.ExecuteDataset(@"data source=lib-ufdc-cache\UFDCPROD;initial catalog=EPC;integrated security=Yes;", CommandType.StoredProcedure, "Export_DataSet");
+		//		return returnSet;
+		//	}
+		//}
+
+		#endregion
+
 		/// <summary> Gets the last exception caught by a database call through this gateway class  </summary>
 		public static Exception Last_Exception
 		{

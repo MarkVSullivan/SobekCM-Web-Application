@@ -290,8 +290,13 @@ namespace SobekCM.Library.Citation.Elements
                     type = HttpContext.Current.Request.Form[thisKey];
                     if ((type != "Select Material Type") && ( type != "Other" ))
                     {
-                        Bib.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
-                        Bib.Bib_Info.Original_Description.Extent = type;
+	                    Bib.Bib_Info.SobekCM_Type_String = type;
+
+	                    if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.UNKNOWN)
+	                    {
+		                    Bib.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
+		                    Bib.Bib_Info.Original_Description.Extent = type;
+	                    }
                     }
                 }
 
