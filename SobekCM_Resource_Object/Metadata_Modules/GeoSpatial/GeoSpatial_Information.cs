@@ -64,6 +64,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             // Set the default error mesasge
             Error_Message = String.Empty;
 
+            // Clear all item footprint info
+ 
+
             // Save each and every coordinate point
             foreach (Coordinate_Point thisPoint in Points)
             {

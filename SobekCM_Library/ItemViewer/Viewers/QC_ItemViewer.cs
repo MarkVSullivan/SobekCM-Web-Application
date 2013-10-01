@@ -61,6 +61,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private int allThumbnailsOuterDiv1Width;
         private int allThumbnailsOuterDiv1Height;
 
+	    private List<string> filenamesFromMets;
+
 		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
 		public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
 		{
@@ -139,7 +141,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 				else
 				{
-					// Just read the normal otherwise ( if we had the ability to deep copy a SObekCM_Item, we could skip this )
+					// Just read the normal otherwise ( if we had the ability to deep copy a SobekCM_Item, we could skip this )
 					qc_item = SobekCM_Item_Factory.Get_Item(Current_Object.BibID, Current_Object.VID, null, null);
 				}
 
@@ -1634,6 +1636,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			int images_per_page = thumbnailsPerPage;
 			int size_of_thumbnails = thumbnailSize;
+           
+            filenamesFromMets = new List<string>();
 
 			//Get the current QC page number
 			int current_qc_viewer_page_num = 1;
@@ -1815,7 +1819,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //set the image url to fetch the small thumbnail .thm image
                     thumbnail_filename = thisFile.System_Name;
                     filename_sansextension = thisFile.File_Name_Sans_Extension;
+     
                 }
+
 
                 // Try to construct a thumbnail from the JPEG image then
                 foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((thisFile => (thisFile.System_Name.IndexOf(".jpg") > 0) &&(thisFile.System_Name.IndexOf("thm.jpg") < 0))))
@@ -1903,6 +1909,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string filenameToDisplay = filename_sans_extension;
 
 					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
+
+			        bool duplicateFile = false;
+
+			    if (filenamesFromMets.Contains(filename_sans_extension))
+			        duplicateFile = true;
+			    else
+			    {
+			        filenamesFromMets.Add(filename_sans_extension);
+			    }
+
+			    if (duplicateFile)
+			        continue;
 
  
 					// Start the box for this thumbnail
