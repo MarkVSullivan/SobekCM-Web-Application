@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- The upgrade code never changes.  Create a new ProductCode for each instance -->
+<!-- The product code identifies the MSI and prevents two of the same exact      -->
+<!-- version to be installed.  Always change this for each new version.          -->
 <?define UpgradeCode="{D13F62A2-9BE7-4DC8-89A6-27AC2B15E25F}"?>
-<?define ProductCode="{C6F24E30-5F7C-45EE-8D58-F07561D87C0C}"?>
-<?define ProductVersion="3.20.0.0"?>
+<?define ProductCode="{16CF589F-81A4-469A-A3F0-0689F27D5DA5}"?>
+<?define ProductVersion="3.40.0.0"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Product Id="$(var.ProductCode)" Name="SobekCM Builder" Language="1033" Version="$(var.ProductVersion)" Manufacturer="SobekCM" UpgradeCode="$(var.UpgradeCode)">

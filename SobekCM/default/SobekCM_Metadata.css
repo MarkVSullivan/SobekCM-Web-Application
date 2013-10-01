@@ -535,6 +535,7 @@ select.type_format_form_select_init { color:Gray; width: 110px; margin-left: 3px
 .typeformat_visual_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:390px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
 .typeformat_serial_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:515px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
 .typeformat_map_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:430px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+.typeformat_computer_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:430px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
 .type_format_form_div { padding-top: 10px; } 
 input.formtype_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.formtype_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }

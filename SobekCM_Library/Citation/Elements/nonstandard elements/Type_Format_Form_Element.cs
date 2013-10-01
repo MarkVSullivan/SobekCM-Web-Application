@@ -192,7 +192,7 @@ namespace SobekCM.Library.Citation.Elements
             bool indexPresent = false;
             bool conferencePublication = false;
             string targetAudience1 = String.Empty;
- string frequency1 = String.Empty;
+			string frequency1 = String.Empty;
             string frequency2 = String.Empty;
             string regularity1 = String.Empty;
             string regularity2 = String.Empty;
@@ -210,6 +210,7 @@ namespace SobekCM.Library.Citation.Elements
             string scale = String.Empty;
             string place_code = String.Empty;
             string language_code = String.Empty;
+			string computerfileform = String.Empty;
 
             // Determine which form will be used and set several values
             Type_Format_Type_Enum formType = Type_Format_Type_Enum.None;
@@ -249,6 +250,13 @@ namespace SobekCM.Library.Citation.Elements
                     form_title = "EDIT MAP MATERIALS DETAILS";
                     windowheight = 430;
                     break;
+
+				case "DATASET":
+					formType = Type_Format_Type_Enum.Computer_Files;
+					class_name = "typeformat_computer_popup_div";
+					form_title = "EDIT COMPUTER FILE DETAILS";
+					windowheight = 430;
+					break;
 
             }
 
@@ -323,6 +331,23 @@ namespace SobekCM.Library.Citation.Elements
                                                       "poetry",
                                                       "short story",
                                                       "speech"
+                                                  };
+
+			// Get list of literary forms
+			List<string> computer_file_form_list = new List<string>(12)
+                                                  {
+                                                      "numeric data",
+                                                      "computer program",
+                                                      "representational",
+                                                      "document",
+                                                      "bibliographic data",
+                                                      "font",
+                                                      "game",
+                                                      "sound",
+                                                      "interactive multimedia",
+                                                      "online system or service",
+                                                      "combination",
+													  "other computer file"
                                                   };
 
             // Get list of biography type information
@@ -508,6 +533,12 @@ namespace SobekCM.Library.Citation.Elements
                             if (map_subtypes.Contains(genre_term_lower))
                                 subtype = genre_term_lower;
                         }
+
+						if (formType == Type_Format_Type_Enum.Computer_Files)
+						{
+							if (computer_file_form_list.Contains(genre_term_lower))
+								computerfileform = genre_term_lower;
+						}
 
                         if (nature_contents_list.Contains(genre_term_lower))
                         {
@@ -1201,9 +1232,81 @@ namespace SobekCM.Library.Citation.Elements
 
             #endregion
 
-            #region Finish the pop-up form
+			#region Render the 'Computer Files' section if necessary 
 
-            popup_form_builder.AppendLine("  </table>");
+			if (formType == Type_Format_Type_Enum.Computer_Files)
+			{
+				// Add the book details title
+				popup_form_builder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Computer Files Details</td></tr>");
+
+				// Add the target audience
+				popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
+				popup_form_builder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
+				popup_form_builder.Append(targetAudience1.Length == 0
+											  ? "<option value=\"\" selected=\"selected\" ></option>"
+											  : "<option value=\"\"></option>");
+				foreach (string thisAudience in audiences_list)
+				{
+					if (targetAudience1 == thisAudience)
+					{
+						popup_form_builder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
+					}
+					else
+					{
+						popup_form_builder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
+					}
+				}
+				popup_form_builder.Append("</select>");
+				popup_form_builder.AppendLine("</td></tr>");
+
+				// Add the form
+				popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; File Type:</td><td colspan=\"2\">");
+				popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
+				popup_form_builder.Append(subtype.Length == 0
+											  ? "<option value=\"\" selected=\"selected\" ></option>"
+											  : "<option value=\"\"></option>");
+				foreach (string thisString in computer_file_form_list)
+				{
+					if (computerfileform == thisString)
+					{
+						popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+					}
+					else
+					{
+						popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+					}
+				}
+				popup_form_builder.Append("</select>");
+				popup_form_builder.AppendLine("</td></tr>");
+
+	
+				// Add the government publication 
+				popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+				popup_form_builder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+				popup_form_builder.Append(govt.Length == 0
+											  ? "<option value=\"\" selected=\"selected\" ></option>"
+											  : "<option value=\"\"></option>");
+				foreach (string thisString in government_list)
+				{
+					if (govt == thisString)
+					{
+						popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+					}
+					else
+					{
+						popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+					}
+				}
+				popup_form_builder.Append("</select>");
+
+				popup_form_builder.AppendLine("</td></tr>");
+			}
+
+			#endregion
+
+			#region Finish the pop-up form
+
+			popup_form_builder.AppendLine("  </table>");
             popup_form_builder.AppendLine("  <br />");
 
             // Add the close button
@@ -1246,7 +1349,7 @@ namespace SobekCM.Library.Citation.Elements
             // Delete all marcgt genres
             if (Bib.Bib_Info.Genres_Count > 0)
             {
-                List<Genre_Info> deleteGenres = Bib.Bib_Info.Genres.Where(thisGenre => thisGenre.Authority == "marcgt").ToList();
+                List<Genre_Info> deleteGenres = Bib.Bib_Info.Genres.Where(ThisGenre => ThisGenre.Authority == "marcgt").ToList();
 
                 foreach (Genre_Info deleteGenre in deleteGenres)
                 {
@@ -1593,6 +1696,9 @@ namespace SobekCM.Library.Citation.Elements
 
             /// <summary> Continuing resource type material ( i.e. Newspapers, Serial, etc..) </summary>
             Continuing_Resource,
+
+			/// <summary> Computer files, in particular software or datasets </summary>
+			Computer_Files,
 
             /// <summary> Cartographic type material ( maps, globes, etc.. ) </summary>
             Map

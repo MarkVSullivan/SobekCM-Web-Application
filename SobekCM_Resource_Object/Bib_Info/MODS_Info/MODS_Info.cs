@@ -1765,18 +1765,18 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region  MODS writing sections
 
         /// <summary> Appends this bibliographic description information as MODS to the StringBuilder object </summary>
-        /// <param name="results">StringBuilder to add this XML to </param>
-        internal virtual void Add_MODS(TextWriter results, VRACore_Info vraCoreInfo)
+        /// <param name="Results">StringBuilder to add this XML to </param>
+        internal virtual void Add_MODS(TextWriter Results, VRACore_Info vraCoreInfo)
         {
             // Start the MODS section
-            results.Write("<mods:mods>\r\n");
+            Results.Write("<mods:mods>\r\n");
 
             // Add the abstracts
             if (abstracts != null)
             {
                 foreach (Abstract_Info thisAbstract in abstracts)
                 {
-                    thisAbstract.Add_MODS(results);
+                    thisAbstract.Add_MODS(Results);
                 }
             }
 
@@ -1785,19 +1785,19 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (Classification_Info thisClassification in classifications)
                 {
-                    thisClassification.Add_MODS(results);
+                    thisClassification.Add_MODS(Results);
                 }
             }
 
             // Add the rights
-            accessCondition.Add_MODS(results);
+            accessCondition.Add_MODS(Results);
 
             // Add the genres
             if (genres != null)
             {
                 foreach (Genre_Info thisGenre in genres)
                 {
-                    thisGenre.Add_MODS(results);
+                    thisGenre.Add_MODS(Results);
                 }
             }
 
@@ -1806,7 +1806,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (Identifier_Info thisIdentifier in identifiers)
                 {
-                    thisIdentifier.Add_MODS(results);
+                    thisIdentifier.Add_MODS(Results);
                 }
             }
 
@@ -1816,28 +1816,28 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (Language_Info thisLanguage in languages)
                 {
-                    thisLanguage.Add_MODS(results);
+                    thisLanguage.Add_MODS(Results);
                 }
             }
 
             // Write the location
             if (locationInfo != null)
             {
-                locationInfo.Add_MODS(results);
+                locationInfo.Add_MODS(Results);
             }
 
-            write_all_names(results);
+            write_all_names(Results);
 
             // Add the notes
             if (notes != null)
             {
                 foreach (Note_Info thisNote in notes)
                 {
-                    thisNote.Add_MODS(results);
+                    thisNote.Add_MODS(Results);
                 }
             }
 
-            ModsOriginInfo.Add_MODS(results);
+            ModsOriginInfo.Add_MODS(Results);
 
             //// Add the physical description of this resource
             //if (physicalDesc.hasData)
@@ -1848,33 +1848,33 @@ namespace SobekCM.Resource_Object.Bib_Info
             // Write the record information
             if (recordInfo.hasData)
             {
-                recordInfo.Add_MODS(results);
+                recordInfo.Add_MODS(Results);
             }
 
             // Write description of the related, original resource
             if (originalPhysicalDesc.hasData)
             {
-                results.Write("<mods:relatedItem type=\"original\">\r\n");
-                originalPhysicalDesc.Add_MODS(results);
-                results.Write("</mods:relatedItem>\r\n");
+                Results.Write("<mods:relatedItem type=\"original\">\r\n");
+                originalPhysicalDesc.Add_MODS(Results);
+                Results.Write("</mods:relatedItem>\r\n");
             }
 
             // Write the volume and issue and edition, if they exist
             if (((seriesPartInfo != null) && (seriesPartInfo.hasData)) || ((seriesTitle != null) && (seriesTitle.Title.Length > 0)))
             {
-                results.Write("<mods:relatedItem type=\"series\">\r\n");
+                Results.Write("<mods:relatedItem type=\"series\">\r\n");
 
                 // Write the series title
                 if ((seriesTitle != null) && (seriesTitle.Title.Length > 0))
                 {
-                    seriesTitle.Add_MODS(results);
+                    seriesTitle.Add_MODS(Results);
                 }
 
                 if ((seriesPartInfo != null) && (seriesPartInfo.hasData))
                 {
-                    seriesPartInfo.Add_MODS(results);
+                    seriesPartInfo.Add_MODS(Results);
                 }
-                results.Write("</mods:relatedItem>\r\n");
+                Results.Write("</mods:relatedItem>\r\n");
             }
 
             // Add any additional related items
@@ -1882,7 +1882,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (Related_Item_Info relatedItem in relatedItems)
                 {
-                    relatedItem.Add_MODS(results);
+                    relatedItem.Add_MODS(Results);
                 }
             }
 
@@ -1891,13 +1891,13 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (Subject_Info thisSubject in subjects)
                 {
-                    thisSubject.Add_MODS(results);
+                    thisSubject.Add_MODS(Results);
                 }
             }
 
             if (!String.IsNullOrEmpty(tableOfContents))
             {
-                results.Write("<mods:tableOfContents type=\"original catalog\">" + base.Convert_String_To_XML_Safe(tableOfContents) + "</mods:tableOfContents>\r\n");
+                Results.Write("<mods:tableOfContents type=\"original catalog\">" + base.Convert_String_To_XML_Safe(tableOfContents) + "</mods:tableOfContents>\r\n");
             }
 
             // Write the target audiences
@@ -1905,13 +1905,13 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (TargetAudience_Info thisAudience in targetAudiences)
                 {
-                    thisAudience.Add_MODS(results);
+                    thisAudience.Add_MODS(Results);
                 }
             }
 
             // Write the main title
             if (mainTitle.Title.Length > 0)
-                mainTitle.Add_MODS(results);
+                mainTitle.Add_MODS(Results);
 
             // Write all the other titles
             if (otherTitles != null)
@@ -1920,16 +1920,16 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     if (otherTitle.Title.Length > 0)
                     {
-                        otherTitle.Add_MODS(results);
+                        otherTitle.Add_MODS(Results);
                     }
                 }
             }
 
             // Write the resource type
-            type.Add_MODS_MODS(results);
+            type.Add_MODS_MODS(Results);
             
             // End the MODS section
-            results.Write("</mods:mods>\r\n");
+            Results.Write("</mods:mods>\r\n");
         }
 
         /// <summary> Helper method to create a simple MODS line </summary>

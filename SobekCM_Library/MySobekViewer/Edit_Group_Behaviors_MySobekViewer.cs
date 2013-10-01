@@ -98,7 +98,7 @@ namespace SobekCM.Library.MySobekViewer
                template.Save_To_Bib(item, user, 1);
 
                // Save the group title
-               SobekCM_Database.Update_Item_Group(item.BibID, item.Behaviors.GroupTitle, item.Bib_Info.sortSafeTitle(item.Behaviors.GroupTitle, true), String.Empty, item.Behaviors.Primary_Identifier.Type, item.Behaviors.Primary_Identifier.Identifier );
+               SobekCM_Database.Update_Item_Group(item.BibID, item.Behaviors.GroupTitle, item.Bib_Info.SortSafeTitle(item.Behaviors.GroupTitle, true), String.Empty, item.Behaviors.Primary_Identifier.Type, item.Behaviors.Primary_Identifier.Identifier );
 
                // Save the interfaces to the group item as well
                SobekCM_Database.Save_Item_Group_Web_Skins(item.Web.GroupID, item );
