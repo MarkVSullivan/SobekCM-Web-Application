@@ -742,41 +742,57 @@ namespace SobekCM.Library.Items
                 View_Enum viewTypeEnum = View_Enum.None;
                 switch (viewType)
                 {
+					case "Dataset Codebook":
+						viewTypeEnum = View_Enum.DATASET_CODEBOOK;
+		                break;
+
+					case "Dataset Reports":
+						viewTypeEnum = View_Enum.DATASET_REPORTS;
+						break;
+
+					case "Dataset View Data":
+						viewTypeEnum = View_Enum.DATASET_VIEWDATA;
+						break;
+
+					case "Google Map":
+						viewTypeEnum = View_Enum.GOOGLE_MAP;
+						break;
+
+					case "HTML Viewer":
+						viewTypeEnum = View_Enum.HTML;
+						break;
+
                     case "JPEG":
                         viewTypeEnum = View_Enum.JPEG;
                         break;
 
+					case "JPEG/Text Two Up":
+						viewTypeEnum = View_Enum.JPEG_TEXT_TWO_UP;
+						break;
+
                     case "JPEG2000":
                         viewTypeEnum = View_Enum.JPEG2000;
-                        break;
-
-                    case "Text":
-                        viewTypeEnum = View_Enum.TEXT;
                         break;
 
                     case "Page Turner":
                         viewTypeEnum = View_Enum.PAGE_TURNER;
                         break;
 
-                    case "Google Map":
-                        viewTypeEnum = View_Enum.GOOGLE_MAP;
-                        break;
-
-                    case "HTML Viewer":
-                        viewTypeEnum = View_Enum.HTML;
-                        break;
-
                     case "Related Images":
                         viewTypeEnum = View_Enum.RELATED_IMAGES;
-                        break;
-
-                    case "TOC":
-                        viewTypeEnum = View_Enum.TOC;
                         break;
 
                     case "TEI":
                         viewTypeEnum = View_Enum.TEI;
                         break;
+
+					case "Text":
+						viewTypeEnum = View_Enum.TEXT;
+						break;
+
+					case "TOC":
+						viewTypeEnum = View_Enum.TOC;
+						break;
                 }
 
                 if (viewTypeEnum != View_Enum.None)
@@ -785,7 +801,25 @@ namespace SobekCM.Library.Items
                 }
             }
 
-            // Add the thumbnail view, if requested and has multiple pages
+			// Add the dataset views (later we should do some checking here, but for 
+			// now just add them if the user selected them.
+	        if (viewsFromDb.ContainsKey(View_Enum.DATASET_CODEBOOK))
+	        {
+		        thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_CODEBOOK]);
+				viewsFromDb.Remove(View_Enum.DATASET_CODEBOOK);
+	        }
+			if (viewsFromDb.ContainsKey(View_Enum.DATASET_REPORTS))
+			{
+				thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_REPORTS]);
+				viewsFromDb.Remove(View_Enum.DATASET_REPORTS);
+			}
+			if (viewsFromDb.ContainsKey(View_Enum.DATASET_VIEWDATA))
+			{
+				thisPackage.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_VIEWDATA]);
+				viewsFromDb.Remove(View_Enum.DATASET_VIEWDATA);
+			}
+
+	        // Add the thumbnail view, if requested and has multiple pages
             if (thisPackage.Divisions.Page_Count > 1)
             {
                 if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))

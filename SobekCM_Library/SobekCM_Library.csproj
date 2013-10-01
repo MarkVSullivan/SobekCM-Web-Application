@@ -200,6 +200,15 @@
     <Compile Include="ItemViewer\Viewers\Aware_JP2_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="ItemViewer\Viewers\Dataset_CodeBook_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ItemViewer\Viewers\Dataset_Reports_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ItemViewer\Viewers\Dataset_ViewData_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -207,6 +216,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\JPEG2000_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ItemViewer\Viewers\JPEG_Text_Two_Up_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\ScriptMethod.cs" />

@@ -36,14 +36,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -111,212 +111,212 @@ namespace SobekCM.Library.Citation.Elements
 
                     // Add this subject linke
                     if ( standSubject.hasData )
-                        Output.Write("\n        <a title=\"Click to edit this subject information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_subject_term_" + subject_index + "')\" onblur=\"link_blurred2('form_subject_term_" + subject_index + "')\" onkeypress=\"return popup_keypress_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600 );\"><div class=\"form_linkline form_subject_line\" id=\"form_subject_term_" + subject_index + "\">" + standSubject + "</div></a>");
+                        Output.Write("\n        <a title=\"Click to edit this subject information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_subject_term_" + subject_index + "')\" onblur=\"link_blurred2('form_subject_term_" + subject_index + "')\" onkeypress=\"return popup_keypress_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600 );\"><div class=\"form_linkline form_subject_line\" id=\"form_subject_term_" + subject_index + "\">" + standSubject + "</div></a>");
                     else
-                        Output.Write("\n        <a title=\"Click to edit this subject information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_subject_term_" + subject_index + "')\" onblur=\"link_blurred2('form_subject_term_" + subject_index + "')\" onkeypress=\"return popup_keypress_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600 );\"><div class=\"form_linkline_empty form_subject_line\" id=\"form_subject_term_" + subject_index + "\"><i>Empty Subject Keyword</i></div></a>");
+                        Output.Write("\n        <a title=\"Click to edit this subject information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_subject_term_" + subject_index + "')\" onblur=\"link_blurred2('form_subject_term_" + subject_index + "')\" onkeypress=\"return popup_keypress_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 210, 600 );\"><div class=\"form_linkline_empty form_subject_line\" id=\"form_subject_term_" + subject_index + "\"><i>Empty Subject Keyword</i></div></a>");
 
                     // Add the popup form
-                    popup_form_builder.AppendLine("<!-- Subject Keyword Form " + subject_index + " -->");
-                    popup_form_builder.AppendLine("<div class=\"subject_popup_div\" id=\"form_subject_" + subject_index + "\" style=\"display:none;\">");
-                    popup_form_builder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT SUBJECT</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_subject_form('form_subject_" + subject_index + "')\">X</a> &nbsp; </td></tr></table></div>");
-                    popup_form_builder.AppendLine("  <br />");
-                    popup_form_builder.AppendLine("  <table class=\"popup_table\">");
+                    PopupFormBuilder.AppendLine("<!-- Subject Keyword Form " + subject_index + " -->");
+                    PopupFormBuilder.AppendLine("<div class=\"subject_popup_div\" id=\"form_subject_" + subject_index + "\" style=\"display:none;\">");
+                    PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT SUBJECT</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_subject_form('form_subject_" + subject_index + "')\">X</a> &nbsp; </td></tr></table></div>");
+                    PopupFormBuilder.AppendLine("  <br />");
+                    PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
 
                     // Add the options for this subject ( standard, name, or title)
-                    popup_form_builder.Append("    <tr><td>Subject Type:</td><td><select class=\"formsubject_type\" name=\"formsubjecttype_" + subject_index + "\" id=\"formsubjecttype_" + subject_index + "\" onfocus=\"javascript:textbox_enter('formsubjecttype_" + subject_index + "', 'formsubject_type_focused')\" onblur=\"javascript:textbox_leave('formsubjecttype_" + subject_index + "', 'formsubject_type')\">");
-                    popup_form_builder.Append("<option value=\"standard\" selected=\"selected\">Standard</option>");
-                    popup_form_builder.AppendLine("</select></td>");
-                    popup_form_builder.Append("        <td>MARC: &nbsp; <select class=\"formsubject_map\" name=\"formsubjectmap_" + subject_index + "\" id=\"formsubjectmap_" + subject_index + "\" onfocus=\"javascript:textbox_enter('formsubjectmap_" + subject_index + "', 'formsubject_map_focused')\" onblur=\"javascript:textbox_leave('formsubjectmap_" + subject_index + "', 'formsubject_map')\">");
+                    PopupFormBuilder.Append("    <tr><td>Subject Type:</td><td><select class=\"formsubject_type\" name=\"formsubjecttype_" + subject_index + "\" id=\"formsubjecttype_" + subject_index + "\" onfocus=\"javascript:textbox_enter('formsubjecttype_" + subject_index + "', 'formsubject_type_focused')\" onblur=\"javascript:textbox_leave('formsubjecttype_" + subject_index + "', 'formsubject_type')\">");
+                    PopupFormBuilder.Append("<option value=\"standard\" selected=\"selected\">Standard</option>");
+                    PopupFormBuilder.AppendLine("</select></td>");
+                    PopupFormBuilder.Append("        <td>MARC: &nbsp; <select class=\"formsubject_map\" name=\"formsubjectmap_" + subject_index + "\" id=\"formsubjectmap_" + subject_index + "\" onfocus=\"javascript:textbox_enter('formsubjectmap_" + subject_index + "', 'formsubject_map_focused')\" onblur=\"javascript:textbox_leave('formsubjectmap_" + subject_index + "', 'formsubject_map')\">");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ") < 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ") < 0
                                                   ? "<option value=\"none\" selected=\"selected\" >&nbsp;</option>"
                                                   : "<option value=\"none\" >&nbsp;</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ648") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ648") == 0
                                                   ? "<option value=\"648\" selected=\"selected\" >648 - Chronological Term</option>"
                                                   : "<option value=\"648\" >648 - Chronological Term</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ650") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ650") == 0
                                                   ? "<option value=\"650\" selected=\"selected\" >650 - Topical Term</option>"
                                                   : "<option value=\"650\" >650 - Topical Term</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ651") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ651") == 0
                                                   ? "<option value=\"651\" selected=\"selected\" >651 - Geographic Name</option>"
                                                   : "<option value=\"651\" >651 - Geographic Name</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ653") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ653") == 0
                                                   ? "<option value=\"653\" selected=\"selected\" >653 - Uncontrolled Index</option>"
                                                   : "<option value=\"653\" >653 - Uncontrolled Index</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ654") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ654") == 0
                                                   ? "<option value=\"654\" selected=\"selected\" >654 - Faceted Topical</option>"
                                                   : "<option value=\"654\" >654 - Faceted Topical</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ655") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ655") == 0
                                                   ? "<option value=\"655\" selected=\"selected\" >655 - Genre / Form</option>"
                                                   : "<option value=\"655\" >655 - Genre / Form</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ656") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ656") == 0
                                                   ? "<option value=\"656\" selected=\"selected\" >656 - Occupation</option>"
                                                   : "<option value=\"656\" >656 - Occupation</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ657") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ657") == 0
                                                   ? "<option value=\"657\" selected=\"selected\" >657 - Function</option>"
                                                   : "<option value=\"657\" >657 - Function</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ690") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ690") == 0
                                                   ? "<option value=\"690\" selected=\"selected\" >690 - Local Topical</option>"
                                                   : "<option value=\"690\" >690 - Local Topical</option>");
 
-                    popup_form_builder.Append(standSubject.ID.IndexOf("SUBJ691") == 0
+                    PopupFormBuilder.Append(standSubject.ID.IndexOf("SUBJ691") == 0
                                                   ? "<option value=\"691\" selected=\"selected\" >691 - Local Geographic</option>"
                                                   : "<option value=\"691\" >691 - Local Geographic</option>");
 
-                    popup_form_builder.AppendLine("</select></td></tr>");
+                    PopupFormBuilder.AppendLine("</select></td></tr>");
 
                     // Add the first row of topical term boxes
-                    popup_form_builder.Append("    <tr><td>Topical Term(s):</td><td colspan=\"2\">");
+                    PopupFormBuilder.Append("    <tr><td>Topical Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Topics_Count >= 1)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic1_" + subject_index + "\" id=\"formsubjecttopic1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[0]) + "\" onfocus=\"javascript:textbox_enter('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic1_" + subject_index + "\" id=\"formsubjecttopic1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[0]) + "\" onfocus=\"javascript:textbox_enter('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic1_" + subject_index + "\" id=\"formsubjecttopic1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input')\" />");                    
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic1_" + subject_index + "\" id=\"formsubjecttopic1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic1_" + subject_index + "', 'formsubject_medium_input')\" />");                    
                     }
 
                     if (standSubject.Topics_Count >= 2)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic2_" + subject_index + "\" id=\"formsubjecttopic2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic2_" + subject_index + "\" id=\"formsubjecttopic2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic2_" + subject_index + "\" id=\"formsubjecttopic2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input')\"  />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic2_" + subject_index + "\" id=\"formsubjecttopic2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic2_" + subject_index + "', 'formsubject_medium_input')\"  />");
                     }
-                    popup_form_builder.AppendLine("</td></tr>");
+                    PopupFormBuilder.AppendLine("</td></tr>");
 
                     // Add the second row of topical term boxes
-                    popup_form_builder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
+                    PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
                     if (standSubject.Topics_Count >= 3)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic3_" + subject_index + "\" id=\"formsubjecttopic3_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[2]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic3_" + subject_index + "\" id=\"formsubjecttopic3_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[2]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic3_" + subject_index + "\" id=\"formsubjecttopic3_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic3_" + subject_index + "\" id=\"formsubjecttopic3_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic3_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
 
                     if (standSubject.Topics_Count >= 4)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic4_" + subject_index + "\" id=\"formsubjecttopic4_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[3]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic4_" + subject_index + "\" id=\"formsubjecttopic4_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[3]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic4_" + subject_index + "\" id=\"formsubjecttopic4_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttopic4_" + subject_index + "\" id=\"formsubjecttopic4_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttopic4_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
-                    popup_form_builder.AppendLine("</td></tr>");
+                    PopupFormBuilder.AppendLine("</td></tr>");
 
                     // Add the two chronological term boxes
-                    popup_form_builder.Append("    <tr><td>Chronological Term(s):</td><td colspan=\"2\">");
+                    PopupFormBuilder.Append("    <tr><td>Chronological Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Temporals_Count >= 1)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal1_" + subject_index + "\" id=\"formsubjecttemporal1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Temporals[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal1_" + subject_index + "\" id=\"formsubjecttemporal1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Temporals[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal1_" + subject_index + "\" id=\"formsubjecttemporal1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal1_" + subject_index + "\" id=\"formsubjecttemporal1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
 
                     if (standSubject.Temporals_Count >= 2)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal2_" + subject_index + "\" id=\"formsubjecttemporal2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Temporals[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal2_" + subject_index + "\" id=\"formsubjecttemporal2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Temporals[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal2_" + subject_index + "\" id=\"formsubjecttemporal2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjecttemporal2_" + subject_index + "\" id=\"formsubjecttemporal2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjecttemporal2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
-                    popup_form_builder.AppendLine("</td></tr>");
+                    PopupFormBuilder.AppendLine("</td></tr>");
 
                     // Add the two geographic term boxes
-                    popup_form_builder.Append("    <tr><td>Geographic Term(s):</td><td colspan=\"2\">");
+                    PopupFormBuilder.Append("    <tr><td>Geographic Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Geographics_Count >= 1)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo1_" + subject_index + "\" id=\"formsubjectgeo1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Geographics[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo1_" + subject_index + "\" id=\"formsubjectgeo1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Geographics[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo1_" + subject_index + "\" id=\"formsubjectgeo1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo1_" + subject_index + "\" id=\"formsubjectgeo1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
 
                     if (standSubject.Geographics_Count >= 2)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo2_" + subject_index + "\" id=\"formsubjectgeo2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Geographics[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo2_" + subject_index + "\" id=\"formsubjectgeo2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Geographics[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo2_" + subject_index + "\" id=\"formsubjectgeo2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgeo2_" + subject_index + "\" id=\"formsubjectgeo2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgeo2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
-                    popup_form_builder.AppendLine("</td></tr>");
+                    PopupFormBuilder.AppendLine("</td></tr>");
 
                     // Add the two genre term boxes
-                    popup_form_builder.Append("    <tr><td>Form / Genre Term(s):</td><td colspan=\"2\">");
+                    PopupFormBuilder.Append("    <tr><td>Form / Genre Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Genres_Count >= 1)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre1_" + subject_index + "\" id=\"formsubjectgenre1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Genres[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre1_" + subject_index + "\" id=\"formsubjectgenre1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Genres[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre1_" + subject_index + "\" id=\"formsubjectgenre1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre1_" + subject_index + "\" id=\"formsubjectgenre1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre1_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
 
                     if (standSubject.Genres_Count >= 2)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre2_" + subject_index + "\" id=\"formsubjectgenre2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Genres[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre2_" + subject_index + "\" id=\"formsubjectgenre2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Genres[1]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre2_" + subject_index + "\" id=\"formsubjectgenre2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input\" name=\"formsubjectgenre2_" + subject_index + "\" id=\"formsubjectgenre2_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectgenre2_" + subject_index + "', 'formsubject_medium_input')\" />");
                     }
-                    popup_form_builder.AppendLine("</td></tr>");
+                    PopupFormBuilder.AppendLine("</td></tr>");
 
                     // Add the occupational term box
-                    popup_form_builder.Append("    <tr><td>Occupation:</td><td colspan=\"2\">");
+                    PopupFormBuilder.Append("    <tr><td>Occupation:</td><td colspan=\"2\">");
                     if (standSubject.Occupations_Count >= 1)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_large_input\" name=\"formsubjectoccup1_" + subject_index + "\" id=\"formsubjectoccup1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Occupations[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_large_input\" name=\"formsubjectoccup1_" + subject_index + "\" id=\"formsubjectoccup1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Occupations[0]) + "\"  onfocus=\"javascript:textbox_enter('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_large_input\" name=\"formsubjectoccup1_" + subject_index + "\" id=\"formsubjectoccup1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_large_input\" name=\"formsubjectoccup1_" + subject_index + "\" id=\"formsubjectoccup1_" + subject_index + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectoccup1_" + subject_index + "', 'formsubject_large_input')\" />");
                     }
-                    popup_form_builder.AppendLine("</td></tr>");
+                    PopupFormBuilder.AppendLine("</td></tr>");
 
                     // Add the authority and language text boxes
-                    popup_form_builder.Append("    <tr><td>Authority:</td><td>");
+                    PopupFormBuilder.Append("    <tr><td>Authority:</td><td>");
                     if (standSubject.Authority.Length > 0 )
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectauthority_" + subject_index + "\" id=\"formsubjectauthority_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Authority) + "\"  onfocus=\"javascript:textbox_enter('formsubjectauthority_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectauthority_" + subject_index + "', 'formsubject_small_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectauthority_" + subject_index + "\" id=\"formsubjectauthority_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Authority) + "\"  onfocus=\"javascript:textbox_enter('formsubjectauthority_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectauthority_" + subject_index + "', 'formsubject_small_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectauthority_" + subject_index + "\" id=\"formsubjectauthority_" + subject_index + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formsubjectauthority_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectauthority_" + subject_index + "', 'formsubject_small_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectauthority_" + subject_index + "\" id=\"formsubjectauthority_" + subject_index + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formsubjectauthority_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectauthority_" + subject_index + "', 'formsubject_small_input')\" />");
                     }
-                    popup_form_builder.Append("</td><td width=\"255px\" > &nbsp; Language: &nbsp; ");
+                    PopupFormBuilder.Append("</td><td width=\"255px\" > &nbsp; Language: &nbsp; ");
                     if (standSubject.Language.Length > 0)
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectlanguage_" + subject_index + "\" id=\"formsubjectlanguage_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Language) + "\" onfocus=\"javascript:textbox_enter('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectlanguage_" + subject_index + "\" id=\"formsubjectlanguage_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Language) + "\" onfocus=\"javascript:textbox_enter('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input')\" />");
                     }
                     else
                     {
-                        popup_form_builder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectlanguage_" + subject_index + "\" id=\"formsubjectlanguage_" + subject_index + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input')\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_small_input\" name=\"formsubjectlanguage_" + subject_index + "\" id=\"formsubjectlanguage_" + subject_index + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input_focused')\" onblur=\"javascript:textbox_leave('formsubjectlanguage_" + subject_index + "', 'formsubject_small_input')\" />");
                     }
 
-                    popup_form_builder.AppendLine("  </td></tr>");
-                    popup_form_builder.AppendLine("  </table>");
-                    popup_form_builder.AppendLine("  <br />");
-                    popup_form_builder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_subject_form('form_subject_" + subject_index + "');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-                    popup_form_builder.AppendLine("</div>");
-                    popup_form_builder.AppendLine();
+                    PopupFormBuilder.AppendLine("  </td></tr>");
+                    PopupFormBuilder.AppendLine("  </table>");
+                    PopupFormBuilder.AppendLine("  <br />");
+                    PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_subject_form('form_subject_" + subject_index + "');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+                    PopupFormBuilder.AppendLine("</div>");
+                    PopupFormBuilder.AppendLine();
 
                     subject_index++;
                 }
@@ -417,9 +417,9 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             // Do nothing
         }
