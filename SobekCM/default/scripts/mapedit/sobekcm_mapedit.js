@@ -1552,7 +1552,7 @@ function save(id) {
                 if (globalVar.firstSaveItem == true) {
                     de("saving location: " + globalVar.savingMarkerCenter);
                     //save to temp xml file
-                    createSavedItem(globalVar.savingMarkerCenter);
+                    createSavedItem("save", globalVar.savingMarkerCenter);
                     //reset first save
                     globalVar.firstSaveItem = false;
                     //change save button to apply button
@@ -1562,8 +1562,11 @@ function save(id) {
                 } else {
                     //apply the changes
                     de("Applying Changes...");
-                    //currently doesnt do anything
-
+                    de("applying location: " + globalVar.savingMarkerCenter);
+                    //save to live areas
+                    createSavedItem("apply", globalVar.savingMarkerCenter);
+                    //reset first save
+                    globalVar.firstSaveItem = true;
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_saveItem").value = L37;
                     document.getElementById("content_toolbox_button_saveitem").title = L38;
@@ -1584,7 +1587,7 @@ function save(id) {
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
                         de("saving overlay: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
-                        createSavedOverlay(globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                        createSavedOverlay("save", globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = false;
@@ -1602,7 +1605,13 @@ function save(id) {
                 if (globalVar.savingOverlayIndex.length) {
                     //apply the changes
                     de("Applying Changes...");
-                    //currently doesnt do anything
+                    for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
+                        //save to temp xml file
+                        de("applying overlay: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                        createSavedOverlay("apply", globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                    }
+                    //reset first save
+                    globalVar.firstSaveOverlay = true;
                 } else {
                     displayMessage(L_NotSaved);
                 }
@@ -1614,27 +1623,13 @@ function save(id) {
             break;
 
         case "poi":
-
-            //save
-
-            //save to temp xml file
-            if (globalVar.poiObj.length > 0) {
-                de("saving " + globalVar.poiObj.length + " POIs...");
-                createSavedPOI();
-                //displayMessage(L_Saved); //not used here
-            } else {
-                displayMessage(L_NotSaved);
-            }
-
-            //apply
-
             //is this the first time saving a changed item? (apply changes)
             if (globalVar.firstSavePOI == true) {
                 //determine if there is something to save
                 if (globalVar.poiObj.length > 0) {
                     //save to temp xml file
                     de("saving " + globalVar.poiObj.length + " POIs...");
-                    createSavedPOI();
+                    createSavedPOI("save");
                     //reset first save
                     globalVar.firstSavePOI = false;
                     //change save button to apply button
@@ -1651,7 +1646,11 @@ function save(id) {
                     if (globalVar.poiObj.length > 0) {
                         //apply the changes
                         de("Applying Changes...");
-                        //currently doesnt do anything
+                        de("applying " + globalVar.poiObj.length + " POIs...");
+                        //apply changes
+                        createSavedPOI("apply");
+                        //reset first save
+                        globalVar.firstSavePOI = true;
                     } else {
                         displayMessage(L_NotSaved);
                     }
@@ -1949,7 +1948,7 @@ function initialize() {
             } else {
                 infoWindow[globalVar.poi_i].setMap(map);
                 infoWindow[globalVar.poi_i].setMap(null);
-                alert(navigator.platform);
+                de("platform: " + navigator.platform);
                 //if (navigator.platform)
                 var t2 = setTimeout(function () {
                     infoWindow[globalVar.poi_i].setMap(map);
@@ -2651,7 +2650,11 @@ function displayIncomingPoints() {
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingOverlays() {
     for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
+
+        globalVar.workingOverlayIndex = i;
         globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);    //create overlay with incoming
+        globalVar.currentlyEditing = "no";
+        
         globalVar.overlaysOnMap[i].setMap(map);                                                                                                       //set the overlay to the map
 
         setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);                                                                                       //set hotspot on top of overlay
@@ -3359,8 +3362,8 @@ function displayMessage(message) {
 }
 
 //create a package to send to server to save item location
-function createSavedItem(coordinates) {
-    var messageType = "item"; //define what message type it is
+function createSavedItem(handle, coordinates) {
+    var messageType = handle + "|" + "item"; //define what message type it is
     //assign data
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
@@ -3369,13 +3372,13 @@ function createSavedItem(coordinates) {
 }
 
 //create a package to send to server to save overlay
-function createSavedOverlay(label, source, bounds, rotation) {
+function createSavedOverlay(handle, label, source, bounds, rotation) {
     var temp = source;
     if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
         displayMessage(L7);
     }
     //var formattedBounds = 
-    var messageType = "overlay"; //define what message type it is
+    var messageType = handle + "|" + "overlay"; //define what message type it is
     var data = messageType + "|" + label + "|" + bounds + "|" + source + "|" + rotation + "|";
     var dataPackage = data + "~";
     de("saving overlay set: " + dataPackage); //temp
@@ -3383,8 +3386,8 @@ function createSavedOverlay(label, source, bounds, rotation) {
 }
 
 //create a package to send to the server to save poi
-function createSavedPOI() {
-    var dataPackage = null;
+function createSavedPOI(handle) {
+    var dataPackage = "";
     //cycle through all pois
     de("poi length: " + globalVar.poiObj.length);
     for (var i = 0; i < globalVar.poiObj.length; i++) {
@@ -3419,7 +3422,7 @@ function createSavedPOI() {
         //filter out the deleted pois
         if (globalVar.poiType[i] != "deleted") {
             //compile data message
-            var data = "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
+            var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
             dataPackage += data + "~";
         }
     }
@@ -3431,19 +3434,43 @@ function createSavedPOI() {
 
 }
 
+////sends save dataPackages to the server via json
+//function toServer(dataPackage) {
+//    var scriptURL = "default/scripts/serverside/Scripts.aspx";
+//    $.ajax({
+//        type: "POST",
+//        url: globalVar.baseURL + scriptURL + "/SaveItem",
+//        data: JSON.stringify({ sendData: dataPackage }),
+//        contentType: "application/json; charset=utf-8",
+//        dataType: "json",
+//        success: function (result) {
+//            de("server result:" + result);
+//            displayMessage(L_Saved);
+//        }
+//    });
+//}
+
 //sends save dataPackages to the server via json
 function toServer(dataPackage) {
-    var scriptURL = "default/scripts/serverside/Scripts.aspx";
-    $.ajax({
-        type: "POST",
-        url: globalVar.baseURL + scriptURL + "/SaveItem",
-        data: JSON.stringify({ sendData: dataPackage }),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (result) {
-            de("server result:" + result);
-            displayMessage(L_Saved);
-        }
+
+    jQuery('form').each(function() {
+
+        var payload = JSON.stringify({ sendData: dataPackage });
+        var hiddenfield = document.getElementById('payload');
+        hiddenfield.value = payload;
+        var hiddenfield2 = document.getElementById('action');
+        hiddenfield2.value = 'save';
+
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: window.location.href.toString(),
+            data: jQuery(this).serialize(),
+            success: function(result) {
+                de("server result:" + result);
+                displayMessage(L_Saved);
+            }
+        });
     });
 }
 
