@@ -15,11 +15,14 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     {
         private string label;
         private List<Coordinate_Point> points;
+        public string featureType;
+
 
         /// <summary> Constructor for a new instance of this Coordinate_Line class </summary>
         public Coordinate_Line()
         {
             points = new List<Coordinate_Point>();
+            featureType = "main"; //default
         }
 
         /// <summary> Read-only collection of all the points for this line </summary>
@@ -39,6 +42,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         {
             get { return label ?? String.Empty; }
             set { label = value; }
+        }
+
+        /// <summary> Add Feature Type Data</summary>
+        public void Add_FeatureType(string incomingFeatureType)
+        {
+            featureType = incomingFeatureType;
         }
 
         /// <summary>Add a pre-existing point object to this line </summary>
