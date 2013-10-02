@@ -54,7 +54,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //script_action_name = "Javascript:advanced_select_search_sobekcm('" + redirect_stem + "', '" + sub_code + "')";
             //script_include_name = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
 
-            scriptActionName = "Javascript:advanced_search_sobekcm('" + redirectStem + "')";
+            scriptActionName = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "')";
             scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
 
         }

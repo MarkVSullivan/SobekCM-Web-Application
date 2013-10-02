@@ -71,11 +71,11 @@ namespace SobekCM.Library.ItemViewer
 					break;
 
 				case View_Enum.DATASET_REPORTS:
-					returnVal.Add(HTML_Helper(Skin_Code, "dsreports", Translator.Get_Translation("EXPLORE DATA", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "dsreports", Translator.Get_Translation("REPORTS", Current_Mode.Language), Current_Mode));
 					break;
 
 				case View_Enum.DATASET_VIEWDATA:
-					returnVal.Add(HTML_Helper(Skin_Code, "dsview", Translator.Get_Translation("REPORTS", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "dsview", Translator.Get_Translation("EXPLORE DATA", Current_Mode.Language), Current_Mode));
 					break;
 
                 case View_Enum.DOWNLOADS:
