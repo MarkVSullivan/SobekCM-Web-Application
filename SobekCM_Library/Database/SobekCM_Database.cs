@@ -58,12 +58,12 @@ namespace SobekCM.Library.Database
 		//	childColumn = set.Tables[2].Columns[0];
 		//	UniqueConstraint uniqueCon = new UniqueConstraint("PersonIdUniqueConstraint", parentColumn);
 		//	set.Tables[0].Constraints.Add(uniqueCon);
-		//	foreignKeyConstraint = new ForeignKeyConstraint ("PersonOccupationForeignKeyConstraint", parentColumn, childColumn);
+		//	foreignKeyConstraint = new ForeignKeyConstraint("PersonOccupationForeignKeyConstraint", parentColumn, childColumn);
 
 		//	set.Tables[2].Constraints.Add(foreignKeyConstraint);
 
-			
-				 
+
+
 
 		//	// Declare parent column and child column variables.
 		//	DataColumn parentColumn2;
@@ -78,6 +78,13 @@ namespace SobekCM.Library.Database
 		//	foreignKeyConstraint2 = new ForeignKeyConstraint("CorporationOccupationForeignKeyConstraint", parentColumn2, childColumn2);
 
 		//	set.Tables[2].Constraints.Add(foreignKeyConstraint2);
+
+		//	DataColumn uniqueColumn = set.Tables[1].Columns[1];
+		//	UniqueConstraint uniqueCon3 = new UniqueConstraint("CorporationNameUniqueConstraint", uniqueColumn);
+		//	set.Tables[1].Constraints.Add(uniqueCon3);
+
+		//	set.Tables[0].Columns["Sex"].MaxLength = 1;
+
 
 		//	set.Tables[0].ExtendedProperties.Add("Description", "Table contains information about all of the people which appeared within the city directory.  These may also be linked to a corporate body and/or an historic occupation.");
 		//	set.Tables[0].Columns[0].Caption = "Unique key for this person within the dataset";
@@ -113,7 +120,7 @@ namespace SobekCM.Library.Database
 		//	set.Tables[2].Columns[1].Caption = "Possible link to a corporate body";
 		//	set.Tables[2].Columns[2].Caption = "Historic occupation, as recorded within the city directory";
 
-		//	set.WriteXml(@"C:\GitRepository\SobekCM\SobekCM-Web-Application\SobekCM\temp\keywest_epc.xml", XmlWriteMode.WriteSchema);
+		//	set.WriteXml(@"C:\GitRepository\SobekCM\SobekCM-Web-Application\SobekCM\temp\gville_epc.xml", XmlWriteMode.WriteSchema);
 		//}
 
 
