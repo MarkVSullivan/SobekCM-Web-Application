@@ -229,6 +229,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AdminViewer\Aggregation_Single_AdminViewer.cs" />
+    <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="Resource_Web_Config_Writer.cs" />

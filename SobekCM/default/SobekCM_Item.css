@@ -286,7 +286,7 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 .sbkDcv_TableDetailsColumn1 { border-left: 1px solid #555555;width:40px;background-color:White;height: 20px; padding-left: 5px; }
 .sbkDcv_TableDetailsColumn2 { border-left:1px solid #888888; border-right:1px solid #888888; background-color:White; padding-left: 5px; }
 .sbkDcv_TableDetailsColumn3 { border-left:1px solid #888888; border-right:1px solid #888888; background-color:White;width:80px; font-style:italic; padding-left: 5px; }
-.sbkDcv_TableDetailsColumn4 { border-right:1px solid #555555;background-color:White;padding-right: 20px;padding-left: 5px; }
+.sbkDcv_TableDetailsColumn4 { border-right:1px solid #555555;background-color:White;padding-right: 20px;padding-left: 5px;font-weight: normal; }
 #sbkDcv_DetailsTableName { font-weight: bold;font-size: 1.4em;padding-left: 10px;padding-bottom: 20px; }
 #sbkDcv_DetailsTableDescription { font-size: 1.2em; padding-left: 60px; padding-bottom: 20px; width: 600px; }
 

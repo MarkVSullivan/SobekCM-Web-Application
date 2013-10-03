@@ -161,7 +161,7 @@ namespace SobekCM.Library.Navigation
 
 
 			Invalid_Item = false;
-			Skin_in_URL = false;
+			Skin_In_URL = false;
 			isPostBack = false;
 			Show_Selection_Panel = false;
 			Is_Robot = false;
@@ -332,7 +332,7 @@ namespace SobekCM.Library.Navigation
 		}
 
 		/// <summary> Flag which indicates the interface is indicated in the URL and query string </summary>
-		public bool Skin_in_URL { get; set; }
+		public bool Skin_In_URL { get; set; }
 
 		/// <summary> Simple error message generated during execution </summary>
 		public string Error_Message
@@ -605,6 +605,10 @@ namespace SobekCM.Library.Navigation
 			{
 				case Writer_Type_Enum.DataSet:
 					this_base_url = this_base_url + "dataset/";
+					break;
+
+				case Writer_Type_Enum.Data_Provider:
+					this_base_url = this_base_url + "dataprovider/";
 					break;
 
 				case Writer_Type_Enum.XML:
@@ -1213,7 +1217,6 @@ namespace SobekCM.Library.Navigation
                             if (!query_string_started)
                             {
                                 itemDisplayBuilder.Append("?file=" + pageByFilename);
-                                query_string_started = true;
                             }
                             else
                             {
