@@ -154,6 +154,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Start the main area
 			const string INDENT = "          ";
 
+			// If only one datatable set the subpage
+			if (itemDataset.Tables.Count == 1)
+				CurrentMode.SubPage = 2;
+
 			if ((CurrentMode.SubPage < 2) || (CurrentMode.SubPage > (1 + itemDataset.Tables.Count)))
 			{
 				Output.WriteLine("          <td id=\"sbkDcv_MainArea\">");
@@ -250,9 +254,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("          <td id=\"sbkDcv_DetailsArea\">");
 				DataTable thisTable = itemDataset.Tables[CurrentMode.SubPage - 2];
 
-				CurrentMode.SubPage = 1;
-				Output.WriteLine("<a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"Back to full data structure\">&larr; Back</a><br /><br />");
-
+				if (itemDataset.Tables.Count > 1)
+				{
+					ushort subpage = CurrentMode.SubPage;
+					CurrentMode.SubPage = 1;
+					Output.WriteLine("<a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"Back to full data structure\">&larr; Back</a><br /><br />");
+					CurrentMode.SubPage = subpage;
+				}
+				else
+				{
+					Output.WriteLine("<br /><br />");
+				}
 
 				// Add the basic table information
 				Output.WriteLine(INDENT + "<div id=\"sbkDcv_DetailsTableName\">" + thisTable.TableName.Replace("_", " ") + " Table Details</div>");
@@ -293,7 +305,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						}
 					}
 
-					Output.WriteLine(INDENT + "    <tr>");
+					if (thisColumn.AllowDBNull)
+						Output.WriteLine(INDENT + "    <tr>");
+					else
+						Output.WriteLine(INDENT + "    <tr class=\"sbkDcv_TableRequiredField\">");
+
 
 					Output.WriteLine(INDENT + "      <td class=\"sbkDcv_TableColumn0\">" + column_reference + "</td>");
 

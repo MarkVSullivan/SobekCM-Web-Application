@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Navigation;
 
 #endregion
 
@@ -153,6 +154,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				return;
 			}
 
+			// If only one datatable set the subpage
+			if (itemDataset.Tables.Count == 1)
+				CurrentMode.SubPage = 2;
+
 			// Is the subpage invalid?
 			if ((CurrentMode.SubPage - 1 > itemDataset.Tables.Count) || (CurrentMode.SubPage < 2))
 			{
@@ -192,23 +197,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine(INDENT + "      </tr>");
 			Output.WriteLine(INDENT + "    </thead>");
 			Output.WriteLine(INDENT + "    <tbody>");
+			Output.WriteLine(INDENT + "      <tr><td colspan=\"" + ( eachColumn.Count + 1 ) + "\" class=\"dataTables_empty\">Loading data from server</td></tr>");
 
-			// Add all the row data
-			int row_number = 1;
-			foreach (DataRow thisRow in thisTable.Rows)
-			{
-				Output.WriteLine(INDENT + "      <tr>");
-				Output.WriteLine(INDENT + "        <td>" + row_number + "</td>");
-				foreach (DataColumn thisColumn in eachColumn)
-				{
-					Output.WriteLine(INDENT + "        <td>" + HttpUtility.HtmlEncode(thisRow[thisColumn]) + "</td>");
-				}
-				Output.WriteLine(INDENT + "      </tr>");
-				row_number++;
-			}
+			//// Add all the row data
+			//int row_number = 1;
+			//foreach (DataRow thisRow in thisTable.Rows)
+			//{
+			//	Output.WriteLine(INDENT + "      <tr>");
+			//	Output.WriteLine(INDENT + "        <td>" + row_number + "</td>");
+			//	foreach (DataColumn thisColumn in eachColumn)
+			//	{
+			//		Output.WriteLine(INDENT + "        <td>" + HttpUtility.HtmlEncode(thisRow[thisColumn]) + "</td>");
+			//	}
+			//	Output.WriteLine(INDENT + "      </tr>");
+			//	row_number++;
+			//}
 
 			Output.WriteLine(INDENT + "    </tbody>");
 			Output.WriteLine(INDENT + "  </table>");
+
+			CurrentMode.Writer_Type = Writer_Type_Enum.Data_Provider;
 
 			Output.WriteLine();
 			Output.WriteLine("<script type=\"text/javascript\">");
@@ -219,6 +227,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("           \"bFilter\": false,");
 			Output.WriteLine("           \"sDom\": 'ipRr<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
 			Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+			Output.WriteLine("           \"bProcessing\": true,");
+
+			Output.WriteLine("           \"bServerSide\": true,");
+			Output.WriteLine("           \"sAjaxSource\": \"" + CurrentMode.Redirect_URL() + "\",");
 			Output.Write    ("           \"aoColumns\": [{ \"bVisible\": false }");
 			for (int i = 0; i < eachColumn.Count; i++)
 				Output.Write(", null");

@@ -83,7 +83,7 @@ namespace SobekCM.Library.Navigation
 
 	    /// <summary> Parse the query and set the internal variables </summary>
         /// <param name="QueryString"> QueryString collection passed from the main page </param>
-        /// <param name="navigator"> Navigation object to hold the mode information </param>
+        /// <param name="Navigator"> Navigation object to hold the mode information </param>
         /// <param name="Base_URL">Requested base URL (without query string, etc..)</param>
         /// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
         /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
@@ -92,7 +92,7 @@ namespace SobekCM.Library.Navigation
         /// <param name="URL_Portals"> List of all web portals into this system </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Parse_Query(NameValueCollection QueryString,
-            SobekCM_Navigation_Object navigator,
+            SobekCM_Navigation_Object Navigator,
             string Base_URL,
             string[] User_Languages,
             Aggregation_Code_Manager Code_Manager,
@@ -106,12 +106,12 @@ namespace SobekCM.Library.Navigation
             SobekCM_Database.Verify_Item_Lookup_Object(true, ref All_Items_Lookup, Tracer);
 
 			// Set default mode to error
-			navigator.Mode = Display_Mode_Enum.Error;
+			Navigator.Mode = Display_Mode_Enum.Error;
 
 			// If this has 'verb' then this is an OAI-PMH request
 			if ( QueryString["verb"] != null )
 			{
-                navigator.Writer_Type = Writer_Type_Enum.OAI;
+                Navigator.Writer_Type = Writer_Type_Enum.OAI;
 				return;
 			}
 
@@ -120,11 +120,11 @@ namespace SobekCM.Library.Navigation
             {
                 if (QueryString["toc"] == "y")
                 {
-                    navigator.TOC_Display = TOC_Display_Type_Enum.Show;
+                    Navigator.TOC_Display = TOC_Display_Type_Enum.Show;
                 }
                 else if ( QueryString["toc"] == "n" )
                 {
-                    navigator.TOC_Display = TOC_Display_Type_Enum.Hide;
+                    Navigator.TOC_Display = TOC_Display_Type_Enum.Hide;
                 }
             }
 
@@ -133,62 +133,62 @@ namespace SobekCM.Library.Navigation
 			{
 				if (( QueryString["l"].ToUpper() == "ES" ) || ( QueryString["l"].ToUpper() == "SP" ))
 				{
-					navigator.Language = Web_Language_Enum.Spanish;
+					Navigator.Language = Web_Language_Enum.Spanish;
 				}
 				if ( QueryString["l"].ToUpper() == "FR" )
 				{
-					navigator.Language = Web_Language_Enum.French;
+					Navigator.Language = Web_Language_Enum.French;
 				}
 			}
 
             // If there is flag indicating to show the trace route, save it
             if (QueryString["trace"] != null)
             {
-                navigator.Trace_Flag = QueryString["trace"].ToUpper() == "NO" ? Trace_Flag_Type_Enum.No : Trace_Flag_Type_Enum.Explicit;
+                Navigator.Trace_Flag = QueryString["trace"].ToUpper() == "NO" ? Trace_Flag_Type_Enum.No : Trace_Flag_Type_Enum.Explicit;
             }
             else
             {
-                navigator.Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
+                Navigator.Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
             }
 			
 			// Collect all the values into the strings
 			Collect_Strings( QueryString );
 
             // Get the valid URL Portal
-            navigator.Default_Aggregation = "all";
+            Navigator.Default_Aggregation = "all";
             Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);
-            navigator.SobekCM_Instance_Abbreviation = urlPortal.Abbreviation;
+            Navigator.SobekCM_Instance_Abbreviation = urlPortal.Abbreviation;
             if (urlPortal.Default_Aggregation.Length > 0)
             {
-                navigator.Default_Aggregation = urlPortal.Default_Aggregation;
-                navigator.Aggregation = urlPortal.Default_Aggregation;
+                Navigator.Default_Aggregation = urlPortal.Default_Aggregation;
+                Navigator.Aggregation = urlPortal.Default_Aggregation;
             }
             if (urlPortal.Default_Web_Skin.Length > 0)
             {
-                navigator.Default_Skin = urlPortal.Default_Web_Skin;
-                navigator.Skin = urlPortal.Default_Web_Skin;
-                navigator.Skin_in_URL = false;
+                Navigator.Default_Skin = urlPortal.Default_Web_Skin;
+                Navigator.Skin = urlPortal.Default_Web_Skin;
+                Navigator.Skin_In_URL = false;
             }
 
             // Save the interface
             if (currSkin.Length > 0)
             {
-                navigator.Skin = currSkin.ToLower();
-                navigator.Skin_in_URL = true;
+                Navigator.Skin = currSkin.ToLower();
+                Navigator.Skin_In_URL = true;
             }
 
             // Get the return url if there was one
             if (return_url.Length > 0)
             {
-                navigator.Return_URL = HttpUtility.UrlDecode(return_url);
+                Navigator.Return_URL = HttpUtility.UrlDecode(return_url);
             }
 
 			// If there are no values in the query string, the
 			// current mode should be the default
 			if (( QueryString.Keys.Count == 0 ) && ( aggregation.Length == 0 ))
 			{
-                navigator.Mode = Display_Mode_Enum.Aggregation_Home;
-                navigator.Home_Type = Home_Type_Enum.List;
+                Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+                Navigator.Home_Type = Home_Type_Enum.List;
 				return;
 			}
 
@@ -227,111 +227,111 @@ namespace SobekCM.Library.Navigation
 			switch( mode[0] )
 			{
 				case 'x':
-                    navigator.Writer_Type = Writer_Type_Enum.XML;
+                    Navigator.Writer_Type = Writer_Type_Enum.XML;
 					break;
 
 				case 'd':
-                    navigator.Writer_Type = Writer_Type_Enum.DataSet;
+                    Navigator.Writer_Type = Writer_Type_Enum.DataSet;
 					break;
 
 				case 't':
-                    navigator.Writer_Type = Writer_Type_Enum.Text;
+                    Navigator.Writer_Type = Writer_Type_Enum.Text;
 					break;
 
                 case 'j':
-                    navigator.Writer_Type = Writer_Type_Enum.JSON;
+                    Navigator.Writer_Type = Writer_Type_Enum.JSON;
                     break;
 
                 case 'l':
-                    navigator.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
+                    Navigator.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
                     break;
 
                 default:
-                    navigator.Writer_Type = Writer_Type_Enum.HTML;
+                    Navigator.Writer_Type = Writer_Type_Enum.HTML;
                     break;
 			}
 
             // Save the aggregation information
-            navigator.Aggregation = aggregation;
-            navigator.SubAggregation = subaggregation;
+            Navigator.Aggregation = aggregation;
+            Navigator.SubAggregation = subaggregation;
 
 			// Perform switch, based on the mode
 			switch ( mode[1] )
 			{
                 case 'a':
-                    Admin_Block(navigator);
+                    Admin_Block(Navigator);
                     return;
 
 				case 'b':
-					navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
-					Browse_Info_Block( navigator );
+					Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+					Browse_Info_Block( Navigator );
 					return;
 
                 case 'c':
                     if ((mode == "hcs") || ( mode == "lcs" ))
                     {
-                        navigator.Mode = Display_Mode_Enum.Contact_Sent;
+                        Navigator.Mode = Display_Mode_Enum.Contact_Sent;
                     }
                     else
                     {
-                        navigator.Mode = Display_Mode_Enum.Contact;
-                        navigator.Error_Message = error_message;
+                        Navigator.Mode = Display_Mode_Enum.Contact;
+                        Navigator.Error_Message = error_message;
                     }
-                    navigator.Aggregation = aggregation;
+                    Navigator.Aggregation = aggregation;
                     return;
 
                 case 'd':
-                    Item_Display_Block(navigator);
+                    Item_Display_Block(Navigator);
                     return;
 
                 case 'e':
-                    Text_Display(navigator);
+                    Text_Display(Navigator);
                     return;
 
                 case 'f':
-                    Item_Print_Block(navigator);
+                    Item_Print_Block(Navigator);
                     return;
 
                 case 'g':
-                    Public_Folder_Block(navigator);
+                    Public_Folder_Block(Navigator);
                     break;
 
 				case 'h':
-					Home_Block( navigator );
+					Home_Block( Navigator );
 					return;
 
                 case 'i':
-                    navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
-                    Browse_Info_Block(navigator);
+                    Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+                    Browse_Info_Block(Navigator);
                     return;
 
                 case 'm':
-                    My_Sobek_Block(navigator);
+                    My_Sobek_Block(Navigator);
                     return;
 
                 case 'p':
-                    navigator.Mode = Display_Mode_Enum.Preferences;
+                    Navigator.Mode = Display_Mode_Enum.Preferences;
                     return;
 
                 case 'r':
-                    Results_Block(navigator);
+                    Results_Block(Navigator);
                     return;
 
 				case 's':    // Performing a basic search
-					Search_Block( navigator );
+					Search_Block( Navigator );
 					return;
 
                 case 't':
-                    Statistics_Block(navigator);
+                    Statistics_Block(Navigator);
                     return;
 
                 case 'z':
-                    navigator.Mode = Display_Mode_Enum.Reset;
+                    Navigator.Mode = Display_Mode_Enum.Reset;
                     return;
 
 				default:
-					navigator.Mode = Display_Mode_Enum.Error;
-                    navigator.Error_Message = "Unknown mode '" + mode + "'";
+					Navigator.Mode = Display_Mode_Enum.Error;
+                    Navigator.Error_Message = "Unknown mode '" + mode + "'";
 					return;
 			}
 		}
