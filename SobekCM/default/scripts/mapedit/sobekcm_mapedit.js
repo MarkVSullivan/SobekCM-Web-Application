@@ -139,9 +139,11 @@ function initDeclarations() {
             savingMarkerCenter: null,                   //holds marker coords to save
             CustomOverlay: null,                        //does nothing
             cCoordsFrozen: "no",                        //used to freeze/unfreeze coordinate viewer
+            incomingPointFeatureType: [],               //defined in c# to js on page
             incomingPointCenter: [],                    //defined in c# to js on page
             incomingPointLabel: [],                     //defined in c# to js on page
             incomingPointSourceURL: [],                 //defined in c# to js on page
+            incomingOverlayFeatureType: [],             //defined in c# to js on page
             incomingOverlayBounds: [],                  //defined in c# to js on page
             incomingOverlayLabel: [],                   //defined in c# to js on page
             incomingOverlaySourceURL: [],               //defined in c# to js on page
@@ -1895,6 +1897,7 @@ function initialize() {
 
     //initialize drawingmanger listeners
     google.maps.event.addListener(drawingManager, 'markercomplete', function (marker) {
+        
         testBounds(); //are we still in the bounds 
         if (globalVar.placerType == "item") {
             globalVar.firstSaveItem = true;
@@ -1941,19 +1944,19 @@ function initialize() {
 
             infoWindow[globalVar.poi_i].setMap(map);
             
-            //infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
+            infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
 
-            if (globalVar.poiCount > 0) {
-                infoWindow[globalVar.poi_i].open(map);
-            } else {
-                infoWindow[globalVar.poi_i].setMap(map);
-                infoWindow[globalVar.poi_i].setMap(null);
-                de("platform: " + navigator.platform);
-                //if (navigator.platform)
-                var t2 = setTimeout(function () {
-                    infoWindow[globalVar.poi_i].setMap(map);
-                }, 1500);
-            }
+            //if (globalVar.poiCount > 0) {
+            //    infoWindow[globalVar.poi_i].open(map);
+            //} else {
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //    infoWindow[globalVar.poi_i].setMap(null);
+            //    de("platform: " + navigator.platform);
+            //    //if (navigator.platform)
+            //    var t2 = setTimeout(function () {
+            //        infoWindow[globalVar.poi_i].setMap(map);
+            //    }, 1500);
+            //}
             
             globalVar.poiCount++;
             
@@ -2616,23 +2619,137 @@ function initialize() {
 //Displays all the points sent from the C# code.
 function displayIncomingPoints() {
     if (globalVar.incomingPointCenter) {
-        //go through and display points as long as there is a point to display (note, currently only supports one point)
+        //go through and display points as long as there is a point to display
         for (var i = 0; i < globalVar.incomingPointCenter.length; i++) {
-            globalVar.firstMarker++;
-            globalVar.itemMarker = new google.maps.Marker({
-                position: globalVar.incomingPointCenter[i],
-                map: map,
-                draggable: true,
-                title: globalVar.incomingPointLabel[i]
-            });
-            document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
-            codeLatLng(globalVar.itemMarker.getPosition());
-            google.maps.event.addListener(globalVar.itemMarker, 'dragend', function () {
-                globalVar.firstSaveItem = true;
-                globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition(); //store coords to save
-                document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
-                codeLatLng(globalVar.itemMarker.getPosition());
-            });
+            switch (globalVar.incomingPointFeatureType[i]) {
+                case "":
+                    globalVar.placerType = "item";
+                    globalVar.firstMarker++;
+                    globalVar.itemMarker = new google.maps.Marker({
+                        position: globalVar.incomingPointCenter[i],
+                        map: map,
+                        draggable: true,
+                        title: globalVar.incomingPointLabel[i]
+                    });
+                    document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                    codeLatLng(globalVar.itemMarker.getPosition());
+                    google.maps.event.addListener(globalVar.itemMarker, 'dragend', function () {
+                        globalVar.firstSaveItem = true;
+                        globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition(); //store coords to save
+                        document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                        codeLatLng(globalVar.itemMarker.getPosition());
+                    });
+                    break;
+                case "main":
+                    globalVar.placerType = "item";
+                    globalVar.firstMarker++;
+                    globalVar.itemMarker = new google.maps.Marker({
+                        position: globalVar.incomingPointCenter[i],
+                        map: map,
+                        draggable: true,
+                        title: globalVar.incomingPointLabel[i]
+                    });
+                    document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                    codeLatLng(globalVar.itemMarker.getPosition());
+                    google.maps.event.addListener(globalVar.itemMarker, 'dragend', function () {
+                        globalVar.firstSaveItem = true;
+                        globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition(); //store coords to save
+                        document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                        codeLatLng(globalVar.itemMarker.getPosition());
+                    });
+                    break;
+                case "poi":
+                    globalVar.placerType = "poi";
+                    var marker = new google.maps.Marker({
+                        position: globalVar.incomingPointCenter[i],
+                        map: map,
+                        draggable: true,
+                        title: globalVar.incomingPointLabel[i]
+                    });
+                    if (globalVar.placerType == "poi") {
+                        globalVar.firstSavePOI = true;
+                        globalVar.poi_i++;
+
+                        label[globalVar.poi_i] = new MarkerWithLabel({
+                            position: marker.getPosition(), //position of real marker
+                            map: map,
+                            zIndex: 2,
+                            labelContent: globalVar.incomingPointLabel[(globalVar.poi_i + 1)],
+                            labelAnchor: new google.maps.Point(15, 0),
+                            labelClass: "labels", // the CSS class for the label
+                            labelStyle: { opacity: 0.75 },
+                            icon: {} //initialize to nothing so no marker shows
+                        });
+
+                        globalVar.poiObj[globalVar.poi_i] = marker;
+                        globalVar.poiType[globalVar.poi_i] = "marker";
+                        var poiId = globalVar.poi_i + 1;
+                        var poiDescTemp = L_Marker;
+                        document.getElementById("poiList").innerHTML += writeHTML("poiListItem", globalVar.poi_i, poiId, poiDescTemp);
+                        var contentString = writeHTML("poiDesc", globalVar.poi_i, "", "");
+                        infoWindow[globalVar.poi_i] = new google.maps.InfoWindow({
+                            content: contentString,
+                            position: marker.getPosition(),
+                            pixelOffset: new google.maps.Size(0, -40)
+                        });
+
+                        infoWindow[globalVar.poi_i].setMap(map);
+
+                        infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
+
+                        //if (globalVar.poiCount > 0) {
+                        //    infoWindow[globalVar.poi_i].open(map);
+                        //} else {
+                        //    infoWindow[globalVar.poi_i].setMap(map);
+                        //    infoWindow[globalVar.poi_i].setMap(null);
+                        //    de("platform: " + navigator.platform);
+                        //    //if (navigator.platform)
+                        //    var t2 = setTimeout(function () {
+                        //        infoWindow[globalVar.poi_i].setMap(map);
+                        //    }, 1500);
+                        //}
+
+                        globalVar.poiCount++;
+
+                    }
+
+                    google.maps.event.addListener(marker, 'dragstart', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setMap(null);
+                                    label[i].setMap(null);
+                                }
+                            }
+                        }
+                    });
+                    google.maps.event.addListener(marker, 'dragend', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                    infoWindow[i].open(null);
+                                    label[i].setPosition(marker.getPosition());
+                                    label[i].setMap(map);
+                                }
+                            }
+                        }
+                    });
+                    google.maps.event.addListener(marker, 'click', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                    infoWindow[i].open(map);
+                                }
+                            }
+                        }
+                    });
+                    break;
+            }
         }
     } else {
         globalVar.firstMarker++;
@@ -2651,14 +2768,23 @@ function displayIncomingPoints() {
 function displayIncomingOverlays() {
     for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
 
-        globalVar.workingOverlayIndex = i;
-        globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);    //create overlay with incoming
-        globalVar.currentlyEditing = "no";
-        
-        globalVar.overlaysOnMap[i].setMap(map);                                                                                                       //set the overlay to the map
-
-        setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);                                                                                       //set hotspot on top of overlay
-        de("I created ghost: " + i);
+        switch (globalVar.incomingOverlayFeatureType) {
+            case "main":
+                globalVar.workingOverlayIndex = i;
+                //create overlay with incoming
+                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);
+                globalVar.currentlyEditing = "no";
+                //set the overlay to the map
+                globalVar.overlaysOnMap[i].setMap(map);
+                //set hotspot on top of overlay
+                setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);
+                de("I created ghost: " + i);
+                break;
+            case "poi":
+                //determine which type of poi it is and handle from there
+                
+                break;
+        }
     }
     globalVar.overlaysCurrentlyDisplayed = true;
 }
@@ -3400,7 +3526,7 @@ function createSavedPOI(handle) {
                 globalVar.poiKML[i] = globalVar.poiObj[i].getCenter() + "|";
                 globalVar.poiKML[i] += globalVar.poiObj[i].getRadius();
                 break;
-            case "globalVar.rectangle":
+            case "rectangle":
                 globalVar.poiKML[i] = globalVar.poiObj[i].getBounds().toString();
                 break;
             case "polygon":
@@ -3467,7 +3593,7 @@ function toServer(dataPackage) {
             url: window.location.href.toString(),
             data: jQuery(this).serialize(),
             success: function(result) {
-                de("server result:" + result);
+                //de("server result:" + result);
                 displayMessage(L_Saved);
             }
         });

@@ -33,6 +33,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
 
+        List<Coordinate_Polygon> POI_allPolygons;
+        List<Coordinate_Point> POI_allPoints;
+        List<Coordinate_Line> POI_allLines;
+
         //private static string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
         //private static string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
         
@@ -119,6 +123,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string[] allSaves = sendData.Substring(0, index1).Split('~');
             //hold save type handle
             string saveTypeHandle = null;
+            bool firedOnce = false; //check to see if save poi clear has already been fired...
             
             for (int i = 0; i < allSaves.Length; i++)
             {
@@ -132,215 +137,247 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string saveType = ar[1];
                 //based on saveType, parse into objects
 
-                //handle save based on type
-                switch (saveType)
+                if (saveTypeHandle == "save")
                 {
-                    case "item":
+                    //handle save based on type
+                    switch (saveType)
+                    {
+                        case "item":
 
-                        //prep incoming lat/long
-                        string[] temp1 = ar[2].Split(',');
-                        double temp1Lat = Convert.ToDouble(temp1[0].Replace("(", ""));
-                        double temp1Long = Convert.ToDouble(temp1[1].Replace(")", ""));
-
-                        //clear previous point (if any)
-                        resourceGeoInfo.Clear_Points();
-
-                        //add the new point 
-                        resourceGeoInfo.Add_Point(temp1Lat, temp1Long, CurrentItem.METS_Header.ObjectID);
-
-                        //save to database
-                        //resourceGeoInfo.Save_Additional_Info_To_Database(CurrentItem.id, "connectionString", CurrentItem, "Could Not Save Item To Database");
-                        
-                        break;
-                    case "overlay":
-                        //search through existing overlays and modify if match found
-                        if (itemPolygons.Count > 0)
-                        {
-                            foreach (Coordinate_Polygon itemPolygon in itemPolygons)
-                            {
-                                if (itemPolygon.Label == ar[2])
-                                {
-                                    //prep incoming bounds
-                                    string[] temp2 = ar[3].Split(',');
-                                    itemPolygon.Clear_Edge_Points();
-                                    itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                                    itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                                    itemPolygon.Recalculate_Bounding_Box();
-
-                                    //add the rotation
-                                    itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            //create new polygon
-                            Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
-
-                            //add the label
-                            if (ar[2] != "undefined")
-                            {
-                                itemPolygon.Label = ar[2];
-                            }
-                            else
-                            {
-                                itemPolygon.Label = CurrentItem.Bib_Title;
-                            }
-
-
-                            //prep incoming bounds
-                            string[] temp2 = ar[3].Split(',');
-                            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                            itemPolygon.Recalculate_Bounding_Box();
-
-                            //add the rotation
-                            itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
+                            //prep incoming lat/long
+                            string[] temp1 = ar[2].Split(',');
+                            double temp1Lat = Convert.ToDouble(temp1[0].Replace("(", ""));
+                            double temp1Long = Convert.ToDouble(temp1[1].Replace(")", ""));
 
                             //clear previous point (if any)
                             resourceGeoInfo.Clear_Points();
 
-                            //clear previous overlay (if any)
-                            resourceGeoInfo.Clear_User_Polygons_And_Lines();
+                            Coordinate_Point newPoint = new Coordinate_Point(temp1Lat, temp1Long, CurrentItem.METS_Header.ObjectID, "main");
+                            //newPoint.Add_FeatureType("main");
 
-                            //check to see if there is a lower level geo info
-                            if (itemGeoInfo != null)
+                            //add the new point 
+                            resourceGeoInfo.Add_Point(newPoint);
+
+                            //save to database
+                            //resourceGeoInfo.Save_Additional_Info_To_Database(CurrentItem.id, "connectionString", CurrentItem, "Could Not Save Item To Database");
+
+                            break;
+                        case "overlay":
+                            //search through existing overlays and modify if match found
+                            if (itemPolygons.Count > 0)
                             {
-                                //add the polygon to the geo info
-                                itemGeoInfo.Add_Polygon(itemPolygon);
+                                foreach (Coordinate_Polygon itemPolygon in itemPolygons)
+                                {
+                                    if (itemPolygon.Label == ar[2])
+                                    {
+                                        //prep incoming bounds
+                                        string[] temp2 = ar[3].Split(',');
+                                        itemPolygon.Clear_Edge_Points();
+                                        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                        itemPolygon.Recalculate_Bounding_Box();
+
+                                        //add the rotation
+                                        itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
+                                    }
+                                }
                             }
                             else
                             {
-                                //add the polygon to the resource level geo info
-                                resourceGeoInfo.Add_Polygon(itemPolygon);
-                            }
-
-                        }
-
-                        //add current geo
-                        if (itemGeoInfo != null)
-                        {
-                            //add to item
-                            CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
-                        }
-                        else
-                        {
-                            if (resourceGeoInfo != null)
-                            {
-                                //clear previous point (if any) (used if the overlay was converted from single point)
-                                resourceGeoInfo.Clear_Points();
-                                //add to resource
-                                CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
-                            }
-                        }
-
-
-                        break;
-                    case "poi":
-
-                        //assign values
-                        string savedPOIType = ar[2];
-                        string savedPOIDesc = ar[3];
-                        string savedPOIKML = ar[4];
-
-                        //get specific geometry (KML Standard)
-                        switch (ar[2])
-                        {
-                            case "marker":
-
-                                //prep incoming lat/long
-                                string[] temp2 = ar[4].Split(',');
-                                double temp2Lat = Convert.ToDouble(temp2[0].Replace("(", ""));
-                                double temp2Long = Convert.ToDouble(temp2[1].Replace(")", ""));
-
-                                //add the new point 
-                                resourceGeoInfo.Add_POI_Point(temp2Lat, temp2Long, ar[3]);
-
-                                break;
-                            case "circle":
-
-                                //create new circle
-                                Coordinate_Polygon poiCircle = new Coordinate_Polygon();
-
-                                //set the label
-                                poiCircle.Label = ar[3];
-
-                                //set the radius
-                                poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
-
-                                //prep incoming lat/long
-                                string[] temp3 = ar[4].Split(',');
-                                double temp3Lat = Convert.ToDouble(temp3[0].Replace("(", ""));
-                                double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
-
-                                //add the center point
-                                poiCircle.Add_Edge_Point(temp3Lat, temp3Long, "circleCenter");
-
-                                //add to the resource obj
-                                resourceGeoInfo.Add_POI_Circle(poiCircle);
-
-                                break;
-                            case "rectangle":
-
                                 //create new polygon
-                                Coordinate_Polygon poiRectangle = new Coordinate_Polygon();
+                                Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
 
                                 //add the label
-                                poiRectangle.Label = ar[3];
+                                if (ar[2] != "undefined")
+                                {
+                                    itemPolygon.Label = ar[2];
+                                }
+                                else
+                                {
+                                    itemPolygon.Label = CurrentItem.Bib_Title;
+                                }
+
 
                                 //prep incoming bounds
-                                string[] temp4 = ar[4].Split(',');
-                                poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[0].Replace("(", "")), Convert.ToDouble(temp4[1].Replace(")", "")));
-                                poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[2].Replace("(", "")), Convert.ToDouble(temp4[3].Replace(")", "")));
-                                poiRectangle.Recalculate_Bounding_Box();
+                                string[] temp2 = ar[3].Split(',');
+                                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                itemPolygon.Recalculate_Bounding_Box();
 
-                                //add to resource obj
-                                resourceGeoInfo.Add_POI_Polygon(poiRectangle);
+                                //add the rotation
+                                itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
 
-                                break;
-                            case "polygon":
+                                //add the feature type 
+                                itemPolygon.Add_FeatureType("main");
 
-                                //create new polygon
-                                Coordinate_Polygon poiPolygon = new Coordinate_Polygon();
+                                //clear previous point (if any)
+                                resourceGeoInfo.Clear_Points();
 
-                                //add the label
-                                poiPolygon.Label = ar[3];
+                                //clear previous overlay (if any)
+                                resourceGeoInfo.Clear_User_Polygons_And_Lines();
 
-                                //add the edge points
-                                for (int i2 = 5; i2 < ar.Length; i2++)
+                                //check to see if there is a lower level geo info
+                                if (itemGeoInfo != null)
                                 {
-                                    string[] temp5 = ar[i2].Split(',');
-                                    poiPolygon.Add_Edge_Point(Convert.ToDouble(temp5[0].Replace("(", "")), Convert.ToDouble(temp5[1].Replace(")", "")));
+                                    //add the polygon to the geo info
+                                    itemGeoInfo.Add_Polygon(itemPolygon);
+                                }
+                                else
+                                {
+                                    //add the polygon to the resource level geo info
+                                    resourceGeoInfo.Add_Polygon(itemPolygon);
                                 }
 
-                                //add the polygon
-                                resourceGeoInfo.Add_POI_Polygon(poiPolygon);
+                            }
 
-                                break;
-                            case "polyline":
-
-                                //create new line
-                                Coordinate_Line poiLine = new Coordinate_Line();
-
-                                //add the label
-                                poiLine.Label = ar[3];
-
-                                //add the edge points
-                                for (int i2 = 5; i2 < ar.Length; i2++)
+                            //add current geo
+                            if (itemGeoInfo != null)
+                            {
+                                //add to item
+                                CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
+                            }
+                            else
+                            {
+                                if (resourceGeoInfo != null)
                                 {
-                                    Coordinate_Point tempPoint = new Coordinate_Point();
-
-                                    string[] temp5 = ar[i2].Split(',');
-                                    poiLine.Add_Point(Convert.ToDouble(temp5[0].Replace("(", "")), Convert.ToDouble(temp5[1].Replace(")", "")), "");
+                                    //clear previous point (if any) (used if the overlay was converted from single point)
+                                    resourceGeoInfo.Clear_Points();
+                                    //add to resource
+                                    CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
                                 }
+                            }
 
-                                //add the line
-                                resourceGeoInfo.Add_POI_Line(poiLine);
 
-                                break;
-                        }
+                            break;
+                        case "poi":
 
-                        break;
+                            if (firedOnce)
+                            {
+                                //clear previous poi points
+                                resourceGeoInfo.Clear_POIs();
+                                firedOnce = true;
+                            }
+                            
+
+                            //assign values
+                            string savedPOIType = ar[2];
+                            string savedPOIDesc = ar[3];
+                            string savedPOIKML = ar[4];
+
+                            //get specific geometry (KML Standard)
+                            switch (ar[2])
+                            {
+                                case "marker":
+
+                                    //prep incoming lat/long
+                                    string[] temp2 = ar[4].Split(',');
+                                    double temp2Lat = Convert.ToDouble(temp2[0].Replace("(", ""));
+                                    double temp2Long = Convert.ToDouble(temp2[1].Replace(")", ""));
+
+                                    //add the new point 
+                                    resourceGeoInfo.Add_Point(temp2Lat, temp2Long, ar[3], "poi");
+
+                                    break;
+                                case "circle":
+
+                                    //create new circle
+                                    Coordinate_Polygon poiCircle = new Coordinate_Polygon();
+
+                                    //set the label
+                                    poiCircle.Label = ar[3];
+
+                                    //set the radius
+                                    poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
+
+                                    //add the feature type
+                                    poiCircle.Add_FeatureType("poi");
+
+                                    //prep incoming lat/long
+                                    string[] temp3 = ar[4].Split(',');
+                                    double temp3Lat = Convert.ToDouble(temp3[0].Replace("(", ""));
+                                    double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
+
+                                    //add the center point
+                                    poiCircle.Add_Edge_Point(temp3Lat, temp3Long, "circleCenter");
+
+                                    //add to the resource obj
+                                    resourceGeoInfo.Add_POI_Circle(poiCircle);
+
+                                    break;
+                                case "rectangle":
+
+                                    //create new polygon
+                                    Coordinate_Polygon poiRectangle = new Coordinate_Polygon();
+
+                                    //add the label
+                                    poiRectangle.Label = ar[3];
+
+                                    //add the feature type
+                                    poiRectangle.Add_FeatureType("poi");
+
+                                    //prep incoming bounds
+                                    string[] temp4 = ar[4].Split(',');
+                                    poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[0].Replace("(", "")), Convert.ToDouble(temp4[1].Replace(")", "")));
+                                    poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[2].Replace("(", "")), Convert.ToDouble(temp4[3].Replace(")", "")));
+                                    poiRectangle.Recalculate_Bounding_Box();
+
+                                    //add to resource obj
+                                    resourceGeoInfo.Add_POI_Polygon(poiRectangle);
+
+                                    break;
+                                case "polygon":
+
+                                    //create new polygon
+                                    Coordinate_Polygon poiPolygon = new Coordinate_Polygon();
+
+                                    //add the label
+                                    poiPolygon.Label = ar[3];
+
+                                    //add the feature type
+                                    poiPolygon.Add_FeatureType("poi");
+
+                                    //add the edge points
+                                    for (int i2 = 5; i2 < ar.Length; i2++)
+                                    {
+                                        string[] temp5 = ar[i2].Split(',');
+                                        poiPolygon.Add_Edge_Point(Convert.ToDouble(temp5[0].Replace("(", "")), Convert.ToDouble(temp5[1].Replace(")", "")));
+                                    }
+
+                                    //add the polygon
+                                    resourceGeoInfo.Add_POI_Polygon(poiPolygon);
+
+                                    break;
+                                case "polyline":
+
+                                    //create new line
+                                    Coordinate_Line poiLine = new Coordinate_Line();
+
+                                    //add the label
+                                    poiLine.Label = ar[3];
+
+                                    //add the feature type
+                                    poiLine.Add_FeatureType("poi");
+
+                                    //add the edge points
+                                    for (int i2 = 5; i2 < ar.Length; i2++)
+                                    {
+                                        Coordinate_Point tempPoint = new Coordinate_Point();
+
+                                        string[] temp5 = ar[i2].Split(',');
+                                        poiLine.Add_Point(Convert.ToDouble(temp5[0].Replace("(", "")), Convert.ToDouble(temp5[1].Replace(")", "")), "");
+                                    }
+
+                                    //add the line
+                                    resourceGeoInfo.Add_POI_Line(poiLine);
+
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    //skip to the apply
                 }
             }
 
@@ -351,6 +388,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 Directory.CreateDirectory(userInProcessDirectory);
             }
+            string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+            string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
+            string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
 
             //determine what to do from here
             switch (saveTypeHandle)
@@ -358,20 +398,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 case "save":
                     //save the item to the temporary location
                     CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
-                    CurrentItem.Save_SobekCM_METS(); //save the mets
+                    //CurrentItem.Save_SobekCM_METS(); //save the mets
                     break;
                 case "apply":
-                    //in theory, this should only be called after the 'save' thus we do not need to save only apply (but we still save temp here just in case)
-                    //save the item to the temporary location
-                    CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
-                    CurrentItem.Save_SobekCM_METS(); //save the mets
+                    //in theory, this should only be called after the 'save' thus we do not need to save only apply (IE send to live)
+
+                    //move temp mets to prod
+                    File.Copy(metsInProcessFile, current_mets, true);
+                    File.Delete(metsInProcessFile); //delete it
+                    
+                    //save the mets (to live)    
+                    //CurrentItem.Save_SobekCM_METS();
                     //save to db
                     Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
-                    //move temp mets to prod
-                    string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
-                    string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
-                    string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
-                    File.Copy(metsInProcessFile, current_mets, true);
                     break;
                 case "reset":
                     //currently not used
@@ -454,15 +493,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //page content
             mapeditBuilder.AppendLine("<td>");
-
-
-
+            
 
             //used to force doctype html5 and css3
             //mapeditBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
 
             mapeditBuilder.AppendLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
             mapeditBuilder.AppendLine("<input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" />");
+            mapeditBuilder.AppendLine("");
 
             //standard css
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
@@ -476,7 +514,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Layout_Default.css\"/>");
             mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Other.css\"/>");
 
+            mapeditBuilder.AppendLine("");
             mapeditBuilder.AppendLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div>");
+            mapeditBuilder.AppendLine("");
 
             //standard js files
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/jquery-ui-1.10.1.js\"></script>");
@@ -529,6 +569,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 allPoints = new List<Coordinate_Point>();
                 allLines = new List<Coordinate_Line>();
 
+                POI_allPolygons = new List<Coordinate_Polygon>();
+                POI_allPoints = new List<Coordinate_Point>();
+                POI_allLines = new List<Coordinate_Line>();
+
                 // Collect all the polygons, points, and lines
                 GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                 if ((geoInfo != null) && (geoInfo.hasData))
@@ -548,6 +592,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         foreach (Coordinate_Point thisPoint in geoInfo.Points)
                             allPoints.Add(thisPoint);
                     }
+                    //if (geoInfo.POI_Polygon_Count > 0)
+                    //{
+                    //    foreach (Coordinate_Polygon thisPolygon in geoInfo.POI_Polygons)
+                    //        POI_allPolygons.Add(thisPolygon);
+                    //}
+                    //if (geoInfo.POI_Line_Count > 0)
+                    //{
+                    //    foreach (Coordinate_Line thisLine in geoInfo.POI_Lines)
+                    //        POI_allLines.Add(thisLine);
+                    //}
+                    //if (geoInfo.POI_Point_Count > 0)
+                    //{
+                    //    foreach (Coordinate_Point thisPoint in geoInfo.POI_Points)
+                    //        POI_allPoints.Add(thisPoint);
+                    //}
                 }
 
 
@@ -655,6 +714,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         //mapeditBuilder.AppendLine("      globalVar.incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
                         mapeditBuilder.AppendLine("      globalVar.incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
 
+                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayFeatureType[" + it + "] = \"" + itemPolygon.featureType + "\";");
+
                         //iterate
                         it++;
 
@@ -670,7 +731,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //add each point
                     for (int point = 0; point < allPoints.Count; point++)
                     {
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointFeatureType[" + point + "] = \"" + allPoints[point].FeatureType + "\";");
+
                         mapeditBuilder.AppendLine("      globalVar.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
+
                         if (allPoints[point].Label != "")
                         {
                             mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
@@ -714,13 +778,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
+                    //this just preps in case we need to convert to an overlay
                     if (allPoints.Count > 0)
                     {
                         try
                         {
                             //get the image url
-                            List<SobekCM_File_Info> first_page_files =
-                                ((Page_TreeNode) CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode) CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
                             string first_page_jpeg = String.Empty;
                             foreach (SobekCM_File_Info thisFile in first_page_files)
                             {

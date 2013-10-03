@@ -664,6 +664,26 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points.Add(new Coordinate_Point(Latitude, Longitude, Label, Altitude));
         }
 
+        /// <summary> Adds a new coordinate point associated with this digital resource </summary>
+        /// <param name="Latitude"> Latitude (expressed in decimal notation) for this point </param>
+        /// <param name="Longitude"> Longitude (expressed in decimal notation) for this point </param>
+        /// <param name="Label"> Label to associate with this point </param>
+        /// <param name="FeatureType"> Altitude for this point on a 3-dimensional plane (in meters)</param>
+        public void Add_Point(double Latitude, double Longitude, string Label, string FeatureType)
+        {
+            // Only add this point if it does not already exists
+            if (points == null)
+                points = new List<Coordinate_Point>();
+
+            foreach (Coordinate_Point existingPoint in points)
+            {
+                if ((existingPoint.Latitude == Latitude) && (existingPoint.Longitude == Longitude))
+                    return;
+            }
+
+            points.Add(new Coordinate_Point(Latitude, Longitude, Label, FeatureType));
+        }
+
         /// <summary> Pulls one coordinate line from the collection of lines associated with this digital resource </summary>
         /// <param name="index"> Index of the line to retrieve </param>
         /// <returns> The indicated line or NULL </returns>
@@ -722,6 +742,28 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points.Clear();
         }
 
+        /// <summary> Clears all of the individual point of interets information from this digital resource </summary>
+        public void Clear_POIs()
+        {
+            List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
+
+            foreach (var coordinatePoint in points)
+            {
+                if (coordinatePoint.FeatureType == "main")
+                {
+                    tempRestorePoints.Add(coordinatePoint);
+                }
+            }
+
+            points.Clear();
+
+            foreach (var tempRestorePoint in tempRestorePoints)
+            {
+                points.Add(tempRestorePoint);
+            }
+
+        }
+
         /// <summary> Clears all user added polygons and all coordinate lines from this digital resource </summary>
         public void Clear_User_Polygons_And_Lines()
         {
@@ -748,7 +790,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         //add poi point
         public void Add_POI_Point(double Latitude, double Longitude, string Label)
         {
-            points.Add(new Coordinate_Point(Latitude, Longitude, Label));
+            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label, "poi");
+            points.Add(newPoint);
         }
 
         //add line
