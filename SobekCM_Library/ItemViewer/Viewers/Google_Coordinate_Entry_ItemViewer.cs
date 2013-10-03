@@ -123,7 +123,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string[] allSaves = sendData.Substring(0, index1).Split('~');
             //hold save type handle
             string saveTypeHandle = null;
-            bool firedOnce = false; //check to see if save poi clear has already been fired...
+            bool firedOnce = true; //check to see if save poi clear has already been fired...
             
             for (int i = 0; i < allSaves.Length; i++)
             {
@@ -255,7 +255,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 //clear previous poi points
                                 resourceGeoInfo.Clear_POIs();
-                                firedOnce = true;
+                                firedOnce = false;
                             }
                             
 
