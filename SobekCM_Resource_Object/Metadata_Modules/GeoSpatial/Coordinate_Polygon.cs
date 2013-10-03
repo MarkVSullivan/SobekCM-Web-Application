@@ -21,6 +21,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private ushort pageSequence;
         public double polygonRotation;
         public double circleRadius;
+        public string featureType;
 
         /// <summary> Constructor for a new instance of this Coordinate_Polygon class </summary>
         public Coordinate_Polygon()
@@ -30,6 +31,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             polygonRotation = 0;
             pageSequence = 0;
             circleRadius = 0;
+            featureType = "main"; //default
         }
 
         /// <summary> Return the rectangular bounding box, with the first point in the upper left corner 
@@ -311,6 +313,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public void Add_Radius(double radius)
         {
             circleRadius = radius;
+        }
+
+        /// <summary> Add Feature Type Data</summary>
+        public void Add_FeatureType(string incomingFeatureType)
+        {
+            featureType = incomingFeatureType;
         }
 
         /// <summary> Writes this polygon of coordinate points as SobekCM-formatted XML </summary>
