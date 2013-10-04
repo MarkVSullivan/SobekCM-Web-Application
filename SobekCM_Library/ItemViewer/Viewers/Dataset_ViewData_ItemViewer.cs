@@ -21,6 +21,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	{
 		private DataSet itemDataset;
 		private string error_message;
+		private int row;
 
 		/// <summary> Constructor for a new instance of the Dataset_ViewData_ItemViewer class </summary>
 		public Dataset_ViewData_ItemViewer()
@@ -61,6 +62,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 				}
 			}
+
+
+
+			// Check the row data
+			if ((itemDataset != null) && ( itemDataset.Tables.Count > 0 ))
+			{
+				DataTable tbl = itemDataset.Tables[0];
+				if ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2))
+				{
+					tbl = itemDataset.Tables[CurrentMode.SubPage - 2];
+				}
+
+				row = -1;
+				if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["row"]))
+				{
+					if (Int32.TryParse(HttpContext.Current.Request.QueryString["row"], out row))
+					{
+						if ((row < 1) || (row > tbl.Rows.Count))
+						{
+							row = -1;
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary> Gets the type of item viewer this object represents </summary>
@@ -86,6 +111,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
+				// If this is to display a row, restrict width
+				if (row > 0)
+					return 800;
+
+				// We can show the left navigation bar if we aren't showing all the
+				// data within a table so center the result
+				if ((itemDataset == null) || (error_message.Length > 0) ||
+					((itemDataset.Tables.Count > 1) && ((CurrentMode.SubPage < 2) || (CurrentMode.SubPage - 1 > itemDataset.Tables.Count))))
+				{
+					return 800;
+				}
+
+				// Otherwise, suppress the left nav bar and go full screen
 				return -1;
 			}
 		}
@@ -116,10 +154,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				return new List<HtmlSubwriter_Behaviors_Enum> 
+				// If this is to display a single row, no special behaviors
+				if (row > 0)
+					return emptybehaviors;
+
+				// We can show the left navigation bar if we aren't showing all the
+				// data within a table
+				if ((itemDataset == null) || (error_message.Length > 0) ||
+				    ((itemDataset.Tables.Count > 1) && ((CurrentMode.SubPage < 2) || (CurrentMode.SubPage - 1 > itemDataset.Tables.Count))))
+				{
+					return emptybehaviors;
+				}
+
+				// Otherwise, suppress the left nav bar
+				return new List<HtmlSubwriter_Behaviors_Enum>
 					{
 						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
 					};
+
 			}
 		}
 
@@ -133,116 +185,228 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Tracer.Add_Trace("Dataset_ViewData_ItemViewer.Write_Main_Viewer_Section", "");
 			}
 
-			Output.WriteLine("          <td><div id=\"sbkDvd_ViewerTitle\">View Data</div></td>");
-			Output.WriteLine("        </tr>");
-			Output.WriteLine("        <tr>");
-
-
-			// Was there an error getting the dataset?
-			if ((itemDataset == null) || ( error_message.Length > 0 ))
+			// Is this to display a single row?
+			if (row > 0)
 			{
-				Output.WriteLine("          <td id=\"sbkDvd_MainAreaError\">");
-				if (error_message.Length > 0)
+				DataTable tbl = itemDataset.Tables[0];
+				if ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2))
 				{
-					Output.WriteLine("            " + error_message );
+					tbl = itemDataset.Tables[CurrentMode.SubPage - 2];
 				}
-				else
-				{
-					Output.WriteLine("            No XML dataset found in the digital resource");
-				}
+				DataRow thisRow = tbl.Rows[row];
+
+				Output.WriteLine("          <td>");
+				Output.WriteLine("            <div id=\"sbkDvd_ViewerTitle\">View Single Row</div>");
 				Output.WriteLine("          </td>");
-				return;
+				Output.WriteLine("        </tr>");
+				Output.WriteLine("        <tr>");
+				Output.WriteLine("          <td id=\"sbkDvd_MainAreaSingleRow\">");
+
+				// find the back url
+				string url = HttpContext.Current.Request.RawUrl.Replace("row=" + row, "");
+				Output.WriteLine("<a href=\"" + url + "\" title=\"Back to results\">&larr; Back</a><br /><br />");
+
+
+				Output.WriteLine("            <table class=\"sbkDvd_SingleRowTable\">");
+				for (int i = 0; i < tbl.Columns.Count; i++)
+				{
+					Output.WriteLine("              <tr>");
+					Output.WriteLine("                <td class=\"sbkDvd_SingleRowColumn1\">" + tbl.Columns[i].ColumnName.Replace("_", " ") + ":</td>");
+					Output.WriteLine("                <td class=\"sbkDvd_SingleRowColumn2\">" + HttpUtility.HtmlEncode(thisRow[i]) + "</td>");
+					Output.WriteLine("              <tr>");
+				}
+				Output.WriteLine("            </table>");
+
+					Output.WriteLine("          </td>");
+				Output.WriteLine();
+
 			}
-
-			// If only one datatable set the subpage
-			if (itemDataset.Tables.Count == 1)
-				CurrentMode.SubPage = 2;
-
-			// Is the subpage invalid?
-			if ((CurrentMode.SubPage - 1 > itemDataset.Tables.Count) || (CurrentMode.SubPage < 2))
+			else
 			{
-				Output.WriteLine("          <td id=\"sbkDvd_MainAreaError\">");
-				if (error_message.Length > 0)
+
+				Output.WriteLine("          <td>");
+				Output.WriteLine("            <div id=\"sbkDvd_ViewerTitle\">View Data</div>");
+
+				// Look for the search term and such from the current query string
+				string term = String.Empty;
+				string field = String.Empty;
+				string[] possibles = new string[] {"col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20"};
+				foreach (string possibility in possibles)
 				{
-					Output.WriteLine("            " + error_message);
+					if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString[possibility]))
+					{
+						field = possibility;
+						term = HttpContext.Current.Request.QueryString[possibility];
+						break;
+					}
 				}
-				else
+
+				if ((itemDataset.Tables.Count == 1) || ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2)))
 				{
-					Output.WriteLine("            Invalid table requested from dataset");
+					Output.WriteLine("            <div id=\"sbkDvd_SearchDiv\">Filter Results for ");
+					Output.WriteLine("              <input type=\"textbox\" id=\"sbkDvd_SearchBox1\" name=\"bkDvd_SearchBox1\" value=\"" + HttpUtility.HtmlEncode(term) + "\" />");
+					Output.WriteLine("              in");
+					Output.WriteLine("              <select id=\"sbkDvd_Select1\" name=\"bkDvd_Select1\">");
+
+					DataTable tbl = itemDataset.Tables[0];
+					if ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2))
+					{
+						tbl = itemDataset.Tables[CurrentMode.SubPage - 2];
+					}
+					int column_count = 1;
+					foreach (DataColumn thisColumn in tbl.Columns)
+					{
+						Output.Write("                <option value=\"col" + column_count + "\"");
+						if ("col" + column_count == field)
+							Output.Write(" selected=\"selected\"");
+						Output.WriteLine(">" + thisColumn.ColumnName.Replace("_", " ") + "</option>");
+						column_count++;
+					}
+
+					Output.WriteLine("              </select> &nbsp; ");
+					Output.WriteLine("              <button title=\"Filter results\" id=\"sbkDvd_FilterButton\" class=\"sbkIsw_RoundButton\" onclick=\"data_search('" + CurrentMode.Redirect_URL() + "'); return false;\">GO<img src=\"http://ufdc.ufl.edu/default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+
+					Output.WriteLine("            </div");
 				}
+
 				Output.WriteLine("          </td>");
-				return;
+				Output.WriteLine("        </tr>");
+				Output.WriteLine("        <tr>");
+
+
+
+				// Was there an error getting the dataset?
+				if ((itemDataset == null) || (error_message.Length > 0))
+				{
+					Output.WriteLine("          <td id=\"sbkDvd_MainAreaError\">");
+					if (error_message.Length > 0)
+					{
+						Output.WriteLine("            " + error_message);
+					}
+					else
+					{
+						Output.WriteLine("            No XML dataset found in the digital resource");
+					}
+					Output.WriteLine("          </td>");
+					return;
+				}
+
+				// If only one datatable set the subpage
+				if (itemDataset.Tables.Count == 1)
+					CurrentMode.SubPage = 2;
+
+				// Is the subpage invalid?
+				if ((CurrentMode.SubPage - 1 > itemDataset.Tables.Count) || (CurrentMode.SubPage < 2))
+				{
+					Output.WriteLine("          <td id=\"sbkDvd_MainAreaInstructions\">");
+					Output.WriteLine("            <p>This dataset has multiple tables.</p>");
+					Output.WriteLine("            <p>Select a table below to view that data:</p>");
+					Output.WriteLine("            <ul>");
+					int table_number = 2;
+					ushort subpage = CurrentMode.SubPage;
+					foreach (DataTable thisTableList in itemDataset.Tables)
+					{
+						CurrentMode.SubPage = (ushort) table_number;
+						table_number++;
+						Output.WriteLine("              <li><a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View all rows from this table\">" + thisTableList.TableName.Replace("_", " ") + "</a> ( " + thisTableList.Rows.Count + " rows )</li>");
+					}
+					Output.WriteLine("            </ul>");
+
+					CurrentMode.ViewerCode = "dscodebook";
+					CurrentMode.SubPage = 0;
+					Output.WriteLine("            <p>For more information about the structure of this dataset <a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"Vist the codebook\">view the data structure/codebook</a> for this dataset.</p>");
+					CurrentMode.SubPage = subpage;
+					CurrentMode.ViewerCode = "dsview";
+
+					Output.WriteLine("            <br /><br />");
+					Output.WriteLine("          </td>");
+					return;
+				}
+
+				// Get the datatable from the set
+				DataTable thisTable = itemDataset.Tables[CurrentMode.SubPage - 2];
+
+
+				// Start the main area
+				const string INDENT = "          ";
+
+				Output.WriteLine(INDENT + "<td id=\"sbkDvd_MainArea\">");
+
+				Output.WriteLine(INDENT + "  <table id=\"sbkDvd_MainTable\">");
+				Output.WriteLine(INDENT + "    <thead>");
+				Output.WriteLine(INDENT + "      <tr>");
+				Output.WriteLine(INDENT + "        <th>Row</th>");
+
+				List<DataColumn> eachColumn = new List<DataColumn>();
+				foreach (DataColumn thisColumn in thisTable.Columns)
+				{
+					Output.WriteLine(INDENT + "        <th>" + thisColumn.ColumnName.Replace("_", " ") + "</th>");
+					eachColumn.Add(thisColumn);
+				}
+				Output.WriteLine(INDENT + "      </tr>");
+				Output.WriteLine(INDENT + "    </thead>");
+				Output.WriteLine(INDENT + "    <tbody>");
+				Output.WriteLine(INDENT + "      <tr><td colspan=\"" + (eachColumn.Count + 1) + "\" class=\"dataTables_empty\">Loading data from server</td></tr>");
+
+				//// Add all the row data
+				//int row_number = 1;
+				//foreach (DataRow thisRow in thisTable.Rows)
+				//{
+				//	Output.WriteLine(INDENT + "      <tr>");
+				//	Output.WriteLine(INDENT + "        <td>" + row_number + "</td>");
+				//	foreach (DataColumn thisColumn in eachColumn)
+				//	{
+				//		Output.WriteLine(INDENT + "        <td>" + HttpUtility.HtmlEncode(thisRow[thisColumn]) + "</td>");
+				//	}
+				//	Output.WriteLine(INDENT + "      </tr>");
+				//	row_number++;
+				//}
+
+				Output.WriteLine(INDENT + "    </tbody>");
+				Output.WriteLine(INDENT + "  </table>");
+
+				CurrentMode.Writer_Type = Writer_Type_Enum.Data_Provider;
+
+				Output.WriteLine();
+				Output.WriteLine("<script type=\"text/javascript\">");
+				Output.WriteLine("  jQuery(document).ready(function() {");
+				Output.WriteLine("      var oTable = jQuery('#sbkDvd_MainTable').dataTable({");
+				Output.WriteLine("           \"iDisplayLength\": 100,");
+				//  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
+				Output.WriteLine("           \"bFilter\": false,");
+				Output.WriteLine("           \"sDom\": 'ipRr<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+				Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+				Output.WriteLine("           \"bProcessing\": true,");
+
+				Output.WriteLine("           \"bServerSide\": true,");
+				string redirect_url = CurrentMode.Redirect_URL();
+				if ((field.Length > 0) && (term.Length > 0))
+				{
+					if (redirect_url.IndexOf("?") > 0)
+						redirect_url = redirect_url + "&" + field + "=" + term;
+					else
+						redirect_url = redirect_url + "?" + field + "=" + term;
+				}
+				Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
+				Output.Write("           \"aoColumns\": [{ \"bVisible\": false }");
+				for (int i = 0; i < eachColumn.Count; i++)
+					Output.Write(", null");
+				Output.WriteLine("],");
+				Output.WriteLine("           \"bAutoWidth\": false });");
+				Output.WriteLine();
+				Output.WriteLine("    jQuery('#sbkDvd_MainTable tbody').delegate('tr','click', function(ev) {");
+
+				Output.WriteLine("      dataset_rowselected(this);");
+				Output.WriteLine("      ev.preventDefault();");
+				Output.WriteLine("      ev.stopPropagation();");
+				Output.WriteLine("    });");
+				Output.WriteLine("  });");
+				Output.WriteLine("</script>");
+				Output.WriteLine();
+
+				Output.WriteLine(INDENT + "</td>");
+				Output.WriteLine();
 			}
-
-			// Get the datatable from the set
-			DataTable thisTable = itemDataset.Tables[CurrentMode.SubPage - 2];
-				 
-
-			// Start the main area
-			const string INDENT = "          ";
-
-			Output.WriteLine(INDENT + "<td id=\"sbkDvd_MainArea\">");
-
-			Output.WriteLine(INDENT + "  <table id=\"sbkDvd_MainTable\">");
-			Output.WriteLine(INDENT + "    <thead>");
-			Output.WriteLine(INDENT + "      <tr>");
-			Output.WriteLine(INDENT + "        <th>Row</th>");
-
-			List<DataColumn> eachColumn = new List<DataColumn>();
-			foreach (DataColumn thisColumn in thisTable.Columns)
-			{
-				Output.WriteLine(INDENT + "        <th>" + thisColumn.ColumnName.Replace("_"," ") + "</th>");
-				eachColumn.Add(thisColumn);
-			}
-			Output.WriteLine(INDENT + "      </tr>");
-			Output.WriteLine(INDENT + "    </thead>");
-			Output.WriteLine(INDENT + "    <tbody>");
-			Output.WriteLine(INDENT + "      <tr><td colspan=\"" + ( eachColumn.Count + 1 ) + "\" class=\"dataTables_empty\">Loading data from server</td></tr>");
-
-			//// Add all the row data
-			//int row_number = 1;
-			//foreach (DataRow thisRow in thisTable.Rows)
-			//{
-			//	Output.WriteLine(INDENT + "      <tr>");
-			//	Output.WriteLine(INDENT + "        <td>" + row_number + "</td>");
-			//	foreach (DataColumn thisColumn in eachColumn)
-			//	{
-			//		Output.WriteLine(INDENT + "        <td>" + HttpUtility.HtmlEncode(thisRow[thisColumn]) + "</td>");
-			//	}
-			//	Output.WriteLine(INDENT + "      </tr>");
-			//	row_number++;
-			//}
-
-			Output.WriteLine(INDENT + "    </tbody>");
-			Output.WriteLine(INDENT + "  </table>");
-
-			CurrentMode.Writer_Type = Writer_Type_Enum.Data_Provider;
-
-			Output.WriteLine();
-			Output.WriteLine("<script type=\"text/javascript\">");
-			Output.WriteLine("  jQuery(document).ready(function() {");
-			Output.WriteLine("      var oTable = jQuery('#sbkDvd_MainTable').dataTable({");
-			Output.WriteLine("           \"iDisplayLength\": 100,");
-			//  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
-			Output.WriteLine("           \"bFilter\": false,");
-			Output.WriteLine("           \"sDom\": 'ipRr<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
-			Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
-			Output.WriteLine("           \"bProcessing\": true,");
-
-			Output.WriteLine("           \"bServerSide\": true,");
-			Output.WriteLine("           \"sAjaxSource\": \"" + CurrentMode.Redirect_URL() + "\",");
-			Output.Write    ("           \"aoColumns\": [{ \"bVisible\": false }");
-			for (int i = 0; i < eachColumn.Count; i++)
-				Output.Write(", null");
-			Output.WriteLine("],");
-			Output.WriteLine("           \"bAutoWidth\": false });");
-			Output.WriteLine("  } );");
-			Output.WriteLine("</script>");
-			Output.WriteLine();
-
-			Output.WriteLine(INDENT + "</td>");
-			Output.WriteLine();
-
 		}
 
 		/// <summary> Write any additional values within the HTML Head of the final served page </summary>

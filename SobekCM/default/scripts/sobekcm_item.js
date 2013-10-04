@@ -387,3 +387,37 @@ function pdf_set_fullscreen() {
     var new_width = window_width - x - 20;
     $("#sbkPdf_Container").width(new_width);
 }
+
+
+function data_search( root ) {
+	// Collect and trim the users's search string
+	var term = trimString(document.itemNavForm.sbkDvd_SearchBox1.value);
+	var field = document.itemNavForm.sbkDvd_Select1.value;
+
+	if (term.length > 0) {
+
+		// Build the destination url by placing the selection option first
+		var url = root + "?" + field + "=" + term;
+		if (root.indexOf("?") > 0)
+			url = root + "&" + field + "=" + term;
+
+		// Change the the browser location to the new url
+		window.location.href = url;
+	} else {
+		window.location.href = root;
+	}
+}
+
+
+function dataset_rowselected(this_) {
+
+	var aData = $('#sbkDvd_MainTable').dataTable().fnGetData(this_);
+	var key = aData[0];
+
+	var url = window.location.href;
+	var new_url = url + "?row=" + key;
+	if (url.indexOf('?') > 0)
+		new_url = url + "&row=" + key;
+
+	window.location = new_url;
+}

@@ -625,6 +625,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             // Set an initial flag 
             criticalErrorEncountered = false;
+			bool xml_found = false;
 
             string[] all_files = Directory.GetFiles(userInProcessDirectory);
             SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
@@ -682,6 +683,9 @@ namespace SobekCM.Library.MySobekViewer
 			                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
 			                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
 		                        }
+
+		                        if (thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
+			                        xml_found = true;
 	                        }
                         }
                     }
@@ -802,6 +806,14 @@ namespace SobekCM.Library.MySobekViewer
                     Item_To_Complete.Tracking.Born_Digital = true;
                 }
                 Item_To_Complete.Tracking.VID_Source = "SobekCM:" + templateCode;
+
+				// If this is a dataset and XML file was uploaded, add some viewers
+				if ((xml_found) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Dataset))
+				{
+					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_CODEBOOK);
+					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_REPORTS);
+					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_VIEWDATA);
+				}
 
                 // Save to the database
                 try

@@ -83,7 +83,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				return -1;
+				return 800;
 			}
 		}
 
@@ -266,9 +266,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine("<br /><br />");
 				}
 
-				// Add the basic table information
-				Output.WriteLine(INDENT + "<div id=\"sbkDcv_DetailsTableName\">" + thisTable.TableName.Replace("_", " ") + " Table Details</div>");
+				// Add the basic table information (if the word table is in the table name, don't include the 
+				// word table in the title)
+				if ( thisTable.TableName.IndexOf("table",StringComparison.OrdinalIgnoreCase) < 0 )
+					Output.WriteLine(INDENT + "<div id=\"sbkDcv_DetailsTableName\"><span style=\"font-style:italic\">" + thisTable.TableName.Replace("_", " ") + "</span> Table Details</div>");
+				else
+					Output.WriteLine(INDENT + "<div id=\"sbkDcv_DetailsTableName\"><span style=\"font-style:italic\">" + thisTable.TableName.Replace("_", " ") + "</span> Details</div>");
 
+				
 				if (thisTable.ExtendedProperties.ContainsKey("Description"))
 				{
 					Output.WriteLine(INDENT + "<div id=\"sbkDcv_DetailsTableDescription\">" + thisTable.ExtendedProperties["Description"] + "</div>");
@@ -323,7 +328,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					if ((colunmType == "string") && (thisColumn.MaxLength == 1))
 						colunmType = "char";
 					Output.WriteLine(INDENT + "      <td class=\"sbkDcv_TableDetailsColumn3\">" + colunmType + "</td>");
-					Output.WriteLine(INDENT + "      <td class=\"sbkDcv_TableDetailsColumn4\">" + thisColumn.Caption + "</td>");
+					Output.WriteLine(INDENT + "      <td class=\"sbkDcv_TableDetailsColumn4\">" + thisColumn.Caption.Replace("_", " ") + "</td>");
 					Output.WriteLine(INDENT + "    </tr>");
 
 					if (column_definition == "PK")
