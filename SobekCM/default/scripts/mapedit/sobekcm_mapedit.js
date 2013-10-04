@@ -1938,8 +1938,8 @@ function initialize() {
             var contentString = writeHTML("poiDesc", globalVar.poi_i, "", "");
             infoWindow[globalVar.poi_i] = new google.maps.InfoWindow({
                 content: contentString,
-                position: marker.getPosition(),
-                pixelOffset: new google.maps.Size(0, -40)
+                position: marker.getPosition()
+                //pixelOffset: new google.maps.Size(0, -40)
             });
 
             infoWindow[globalVar.poi_i].setMap(map);
@@ -2659,6 +2659,7 @@ function displayIncomingPoints() {
                     });
                     break;
                 case "poi":
+                    de("incoming poi: " + i + " " + globalVar.incomingPointLabel[i]);
                     globalVar.placerType = "poi";
                     var marker = new google.maps.Marker({
                         position: globalVar.incomingPointCenter[i],
@@ -2666,53 +2667,36 @@ function displayIncomingPoints() {
                         draggable: true,
                         title: globalVar.incomingPointLabel[i]
                     });
+                    de("incoming center: " + marker.getPosition());
                     if (globalVar.placerType == "poi") {
                         globalVar.firstSavePOI = true;
                         globalVar.poi_i++;
-
                         label[globalVar.poi_i] = new MarkerWithLabel({
                             position: marker.getPosition(), //position of real marker
                             map: map,
                             zIndex: 2,
-                            labelContent: globalVar.incomingPointLabel[(globalVar.poi_i + 1)],
+                            labelContent: globalVar.incomingPointLabel[(i)],
                             labelAnchor: new google.maps.Point(15, 0),
                             labelClass: "labels", // the CSS class for the label
                             labelStyle: { opacity: 0.75 },
                             icon: {} //initialize to nothing so no marker shows
                         });
-
                         globalVar.poiObj[globalVar.poi_i] = marker;
                         globalVar.poiType[globalVar.poi_i] = "marker";
                         var poiId = globalVar.poi_i + 1;
-                        var poiDescTemp = L_Marker;
-                        document.getElementById("poiList").innerHTML += writeHTML("poiListItem", globalVar.poi_i, poiId, poiDescTemp);
-                        var contentString = writeHTML("poiDesc", globalVar.poi_i, "", "");
+                        var poiDescTemp = globalVar.incomingPointLabel[i];
+                        document.getElementById("poiList").innerHTML += writeHTML("poiListItemIncoming", globalVar.poi_i, poiId, poiDescTemp);
+                        globalVar.poiDesc[globalVar.poi_i] = poiDescTemp;
+                        var contentString = writeHTML("poiDescIncoming", globalVar.poi_i, poiDescTemp,"");
                         infoWindow[globalVar.poi_i] = new google.maps.InfoWindow({
                             content: contentString,
-                            position: marker.getPosition(),
-                            pixelOffset: new google.maps.Size(0, -40)
+                            position: marker.getPosition()
+                            //pixelOffset: new google.maps.Size(0, -40)
                         });
-
                         infoWindow[globalVar.poi_i].setMap(map);
-
                         infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
-
-                        //if (globalVar.poiCount > 0) {
-                        //    infoWindow[globalVar.poi_i].open(map);
-                        //} else {
-                        //    infoWindow[globalVar.poi_i].setMap(map);
-                        //    infoWindow[globalVar.poi_i].setMap(null);
-                        //    de("platform: " + navigator.platform);
-                        //    //if (navigator.platform)
-                        //    var t2 = setTimeout(function () {
-                        //        infoWindow[globalVar.poi_i].setMap(map);
-                        //    }, 1500);
-                        //}
-
                         globalVar.poiCount++;
-
                     }
-
                     google.maps.event.addListener(marker, 'dragstart', function () {
                         if (globalVar.placerType == "poi") {
                             globalVar.firstSavePOI = true;
@@ -2729,9 +2713,9 @@ function displayIncomingPoints() {
                             globalVar.firstSavePOI = true;
                             for (var i = 0; i < globalVar.poiObj.length; i++) {
                                 if (globalVar.poiObj[i] == this) {
-                                    infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                    infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
                                     infoWindow[i].open(null);
-                                    label[i].setPosition(marker.getPosition());
+                                    label[i].setPosition(this.getPosition());
                                     label[i].setMap(map);
                                 }
                             }
@@ -2742,7 +2726,7 @@ function displayIncomingPoints() {
                             globalVar.firstSavePOI = true;
                             for (var i = 0; i < globalVar.poiObj.length; i++) {
                                 if (globalVar.poiObj[i] == this) {
-                                    infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                    infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
                                     infoWindow[i].open(map);
                                 }
                             }
@@ -2761,7 +2745,16 @@ function displayIncomingPoints() {
         });
         //nothing to display because there is no geolocation of item
     }
-
+    //once everything is drawn, determine if there are pois
+    if (globalVar.poiCount > 0) {
+        //close and reopen pois (to fix firefox bug)
+        setTimeout(function () {
+            globalVar.RIBMode = true;
+            toggleVis("pois");
+            toggleVis("pois");
+            globalVar.RIBMode = false;
+        }, 1000);
+    }
 }
 
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
@@ -3667,6 +3660,7 @@ function overlayDeleteMe(id) {
 function poiEditMe(id) {
     globalVar.poiObj[id].setMap(map);
     infoWindow[id].setMap(map);
+    label[id].setMap(map);
     //document.getElementById("overlayListItem" + id).style.backgroundColor = "red"; //not implemented yet
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }
@@ -3720,12 +3714,12 @@ function poiGetDesc(id) {
             var tempHTMLHolder1 = document.getElementById("poiList").innerHTML.replace(globalVar.poiDesc[id], temp);
             document.getElementById("poiList").innerHTML = tempHTMLHolder1;
 
-            de("tempHTMLHolder1: " + tempHTMLHolder1);
+            //de("tempHTMLHolder1: " + tempHTMLHolder1);
             de("globalVar.poiDesc[id].substring(0, 20): " + globalVar.poiDesc[id].substring(0, 20));
             de("temp.substring(0, 20): " + temp.substring(0, 20));
 
-            //now replace the title (order is important)
-            var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace("> " + globalVar.poiDesc[id].substring(0, 20), "> " + temp.substring(0, 20));
+            //now replace the list item (order is important)
+            var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace(">" + globalVar.poiDesc[id].substring(0, 20), ">" + temp.substring(0, 20));
             //now post all this back to the listbox
             document.getElementById("poiList").innerHTML = tempHTMLHolder2;
 
@@ -4200,12 +4194,26 @@ function writeHTML(type, param1, param2, param3) {
     switch (type) {
         case "poiListItem":
             de("Creating html String");
-            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\" New" + param3 + param2 + " \"> New" + param3 + param2 + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            //if (globalVar.incomingPointLabel[param1] == "") {
+            //    globalVar.poiDesc[param1] = "New" + param3 + param2;
+            //} else {
+            //    globalVar.poiDesc[param1] = globalVar.incomingPointLabel[param1];
+            //}
             globalVar.poiDesc[param1] = "New" + param3 + param2;
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + globalVar.poiDesc[param1] + " \">" + globalVar.poiDesc[param1] + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            break;
+        case "poiListItemIncoming":
+            de("Creating html String");
+            globalVar.poiDesc[param1] = param3;
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + param3 + " \">" + param3 + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
             break;
         case "poiDesc":
             de("Creating html String");
             htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
+            break;
+        case "poiDescIncoming":
+            de("Creating html String");
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\">" + param2 + "</textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
             break;
         case "overlayListItem":
             de("Creating html String");
