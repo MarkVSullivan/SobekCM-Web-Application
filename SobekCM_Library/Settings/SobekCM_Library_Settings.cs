@@ -159,9 +159,10 @@ namespace SobekCM.Library.Settings
                 
                 Refresh(SobekCM_Database.Get_Settings_Complete(null));
             }
-            catch (Exception)
+            catch (Exception ee)
             {
                 // Do nothing here
+	            mangoUnionSearchBaseUrl = ee.Message;
             }
         }
 

@@ -263,12 +263,12 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 
 /* DATASET_CODEBOOK_ITEMVIEWER */
 #sbkDcv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
-#sbkDcv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #bbbbbb;margin-left: auto;margin-right: auto; TEXT-ALIGN: center; font-size: 0.9em;padding: 25px; width: 100%;}
+#sbkDcv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #cccccc;margin-left: auto;margin-right: auto; TEXT-ALIGN: center; font-size: 0.9em;padding: 25px; width: 100%;}
 #sbkDcv_MainAreaError { BORDER-WIDTH: 0;COLOR: maroon; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: center; font-size: 1.2em;padding: 25px; margin: 0;}
-#sbkDcv_DetailsArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #bbbbbb;margin-left: auto;margin-right: auto; TEXT-ALIGN: left; font-size: 0.9em;padding: 0 25px 25px 25px; width: 100%;}
+#sbkDcv_DetailsArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #cccccc;margin-left: auto;margin-right: auto; TEXT-ALIGN: left; font-size: 0.9em;padding: 0 25px 25px 25px; width: 100%;}
 .sbkDcv_TableDiv { padding-left: 100px;padding-right: 100px;font-size: 1.3em;padding-bottom: 25px; }
 .sbkDcv_Table { border: 0; border-collapse: collapse; border-spacing: 0; text-align: left; }
-.sbkDcv_TableHeader { height: 25px; border:1px solid #00005C; background-color:#00005C; color:White; font-weight:bold; text-align:center; border-top-left-radius: 10px; border-top-right-radius: 10px;font-size: 1.1em; }
+.sbkDcv_TableHeader { height: 25px; background-color:#00005C; color:White; font-weight:bold; text-align:center; border-top-left-radius: 10px; border-top-right-radius: 10px;font-size: 1.1em; }
 .sbkDcv_TableHeader a:link { color: White;text-decoration: none; }
 .sbkDcv_TableHeader a:visited { color: White;text-decoration: none; }
 .sbkDcv_TableHeader a:hover { color: White;text-decoration: underline; }
@@ -277,7 +277,7 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 .sbkDcv_TableColumn1 { border-left: 1px solid #555555;width:50px;background-color:White;height: 20px; padding-left: 5px; }
 .sbkDcv_TableColumn2 { border-left:1px solid #888888; border-right:1px solid #888888; background-color:White; padding-left: 5px;padding-right: 20px; }
 .sbkDcv_TableColumn3 { font-style:italic; border-right:1px solid #555555;background-color:White;width:100px; padding-left: 5px; }
-.sbkDcv_TableFooter { height: 15px; border:1px solid #00005C; background-color:#00005C; color:White; text-align:center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;font-size: 0.85em; }
+.sbkDcv_TableFooter { height: 15px; background-color:#00005C; color:White; text-align:center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;font-size: 0.85em; }
 .sbkDcv_TableFooter a:link { color: #dddddd;text-decoration: none; }
 .sbkDcv_TableFooter a:visited { color: #dddddd;text-decoration: none; }
 .sbkDcv_TableFooter a:hover { color: #dddddd;text-decoration: underline; }
@@ -291,11 +291,31 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 #sbkDcv_DetailsTableDescription { font-size: 1.2em; padding-left: 60px; padding-bottom: 20px; width: 600px; }
 
 /* DATASET_VIEWDATA_ITEMVIEWER */
-#sbkDvd_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+#sbkDvd_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold;display: inline-block; }
 #sbkDvd_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff;margin-left: auto;margin-right: auto; TEXT-ALIGN: center; font-size: 0.9em;padding: 25px; width: 100%;}
 #sbkDvd_MainAreaError { BORDER-WIDTH: 0;COLOR: maroon; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: center; font-size: 1.2em;padding: 25px; margin: 0;}
+#sbkDvd_MainAreaInstructions { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff;margin-left: auto;margin-right: auto; TEXT-ALIGN: left; font-size: 1.1em;padding: 25px; width: 100%;}
 #sbkDvd_MainTable {border: 1px solid #555555; border-collapse: collapse; border-spacing: 0; text-align: left;width: 100%; }
 #sbkDvd_MainTable th { text-align: left;cursor: pointer;font-weight: bold;font-size: 1.1em;padding-left: 5px;padding-right: 5px;background-color: #f5deb3; }
 #sbkDvd_MainTable td { padding-left: 5px;padding-right: 5px; }
+#sbkDvd_SearchDiv { display: inline-block;padding-left: 300px;}
+#sbkDvd_MainAreaSingleRow { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff;margin-left: auto;margin-right: auto; TEXT-ALIGN: left; font-size: 0.9em;padding: 25px; width: 100%;}
+.sbkDvd_SingleRowTable { font-size: 1.2em; }
+.sbkDvd_SingleRowColumn1 { padding-left: 5px;padding-right: 10px;height: 30px;font-weight: bold;}
+.sbkDvd_SingleRowColumn1 { padding-right: 10px;height: 30px;}
+
+/* DATASET_REPORT_ITEMVIEWER */
+#sbkDrv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff;margin-left: auto;margin-right: auto; TEXT-ALIGN: left; font-size: 0.9em;padding: 0 25px 25px 25px; width: 100%;}
+#sbkDrv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+#sbkDrv_TableSelect { border: 1px solid black; width: 100%; BACKGROUND-COLOR: #cccccc; }
+.sbkDrv_TableDiv {padding: 25px 20px 25px 20px; display: inline-block;vertical-align: top; }
+.sbkDrv_Table { border: 0; border-collapse: collapse; border-spacing: 0; text-align: left; }
+.sbkDrv_TableHeader { height: 20px; background-color:#00005C; border:1px solid #00005C; color:White; font-weight:bold; text-align:center; font-size: 1.1em;padding-left: 10px;padding-right: 10px; }
+.sbkDrv_TableColumn1 {width: 20px; border-left:1px solid #888888;  background-color:White; padding-left: 5px; }
+.sbkDrv_TableColumn2 {  border-right:1px solid #888888; background-color:White;padding-left: 5px;padding-right: 10px; }
+.sbkDrv_TableFooter { height: 2px; background-color:#00005C; border:1px solid #00005C; }
+#sbkDrv_SearchParams { width: 100%; }
+#sbkDrv_OrderParams { width: 100%; }
+#sbkDrv_ButtonDiv {padding-top: 20px;font-size: 1.3em; text-align: center;margin-left: auto;margin-right: auto;}
 
 .fadeEffect { background-color: #6f6b06; border-radius: 5px; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white;  }

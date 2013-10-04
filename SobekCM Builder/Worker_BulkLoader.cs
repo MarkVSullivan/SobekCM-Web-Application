@@ -1629,7 +1629,13 @@ namespace SobekCM.Builder
 
                 if ((!System.Text.RegularExpressions.Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, resourcePackage.BibID + "_" + resourcePackage.VID + ".html", true) != 0))
                 {
-                    resourcePackage.Metadata.Divisions.Download_Tree.Add_File(thisFileInfo.Name);
+					// Some last checks here
+	                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("doc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
+						(thisFileInfo.Name.IndexOf("ufdc_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("agreement.txt", StringComparison.OrdinalIgnoreCase) < 0) &&
+						((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(resourcePackage.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+	                {
+		                resourcePackage.Metadata.Divisions.Download_Tree.Add_File(thisFileInfo.Name);
+	                }
                 }
             }
 

@@ -287,6 +287,15 @@ namespace SobekCM.Resource_Object.Database
 						}
 						break;
 
+					case View_Enum.JPEG_TEXT_TWO_UP:
+						if (!view_type_ids.Contains(14))
+						{
+							view_type_ids.Add(14);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
 					case View_Enum.JPEG2000:
 						if (!view_type_ids.Contains(2))
 						{
@@ -311,43 +320,28 @@ namespace SobekCM.Resource_Object.Database
 			{
 				switch (thisView.View_Type)
 				{
-					case View_Enum.RELATED_IMAGES:
-						view_type_ids.Add(8);
-						view_labels.Add(String.Empty);
-						view_attributes.Add(String.Empty);
-						break;
-
-					case View_Enum.JPEG:
-						if (!view_type_ids.Contains(1))
+					case View_Enum.DATASET_CODEBOOK:
+						if (!view_type_ids.Contains(11))
 						{
-							view_type_ids.Add(1);
+							view_type_ids.Add(11);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
 						break;
 
-					case View_Enum.JPEG2000:
-						if (!view_type_ids.Contains(2))
+					case View_Enum.DATASET_REPORTS:
+						if (!view_type_ids.Contains(12))
 						{
-							view_type_ids.Add(2);
+							view_type_ids.Add(12);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
 						break;
 
-					case View_Enum.TEXT:
-						if (!view_type_ids.Contains(3))
+					case View_Enum.DATASET_VIEWDATA:
+						if (!view_type_ids.Contains(13))
 						{
-							view_type_ids.Add(3);
-							view_labels.Add(String.Empty);
-							view_attributes.Add(String.Empty);
-						}
-						break;
-
-					case View_Enum.PAGE_TURNER:
-						if (!view_type_ids.Contains(4))
-						{
-							view_type_ids.Add(4);
+							view_type_ids.Add(13);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
@@ -366,6 +360,63 @@ namespace SobekCM.Resource_Object.Database
 						view_type_ids.Add(6);
 						view_labels.Add(thisView.Label);
 						view_attributes.Add(thisView.Attributes);
+						break;
+
+					case View_Enum.JPEG:
+						if (!view_type_ids.Contains(1))
+						{
+							view_type_ids.Add(1);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.JPEG_TEXT_TWO_UP:
+						if (!view_type_ids.Contains(14))
+						{
+							view_type_ids.Add(14);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.JPEG2000:
+						if (!view_type_ids.Contains(2))
+						{
+							view_type_ids.Add(2);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.PAGE_TURNER:
+						if (!view_type_ids.Contains(4))
+						{
+							view_type_ids.Add(4);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.RELATED_IMAGES:
+						view_type_ids.Add(8);
+						view_labels.Add(String.Empty);
+						view_attributes.Add(String.Empty);
+						break;
+
+					case View_Enum.TEI:
+						view_type_ids.Add(10);
+						view_labels.Add(String.Empty);
+						view_attributes.Add(String.Empty);
+						break;
+
+					case View_Enum.TEXT:
+						if (!view_type_ids.Contains(3))
+						{
+							view_type_ids.Add(3);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
 						break;
 
 					case View_Enum.TOC:
