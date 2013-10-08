@@ -111,6 +111,9 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.TRACKING:
                     return new string[] {"milestones", "tracking", "directory", "media", "archive"};
 
+                case View_Enum.TRACKING_SHEET:
+                    return new string[]{"ts"};
+
                 case View_Enum.DOWNLOADS:
                     return new string[] {"downloads"};
 

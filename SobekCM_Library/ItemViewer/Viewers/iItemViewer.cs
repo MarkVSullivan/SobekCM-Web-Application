@@ -129,6 +129,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Displays the tracking information for a single digital resource </summary>
         Tracking,
 
+        /// <summary>Displays the tracking information for a single item (Bib/VID) </summary>
+        Tracking_Sheet,
+
         /// <summary> Displays a you tube video embedded within the digital resource  </summary>
         YouTube_Video
     }

@@ -183,6 +183,10 @@ namespace SobekCM.Library.ItemViewer
                     // DO nothing in this case.. do not write any tab
                     break;
 
+                case View_Enum.TRACKING_SHEET:
+                    //DO nothing in this case.. do not write any tab
+                    break;
+
                 case View_Enum.QUALITY_CONTROL:
                     // DO nothing in this case.. do not write any tab
                     break;

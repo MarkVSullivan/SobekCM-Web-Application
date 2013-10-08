@@ -90,6 +90,9 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Displays the tracking information for a single digital resource </summary>
         TRACKING,
 
+        /// <summary>Displays the tracking sheet for the object being digitized</summary>
+        TRACKING_SHEET,
+
         /// <summary> Displays a you tube video embedded within the digital resource </summary>
         YOUTUBE_VIDEO,
 
