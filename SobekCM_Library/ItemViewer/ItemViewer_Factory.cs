@@ -36,6 +36,24 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.DOWNLOADS:
                     return new Download_ItemViewer();
 
+				case View_Enum.DATASET_CODEBOOK:
+					return new Dataset_CodeBook_ItemViewer();
+
+				case View_Enum.DATASET_REPORTS:
+					return new Dataset_Reports_ItemViewer();
+
+				case View_Enum.DATASET_VIEWDATA:
+					return new Dataset_ViewData_ItemViewer();
+
+				case View_Enum.EAD_DESCRIPTION:
+					return new EAD_Description_ItemViewer();
+
+				case View_Enum.EAD_CONTAINER_LIST:
+					return new EAD_Container_List_ItemViewer();
+
+				case View_Enum.EMBEDDED_VIDEO:
+					return new EmbeddedVideo_ItemViewer();
+
                 case View_Enum.FEATURES:
                     return new Feature_ItemViewer();
 
@@ -56,6 +74,11 @@ namespace SobekCM.Library.ItemViewer
                     jpegViewer.FileName = viewObject.FileName;
                     return jpegViewer;
 
+				case View_Enum.JPEG_TEXT_TWO_UP:
+		            abstractItemViewer jpegTextViewer = new JPEG_Text_Two_Up_ItemViewer(viewObject.Attributes);
+					jpegTextViewer.FileName = viewObject.FileName;
+					return jpegTextViewer;
+
                 case View_Enum.JPEG2000:
 					//if (((Current_Object.BibID == "UF00074227") && (Current_Object.VID == "00004")) || (Current_Object.BibID == "UF00080481"))
 					//{
@@ -71,8 +94,14 @@ namespace SobekCM.Library.ItemViewer
                     //}
                     //break;
 
+				case View_Enum.PAGE_TURNER:
+						return new GnuBooks_PageTurner_ItemViewer();
 
- 
+				case View_Enum.PDF:
+						return new PDF_ItemViewer(viewObject.FileName);
+
+				case View_Enum.QUALITY_CONTROL:
+						return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);
 
                 case View_Enum.RELATED_IMAGES:
                     return new Related_Images_ItemViewer();
@@ -83,6 +112,9 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.STREETS:
                     return new Street_ItemViewer();
 
+				case View_Enum.TEST:
+					return new Test_ItemViewer();
+
                 case View_Enum.TEXT:
                     abstractItemViewer textViewer = new Text_ItemViewer();
                     textViewer.FileName = viewObject.FileName;
@@ -91,35 +123,13 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.TOC:
                     return new TOC_ItemViewer();
 
-                case View_Enum.PDF:
-                    return new PDF_ItemViewer(viewObject.FileName);
-
-                case View_Enum.EAD_DESCRIPTION:
-                    return new EAD_Description_ItemViewer();
-
-                case View_Enum.EAD_CONTAINER_LIST:
-                    return new EAD_Container_List_ItemViewer();
-
-                case View_Enum.PAGE_TURNER:
-                    return new GnuBooks_PageTurner_ItemViewer();
-
-                case View_Enum.YOUTUBE_VIDEO:
-                    return new YouTube_Embedded_Video_ItemViewer();
-
-                case View_Enum.EMBEDDED_VIDEO:
-                    return new EmbeddedVideo_ItemViewer();
-
-                case View_Enum.TRACKING:
-                    return new Tracking_ItemViewer();
+				case View_Enum.TRACKING:
+					return new Tracking_ItemViewer();
 
                 case View_Enum.TRACKING_SHEET:
                     return new TrackingSheet_ItemViewer(Current_Object, Current_User, Current_Mode);
 
-                case View_Enum.QUALITY_CONTROL:
-                    return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);
 
-                case View_Enum.TEST:
-                    return new Test_ItemViewer();
             }
 
             return null;

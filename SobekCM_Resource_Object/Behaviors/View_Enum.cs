@@ -16,6 +16,15 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Downloads viewer shows the list of possible downloads for a digital resource </summary>
         DOWNLOADS,
 
+		/// <summary> Dataset viewer is used to dispay codebook information present in the XSD accompanying a XML dataset </summary>
+		DATASET_CODEBOOK,
+
+		/// <summary> Dataset viewer is used to view saved reports or create new custom reports </summary>
+		DATASET_REPORTS,
+
+		/// <summary> Dataset viewer shows the paged data from the dataset and allows simple searching/filtering </summary>
+		DATASET_VIEWDATA,
+
         /// <summary> Container list viewer for an EAD/Finding guide item with a container list </summary>
         EAD_CONTAINER_LIST,
 
@@ -43,6 +52,10 @@ namespace SobekCM.Resource_Object.Behaviors
 
         /// <summary> Static JPEG page viewer </summary>
         JPEG,
+
+		/// <summary> Viewer is used to view the jpeg image and view (and possibly edit) the 
+		/// full text derived from that page image </summary>
+		JPEG_TEXT_TWO_UP,
 
         /// <summary> Zoomable JPEG2000 page viewer </summary>
         JPEG2000,
@@ -96,6 +109,7 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Displays a you tube video embedded within the digital resource </summary>
         YOUTUBE_VIDEO,
 
+		/// <summary> Generic embedded video displayer is used for displaying any streaming video in an iFrame </summary>
         EMBEDDED_VIDEO
     }
 }
