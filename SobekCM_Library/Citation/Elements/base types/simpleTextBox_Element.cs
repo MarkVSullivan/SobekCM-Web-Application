@@ -309,28 +309,28 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the default value from a <i>value</i> subelement and the <i>label</i> subelement, which is used in several of the classes that extend this one </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
-            while (xmlReader.Read())
+            while (XMLReader.Read())
             {
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "value"))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "value"))
                 {
-                    xmlReader.Read();
-                    default_values.Add(xmlReader.Value.Trim());
+                    XMLReader.Read();
+                    default_values.Add(XMLReader.Value.Trim());
                 }
 
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "label"))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "label"))
                 {
-                    xmlReader.Read();
-                    label_from_template_file = xmlReader.Value.Trim();
+                    XMLReader.Read();
+                    label_from_template_file = XMLReader.Value.Trim();
                 }
 
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "fixed_type"))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "fixed_type"))
                 {
-                    xmlReader.Read();
-                    fixed_type_from_template_file = xmlReader.Value.Trim();
+                    XMLReader.Read();
+                    fixed_type_from_template_file = XMLReader.Value.Trim();
                 }
             }
         }

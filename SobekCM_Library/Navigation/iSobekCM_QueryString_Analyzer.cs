@@ -15,7 +15,7 @@ namespace SobekCM.Library.Navigation
 	{
 		/// <summary> Parse the query and set the internal variables </summary>
 		/// <param name="QueryString"> QueryString collection passed from the main page </param>
-		/// <param name="navigator"> Navigation object to hold the mode information </param>
+		/// <param name="Navigator"> Navigation object to hold the mode information </param>
         /// <param name="Requested_URL">Requested URL</param>
         /// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
         /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
@@ -24,7 +24,7 @@ namespace SobekCM.Library.Navigation
         /// <param name="URL_Portals"> List of all web portals into this system </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		void Parse_Query( NameValueCollection QueryString, 
-            SobekCM_Navigation_Object navigator, 
+            SobekCM_Navigation_Object Navigator, 
             string Requested_URL,
             string[] User_Languages,
             Aggregation_Code_Manager Code_Manager,

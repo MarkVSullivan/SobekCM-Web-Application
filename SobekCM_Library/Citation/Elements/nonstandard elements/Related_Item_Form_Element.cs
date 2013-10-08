@@ -35,14 +35,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -97,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
                     // Add this related item links
                     if ((thisItem.hasMainTitle) && (thisItem.Main_Title.Title.Length > 0))
                     {
-                        Output.Write("\n        <a title=\"Click to edit this related item\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_item_term_" + item_index + "')\" onblur=\"link_blurred2('form_related_item_term_" + item_index + "')\" onkeypress=\"return popup_keypress_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620 );\"><div class=\"form_linkline form_related_item_line\" id=\"form_related_item_term_" + item_index + "\">");
+                        Output.Write("\n        <a title=\"Click to edit this related item\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_item_term_" + item_index + "')\" onblur=\"link_blurred2('form_related_item_term_" + item_index + "')\" onkeypress=\"return popup_keypress_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620 );\"><div class=\"form_linkline form_related_item_line\" id=\"form_related_item_term_" + item_index + "\">");
 
                         if (thisItem.URL_Display_Label.Length > 0)
                         {
@@ -133,7 +133,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
                     else
                     {
-                        Output.Write("\n        <a title=\"Click to edit this related item\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_item_term_" + item_index + "')\" onblur=\"link_blurred2('form_related_item_term_" + item_index + "')\" onkeypress=\"return popup_keypress_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620 );\"><div class=\"form_linkline_empty form_related_item_line\" id=\"form_related_item_term_" + item_index + "\">");
+                        Output.Write("\n        <a title=\"Click to edit this related item\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_item_term_" + item_index + "')\" onblur=\"link_blurred2('form_related_item_term_" + item_index + "')\" onkeypress=\"return popup_keypress_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_item_" + item_index + "', 'form_related_item_term_" + item_index + "', 'form_relateditem_title_" + item_index + "', 375, 620 );\"><div class=\"form_linkline_empty form_related_item_line\" id=\"form_related_item_term_" + item_index + "\">");
 
                         Output.Write("<i>Empty Related Item</i>");
                     }
@@ -141,41 +141,41 @@ namespace SobekCM.Library.Citation.Elements
                     Output.Write("</div></a>");
 
                     // Add the popup form
-                    popup_form_builder.AppendLine("<!-- Related Item Form " + item_index + " -->");
-                    popup_form_builder.AppendLine("<div class=\"related_item_popup_div\" id=\"form_related_item_" + item_index + "\" style=\"display:none;\">");
-                    popup_form_builder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT RELATED ITEM</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_item_form('form_related_item_" + item_index + "')\">X</a> &nbsp; </td></tr></table></div>");
-                    popup_form_builder.AppendLine("  <br />");
-                    popup_form_builder.AppendLine("  <table class=\"popup_table\">");
+                    PopupFormBuilder.AppendLine("<!-- Related Item Form " + item_index + " -->");
+                    PopupFormBuilder.AppendLine("<div class=\"related_item_popup_div\" id=\"form_related_item_" + item_index + "\" style=\"display:none;\">");
+                    PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT RELATED ITEM</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_item_form('form_related_item_" + item_index + "')\">X</a> &nbsp; </td></tr></table></div>");
+                    PopupFormBuilder.AppendLine("  <br />");
+                    PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
 
                     // Add the relation and display label
-                    popup_form_builder.Append("    <tr><td width=\"90px\">Relation:</td><td><select class=\"form_relateditem_select\" name=\"form_relateditem_relation_" + item_index + "\" id=\"form_relateditem_relation_" + item_index + "\" >");
-                    popup_form_builder.Append(thisItem.Relationship == Related_Item_Type_Enum.UNKNOWN
+                    PopupFormBuilder.Append("    <tr><td width=\"90px\">Relation:</td><td><select class=\"form_relateditem_select\" name=\"form_relateditem_relation_" + item_index + "\" id=\"form_relateditem_relation_" + item_index + "\" >");
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.UNKNOWN
                                                   ? "<option value=\"\" selected=\"selected\" >&nbsp;</option>"
                                                   : "<option value=\"\">&nbsp;</option>");
 
-                    popup_form_builder.Append(thisItem.Relationship == Related_Item_Type_Enum.host
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.host
                                                   ? "<option value=\"host\" selected=\"selected\" >Host</option>"
                                                   : "<option value=\"host\">Host</option>");
 
-                    popup_form_builder.Append(thisItem.Relationship == Related_Item_Type_Enum.otherFormat
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.otherFormat
                                                   ? "<option value=\"other_format\" selected=\"selected\" >Other Format</option>"
                                                   : "<option value=\"other_format\">Other Format</option>");
 
-                    popup_form_builder.Append(thisItem.Relationship == Related_Item_Type_Enum.otherVersion
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.otherVersion
                                                   ? "<option value=\"other_version\" selected=\"selected\" >Other Version</option>"
                                                   : "<option value=\"other_version\">Other Version</option>");
 
-                    popup_form_builder.Append(thisItem.Relationship == Related_Item_Type_Enum.preceding
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.preceding
                                                   ? "<option value=\"preceding\" selected=\"selected\" >Preceding</option>"
                                                   : "<option value=\"preceding\">Preceding</option>");
 
-                    popup_form_builder.Append(thisItem.Relationship == Related_Item_Type_Enum.succeeding
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.succeeding
                                                   ? "<option value=\"succeeding\" selected=\"selected\" >Succeeding</option>"
                                                   : "<option value=\"succeeding\">Succeeding</option>");
 
-                    popup_form_builder.Append("</select></td>");
-                    popup_form_builder.AppendLine("      <td width=\"255px\">Display Label: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_display_" + item_index + "\" id=\"form_relateditem_display_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL_Display_Label) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_display_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_display_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
-                    popup_form_builder.AppendLine("    </tr>");
+                    PopupFormBuilder.Append("</select></td>");
+                    PopupFormBuilder.AppendLine("      <td width=\"255px\">Display Label: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_display_" + item_index + "\" id=\"form_relateditem_display_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL_Display_Label) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_display_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_display_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
+                    PopupFormBuilder.AppendLine("    </tr>");
 
                     string issn = String.Empty;
                     string oclc = String.Empty;
@@ -206,23 +206,23 @@ namespace SobekCM.Library.Citation.Elements
                     if (thisItem.hasMainTitle)
                         related_title = thisItem.Main_Title.Title;
 
-                    popup_form_builder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input\" name=\"form_relateditem_title_" + item_index + "\" id=\"form_relateditem_title_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(related_title) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_title_" + item_index + "', 'form_relateditem_large_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_title_" + item_index + "', 'form_relateditem_large_input')\" /></td></tr>");
-                    popup_form_builder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_url_" + item_index + "', 'form_relateditem_large_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_url_" + item_index + "', 'form_relateditem_large_input')\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input\" name=\"form_relateditem_title_" + item_index + "\" id=\"form_relateditem_title_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(related_title) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_title_" + item_index + "', 'form_relateditem_large_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_title_" + item_index + "', 'form_relateditem_large_input')\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_url_" + item_index + "', 'form_relateditem_large_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_url_" + item_index + "', 'form_relateditem_large_input')\" /></td></tr>");
 
                     // Add the system ID and ISSN row
-                    popup_form_builder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
-                    popup_form_builder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(issn) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_issn_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_issn_" + item_index + "', 'form_relateditem_medium_input')\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_sobekid_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
+                    PopupFormBuilder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(issn) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_issn_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_issn_" + item_index + "', 'form_relateditem_medium_input')\" /></td></tr>");
 
                     // Add the OCLC and LCCN row
-                    popup_form_builder.AppendLine("    <tr><td>OCLC:</td><td><input class=\"form_relateditem_medium_input\" name=\"form_relateditem_oclc_" + item_index + "\" id=\"form_relateditem_oclc_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(oclc) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_oclc_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_oclc_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
-                    popup_form_builder.AppendLine("        <td>LCCN: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_lccn_" + item_index + "\" id=\"form_relateditem_lccn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(lccn) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_lccn_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_lccn_" + item_index + "', 'form_relateditem_medium_input')\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>OCLC:</td><td><input class=\"form_relateditem_medium_input\" name=\"form_relateditem_oclc_" + item_index + "\" id=\"form_relateditem_oclc_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(oclc) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_oclc_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_oclc_" + item_index + "', 'form_relateditem_medium_input')\" /></td>");
+                    PopupFormBuilder.AppendLine("        <td>LCCN: &nbsp; <input class=\"form_relateditem_medium_input\" name=\"form_relateditem_lccn_" + item_index + "\" id=\"form_relateditem_lccn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(lccn) + "\" onfocus=\"javascript:textbox_enter('form_relateditem_lccn_" + item_index + "', 'form_relateditem_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_relateditem_lccn_" + item_index + "', 'form_relateditem_medium_input')\" /></td></tr>");
 
                     // Close out this form
-                    popup_form_builder.AppendLine("  </table>");
-                    popup_form_builder.AppendLine("  <br />");
-                    popup_form_builder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_related_item_form('form_related_item_" + item_index + "');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-                    popup_form_builder.AppendLine("</div>");
-                    popup_form_builder.AppendLine();
+                    PopupFormBuilder.AppendLine("  </table>");
+                    PopupFormBuilder.AppendLine("  <br />");
+                    PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_related_item_form('form_related_item_" + item_index + "');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+                    PopupFormBuilder.AppendLine("</div>");
+                    PopupFormBuilder.AppendLine();
 
                     item_index++;
                 }
@@ -326,9 +326,9 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             // Do nothing
         }

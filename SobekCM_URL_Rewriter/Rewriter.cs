@@ -150,7 +150,7 @@ namespace SobekCM.URL_Rewriter
                 string current_querystring = HttpContext.Current.Request.QueryString.ToString();
                 if (appRelative.Length > 0)
                 {
-                    if ((appRelative.IndexOf("dataset/") == 0) || (appRelative.IndexOf("xml/") == 0) || (appRelative.IndexOf("json/") == 0))
+					if ((appRelative.IndexOf("dataset/") == 0) || (appRelative.IndexOf("xml/") == 0) || (appRelative.IndexOf("json/") == 0) || (appRelative.IndexOf("dataprovider/") == 0))
                     {
                         if (current_querystring.Length > 0)
                         {

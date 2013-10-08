@@ -34,7 +34,7 @@ namespace SobekCM.Library.Citation.Elements
 			// do nothing
 		}
 
-		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, Users.User_Object Current_User, Configuration.Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
+		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, Users.User_Object Current_User, Configuration.Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
 		{
 			Output.WriteLine("  <!-- Literal Element -->");
 			Output.WriteLine("  <tr align=\"left\">");
@@ -43,14 +43,14 @@ namespace SobekCM.Library.Citation.Elements
 			Output.WriteLine("  </tr>");
 		}
 
-		protected override void Inner_Read_Data(System.Xml.XmlTextReader xmlReader)
+		protected override void Inner_Read_Data(System.Xml.XmlTextReader XMLReader)
 		{
-			while (xmlReader.Read())
+			while (XMLReader.Read())
 			{
-				if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "value"))
+				if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "value"))
 				{
-					xmlReader.Read();
-					html_text = xmlReader.Value.Trim();
+					XMLReader.Read();
+					html_text = XMLReader.Value.Trim();
 				}
 			}
 		}

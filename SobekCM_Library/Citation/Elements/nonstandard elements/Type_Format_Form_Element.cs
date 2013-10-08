@@ -53,14 +53,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -192,7 +192,7 @@ namespace SobekCM.Library.Citation.Elements
             bool indexPresent = false;
             bool conferencePublication = false;
             string targetAudience1 = String.Empty;
- string frequency1 = String.Empty;
+			string frequency1 = String.Empty;
             string frequency2 = String.Empty;
             string regularity1 = String.Empty;
             string regularity2 = String.Empty;
@@ -210,6 +210,7 @@ namespace SobekCM.Library.Citation.Elements
             string scale = String.Empty;
             string place_code = String.Empty;
             string language_code = String.Empty;
+			string computerfileform = String.Empty;
 
             // Determine which form will be used and set several values
             Type_Format_Type_Enum formType = Type_Format_Type_Enum.None;
@@ -249,6 +250,13 @@ namespace SobekCM.Library.Citation.Elements
                     form_title = "EDIT MAP MATERIALS DETAILS";
                     windowheight = 430;
                     break;
+
+				case "DATASET":
+					formType = Type_Format_Type_Enum.Computer_Files;
+					class_name = "typeformat_computer_popup_div";
+					form_title = "EDIT COMPUTER FILE DETAILS";
+					windowheight = 430;
+					break;
 
             }
 
@@ -323,6 +331,23 @@ namespace SobekCM.Library.Citation.Elements
                                                       "poetry",
                                                       "short story",
                                                       "speech"
+                                                  };
+
+			// Get list of literary forms
+			List<string> computer_file_form_list = new List<string>(12)
+                                                  {
+                                                      "numeric data",
+                                                      "computer program",
+                                                      "representational",
+                                                      "document",
+                                                      "bibliographic data",
+                                                      "font",
+                                                      "game",
+                                                      "sound",
+                                                      "interactive multimedia",
+                                                      "online system or service",
+                                                      "combination",
+													  "other computer file"
                                                   };
 
             // Get list of biography type information
@@ -509,6 +534,12 @@ namespace SobekCM.Library.Citation.Elements
                                 subtype = genre_term_lower;
                         }
 
+						if (formType == Type_Format_Type_Enum.Computer_Files)
+						{
+							if (computer_file_form_list.Contains(genre_term_lower))
+								computerfileform = genre_term_lower;
+						}
+
                         if (nature_contents_list.Contains(genre_term_lower))
                         {
                             switch (nature_index)
@@ -608,7 +639,7 @@ namespace SobekCM.Library.Citation.Elements
             if (additional_info.Length > 60)
                 additional_info = additional_info.Substring(0, 60) + "...";
             Output.WriteLine("        &nbsp; &nbsp; ");
-            Output.WriteLine("              <a title=\"Click to edit the material details\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_typeformat_term')\" onblur=\"link_blurred2('form_typeformat_term')\" onkeypress=\"return popup_keypress_focus('form_typeformat', 'form_typeformat_term', 'form_typeformat_extent', " + windowheight + ", 675, '" + isMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_typeformat', 'form_typeformat_term', 'form_typeformat_extent', " + windowheight + ", 675 );\"><span class=\"" + style + " form_typeformat_line\" id=\"form_typeformat_term\">" + additional_info + "</span></a>");
+            Output.WriteLine("              <a title=\"Click to edit the material details\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_typeformat_term')\" onblur=\"link_blurred2('form_typeformat_term')\" onkeypress=\"return popup_keypress_focus('form_typeformat', 'form_typeformat_term', 'form_typeformat_extent', " + windowheight + ", 675, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_typeformat', 'form_typeformat_term', 'form_typeformat_extent', " + windowheight + ", 675 );\"><span class=\"" + style + " form_typeformat_line\" id=\"form_typeformat_term\">" + additional_info + "</span></a>");
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
             Output.WriteLine("          <td valign=\"bottom\" >");
@@ -625,35 +656,35 @@ namespace SobekCM.Library.Citation.Elements
             #region Create the pop-up form for the All Materials section
 
             // Add the popup form
-            popup_form_builder.AppendLine("<!-- Type Format Form -->");
-            popup_form_builder.AppendLine("<div class=\"" + class_name + "\" id=\"form_typeformat\" style=\"display:none;\">");
-            popup_form_builder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">" + form_title + "</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_typeformat_form()\">X</a> &nbsp; </td></tr></table></div>");
-            popup_form_builder.AppendLine("  <br />");
-            popup_form_builder.AppendLine("  <table class=\"popup_table\">");
+            PopupFormBuilder.AppendLine("<!-- Type Format Form -->");
+            PopupFormBuilder.AppendLine("<div class=\"" + class_name + "\" id=\"form_typeformat\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">" + form_title + "</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_typeformat_form()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("  <br />");
+            PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
 
             // Add the all materials title
-            popup_form_builder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle_first\" >All Materials</td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle_first\" >All Materials</td></tr>");
 
             // Add the extent information
-            popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Physical Desc:</td><td colspan=\"2\">");
-            popup_form_builder.Append("<input class=\"formtype_large_input\" name=\"form_typeformat_extent\" id=\"form_typeformat_extent\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_extent', 'formtype_large_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_extent', 'formtype_large_input')\" />");
-            popup_form_builder.AppendLine("</td></tr>");
+            PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Physical Desc:</td><td colspan=\"2\">");
+            PopupFormBuilder.Append("<input class=\"formtype_large_input\" name=\"form_typeformat_extent\" id=\"form_typeformat_extent\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_extent', 'formtype_large_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_extent', 'formtype_large_input')\" />");
+            PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the date range info
-            popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Year Range:</td><td colspan=\"2\">");
-            popup_form_builder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_datestart', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_datestart', 'formtype_small_input')\" />");
-            popup_form_builder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_dateend', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_dateend', 'formtype_small_input')\" />");
-            popup_form_builder.AppendLine("</td></tr>");
+            PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Year Range:</td><td colspan=\"2\">");
+            PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_datestart', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_datestart', 'formtype_small_input')\" />");
+            PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_dateend', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_dateend', 'formtype_small_input')\" />");
+            PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the place code info
-            popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Place Code:</td><td colspan=\"2\">");
-            popup_form_builder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(place_code) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_placecode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_placecode', 'formtype_small_input')\" />");
-            popup_form_builder.AppendLine("</td></tr>");
+            PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Place Code:</td><td colspan=\"2\">");
+            PopupFormBuilder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(place_code) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_placecode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_placecode', 'formtype_small_input')\" />");
+            PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the language code info
-            popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Language Code:</td><td colspan=\"2\">");
-            popup_form_builder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(language_code) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_langcode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_langcode', 'formtype_small_input')\" />");
-            popup_form_builder.AppendLine("</td></tr>");
+            PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Language Code:</td><td colspan=\"2\">");
+            PopupFormBuilder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(language_code) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_langcode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_langcode', 'formtype_small_input')\" />");
+            PopupFormBuilder.AppendLine("</td></tr>");
 
             #endregion
 
@@ -662,197 +693,197 @@ namespace SobekCM.Library.Citation.Elements
             if (formType ==  Type_Format_Type_Enum.Book)
             {
                 // Add the book details title
-                popup_form_builder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Book Details</td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Book Details</td></tr>");
 
                 // Add the target audience
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
-                popup_form_builder.Append(targetAudience1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
+                PopupFormBuilder.Append(targetAudience1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisAudience in audiences_list)
                 {
                     if ( targetAudience1 == thisAudience )
                     {
-                        popup_form_builder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience +"</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience +"</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the nature of contents
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Nature of contents:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature1\" id=\"form_typeformat_nature1\" >");
-                popup_form_builder.Append(nature1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Nature of contents:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature1\" id=\"form_typeformat_nature1\" >");
+                PopupFormBuilder.Append(nature1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature1 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature2\" id=\"form_typeformat_nature2\" >");
-                popup_form_builder.Append(nature2.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature2\" id=\"form_typeformat_nature2\" >");
+                PopupFormBuilder.Append(nature2.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature2 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
-                popup_form_builder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature3\" id=\"form_typeformat_nature3\" >");
-                popup_form_builder.Append(nature3.Length == 0
+                PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature3\" id=\"form_typeformat_nature3\" >");
+                PopupFormBuilder.Append(nature3.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature3 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature4\" id=\"form_typeformat_nature4\" >");
-                popup_form_builder.Append(nature4.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature4\" id=\"form_typeformat_nature4\" >");
+                PopupFormBuilder.Append(nature4.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature4 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
               
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the government publication 
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
-                popup_form_builder.Append(govt.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+                PopupFormBuilder.Append(govt.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
                     if (govt == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the checkboxes
-                popup_form_builder.Append("    <tr><td colspan=\"3\"> &nbsp; &nbsp; ");
-                popup_form_builder.Append(conferencePublication
+                PopupFormBuilder.Append("    <tr><td colspan=\"3\"> &nbsp; &nbsp; ");
+                PopupFormBuilder.Append(conferencePublication
                                               ? "Conference Publication: <input type=\"checkbox\" name=\"form_typeformat_conference\" checked=\"checked\" /> &nbsp; &nbsp; &nbsp; &nbsp; "
                                               : "Conference Publication: <input type=\"checkbox\" name=\"form_typeformat_conference\" /> &nbsp; &nbsp; &nbsp; &nbsp; ");
 
-                popup_form_builder.Append(festschrift
+                PopupFormBuilder.Append(festschrift
                                               ? "Festschrift: <input type=\"checkbox\" name=\"form_typeformat_festschrift\" checked=\"checked\" /> &nbsp; &nbsp; &nbsp; &nbsp; "
                                               : "Festschrift: <input type=\"checkbox\" name=\"form_typeformat_festschrift\" /> &nbsp; &nbsp; &nbsp; &nbsp; ");
 
-                popup_form_builder.Append(indexPresent
+                PopupFormBuilder.Append(indexPresent
                                               ? "Index Present: <input type=\"checkbox\" name=\"form_typeformat_index\" checked=\"checked\" />"
                                               : "Index Present: <input type=\"checkbox\" name=\"form_typeformat_index\" />");
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the literary form
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Literary Form:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_literary1\" id=\"form_typeformat_literary1\" >");
-                popup_form_builder.Append(literaryform1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Literary Form:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_literary1\" id=\"form_typeformat_literary1\" >");
+                PopupFormBuilder.Append(literaryform1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in literary_form_list)
                 {
                     if (literaryform1 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_literary2\" id=\"form_typeformat_literary2\" >");
-                popup_form_builder.Append(literaryform2.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_literary2\" id=\"form_typeformat_literary2\" >");
+                PopupFormBuilder.Append(literaryform2.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in literary_form_list)
                 {
                     if (literaryform2 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");                
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");                
 
                 // Add the bibliography info
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Biography:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_biography\" id=\"form_typeformat_biography\" >");
-                popup_form_builder.Append(biography.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Biography:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_biography\" id=\"form_typeformat_biography\" >");
+                PopupFormBuilder.Append(biography.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in biography_list)
                 {
                     if (biography == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
             }
 
             #endregion
@@ -862,69 +893,69 @@ namespace SobekCM.Library.Citation.Elements
             if (formType == Type_Format_Type_Enum.Visual_Materials)
             {
                 // Add the book details title
-                popup_form_builder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\">Visual Materials Details</td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\">Visual Materials Details</td></tr>");
 
                 // Add the target audience
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
-                popup_form_builder.Append(targetAudience1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
+                PopupFormBuilder.Append(targetAudience1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisAudience in audiences_list)
                 {
                     if (targetAudience1 == thisAudience)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the subtype
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
-                popup_form_builder.Append(subtype.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
+                PopupFormBuilder.Append(subtype.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in visual_subtypes)
                 {
                     if (subtype == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 
                 // Add the government publication 
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
-                popup_form_builder.Append(govt.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+                PopupFormBuilder.Append(govt.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
                     if (govt == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
             }
 
             #endregion
@@ -934,61 +965,61 @@ namespace SobekCM.Library.Citation.Elements
             if (formType == Type_Format_Type_Enum.Map)
             {
                 // Add the book details title
-                popup_form_builder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\">Map Details</td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\">Map Details</td></tr>");
 
                 // Add the projection code and scale
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Projection Code:</td><td>");
-                popup_form_builder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode( projection ) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_projcode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_projcode', 'formtype_small_input')\" ></td>");
-                popup_form_builder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(scale) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_scale', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_scale', 'formtype_small_input')\" ></td></tr>");
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Projection Code:</td><td>");
+                PopupFormBuilder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode( projection ) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_projcode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_projcode', 'formtype_small_input')\" ></td>");
+                PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(scale) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_scale', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_scale', 'formtype_small_input')\" ></td></tr>");
 
                 // Add the subtype
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
-                popup_form_builder.Append(subtype.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
+                PopupFormBuilder.Append(subtype.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in map_subtypes)
                 {
                     if (subtype == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
 
                 // Add the government publication 
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
-                popup_form_builder.Append(govt.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+                PopupFormBuilder.Append(govt.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
                     if (govt == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the checkboxes
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Index Present:</td>");
-                popup_form_builder.Append(indexPresent
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Index Present:</td>");
+                PopupFormBuilder.Append(indexPresent
                                               ? "<td colspan=\"2\"><input type=\"checkbox\" name=\"form_typeformat_index\" checked=\"checked\" />"
                                               : "<td colspan=\"2\"><input type=\"checkbox\" name=\"form_typeformat_index\" />");
 
-                popup_form_builder.Append("</td></tr>");
+                PopupFormBuilder.Append("</td></tr>");
             }
 
             #endregion
@@ -998,218 +1029,290 @@ namespace SobekCM.Library.Citation.Elements
             if (formType == Type_Format_Type_Enum.Continuing_Resource)
             {
                 // Add the book details title
-                popup_form_builder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Continuing Resources Details</td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Continuing Resources Details</td></tr>");
 
                 // Add the frequency
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Frequency:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_frequency1\" id=\"form_typeformat_frequency1\" >");
-                popup_form_builder.Append(frequency1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Frequency:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_frequency1\" id=\"form_typeformat_frequency1\" >");
+                PopupFormBuilder.Append(frequency1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in frequency_list)
                 {
                     if (frequency1 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_frequency2\" id=\"form_typeformat_frequency2\" >");
-                popup_form_builder.Append(frequency2.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_frequency2\" id=\"form_typeformat_frequency2\" >");
+                PopupFormBuilder.Append(frequency2.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in frequency_list)
                 {
                     if (frequency2 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the regularity
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Regularity:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_regularity1\" id=\"form_typeformat_regularity1\" >");
-                popup_form_builder.Append(regularity1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Regularity:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_regularity1\" id=\"form_typeformat_regularity1\" >");
+                PopupFormBuilder.Append(regularity1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in regularity_list)
                 {
                     if (regularity1 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_regularity2\" id=\"form_typeformat_regularity2\" >");
-                popup_form_builder.Append(regularity2.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_regularity2\" id=\"form_typeformat_regularity2\" >");
+                PopupFormBuilder.Append(regularity2.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in regularity_list)
                 {
                     if (regularity2 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the subtype
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
-                popup_form_builder.Append(subtype.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
+                PopupFormBuilder.Append(subtype.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in continuing_subtypes)
                 {
                     if (subtype == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the nature of contents
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Nature of contents:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature1\" id=\"form_typeformat_nature1\" >");
-                popup_form_builder.Append(nature1.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Nature of contents:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature1\" id=\"form_typeformat_nature1\" >");
+                PopupFormBuilder.Append(nature1.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature1 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature2\" id=\"form_typeformat_nature2\" >");
-                popup_form_builder.Append(nature2.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature2\" id=\"form_typeformat_nature2\" >");
+                PopupFormBuilder.Append(nature2.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature2 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
-                popup_form_builder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature3\" id=\"form_typeformat_nature3\" >");
-                popup_form_builder.Append(nature3.Length == 0
+                PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature3\" id=\"form_typeformat_nature3\" >");
+                PopupFormBuilder.Append(nature3.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature3 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature4\" id=\"form_typeformat_nature4\" >");
-                popup_form_builder.Append(nature4.Length == 0
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_nature4\" id=\"form_typeformat_nature4\" >");
+                PopupFormBuilder.Append(nature4.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in nature_contents_list)
                 {
                     if (nature4 == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the government publication 
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
-                popup_form_builder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
-                popup_form_builder.Append(govt.Length == 0
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+                PopupFormBuilder.Append(govt.Length == 0
                                               ? "<option value=\"\" selected=\"selected\" ></option>"
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
                     if (govt == thisString)
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
                     else
                     {
-                        popup_form_builder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
                     }
                 }
-                popup_form_builder.Append("</select>");
+                PopupFormBuilder.Append("</select>");
 
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the checkboxes
-                popup_form_builder.Append("    <tr><td> &nbsp; &nbsp; Conference Production:");
-                popup_form_builder.Append(conferencePublication
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Conference Production:");
+                PopupFormBuilder.Append(conferencePublication
                                               ? "<td colspan=\"2\"><input type=\"checkbox\" name=\"form_typeformat_conference\" checked=\"checked\" /> &nbsp; &nbsp; &nbsp; &nbsp; "
                                               : "<td colspan=\"2\"><input type=\"checkbox\" name=\"form_typeformat_conference\" /> &nbsp; &nbsp; &nbsp; &nbsp; ");
-                popup_form_builder.AppendLine("</td></tr>");
+                PopupFormBuilder.AppendLine("</td></tr>");
             }
 
             #endregion
 
-            #region Finish the pop-up form
+			#region Render the 'Computer Files' section if necessary 
 
-            popup_form_builder.AppendLine("  </table>");
-            popup_form_builder.AppendLine("  <br />");
+			if (formType == Type_Format_Type_Enum.Computer_Files)
+			{
+				// Add the book details title
+				PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Computer Files Details</td></tr>");
+
+				// Add the target audience
+				PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
+				PopupFormBuilder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
+				PopupFormBuilder.Append(targetAudience1.Length == 0
+											  ? "<option value=\"\" selected=\"selected\" ></option>"
+											  : "<option value=\"\"></option>");
+				foreach (string thisAudience in audiences_list)
+				{
+					if (targetAudience1 == thisAudience)
+					{
+						PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
+					}
+					else
+					{
+						PopupFormBuilder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
+					}
+				}
+				PopupFormBuilder.Append("</select>");
+				PopupFormBuilder.AppendLine("</td></tr>");
+
+				// Add the form
+				PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; File Type:</td><td colspan=\"2\">");
+				PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
+				PopupFormBuilder.Append(subtype.Length == 0
+											  ? "<option value=\"\" selected=\"selected\" ></option>"
+											  : "<option value=\"\"></option>");
+				foreach (string thisString in computer_file_form_list)
+				{
+					if (computerfileform == thisString)
+					{
+						PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+					}
+					else
+					{
+						PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+					}
+				}
+				PopupFormBuilder.Append("</select>");
+				PopupFormBuilder.AppendLine("</td></tr>");
+
+	
+				// Add the government publication 
+				PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+				PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+				PopupFormBuilder.Append(govt.Length == 0
+											  ? "<option value=\"\" selected=\"selected\" ></option>"
+											  : "<option value=\"\"></option>");
+				foreach (string thisString in government_list)
+				{
+					if (govt == thisString)
+					{
+						PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+					}
+					else
+					{
+						PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+					}
+				}
+				PopupFormBuilder.Append("</select>");
+
+				PopupFormBuilder.AppendLine("</td></tr>");
+			}
+
+			#endregion
+
+			#region Finish the pop-up form
+
+			PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("  <br />");
 
             // Add the close button
-            popup_form_builder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_typeformat_form();\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-            popup_form_builder.AppendLine("</div>");
-            popup_form_builder.AppendLine();
+            PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_typeformat_form();\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
 
             #endregion
 
@@ -1246,7 +1349,7 @@ namespace SobekCM.Library.Citation.Elements
             // Delete all marcgt genres
             if (Bib.Bib_Info.Genres_Count > 0)
             {
-                List<Genre_Info> deleteGenres = Bib.Bib_Info.Genres.Where(thisGenre => thisGenre.Authority == "marcgt").ToList();
+                List<Genre_Info> deleteGenres = Bib.Bib_Info.Genres.Where(ThisGenre => ThisGenre.Authority == "marcgt").ToList();
 
                 foreach (Genre_Info deleteGenre in deleteGenres)
                 {
@@ -1539,24 +1642,24 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the type combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             default_values.Clear();
-            while (xmlReader.Read())
+            while (XMLReader.Read())
             {
-                if ((xmlReader.NodeType == XmlNodeType.Element) && ((xmlReader.Name.ToLower() == "value") || (xmlReader.Name.ToLower() == "options")))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && ((XMLReader.Name.ToLower() == "value") || (XMLReader.Name.ToLower() == "options")))
                 {
-                    if (xmlReader.Name.ToLower() == "value")
+                    if (XMLReader.Name.ToLower() == "value")
                     {
-                        xmlReader.Read();
-                        default_values.Add(xmlReader.Value.Trim());
+                        XMLReader.Read();
+                        default_values.Add(XMLReader.Value.Trim());
                     }
                     else
                     {
-                        xmlReader.Read();
-                        string options = xmlReader.Value.Trim();
+                        XMLReader.Read();
+                        string options = XMLReader.Value.Trim();
                         items.Clear();
                         if (options.Length > 0)
                         {
@@ -1593,6 +1696,9 @@ namespace SobekCM.Library.Citation.Elements
 
             /// <summary> Continuing resource type material ( i.e. Newspapers, Serial, etc..) </summary>
             Continuing_Resource,
+
+			/// <summary> Computer files, in particular software or datasets </summary>
+			Computer_Files,
 
             /// <summary> Cartographic type material ( maps, globes, etc.. ) </summary>
             Map

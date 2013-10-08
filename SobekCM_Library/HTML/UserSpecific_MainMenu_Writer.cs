@@ -38,6 +38,7 @@ namespace SobekCM.Library.HTML
 
             // Get ready to draw the tabs
             string sobek_home_text = Mode.SobekCM_Instance_Abbreviation + " Home";
+			const string myCollections = "My Collections";
             string my_sobek_home_text = "<span style=\"text-transform:lowercase\">my</span>" + Mode.SobekCM_Instance_Abbreviation + " Home";
             const string myLibrary = "My Library";
             const string myPreferences = "My Account";
@@ -85,6 +86,11 @@ namespace SobekCM.Library.HTML
                 Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
                 Output.WriteLine("\t\t\t<li id=\"sbkUsm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
             }
+			if (User != null)
+			{
+				Mode.Home_Type = Home_Type_Enum.Personalized;
+				Output.WriteLine("\t\t\t<li id=\"sbkUsm_HomePersonalized\"><a href=\"" + Mode.Redirect_URL() + "\">" + myCollections + "</a></li>");
+			}
             if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
             {
                 Mode.Home_Type = Home_Type_Enum.Partners_List;

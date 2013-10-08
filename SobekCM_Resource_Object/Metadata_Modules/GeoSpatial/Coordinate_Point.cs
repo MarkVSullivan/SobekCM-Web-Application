@@ -16,6 +16,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private double latitude;
         private double longitude;
         private int order_temp;
+        private string featureType;
 
         #region Constructors
 
@@ -62,6 +63,20 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             order_temp = -1;
         }
 
+        /// <summary> Constructor for a new instance of the Coordinate_Point class </summary>
+        /// <param name="Latitude"> Latitude (expressed in decimal notation) for this point </param>
+        /// <param name="Longitude"> Longitude (expressed in decimal notation) for this point </param>
+        /// <param name="Label"> Label to associate with this point </param>
+        /// <param name="FeatureType"> Altitude for this point on a 3-dimensional plane (in meters)</param>
+        public Coordinate_Point(double Latitude, double Longitude, string Label, string FeatureType)
+        {
+            latitude = Latitude;
+            longitude = Longitude;
+            featureType = FeatureType;
+            label = Label;
+            order_temp = -1;
+        }
+
         #endregion
 
         /// <summary> Order from the XML read </summary>
@@ -101,6 +116,19 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             set { label = value; }
         }
 
+        /// <summary> FeatureType associated with this point  </summary>
+        public string FeatureType
+        {
+            get { return featureType ?? String.Empty; }
+            set { featureType = value; }
+        }
+
+        ///// <summary> Add Feature Type Data</summary>
+        //public void Add_FeatureType(string incomingFeatureType)
+        //{
+        //    featureType = incomingFeatureType;
+        //}
+
 
         /// <summary> Writes this single coordinate point as SobekCM-formatted XML </summary>
         /// <param name="order"> Order in which this point appears within a larger object (such as a line or polygon) </param>
@@ -122,6 +150,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             if (!String.IsNullOrEmpty(label))
             {
                 results.Write("label=\"" + label + "\"");
+            }
+            if (!String.IsNullOrEmpty(featureType))
+            {
+                results.Write("featureType=\"" + featureType + "\"");
             }
             results.Write(" />\r\n");
         }

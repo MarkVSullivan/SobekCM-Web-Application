@@ -484,42 +484,36 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "Temporal":
                             while (Input_XmlReader.Read())
                             {
-                                if ((Input_XmlReader.NodeType == XmlNodeType.EndElement) && (Input_XmlReader.Name == sobekcm_namespace + ":Temporal"))
+								if ((Input_XmlReader.NodeType == XmlNodeType.EndElement) && (Input_XmlReader.Name == sobekcm_namespace + ":Temporal"))
                                 {
-                                    break;
+									break;
                                 }
 
                                 if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (Input_XmlReader.Name == sobekcm_namespace + ":period"))
                                 {
-                                    Temporal_Info newTemporal = new Temporal_Info();
-                                    if (Input_XmlReader.MoveToAttribute("start"))
+									Temporal_Info newTemporal = new Temporal_Info();
+									if (Input_XmlReader.MoveToAttribute("start"))
                                     {
-                                        try
-                                        {
-                                            newTemporal.Start_Year = Convert.ToInt32(Input_XmlReader.Value);
-                                        }
-                                        catch
-                                        {
-                                        }
+	                                    int temp_start_year;
+	                                    if (Int32.TryParse(Input_XmlReader.Value, out temp_start_year))
+		                                    newTemporal.Start_Year = temp_start_year;
                                     }
 
                                     if (Input_XmlReader.MoveToAttribute("end"))
                                     {
-                                        try
-                                        {
-                                            newTemporal.End_Year = Convert.ToInt32(Input_XmlReader.Value);
-                                        }
-                                        catch
-                                        {
-                                        }
+										int temp_end_year;
+										if (Int32.TryParse(Input_XmlReader.Value, out temp_end_year))
+											newTemporal.End_Year = temp_end_year;
                                     }
 
                                     Input_XmlReader.Read();
                                     if (Input_XmlReader.NodeType == XmlNodeType.Text)
                                     {
                                         newTemporal.TimePeriod = Input_XmlReader.Value;
-                                        Return_Package.Bib_Info.Add_Temporal_Subject(newTemporal);
                                     }
+
+									if (( newTemporal.Start_Year > 0 ) || ( newTemporal.End_Year > 0 ) || ( newTemporal.TimePeriod.Length > 0 ))
+										Return_Package.Bib_Info.Add_Temporal_Subject(newTemporal);
                                 }
                             }
                             break;

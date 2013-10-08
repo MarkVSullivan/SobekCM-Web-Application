@@ -342,23 +342,23 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
-            while ( xmlReader.Read() )
+            while ( XMLReader.Read() )
             {
-                if ( xmlReader.NodeType == XmlNodeType.Element ) 
+                if ( XMLReader.NodeType == XmlNodeType.Element ) 
                 {
-                    if (xmlReader.Name.ToLower() == "value")
+                    if (XMLReader.Name.ToLower() == "value")
                     {
-                        xmlReader.Read();
-                        items.Add(xmlReader.Value.Trim());
+                        XMLReader.Read();
+                        items.Add(XMLReader.Value.Trim());
                     }
-                    if (xmlReader.Name.ToLower() == "options")
+                    if (XMLReader.Name.ToLower() == "options")
                     {
-                        xmlReader.Read();
-                        string options = xmlReader.Value.Trim();
+                        XMLReader.Read();
+                        string options = XMLReader.Value.Trim();
                         items.Clear();
                         if (options.Length > 0)
                         {
