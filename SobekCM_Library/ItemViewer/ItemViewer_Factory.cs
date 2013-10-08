@@ -112,6 +112,9 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.TRACKING:
                     return new Tracking_ItemViewer();
 
+                case View_Enum.TRACKING_SHEET:
+                    return new TrackingSheet_ItemViewer(Current_Object, Current_User, Current_Mode);
+
                 case View_Enum.QUALITY_CONTROL:
                     return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);
 

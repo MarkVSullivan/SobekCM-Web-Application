@@ -777,6 +777,11 @@ namespace SobekCM.Library.Items
                     case "TEI":
                         viewTypeEnum = View_Enum.TEI;
                         break;
+
+                    case "TRACKING_SHEET":
+                        viewTypeEnum = View_Enum.TRACKING_SHEET;
+                        break;
+
                 }
 
                 if (viewTypeEnum != View_Enum.None)
