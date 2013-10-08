@@ -62,6 +62,7 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            toServerSuccess: false,                     //holds a marker indicating if toserver was sucessfull
             tempYo: false,                              //holds tempyo for fixing ff info window issue
             buttonActive_searchResultToggle: false,     //holds is button active markers
             buttonActive_itemPlace: false,              //holds is button active markers
@@ -145,11 +146,13 @@ function initDeclarations() {
             incomingPointCenter: [],                    //defined in c# to js on page
             incomingPointLabel: [],                     //defined in c# to js on page
             incomingPointSourceURL: [],                 //defined in c# to js on page
-            incomingOverlayFeatureType: [],             //defined in c# to js on page
-            incomingOverlayBounds: [],                  //defined in c# to js on page
-            incomingOverlayLabel: [],                   //defined in c# to js on page
-            incomingOverlaySourceURL: [],               //defined in c# to js on page
-            incomingOverlayRotation: [],                //defined in c# to js on page
+            incomingPolygonFeatureType: [],             //defined in c# to js on page
+            incomingPolygonBounds: [],                  //defined in c# to js on page
+            incomingPolygonCenter: [],                  //defined in c# to js on page
+            incomingPolygonLabel: [],                   //defined in c# to js on page
+            incomingPolygonSourceURL: [],               //defined in c# to js on page
+            incomingPolygonRotation: [],                //defined in c# to js on page
+            incomingPolygonRadius: [],                  //defined in c# to js on page
             ghostOverlayRectangle: [],                  //holds ghost overlay rectangles (IE overlay hotspots)
             workingOverlayIndex: null,                  //holds the index of the overlay we are working with (and saving)
             currentlyEditing: "no",                     //tells us if we are editing anything
@@ -500,12 +503,14 @@ function initListeners() {
 
         //menubarf
         document.getElementById("content_menubar_save").addEventListener("click", function () {
+            //save("all");
             //attempt to save all three
             save("item");
             save("overlay");
             save("poi");
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
+            //clear("all");
             //attempt to cancel all three
             clear("item");
             clear("overlay");
@@ -1017,14 +1022,16 @@ function toggleVis(id) {
 
     switch (id) {
         case "mapControls":
-            if (globalVar.mapControlsDisplayed == true) { //not present
+            if (globalVar.mapControlsDisplayed == true) { //present, hide
                 map.setOptions({
                     zoomControl: false,
                     panControl: false,
                     mapTypeControl: false
                 });
+                //drawingManager.setMap(null);
+                //globalVar.mapDrawingManagerDisplayed = false;
                 globalVar.mapControlsDisplayed = false;
-            } else { //present
+            } else { //not present, make present
                 map.setOptions({
                     zoomControl: true,
                     zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL, position: google.maps.ControlPosition.LEFT_TOP },
@@ -1104,7 +1111,7 @@ function toggleVis(id) {
                 if (globalVar.overlaysCurrentlyDisplayed == true) {
                     displayMessage(L22);
 
-                    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                    for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
                         de("overlay count " + globalVar.overlayCount);
                         globalVar.RIBMode = true;
                         if (document.getElementById("overlayToggle" + i)) {
@@ -1121,7 +1128,7 @@ function toggleVis(id) {
                     }
                 } else {
                     displayMessage(L23);
-                    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                    for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
                         de("oom " + globalVar.overlaysOnMap.length);
                         globalVar.RIBMode = true;
                         if (document.getElementById("overlayToggle" + i)) {
@@ -1420,7 +1427,7 @@ function place(id) {
             //buttonActive("overlayPlace");
 
             globalVar.placerType = "overlay";
-            if (globalVar.incomingOverlayBounds.length > 0) {
+            if (globalVar.incomingPolygonBounds.length > 0) {
                 if (globalVar.pageMode == "edit") {
                     globalVar.pageMode = "view";
                     if (globalVar.savingOverlayIndex.length > 0) {
@@ -1596,6 +1603,9 @@ function save(id) {
                     de("saving location: " + globalVar.savingMarkerCenter);
                     //save to temp xml file
                     createSavedItem("save", globalVar.savingMarkerCenter);
+                    if (globalVar.toServerSuccess == true) {
+                        displayMessage(L_Saved);
+                    }
                     //reset first save
                     globalVar.firstSaveItem = false;
                     //change save button to apply button
@@ -1608,6 +1618,9 @@ function save(id) {
                     de("applying location: " + globalVar.savingMarkerCenter);
                     //save to live areas
                     createSavedItem("apply", globalVar.savingMarkerCenter);
+                    if (globalVar.toServerSuccess == true) {
+                        displayMessage(L_Applied);
+                    }
                     //reset first save
                     globalVar.firstSaveItem = true;
                     //reset apply button to save
@@ -1631,6 +1644,9 @@ function save(id) {
                         //save to temp xml file
                         de("saving overlay: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                         createSavedOverlay("save", globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                        if (globalVar.toServerSuccess == true) {
+                            displayMessage(L_Saved);
+                        }
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = false;
@@ -1652,6 +1668,9 @@ function save(id) {
                         //save to temp xml file
                         de("applying overlay: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                         createSavedOverlay("apply", globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                        if (globalVar.toServerSuccess == true) {
+                            displayMessage(L_Applied);
+                        }
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = true;
@@ -1673,6 +1692,9 @@ function save(id) {
                     //save to temp xml file
                     de("saving " + globalVar.poiObj.length + " POIs...");
                     createSavedPOI("save");
+                    if (globalVar.toServerSuccess == true) {
+                        displayMessage(L_Saved);
+                    }
                     //reset first save
                     globalVar.firstSavePOI = false;
                     //change save button to apply button
@@ -1692,6 +1714,9 @@ function save(id) {
                         de("applying " + globalVar.poiObj.length + " POIs...");
                         //apply changes
                         createSavedPOI("apply");
+                        if (globalVar.toServerSuccess == true) {
+                            displayMessage(L_Applied);
+                        }
                         //reset first save
                         globalVar.firstSavePOI = true;
                     } else {
@@ -1987,13 +2012,24 @@ function initialize() {
             
             infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
 
+            de("poiCount: " + globalVar.poiCount);
+
+            //best fix so far
+            if (globalVar.poiCount == 0) {
+                setTimeout(function () {
+                    infoWindow[0].setMap(null);
+                    infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                    infoWindow[0].setMap(map);
+                }, 800);
+            }
+
             //if (globalVar.poiCount > 0) {
             //    infoWindow[globalVar.poi_i].open(map);
             //} else {
             //    infoWindow[globalVar.poi_i].setMap(map);
             //    infoWindow[globalVar.poi_i].setMap(null);
             //    de("platform: " + navigator.platform);
-            //    //if (navigator.platform)
+            //    if (navigator.platform)
             //    var t2 = setTimeout(function () {
             //        infoWindow[globalVar.poi_i].setMap(map);
             //    }, 1500);
@@ -2112,16 +2148,24 @@ function initialize() {
                 content: contentString
             });
             infoWindow[globalVar.poi_i].setPosition(circle.getCenter());
-            if (globalVar.poiCount > 0) {
-                infoWindow[globalVar.poi_i].open(map);
-            } else {
-                infoWindow[globalVar.poi_i].setMap(map);
-                infoWindow[globalVar.poi_i].setMap(null);
-                infoWindow[globalVar.poi_i].setMap(map);
+            infoWindow[globalVar.poi_i].open(map);
+            //best fix so far
+            if (globalVar.poiCount == 0) {
+                setTimeout(function () {
+                    infoWindow[0].setMap(null);
+                    infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                    infoWindow[0].setMap(map);
+                }, 800);
             }
+            //if (globalVar.poiCount > 0) {
+            //    infoWindow[globalVar.poi_i].open(map);
+            //} else {
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //    infoWindow[globalVar.poi_i].setMap(null);
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //}
             globalVar.poiCount++;
         }
-
         google.maps.event.addListener(circle, 'dragstart', function () {
 
             if (globalVar.placerType == "poi") {
@@ -2186,7 +2230,7 @@ function initialize() {
             globalVar.firstSaveOverlay = true;
 
             //add the incoming overlay bounds
-            globalVar.incomingOverlayBounds[0] = rectangle.getBounds();
+            globalVar.incomingPolygonBounds[0] = rectangle.getBounds();
 
             //redisplay overlays (the one we just made)
             displayIncomingOverlays();
@@ -2232,13 +2276,22 @@ function initialize() {
                 content: contentString
             });
             infoWindow[globalVar.poi_i].setPosition(rectangle.getBounds().getCenter());
-            if (globalVar.poiCount > 0) {
-                infoWindow[globalVar.poi_i].open(map);
-            } else {
-                infoWindow[globalVar.poi_i].setMap(map);
-                infoWindow[globalVar.poi_i].setMap(null);
-                infoWindow[globalVar.poi_i].setMap(map);
+            infoWindow[globalVar.poi_i].open(map);
+            //best fix so far
+            if (globalVar.poiCount == 0) {
+                setTimeout(function () {
+                    infoWindow[0].setMap(null);
+                    infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                    infoWindow[0].setMap(map);
+                }, 800);
             }
+            //if (globalVar.poiCount > 0) {
+            //    infoWindow[globalVar.poi_i].open(map);
+            //} else {
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //    infoWindow[globalVar.poi_i].setMap(null);
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //}
             globalVar.poiCount++;
         }
 
@@ -2346,13 +2399,22 @@ function initialize() {
                 content: contentString
             });
             infoWindow[globalVar.poi_i].setPosition(polygonCenter(polygon));
-            if (globalVar.poiCount > 0) {
-                infoWindow[globalVar.poi_i].open(map);
-            } else {
-                infoWindow[globalVar.poi_i].setMap(map);
-                infoWindow[globalVar.poi_i].setMap(null);
-                infoWindow[globalVar.poi_i].setMap(map);
+            infoWindow[globalVar.poi_i].open(map);
+            //best fix so far
+            if (globalVar.poiCount == 0) {
+                setTimeout(function () {
+                    infoWindow[0].setMap(null);
+                    infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                    infoWindow[0].setMap(map);
+                }, 800);
             }
+            //if (globalVar.poiCount > 0) {
+            //    infoWindow[globalVar.poi_i].open(map);
+            //} else {
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //    infoWindow[globalVar.poi_i].setMap(null);
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //}
             globalVar.poiCount++;
         }
         google.maps.event.addListener(polygon.getPath(), 'set_at', function () { //if bounds change
@@ -2464,13 +2526,22 @@ function initialize() {
             var polylineStartPoint = polylinePoints[0];
             de("polylineStartPoint: " + polylineStartPoint);
             infoWindow[globalVar.poi_i].setPosition(polylineStartPoint);
-            if (globalVar.poiCount > 0) {
-                infoWindow[globalVar.poi_i].open(map);
-            } else {
-                infoWindow[globalVar.poi_i].setMap(map);
-                infoWindow[globalVar.poi_i].setMap(null);
-                infoWindow[globalVar.poi_i].setMap(map);
+            infoWindow[globalVar.poi_i].open(map);
+            //best fix so far
+            if (globalVar.poiCount == 0) {
+                setTimeout(function () {
+                    infoWindow[0].setMap(null);
+                    infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                    infoWindow[0].setMap(map);
+                }, 800);
             }
+            //if (globalVar.poiCount > 0) {
+            //    infoWindow[globalVar.poi_i].open(map);
+            //} else {
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //    infoWindow[globalVar.poi_i].setMap(null);
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //}
             globalVar.poiCount++;
 
             label[globalVar.poi_i] = new MarkerWithLabel({
@@ -2809,18 +2880,18 @@ function displayIncomingPoints() {
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingOverlays() {
     //go through and display overlays as long as there is an overlay to display
-    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) {
+    for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) {
 
-        switch (globalVar.incomingOverlayFeatureType[i]) {
+        switch (globalVar.incomingPolygonFeatureType[i]) {
             case "":
                 globalVar.workingOverlayIndex = i;
                 //create overlay with incoming
-                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);
+                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingPolygonBounds[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
                 globalVar.currentlyEditing = "no";
                 //set the overlay to the map
                 globalVar.overlaysOnMap[i].setMap(map);
                 //set hotspot on top of overlay
-                setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);
+                setGhostOverlay(i, globalVar.incomingPolygonBounds[i]);
                 de("I created ghost: " + i);
                 globalVar.mainCount++;
                 globalVar.incomingACL = "overlay";
@@ -2828,12 +2899,12 @@ function displayIncomingOverlays() {
             case "main":
                 globalVar.workingOverlayIndex = i;
                 //create overlay with incoming
-                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);
+                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingPolygonBounds[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
                 globalVar.currentlyEditing = "no";
                 //set the overlay to the map
                 globalVar.overlaysOnMap[i].setMap(map);
                 //set hotspot on top of overlay
-                setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);
+                setGhostOverlay(i, globalVar.incomingPolygonBounds[i]);
                 de("I created ghost: " + i);
                 globalVar.mainCount++;
                 globalVar.incomingACL = "overlay";
@@ -2866,7 +2937,7 @@ function displayIncomingOverlays() {
 
 //clears all incoming overlays
 function clearIncomingOverlays() {
-    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
+    for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
         if (globalVar.overlaysOnMap[i] != null) {
             globalVar.overlaysOnMap[i].setMap(null);
             globalVar.overlaysOnMap[i] = null;
@@ -2927,7 +2998,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
         if (globalVar.pageMode == "edit") {
             globalVar.overlaysOnMap[ghostIndex].setMap(null);                                                                                                                                 //hide previous overlay
             globalVar.overlaysOnMap[ghostIndex] = null;                                                                                                                                       //delete previous overlay values
-            globalVar.overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, globalVar.ghostOverlayRectangle[ghostIndex].getBounds(), globalVar.incomingOverlaySourceURL[ghostIndex], map, globalVar.preservedRotation); //redraw the overlay within the new bounds
+            globalVar.overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, globalVar.ghostOverlayRectangle[ghostIndex].getBounds(), globalVar.incomingPolygonSourceURL[ghostIndex], map, globalVar.preservedRotation); //redraw the overlay within the new bounds
             globalVar.overlaysOnMap[ghostIndex].setMap(map);                                                                                                                                  //set the overlay with new bounds to the map
             globalVar.currentlyEditing = "yes";                                                                                                                                               //enable editing marker
             cacheSaveOverlay(ghostIndex);                                                                                                                                           //trigger a cache of current working overlay
@@ -2952,10 +3023,10 @@ function cacheSaveOverlay(index) {
     globalVar.savingOverlayIndex[globalVar.csoi] = globalVar.workingOverlayIndex;
     de("globalVar.savingOverlayIndex[globalVar.csoi]:" + globalVar.savingOverlayIndex[globalVar.csoi]);
     //set label to save
-    globalVar.savingOverlayLabel[globalVar.csoi] = globalVar.incomingOverlayLabel[globalVar.workingOverlayIndex];
+    globalVar.savingOverlayLabel[globalVar.csoi] = globalVar.incomingPolygonLabel[globalVar.workingOverlayIndex];
     de("globalVar.savingOverlayLabel[globalVar.csoi]:" + globalVar.savingOverlayLabel[globalVar.csoi]);
     //set source url to save
-    globalVar.savingOverlaySourceURL[globalVar.csoi] = globalVar.incomingOverlaySourceURL[globalVar.workingOverlayIndex];
+    globalVar.savingOverlaySourceURL[globalVar.csoi] = globalVar.incomingPolygonSourceURL[globalVar.workingOverlayIndex];
     de("globalVar.savingOverlaySourceURL[globalVar.csoi]:" + globalVar.savingOverlaySourceURL[globalVar.csoi]);
     //set bounds to save
     globalVar.savingOverlayBounds[globalVar.csoi] = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds();
@@ -3242,9 +3313,9 @@ function initOptions() {
     //        }
     //    }
     //} else {
-    //    if (globalVar.incomingOverlayBounds.length > 0) {
-    //        for (var j = 0; j < globalVar.incomingOverlayBounds.length; j++) {
-    //            if (globalVar.incomingOverlayFeatureType[j] == "main" || globalVar.incomingOverlayFeatureType[j] == "") {
+    //    if (globalVar.incomingPolygonBounds.length > 0) {
+    //        for (var j = 0; j < globalVar.incomingPolygonBounds.length; j++) {
+    //            if (globalVar.incomingPolygonFeatureType[j] == "main" || globalVar.incomingPolygonFeatureType[j] == "") {
     //                mainCount++;
     //                //globalVar.incomingACL = "overlay";
     //                actionsACL("full", "overlay");
@@ -3688,6 +3759,8 @@ function toServer(dataPackage) {
         var hiddenfield2 = document.getElementById('action');
         hiddenfield2.value = 'save';
 
+        //reset success marker
+        globalVar.toServerSuccess = false;
         $.ajax({
             type: "POST",
             async: true,
@@ -3696,6 +3769,7 @@ function toServer(dataPackage) {
             success: function(result) {
                 //de("server result:" + result);
                 displayMessage(L_Saved);
+                globalVar.toServerSuccess = true;
             }
         });
     });
@@ -3733,7 +3807,7 @@ function overlayEditMe(id) {
         }
         overlayCenterOnMe(id);
     }
-    displayMessage(L34 + " " + globalVar.incomingOverlayLabel[id]);
+    displayMessage(L34 + " " + globalVar.incomingPolygonLabel[id]);
 }
 
 //hide poi on map
@@ -3741,7 +3815,7 @@ function overlayHideMe(id) {
     globalVar.overlaysOnMap[id].setMap(null);
     globalVar.ghostOverlayRectangle[id].setMap(null);
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "add.png\" onclick=\"overlayShowMe(" + id + ");\" />";
-    displayMessage(L31 + " " + globalVar.incomingOverlayLabel[id]);
+    displayMessage(L31 + " " + globalVar.incomingPolygonLabel[id]);
 }
 
 //show poi on map
@@ -3749,7 +3823,7 @@ function overlayShowMe(id) {
     globalVar.overlaysOnMap[id].setMap(map);
     globalVar.ghostOverlayRectangle[id].setMap(map);
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
-    displayMessage(L32 + " " + globalVar.incomingOverlayLabel[id]);
+    displayMessage(L32 + " " + globalVar.incomingPolygonLabel[id]);
 }
 
 //delete poi from map and list
@@ -4172,7 +4246,7 @@ function convertToOverlay() {
         actionsACL("full", "overlay");
 
         //fixes a bug
-        globalVar.incomingOverlayFeatureType[0] = "main";
+        globalVar.incomingPolygonFeatureType[0] = "main";
 
         //a simple marker to fix a bug
         //isConverted = true;
@@ -4182,18 +4256,18 @@ function convertToOverlay() {
 
         //add what we know already
         if (globalVar.incomingPointLabel[0]) {
-            globalVar.incomingOverlayLabel[0] = globalVar.incomingPointLabel[0];
+            globalVar.incomingPolygonLabel[0] = globalVar.incomingPointLabel[0];
         } else {
             de("no incoming point label");
             //ask for it
         }
         if (globalVar.incomingPointSourceURL[0]) {
-            globalVar.incomingOverlaySourceURL[0] = globalVar.incomingPointSourceURL[0];
+            globalVar.incomingPolygonSourceURL[0] = globalVar.incomingPointSourceURL[0];
         } else {
             de("no incoming point source url");
             //ask for it
         }
-        globalVar.incomingOverlayRotation[0] = 0;
+        globalVar.incomingPolygonRotation[0] = 0;
 
         //adds a working overlay index
         if (globalVar.workingOverlayIndex == null) {
@@ -4201,7 +4275,7 @@ function convertToOverlay() {
         }
 
         //add to list overlay item
-        document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", 0, globalVar.incomingOverlayLabel[0], "");
+        document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", 0, globalVar.incomingPolygonLabel[0], "");
 
         //marks this overlay as converted
         globalVar.isConvertedOverlay = true;
@@ -4223,14 +4297,14 @@ function convertToOverlay() {
 function initOverlayList() {
     de("initOverlayList(); started...");
     document.getElementById("overlayList").innerHTML = "";
-    if (globalVar.incomingOverlayLabel.length > 0) {
-        de("There are " + globalVar.incomingOverlayLabel.length + " Incoming Overlays");
-        for (var i = 0; i < globalVar.incomingOverlayLabel.length; i++) {
+    if (globalVar.incomingPolygonLabel.length > 0) {
+        de("There are " + globalVar.incomingPolygonLabel.length + " Incoming Overlays");
+        for (var i = 0; i < globalVar.incomingPolygonLabel.length; i++) {
             de("Adding Overlay List Item");
-            if (globalVar.incomingOverlayLabel[i] == "") {
-                globalVar.incomingOverlayLabel[i] = "Overlay" + (i + 1);
+            if (globalVar.incomingPolygonLabel[i] == "") {
+                globalVar.incomingPolygonLabel[i] = "Overlay" + (i + 1);
             }
-            document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", i, globalVar.incomingOverlayLabel[i], "");
+            document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", i, globalVar.incomingPolygonLabel[i], "");
         }
     }
 }
@@ -4518,14 +4592,14 @@ function keyup(e) {
             if (isCntrlDown == true) {
                 if (globalVar.overlaysCurrentlyDisplayed == true) {
                     displayMessage(L22);
-                    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                    for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
                         globalVar.overlaysOnMap[i].setMap(null); //hide the overlay from the map
                         globalVar.ghostOverlayRectangle[i].setMap(null); //hide ghost from map
                         globalVar.overlaysCurrentlyDisplayed = false; //mark that overlays are not on the map
                     }
                 } else {
                     displayMessage(L23);
-                    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
+                    for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) { //go through and display overlays as long as there is an overlay to display
                         globalVar.overlaysOnMap[i].setMap(map); //set the overlay to the map
                         globalVar.ghostOverlayRectangle[i].setMap(map); //set to map
                         globalVar.overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
