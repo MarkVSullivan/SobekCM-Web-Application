@@ -156,7 +156,7 @@ public class SobekCM_Page_Globals
         }
 
         // If this was for HTML, but was at the data, just convert to XML 
-        if (( page_name == "SOBEKCM_DATA" ) && (currentMode.Writer_Type != Writer_Type_Enum.XML) && (currentMode.Writer_Type != Writer_Type_Enum.JSON) && (currentMode.Writer_Type != Writer_Type_Enum.DataSet))
+		if ((page_name == "SOBEKCM_DATA") && (currentMode.Writer_Type != Writer_Type_Enum.XML) && (currentMode.Writer_Type != Writer_Type_Enum.JSON) && (currentMode.Writer_Type != Writer_Type_Enum.DataSet) && (currentMode.Writer_Type != Writer_Type_Enum.Data_Provider))
             currentMode.Writer_Type = Writer_Type_Enum.XML;
 
 
@@ -896,6 +896,12 @@ public class SobekCM_Page_Globals
         {
             mainWriter = new Dataset_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults,thisBrowseObject,   currentItem, currentPage);
         }
+
+		// Load the DataProvider writer
+		if (currentMode.Writer_Type == Writer_Type_Enum.Data_Provider)
+		{
+			mainWriter = new DataProvider_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage);
+		}
 
         // Load the XML writer
         if (currentMode.Writer_Type == Writer_Type_Enum.XML)

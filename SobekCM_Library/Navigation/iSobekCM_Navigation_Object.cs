@@ -41,24 +41,28 @@ namespace SobekCM.Library.Navigation
 		HTML_LoggedIn,
 
 		/// <summary> Response should be in microsoft compliant dataset format </summary>
-		/// <remarks>This type of request is forwarded to sobekcm_data.aspx ( or ufdc_data.aspx)<br /><br />
+		/// <remarks>This type of request is forwarded to sobekcm_data.aspx <br /><br />
 		/// Generally, this is achieved by just using the standard write to xml routines in a DataSet</remarks>
 		DataSet,
 
+		/// <summary> Response should be a portion of a datatable, in JSON response </summary>
+		/// <remarks> This is used to provide data server-side for the jQuery Datatable plug-in mostly </remarks>
+		Data_Provider,
+
 		/// <summary> Response should be in simplified JSON (Javan Simple Object Notation) format </summary>
-		/// <remarks>This type of request is forwarded to sobekcm_data.aspx ( or ufdc_data.aspx)<br /><br />
+		/// <remarks>This type of request is forwarded to sobekcm_data.aspx <br /><br />
 		/// This is used to provide support to the iPhone application</remarks>
 		JSON,
 
 		/// <summary> Response should be compliant with the OAI-PMH standard </summary>
-		/// <remarks>This type of request is forwarded to sobekcm_oai.aspx ( or ufdc_oai.aspx)</remarks>
+		/// <remarks>This type of request is forwarded to sobekcm_oai.aspx </remarks>
 		OAI,
 
 		/// <summary> Response should be in HTML, but be simple text, not formatted </summary>
 		Text,
 
 		/// <summary> Response should be in simplified XML format </summary>
-		/// <remarks>This type of request is forwarded to sobekcm_data.aspx ( or ufdc_data.aspx)</remarks>
+		/// <remarks>This type of request is forwarded to sobekcm_data.aspx </remarks>
 		XML
 	};
 

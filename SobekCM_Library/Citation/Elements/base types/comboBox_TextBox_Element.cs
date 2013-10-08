@@ -285,16 +285,16 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the combo box from an <i>options</i> subelement.  The default value for the combo box is from a <i>code</i> subelement and the default value for the text box is from a <i>statement</i> subelement. </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
-            while (xmlReader.Read())
+            while (XMLReader.Read())
             {
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "options"))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "options"))
                 {
-                    xmlReader.Read();
-                    string options = xmlReader.Value.Trim();
+                    XMLReader.Read();
+                    string options = XMLReader.Value.Trim();
                     possible_select_items.Clear();
                     if (options.Length > 0)
                     {
@@ -309,16 +309,16 @@ namespace SobekCM.Library.Citation.Elements
                     }
                 }
 
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "code"))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "code"))
                 {
-                    xmlReader.Read();
-                    default_codes.Add(xmlReader.Value.Trim());
+                    XMLReader.Read();
+                    default_codes.Add(XMLReader.Value.Trim());
                 }
 
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name.ToLower() == "statement"))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "statement"))
                 {
-                    xmlReader.Read();
-                    default_values.Add(xmlReader.Value.Trim());
+                    XMLReader.Read();
+                    default_values.Add(XMLReader.Value.Trim());
                 }
             }
         }

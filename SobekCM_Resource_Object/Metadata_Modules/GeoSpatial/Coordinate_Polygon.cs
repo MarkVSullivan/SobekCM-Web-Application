@@ -21,6 +21,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private ushort pageSequence;
         public double polygonRotation;
         public double circleRadius;
+        public string featureType;
 
         /// <summary> Constructor for a new instance of this Coordinate_Polygon class </summary>
         public Coordinate_Polygon()
@@ -313,6 +314,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             circleRadius = radius;
         }
 
+        /// <summary> FeatureType associated with this point  </summary>
+        public string FeatureType
+        {
+            get { return featureType ?? String.Empty; }
+            set { featureType = value; }
+        }
+
         /// <summary> Writes this polygon of coordinate points as SobekCM-formatted XML </summary>
         /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
         /// <param name="results"> Stream to write this polygon of coordinate points as SobekCM-formatted XML</param>
@@ -328,6 +336,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 results.Write(" ID=\"" + id + "\"");
             if (pageSequence > 0)
                 results.Write(" pageSeq=\"" + pageSequence + "\"");
+            if (!String.IsNullOrEmpty(featureType))
+                results.Write("featureType=\"" + featureType + "\"");
             results.Write(">\r\n");
             if (edge_points.Count > 0)
             {

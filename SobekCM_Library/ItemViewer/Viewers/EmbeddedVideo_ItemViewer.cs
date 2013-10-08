@@ -1,13 +1,14 @@
 ﻿#region Using directives
 
 using System.IO;
-using System.Text;
-using System.Web.UI.WebControls;
 
 #endregion
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
+	/// <summary> Itemviewer is used to show an embedded video being streamed from any source </summary>
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <see cref="iItemViewer" /> interface. </remarks>
     public class EmbeddedVideo_ItemViewer : abstractItemViewer
     {
         /// <summary> Gets the type of item viewer this object represents </summary>
@@ -67,15 +68,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("EmbeddedVideo_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
-            //Determine the name of the FLASH file
-            string youtube_url = CurrentItem.Bib_Info.Location.Other_URL;
-            if (youtube_url.IndexOf("watch") > 0)
-                youtube_url = youtube_url.Replace("watch?v=", "v/") + "?fs=1&amp;hl=en_US";
-            const int width = 600;
-            const int height = 480;
 
             // Add the HTML for the image
-            StringBuilder result = new StringBuilder(500);
             Output.WriteLine("          <td><div id=\"sbkEmv_ViewerTitle\">Streaming Video</div></td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("        <tr>");

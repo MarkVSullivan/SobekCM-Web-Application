@@ -37,35 +37,35 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
-        /// <param name="isMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
-        /// <param name="popup_form_builder"> Builder for any related popup forms for this element </param>
+        /// <param name="IsMozilla"> Flag indicates if the current browse is Mozilla Firefox (different css choices for some elements)</param>
+        /// <param name="PopupFormBuilder"> Builder for any related popup forms for this element </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, StringBuilder popup_form_builder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the view types for this material when viewed online.";
+                const string DEFAULT_ACRONYM = "Select the view types for this material when viewed online.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -98,12 +98,13 @@ namespace SobekCM.Library.Citation.Elements
             }
             if (Bib.Behaviors.Views_Count > 0)
             {
-                views.AddRange(Bib.Behaviors.Views.Where(itemView => (itemView.View_Type != View_Enum.CITATION) && (itemView.View_Type != View_Enum.ALL_VOLUMES) && (itemView.View_Type != View_Enum.DOWNLOADS) && (itemView.View_Type != View_Enum.FLASH) && (itemView.View_Type != View_Enum.GOOGLE_MAP) && (itemView.View_Type != View_Enum.PDF) && (itemView.View_Type != View_Enum.TOC)));
+                views.AddRange(Bib.Behaviors.Views.Where(ItemView => (ItemView.View_Type != View_Enum.CITATION) && (ItemView.View_Type != View_Enum.ALL_VOLUMES) && (ItemView.View_Type != View_Enum.DOWNLOADS) && (ItemView.View_Type != View_Enum.FLASH) && (ItemView.View_Type != View_Enum.GOOGLE_MAP) && (ItemView.View_Type != View_Enum.PDF) && (ItemView.View_Type != View_Enum.TOC)));
             }
 
             if (views.Count == 0 )
             {
                 const int i = 1;
+
                 // Add the view types select
                 Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + i + "');\">");
                 Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
@@ -137,73 +138,94 @@ namespace SobekCM.Library.Citation.Elements
             }
             else
             {
-                for (int i = 1; i <= views.Count; i++)
+				List<View_Enum> handledTypes = new List<View_Enum> {View_Enum.HTML, View_Enum.JPEG, View_Enum.JPEG2000, View_Enum.GOOGLE_MAP, View_Enum.PAGE_TURNER, View_Enum.RELATED_IMAGES,  View_Enum.TEXT, View_Enum.TEI, View_Enum.JPEG_TEXT_TWO_UP, View_Enum.DATASET_CODEBOOK, View_Enum.DATASET_REPORTS, View_Enum.DATASET_VIEWDATA };
+
+	            for (int i = 1; i <= views.Count; i++)
                 {
-                    // Add the view types select
-                    Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + i + "');\">");
-                    Output.Write(views[i - 1].View_Type == View_Enum.None
-                                     ? "<option value=\"\" selected=\"selected\" >&nbsp;</option>"
-                                     : "<option value=\"\">&nbsp;</option>");
+	                if ((i == 1) || (handledTypes.Contains(views[i - 1].View_Type)))
+	                {
+		                // Add the view types select
+		                Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + i + "');\">");
+		                Output.Write(views[i - 1].View_Type == View_Enum.None
+			                             ? "<option value=\"\" selected=\"selected\" >&nbsp;</option>"
+			                             : "<option value=\"\">&nbsp;</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.HTML
-                                     ? "<option value=\"html\" selected=\"selected\" >HTML</option>"
-                                     : "<option value=\"html\" >HTML</option>");
+						Output.Write(views[i - 1].View_Type == View_Enum.DATASET_CODEBOOK
+										 ? "<option value=\"dscodebook\" selected=\"selected\" >Dataset Codebook</option>"
+										 : "<option value=\"dscodebook\" >Dataset Codebook</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.JPEG
-                                     ? "<option value=\"jpeg\" selected=\"selected\" >JPEG</option>"
-                                     : "<option value=\"jpeg\" >JPEG</option>");
+						Output.Write(views[i - 1].View_Type == View_Enum.DATASET_REPORTS
+										 ? "<option value=\"dsreports\" selected=\"selected\" >Dataset Reports</option>"
+										 : "<option value=\"dsreports\" >Dataset Reports</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.JPEG2000
-                                     ? "<option value=\"jpeg2000\" selected=\"selected\" >JPEG2000</option>"
-                                     : "<option value=\"jpeg2000\" >JPEG2000</option>");
+						Output.Write(views[i - 1].View_Type == View_Enum.DATASET_VIEWDATA
+										 ? "<option value=\"dsviewdata\" selected=\"selected\" >Dataset View Data</option>"
+										 : "<option value=\"dsviewdata\" >Dataset View Data</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP
-                                     ? "<option value=\"map\" selected=\"selected\" >Map Display</option>"
-                                     : "<option value=\"map\" >Map Display</option>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.HTML
+			                             ? "<option value=\"html\" selected=\"selected\" >HTML</option>"
+			                             : "<option value=\"html\" >HTML</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.PAGE_TURNER
-                                     ? "<option value=\"pageturner\" selected=\"selected\" >Page Turner</option>"
-                                     : "<option value=\"pageturner\" >Page Turner</option>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.JPEG
+			                             ? "<option value=\"jpeg\" selected=\"selected\" >JPEG</option>"
+			                             : "<option value=\"jpeg\" >JPEG</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.RELATED_IMAGES
-                                     ? "<option value=\"related\" selected=\"selected\" >Related Images</option>"
-                                     : "<option value=\"related\" >Related Images</option>");
+						Output.Write(views[i - 1].View_Type == View_Enum.JPEG_TEXT_TWO_UP
+										? "<option value=\"jpeg2up\" selected=\"selected\" >JPEG AND TEXT</option>"
+										: "<option value=\"jpeg2up\" >JPEG AND TEXT</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.TEXT
-                                     ? "<option value=\"text\" selected=\"selected\" >Text</option>"
-                                     : "<option value=\"text\" >Text</option>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.JPEG2000
+			                             ? "<option value=\"jpeg2000\" selected=\"selected\" >JPEG2000</option>"
+			                             : "<option value=\"jpeg2000\" >JPEG2000</option>");
 
-                    Output.Write(views[i - 1].View_Type == View_Enum.TEI
-                                    ? "<option value=\"tei\" selected=\"selected\" >TEI</option>"
-                                    : "<option value=\"tei\" >TEI</option>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP
+			                             ? "<option value=\"map\" selected=\"selected\" >Map Display</option>"
+			                             : "<option value=\"map\" >Map Display</option>");
 
-                    Output.Write("</select>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.PAGE_TURNER
+			                             ? "<option value=\"pageturner\" selected=\"selected\" >Page Turner</option>"
+			                             : "<option value=\"pageturner\" >Page Turner</option>");
 
-                    // Add the file sublabel
-                    Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
-                    Output.Write("<span class=\"metadata_sublabel\">File:</span>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.RELATED_IMAGES
+			                             ? "<option value=\"related\" selected=\"selected\" >Related Images</option>"
+			                             : "<option value=\"related\" >Related Images</option>");
 
-                    // Add the file select
-                    Output.Write("<select name=\"" + id_name + "_file" + i + "\" id=\"" + id_name + "_file" + i + "\" class=\"" + html_element_name + "_file\">");
+		                Output.Write(views[i - 1].View_Type == View_Enum.TEXT
+			                             ? "<option value=\"text\" selected=\"selected\" >Text</option>"
+			                             : "<option value=\"text\" >Text</option>");
 
-                    if (views[i - 1].FileName.Length > 0)
-                    {
-                        Output.Write("<option value=\"\">&nbsp;</option>");
-                        Output.Write("<option value=\"" + views[i - 1].FileName + "\" selected=\"selected\">" + views[i - 1].FileName + "</option>");
-                    }
-                    else
-                    {
-                        Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
-                    }
-                    Output.Write("</select>");
+		                Output.Write(views[i - 1].View_Type == View_Enum.TEI
+			                             ? "<option value=\"tei\" selected=\"selected\" >TEI</option>"
+			                             : "<option value=\"tei\" >TEI</option>");
 
-                    // Add the label sublabel
-                    Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
+		                Output.Write("</select>");
 
-                    // Add the label input
-                    Output.Write("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(views[i - 1].Label)  + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input')\" /></span>");
+		                // Add the file sublabel
+		                Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
+		                Output.Write("<span class=\"metadata_sublabel\">File:</span>");
 
-                    Output.WriteLine(i < views.Count ? "<br />" : "</div>");
+		                // Add the file select
+		                Output.Write("<select name=\"" + id_name + "_file" + i + "\" id=\"" + id_name + "_file" + i + "\" class=\"" + html_element_name + "_file\">");
+
+		                if (views[i - 1].FileName.Length > 0)
+		                {
+			                Output.Write("<option value=\"\">&nbsp;</option>");
+			                Output.Write("<option value=\"" + views[i - 1].FileName + "\" selected=\"selected\">" + views[i - 1].FileName + "</option>");
+		                }
+		                else
+		                {
+			                Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
+		                }
+		                Output.Write("</select>");
+
+		                // Add the label sublabel
+		                Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
+
+		                // Add the label input
+		                Output.Write("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(views[i - 1].Label) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input')\" /></span>");
+
+		                Output.WriteLine(i < views.Count ? "<br />" : "</div>");
+	                }
                 }
             }
             Output.WriteLine("          </td>");
@@ -254,6 +276,19 @@ namespace SobekCM.Library.Citation.Elements
                     View_Enum viewType = View_Enum.None;
                     switch (type)
                     {
+
+						case "dscodebook":
+							viewType = View_Enum.DATASET_CODEBOOK;
+							break;
+
+						case "dsreports":
+							viewType = View_Enum.DATASET_REPORTS;
+							break;
+
+						case "dsviewdata":
+							viewType = View_Enum.DATASET_VIEWDATA;
+							break;
+
                         case "html":
                             viewType = View_Enum.HTML;
                             break;
@@ -261,6 +296,10 @@ namespace SobekCM.Library.Citation.Elements
                         case "jpeg":
                             viewType = View_Enum.JPEG;
                             break;
+
+						case "jpeg2up":
+							viewType = View_Enum.JPEG_TEXT_TWO_UP;
+							break;
 
                         case "jpeg2000":
                             viewType = View_Enum.JPEG2000;
@@ -311,9 +350,9 @@ namespace SobekCM.Library.Citation.Elements
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
         /// <summary> Reads the inner data from the Template XML format </summary>
-        /// <param name="xmlReader"> Current template xml configuration reader </param>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data(XmlTextReader xmlReader)
+        protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
             // Do nothing
         }

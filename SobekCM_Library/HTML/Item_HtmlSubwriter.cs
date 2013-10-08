@@ -1162,8 +1162,9 @@ namespace SobekCM.Library.HTML
 
 			    // Save the current view type
 			    ushort page = currentMode.Page;
+			    ushort subpage = currentMode.SubPage;
 			    string viewerCode = currentMode.ViewerCode;
-
+			    currentMode.SubPage = 0;
 
 			    // Add the item level views
 			    foreach (View_Object thisView in currentItem.Behaviors.Views)
@@ -1417,6 +1418,7 @@ namespace SobekCM.Library.HTML
 			    // Set current submode back
 			    currentMode.Page = page;
 			    currentMode.ViewerCode = viewerCode;
+			    currentMode.SubPage = subpage;
 
 
 

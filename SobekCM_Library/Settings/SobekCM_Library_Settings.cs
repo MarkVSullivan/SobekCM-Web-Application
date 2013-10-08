@@ -26,7 +26,7 @@ namespace SobekCM.Library.Settings
         public const string CURRENT_WEB_VERSION = "3.20 BETA";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        public const string CURRENT_BUILDER_VERSION = "3.20 BETA";
+        public const string CURRENT_BUILDER_VERSION = "3.30 BETA";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -159,9 +159,10 @@ namespace SobekCM.Library.Settings
                 
                 Refresh(SobekCM_Database.Get_Settings_Complete(null));
             }
-            catch (Exception)
+            catch (Exception ee)
             {
                 // Do nothing here
+	            mangoUnionSearchBaseUrl = ee.Message;
             }
         }
 

@@ -237,16 +237,21 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && ( String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", true ) != 0 ))
                         {
-                            // Is this the first image file with this name?
-                            if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-                            {
-                                download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                            }
-                            else
-                            {
-                                List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-                                download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-                            }
+							// Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
+							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
+								((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf( Item_To_Complete.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+	                        {
+		                        // Is this the first image file with this name?
+		                        if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+		                        {
+			                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+		                        }
+		                        else
+		                        {
+			                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
+			                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+		                        }
+	                        }
                         }
                     }
                 }
@@ -494,16 +499,20 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, item.BibID + "_" + item.VID + ".html", true) != 0))
                         {
-                            // Is this the first image file with this name?
-                            if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-                            {
-                                download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                            }
-                            else
-                            {
-                                List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-                                download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-                            }
+	                        if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
+	                            ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(item.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+	                        {
+		                        // Is this the first image file with this name?
+		                        if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+		                        {
+			                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+		                        }
+		                        else
+		                        {
+			                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
+			                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+		                        }
+	                        }
                         }
                     }
                 }

@@ -139,9 +139,13 @@ function initDeclarations() {
             savingMarkerCenter: null,                   //holds marker coords to save
             CustomOverlay: null,                        //does nothing
             cCoordsFrozen: "no",                        //used to freeze/unfreeze coordinate viewer
+            mainCount: 0,                               //hold debug main count
+            incomingACL: "item",                        //hold default incoming ACL (determined in displaying points/overlays)
+            incomingPointFeatureType: [],               //defined in c# to js on page
             incomingPointCenter: [],                    //defined in c# to js on page
             incomingPointLabel: [],                     //defined in c# to js on page
             incomingPointSourceURL: [],                 //defined in c# to js on page
+            incomingOverlayFeatureType: [],             //defined in c# to js on page
             incomingOverlayBounds: [],                  //defined in c# to js on page
             incomingOverlayLabel: [],                   //defined in c# to js on page
             incomingOverlaySourceURL: [],               //defined in c# to js on page
@@ -161,11 +165,13 @@ function initDeclarations() {
                 fillOpacity: 0.0,                       //make fill transparent
                 editable: false,                        //sobek standard
                 draggable: false,                       //sobek standard
+                clickable: false,                       //sobek standard
                 zindex: 5                               //perhaps higher?
             },
             editable: {                                 //define options for visible and globalVar.editable
                 editable: true,                         //sobek standard
                 draggable: true,                        //sobek standard
+                clickable: true,                        //sobek standard
                 strokeOpacity: 0.2,                     //sobek standard
                 strokeWeight: 1,                        //sobek standard
                 fillOpacity: 0.0,                       //sobek standard 
@@ -204,6 +210,7 @@ var L_Rectangle = "Rectangle";
 var L_Polygon = "Polygon";
 var L_Line = "Line";
 var L_Saved = "Saved";
+var L_Applied = "Applied";
 var L_NotSaved = "Nothing To Save";
 var L_NotCleared = "Nothing to Reset";
 var L_Save = "Save";
@@ -1260,35 +1267,40 @@ function action(id) {
                 globalVar.mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
-            globalVar.placerType = "item";
+            
             //save 
-            globalVar.RIBMode = true;
-            save("overlay");
-            save("poi");
-            globalVar.RIBMode = false;
+            //globalVar.RIBMode = true;
+            //save("overlay");
+            //save("poi");
+            //globalVar.RIBMode = false;
+            
+            globalVar.placerType = "item";
             place("item");
 
             break;
 
         case "manageOverlay":
-            globalVar.userMayLoseData = true;
+            globalVar.userMayLoseData = true; //mark that we may lose data if we exit page
+            
             globalVar.actionActive = "Overlay"; //notice case (uppercase is tied to the actual div)
-            buttonActive("action");
+            buttonActive("action"); 
+            
             if (globalVar.toolboxDisplayed != true) {
                 toggleVis("toolbox");
             }
             openToolboxTab(3);
-            //force a suppression dm
+            
+            //force a suppression of dm
             if (globalVar.mapDrawingManagerDisplayed == true) {
                 globalVar.mapDrawingManagerDisplayed = true;
                 toggleVis("mapDrawingManager");
             }
 
             //save
-            globalVar.RIBMode = true;
-            save("item");
-            save("poi");
-            globalVar.RIBMode = false;
+            //globalVar.RIBMode = true;
+            //save("item");
+            //save("poi");
+            //globalVar.RIBMode = false;
 
             //place
             globalVar.placerType = "overlay";
@@ -1307,10 +1319,10 @@ function action(id) {
             toggleVis("mapDrawingManager");
 
             //save
-            globalVar.RIBMode = true;
-            save("item");
-            save("overlay");
-            globalVar.RIBMode = false;
+            //globalVar.RIBMode = true;
+            //save("item");
+            //save("overlay");
+            //globalVar.RIBMode = false;
 
             //place
             globalVar.placerType = "poi";
@@ -1329,11 +1341,11 @@ function action(id) {
             }
 
             //save
-            globalVar.RIBMode = true;
-            save("item");
-            save("overlay");
-            save("poi");
-            globalVar.RIBMode = false;
+            //globalVar.RIBMode = true;
+            //save("item");
+            //save("overlay");
+            //save("poi");
+            //globalVar.RIBMode = false;
 
             globalVar.placerType = "none";
 
@@ -1385,7 +1397,28 @@ function place(id) {
             break;
 
         case "overlay":
-            buttonActive("overlayPlace");
+            
+            //if (globalVar.currentlyEditingOverlays == true) {
+
+            //    document.getElementById("content_menubar_overlayEdit").className += " isActive2";
+            //    document.getElementById("content_toolbox_button_overlayEdit").className += " isActive";
+
+            //    document.getElementById("content_menubar_overlayPlace").className += " isActive2";
+            //    document.getElementById("content_toolbox_button_overlayPlace").className += " isActive";
+                
+            //} else {
+
+            //    document.getElementById("content_menubar_overlayEdit").className = document.getElementById("content_menubar_overlayEdit").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
+            //    document.getElementById("content_toolbox_button_overlayEdit").className = document.getElementById("content_toolbox_button_overlayEdit").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                
+            //    document.getElementById("content_menubar_overlayPlace").className = document.getElementById("content_menubar_overlayPlace").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
+            //    document.getElementById("content_toolbox_button_overlayPlace").className = document.getElementById("content_toolbox_button_overlayPlace").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+
+            //}
+            
+            //buttonActive("overlayEdit");
+            //buttonActive("overlayPlace");
+
             globalVar.placerType = "overlay";
             if (globalVar.incomingOverlayBounds.length > 0) {
                 if (globalVar.pageMode == "edit") {
@@ -1396,9 +1429,19 @@ function place(id) {
                         }
                     }
                     displayMessage(L26);
+                    document.getElementById("content_menubar_overlayEdit").className = document.getElementById("content_menubar_overlayEdit").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
+                    document.getElementById("content_toolbox_button_overlayEdit").className = document.getElementById("content_toolbox_button_overlayEdit").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                    document.getElementById("content_menubar_overlayPlace").className = document.getElementById("content_menubar_overlayPlace").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
+                    document.getElementById("content_toolbox_button_overlayPlace").className = document.getElementById("content_toolbox_button_overlayPlace").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                    
                 } else {
                     globalVar.pageMode = "edit";
                     displayMessage(L27);
+                    document.getElementById("content_menubar_overlayEdit").className += " isActive2";
+                    document.getElementById("content_toolbox_button_overlayEdit").className += " isActive";
+                    document.getElementById("content_menubar_overlayPlace").className += " isActive2";
+                    document.getElementById("content_toolbox_button_overlayPlace").className += " isActive";
+                    
                 }
                 //toggleOverlayEditor(); 
             } else {
@@ -1552,7 +1595,7 @@ function save(id) {
                 if (globalVar.firstSaveItem == true) {
                     de("saving location: " + globalVar.savingMarkerCenter);
                     //save to temp xml file
-                    createSavedItem(globalVar.savingMarkerCenter);
+                    createSavedItem("save", globalVar.savingMarkerCenter);
                     //reset first save
                     globalVar.firstSaveItem = false;
                     //change save button to apply button
@@ -1562,8 +1605,11 @@ function save(id) {
                 } else {
                     //apply the changes
                     de("Applying Changes...");
-                    //currently doesnt do anything
-
+                    de("applying location: " + globalVar.savingMarkerCenter);
+                    //save to live areas
+                    createSavedItem("apply", globalVar.savingMarkerCenter);
+                    //reset first save
+                    globalVar.firstSaveItem = true;
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_saveItem").value = L37;
                     document.getElementById("content_toolbox_button_saveitem").title = L38;
@@ -1584,7 +1630,7 @@ function save(id) {
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
                         de("saving overlay: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
-                        createSavedOverlay(globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                        createSavedOverlay("save", globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = false;
@@ -1602,7 +1648,13 @@ function save(id) {
                 if (globalVar.savingOverlayIndex.length) {
                     //apply the changes
                     de("Applying Changes...");
-                    //currently doesnt do anything
+                    for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
+                        //save to temp xml file
+                        de("applying overlay: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                        createSavedOverlay("apply", globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                    }
+                    //reset first save
+                    globalVar.firstSaveOverlay = true;
                 } else {
                     displayMessage(L_NotSaved);
                 }
@@ -1614,27 +1666,13 @@ function save(id) {
             break;
 
         case "poi":
-
-            //save
-
-            //save to temp xml file
-            if (globalVar.poiObj.length > 0) {
-                de("saving " + globalVar.poiObj.length + " POIs...");
-                createSavedPOI();
-                //displayMessage(L_Saved); //not used here
-            } else {
-                displayMessage(L_NotSaved);
-            }
-
-            //apply
-
             //is this the first time saving a changed item? (apply changes)
             if (globalVar.firstSavePOI == true) {
                 //determine if there is something to save
                 if (globalVar.poiObj.length > 0) {
                     //save to temp xml file
                     de("saving " + globalVar.poiObj.length + " POIs...");
-                    createSavedPOI();
+                    createSavedPOI("save");
                     //reset first save
                     globalVar.firstSavePOI = false;
                     //change save button to apply button
@@ -1651,7 +1689,11 @@ function save(id) {
                     if (globalVar.poiObj.length > 0) {
                         //apply the changes
                         de("Applying Changes...");
-                        //currently doesnt do anything
+                        de("applying " + globalVar.poiObj.length + " POIs...");
+                        //apply changes
+                        createSavedPOI("apply");
+                        //reset first save
+                        globalVar.firstSavePOI = true;
                     } else {
                         displayMessage(L_NotSaved);
                     }
@@ -1896,6 +1938,7 @@ function initialize() {
 
     //initialize drawingmanger listeners
     google.maps.event.addListener(drawingManager, 'markercomplete', function (marker) {
+        
         testBounds(); //are we still in the bounds 
         if (globalVar.placerType == "item") {
             globalVar.firstSaveItem = true;
@@ -1936,25 +1979,25 @@ function initialize() {
             var contentString = writeHTML("poiDesc", globalVar.poi_i, "", "");
             infoWindow[globalVar.poi_i] = new google.maps.InfoWindow({
                 content: contentString,
-                position: marker.getPosition(),
-                pixelOffset: new google.maps.Size(0, -40)
+                position: marker.getPosition()
+                //pixelOffset: new google.maps.Size(0, -40)
             });
 
             infoWindow[globalVar.poi_i].setMap(map);
             
-            //infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
+            infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
 
-            if (globalVar.poiCount > 0) {
-                infoWindow[globalVar.poi_i].open(map);
-            } else {
-                infoWindow[globalVar.poi_i].setMap(map);
-                infoWindow[globalVar.poi_i].setMap(null);
-                alert(navigator.platform);
-                //if (navigator.platform)
-                var t2 = setTimeout(function () {
-                    infoWindow[globalVar.poi_i].setMap(map);
-                }, 1500);
-            }
+            //if (globalVar.poiCount > 0) {
+            //    infoWindow[globalVar.poi_i].open(map);
+            //} else {
+            //    infoWindow[globalVar.poi_i].setMap(map);
+            //    infoWindow[globalVar.poi_i].setMap(null);
+            //    de("platform: " + navigator.platform);
+            //    //if (navigator.platform)
+            //    var t2 = setTimeout(function () {
+            //        infoWindow[globalVar.poi_i].setMap(map);
+            //    }, 1500);
+            //}
             
             globalVar.poiCount++;
             
@@ -2617,23 +2660,125 @@ function initialize() {
 //Displays all the points sent from the C# code.
 function displayIncomingPoints() {
     if (globalVar.incomingPointCenter) {
-        //go through and display points as long as there is a point to display (note, currently only supports one point)
+        //go through and display points as long as there is a point to display
         for (var i = 0; i < globalVar.incomingPointCenter.length; i++) {
-            globalVar.firstMarker++;
-            globalVar.itemMarker = new google.maps.Marker({
-                position: globalVar.incomingPointCenter[i],
-                map: map,
-                draggable: true,
-                title: globalVar.incomingPointLabel[i]
-            });
-            document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
-            codeLatLng(globalVar.itemMarker.getPosition());
-            google.maps.event.addListener(globalVar.itemMarker, 'dragend', function () {
-                globalVar.firstSaveItem = true;
-                globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition(); //store coords to save
-                document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
-                codeLatLng(globalVar.itemMarker.getPosition());
-            });
+            switch (globalVar.incomingPointFeatureType[i]) {
+                case "":
+                    globalVar.placerType = "item";
+                    globalVar.firstMarker++;
+                    globalVar.itemMarker = new google.maps.Marker({
+                        position: globalVar.incomingPointCenter[i],
+                        map: map,
+                        draggable: true,
+                        title: globalVar.incomingPointLabel[i]
+                    });
+                    document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                    codeLatLng(globalVar.itemMarker.getPosition());
+                    google.maps.event.addListener(globalVar.itemMarker, 'dragend', function () {
+                        globalVar.firstSaveItem = true;
+                        globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition(); //store coords to save
+                        document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                        codeLatLng(globalVar.itemMarker.getPosition());
+                    });
+                    globalVar.mainCount++;
+                    globalVar.incomingACL = "item";
+                    break;
+                case "main":
+                    globalVar.placerType = "item";
+                    globalVar.firstMarker++;
+                    globalVar.itemMarker = new google.maps.Marker({
+                        position: globalVar.incomingPointCenter[i],
+                        map: map,
+                        draggable: true,
+                        title: globalVar.incomingPointLabel[i]
+                    });
+                    document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                    codeLatLng(globalVar.itemMarker.getPosition());
+                    google.maps.event.addListener(globalVar.itemMarker, 'dragend', function () {
+                        globalVar.firstSaveItem = true;
+                        globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition(); //store coords to save
+                        document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
+                        codeLatLng(globalVar.itemMarker.getPosition());
+                    });
+                    globalVar.mainCount++;
+                    globalVar.incomingACL = "item";
+                    break;
+                case "poi":
+                    de("incoming poi: " + i + " " + globalVar.incomingPointLabel[i]);
+                    globalVar.placerType = "poi";
+                    var marker = new google.maps.Marker({
+                        position: globalVar.incomingPointCenter[i],
+                        map: map,
+                        draggable: true,
+                        title: globalVar.incomingPointLabel[i]
+                    });
+                    de("incoming center: " + marker.getPosition());
+                    if (globalVar.placerType == "poi") {
+                        globalVar.firstSavePOI = true;
+                        globalVar.poi_i++;
+                        label[globalVar.poi_i] = new MarkerWithLabel({
+                            position: marker.getPosition(), //position of real marker
+                            map: map,
+                            zIndex: 2,
+                            labelContent: globalVar.incomingPointLabel[(i)],
+                            labelAnchor: new google.maps.Point(15, 0),
+                            labelClass: "labels", // the CSS class for the label
+                            labelStyle: { opacity: 0.75 },
+                            icon: {} //initialize to nothing so no marker shows
+                        });
+                        globalVar.poiObj[globalVar.poi_i] = marker;
+                        globalVar.poiType[globalVar.poi_i] = "marker";
+                        var poiId = globalVar.poi_i + 1;
+                        var poiDescTemp = globalVar.incomingPointLabel[i];
+                        document.getElementById("poiList").innerHTML += writeHTML("poiListItemIncoming", globalVar.poi_i, poiId, poiDescTemp);
+                        globalVar.poiDesc[globalVar.poi_i] = poiDescTemp;
+                        var contentString = writeHTML("poiDescIncoming", globalVar.poi_i, poiDescTemp,"");
+                        infoWindow[globalVar.poi_i] = new google.maps.InfoWindow({
+                            content: contentString,
+                            position: marker.getPosition()
+                            //pixelOffset: new google.maps.Size(0, -40)
+                        });
+                        infoWindow[globalVar.poi_i].setMap(map);
+                        infoWindow[globalVar.poi_i].open(map, globalVar.poiObj[globalVar.poi_i]);
+                        globalVar.poiCount++;
+                    }
+                    google.maps.event.addListener(marker, 'dragstart', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setMap(null);
+                                    label[i].setMap(null);
+                                }
+                            }
+                        }
+                    });
+                    google.maps.event.addListener(marker, 'dragend', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                    infoWindow[i].open(null);
+                                    label[i].setPosition(this.getPosition());
+                                    label[i].setMap(map);
+                                }
+                            }
+                        }
+                    });
+                    google.maps.event.addListener(marker, 'click', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                    infoWindow[i].open(map);
+                                }
+                            }
+                        }
+                    });
+                    break;
+            }
         }
     } else {
         globalVar.firstMarker++;
@@ -2645,19 +2790,78 @@ function displayIncomingPoints() {
         });
         //nothing to display because there is no geolocation of item
     }
-
+    //once everything is drawn, determine if there are pois
+    if (globalVar.poiCount > 0) {
+        //close and reopen pois (to fix firefox bug)
+        setTimeout(function () {
+            globalVar.RIBMode = true;
+            toggleVis("pois");
+            toggleVis("pois");
+            globalVar.RIBMode = false;
+            //this hides the infowindows at startup
+            for (var j = 0; j < globalVar.poiCount; j++) {
+                infoWindow[j].setMap(null);
+            }
+        }, 1000);
+    }
 }
 
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingOverlays() {
-    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) {                                                                                //go through and display overlays as long as there is an overlay to display
-        globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);    //create overlay with incoming
-        globalVar.overlaysOnMap[i].setMap(map);                                                                                                       //set the overlay to the map
+    //go through and display overlays as long as there is an overlay to display
+    for (var i = 0; i < globalVar.incomingOverlayBounds.length; i++) {
 
-        setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);                                                                                       //set hotspot on top of overlay
-        de("I created ghost: " + i);
+        switch (globalVar.incomingOverlayFeatureType[i]) {
+            case "":
+                globalVar.workingOverlayIndex = i;
+                //create overlay with incoming
+                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);
+                globalVar.currentlyEditing = "no";
+                //set the overlay to the map
+                globalVar.overlaysOnMap[i].setMap(map);
+                //set hotspot on top of overlay
+                setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);
+                de("I created ghost: " + i);
+                globalVar.mainCount++;
+                globalVar.incomingACL = "overlay";
+                break;
+            case "main":
+                globalVar.workingOverlayIndex = i;
+                //create overlay with incoming
+                globalVar.overlaysOnMap[i] = new CustomOverlay(i, globalVar.incomingOverlayBounds[i], globalVar.incomingOverlaySourceURL[i], map, globalVar.incomingOverlayRotation[i]);
+                globalVar.currentlyEditing = "no";
+                //set the overlay to the map
+                globalVar.overlaysOnMap[i].setMap(map);
+                //set hotspot on top of overlay
+                setGhostOverlay(i, globalVar.incomingOverlayBounds[i]);
+                de("I created ghost: " + i);
+                globalVar.mainCount++;
+                globalVar.incomingACL = "overlay";
+                break;
+            case "poi":
+                //determine which type of poi it is and handle from there
+                
+                break;
+        }
     }
     globalVar.overlaysCurrentlyDisplayed = true;
+    
+    //once everything is drawn, determine if there are pois
+    if (globalVar.poiCount > 0) {
+        //close and reopen pois (to fix firefox bug)
+        setTimeout(function () {
+            globalVar.RIBMode = true;
+            toggleVis("pois");
+            toggleVis("pois");
+            globalVar.RIBMode = false;
+
+            //this hides the infowindows at startup
+            for (var j = 0; j < globalVar.poiCount; j++) {
+                infoWindow[j].setMap(null);
+            }
+
+        }, 1000);
+    }
 }
 
 //clears all incoming overlays
@@ -2770,13 +2974,13 @@ function cacheSaveOverlay(index) {
 //Starts the creation of a custom overlay div which contains a rectangular image.
 //Supporting URL: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
 function CustomOverlay(id, bounds, image, map, rotation) {
-    globalVar.overlayCount++;                 //iterate how many overlays have been drawn
-    this.bounds_ = bounds;          //set the bounds
-    this.image_ = image;            //set source url
-    this.map_ = map;                //set to map
-    globalVar.preservedRotation = rotation;   //set the rotation
-    this.div_ = null;               //defines a property to hold the image's div. We'll actually create this div upon receipt of the onAdd() method so we'll leave it null for now.
-    this.index_ = id;               //set the index/id of this overlay
+    globalVar.overlayCount++;                   //iterate how many overlays have been drawn
+    this.bounds_ = bounds;                      //set the bounds
+    this.image_ = image;                        //set source url
+    this.map_ = map;                            //set to map
+    globalVar.preservedRotation = rotation;     //set the rotation
+    this.div_ = null;                           //defines a property to hold the image's div. We'll actually create this div upon receipt of the onAdd() method so we'll leave it null for now.
+    this.index_ = id;                           //set the index/id of this overlay
 }
 
 //#endregion
@@ -3026,20 +3230,46 @@ function initOptions() {
     de("[WARN]: #mapedit_container_pane_0 background color must be set manually if changed from default.");
     document.getElementById("mapedit_container_pane_0").style.display = "block";
 
-    //determine ACL placer type
-    if (globalVar.incomingPointCenter.length > 0) {
-        //there is an item
-        actionsACL("full", "item");
-    } else {
-        if (globalVar.incomingOverlayBounds.length > 0) {
-            //there are overlays
+    //var mainCount = 0;
+    ////determine ACL placer type
+    //if (globalVar.incomingPointCenter.length > 0) {
+    //    //determine if any points are "main"
+    //    for (var i = 0; i < globalVar.incomingPointCenter.length; i++) {
+    //        if (globalVar.incomingPointFeatureType[i] == "main" || globalVar.incomingPointFeatureType[i] == "") {
+    //            mainCount++;
+    //            //globalVar.incomingACL = "item";
+    //            actionsACL("full", "item");
+    //        }
+    //    }
+    //} else {
+    //    if (globalVar.incomingOverlayBounds.length > 0) {
+    //        for (var j = 0; j < globalVar.incomingOverlayBounds.length; j++) {
+    //            if (globalVar.incomingOverlayFeatureType[j] == "main" || globalVar.incomingOverlayFeatureType[j] == "") {
+    //                mainCount++;
+    //                //globalVar.incomingACL = "overlay";
+    //                actionsACL("full", "overlay");
+    //            }
+    //        }
+    //    } else {
+    //        //(if no geo detected, open item first [from there you can convert to overlay] this is just a command decision)
+    //        actionsACL("full", "item"); 
+    //        //actionsACL("full", "overlay");
+    //        //actionsACL("full", "poi"); //not yet implemented
+    //    }
+    //}
+
+    switch (globalVar.incomingACL) {
+        case "item":
+            actionsACL("full", "item");
+            break;
+        case "overlay":
             actionsACL("full", "overlay");
-        } else {
-            actionsACL("full", "item"); //(if no geo detected, open item first [from there you can convert to overlay] this is just a command decision)
-            //actionsACL("full", "overlay");
-            //actionsACL("full", "poi"); //not yet implemented
-        }
+            break;
+        case "poi":
+            actionsACL("full", "poi");
+            break;
     }
+    de("main count: " + globalVar.mainCount);
 
     //determine ACL maptype toggle
     if (globalVar.hasCustomMapType == true) {
@@ -3220,7 +3450,7 @@ function buttonActive(id) {
         //    } else { //present
         //        document.getElementById("content_menubar_overlayPlace").className += " isActive2";
         //        document.getElementById("content_toolbox_button_overlayPlace").className += " isActive";
-        //        lobalVar.buttonActive_overlayPlace = false;
+        //        globalVar.buttonActive_overlayPlace = false;
         //    }
         //    break;
         case "overlayToggle":
@@ -3359,8 +3589,8 @@ function displayMessage(message) {
 }
 
 //create a package to send to server to save item location
-function createSavedItem(coordinates) {
-    var messageType = "item"; //define what message type it is
+function createSavedItem(handle, coordinates) {
+    var messageType = handle + "|" + "item"; //define what message type it is
     //assign data
     var data = messageType + "|" + coordinates + "|";
     var dataPackage = data + "~";
@@ -3369,13 +3599,13 @@ function createSavedItem(coordinates) {
 }
 
 //create a package to send to server to save overlay
-function createSavedOverlay(label, source, bounds, rotation) {
+function createSavedOverlay(handle, label, source, bounds, rotation) {
     var temp = source;
     if (temp.contains("~") || temp.contains("|")) { //check to make sure reserve characters are not there
         displayMessage(L7);
     }
     //var formattedBounds = 
-    var messageType = "overlay"; //define what message type it is
+    var messageType = handle + "|" + "overlay"; //define what message type it is
     var data = messageType + "|" + label + "|" + bounds + "|" + source + "|" + rotation + "|";
     var dataPackage = data + "~";
     de("saving overlay set: " + dataPackage); //temp
@@ -3383,8 +3613,8 @@ function createSavedOverlay(label, source, bounds, rotation) {
 }
 
 //create a package to send to the server to save poi
-function createSavedPOI() {
-    var dataPackage = null;
+function createSavedPOI(handle) {
+    var dataPackage = "";
     //cycle through all pois
     de("poi length: " + globalVar.poiObj.length);
     for (var i = 0; i < globalVar.poiObj.length; i++) {
@@ -3397,7 +3627,7 @@ function createSavedPOI() {
                 globalVar.poiKML[i] = globalVar.poiObj[i].getCenter() + "|";
                 globalVar.poiKML[i] += globalVar.poiObj[i].getRadius();
                 break;
-            case "globalVar.rectangle":
+            case "rectangle":
                 globalVar.poiKML[i] = globalVar.poiObj[i].getBounds().toString();
                 break;
             case "polygon":
@@ -3419,7 +3649,7 @@ function createSavedPOI() {
         //filter out the deleted pois
         if (globalVar.poiType[i] != "deleted") {
             //compile data message
-            var data = "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
+            var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
             dataPackage += data + "~";
         }
     }
@@ -3431,19 +3661,43 @@ function createSavedPOI() {
 
 }
 
+////sends save dataPackages to the server via json
+//function toServer(dataPackage) {
+//    var scriptURL = "default/scripts/serverside/Scripts.aspx";
+//    $.ajax({
+//        type: "POST",
+//        url: globalVar.baseURL + scriptURL + "/SaveItem",
+//        data: JSON.stringify({ sendData: dataPackage }),
+//        contentType: "application/json; charset=utf-8",
+//        dataType: "json",
+//        success: function (result) {
+//            de("server result:" + result);
+//            displayMessage(L_Saved);
+//        }
+//    });
+//}
+
 //sends save dataPackages to the server via json
 function toServer(dataPackage) {
-    var scriptURL = "default/scripts/serverside/Scripts.aspx";
-    $.ajax({
-        type: "POST",
-        url: globalVar.baseURL + scriptURL + "/SaveItem",
-        data: JSON.stringify({ sendData: dataPackage }),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (result) {
-            de("server result:" + result);
-            displayMessage(L_Saved);
-        }
+
+    jQuery('form').each(function() {
+
+        var payload = JSON.stringify({ sendData: dataPackage });
+        var hiddenfield = document.getElementById('payload');
+        hiddenfield.value = payload;
+        var hiddenfield2 = document.getElementById('action');
+        hiddenfield2.value = 'save';
+
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: window.location.href.toString(),
+            data: jQuery(this).serialize(),
+            success: function(result) {
+                //de("server result:" + result);
+                displayMessage(L_Saved);
+            }
+        });
     });
 }
 
@@ -3514,6 +3768,7 @@ function overlayDeleteMe(id) {
 function poiEditMe(id) {
     globalVar.poiObj[id].setMap(map);
     infoWindow[id].setMap(map);
+    label[id].setMap(map);
     //document.getElementById("overlayListItem" + id).style.backgroundColor = "red"; //not implemented yet
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }
@@ -3567,12 +3822,12 @@ function poiGetDesc(id) {
             var tempHTMLHolder1 = document.getElementById("poiList").innerHTML.replace(globalVar.poiDesc[id], temp);
             document.getElementById("poiList").innerHTML = tempHTMLHolder1;
 
-            de("tempHTMLHolder1: " + tempHTMLHolder1);
+            //de("tempHTMLHolder1: " + tempHTMLHolder1);
             de("globalVar.poiDesc[id].substring(0, 20): " + globalVar.poiDesc[id].substring(0, 20));
             de("temp.substring(0, 20): " + temp.substring(0, 20));
 
-            //now replace the title (order is important)
-            var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace("> " + globalVar.poiDesc[id].substring(0, 20), "> " + temp.substring(0, 20));
+            //now replace the list item (order is important)
+            var tempHTMLHolder2 = document.getElementById("poiList").innerHTML.replace(">" + globalVar.poiDesc[id].substring(0, 20), ">" + temp.substring(0, 20));
             //now post all this back to the listbox
             document.getElementById("poiList").innerHTML = tempHTMLHolder2;
 
@@ -3916,6 +4171,9 @@ function convertToOverlay() {
         actionsACL("none", "item");
         actionsACL("full", "overlay");
 
+        //fixes a bug
+        globalVar.incomingOverlayFeatureType[0] = "main";
+
         //a simple marker to fix a bug
         //isConverted = true;
 
@@ -4047,12 +4305,26 @@ function writeHTML(type, param1, param2, param3) {
     switch (type) {
         case "poiListItem":
             de("Creating html String");
-            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\" New" + param3 + param2 + " \"> New" + param3 + param2 + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            //if (globalVar.incomingPointLabel[param1] == "") {
+            //    globalVar.poiDesc[param1] = "New" + param3 + param2;
+            //} else {
+            //    globalVar.poiDesc[param1] = globalVar.incomingPointLabel[param1];
+            //}
             globalVar.poiDesc[param1] = "New" + param3 + param2;
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + globalVar.poiDesc[param1] + " \">" + globalVar.poiDesc[param1] + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            break;
+        case "poiListItemIncoming":
+            de("Creating html String");
+            globalVar.poiDesc[param1] = param3;
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + param3 + " \">" + param3 + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
             break;
         case "poiDesc":
             de("Creating html String");
             htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
+            break;
+        case "poiDescIncoming":
+            de("Creating html String");
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\">" + param2 + "</textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
             break;
         case "overlayListItem":
             de("Creating html String");

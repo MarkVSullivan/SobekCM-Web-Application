@@ -287,6 +287,15 @@ namespace SobekCM.Resource_Object.Database
 						}
 						break;
 
+					case View_Enum.JPEG_TEXT_TWO_UP:
+						if (!view_type_ids.Contains(14))
+						{
+							view_type_ids.Add(14);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
 					case View_Enum.JPEG2000:
 						if (!view_type_ids.Contains(2))
 						{
@@ -311,43 +320,28 @@ namespace SobekCM.Resource_Object.Database
 			{
 				switch (thisView.View_Type)
 				{
-					case View_Enum.RELATED_IMAGES:
-						view_type_ids.Add(8);
-						view_labels.Add(String.Empty);
-						view_attributes.Add(String.Empty);
-						break;
-
-					case View_Enum.JPEG:
-						if (!view_type_ids.Contains(1))
+					case View_Enum.DATASET_CODEBOOK:
+						if (!view_type_ids.Contains(11))
 						{
-							view_type_ids.Add(1);
+							view_type_ids.Add(11);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
 						break;
 
-					case View_Enum.JPEG2000:
-						if (!view_type_ids.Contains(2))
+					case View_Enum.DATASET_REPORTS:
+						if (!view_type_ids.Contains(12))
 						{
-							view_type_ids.Add(2);
+							view_type_ids.Add(12);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
 						break;
 
-					case View_Enum.TEXT:
-						if (!view_type_ids.Contains(3))
+					case View_Enum.DATASET_VIEWDATA:
+						if (!view_type_ids.Contains(13))
 						{
-							view_type_ids.Add(3);
-							view_labels.Add(String.Empty);
-							view_attributes.Add(String.Empty);
-						}
-						break;
-
-					case View_Enum.PAGE_TURNER:
-						if (!view_type_ids.Contains(4))
-						{
-							view_type_ids.Add(4);
+							view_type_ids.Add(13);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
@@ -366,6 +360,63 @@ namespace SobekCM.Resource_Object.Database
 						view_type_ids.Add(6);
 						view_labels.Add(thisView.Label);
 						view_attributes.Add(thisView.Attributes);
+						break;
+
+					case View_Enum.JPEG:
+						if (!view_type_ids.Contains(1))
+						{
+							view_type_ids.Add(1);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.JPEG_TEXT_TWO_UP:
+						if (!view_type_ids.Contains(14))
+						{
+							view_type_ids.Add(14);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.JPEG2000:
+						if (!view_type_ids.Contains(2))
+						{
+							view_type_ids.Add(2);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.PAGE_TURNER:
+						if (!view_type_ids.Contains(4))
+						{
+							view_type_ids.Add(4);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.RELATED_IMAGES:
+						view_type_ids.Add(8);
+						view_labels.Add(String.Empty);
+						view_attributes.Add(String.Empty);
+						break;
+
+					case View_Enum.TEI:
+						view_type_ids.Add(10);
+						view_labels.Add(String.Empty);
+						view_attributes.Add(String.Empty);
+						break;
+
+					case View_Enum.TEXT:
+						if (!view_type_ids.Contains(3))
+						{
+							view_type_ids.Add(3);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
 						break;
 
 					case View_Enum.TOC:
@@ -443,12 +494,12 @@ namespace SobekCM.Resource_Object.Database
 				param_list[i++] = new SqlParameter("@PageCount", thisPackage.Divisions.Page_Count);
 				param_list[i++] = new SqlParameter("@FileCount", thisPackage.Divisions.Files.Count);
 				param_list[i++] = new SqlParameter("@Title", thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title);
-				param_list[i++] = new SqlParameter("@SortTitle", thisPackage.Bib_Info.sortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false));
+				param_list[i++] = new SqlParameter("@SortTitle", thisPackage.Bib_Info.SortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false));
 				param_list[i++] = new SqlParameter("@AccessMethod", 1);
 				param_list[i++] = new SqlParameter("@Link", link);
 				param_list[i++] = new SqlParameter("@CreateDate", DateTime.Now);
 				param_list[i++] = new SqlParameter("@PubDate", pubdate);
-				param_list[i++] = new SqlParameter("@SortDate", thisPackage.Bib_Info.sortSafeDate(pubdate));
+				param_list[i++] = new SqlParameter("@SortDate", thisPackage.Bib_Info.SortSafeDate(pubdate));
 				param_list[i++] = new SqlParameter("@Author", author_builder.ToString());
 				param_list[i++] = new SqlParameter("@Spatial_KML", spatial_kml);
 				param_list[i++] = new SqlParameter("@Spatial_KML_Distance", spatial_distance);
@@ -1313,7 +1364,7 @@ namespace SobekCM.Resource_Object.Database
 			}           
 
 			// Save the main information, and keep the item id
-            Save_Item_Group_Args saveArgs = Save_Item_Group(thisPackage.BibID, groupTitle, thisPackage.Bib_Info.sortSafeTitle(groupTitle, true), thisPackage.Bib_Info.SobekCM_Type_String, thisPackage.Web.File_Root, String.Empty, false, createDate, OCLC_Number, ALEPH_Number, thisPackage.Tracking.Large_Format, thisPackage.Tracking.Track_By_Month, thisPackage.Tracking.Never_Overlay_Record, primary_alternate_type, primary_alternate_id);
+            Save_Item_Group_Args saveArgs = Save_Item_Group(thisPackage.BibID, groupTitle, thisPackage.Bib_Info.SortSafeTitle(groupTitle, true), thisPackage.Bib_Info.SobekCM_Type_String, thisPackage.Web.File_Root, String.Empty, false, createDate, OCLC_Number, ALEPH_Number, thisPackage.Tracking.Large_Format, thisPackage.Tracking.Track_By_Month, thisPackage.Tracking.Never_Overlay_Record, primary_alternate_type, primary_alternate_id);
             thisPackage.Web.GroupID = saveArgs.GroupID;
 			thisPackage.BibID = saveArgs.New_BibID;
 
@@ -1587,8 +1638,8 @@ namespace SobekCM.Resource_Object.Database
 
 			// Save the main information, and return the item id
 			Save_Item_Args returnVal = Save_Item( GroupID, thisPackage.VID, thisPackage.Divisions.Page_Count, thisPackage.Divisions.Files.Count,
-				thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title, thisPackage.Bib_Info.sortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false),
-				link, CreateDate, pubdate, thisPackage.Bib_Info.sortSafeDate(pubdate), holding_code, 
+				thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title, thisPackage.Bib_Info.SortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false),
+				link, CreateDate, pubdate, thisPackage.Bib_Info.SortSafeDate(pubdate), holding_code, 
 				source_code, author_builder.ToString(), spatial_kml, spatial_distance, thisPackage.DiskSize_MB, donor, publisher_builder.ToString(),
 				spatialDisplayBuilder.ToString(),institutionDisplayBuilder.ToString(), thisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
 				measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());
@@ -1674,6 +1725,15 @@ namespace SobekCM.Resource_Object.Database
 						}
 						break;
 
+					case View_Enum.JPEG_TEXT_TWO_UP:
+						if (!view_type_ids.Contains(14))
+						{
+							view_type_ids.Add(14);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
 					case View_Enum.JPEG2000:
 						if (!view_type_ids.Contains(2))
 						{
@@ -1698,43 +1758,28 @@ namespace SobekCM.Resource_Object.Database
 			{
 				switch (thisView.View_Type)
 				{
-					case View_Enum.RELATED_IMAGES:
-						view_type_ids.Add(8);
-						view_labels.Add(String.Empty);
-						view_attributes.Add(String.Empty);
-						break;
-
-					case View_Enum.JPEG:
-						if (!view_type_ids.Contains(1))
+					case View_Enum.DATASET_CODEBOOK:
+						if (!view_type_ids.Contains(11))
 						{
-							view_type_ids.Add(1);
+							view_type_ids.Add(11);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
 						break;
 
-					case View_Enum.JPEG2000:
-						if (!view_type_ids.Contains(2))
+					case View_Enum.DATASET_REPORTS:
+						if (!view_type_ids.Contains(12))
 						{
-							view_type_ids.Add(2);
+							view_type_ids.Add(12);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
 						break;
 
-					case View_Enum.TEXT:
-						if (!view_type_ids.Contains(3))
+					case View_Enum.DATASET_VIEWDATA:
+						if (!view_type_ids.Contains(13))
 						{
-							view_type_ids.Add(3);
-							view_labels.Add(String.Empty);
-							view_attributes.Add(String.Empty);
-						}
-						break;
-
-					case View_Enum.PAGE_TURNER:
-						if (!view_type_ids.Contains(4))
-						{
-							view_type_ids.Add(4);
+							view_type_ids.Add(13);
 							view_labels.Add(String.Empty);
 							view_attributes.Add(String.Empty);
 						}
@@ -1755,17 +1800,68 @@ namespace SobekCM.Resource_Object.Database
 						view_attributes.Add(thisView.Attributes);
 						break;
 
+					case View_Enum.JPEG:
+						if (!view_type_ids.Contains(1))
+						{
+							view_type_ids.Add(1);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.JPEG_TEXT_TWO_UP:
+						if (!view_type_ids.Contains(14))
+						{
+							view_type_ids.Add(14);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.JPEG2000:
+						if (!view_type_ids.Contains(2))
+						{
+							view_type_ids.Add(2);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.PAGE_TURNER:
+						if (!view_type_ids.Contains(4))
+						{
+							view_type_ids.Add(4);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
+					case View_Enum.RELATED_IMAGES:
+						view_type_ids.Add(8);
+						view_labels.Add(String.Empty);
+						view_attributes.Add(String.Empty);
+						break;
+
+					case View_Enum.TEI:
+						view_type_ids.Add(10);
+						view_labels.Add(String.Empty);
+						view_attributes.Add(String.Empty);
+						break;
+
+					case View_Enum.TEXT:
+						if (!view_type_ids.Contains(3))
+						{
+							view_type_ids.Add(3);
+							view_labels.Add(String.Empty);
+							view_attributes.Add(String.Empty);
+						}
+						break;
+
 					case View_Enum.TOC:
 						view_type_ids.Add(9);
 						view_labels.Add(String.Empty);
 						view_attributes.Add(String.Empty);
 						break;
-
-                    case View_Enum.TEI:
-                        view_type_ids.Add(10);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
 				}
 			}
 

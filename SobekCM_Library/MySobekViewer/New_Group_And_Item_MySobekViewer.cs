@@ -618,14 +618,14 @@ namespace SobekCM.Library.MySobekViewer
 		}
 
 		#endregion
-
-
+		
 		#region Method commpletes the item submission on the way to the congratulations screen
 
 		private bool complete_item_submission(SobekCM_Item Item_To_Complete,  Custom_Tracer Tracer )
         {
             // Set an initial flag 
             criticalErrorEncountered = false;
+			bool xml_found = false;
 
             string[] all_files = Directory.GetFiles(userInProcessDirectory);
             SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
@@ -670,16 +670,23 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if (!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
                         {
-                            // Is this the first image file with this name?
-                            if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-                            {
-                                download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                            }
-                            else
-                            {
-                                List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-                                download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-                            }
+							// Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
+	                        if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
+	                        {
+		                        // Is this the first image file with this name?
+		                        if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+		                        {
+			                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+		                        }
+		                        else
+		                        {
+			                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
+			                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+		                        }
+
+		                        if (thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
+			                        xml_found = true;
+	                        }
                         }
                     }
                 }
@@ -799,6 +806,14 @@ namespace SobekCM.Library.MySobekViewer
                     Item_To_Complete.Tracking.Born_Digital = true;
                 }
                 Item_To_Complete.Tracking.VID_Source = "SobekCM:" + templateCode;
+
+				// If this is a dataset and XML file was uploaded, add some viewers
+				if ((xml_found) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Dataset))
+				{
+					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_CODEBOOK);
+					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_REPORTS);
+					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_VIEWDATA);
+				}
 
                 // Save to the database
                 try
@@ -1338,16 +1353,19 @@ namespace SobekCM.Library.MySobekViewer
                                 // If this does not match the exclusion regular expression, than add this
                                 if (!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
                                 {
-                                    // Is this the first image file with this name?
-                                    if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-                                    {
-                                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                                    }
-                                    else
-                                    {
-                                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-                                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-                                    }
+	                                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
+	                                {
+		                                // Is this the first image file with this name?
+		                                if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+		                                {
+			                                download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+		                                }
+		                                else
+		                                {
+			                                List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
+			                                download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+		                                }
+	                                }
                                 }
                             }
                         }

@@ -2958,9 +2958,9 @@ namespace SobekCM.Library.HTML
 				    string thisCode = thisRow[3].ToString().ToUpper();
 				    string name = thisRow[4].ToString();
 				    bool active = Convert.ToBoolean(thisRow[5]);
-				    int added_titles = Convert.ToInt32(thisRow[6]) - Convert.ToInt32(thisRow[9]);
-				    int added_items = Convert.ToInt32(thisRow[7]) - Convert.ToInt32(thisRow[10]);
-				    int added_pages = Convert.ToInt32(thisRow[8]) - Convert.ToInt32(thisRow[11]);
+				    int added_titles = Convert.ToInt32(thisRow[12]) - Convert.ToInt32(thisRow[9]);
+				    int added_items = Convert.ToInt32(thisRow[13]) - Convert.ToInt32(thisRow[10]);
+				    int added_pages = Convert.ToInt32(thisRow[14]) - Convert.ToInt32(thisRow[11]);
 
 				    if (code1 == "ZZZ")
 				    {
@@ -2971,9 +2971,9 @@ namespace SobekCM.Library.HTML
 					    Output.WriteLine("      <td>&nbsp;</td>");
 					    Output.WriteLine("      <td>ZZZ</td>");
 					    Output.WriteLine("      <td>TOTAL</td>");
-					    Output.WriteLine("      <td>" + thisRow[6] + "</td>");
-					    Output.WriteLine("      <td>" + thisRow[7] + "</td>");
-					    Output.WriteLine("      <td>" + thisRow[8] + "</td>");
+					    Output.WriteLine("      <td>" + thisRow[9] + "</td>");
+					    Output.WriteLine("      <td>" + thisRow[10] + "</td>");
+					    Output.WriteLine("      <td>" + thisRow[11] + "</td>");
 					    Output.WriteLine("      <td>" + added_titles + "</td>");
 					    Output.WriteLine("      <td>" + added_items + "</td>");
 					    Output.WriteLine("      <td>" + added_pages + "</td>");
@@ -3037,16 +3037,16 @@ namespace SobekCM.Library.HTML
 					    if (active)
 					    {
 						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "\">" + name.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></td>");
-						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[6] + "</a></td>");
-						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[7] + "</a></td>");
+						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[9] + "</a></td>");
+						    Output.WriteLine("      <td><a href=\"" + currentMode.Base_URL + thisCode + "/all\">" + thisRow[10] + "</a></td>");
 					    }
 					    else
 					    {
 						    Output.WriteLine("      <td>" + name + "</td>");
-						    Output.WriteLine("      <td>" + thisRow[6] + "</td>");
-						    Output.WriteLine("      <td>" + thisRow[7] + "</td>");
+						    Output.WriteLine("      <td>" + thisRow[9] + "</td>");
+						    Output.WriteLine("      <td>" + thisRow[10] + "</td>");
 					    }
-					    Output.WriteLine("      <td>" + thisRow[8] + "</td>");
+					    Output.WriteLine("      <td>" + thisRow[11] + "</td>");
 					    Output.WriteLine("      <td>" + added_titles + "</td>");
 					    Output.WriteLine("      <td>" + added_items + "</td>");
 					    Output.WriteLine("      <td>" + added_pages + "</td>");
