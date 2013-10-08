@@ -13,8 +13,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Delegate defines a signature for an event used by item viewers for requesting
     /// an immediate redirect of the user's browser. </summary>
-    /// <param name="new_url"> URL to forward the user to </param>
-	public delegate void Redirect_Requested( string new_url );
+    /// <param name="NewURL"> URL to forward the user to </param>
+	public delegate void Redirect_Requested( string NewURL );
 
     /// <summary> Page selector type enumeration </summary>
     public enum ItemViewer_PageSelector_Type_Enum : byte
@@ -38,6 +38,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Citation of an item includes the basic metadata in standard and MARC format, as well as
         /// links to the metadata  </summary>
         Citation,
+
+		/// <summary> Dataset viewer is used to dispay codebook information present in the XSD accompanying a XML dataset </summary>
+		Dataset_Codebook,
+
+		/// <summary> Dataset viewer is used to view saved reports or create new custom reports </summary>
+		Dataset_Reports,
+
+		/// <summary> Dataset viewer shows the paged data from the dataset and allows simple searching/filtering </summary>
+		Dataset_ViewData,
 
         /// <summary> List of downloads associated with this digital resource </summary>
         Download,
@@ -95,6 +104,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Displays a static jpeg file related to this digital resource </summary>
         JPEG,
+
+		/// <summary> Viewer is used to view the jpeg image and view (and possibly edit) the 
+		/// full text derived from that page image </summary>
+		JPEG_Text_Two_Up,
 
         /// <summary> Displays other issues related to the current digital resource by title / bib id </summary>
         MultiVolume,

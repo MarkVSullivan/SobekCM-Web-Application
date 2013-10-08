@@ -66,9 +66,17 @@ namespace SobekCM.Library.ItemViewer
                     }
                     break;
 
-                case View_Enum.SEARCH:
-                    returnVal.Add(HTML_Helper(Skin_Code, "search", Translator.Get_Translation("SEARCH", Current_Mode.Language), Current_Mode));
-                    break;
+				case View_Enum.DATASET_CODEBOOK:
+					returnVal.Add(HTML_Helper(Skin_Code, "dscodebook", Translator.Get_Translation("DATA STRUCTURE", Current_Mode.Language), Current_Mode));
+					break;
+
+				case View_Enum.DATASET_REPORTS:
+					returnVal.Add(HTML_Helper(Skin_Code, "dsreports", Translator.Get_Translation("REPORTS", Current_Mode.Language), Current_Mode));
+					break;
+
+				case View_Enum.DATASET_VIEWDATA:
+					returnVal.Add(HTML_Helper(Skin_Code, "dsview", Translator.Get_Translation("EXPLORE DATA", Current_Mode.Language), Current_Mode));
+					break;
 
                 case View_Enum.DOWNLOADS:
                     returnVal.Add(HTML_Helper(Skin_Code, "downloads", Translator.Get_Translation("DOWNLOADS", Current_Mode.Language), Current_Mode));
@@ -120,6 +128,10 @@ namespace SobekCM.Library.ItemViewer
                     returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "j", Translator.Get_Translation("STANDARD", Current_Mode.Language), Current_Mode));
                     break;
 
+				case View_Enum.JPEG_TEXT_TWO_UP:
+					returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "u", Translator.Get_Translation("PAGE IMAGE WITH TEXT", Current_Mode.Language), Current_Mode));
+					break;
+
                 case View_Enum.JPEG2000:
                     if (Show_Zoomable)
                     {
@@ -127,11 +139,19 @@ namespace SobekCM.Library.ItemViewer
                     }
                     break;
 
+				case View_Enum.PDF:
+					returnVal.Add(HTML_Helper(Skin_Code, "pdf", Translator.Get_Translation("PDF VIEWER", Current_Mode.Language), Current_Mode));
+					break;
+
                 case View_Enum.RELATED_IMAGES:
                     returnVal.Add(Current_Mode.ViewerCode.IndexOf("thumbs") >= 0
                                       ? HTML_Helper(Skin_Code, Current_Mode.ViewerCode, Translator.Get_Translation("THUMBNAILS", Current_Mode.Language), Current_Mode)
                                       : HTML_Helper(Skin_Code, "thumbs", Translator.Get_Translation("THUMBNAILS", Current_Mode.Language), Current_Mode));
                     break;
+
+				case View_Enum.SEARCH:
+					returnVal.Add(HTML_Helper(Skin_Code, "search", Translator.Get_Translation("SEARCH", Current_Mode.Language), Current_Mode));
+					break;
 
                 case View_Enum.SIMPLE_HTML_LINK:
                     returnVal.Add("<li> <a href=\"" + Item_View.Attributes + "\" target=\"_blank\" alt=\"Link to '" + Item_View.Label + "'\"> " + Translator.Get_Translation(Item_View.Label.ToUpper(), Current_Mode.Language) + " </a></li>");
@@ -149,9 +169,7 @@ namespace SobekCM.Library.ItemViewer
                      // returnVal.Add(base.HTML_Helper(Skin_Code, "TC", "Table of Contents", Current_Mode));
                     break;
 
-                case View_Enum.PDF:
-                    returnVal.Add(HTML_Helper(Skin_Code, "pdf", Translator.Get_Translation("PDF VIEWER", Current_Mode.Language), Current_Mode));
-                    break;
+
 
                 case View_Enum.RESTRICTED:
                     returnVal.Add(HTML_Helper(Skin_Code, "restricted", Translator.Get_Translation("RESTRICTED", Current_Mode.Language), Current_Mode));
