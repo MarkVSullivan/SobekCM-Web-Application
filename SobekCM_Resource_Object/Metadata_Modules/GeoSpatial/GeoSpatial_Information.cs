@@ -20,6 +20,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private List<Coordinate_Line> lines;
         private List<Coordinate_Point> points;
         private List<Coordinate_Polygon> polygons;
+        private List<Coordinate_Circle> circles;
         private double sobekcm_main_spatial_distance;
         private string sobekcm_main_spatial_string;
 
@@ -29,6 +30,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points = new List<Coordinate_Point>();
             polygons = new List<Coordinate_Polygon>();
             lines = new List<Coordinate_Line>();
+            circles = new List<Coordinate_Circle>();
 
             sobekcm_main_spatial_distance = -1;
             sobekcm_main_spatial_string = String.Empty;
@@ -311,6 +313,18 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public int Line_Count
         {
             get { return lines.Count; }
+        }
+
+        /// <summary> Read-only collection of polygons associated with this digital resource </summary>
+        public ReadOnlyCollection<Coordinate_Circle> Circles
+        {
+            get { return new ReadOnlyCollection<Coordinate_Circle>(circles); }
+        }
+
+        /// <summary> Number of polygons associated with this digital resource </summary>
+        public int Circle_Count
+        {
+            get { return circles.Count; }
         }
 
         /// <summary> Read-only collection of polygons associated with this digital resource </summary>
@@ -729,6 +743,28 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             }
         }
 
+        /// <summary> Add a single, completely built Cirlce associated with this digital resource </summary>
+        /// <param name="Circle"> Coordinate Circle object associated with this digital resource </param>
+        public void Add_Circle(Coordinate_Circle Circle)
+        {
+            circles.Add(Circle);
+        }
+
+        /// <summary> Pulls one coordinate circle from the collection of circles associated with this digital resource </summary>
+        /// <param name="index"> Index of the circle to retrieve </param>
+        /// <returns> The indicated cirlce or NULL </returns>
+        public Coordinate_Circle Get_Circle(int index)
+        {
+            if (index < circles.Count)
+            {
+                return circles[index];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         /// <summary> Add a single, completely built polygon associated with this digital resource </summary>
         /// <param name="Polygon"> Coordinate polygon object associated with this digital resource </param>
         public void Add_Polygon(Coordinate_Polygon Polygon)
@@ -742,12 +778,19 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points.Clear();
             polygons.Clear();
             lines.Clear();
+            circles.Clear();
         }
 
         /// <summary> Clears all of the individual point information from this digital resource </summary>
         public void Clear_Points()
         {
             points.Clear();
+        }
+
+        /// <summary> Clears all of the individual point information from this digital resource </summary>
+        public void Clear_Circles()
+        {
+            circles.Clear();
         }
 
         /// <summary> Clears all of the individual point of interets information from this digital resource </summary>

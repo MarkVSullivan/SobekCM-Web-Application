@@ -283,13 +283,13 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             // Read the feature label
                             string polygonLabel = String.Empty;
                             double polygonRotation = 0;
-                            double circleRadius = 0;
+                            //double circleRadius = 0;
                             if (Input_XmlReader.MoveToAttribute("label"))
                                 polygonLabel = Input_XmlReader.Value;
                             if (Input_XmlReader.MoveToAttribute("rotation"))
                                 polygonRotation = Convert.ToDouble(Input_XmlReader.Value);
-                            if (Input_XmlReader.MoveToAttribute("radius"))
-                                circleRadius = Convert.ToDouble(Input_XmlReader.Value);
+                            //if (Input_XmlReader.MoveToAttribute("radius"))
+                            //    circleRadius = Convert.ToDouble(Input_XmlReader.Value);
                             string polygonFeatureType = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("featureType"))
                                 polygonFeatureType = Input_XmlReader.Value;
@@ -334,8 +334,12 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                     newPoly.Add_Edge_Point(latLongs[i], latLongs[i + 1]);
                                                     i += 2;
                                                 }
+
                                                 newPoly.Label = polygonLabel;
                                                 newPoly.polygonRotation = polygonRotation;
+                                                //newPoly.circleRadius = circleRadius;
+                                                newPoly.featureType = polygonFeatureType;
+
                                                 switch (polygonFeatureType)
                                                 {
                                                     case "main":
@@ -354,6 +358,45 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 }
                             } while (Input_XmlReader.Read());
                             break;
+
+                        case "gml:Circle": //is a circle
+                            // Read the feature label
+                            string circleLabel = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("label"))
+                                circleLabel = Input_XmlReader.Value;
+                            double circleRadius = 0;
+                            if (Input_XmlReader.MoveToAttribute("radius"))
+                                circleRadius = Convert.ToDouble(Input_XmlReader.Value);
+                            string circleFeatureType = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("featureType"))
+                                circleFeatureType = Input_XmlReader.Value;
+                            do
+                            {
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Circle") //check to see if end of element
+                                    break;
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element) //if it is an element
+                                {
+                                    switch (Input_XmlReader.Name) //determine the name of that element
+                                    {
+                                        case "gml:Coordinates": //if it is the coordinates
+                                            Input_XmlReader.Read();
+                                            if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
+                                            {
+                                                string result = Convert.ToString(Input_XmlReader.Value);
+                                                var items = result.Split(',');
+                                                double latitude = double.Parse(items[0]);
+                                                double longitude = double.Parse(items[1]);
+
+                                                Coordinate_Circle newCircle = new Coordinate_Circle(latitude, longitude, circleRadius, circleLabel, circleFeatureType); //create the circle
+
+                                                geoInfo.Add_Circle(newCircle); //add to obj
+                                            }
+                                            break;
+                                    }
+                                }
+                            } while (Input_XmlReader.Read());
+                            break;
+
                     }
                 }
             } while (Input_XmlReader.Read());
@@ -422,6 +465,21 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 Output_Stream.WriteLine("</gml:LinearRing>");
                 Output_Stream.WriteLine("</gml:exterior>");
                 Output_Stream.WriteLine("</gml:Polygon>");
+                Output_Stream.WriteLine("</gml:featureMember>");
+            }
+
+            //for points
+            foreach (Coordinate_Circle thisCircle in geoInfo.Circles)
+            {
+                Output_Stream.WriteLine("<gml:featureMember>");
+                if (thisCircle.Label.Length > 0)
+                    Output_Stream.WriteLine("<gml:Circle featureType=\"" + Convert_String_To_XML_Safe(thisCircle.FeatureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisCircle.Label) + "\" radius=\"" + Convert_String_To_XML_Safe(thisCircle.Radius.ToString()) + "\">");
+                else
+                    Output_Stream.WriteLine("<gml:Circle featureType=\"" + Convert_String_To_XML_Safe(thisCircle.FeatureType) + "\" radius=\"" + Convert_String_To_XML_Safe(thisCircle.Radius.ToString()) + "\">");
+                Output_Stream.Write("<gml:Coordinates>");
+                Output_Stream.Write(thisCircle.Latitude + "," + thisCircle.Longitude + " ");
+                Output_Stream.WriteLine("</gml:Coordinates>");
+                Output_Stream.WriteLine("</gml:Circle>");
                 Output_Stream.WriteLine("</gml:featureMember>");
             }
 

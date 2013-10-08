@@ -32,6 +32,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Polygon> allPolygons;
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
+        List<Coordinate_Circle> allCircles;
 
         List<Coordinate_Polygon> POI_allPolygons;
         List<Coordinate_Point> POI_allPoints;
@@ -276,31 +277,58 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     resourceGeoInfo.Add_Point(temp2Lat, temp2Long, ar[3], "poi");
 
                                     break;
+                                //case "circle":
+
+                                //    //create new circle
+                                //    Coordinate_Polygon poiCircle = new Coordinate_Polygon();
+
+                                //    //set the label
+                                //    poiCircle.Label = ar[3];
+
+                                //    //set the radius
+                                //    poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
+
+                                //    //add the feature type
+                                //    poiCircle.featureType = "poi";
+                                //    //poiCircle.Add_FeatureType("poi");
+
+                                //    //prep incoming lat/long
+                                //    string[] temp3 = ar[4].Split(',');
+                                //    double temp3Lat = Convert.ToDouble(temp3[0].Replace("(", ""));
+                                //    double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
+
+                                //    //add the center point
+                                //    poiCircle.Add_Edge_Point(temp3Lat, temp3Long);
+
+                                //    //add to the resource obj
+                                //    resourceGeoInfo.Add_POI_Circle(poiCircle);
+
+                                //    break;
                                 case "circle":
 
                                     //create new circle
-                                    Coordinate_Polygon poiCircle = new Coordinate_Polygon();
+                                    Coordinate_Circle poiCircle = new Coordinate_Circle();
 
                                     //set the label
                                     poiCircle.Label = ar[3];
 
                                     //set the radius
-                                    poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
+                                    poiCircle.Radius = Convert.ToDouble(ar[5]);
 
                                     //add the feature type
-                                    poiCircle.featureType = "poi";
-                                    //poiCircle.Add_FeatureType("poi");
-
+                                    poiCircle.FeatureType = "poi";
+                                    
                                     //prep incoming lat/long
                                     string[] temp3 = ar[4].Split(',');
                                     double temp3Lat = Convert.ToDouble(temp3[0].Replace("(", ""));
                                     double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
 
                                     //add the center point
-                                    poiCircle.Add_Edge_Point(temp3Lat, temp3Long);
+                                    poiCircle.Latitude = temp3Lat;
+                                    poiCircle.Longitude = temp3Long;
 
                                     //add to the resource obj
-                                    resourceGeoInfo.Add_POI_Circle(poiCircle);
+                                    resourceGeoInfo.Add_Circle(poiCircle);
 
                                     break;
                                 case "rectangle":
@@ -570,6 +598,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 allPolygons = new List<Coordinate_Polygon>();
                 allPoints = new List<Coordinate_Point>();
                 allLines = new List<Coordinate_Line>();
+                allCircles = new List<Coordinate_Circle>();
 
                 POI_allPolygons = new List<Coordinate_Polygon>();
                 POI_allPoints = new List<Coordinate_Point>();
@@ -594,24 +623,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         foreach (Coordinate_Point thisPoint in geoInfo.Points)
                             allPoints.Add(thisPoint);
                     }
-                    //if (geoInfo.POI_Polygon_Count > 0)
-                    //{
-                    //    foreach (Coordinate_Polygon thisPolygon in geoInfo.POI_Polygons)
-                    //        POI_allPolygons.Add(thisPolygon);
-                    //}
-                    //if (geoInfo.POI_Line_Count > 0)
-                    //{
-                    //    foreach (Coordinate_Line thisLine in geoInfo.POI_Lines)
-                    //        POI_allLines.Add(thisLine);
-                    //}
-                    //if (geoInfo.POI_Point_Count > 0)
-                    //{
-                    //    foreach (Coordinate_Point thisPoint in geoInfo.POI_Points)
-                    //        POI_allPoints.Add(thisPoint);
-                    //}
+                    if (geoInfo.Circle_Count > 0)
+                    {
+                        foreach (Coordinate_Circle thisCircle in geoInfo.Circles)
+                            allCircles.Add(thisCircle);
+                    }
                 }
-
-
+                
                 List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
                 for (int i = 0; i < pages.Count; i++)
                 {
@@ -641,7 +659,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 allPoints.Add(thisPoint);
                             }
                         }
+                        if (geoInfo2.Circle_Count > 0)
+                        {
+                            foreach (Coordinate_Circle thisCircle in geoInfo2.Circles)
+                            {
+                                allCircles.Add(thisCircle);
+                            }
+                        }
                     }
+                }
+
+                // Draw all the single circles 
+                if (allCircles.Count > 0)
+                {
+                    //add each circle
+                    for (int circle = 0; circle < allCircles.Count; circle++)
+                    {
+                        mapeditBuilder.AppendLine("      globalVar.incomingCircleFeatureType[" + circle + "] = \"" + allCircles[circle].FeatureType + "\";");
+
+                        mapeditBuilder.AppendLine("      globalVar.incomingCircleCenter[" + circle + "] = new google.maps.LatLng(" + allCircles[circle].Latitude + "," + allCircles[circle].Longitude + "); ");
+
+                        if (allCircles[circle].Label != "")
+                        {
+                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + allCircles[circle].Label + "\"; ");
+                        }
+                        else
+                        {
+                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + CurrentItem.Bib_Title + "\"; ");
+                        }
+
+                        mapeditBuilder.AppendLine("      globalVar.incomingCircleFeatureType[" + circle + "] = \"" + allCircles[circle].FeatureType + "\"; ");
+                        mapeditBuilder.AppendLine("      globalVar.incomingCircleRadius[" + circle + "] = " + allCircles[circle].Radius + "; ");
+
+                    }
+                    mapeditBuilder.AppendLine(" ");
+                    mapeditBuilder.AppendLine("      displayIncomingCircles();");
+                    mapeditBuilder.AppendLine(" ");
                 }
 
                 // Add all the polygons now
@@ -699,10 +752,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //it is a circle
                             
                             //get the center point
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonCenter[" + it + "] = new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude.ToString() + ", " + itemPolygon.Edge_Points[0].Longitude.ToString() + "); ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonCenter[" + it + "] = new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude.ToString() + "," + itemPolygon.Edge_Points[0].Longitude.ToString() + "); ");
 
                             //get the radius
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonRadius[" + it + "] = \"" + itemPolygon.circleRadius + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonRadius[" + it + "] = " + itemPolygon.circleRadius + ";");
 
                         }
 

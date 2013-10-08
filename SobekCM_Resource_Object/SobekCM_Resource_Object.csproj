@@ -157,6 +157,7 @@
     </Compile>
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="Generic_Reader.cs" />
+    <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Circle.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_MS_DC_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_SobekCM_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="Utilities\Image_Derivative_Creation_Processor.cs" />
