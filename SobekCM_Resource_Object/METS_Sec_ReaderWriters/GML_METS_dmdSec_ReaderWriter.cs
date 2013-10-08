@@ -269,15 +269,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                     i += 2;
                                                 }
                                                 newline.Label = lineLabel;
-                                                switch (lineFeatureType)
-                                                {
-                                                    case "main":
-                                                        geoInfo.Add_Line(newline);
-                                                        break;
-                                                    case "poi":
-                                                        geoInfo.Add_POI_Line(newline);
-                                                        break;
-                                                }
+
+                                                geoInfo.Add_Line(newline, lineFeatureType);
+
                                             }
                                             break;
                                     }
@@ -349,6 +343,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                         break;
                                                     case "poi":
                                                         geoInfo.Add_POI_Polygon(newPoly);
+                                                        break;
+                                                    default:
+                                                        geoInfo.Add_Polygon(newPoly);
                                                         break;
                                                 }
                                             }

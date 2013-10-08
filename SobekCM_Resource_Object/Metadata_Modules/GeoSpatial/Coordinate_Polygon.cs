@@ -31,7 +31,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             polygonRotation = 0;
             pageSequence = 0;
             circleRadius = 0;
-            featureType = "main"; //default
         }
 
         /// <summary> Return the rectangular bounding box, with the first point in the upper left corner 
@@ -315,10 +314,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             circleRadius = radius;
         }
 
-        /// <summary> Add Feature Type Data</summary>
-        public void Add_FeatureType(string incomingFeatureType)
+        /// <summary> FeatureType associated with this point  </summary>
+        public string FeatureType
         {
-            featureType = incomingFeatureType;
+            get { return featureType ?? String.Empty; }
+            set { featureType = value; }
         }
 
         /// <summary> Writes this polygon of coordinate points as SobekCM-formatted XML </summary>
@@ -336,6 +336,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 results.Write(" ID=\"" + id + "\"");
             if (pageSequence > 0)
                 results.Write(" pageSeq=\"" + pageSequence + "\"");
+            if (!String.IsNullOrEmpty(featureType))
+                results.Write("featureType=\"" + featureType + "\"");
             results.Write(">\r\n");
             if (edge_points.Count > 0)
             {

@@ -22,7 +22,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public Coordinate_Line()
         {
             points = new List<Coordinate_Point>();
-            featureType = "main"; //default
         }
 
         /// <summary> Read-only collection of all the points for this line </summary>
@@ -44,10 +43,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             set { label = value; }
         }
 
-        /// <summary> Add Feature Type Data</summary>
-        public void Add_FeatureType(string incomingFeatureType)
+        /// <summary> FeatureType associated with this point  </summary>
+        public string FeatureType
         {
-            featureType = incomingFeatureType;
+            get { return featureType ?? String.Empty; }
+            set { featureType = value; }
         }
 
         /// <summary>Add a pre-existing point object to this line </summary>
@@ -99,6 +99,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             foreach (Coordinate_Point thisPoint in points)
             {
                 thisPoint.Add_SobekCM_Metadata(-1, sobekcm_namespace, results);
+            }
+            if (!String.IsNullOrEmpty(featureType))
+            {
+                results.Write("featureType=\"" + featureType + "\"");
             }
             results.Write("</" + sobekcm_namespace + ":Line>\r\n");
         }

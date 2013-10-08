@@ -59,10 +59,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
-
             string action = HttpContext.Current.Request.Form["action"] ?? String.Empty;
             string payload = HttpContext.Current.Request.Form["payload"] ?? String.Empty;
-
 
             // See if there were hidden requests
             if (!String.IsNullOrEmpty(action))
@@ -208,7 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
 
                                 //add the feature type 
-                                itemPolygon.Add_FeatureType("main");
+                                //itemPolygon.Add_FeatureType("main");
 
                                 //clear previous point (if any)
                                 resourceGeoInfo.Clear_Points();
@@ -246,8 +244,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
                                 }
                             }
-
-
+                            
                             break;
                         case "poi":
 
@@ -289,8 +286,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     //set the radius
                                     poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
 
-                                    //add the feature type
-                                    poiCircle.Add_FeatureType("poi");
+                                    ////add the feature type
+                                    //poiCircle.Add_FeatureType("poi");
 
                                     //prep incoming lat/long
                                     string[] temp3 = ar[4].Split(',');
@@ -313,7 +310,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiRectangle.Label = ar[3];
 
                                     //add the feature type
-                                    poiRectangle.Add_FeatureType("poi");
+                                    //poiRectangle.Add_FeatureType("poi");
 
                                     //prep incoming bounds
                                     string[] temp4 = ar[4].Split(',');
@@ -334,7 +331,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiPolygon.Label = ar[3];
 
                                     //add the feature type
-                                    poiPolygon.Add_FeatureType("poi");
+                                    //poiPolygon.Add_FeatureType("poi");
 
                                     //add the edge points
                                     for (int i2 = 5; i2 < ar.Length; i2++)
@@ -356,7 +353,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiLine.Label = ar[3];
 
                                     //add the feature type
-                                    poiLine.Add_FeatureType("poi");
+                                    //poiLine.Add_FeatureType("poi");
 
                                     //add the edge points
                                     for (int i2 = 5; i2 < ar.Length; i2++)
@@ -693,21 +690,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         mapeditBuilder.AppendLine("      globalVar.incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
 
                         //get the image url
-                        List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
-                        string first_page_jpeg = String.Empty;
-                        foreach (SobekCM_File_Info thisFile in first_page_files)
+                        try
                         {
-                            if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
-                                (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                            //your way
+                            List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            string first_page_jpeg = String.Empty;
+                            foreach (SobekCM_File_Info thisFile in first_page_files)
                             {
-                                first_page_jpeg = thisFile.System_Name;
-                                break;
+                                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                    (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                                {
+                                    first_page_jpeg = thisFile.System_Name;
+                                    break;
+                                }
                             }
+                            string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                            //polygonURL[it] = first_page_complete_url;
+                            polygonURL.Add(first_page_complete_url);
+                            mapeditBuilder.AppendLine("      globalVar.incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
                         }
-                        string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
-                        //polygonURL[it] = first_page_complete_url;
-                        polygonURL.Add(first_page_complete_url);
-                        mapeditBuilder.AppendLine("      globalVar.incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
+                        catch (Exception)
+                        {
+                            //my way
+                            string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
+                            mapeditBuilder.AppendLine("      globalVar.incomingOverlaySourceURL[" + it + "] = \"" + current_image_file + "\"; ");
+                            //throw;
+                        }
+                        
 
                         //get and set the rotation value
                         //polygonRotation.Add(0);
@@ -743,30 +752,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + CurrentItem.Bib_Title + "\"; ");
                         }
-
-
+                        
                         try
                         {
-                            //get the image url
-                            List<SobekCM_File_Info> first_page_files =
-                                ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
-                            string first_page_jpeg = String.Empty;
-                            foreach (SobekCM_File_Info thisFile in first_page_files)
-                            {
-                                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
-                                    (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
-                                {
-                                    first_page_jpeg = thisFile.System_Name;
-                                    break;
-                                }
-                            }
-                            string first_page_complete_url = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+                            //get image url myway
+                            string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
 
-                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"" + first_page_complete_url + "\"; ");
+                            ////get the image url
+                            //List<SobekCM_File_Info> first_page_files = ((Page_TreeNode)CurrentItem.Divisions.Physical_Tree.Pages_PreOrder[it]).Files;
+                            //string first_page_jpeg = String.Empty;
+                            //foreach (SobekCM_File_Info thisFile in first_page_files)
+                            //{
+                            //    if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) && (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                            //    {
+                            //        first_page_jpeg = thisFile.System_Name;
+                            //        break;
+                            //    }
+                            //}
+                            //current_image_file = CurrentItem.Web.Source_URL + "/" + first_page_jpeg;
+
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"" + current_image_file + "\"; ");
+
+                            //if (File.Exists(current_image_file))
+                            //{
+                            //    //mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"" + current_image_file + "\"; ");
+                            //}
+                            //else
+                            //{
+                            //    //mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"\"; ");
+                            //}
+                            
                         }
                         catch (Exception)
                         {
-                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"\" ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"\"; ");
                             //throw;
                         }
 
