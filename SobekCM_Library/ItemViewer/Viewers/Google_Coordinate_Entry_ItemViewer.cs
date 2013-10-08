@@ -206,6 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 itemPolygon.Add_Rotation(Convert.ToDouble(ar[5]));
 
                                 //add the feature type 
+                                itemPolygon.featureType = "main";
                                 //itemPolygon.Add_FeatureType("main");
 
                                 //clear previous point (if any)
@@ -286,7 +287,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     //set the radius
                                     poiCircle.Add_Radius(Convert.ToDouble(ar[5]));
 
-                                    ////add the feature type
+                                    //add the feature type
+                                    poiCircle.featureType = "poi";
                                     //poiCircle.Add_FeatureType("poi");
 
                                     //prep incoming lat/long
@@ -295,7 +297,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     double temp3Long = Convert.ToDouble(temp3[1].Replace(")", ""));
 
                                     //add the center point
-                                    poiCircle.Add_Edge_Point(temp3Lat, temp3Long, "circleCenter");
+                                    poiCircle.Add_Edge_Point(temp3Lat, temp3Long);
 
                                     //add to the resource obj
                                     resourceGeoInfo.Add_POI_Circle(poiCircle);
@@ -310,6 +312,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiRectangle.Label = ar[3];
 
                                     //add the feature type
+                                    poiRectangle.featureType = "poi";
                                     //poiRectangle.Add_FeatureType("poi");
 
                                     //prep incoming bounds
@@ -331,6 +334,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiPolygon.Label = ar[3];
 
                                     //add the feature type
+                                    poiPolygon.featureType = "poi";
                                     //poiPolygon.Add_FeatureType("poi");
 
                                     //add the edge points
@@ -353,6 +357,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiLine.Label = ar[3];
 
                                     //add the feature type
+                                    poiLine.featureType = "poi";
                                     //poiLine.Add_FeatureType("poi");
 
                                     //add the edge points
@@ -644,50 +649,65 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 List<string> polygonURL = new List<string>();
                 List<double> polygonRotation = new List<double>();
                 int it = 0;
-                if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
+                //if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1)) //why this? a polygon with a single edge point could be a poi circle?
+                if (allPolygons.Count > 0)
                 {
                     // Add each polygon 
                     foreach (Coordinate_Polygon itemPolygon in allPolygons)
                     {
-                        //get and set the bounds
-                        string bounds = "new google.maps.LatLngBounds( ";
-                        int localit = 0;
-                        string bounds1 = "new google.maps.LatLng";
-                        string bounds2 = "new google.maps.LatLng";
-                        foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                        if (itemPolygon.Edge_Points_Count > 1)
                         {
-                            if (itemPolygon.Edge_Points_Count == 2)
+                            //get and set the bounds
+                            string bounds = "new google.maps.LatLngBounds( ";
+                            int localit = 0;
+                            string bounds1 = "new google.maps.LatLng";
+                            string bounds2 = "new google.maps.LatLng";
+                            foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
                             {
-                                if (localit == 0)
+                                if (itemPolygon.Edge_Points_Count == 2)
                                 {
-                                    bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                    if (localit == 0)
+                                    {
+                                        bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                    }
+                                    if (localit == 1)
+                                    {
+                                        bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                    }
+                                    localit++;
                                 }
-                                if (localit == 1)
+                                if (itemPolygon.Edge_Points_Count == 4)
                                 {
-                                    bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                    if (localit == 0)
+                                    {
+                                        bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                    }
+                                    if (localit == 2)
+                                    {
+                                        bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
+                                    }
+                                    localit++;
                                 }
-                                localit++;
                             }
-                            if (itemPolygon.Edge_Points_Count == 4)
-                            {
-                                if (localit == 0)
-                                {
-                                    bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
-                                }
-                                if (localit == 2)
-                                {
-                                    bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
-                                }
-                                localit++;
-                            }
+                            bounds += bounds2 + ", " + bounds1;
+                            bounds += ")";
+                            polygonBounds.Add(bounds);
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonBounds[" + it + "] = " + bounds + ";");
                         }
-                        bounds += bounds2 + ", " + bounds1;
-                        bounds += ")";
-                        polygonBounds.Add(bounds);
-                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayBounds[" + it + "] = " + bounds + ";");
+                        else
+                        {
+                            //it is a circle
+                            
+                            //get the center point
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonCenter[" + it + "] = new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude.ToString() + ", " + itemPolygon.Edge_Points[0].Longitude.ToString() + "); ");
+
+                            //get the radius
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonRadius[" + it + "] = \"" + itemPolygon.circleRadius + "\";");
+
+                        }
 
                         //add the label of the polygon
-                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
 
                         //get the image url
                         try
@@ -707,23 +727,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                             //polygonURL[it] = first_page_complete_url;
                             polygonURL.Add(first_page_complete_url);
-                            mapeditBuilder.AppendLine("      globalVar.incomingOverlaySourceURL[" + it + "] = " + polygonURL[it] + ";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + it + "] = " + polygonURL[it] + ";");
                         }
                         catch (Exception)
                         {
                             //my way
                             string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
-                            mapeditBuilder.AppendLine("      globalVar.incomingOverlaySourceURL[" + it + "] = \"" + current_image_file + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + it + "] = \"" + current_image_file + "\"; ");
                             //throw;
                         }
                         
 
                         //get and set the rotation value
                         //polygonRotation.Add(0);
-                        //mapeditBuilder.AppendLine("      globalVar.incomingOverlayRotation[" + it + "] = " + polygonRotation[it] + ";");
-                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
+                        //mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + it + "] = " + polygonRotation[it] + ";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + it + "] = " + itemPolygon.polygonRotation + ";");
 
-                        mapeditBuilder.AppendLine("      globalVar.incomingOverlayFeatureType[" + it + "] = \"" + itemPolygon.featureType + "\";");
+                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + it + "] = \"" + itemPolygon.featureType + "\";");
 
                         //iterate
                         it++;
