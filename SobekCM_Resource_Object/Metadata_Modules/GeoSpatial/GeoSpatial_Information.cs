@@ -706,6 +706,14 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             lines.Add(Line);
         }
 
+        /// <summary> Add a single, completely built line associated with this digital resource </summary>
+        /// <param name="Line"> Coordinate line object associated with this digital resource </param>
+        public void Add_Line(Coordinate_Line Line, string FeatureType)
+        {
+            Line.FeatureType = FeatureType;
+            lines.Add(Line);
+        }
+
         /// <summary> Pulls one coordinate polygon from the collection of polygons associated with this digital resource </summary>
         /// <param name="index"> Index of the polygon to retrieve </param>
         /// <returns> The indicated polygon or NULL </returns>
@@ -746,6 +754,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public void Clear_POIs()
         {
             List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
+            //
 
             foreach (var coordinatePoint in points)
             {
@@ -754,13 +763,17 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     tempRestorePoints.Add(coordinatePoint);
                 }
             }
+            //
 
             points.Clear();
+            //
+            //
 
             foreach (var tempRestorePoint in tempRestorePoints)
             {
                 points.Add(tempRestorePoint);
             }
+            //
 
         }
 
@@ -797,6 +810,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         //add line
         public void Add_POI_Line(Coordinate_Line Line)
         {
+            Line.FeatureType = "poi";
             lines.Add(Line);
         }
 
