@@ -142,6 +142,9 @@ function initDeclarations() {
             cCoordsFrozen: "no",                        //used to freeze/unfreeze coordinate viewer
             mainCount: 0,                               //hold debug main count
             incomingACL: "item",                        //hold default incoming ACL (determined in displaying points/overlays)
+            incomingLineFeatureType: [],                //defined in c# to js on page
+            incomingLineLabel: [],                      //defined in c# to js on page
+            incomingLinePath: [],                       //defined in c# to js on page
             incomingCircleCenter: [],                   //defined in c# to js on page
             incomingCircleRadius: [],                   //defined in c# to js on page
             incomingCircleFeatureType: [],              //defined in c# to js on page
@@ -152,6 +155,7 @@ function initDeclarations() {
             incomingPointSourceURL: [],                 //defined in c# to js on page
             incomingPolygonFeatureType: [],             //defined in c# to js on page
             incomingPolygonBounds: [],                  //defined in c# to js on page
+            incomingPolygonPath: [],                    //defined in c# to js on page
             incomingPolygonCenter: [],                  //defined in c# to js on page
             incomingPolygonLabel: [],                   //defined in c# to js on page
             incomingPolygonSourceURL: [],               //defined in c# to js on page
@@ -1761,7 +1765,7 @@ function clear(id) {
                 displayMessage(localize.L52);
                 clearIncomingOverlays();
                 //show all the incoming overlays
-                displayIncomingOverlays();
+                displayIncomingPolygons();
                 //redraw list items of overlays
                 initOverlayList();
                 //clear the save cache
@@ -2237,7 +2241,7 @@ function initialize() {
             globalVar.incomingPolygonBounds[0] = rectangle.getBounds();
 
             //redisplay overlays (the one we just made)
-            displayIncomingOverlays();
+            displayIncomingPolygons();
 
             //relist the overlay we drew
             initOverlayList();
@@ -2732,7 +2736,12 @@ function initialize() {
     });
 }
 
-//Displays all the points sent from the C# code.
+//Displays all the lines sent from the C# code.
+function displayIncomingLines() {
+    //coming soon
+}
+
+//Displays all the circles sent from the C# code.
 function displayIncomingCircles() {
     if (globalVar.incomingCircleCenter.length > 0) {
         for (var i = 0; i < globalVar.incomingCircleCenter.length; i++) {
@@ -3007,7 +3016,7 @@ function displayIncomingPoints() {
 }
 
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
-function displayIncomingOverlays() {
+function displayIncomingPolygons() {
     //go through and display overlays as long as there is an overlay to display
     for (var i = 0; i < globalVar.incomingPolygonBounds.length; i++) {
 
@@ -3787,6 +3796,16 @@ function displayMessage(message) {
         }, 3000); //after 3 sec
     }
 }
+
+////create a package to send to server to save item location
+//function createSavedItem(saveType, coordinates) {
+//    var messageHeader = saveType + "|" + "main" + "|" + "point"; //saveType, featureType, objType
+//    var messageBody = coordinates;
+//    var data = messageHeader + "|" + messageBody + "|";
+//    var dataPackage = data + "~";
+//    de("saving item: " + dataPackage); //temp
+//    toServer(dataPackage);
+//}
 
 //create a package to send to server to save item location
 function createSavedItem(handle, coordinates) {
@@ -4629,7 +4648,7 @@ function resizeView() {
     //document.getElementById("mapedit_container_pane_0").style.height = pane0PX + "px";
     var pane1PX = bodyPX * .05;
     //document.getElementById("mapedit_container_pane_1").style.height = pane1PX + "px";
-    var pane2PX = bodyPX * .9;
+    var pane2PX = bodyPX * .90;
     //document.getElementById("mapedit_container_pane_2").style.height = pane2PX + "px";
 
     //calculate percentage of height
