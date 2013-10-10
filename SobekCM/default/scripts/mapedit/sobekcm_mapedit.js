@@ -2677,7 +2677,6 @@ function initialize() {
                         infoWindow[i].open(map);
                     }
                 }
-
             }
         });
     });
@@ -2738,7 +2737,190 @@ function initialize() {
 
 //Displays all the lines sent from the C# code.
 function displayIncomingLines() {
-    //coming soon
+    if (globalVar.incomingLinePath.length > 0) {
+        for (var i = 0; i < globalVar.incomingLinePath.length; i++) {
+            switch (globalVar.incomingLineFeatureType[i]) {
+                case "":
+                    break;
+                case "main":
+                    break;
+                case "poi":
+                    de("incoming poi: " + i + " " + globalVar.incomingLineLabel[i]);
+                    globalVar.placerType = "poi";
+                    var polyline = new google.maps.Polyline({
+                        path: globalVar.incomingLinePath[i],
+                        map: map,
+                        draggable: true,
+                        editable: true,
+                        title: globalVar.incomingLineLabel[i]
+                    });
+                    if (globalVar.placerType == "poi") {
+                        globalVar.firstSavePOI = true;
+                        globalVar.poi_i++;
+                        var poiId = globalVar.poi_i + 1;
+                        globalVar.poiObj[globalVar.poi_i] = polyline;
+                        globalVar.poiType[globalVar.poi_i] = "polyline";
+                        var poiDescTemp = globalVar.incomingLineLabel[i];
+                        document.getElementById("poiList").innerHTML += writeHTML("poiListItemIncoming", globalVar.poi_i, poiId, poiDescTemp);
+                        globalVar.poiDesc[globalVar.poi_i] = poiDescTemp;
+                        var contentString = writeHTML("poiDescIncoming", globalVar.poi_i, poiDescTemp, "");
+                        infoWindow[globalVar.poi_i] = new google.maps.InfoWindow({
+                            content: contentString
+                        });
+                        var polylinePoints = [];
+                        var polylinePointCount = 0;
+                        polyline.getPath().forEach(function (latLng) {
+                            polylinePoints[polylinePointCount] = latLng;
+                            de("polylinePoints[" + polylinePointCount + "] = " + latLng);
+                            polylinePointCount++;
+                        });
+                        de("polylinePointCount: " + polylinePointCount);
+                        de("polylinePoints.length: " + polylinePoints.length);
+                        de("Math.round((polylinePoints.length / 2)): " + Math.round((polylinePoints.length / 2)));
+                        var polylineCenterPoint = polylinePoints[Math.round((polylinePoints.length / 2))];
+                        de("polylineCenterPoint: " + polylineCenterPoint);
+                        var polylineStartPoint = polylinePoints[0];
+                        de("polylineStartPoint: " + polylineStartPoint);
+                        infoWindow[globalVar.poi_i].setPosition(polylineStartPoint);
+                        infoWindow[globalVar.poi_i].open(map);
+                        //best fix so far
+                        if (globalVar.poiCount == 0) {
+                            setTimeout(function () {
+                                infoWindow[0].setMap(null);
+                                infoWindow[0].setMap(map);
+                            }, 800);
+                        }
+                        globalVar.poiCount++;
+                        label[globalVar.poi_i] = new MarkerWithLabel({
+                            position: polylineStartPoint, //position at start of polyline
+                            zIndex: 2,
+                            map: map,
+                            labelContent: poiId, //the current user count
+                            labelAnchor: new google.maps.Point(15, 0),
+                            labelClass: "labels", // the CSS class for the label
+                            labelStyle: { opacity: 0.75 },
+                            icon: {} //initialize to nothing so no marker shows
+                        });
+                    }
+                    google.maps.event.addListener(polyline, 'mouseout', function () {
+                        var polylinePoints = [];
+                        var polylinePointCount = 0;
+                        de("here1");
+                        this.getPath().forEach(function (latLng) {
+                            polylinePoints[polylinePointCount] = latLng;
+                            polylinePointCount++;
+                        });
+                        de("here2");
+                        var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
+                        var polylineStartPoint = polylinePoints[0];
+                        infoWindow[globalVar.poi_i].setPosition(polylineStartPoint);
+                        infoWindow[globalVar.poi_i].open(null);
+                        label[globalVar.poi_i].setPosition(polylineStartPoint);
+                        label[globalVar.poi_i].setMap(map);
+                        de("here3");
+                    });
+                    google.maps.event.addListener(polyline, 'dragstart', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    infoWindow[i].setMap(null);
+                                    label[i].setMap(null);
+                                }
+                            }
+                        }
+                    });
+                    google.maps.event.addListener(polyline, 'drag', function () {
+                        //used for lat/long tooll
+                        var bounds = new google.maps.LatLngBounds;
+                        this.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+                        var polylineCenter = bounds.getCenter();
+                        var str = polylineCenter.toString();
+                        var cLatV = str.replace("(", "").replace(")", "").split(",", 1);
+                        var cLongV = str.replace(cLatV, "").replace("(", "").replace(")", "").replace(",", ""); //is this better than passing into array?s
+                        if (cLatV.indexOf("-") != 0) {
+                            latH = "N";
+                        } else {
+                            latH = "S";
+                        }
+                        if (cLongV.indexOf("-") != 0) {
+                            longH = "W";
+                        } else {
+                            longH = "E";
+                        }
+                        cLat.innerHTML = cLatV + " (" + latH + ")";
+                        cLong.innerHTML = cLongV + " (" + longH + ")";
+                    });
+                    google.maps.event.addListener(polyline, 'dragend', function () {
+                        if (globalVar.placerType == "poi") {
+                            globalVar.firstSavePOI = true;
+                            //var bounds = new google.maps.LatLngBounds;
+                            //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+                            //var polylineCenter = bounds.getCenter();
+                            //var bounds = new google.maps.LatLngBounds; //spatial center, bounds holder
+
+                            for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                if (globalVar.poiObj[i] == this) {
+                                    var polylinePoints = [];
+                                    var polylinePointCount = 0;
+                                    this.getPath().forEach(function (latLng) {
+                                        polylinePoints[polylinePointCount] = latLng;
+                                        polylinePointCount++;
+                                    });
+                                    var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
+                                    var polylineStartPoint = polylinePoints[0];
+                                    infoWindow[i].setPosition(polylineStartPoint);
+                                    infoWindow[i].open(null);
+                                    label[i].setPosition(polylineStartPoint);
+                                    label[i].setMap(map);
+                                }
+                            }
+
+                        }
+                    });
+                    google.maps.event.addListener(polyline, 'click', function () {
+                            if (globalVar.placerType == "poi") {
+                                globalVar.firstSavePOI = true;
+                                //var bounds = new google.maps.LatLngBounds;
+                                //polyline.getPath().forEach(function (latLng) { bounds.extend(latLng); });
+                                //var polylineCenter = bounds.getCenter();
+
+                                for (var i = 0; i < globalVar.poiObj.length; i++) {
+                                    if (globalVar.poiObj[i] == this) {
+                                        var polylinePoints = [];
+                                        var polylinePointCount = 0;
+                                        this.getPath().forEach(function (latLng) {
+                                            polylinePoints[polylinePointCount] = latLng;
+                                            polylinePointCount++;
+                                        });
+                                        var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
+                                        var polylineStartPoint = polylinePoints[0];
+                                        infoWindow[i].setPosition(polylineStartPoint);
+                                        infoWindow[i].open(map);
+                                    }
+                                }
+                            }
+                        });
+                    break;
+            }
+        }
+    } else {
+        //nothing
+    }
+    //once everything is drawn, determine if there are pois
+    if (globalVar.poiCount > 0) {
+        //close and reopen pois (to fix firefox bug)
+        setTimeout(function () {
+            globalVar.RIBMode = true;
+            toggleVis("pois");
+            toggleVis("pois");
+            globalVar.RIBMode = false;
+            //this hides the infowindows at startup
+            for (var j = 0; j < globalVar.poiCount; j++) {
+                infoWindow[j].setMap(null);
+            }
+        }, 1000);
+    }
 }
 
 //Displays all the circles sent from the C# code.
@@ -2757,6 +2939,7 @@ function displayIncomingCircles() {
                         center: globalVar.incomingCircleCenter[i],
                         map: map,
                         draggable: true,
+                        editable: true,
                         title: globalVar.incomingCircleLabel[i],
                         radius: globalVar.incomingCircleRadius[i]
                     });
@@ -3048,8 +3231,7 @@ function displayIncomingPolygons() {
                 globalVar.incomingACL = "overlay";
                 break;
             case "poi":
-                //determine which type of poi it is and handle from there
-                
+                //nothing yet
                 break;
         }
     }
