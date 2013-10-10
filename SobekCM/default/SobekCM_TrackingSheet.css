@@ -22,12 +22,12 @@
 .sbkTs_Title{margin-left: 25px;float: left; font-size: 40px;font-weight: bold;}
 .sbkTs_Title_right{margin-right: 15px;float: right; font-size: 25px;font-weight: bold;}
 
-.sbkTs_tableHeader{ font-size: 1.2em;color: #999999;font-weight: bold; }
+.sbkTs_tableHeader{ font-size: 1.1em;color: #999999;font-weight: bold; }
 .sbkTs_tableLabel{color: #999999;}
-.sbkTs_MainTable{width: 100%; border-spacing: 5px;background-color: white; font-size: 0.8em;}
+.sbkTs_MainTable{width: 100%; border-spacing: 5px;background-color: white; font-size: 0.75em;}
 .sbkTs_tblMaterialInfo{width: 90%; border-spacing: 5px;margin-left: 25px;}
 .sbkTs_tblSerialHierarchy{width: 40%; border-spacing: 5px;margin-left: 25px;}
-.sbkTs_tblImagingProgress{width: auto; border-spacing: 5px;margin-left: 25px;}
+.sbkTs_tblImagingProgress{width: 90%; border-spacing: 5px;margin-left: 25px;}
 .sbkTs_tblDisposition{width: 90%; border-spacing: 5px;margin-left: 25px;}
 .sbkTs_tblAdditionalNotes{width: 90%; border-spacing: 5px;margin-left: 25px;}
 .sbkTs_tblBarcodes{width: 90%; border-spacing: 5px;margin-left: 25px;}
