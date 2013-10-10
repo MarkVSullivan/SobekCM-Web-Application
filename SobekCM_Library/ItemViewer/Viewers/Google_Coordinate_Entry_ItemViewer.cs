@@ -1144,7 +1144,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine(" <div id=\"debugs\"></div> ");
 
-
                 #endregion
 
             }
