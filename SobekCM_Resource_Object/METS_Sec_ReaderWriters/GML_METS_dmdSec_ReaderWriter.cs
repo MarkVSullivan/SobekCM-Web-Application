@@ -175,66 +175,68 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     switch (Input_XmlReader.Name) //get name of
                     {
                         case "gml:Point": //is a point
-                            // Read the feature label
-                            string pointLabel = String.Empty;
-                            if (Input_XmlReader.MoveToAttribute("label"))
-                                pointLabel = Input_XmlReader.Value;
+                            // Read the featureType
                             string pointFeatureType = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("featureType"))
                                 pointFeatureType = Input_XmlReader.Value;
+                            //read the label
+                            string pointLabel = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("label"))
+                                pointLabel = Input_XmlReader.Value;
+                            //get the rest
                             do
                             {
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Point") //check to see if end of element
+                                //check to see if end of element
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Point") 
                                     break;
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) //if it is an element
+                                //if it is an element
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
                                 {
-                                    switch (Input_XmlReader.Name) //determine the name of that element
+                                    //determine the name of that element
+                                    switch (Input_XmlReader.Name) 
                                     {
-                                        case "gml:Coordinates": //if it is the coordinates
+                                        //if it is the coordinates
+                                        case "gml:Coordinates": 
                                             Input_XmlReader.Read();
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
+                                                //get coordinates
                                                 string result = Convert.ToString(Input_XmlReader.Value);
                                                 var items = result.Split(',');
                                                 double latitude = double.Parse(items[0]);
                                                 double longitude = double.Parse(items[1]);
-
-                                                geoInfo.Add_Point(latitude, longitude, pointLabel, pointFeatureType); //add to obj
-
-                                                //switch (pointFeatureType)
-                                                //{
-                                                //    case "main":
-                                                //        geoInfo.Add_Point(latitude, longitude, pointLabel); //add to obj
-                                                //        break;
-                                                //    case "poi":
-                                                //        geoInfo.Add_POI_Point(latitude, longitude, pointLabel); //add to obj
-                                                //        break;
-                                                //}
+                                                //add point to geo obj
+                                                geoInfo.Add_Point(latitude, longitude, pointLabel, pointFeatureType);
                                             }
                                             break;
                                     }
                                 }
                             } while (Input_XmlReader.Read());
                             break;
-
                         case "gml:Line": //is a line
-                            // Read the feature label
-                            string lineLabel = String.Empty;
-                            if (Input_XmlReader.MoveToAttribute("label"))
-                                lineLabel = Input_XmlReader.Value;
+                            //read the featureType
                             string lineFeatureType = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("featureType"))
                                 lineFeatureType = Input_XmlReader.Value;
+                            //read the label
+                            string lineLabel = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("label"))
+                                lineLabel = Input_XmlReader.Value;
+                            //get the rest
                             do
                             {
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Line") //check to see if end of element
+                                //check to see if end of element
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Line") 
                                     break;
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) //if it is an element
+                                //if it is an element
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
                                 {
-                                    switch (Input_XmlReader.Name) //determine the name of that element
+                                    //determine the name of that element
+                                    switch (Input_XmlReader.Name) 
                                     {
-                                        case "gml:Coordinates": //if it is the coordinates
-                                            Input_XmlReader.Read(); //2do: parse out lat and long
+                                        //if it is the coordinates
+                                        case "gml:Coordinates":
+                                            Input_XmlReader.Read(); 
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
                                                 // Parse the string into a collection of doubles, which represents lats AND longs
@@ -257,9 +259,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                         }
                                                     }
                                                 }
-
-                                                // In pairs, assign new points to the line and add the line to the coordinate/item
+                                                //create newline obj
                                                 Coordinate_Line newline = new Coordinate_Line();
+                                                //add points, In pairs, assign new points to the line and add the line to the coordinate/item
                                                 int i = 0;
                                                 while ((i + 2) <= latLongs.Count)
                                                 {
@@ -268,10 +270,12 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                     newline.Add_Point(latLongs[i], latLongs[i + 1], lineName);
                                                     i += 2;
                                                 }
+                                                //add featureType
+                                                newline.FeatureType = lineFeatureType;
+                                                //add label
                                                 newline.Label = lineLabel;
-
-                                                geoInfo.Add_Line(newline, lineFeatureType);
-
+                                                //add line to geo obj
+                                                geoInfo.Add_Line(newline);
                                             }
                                             break;
                                     }
@@ -280,28 +284,32 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "gml:Polygon": //is polygon
-                            // Read the feature label
-                            string polygonLabel = String.Empty;
-                            double polygonRotation = 0;
-                            double circleRadius = 0;
-                            if (Input_XmlReader.MoveToAttribute("label"))
-                                polygonLabel = Input_XmlReader.Value;
-                            if (Input_XmlReader.MoveToAttribute("rotation"))
-                                polygonRotation = Convert.ToDouble(Input_XmlReader.Value);
-                            if (Input_XmlReader.MoveToAttribute("radius"))
-                                circleRadius = Convert.ToDouble(Input_XmlReader.Value);
+                            //read the featuretype
                             string polygonFeatureType = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("featureType"))
                                 polygonFeatureType = Input_XmlReader.Value;
+                            //read the label
+                            string polygonLabel = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("label"))
+                                polygonLabel = Input_XmlReader.Value;
+                            //read the rotation
+                            double polygonRotation = 0;
+                            if (Input_XmlReader.MoveToAttribute("rotation"))
+                                polygonRotation = Convert.ToDouble(Input_XmlReader.Value);
+                            //get the rest
                             do
                             {
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Polygon") //check to see if end of element
+                                //check to see if end of element
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Polygon") 
                                     break;
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) //if it is an element
+                                //if it is an element
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
                                 {
-                                    switch (Input_XmlReader.Name) //determine the name of that element
+                                    //determine the name of that element
+                                    switch (Input_XmlReader.Name) 
                                     {
-                                        case "gml:Coordinates": //if it is the coordinates
+                                        //if it is the coordinates
+                                        case "gml:Coordinates": 
                                             Input_XmlReader.Read();
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
@@ -325,35 +333,75 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                         }
                                                     }
                                                 }
-
-                                                // In pairs, assign new points to the polygon and add the polygon to the coordinate/item
+                                                //create a newpoly obj
                                                 Coordinate_Polygon newPoly = new Coordinate_Polygon();
+                                                //add the edgepoints, In pairs, assign new points to the polygon and add the polygon to the coordinate/item
                                                 int i = 0;
                                                 while ((i + 2) <= latLongs.Count)
                                                 {
                                                     newPoly.Add_Edge_Point(latLongs[i], latLongs[i + 1]);
                                                     i += 2;
                                                 }
+                                                //add the featuretype
+                                                newPoly.FeatureType = polygonFeatureType;
+                                                //add the label
                                                 newPoly.Label = polygonLabel;
-                                                newPoly.polygonRotation = polygonRotation;
-                                                switch (polygonFeatureType)
-                                                {
-                                                    case "main":
-                                                        geoInfo.Add_Polygon(newPoly);
-                                                        break;
-                                                    case "poi":
-                                                        geoInfo.Add_POI_Polygon(newPoly);
-                                                        break;
-                                                    default:
-                                                        geoInfo.Add_Polygon(newPoly);
-                                                        break;
-                                                }
+                                                //add the rotation
+                                                newPoly.Rotation = polygonRotation;
+                                                //add poly to geo obj
+                                                geoInfo.Add_Polygon(newPoly);
                                             }
                                             break;
                                     }
                                 }
                             } while (Input_XmlReader.Read());
                             break;
+
+                        case "gml:Circle": //is a circle
+                            //read the featureType
+                            string circleFeatureType = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("featureType"))
+                                circleFeatureType = Input_XmlReader.Value;
+                            //read the label
+                            string circleLabel = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("label"))
+                                circleLabel = Input_XmlReader.Value;
+                            //read the radius
+                            double circleRadius = 0;
+                            if (Input_XmlReader.MoveToAttribute("radius"))
+                                circleRadius = Convert.ToDouble(Input_XmlReader.Value);
+                            //get the rest
+                            do
+                            {
+                                //check to see if end of element
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Circle") 
+                                    break;
+                                //if it is an element
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
+                                {
+                                    //determine the name of that element
+                                    switch (Input_XmlReader.Name) 
+                                    {
+                                        //if it is the coordinates
+                                        case "gml:Coordinates": 
+                                            Input_XmlReader.Read();
+                                            if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
+                                            {
+                                                string result = Convert.ToString(Input_XmlReader.Value);
+                                                var items = result.Split(',');
+                                                double latitude = double.Parse(items[0]);
+                                                double longitude = double.Parse(items[1]);
+                                                //create the circle
+                                                Coordinate_Circle newCircle = new Coordinate_Circle(latitude, longitude, circleRadius, circleLabel, circleFeatureType); 
+                                                //add to object
+                                                geoInfo.Add_Circle(newCircle);
+                                            }
+                                            break;
+                                    }
+                                }
+                            } while (Input_XmlReader.Read());
+                            break;
+
                     }
                 }
             } while (Input_XmlReader.Read());
@@ -408,9 +456,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 Output_Stream.WriteLine("<gml:featureMember>");
                 if (thisPolygon.Label.Length > 0)
-                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.featureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.polygonRotation + "\" radius=\"" + thisPolygon.circleRadius + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.featureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
                 else
-                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.featureType) + "\" rotation=\"" + thisPolygon.polygonRotation + "\" radius=\"" + thisPolygon.circleRadius + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.featureType) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
                 Output_Stream.WriteLine("<gml:exterior>");
                 Output_Stream.WriteLine("<gml:LinearRing>");
                 Output_Stream.Write("<gml:Coordinates>");
@@ -422,6 +470,21 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 Output_Stream.WriteLine("</gml:LinearRing>");
                 Output_Stream.WriteLine("</gml:exterior>");
                 Output_Stream.WriteLine("</gml:Polygon>");
+                Output_Stream.WriteLine("</gml:featureMember>");
+            }
+
+            //for circles
+            foreach (Coordinate_Circle thisCircle in geoInfo.Circles)
+            {
+                Output_Stream.WriteLine("<gml:featureMember>");
+                if (thisCircle.Label.Length > 0)
+                    Output_Stream.WriteLine("<gml:Circle featureType=\"" + Convert_String_To_XML_Safe(thisCircle.FeatureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisCircle.Label) + "\" radius=\"" + Convert_String_To_XML_Safe(thisCircle.Radius.ToString()) + "\">");
+                else
+                    Output_Stream.WriteLine("<gml:Circle featureType=\"" + Convert_String_To_XML_Safe(thisCircle.FeatureType) + "\" radius=\"" + Convert_String_To_XML_Safe(thisCircle.Radius.ToString()) + "\">");
+                Output_Stream.Write("<gml:Coordinates>");
+                Output_Stream.Write(thisCircle.Latitude + "," + thisCircle.Longitude + " ");
+                Output_Stream.WriteLine("</gml:Coordinates>");
+                Output_Stream.WriteLine("</gml:Circle>");
                 Output_Stream.WriteLine("</gml:featureMember>");
             }
 

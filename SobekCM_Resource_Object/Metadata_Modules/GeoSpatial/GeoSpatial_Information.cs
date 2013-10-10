@@ -20,6 +20,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private List<Coordinate_Line> lines;
         private List<Coordinate_Point> points;
         private List<Coordinate_Polygon> polygons;
+        private List<Coordinate_Circle> circles;
         private double sobekcm_main_spatial_distance;
         private string sobekcm_main_spatial_string;
 
@@ -29,6 +30,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points = new List<Coordinate_Point>();
             polygons = new List<Coordinate_Polygon>();
             lines = new List<Coordinate_Line>();
+            circles = new List<Coordinate_Circle>();
 
             sobekcm_main_spatial_distance = -1;
             sobekcm_main_spatial_string = String.Empty;
@@ -311,6 +313,18 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public int Line_Count
         {
             get { return lines.Count; }
+        }
+
+        /// <summary> Read-only collection of polygons associated with this digital resource </summary>
+        public ReadOnlyCollection<Coordinate_Circle> Circles
+        {
+            get { return new ReadOnlyCollection<Coordinate_Circle>(circles); }
+        }
+
+        /// <summary> Number of polygons associated with this digital resource </summary>
+        public int Circle_Count
+        {
+            get { return circles.Count; }
         }
 
         /// <summary> Read-only collection of polygons associated with this digital resource </summary>
@@ -598,10 +612,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 points = new List<Coordinate_Point>();
 
             foreach (Coordinate_Point existingPoint in points)
-            {
                 if ((existingPoint.Latitude == Point.Latitude) && (existingPoint.Longitude == Point.Longitude))
                     return;
-            }
 
             if (Point != null)
                 points.Add(Point);
@@ -617,10 +629,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 points = new List<Coordinate_Point>();
 
             foreach (Coordinate_Point existingPoint in points)
-            {
                 if ((existingPoint.Latitude == Latitude) && (existingPoint.Longitude == Longitude))
                     return;
-            }
 
             points.Add(new Coordinate_Point(Latitude, Longitude));
         }
@@ -636,10 +646,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 points = new List<Coordinate_Point>();
 
             foreach (Coordinate_Point existingPoint in points)
-            {
                 if ((existingPoint.Latitude == Latitude) && (existingPoint.Longitude == Longitude))
                     return;
-            }
 
             points.Add(new Coordinate_Point(Latitude, Longitude, Label));
         }
@@ -656,10 +664,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 points = new List<Coordinate_Point>();
 
             foreach (Coordinate_Point existingPoint in points)
-            {
                 if ((existingPoint.Latitude == Latitude) && (existingPoint.Longitude == Longitude))
                     return;
-            }
 
             points.Add(new Coordinate_Point(Latitude, Longitude, Label, Altitude));
         }
@@ -676,10 +682,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 points = new List<Coordinate_Point>();
 
             foreach (Coordinate_Point existingPoint in points)
-            {
                 if ((existingPoint.Latitude == Latitude) && (existingPoint.Longitude == Longitude))
                     return;
-            }
 
             points.Add(new Coordinate_Point(Latitude, Longitude, Label, FeatureType));
         }
@@ -690,13 +694,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public Coordinate_Line Get_Line(int index)
         {
             if (index < lines.Count)
-            {
                 return lines[index];
-            }
             else
-            {
                 return null;
-            }
         }
 
         /// <summary> Add a single, completely built line associated with this digital resource </summary>
@@ -720,13 +720,27 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public Coordinate_Polygon Get_Polygon(int index)
         {
             if (index < polygons.Count)
-            {
                 return polygons[index];
-            }
             else
-            {
                 return null;
-            }
+        }
+
+        /// <summary> Add a single, completely built Cirlce associated with this digital resource </summary>
+        /// <param name="Circle"> Coordinate Circle object associated with this digital resource </param>
+        public void Add_Circle(Coordinate_Circle Circle)
+        {
+            circles.Add(Circle);
+        }
+
+        /// <summary> Pulls one coordinate circle from the collection of circles associated with this digital resource </summary>
+        /// <param name="index"> Index of the circle to retrieve </param>
+        /// <returns> The indicated cirlce or NULL </returns>
+        public Coordinate_Circle Get_Circle(int index)
+        {
+            if (index < circles.Count)
+                return circles[index];
+            else
+                return null;
         }
 
         /// <summary> Add a single, completely built polygon associated with this digital resource </summary>
@@ -742,6 +756,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points.Clear();
             polygons.Clear();
             lines.Clear();
+            circles.Clear();
         }
 
         /// <summary> Clears all of the individual point information from this digital resource </summary>
@@ -750,31 +765,96 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points.Clear();
         }
 
+        /// <summary> Clears all of the circle information from this digital resource </summary>
+        public void Clear_Circles()
+        {
+            circles.Clear();
+        }
+
         /// <summary> Clears all of the individual point of interets information from this digital resource </summary>
         public void Clear_POIs()
         {
+            //create restore holders
             List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
-            //
-
-            foreach (var coordinatePoint in points)
-            {
-                if (coordinatePoint.FeatureType == "main")
-                {
-                    tempRestorePoints.Add(coordinatePoint);
-                }
-            }
-            //
-
+            List<Coordinate_Circle> tempRestoreCircles = new List<Coordinate_Circle>();
+            List<Coordinate_Line> tempRestoreLines = new List<Coordinate_Line>();
+            List<Coordinate_Polygon> tempRestorePolygons = new List<Coordinate_Polygon>();
+            //add objs to restore holders
+            foreach (var temp in points)
+                if (temp.FeatureType != "poi")
+                    tempRestorePoints.Add(temp);
+            foreach (var temp in circles)
+                if (temp.FeatureType != "poi")
+                    tempRestoreCircles.Add(temp);
+            foreach (var temp in lines)
+                if (temp.FeatureType != "poi")
+                    tempRestoreLines.Add(temp);
+            foreach (var temp in polygons)
+                if (temp.FeatureType != "poi")
+                    tempRestorePolygons.Add(temp);
+            //clear all objs
             points.Clear();
-            //
-            //
+            circles.Clear();
+            lines.Clear();
+            polygons.Clear();
+            //now restore the restore objects
+            foreach (var temp in tempRestorePoints)
+                points.Add(temp);
+            foreach (var temp in tempRestoreCircles)
+                circles.Add(temp);
+            foreach (var temp in tempRestoreLines)
+                lines.Add(temp);
+            foreach (var temp in tempRestorePolygons)
+                polygons.Add(temp);
+        }
 
-            foreach (var tempRestorePoint in tempRestorePoints)
-            {
-                points.Add(tempRestorePoint);
-            }
-            //
+        ///// <summary> Clears a specific set of spatial information matching the URI from this digital resource </summary>
+        //public void Clear_Specific(string URI)
+        //{
+        //    //points.Remove()
+        //}
 
+        /// <summary> Clears a specific polygon spatial information from this digital resource </summary>
+        public void Clear_Specific_Polygon(Coordinate_Polygon PolygonToRemove)
+        {
+            polygons.Remove(PolygonToRemove);
+        }
+
+        /// <summary> Clears all of the spatial information with the 'main' featureType from this digital resource </summary>
+        public void Clear_NonPOIs()
+        {
+            //create restore holders
+            List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
+            List<Coordinate_Circle> tempRestoreCircles = new List<Coordinate_Circle>();
+            List<Coordinate_Line> tempRestoreLines = new List<Coordinate_Line>();
+            List<Coordinate_Polygon> tempRestorePolygons = new List<Coordinate_Polygon>();
+            //add objs to restore holders
+            foreach (var temp in points)
+                if (temp.FeatureType == "poi")
+                    tempRestorePoints.Add(temp);
+            foreach (var temp in circles)
+                if (temp.FeatureType == "poi")
+                    tempRestoreCircles.Add(temp);
+            foreach (var temp in lines)
+                if (temp.FeatureType == "poi")
+                    tempRestoreLines.Add(temp);
+            foreach (var temp in polygons)
+                if (temp.FeatureType == "poi")
+                    tempRestorePolygons.Add(temp);
+            //clear all objs
+            points.Clear();
+            circles.Clear();
+            lines.Clear();
+            polygons.Clear();
+            //now restore the restore objects
+            foreach (var temp in tempRestorePoints)
+                points.Add(temp);
+            foreach (var temp in tempRestoreCircles)
+                circles.Add(temp);
+            foreach (var temp in tempRestoreLines)
+                lines.Add(temp);
+            foreach (var temp in tempRestorePolygons)
+                polygons.Add(temp);
         }
 
         /// <summary> Clears all user added polygons and all coordinate lines from this digital resource </summary>
@@ -798,32 +878,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 }
             }
             lines.Clear();
-        }
-
-        //add poi point
-        public void Add_POI_Point(double Latitude, double Longitude, string Label)
-        {
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label, "poi");
-            points.Add(newPoint);
-        }
-
-        //add line
-        public void Add_POI_Line(Coordinate_Line Line)
-        {
-            Line.FeatureType = "poi";
-            lines.Add(Line);
-        }
-
-        //add polygon
-        public void Add_POI_Polygon(Coordinate_Polygon Polygon)
-        {
-            polygons.Add(Polygon);
-        }
-
-        //add circle
-        public void Add_POI_Circle(Coordinate_Polygon Circle)
-        {
-            polygons.Add(Circle);
         }
     }
 }

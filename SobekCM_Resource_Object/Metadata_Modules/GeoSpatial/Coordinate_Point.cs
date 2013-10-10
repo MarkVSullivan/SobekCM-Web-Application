@@ -122,40 +122,5 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             get { return featureType ?? String.Empty; }
             set { featureType = value; }
         }
-
-        ///// <summary> Add Feature Type Data</summary>
-        //public void Add_FeatureType(string incomingFeatureType)
-        //{
-        //    featureType = incomingFeatureType;
-        //}
-
-
-        /// <summary> Writes this single coordinate point as SobekCM-formatted XML </summary>
-        /// <param name="order"> Order in which this point appears within a larger object (such as a line or polygon) </param>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this single coordinate point as SobekCM-formatted XML</param>
-        internal void Add_SobekCM_Metadata(int order, string sobekcm_namespace, TextWriter results)
-        {
-            results.Write("<" + sobekcm_namespace + ":Point ");
-            results.Write("latitude=\"" + latitude + "\" ");
-            results.Write("longitude=\"" + longitude + "\" ");
-            if (altitude != 0)
-            {
-                results.Write("altitude=\"" + altitude.ToString() + "\" ");
-            }
-            if (order > 0)
-            {
-                results.Write("order=\"" + order + "\" ");
-            }
-            if (!String.IsNullOrEmpty(label))
-            {
-                results.Write("label=\"" + label + "\"");
-            }
-            if (!String.IsNullOrEmpty(featureType))
-            {
-                results.Write("featureType=\"" + featureType + "\"");
-            }
-            results.Write(" />\r\n");
-        }
     }
 }
