@@ -81,30 +81,5 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             points.Add(newPoint);
             return newPoint;
         }
-
-        /// <summary> Writes this line of coordinates as SobekCM-formatted XML </summary>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this line of coordiantes as SobekCM-formatted XML</param>
-        internal void Add_SobekCM_Metadata(string sobekcm_namespace, TextWriter results)
-        {
-            // If no points, return nothing
-            if (points.Count == 0)
-                return;
-
-            // Step through all the points in this line
-            results.Write("<" + sobekcm_namespace + ":Line");
-            if (!String.IsNullOrEmpty(label))
-                results.Write(" label=\"" + label + "\"");
-            results.Write(">\r\n");
-            foreach (Coordinate_Point thisPoint in points)
-            {
-                thisPoint.Add_SobekCM_Metadata(-1, sobekcm_namespace, results);
-            }
-            if (!String.IsNullOrEmpty(featureType))
-            {
-                results.Write("featureType=\"" + featureType + "\"");
-            }
-            results.Write("</" + sobekcm_namespace + ":Line>\r\n");
-        }
     }
 }
