@@ -148,15 +148,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableHeader\">Material Information</span></td></tr>");
 
             string label_space = "&nbsp;&nbsp;&nbsp;";
+            //Add the title
             Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableLabel\">Title:" + label_space+"</span>");
             Output.WriteLine("<span>" + item_details.Rows[0]["Title"] + "</span></td></tr>");
 
+            //Add the Author
             Output.WriteLine("<tr><td colspan=\"3\" ><span class=\"sbkTs_tableLabel\">Author:" + label_space+"</span>");
             Output.WriteLine("<span>" + item_details.Rows[0]["Author"] + "</span></td></tr>");
 
+            //Add the publisher
             Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableLabel\">Publisher:" + label_space+"</span>");
             Output.WriteLine("<span>" + item_details.Rows[0]["Publisher"] + "</span></td></tr>");
 
+            //Add the OCLC, Aleph, Material Type info
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">OCLC:" + label_space+"</span>");
             Output.WriteLine("<span>" + item_details.Rows[0]["OCLC_Number"] + "</span></td>");
             Output.WriteLine("<td><span class=\"sbkTs_tableLabel\"> Aleph: " + label_space+"</span>");
@@ -172,6 +176,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</table>");
             Output.WriteLine("<br/><br/><br/>");
 
+            //Write the serial hierarchy info, if there is any data available
             if (!((String.IsNullOrEmpty(item_details.Rows[0]["Level1_Text"].ToString())) && String.IsNullOrEmpty(item_details.Rows[0]["Level2_Text"].ToString()) && String.IsNullOrEmpty(item_details.Rows[0]["Level3_Text"].ToString())))
             {
                 //Start the Serial Hierarchy Table
@@ -186,6 +191,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 3:"+label_space+"</span>");
                 Output.WriteLine(item_details.Rows[0]["Level3_Text"] + "</td></tr>");
+                
+                //End this table
                 Output.WriteLine("</table>");
             }
             Output.WriteLine("<br/><br/><br/>");
@@ -194,10 +201,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<table class=\"sbkTs_tblImagingProgress\">");
             Output.WriteLine("<tr><td colspan=\"8\"><span class=\"sbkTs_tableHeader\">Imaging Progress</span></td></tr>");
            
-            //Generate a long space to use as empty fields in the tables
+            //Long space to use as empty fields in the tables
             string label1_space = "&nbsp;";
             for (int i = 0; i < 17; i++)
                 label1_space += "&nbsp;";
+          
             for (int rowCount = 0; rowCount < 4; rowCount++)
             {
                 Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label1_space+label1_space + label1_space + label1_space + "</td>");
@@ -226,16 +234,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</table>");
             Output.WriteLine("<br/><br/><br/>");
 
-            //Get the barcode images for the events
-            string imageUrl1 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "A", track_item.BibID + track_item.VID + "A");
-            string imageUrl2 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "B", track_item.BibID + track_item.VID + "B");
+            //Is this item born digital?
+            bool born_digital = false;
+            Boolean.TryParse(item_details.Rows[0]["Born_Digital"].ToString(), out born_digital);
 
-            //Start the table for the event barcodes
-            Output.WriteLine("<table class=\"sbkTs_tblBarcodes\">");
-            Output.WriteLine("<tr><td><img id=\"barcode1\" src=\"" + imageUrl1 + "\"/></td>");
-            Output.WriteLine("<td><img id=\"barcode2\" src=\"" + imageUrl2 + "\"/></td></tr>");
-            Output.WriteLine("</table>");
+            if (!born_digital)
+            {
+                //Get the barcode images for the events
+                string imageUrl1 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "A", track_item.BibID + track_item.VID + "A");
+                string imageUrl2 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "B", track_item.BibID + track_item.VID + "B");
 
+                //Start the table for the event barcodes
+                Output.WriteLine("<table class=\"sbkTs_tblBarcodes\">");
+                Output.WriteLine("<tr><td><img id=\"barcode1\" src=\"" + imageUrl1 + "\"/></td>");
+                Output.WriteLine("<td><img id=\"barcode2\" src=\"" + imageUrl2 + "\"/></td></tr>");
+                Output.WriteLine("</table>");
+            }
+            
             //Close the outer table
             Output.WriteLine("</td></tr></table>");
 
