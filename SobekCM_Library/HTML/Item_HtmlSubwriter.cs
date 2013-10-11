@@ -953,125 +953,128 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("<div itemscope itemtype=\"http:schema.org/ItemPage\">");
 		    Output.WriteLine();
 
-		    Output.WriteLine("<!-- Show the title and any other important item information -->");
-		    Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
-		    if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
-		    {
-			    string grouptitle = currentItem.Behaviors.GroupTitle;
-			    if (grouptitle.Length > 125)
-			    {
-					Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
-			    }
-			    else
-			    {
-				    Output.WriteLine("\t<h1 itemprop=\"name\">" + grouptitle + "</h1>");
-			    }
-		    }
-		    else
-		    {
-			    string final_title = currentItem.Bib_Info.Main_Title.Title;
-			    if (currentItem.Bib_Info.Main_Title.NonSort.Length > 0)
-			    {
-				    if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
-					    final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
-				    else
-				    {
-					    if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
-					    {
-						    final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
-					    }
-					    else
-					    {
-						    final_title = currentItem.Bib_Info.Main_Title.NonSort + " " + currentItem.Bib_Info.Main_Title.Title;
-					    }
-				    }
-			    }
+            // The item viewer can choose to override the standard item titlebar
+	        if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Titlebar))
+	        {
+	            Output.WriteLine("<!-- Show the title and any other important item information -->");
+	            Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+	            if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
+	            {
+	                string grouptitle = currentItem.Behaviors.GroupTitle;
+	                if (grouptitle.Length > 125)
+	                {
+	                    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
+	                }
+	                else
+	                {
+	                    Output.WriteLine("\t<h1 itemprop=\"name\">" + grouptitle + "</h1>");
+	                }
+	            }
+	            else
+	            {
+	                string final_title = currentItem.Bib_Info.Main_Title.Title;
+	                if (currentItem.Bib_Info.Main_Title.NonSort.Length > 0)
+	                {
+	                    if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+	                        final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
+	                    else
+	                    {
+	                        if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+	                        {
+	                            final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
+	                        }
+	                        else
+	                        {
+	                            final_title = currentItem.Bib_Info.Main_Title.NonSort + " " + currentItem.Bib_Info.Main_Title.Title;
+	                        }
+	                    }
+	                }
 
 
-			    // Add the Title if there is one
-			    if (final_title.Length > 0)
-			    {
-				    // Is this a newspaper?
-				    bool newspaper = currentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
-				    if ((newspaper) && ((currentItem.Bib_Info.Origin_Info.Date_Created.Length > 0) || (currentItem.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
-				    {
-					    string date = currentItem.Bib_Info.Origin_Info.Date_Created;
-					    if (currentItem.Bib_Info.Origin_Info.Date_Created.Length == 0)
-						    date = currentItem.Bib_Info.Origin_Info.Date_Issued;
+	                // Add the Title if there is one
+	                if (final_title.Length > 0)
+	                {
+	                    // Is this a newspaper?
+	                    bool newspaper = currentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+	                    if ((newspaper) && ((currentItem.Bib_Info.Origin_Info.Date_Created.Length > 0) || (currentItem.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+	                    {
+	                        string date = currentItem.Bib_Info.Origin_Info.Date_Created;
+	                        if (currentItem.Bib_Info.Origin_Info.Date_Created.Length == 0)
+	                            date = currentItem.Bib_Info.Origin_Info.Date_Issued;
 
 
-					    if (final_title.Length > 125)
-					    {
-							Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
-					    }
-					    else
-					    {
-							Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
-					    }
-				    }
-				    else
-				    {
-					    if (final_title.Length > 125)
-					    {
-							Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
-					    }
-					    else
-					    {
-							Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
-					    }
-				    }
-			    }
+	                        if (final_title.Length > 125)
+	                        {
+	                            Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+	                        }
+	                        else
+	                        {
+	                            Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+	                        }
+	                    }
+	                    else
+	                    {
+	                        if (final_title.Length > 125)
+	                        {
+	                            Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+	                        }
+	                        else
+	                        {
+	                            Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+	                        }
+	                    }
+	                }
 
 
-			    // Add the link if there is one
-			    if ((currentItem.Bib_Info.hasLocationInformation) && (currentItem.Bib_Info.Location.Other_URL.Length > 0))
-			    {
-				    if (currentItem.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
-				    {
+	                // Add the link if there is one
+	                if ((currentItem.Bib_Info.hasLocationInformation) && (currentItem.Bib_Info.Location.Other_URL.Length > 0))
+	                {
+	                    if (currentItem.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
+	                    {
 
 
-					    // Determine the type of link
-					    string type = translations.Get_Translation("Related Link", currentMode.Language);
-					    if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
-					    {
-						    type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, currentMode.Language);
-					    }
+	                        // Determine the type of link
+	                        string type = translations.Get_Translation("Related Link", currentMode.Language);
+	                        if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
+	                        {
+	                            type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, currentMode.Language);
+	                        }
 
 
-					    // Determine the display value
-					    string note = currentItem.Bib_Info.Location.Other_URL;
-					    if (currentItem.Bib_Info.Location.Other_URL_Note.Length > 0)
-					    {
-						    note = currentItem.Bib_Info.Location.Other_URL_Note;
-					    }
+	                        // Determine the display value
+	                        string note = currentItem.Bib_Info.Location.Other_URL;
+	                        if (currentItem.Bib_Info.Location.Other_URL_Note.Length > 0)
+	                        {
+	                            note = currentItem.Bib_Info.Location.Other_URL_Note;
+	                        }
 
 
-					    // Add the link
-					    Output.WriteLine("\t<a href=\"" + currentItem.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
-				    }
-			    }
+	                        // Add the link
+	                        Output.WriteLine("\t<a href=\"" + currentItem.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
+	                    }
+	                }
 
 
-			    // If there is an ACCESSION number and this is an ARTIFACT, include that at the top
-			    if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
-			    {
-				    foreach (Identifier_Info thisIdentifier in currentItem.Bib_Info.Identifiers)
-				    {
-					    if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
-					    {
-						    Output.WriteLine("\t" + translations.Get_Translation("Accession number", currentMode.Language) + " " + thisIdentifier.Identifier + "<br />");
-						    break;
-					    }
-				    }
-			    }
-		    }
+	                // If there is an ACCESSION number and this is an ARTIFACT, include that at the top
+	                if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
+	                {
+	                    foreach (Identifier_Info thisIdentifier in currentItem.Bib_Info.Identifiers)
+	                    {
+	                        if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
+	                        {
+	                            Output.WriteLine("\t" + translations.Get_Translation("Accession number", currentMode.Language) + " " + thisIdentifier.Identifier + "<br />");
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
 
 
-		    Output.WriteLine("</div>");
-		    Output.WriteLine();
+	            Output.WriteLine("</div>");
+	            Output.WriteLine();
+	        }
 
-
-		    // The item viewer can choose to override the standard item menu
+	        // The item viewer can choose to override the standard item menu
 		    if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu))
 		    {
 			    // Can this user (if there is one) edit this item?
