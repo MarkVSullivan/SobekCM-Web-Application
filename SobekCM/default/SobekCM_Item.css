@@ -319,3 +319,6 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 #sbkDrv_ButtonDiv {padding-top: 20px;font-size: 1.3em; text-align: center;margin-left: auto;margin-right: auto;}
 
 .fadeEffect { background-color: #6f6b06; border-radius: 5px; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white;  }
+
+
+.sbkTs_MainTable{ width: 800px;}
