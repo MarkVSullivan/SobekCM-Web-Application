@@ -117,7 +117,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
                         HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
                         HtmlSubwriter_Behaviors_Enum.Suppress_Header,
-                        HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Banner,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Titlebar
                     };
             }
         }
