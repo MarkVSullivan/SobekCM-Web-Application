@@ -19,8 +19,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private string id;
         private string label;
         private ushort pageSequence;
-        public double rotation;
-        public string featureType;
+        private double rotation;
+        private string featureType;
+        private string polygonType;
 
         /// <summary> Constructor for a new instance of this Coordinate_Polygon class </summary>
         public Coordinate_Polygon()
@@ -115,6 +116,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         {
             get { return featureType ?? String.Empty; }
             set { featureType = value; }
+        }
+
+        /// <summary> PolygonType associated with this polygon </summary>
+        public string PolygonType
+        {
+            get { return polygonType ?? String.Empty; }
+            set { polygonType = value; }
         }
 
         /// <summary> Label for this polygon within the digital resource </summary>

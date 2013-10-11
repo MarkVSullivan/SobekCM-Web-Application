@@ -288,6 +288,10 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             string polygonFeatureType = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("featureType"))
                                 polygonFeatureType = Input_XmlReader.Value;
+                            //read the polygonType
+                            string polygonPolygonType = String.Empty;
+                            if (Input_XmlReader.MoveToAttribute("polygonType"))
+                                polygonPolygonType = Input_XmlReader.Value;
                             //read the label
                             string polygonLabel = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("label"))
@@ -344,6 +348,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                 }
                                                 //add the featuretype
                                                 newPoly.FeatureType = polygonFeatureType;
+                                                //add the polygontype
+                                                newPoly.PolygonType = polygonPolygonType;
                                                 //add the label
                                                 newPoly.Label = polygonLabel;
                                                 //add the rotation
@@ -438,9 +444,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 Output_Stream.WriteLine("<gml:featureMember>");
                 if (thisLine.Label.Length > 0)
-                    Output_Stream.WriteLine("<gml:Line featureType=\"" + Convert_String_To_XML_Safe(thisLine.featureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisLine.Label) + "\">");
+                    Output_Stream.WriteLine("<gml:Line featureType=\"" + Convert_String_To_XML_Safe(thisLine.FeatureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisLine.Label) + "\">");
                 else
-                    Output_Stream.WriteLine("<gml:Line featureType=\"" + Convert_String_To_XML_Safe(thisLine.featureType) + "\">");
+                    Output_Stream.WriteLine("<gml:Line featureType=\"" + Convert_String_To_XML_Safe(thisLine.FeatureType) + "\">");
                 Output_Stream.Write("<gml:Coordinates>");
                 foreach (Coordinate_Point thisPoint in thisLine.Points) //for each lat/long
                 {
@@ -456,9 +462,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 Output_Stream.WriteLine("<gml:featureMember>");
                 if (thisPolygon.Label.Length > 0)
-                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.featureType) + "\" label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.FeatureType) + "\" polygonType=\"" + Convert_String_To_XML_Safe(thisPolygon.PolygonType) + "\" label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
                 else
-                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.featureType) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.FeatureType) + "\" polygonType=\"" + Convert_String_To_XML_Safe(thisPolygon.PolygonType) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
                 Output_Stream.WriteLine("<gml:exterior>");
                 Output_Stream.WriteLine("<gml:LinearRing>");
                 Output_Stream.Write("<gml:Coordinates>");
