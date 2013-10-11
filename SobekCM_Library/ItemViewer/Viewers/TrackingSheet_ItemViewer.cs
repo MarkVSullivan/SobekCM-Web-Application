@@ -19,9 +19,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private int itemID;
         private DataSet item_details_dataset;
         private DataTable item_details;
+        private DataTable aggregation_details;
         private string image_location;
         private string username;
-
+        private List<string> aggregation_list;
+        private string aggregations;
 
         /// <summary>
         /// Constructor for the Tracking Sheet ItemViewer
@@ -34,17 +36,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode = Current_Mode;
             CurrentUser = Current_User;
             
-
-            //Assign the current resource object to track_item
-            track_item = Current_Object;
-
-            //Get the ItemID for this Item from the database
-            itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(track_item.BibID, track_item.VID);
-
-            //Also get the item details from the database
-            item_details_dataset = Database.SobekCM_Database.Get_Item_Details(track_item.BibID, track_item.VID, null);
-            item_details = item_details_dataset.Tables[2];
-
             // If there is no user, send to the login
             if (CurrentUser == null)
             {
@@ -61,15 +52,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Redirect();
                 return;
             }
+
+            //Assign the current resource object to track_item
+            track_item = Current_Object;
+
+            //Get the ItemID for this Item from the database
+            itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(track_item.BibID, track_item.VID);
+
+            //Also get the item & aggregation details from the database
+            item_details_dataset = Database.SobekCM_Database.Get_Item_Details(track_item.BibID, track_item.VID, null);
+            item_details = item_details_dataset.Tables[2];
+            aggregation_details = item_details_dataset.Tables[1];
+
+            //Get the list of aggregations from the data table
+            aggregation_list = new List<string>();
+            foreach (DataRow row in aggregation_details.Rows)
+            {
+                aggregation_list.Add(row["Code"].ToString());
+                aggregations = aggregations + row["Code"].ToString() + ", ";
+            }
+            //Remove extra comma and space from the end
+            aggregations = aggregations.Substring(0, aggregations.Length - 2);
+
+            
+
+            //Get the temporary location for saving the barcode images
             image_location = SobekCM_Library_Settings.Base_Temporary_Directory + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\tsBarcodes\\" + itemID.ToString();
             username = Current_User.UserName.Replace(".", "").Replace("@", "");
             if (Current_User.UFID.Trim().Length > 0)
             {
-                image_location = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\tsBarcodes\\" + itemID.ToString();
+                image_location = SobekCM_Library_Settings.Base_Temporary_Directory + "\\" + Current_User.UFID + "\\tsBarcodes\\" + itemID.ToString();
                 username = Current_User.UFID;
             }
 
-            // Make the folder for the user in process directory
+            // Make the folder for the user in the temp directory
             if (!Directory.Exists(image_location))
                 Directory.CreateDirectory(image_location);
 
@@ -147,6 +163,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<td> <span class=\"sbkTs_tableLabel\">  Material Type:" + label_space+"</span>");
             Output.WriteLine("<span>" + item_details.Rows[0]["Type"] + "</span></td></tr>");
             
+            //Add the aggregation info
+            Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableLabel\">Aggregations:"+label_space+"</span>");
+            Output.WriteLine("<span>" + aggregations + "</span></td></tr>");
+
             //End the table
             Output.WriteLine("</table>");
             Output.WriteLine("<br/><br/><br/>");
@@ -172,7 +192,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Start the Imaging Progress Table
             Output.WriteLine("<table class=\"sbkTs_tblImagingProgress\">");
             Output.WriteLine("<tr><td colspan=\"8\"><span class=\"sbkTs_tableHeader\">Imaging Progress</span></td></tr>");
-            string label1_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+           
+            //Generate a long space to use as empty fields in the tables
+            string label1_space = "&nbsp;";
+            for (int i = 0; i < 17; i++)
+                label1_space += "&nbsp;";
             for (int rowCount = 0; rowCount < 4; rowCount++)
             {
                 Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label1_space+label1_space + label1_space + label1_space + "</td>");
@@ -183,12 +207,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</table>");
             Output.WriteLine("<br/><br/><br/>");
 
-            //Add the Disposition Statement
-            Output.WriteLine("<table class=\"sbkTs_tblDisposition\">");
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">Disposition Notes:</span>"+label_space + item_details.Rows[0][33] + "</td></tr>");
-            Output.WriteLine("</table>");
-            Output.WriteLine("<br/><br/><br/>");
-
+            //Add the Disposition Notes (only if  there is any data available)
+            if (!String.IsNullOrEmpty(item_details.Rows[0][33].ToString()))
+            {
+                Output.WriteLine("<table class=\"sbkTs_tblDisposition\">");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">Disposition Notes:</span>" + label_space + item_details.Rows[0][33] + "</td></tr>");
+                Output.WriteLine("</table>");
+                Output.WriteLine("<br/><br/><br/>");
+            }
+            
             //Add the Additional Notes table
             Output.WriteLine("<table class=\"sbkTs_tblAdditionalNotes\">");
             Output.WriteLine("<tr><td class=\"sbkTs_tableHeader\">Additional Notes:</td></tr>");
