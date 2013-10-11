@@ -257,6 +257,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     poiRectangle.Label = ar[3];
                                     //add the feature type
                                     poiRectangle.FeatureType = "poi";
+                                    //add the polygon type
+                                    poiRectangle.PolygonType = "rectangle";
                                     //add the incoming bounds
                                     string[] temp4 = ar[4].Split(',');
                                     poiRectangle.Add_Edge_Point(Convert.ToDouble(temp4[0].Replace("(", "")), Convert.ToDouble(temp4[1].Replace(")", "")));
@@ -591,6 +593,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                         }
                     }
+                    //add the info for converted overlays
+                    try
+                    {
+                        //get image url myway
+                        string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURLConverted = \"" + current_image_file + "\"; ");
+                    }
+                    catch (Exception)
+                    {
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURLConverted = \"\"; ");
+                    }
+                    mapeditBuilder.AppendLine("      globalVar.incomingPointLabelConverted = \"" + CurrentItem.Bib_Title + "\"; ");
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPoints();");
                     mapeditBuilder.AppendLine(" ");
@@ -598,8 +612,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //if there are no points
                 else
                 {
-                    mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[0] = \"\" ");
-                    mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[0] = \"" + CurrentItem.Bib_Title + "\"; ");
+                    mapeditBuilder.AppendLine(" ");
+                    try
+                    {
+                        //get image url myway
+                        string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURLConverted = \"" + current_image_file + "\"; ");
+                    }
+                    catch (Exception)
+                    {
+                        mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURLConverted = \"\"; ");
+                    }
+                    mapeditBuilder.AppendLine("      globalVar.incomingPointLabelConverted = \"" + CurrentItem.Bib_Title + "\"; ");
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPoints();");
                     mapeditBuilder.AppendLine(" ");
@@ -664,6 +688,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         //add the featureType
                         mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + it + "] = \"" + itemPolygon.FeatureType + "\";");
+                        //add the polygonType
+                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + it + "] = \"" + itemPolygon.PolygonType + "\";");
                         //add the label
                         mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
                         //determine if an overlay or a polygon
@@ -722,7 +748,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             bounds += bounds2 + ", " + bounds1;
                             bounds += ")";
                             //add the bounds
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonBounds[" + it + "] = " + bounds + ";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPath[" + it + "] = " + bounds + ";"); //changed from bounds
                             //add image url
                             try
                             {

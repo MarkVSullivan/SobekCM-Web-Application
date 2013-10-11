@@ -15,7 +15,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     {
         private string label;
         private List<Coordinate_Point> points;
-        public string featureType;
+        private string featureType;
 
 
         /// <summary> Constructor for a new instance of this Coordinate_Line class </summary>
