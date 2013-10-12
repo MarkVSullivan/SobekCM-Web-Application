@@ -117,6 +117,9 @@ namespace SobekCM.Resource_Object.Behaviors
 				case View_Enum.DATASET_VIEWDATA:
 					return new string[] { "dsview" };
 
+                case View_Enum.TRACKING_SHEET:
+                    return new string[]{"ts"};
+
                 case View_Enum.DOWNLOADS:
                     return new string[] {"downloads"};
 
