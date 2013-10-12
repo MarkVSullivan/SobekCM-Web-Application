@@ -118,9 +118,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //get the length of incoming message
-            int index1 = sendData.LastIndexOf("~");
+            int index1 = sendData.LastIndexOf("~", StringComparison.Ordinal);
+
             //split into each save message
             string[] allSaves = sendData.Substring(0, index1).Split('~');
+
             //hold save type handle
             string saveTypeHandle = null;
             bool firedOnce = true; //check to see if save poi clear has already been fired...
@@ -246,9 +248,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
                                 }
                             }
-
-
                             break;
+
                         case "poi":
 
                             if (firedOnce)
@@ -383,6 +384,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //create inprocessing directory
             string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
+
             //ensure the user's process directory exists
             if (!Directory.Exists(userInProcessDirectory))
             {

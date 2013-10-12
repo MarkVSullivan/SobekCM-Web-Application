@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
@@ -147,7 +148,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             resultsBldr.AppendLine("</a>");
-            if (user_notes.Length > 0)
+            if (!String.IsNullOrEmpty(user_notes))
             {
                 resultsBldr.AppendLine("<br />" + user_notes + " <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return edit_notes_form_open('item_send_" + index_in_page + "', '" + identifier + "','" + user_notes.Replace("\"", "%22").Replace("'", "%27").Replace("=", "%3D").Replace("&", "%26") + "' );\">edit note</a> )</span></td>");
             }

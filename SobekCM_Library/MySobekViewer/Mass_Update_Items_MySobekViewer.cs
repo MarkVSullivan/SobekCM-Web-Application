@@ -227,19 +227,6 @@ namespace SobekCM.Library.MySobekViewer
             // Add the hidden field
             Output.WriteLine();
         }
-
-        #region Method to add the controls to web page
-
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Add_Controls", "Do nothing");
-        }
-
-        #endregion
     }
 }
 

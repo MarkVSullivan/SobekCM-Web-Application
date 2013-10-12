@@ -541,12 +541,11 @@ namespace SobekCM.Library.MySobekViewer
         }
 
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file [UNUSED IN THIS VIEWER] </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> The <see cref="PagedResults_HtmlSubwriter"/> class is instantiated and adds controls to the placeholder here </remarks>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Controls", String.Empty);
 
@@ -671,7 +670,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
 
-                placeHolder.Controls.Add(treeView1);
+                MainPlaceHolder.Controls.Add(treeView1);
             }
 
             if (currentMode.My_Sobek_SubMode.Length > 0)
@@ -689,10 +688,10 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     
                     if (properFolderName != "Submitted Items")
-                        literal.Text = "<br /><br /><div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div>";
+						literal.Text = "<br /><br /><div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
                     else
-                        literal.Text = "<div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div>";
-                    placeHolder.Controls.Add(literal);
+						literal.Text = "<div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
+                    MainPlaceHolder.Controls.Add(literal);
 
                 }
                 else
@@ -718,21 +717,21 @@ namespace SobekCM.Library.MySobekViewer
                     writeResult.Write_HTML(writer, Tracer);
 
                     Literal view_type_selection_literal = new Literal {Text = view_type_selection_builder.ToString()};
-                    placeHolder.Controls.Add(view_type_selection_literal);
+                    MainPlaceHolder.Controls.Add(view_type_selection_literal);
 
                     // Now, add the results controls as well
-                    writeResult.Add_Controls(placeHolder, Tracer);
+                    writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
                     // Close the div
-                    Literal final_literal = new Literal {Text = "<br />\n"};
-                    placeHolder.Controls.Add(final_literal);
+                    Literal final_literal = new Literal {Text = "<br /></div>\n"};
+                    MainPlaceHolder.Controls.Add(final_literal);
                 }
 
                 //if (resultTable.Title_Count > 0)
                 //{
                 //    System.Web.UI.WebControls.Literal literal = new System.Web.UI.WebControls.Literal();
                 //    literal.Text = "<div class=\"SobekResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons  + Environment.NewLine + "  " + writeResult.Showing_Text  + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine ;
-                //    placeHolder.Controls.Add(literal);
+                //    MainPlaceHolder.Controls.Add(literal);
                 //}
             }
             else
@@ -815,10 +814,11 @@ namespace SobekCM.Library.MySobekViewer
                 bookshelfManageBuilder.AppendLine("  </table>");
                 bookshelfManageBuilder.AppendLine("  </blockquote>");
                 bookshelfManageBuilder.AppendLine("</div>");
+				bookshelfManageBuilder.AppendLine("</div>");
 
                 // Add this as a literal
                 Literal mgmtLiteral = new Literal {Text = bookshelfManageBuilder.ToString()};
-                placeHolder.Controls.Add(mgmtLiteral);
+                MainPlaceHolder.Controls.Add(mgmtLiteral);
             }
         }
 

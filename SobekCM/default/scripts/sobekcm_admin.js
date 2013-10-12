@@ -563,20 +563,19 @@ function wordmark_form_popup(linkname, code, title, file, link )
     var hiddenfield = document.getElementById('admin_wordmark_code_tosave');
     hiddenfield.value = code;
     
-    // Populate the visible fields
+	// Populate the visible fields
     document.getElementById('form_wordmark_code').innerHTML = code + ' &nbsp; &nbsp ';
     document.getElementById('form_wordmark_file').value = file;
     document.getElementById('form_wordmark_title').value = title;
     document.getElementById('form_wordmark_link').value = link;
 
     // Toggle the wordmark form
-    blanket_size('form_wordmark', linkname, 215 );
-    window_pos('form_wordmark', 1000);
+    blanket_size('form_wordmark', 215 );
     toggle('blanket_outer');
     toggle('form_wordmark');	
     
     // Create the draggable object to allow this window to be dragged around
-    $("#form_wordmark").draggable();
+    jQuery("#form_wordmark").draggable();
     
     // Put focus on the wordmark file field
     var focusfield = document.getElementById('form_wordmark_file');
@@ -617,21 +616,36 @@ function save_new_wordmark()
     return true;
 }
 
-// Save the new wordmark
+// Verify deletion of the existing wordmark in the database and file
 function delete_wordmark( code )
 {
-    input_box=confirm("Do you really want to delete wordmark '" + code + "'?");
+    var input_box=confirm("Do you really want to delete wordmark '" + code + "' and associated file?");
     if (input_box==true) 
     { 
         // Set the hidden value this data
         var hiddenfield = document.getElementById('admin_wordmark_code_delete');
         hiddenfield.value = code;
  
-        document.itemNavForm.submit();
+        document.sbkAdm_AddedForm.submit();
     
         // Return false to prevent another return trip to the server
         return false;
     }
+}
+
+// Verify deletion of a wordmark/icon file which is neither referenced in the database nor used
+function delete_wordmark_file(code) {
+	var input_box = confirm("Do you really want to delete unused image file '" + code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_wordmark_code_delete');
+		hiddenfield.value = code;
+
+		document.sbkAdm_AddedForm.submit();
+
+		// Return false to prevent another return trip to the server
+		return false;
+	}
 }
 
 // Delete an item

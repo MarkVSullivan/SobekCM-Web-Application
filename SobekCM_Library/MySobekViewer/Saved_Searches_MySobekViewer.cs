@@ -99,12 +99,11 @@ namespace SobekCM.Library.MySobekViewer
             
         }
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file [UNUSED IN THIS VIEWER] </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> The <see cref="PagedResults_HtmlSubwriter"/> class is instantiated and adds controls to the placeholder here </remarks>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Saved_Searches_MySobekViewer.Add_Controls", String.Empty);
             DataTable searchesTable = SobekCM_Database.Get_User_Searches(user.UserID, Tracer);
@@ -158,7 +157,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Add this as a literal
             Literal mgmtLiteral = new Literal {Text = saveSearchBuilder.ToString()};
-            placeHolder.Controls.Add(mgmtLiteral);
+            MainPlaceHolder.Controls.Add(mgmtLiteral);
         }
     }
 }
