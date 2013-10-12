@@ -309,44 +309,56 @@ namespace SobekCM.Library.AdminViewer
 
 
 
-			Output.WriteLine("  <h2>New Wordmark / Icon</h2>");
-			Output.WriteLine("    <div class=\"sbkWav_NewDiv\">");
-			Output.WriteLine("      <table class=\"popup_table\">");
+		        Output.WriteLine("  <h2>New Wordmark / Icon</h2>");
+				Output.WriteLine("  <p>Add a new wordmark to this repository.  If you have not yet uploaded the image to use, do this first.</p>");
 
-			// Add line for wordmark code
-			Output.WriteLine("        <tr>");
-			Output.WriteLine("          <td style=\"width:120px\"><label for=\"admin_wordmark_code\">Wordmark Code:</label></td>");
-			Output.WriteLine("          <td><input class=\"sbkWav_small_input sbkAdmin_Focusable\" name=\"admin_wordmark_code\" id=\"admin_wordmark_code\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("        </tr>");
+	        if (loweredFiles.Count > 0)
+	        {
 
-			// Add line for filename
-			Output.WriteLine("        <tr>");
-			Output.WriteLine("          <td><label for=\"admin_wordmark_file\">Image File:</label></td>");
-			Output.WriteLine("          <td>");
-			Output.WriteLine("            <select class=\"sbkWav_medium_input\" name=\"admin_wordmark_file\" id=\"admin_wordmark_file\">");
+		        Output.WriteLine("  <div style=\"width:210px; float:right;\"><img id=\"sbkWav_SelectedImage\" name=\"sbkWav_SelectedImage\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + loweredFiles[0] + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
 
-			foreach (string thisFile in loweredFiles)
-			{
-				Output.WriteLine("              <option value=\"" + thisFile + "\">" + thisFile + "</option>");
-			}
+		        Output.WriteLine("    <div class=\"sbkWav_NewDiv\">");
+		        Output.WriteLine("      <table class=\"popup_table\">");
 
-			Output.WriteLine("            </select>");
-			Output.WriteLine("          </td>");
-			Output.WriteLine("        </tr>");
+		        // Add line for wordmark code
+		        Output.WriteLine("        <tr>");
+		        Output.WriteLine("          <td style=\"width:120px\"><label for=\"admin_wordmark_code\">Wordmark Code:</label></td>");
+		        Output.WriteLine("          <td><input class=\"sbkWav_small_input sbkAdmin_Focusable\" name=\"admin_wordmark_code\" id=\"admin_wordmark_code\" type=\"text\" value=\"\" /></td>");
+		        Output.WriteLine("        </tr>");
+
+		        // Add line for filename
+		        Output.WriteLine("        <tr>");
+		        Output.WriteLine("          <td><label for=\"admin_wordmark_file\">Image File:</label></td>");
+		        Output.WriteLine("          <td>");
+		        Output.WriteLine("            <select class=\"sbkWav_medium_input\" name=\"admin_wordmark_file\" id=\"admin_wordmark_file\" onchange=\"wordmark_select_changed('" + currentMode.Base_URL + "design/wordmarks/');\">");
+
+		        foreach (string thisFile in loweredFiles)
+		        {
+			        Output.WriteLine("              <option value=\"" + thisFile + "\">" + thisFile + "</option>");
+		        }
+
+		        Output.WriteLine("            </select>");
+		        Output.WriteLine("          </td>");
+		        Output.WriteLine("        </tr>");
 
 
-			// Add line for title
-			Output.WriteLine("        <tr><td><label for=\"admin_wordmark_title\">Title:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_title\" id=\"admin_wordmark_title\" type=\"text\" value=\"\" /></td></tr>");
+		        // Add line for title
+		        Output.WriteLine("        <tr><td><label for=\"admin_wordmark_title\">Title:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_title\" id=\"admin_wordmark_title\" type=\"text\" value=\"\" /></td></tr>");
 
-			// Add line for banner link
-			Output.WriteLine("        <tr><td><label for=\"admin_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_link\" id=\"admin_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
-			Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE</button></td></tr>");
-			Output.WriteLine("      </table>");
-			Output.WriteLine("    </div>");
-			Output.WriteLine("  </div>");
+		        // Add line for banner link
+		        Output.WriteLine("        <tr><td><label for=\"admin_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_link\" id=\"admin_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
+		        Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE</button></td></tr>");
+		        Output.WriteLine("      </table>");
+		        Output.WriteLine("    </div>");
+	        }
+	        else
+	        {
+				Output.WriteLine("  <br />");
+	        }
+
+	        Output.WriteLine("  </div>");
 			Output.WriteLine("  <br />");
 			Output.WriteLine("</form>");
-
 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 			Output.WriteLine("  <h2>Upload New Image File</h2>");
@@ -379,10 +391,9 @@ namespace SobekCM.Library.AdminViewer
 			int unused_column = 0;
 			foreach (string thisIcon in loweredFiles)
 			{
-				Output.Write("      <td style=\"width:200px;\">");
-				Output.Write("<a href=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon + "\" target=\"" + thisIcon.Replace(".", "") + "\">");
+				Output.Write("      <td style=\"width:210px;\">");
 				Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmark\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon + "\" alt=\"Missing Thumbnail\" title=\"" + thisIcon + "\" />");
-				Output.Write("</a><br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon + "</span>");
+				Output.Write("<br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon + "</span>");
 
 				// Build the action links
 				Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
@@ -425,9 +436,9 @@ namespace SobekCM.Library.AdminViewer
 
             foreach (Wordmark_Icon thisIcon in sortedIcons.Values)
             {
-                Output.Write("      <td style=\"width:200px;\">");
+                Output.Write("      <td style=\"width:210px;\">");
                 if (thisIcon.Link.Length > 0)
-                    Output.Write("<a href=\"" + thisIcon.Link + "\" target=\"_blank\">");
+                    Output.Write("<a href=\"" + thisIcon.Link.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%?URLOPTS%>","") + "\" target=\"_blank\">");
 				Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmarkTitle\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
                 if (thisIcon.Title.Length > 0)
                     Output.Write(" title=\"" + thisIcon.Title + "\"");

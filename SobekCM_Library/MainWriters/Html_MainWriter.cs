@@ -1125,6 +1125,13 @@ namespace SobekCM.Library.MainWriters
             string container_inner = "container-inner";
             switch (currentMode.Mode)
             {
+				case Display_Mode_Enum.Administrative:
+					if (currentMode.Admin_Type == Admin_Type_Enum.Wordmarks )
+					{
+						container_inner = "sbkWav_ContainerInner";
+					}
+					break;
+
                 case Display_Mode_Enum.My_Sobek :
                     if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && ( currentMode.My_Sobek_SubMode.IndexOf("0.2") == 0 ))
                     {
