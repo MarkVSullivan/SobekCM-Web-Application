@@ -1,0 +1,41 @@
+﻿/**************************************************************************
+**     SOBEKCM_TrackingSheet.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for the online Quality Control interface.                                            
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/    
+
+/* Code for the pages that appear within the Tracking_Sheet item viewer, including controls around them */
+.sbkTs_OuterDiv{ width: 90%; border-spacing: 5px;margin-left: 25px;background-color: white; font-size: 0.8em;}
+
+.sbkTs_Title{margin-left: 25px;float: left; font-size: 40px;font-weight: bold;}
+.sbkTs_Title_right{margin-right: 15px;float: right; font-size: 25px;font-weight: bold;}
+
+.sbkTs_tableHeader{ font-size: 1.25em;color: #999999;font-weight: bold; }
+.sbkTs_tableLabel{color: #999999;margin-left: 15px;}
+.sbkTs_MainTable{border-spacing: 5px;background-color: white; font-size: 0.75em;}
+.sbkTs_tblMaterialInfo{width: 90%; border-spacing: 5px;margin-left: 25px;}
+.sbkTs_tblSerialHierarchy{width: 40%; border-spacing: 5px;margin-left: 25px;}
+.sbkTs_tblImagingProgress{width: 95%; border-spacing: 5px;margin-left: 25px;}
+.sbkTs_tblPhysicalMaterial{width: 90%; border-spacing: 5px;margin-left: 25px;}
+.sbkTs_tblAdditionalNotes{width: 90%; border-spacing: 5px;margin-left: 25px;}
+.sbkTs_tblBarcodes{width: 90%; border-spacing: 5px;margin-left: 25px;}
+
+.sbkTs_barcode_label{font-size: 1.1em;color: #999999;font-weight: bold;margin-left: 26px;}
+.sbkTs_barcode_label1{font-size: 1.1em;color: #999999;font-weight: bold;margin-left: 40px;}
+
+.sbkTs_tblCellUnderline{ border-bottom-style: solid;border-bottom-width: 1px;border-color: #999999;}
+
+.sbkTs_greyText{color:#999999; }
+
+

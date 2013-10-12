@@ -104,6 +104,9 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Zen.Barcode.Core">
+      <HintPath>..\DLLs\Zen.Barcode.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
@@ -229,6 +232,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AdminViewer\Aggregation_Single_AdminViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\TrackingSheet_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />
     <Compile Include="OAI\OAI_Record.cs" />

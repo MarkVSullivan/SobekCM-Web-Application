@@ -21,6 +21,8 @@ namespace SobekCM.Library.HTML
         Item_Subwriter_NonWindowed_Mode,
 
         Item_Subwriter_Suppress_Bottom_Pagination,
+        
+        Item_Subwriter_Suppress_Titlebar,
 
         Item_Subwriter_Suppress_Item_Menu,
 

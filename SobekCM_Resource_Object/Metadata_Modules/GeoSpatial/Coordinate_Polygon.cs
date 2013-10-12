@@ -15,23 +15,20 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     {
         private List<Coordinate_Point> bounding_box;
         private List<Coordinate_Point> edge_points;
-        private string id;
         private List<Coordinate_Point> internal_points;
+        private string id;
         private string label;
         private ushort pageSequence;
-        public double polygonRotation;
-        public double circleRadius;
-        public string featureType;
+        private double rotation;
+        private string featureType;
+        private string polygonType;
 
         /// <summary> Constructor for a new instance of this Coordinate_Polygon class </summary>
         public Coordinate_Polygon()
         {
             edge_points = new List<Coordinate_Point>();
             internal_points = new List<Coordinate_Point>();
-            polygonRotation = 0;
             pageSequence = 0;
-            circleRadius = 0;
-            featureType = "main"; //default
         }
 
         /// <summary> Return the rectangular bounding box, with the first point in the upper left corner 
@@ -105,6 +102,27 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public ReadOnlyCollection<Coordinate_Point> Inner_Points
         {
             get { return new ReadOnlyCollection<Coordinate_Point>(internal_points); }
+        }
+
+        /// <summary> Rotation of this polygon </summary>
+        public double Rotation
+        {
+            get { return rotation; }
+            set { rotation = value; }
+        }
+
+        /// <summary> FeatureType associated with this polygon </summary>
+        public string FeatureType
+        {
+            get { return featureType ?? String.Empty; }
+            set { featureType = value; }
+        }
+
+        /// <summary> PolygonType associated with this polygon </summary>
+        public string PolygonType
+        {
+            get { return polygonType ?? String.Empty; }
+            set { polygonType = value; }
         }
 
         /// <summary> Label for this polygon within the digital resource </summary>
@@ -211,8 +229,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             // Otherwise, there is some overlap
             return true;
         }
-
-
+        
         /// <summary> Forces a recalculation of the bounding box for this area and returns the 
         /// new bounding box </summary>
         /// <returns>Rectangular bounding box, with the first point in the upper left corner 
@@ -301,63 +318,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label);
             internal_points.Add(newPoint);
             return newPoint;
-        }
-
-        /// <summary> Add Rotation Data </summary>
-        public void Add_Rotation(double rotation)
-        {
-            polygonRotation = rotation;
-        }
-
-        /// <summary> Add Radius Data </summary>
-        public void Add_Radius(double radius)
-        {
-            circleRadius = radius;
-        }
-
-        /// <summary> Add Feature Type Data</summary>
-        public void Add_FeatureType(string incomingFeatureType)
-        {
-            featureType = incomingFeatureType;
-        }
-
-        /// <summary> Writes this polygon of coordinate points as SobekCM-formatted XML </summary>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this polygon of coordinate points as SobekCM-formatted XML</param>
-        internal void Add_SobekCM_Metadata(string sobekcm_namespace, TextWriter results)
-        {
-            if ((edge_points.Count == 0) && (internal_points.Count == 0))
-                return;
-
-            results.Write("<" + sobekcm_namespace + ":Polygon");
-            if (!String.IsNullOrEmpty(label))
-                results.Write(" label=\"" + label + "\"");
-            if (!String.IsNullOrEmpty(id))
-                results.Write(" ID=\"" + id + "\"");
-            if (pageSequence > 0)
-                results.Write(" pageSeq=\"" + pageSequence + "\"");
-            results.Write(">\r\n");
-            if (edge_points.Count > 0)
-            {
-                results.Write("<" + sobekcm_namespace + ":Edge>\r\n");
-                int order = 1;
-                foreach (Coordinate_Point thisPoint in edge_points)
-                {
-                    thisPoint.Add_SobekCM_Metadata(order++, sobekcm_namespace, results);
-                }
-                results.Write("</" + sobekcm_namespace + ":Edge>\r\n");
-            }
-            if (internal_points.Count > 0)
-            {
-                results.Write("<" + sobekcm_namespace + ":Internal>\r\n");
-                foreach (Coordinate_Point thisPoint in internal_points)
-                {
-                    thisPoint.Add_SobekCM_Metadata(-1, sobekcm_namespace, results);
-                }
-                results.Write("</" + sobekcm_namespace + ":Internal>\r\n");
-            }
-            results.Write("");
-            results.Write("</" + sobekcm_namespace + ":Polygon>\r\n");
         }
     }
 }
