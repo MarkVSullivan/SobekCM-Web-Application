@@ -15,25 +15,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     public class TrackingSheet_ItemViewer : abstractItemViewer
     {
-        private SobekCM_Item track_item;
-        private int itemID;
-        private string image_location;
-        private string username;
-        private string aggregations;
-        private string oclc;
-        private string aleph;
+        private readonly SobekCM_Item track_item;
+        private readonly int itemID;
+        private readonly string image_location;
+        private readonly string username;
+        private readonly string aggregations;
+        private readonly string oclc;
+        private readonly string aleph;
         
-        private List<string> aggregation_list;
-        private string[] authors_list;
-        private string[] publishers_list;
+        private readonly List<string> aggregation_list;
+        private readonly string[] authors_list;
+        private readonly string[] publishers_list;
 
-        private DataSet item_details_dataset;
-        private DataTable item_details;
-        private DataTable aggregation_details;
+        private readonly DataSet item_details_dataset;
+        private readonly DataTable item_details;
+        private readonly DataTable aggregation_details;
 
-        /// <summary>
-        /// Constructor for the Tracking Sheet ItemViewer
-        /// </summary>
+        /// <summary> Constructor for the Tracking Sheet ItemViewer </summary>
         /// <param name="Current_Object"></param>
         /// <param name="Current_User"></param>
         /// <param name="Current_Mode"></param>
@@ -82,12 +80,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
            
             //Remove extra comma and space from the end
-            if(aggregations.Length>2)
-              aggregations = aggregations.ToUpper().Substring(0, aggregations.Length - 2);
-            else
-            {
-                aggregations = "(none)";
-            }
+            aggregations = aggregations.Length>2 ? aggregations.ToUpper().Substring(0, aggregations.Length - 2) : "(none)";
 
             //Determine the OCLC & Aleph number for display
             oclc = item_details.Rows[0]["OCLC_Number"].ToString();
@@ -167,13 +160,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             #region Variable definitions
             
             //Spaces to use as empty fields in the tables
-            string label_space = "&nbsp;&nbsp;&nbsp;";
-            string label1_space = "&nbsp;";
-            for (int i = 0; i < 17; i++)
-                label1_space += "&nbsp;";
+            const string LABEL_SPACE = "&nbsp;&nbsp;&nbsp;";
+			const string LABEL1_SPACE = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
             //Is this item born digital?
-            bool born_digital = false;
+            bool born_digital;
             Boolean.TryParse(item_details.Rows[0]["Born_Digital"].ToString(), out born_digital);
 
             #endregion
@@ -243,13 +234,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<table class=\"sbkTs_tblSerialHierarchy\">");
                 Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">Serial Hierarchy</span></td></tr>");
 
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 1:"+label_space+"</span>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 1:"+LABEL_SPACE+"</span>");
                 Output.WriteLine( item_details.Rows[0]["Level1_Text"] + "</td></tr>");
 
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 2:"+label_space+"</span>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 2:"+LABEL_SPACE+"</span>");
                 Output.WriteLine(item_details.Rows[0]["Level2_Text"] + "</td></tr>");
 
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 3:"+label_space+"</span>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 3:"+LABEL_SPACE+"</span>");
                 Output.WriteLine(item_details.Rows[0]["Level3_Text"] + "</td></tr>");
                 
                 //End this table
@@ -262,12 +253,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<tr><td colspan=\"8\"><span class=\"sbkTs_tableHeader\">Imaging Progress</span></td></tr>");
            
    
-            for (int rowCount = 0; rowCount < 4; rowCount++)
+            for (int rowCount = 0; rowCount < 2; rowCount++)
             {
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label1_space+label1_space + label1_space + label1_space + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Date:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label_space + label_space + "/" + label_space + label_space + " / " + label_space + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Page Range:</span></td><td class=\"sbkTs_tblCellUnderline\">"+label_space+label_space+label_space +"</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Duration:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label_space +label_space+label_space+ "</td></tr>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL1_SPACE+LABEL1_SPACE + LABEL1_SPACE + LABEL1_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Date:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + "/" + LABEL_SPACE + LABEL_SPACE + " / " + LABEL_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Page Range:</span></td><td class=\"sbkTs_tblCellUnderline\">"+LABEL_SPACE+LABEL_SPACE+LABEL_SPACE +"</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Duration:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE +LABEL_SPACE+LABEL_SPACE+ "</td></tr>");
             }
             Output.WriteLine("</table>");
             Output.WriteLine("<br/><br/>");
@@ -297,7 +288,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 materialRecd_text = item_details.Rows[0]["Material_Received_Date"].ToString();
                 if (!String.IsNullOrEmpty(item_details.Rows[0]["Comments"].ToString()))
                 {
-                    materialRecd_text += " (" + item_details.Rows[0]["Comments"].ToString() + ")";
+                    materialRecd_text += " (" + item_details.Rows[0]["Comments"] + ")";
                 }
             }
 
@@ -307,14 +298,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 disposition_text = item_details.Rows[0]["Disposition_Advice_Notes"].ToString();
                 if (!String.IsNullOrEmpty(item_details.Rows[0]["Disposition_Notes"].ToString()))
                 {
-                    disposition_text += " ("+item_details.Rows[0]["Disposition_Notes"].ToString() + ")";
+                    disposition_text += " ("+item_details.Rows[0]["Disposition_Notes"] + ")";
                 }
             }
 
 
             //Add the Physical Material Info 
             Output.WriteLine("<table class=\"sbkTs_tblPhysicalMaterial\"><col width=\"130\">");
-            Output.WriteLine("<tr><td colspan=\"2\"><span class=\"sbkTs_tableHeader\">Physical Material</span>" + label_space + label_space+"<input type=\"checkbox\" disabled=\"true\" "+checked_text+"/><span class=\"sbkTs_greyText\">Item is born digital</span></td></tr>");
+            Output.WriteLine("<tr><td colspan=\"2\"><span class=\"sbkTs_tableHeader\">Physical Material</span>" + LABEL_SPACE + LABEL_SPACE+"<input type=\"checkbox\" disabled=\"true\" "+checked_text+"/><span class=\"sbkTs_greyText\">Item is born digital</span></td></tr>");
             Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">Material Recd:</span></td>");
             Output.WriteLine("         <td class=\""+materialRecd_class+"\">"+materialRecd_text+"</td>");
             Output.WriteLine("</tr>");
@@ -330,7 +321,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<tr><td class=\"sbkTs_tableHeader\">Additional Notes:</td></tr>");
             Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
             Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
-            Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
+         //   Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
             Output.WriteLine("</table>");
             Output.WriteLine("<br/>");
 
@@ -363,35 +354,35 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Converts a base-10 integer to the base-26 equivalent </summary>
-        /// <param name="input_number"></param>
-        /// <returns>returnValue</returns>
-        public string int_to_base26(int input_number)
+        /// <param name="InputNumber"> Integer to convert to base-26 equivalent </param>
+        /// <returns> Base-26 equivalent, utilizing the alphabet to encode the number </returns>
+        public string int_to_base26(int InputNumber)
         {
             string returnValue = String.Empty;
 
-            input_number = Math.Abs(input_number);
+            InputNumber = Math.Abs(InputNumber);
 
             do
             {
-                int remainder = input_number % 26;
+                int remainder = InputNumber % 26;
                 returnValue = (char)(remainder + 'A') + returnValue;
-                input_number = (input_number - remainder) / 26;
-            } while (input_number > 0);
+                InputNumber = (InputNumber - remainder) / 26;
+            } while (InputNumber > 0);
 
             return returnValue;
         }
 
 
         /// <summary> Generates a barcode(with checksum) for a given string </summary>
-        /// <param name="inputString">This is the itemID, in base 26 number system</param>
-        /// <param name="action">Indicates the Imaging action represented by this barcode</param>
-        /// <param name="filename_to_save"></param>
+        /// <param name="InputString"> This is the itemID, in base 26 number system</param>
+		/// <param name="Action"> Indicates the Imaging action represented by this barcode</param>
+        /// <param name="FilenameToSave"> Name of the output file to save </param>
         /// <returns>The url of the generated barcode GIF image</returns>
-        public string Get_BarcodeImageUrl_from_string(string inputString, string action, string filename_to_save)
+        public string Get_BarcodeImageUrl_from_string(string InputString, string Action, string FilenameToSave)
         {
-            string returnUrl = String.Empty;
-            string barcodeString = (inputString + action).ToUpper();
-            string image_save_location = image_location + "\\" + filename_to_save + ".gif";
+	        if (InputString == null) throw new ArgumentNullException("InputString");
+			string barcodeString = (InputString + Action).ToUpper();
+            string image_save_location = image_location + "\\" + FilenameToSave + ".gif";
 
             //Generate the image
             Code39BarcodeDraw barcode39 = BarcodeDrawFactory.Code39WithChecksum;
@@ -399,9 +390,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
             //Save the image
             barcode_image.Save(@image_save_location, System.Drawing.Imaging.ImageFormat.Gif);
-            returnUrl = "/sobekcm/temp/"+username+"/tsBarcodes/" + itemID.ToString() + "/" + filename_to_save + ".gif";
+	        string url = CurrentMode.Base_URL + "temp/" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "/tsBarcodes/" + itemID.ToString();
 
-            return returnUrl;
+			return url + "/" + FilenameToSave + ".gif";
         }
 
 

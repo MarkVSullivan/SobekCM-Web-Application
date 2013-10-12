@@ -98,8 +98,10 @@ input.admin_portal_input_focused  {  color:#0000a8; width: 300px;  background-co
 .sbkWav_ItemWordmarkTitle { font-weight: bold; }
 input.sbkWav_small_input  { width: 120px;  margin-right: 10px; margin-top: 6px;  }
 input.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6px; }
-input.sbkWav_large_input  { width: 463px;  margin-right: 10px; margin-top: 6px;  }
+input.sbkWav_large_input  { width: 400px;  margin-right: 10px; margin-top: 6px;  }
 select.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6px; }
+#sbkWav_ContainerInner { margin: 0 auto; padding:0; width: 950px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+
 
 
 

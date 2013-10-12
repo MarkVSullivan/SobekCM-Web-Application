@@ -321,6 +321,9 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 
 .fadeEffect { background-color: #6f6b06; border-radius: 5px; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white;  }
 
+/* TRACKINGSHEET_ITEM_VIEWER */
+.sbkTs_MainTable{ width: 800px; }
 
 /** Class used for all item-viewer boxes which take focus */
 .sbkIsw_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
+

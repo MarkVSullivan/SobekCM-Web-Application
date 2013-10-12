@@ -648,6 +648,13 @@ function delete_wordmark_file(code) {
 	}
 }
 
+function wordmark_select_changed(url) {
+	var selectField = document.getElementById('admin_wordmark_file');
+	var new_url = url + selectField.value;
+	jQuery("#sbkWav_SelectedImage").attr("src", new_url);
+}
+
+
 // Delete an item
 function delete_item() {
     var hiddenfield = document.getElementById('admin_delete_item');
