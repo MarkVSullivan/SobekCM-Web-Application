@@ -106,9 +106,17 @@ function blanket_size(popUpDivVar, windowheight) {
     //popUpDiv_height=350; // blanket_height/2-150;//150 is half popup's height
     //popUpDiv.style.top = popUpDiv_height + 'px';
 
-    var popUpDiv = document.getElementById(popUpDivVar);
-    //maybe_top = ((blanket_height - 100 )/ 2) - windowheight;
-    popUpDiv.style.top = 150;
+    var popUpDiv = jQuery('#' + popUpDivVar);
+	
+	// Set the correct top
+    var popUpHeight = popUpDiv.height();
+    var windowheight2 = jQuery(window).height();
+    popUpDiv.css({ top: ((windowheight2 - popUpHeight) / 2) + 'px' });
+	
+	// Set the correct left
+    var popUpWidth = popUpDiv.width();
+    var windowwidth = jQuery(window).width();
+    popUpDiv.css({ left: ((windowwidth - popUpWidth) / 2) + 'px' });
 }
 
 function window_pos(popUpDivVar, windowwidth) {

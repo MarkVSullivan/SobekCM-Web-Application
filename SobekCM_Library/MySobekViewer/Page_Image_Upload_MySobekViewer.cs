@@ -626,16 +626,15 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
 
             // Add the upload controls to the file place holder
-            add_upload_controls(uploadFilesPlaceHolder, Tracer);
+            add_upload_controls(MainPlaceHolder, Tracer);
         }
 
         private void add_upload_controls(PlaceHolder placeHolder, Custom_Tracer Tracer)

@@ -160,7 +160,15 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Write any additional values within the HTML Head of the
+	    /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+	    /// for the current request, or if it can be hidden. </summary>
+	    /// <value> This value can be override by child classes, but by default this returns FALSE </value>
+	    public virtual bool Upload_File_Possible 
+		{
+			get { return false;  }
+		}
+
+	    /// <summary> Write any additional values within the HTML Head of the
         /// final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

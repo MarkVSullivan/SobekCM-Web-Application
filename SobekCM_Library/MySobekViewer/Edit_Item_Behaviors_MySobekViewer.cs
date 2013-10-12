@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
@@ -60,8 +59,8 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
 
-            const string templateCode = "itembehaviors";
-            template = Cached_Data_Manager.Retrieve_Template(templateCode, Tracer);
+            const string TEMPLATE_CODE = "itembehaviors";
+            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, Tracer);
             if (template != null)
             {
                 Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Found template in cache");
@@ -73,13 +72,13 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML(SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\defaults\\" + templateCode + ".xml", template, true);
+                reader.Read_XML(SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
 
                 // Add the current codes to this template
                 template.Add_Codes(Code_Manager);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(templateCode, template, Tracer);
+                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, Tracer);
             }
 
             // See if there was a hidden request
@@ -203,10 +202,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");
 
-            bool isMozilla = false;
-            if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
-                isMozilla = true;
-            template.Render_Template_HTML(Output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
+	        bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+	        template.Render_Template_HTML(Output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
 
             // Add the second buttons at the bottom of the form
             Output.WriteLine("<!-- Add SAVE and CANCEL buttons to bottom of form -->");
@@ -235,19 +232,6 @@ namespace SobekCM.Library.MySobekViewer
             // Add the hidden field
             Output.WriteLine();
         }
-
-        #region Method to add the controls to web page
-
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Add_Controls", "Do nothing");
-        }
-
-        #endregion
     }
 }
 

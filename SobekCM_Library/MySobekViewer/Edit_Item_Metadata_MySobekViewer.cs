@@ -92,11 +92,9 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Is this a project
-            isProject = false;
-            if (item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
-                isProject = true;
+            isProject = item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project;
 
-            string template_code = user.Edit_Template_Code;
+	        string template_code = user.Edit_Template_Code;
             if ((isProject) || (item.Contains_Complex_Content) || (item.Using_Complex_Template))
             {
                 template_code = user.Edit_Template_MARC_Code;
@@ -207,7 +205,7 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        void complicateButton_Click(object sender, EventArgs e)
+        void complicateButton_Click(object Sender, EventArgs E)
         {
             item.Using_Complex_Template = true;
 
@@ -216,7 +214,7 @@ namespace SobekCM.Library.MySobekViewer
             currentMode.Request_Completed = true;
         }
 
-        void simplifyButton_Click(object sender, EventArgs e)
+        void simplifyButton_Click(object Sender, EventArgs E)
         {
             if (!item.Contains_Complex_Content)
                 item.Using_Complex_Template = false;
@@ -226,13 +224,13 @@ namespace SobekCM.Library.MySobekViewer
             currentMode.Request_Completed = true;
         }
 
-        void linkButton_Click(object sender, EventArgs e)
+        void linkButton_Click(object Sender, EventArgs E)
         {
             // See if there was a hidden request
             string hidden_request = HttpContext.Current.Request.Form["new_element_requested"] ?? String.Empty;
 
             // Find the requested page
-            int page_requested = Convert.ToInt16(((LinkButton)sender).ID.Replace("newpagebutton", ""));
+            int page_requested = Convert.ToInt16(((LinkButton)Sender).ID.Replace("newpagebutton", ""));
 
             // If this was a cancel request do that
             if (hidden_request == "cancel")
@@ -386,7 +384,6 @@ namespace SobekCM.Library.MySobekViewer
                 catch (Exception ee)
                 {
                     // Failing to make the static page is not the worst thing in the world...
-                    bool ee_occurred = true;
                 }
 
                 currentMode.Base_URL = base_url;
@@ -414,10 +411,10 @@ namespace SobekCM.Library.MySobekViewer
 
                 List<string> collectionnames = new List<string>();
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
-                string Error_Message;
+                string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
                 options["MarcXML_File_ReaderWriter:Additional_Tags"] = item.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
-                marcWriter.Write_Metadata(item.Source_Directory + "\\marc.xml", item, options, out Error_Message);
+                marcWriter.Write_Metadata(item.Source_Directory + "\\marc.xml", item, options, out errorMessage);
 
                 // Copy this to all the image servers
                 SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(null));
@@ -536,8 +533,8 @@ namespace SobekCM.Library.MySobekViewer
                     SobekCM_Item testItem = Test_Bib_Package.Create(String.Empty);
                     METS_File_ReaderWriter metsWriter = new METS_File_ReaderWriter();
 
-                    string Error_Message;
-                    metsWriter.Write_Metadata(mets_output, testItem, null, out Error_Message);
+                    string errorMessage;
+                    metsWriter.Write_Metadata(mets_output, testItem, null, out errorMessage);
                     string mets_string = mets_builder.ToString();
                     string header = mets_string.Substring(0, mets_string.IndexOf("<METS:mets"));
                     string remainder = mets_string.Substring(header.Length);
@@ -561,11 +558,10 @@ namespace SobekCM.Library.MySobekViewer
 
         #region Method to add the controls to web page
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "");
 
@@ -589,12 +585,12 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         temp_builder.AppendLine("      <li>You are using the full editing form.  Click");
-                        placeHolder.Controls.Add(new LiteralControl(temp_builder.ToString()));
+                        MainPlaceHolder.Controls.Add(new LiteralControl(temp_builder.ToString()));
                         temp_builder.Remove(0, temp_builder.Length);
 
                         LinkButton simplifyButton = new LinkButton {Text = "here to return to the simplified version."};
                         simplifyButton.Click += simplifyButton_Click;
-                        placeHolder.Controls.Add(simplifyButton);
+                        MainPlaceHolder.Controls.Add(simplifyButton);
 
                         temp_builder.Append("      </li>");
                     }
@@ -602,12 +598,12 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
                     temp_builder.AppendLine("      <li>You are using the simplified editing form.  Click");
-                    placeHolder.Controls.Add(new LiteralControl(temp_builder.ToString()));
+                    MainPlaceHolder.Controls.Add(new LiteralControl(temp_builder.ToString()));
                     temp_builder.Remove(0, temp_builder.Length);
 
                     LinkButton complicateButton = new LinkButton {Text = "here to use the full form."};
                     complicateButton.Click += complicateButton_Click;
-                    placeHolder.Controls.Add(complicateButton);
+                    MainPlaceHolder.Controls.Add(complicateButton);
 
                     temp_builder.Append("      </li>");
 
@@ -642,7 +638,7 @@ namespace SobekCM.Library.MySobekViewer
 
             temp_builder.AppendLine("<!-- Buttons to select each template page -->");
             LiteralControl viewBrowsesLiteral2 = new LiteralControl(temp_builder + "<a name=\"template\"> </a>\n<br />\n<div class=\"" + view_class + "\">\n  ");
-            placeHolder.Controls.Add(viewBrowsesLiteral2);
+            MainPlaceHolder.Controls.Add(viewBrowsesLiteral2);
 
             
             int page_iterator = 1;
@@ -658,7 +654,7 @@ namespace SobekCM.Library.MySobekViewer
                                                 { Text = Selected_Tab_Start + template.InputPages[page_iterator - 1].Title.ToUpper() + Selected_Tab_End + " ",
                                                   ID = "newpagebutton" + page_iterator };
                     linkButton.Click += linkButton_Click;
-                    placeHolder.Controls.Add(linkButton);
+                    MainPlaceHolder.Controls.Add(linkButton);
                 }
                 else
                 {
@@ -667,7 +663,7 @@ namespace SobekCM.Library.MySobekViewer
                                                 { Text = Unselected_Tab_Start + template.InputPages[page_iterator - 1].Title.ToUpper() + Unselected_Tab_End + " ",
                                                     ID = "newpagebutton" + page_iterator };
                     linkButton.Click += linkButton_Click;
-                    placeHolder.Controls.Add(linkButton);
+                    MainPlaceHolder.Controls.Add(linkButton);
                 }
 
                 page_iterator++;
@@ -680,7 +676,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     preview = true;
                     LiteralControl currentPageLiteral = new LiteralControl(Selected_Tab_Start + "PREVIEW" + Selected_Tab_End + " ");
-                    placeHolder.Controls.Add(currentPageLiteral);
+                    MainPlaceHolder.Controls.Add(currentPageLiteral);
                 }
                 else
                 {
@@ -690,7 +686,7 @@ namespace SobekCM.Library.MySobekViewer
                                                 { Text = Unselected_Tab_Start + "PREVIEW" + Unselected_Tab_End + " " };
                     linkButton.Click += linkButton_Click;
                     linkButton.ID = "newpagebutton0";
-                    placeHolder.Controls.Add(linkButton);
+                    MainPlaceHolder.Controls.Add(linkButton);
                 }
             }
 
@@ -700,20 +696,20 @@ namespace SobekCM.Library.MySobekViewer
             LiteralControl first_literal = new LiteralControl("\n</div>\n\n<div class=\"SobekEditPanel\">\n\n");
             if (page == 0.2)
                 first_literal.Text = "</div>\n\n<center>\n\n<div class=\"SobekEditPanel_Wide\">\n\n";
-            placeHolder.Controls.Add(first_literal);
+            MainPlaceHolder.Controls.Add(first_literal);
 
             // Add the first buttons
-            placeHolder.Controls.Add(new LiteralControl("<!-- Add SAVE and CANCEL buttons to top of form -->\n<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>\n<table width=\"100%\">\n  <tr>\n    <td width=\"480px\">&nbsp;</td>\n    <td align=\"right\">"));
+            MainPlaceHolder.Controls.Add(new LiteralControl("<!-- Add SAVE and CANCEL buttons to top of form -->\n<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>\n<table width=\"100%\">\n  <tr>\n    <td width=\"480px\">&nbsp;</td>\n    <td align=\"right\">"));
 
             double lastPage = page;
             if (page < 1)
                 page = 1;
 
             LiteralControl cancelButton = new LiteralControl("<a onmousedown=\"javascript:myufdc_cancel_form('" + ((int) page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>\n");
-            placeHolder.Controls.Add(cancelButton);
+            MainPlaceHolder.Controls.Add(cancelButton);
 
             LiteralControl saveButton = new LiteralControl("<a onmousedown=\"javascript:myufdc_save_form('" + ((int)page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>\n");
-            placeHolder.Controls.Add(saveButton);
+            MainPlaceHolder.Controls.Add(saveButton);
 
             page = lastPage;
 
@@ -722,14 +718,14 @@ namespace SobekCM.Library.MySobekViewer
             //cancelButton.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif";
             //cancelButton.AlternateText = "CANCEL";
             //cancelButton.Click += new System.Web.UI.ImageClickEventHandler(cancelButton_Click);
-            //placeHolder.Controls.Add(cancelButton);
-            //placeHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
+            //MainPlaceHolder.Controls.Add(cancelButton);
+            //MainPlaceHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
             //System.Web.UI.WebControls.ImageButton saveButton = new System.Web.UI.WebControls.ImageButton();
             //saveButton.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif";
             //saveButton.AlternateText = "SAVE";
             //saveButton.Click += new System.Web.UI.ImageClickEventHandler(saveButton_Click);
-            //placeHolder.Controls.Add(saveButton);
-            placeHolder.Controls.Add(new LiteralControl("</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n"));
+            //MainPlaceHolder.Controls.Add(saveButton);
+            MainPlaceHolder.Controls.Add(new LiteralControl("</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n"));
 
 
 
@@ -741,11 +737,9 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (page >= 1)
                 {
-                    bool isMozilla = false;
-                    if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
-                        isMozilla = true;
+	                bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 
-                    popUpFormsHtml = template.Render_Template_HTML(output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, ((int)page));
+	                popUpFormsHtml = template.Render_Template_HTML(output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, ((int)page));
                 }
             }
             else
@@ -758,32 +752,32 @@ namespace SobekCM.Library.MySobekViewer
 
 
             LiteralControl last_button_literal1 = new LiteralControl(builder.ToString());
-            placeHolder.Controls.Add(last_button_literal1);
+            MainPlaceHolder.Controls.Add(last_button_literal1);
 
             lastPage = page;
             if (page < 1)
                 page = 1;
 
             LiteralControl cancelButton2 = new LiteralControl("<a onmousedown=\"javascript:myufdc_cancel_form('" + ((int)page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>\n");
-            placeHolder.Controls.Add(cancelButton2);
+            MainPlaceHolder.Controls.Add(cancelButton2);
 
             LiteralControl saveButton2 = new LiteralControl("<a onmousedown=\"javascript:myufdc_save_form('" + ((int)page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>\n");
-            placeHolder.Controls.Add(saveButton2);
+            MainPlaceHolder.Controls.Add(saveButton2);
             page = lastPage;
 
             //System.Web.UI.WebControls.ImageButton cancelButton2 = new System.Web.UI.WebControls.ImageButton();
             //cancelButton2.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif";
             //cancelButton2.AlternateText = "CANCEL";
             //cancelButton2.Click += new System.Web.UI.ImageClickEventHandler(cancelButton_Click);
-            //placeHolder.Controls.Add(cancelButton2);
-            //placeHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
+            //MainPlaceHolder.Controls.Add(cancelButton2);
+            //MainPlaceHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
             //System.Web.UI.WebControls.ImageButton saveButton2 = new System.Web.UI.WebControls.ImageButton();
             //saveButton2.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif";
             //saveButton2.AlternateText = "SAVE";
             //saveButton2.Click += new System.Web.UI.ImageClickEventHandler(saveButton_Click);
-            //placeHolder.Controls.Add(saveButton2);
+            //MainPlaceHolder.Controls.Add(saveButton2);
 
-            placeHolder.Controls.Add(page != 0.2
+            MainPlaceHolder.Controls.Add(page != 0.2
                                          ? new LiteralControl( "</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n\n</div>\n<br />\n")
                                          : new LiteralControl( "</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n\n</div>\n</center>\n<br />\n<div id=\"pagecontainer_resumed\">\n"));
 
@@ -805,7 +799,7 @@ namespace SobekCM.Library.MySobekViewer
                             delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
                             delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_related_item_" + related_item_count + "', 'form_related_item_term_" + related_item_count + "', 'form_relateditem_title_" + related_item_count + "', 575, 620 );</script>");
                             delayed_popup_builder.AppendLine();
-                            placeHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
+                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
                         }
                         break;
 
@@ -813,7 +807,7 @@ namespace SobekCM.Library.MySobekViewer
                         int subject_index = 0;
                         if (item.Bib_Info.Subjects_Count > 0)
                         {
-                            subject_index += item.Bib_Info.Subjects.Count(thisSubject => thisSubject.Class_Type == Subject_Info_Type.Standard);
+                            subject_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Standard);
                         }
                         if (subject_index > 0)
                         {
@@ -822,7 +816,7 @@ namespace SobekCM.Library.MySobekViewer
                             delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
                             delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 310, 600 );</script>");
                             delayed_popup_builder.AppendLine();
-                            placeHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
+                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
                         }
                         break;
 
@@ -830,7 +824,7 @@ namespace SobekCM.Library.MySobekViewer
                         int spatial_index = 0;
                         if (item.Bib_Info.Subjects_Count > 0)
                         {
-                            spatial_index += item.Bib_Info.Subjects.Count(thisSubject => thisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial);
+                            spatial_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial);
                         }
                         if (spatial_index > 0)
                         {
@@ -839,7 +833,7 @@ namespace SobekCM.Library.MySobekViewer
                             delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
                             delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_spatial_" + spatial_index + "', 'form_spatial_term_" + spatial_index + "', 'formspatialcontinent_" + spatial_index + "', 590, 550 );</script>");
                             delayed_popup_builder.AppendLine();
-                            placeHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
+                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
                         }
                         break;
 
@@ -856,7 +850,7 @@ namespace SobekCM.Library.MySobekViewer
                             delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
                             delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 475, 700 );</script>");
                             delayed_popup_builder.AppendLine();
-                            placeHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
+                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
                         }
                         break;
 
@@ -871,7 +865,7 @@ namespace SobekCM.Library.MySobekViewer
                             delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
                             delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675 );</script>");
                             delayed_popup_builder.AppendLine();
-                            placeHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
+                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
                         }
                         break;
                 }

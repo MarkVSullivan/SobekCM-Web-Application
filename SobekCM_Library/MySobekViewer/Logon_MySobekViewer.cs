@@ -33,14 +33,14 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string errorMessage;
 
         /// <summary> Constructor for a new instance of the Home_MySobekViewer class </summary>
-        /// <param name="currentMode"> Mode / navigation information for the current request (including interface code) </param>
+		/// <param name="CurrentMode"> Mode / navigation information for the current request (including interface code) </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Logon_MySobekViewer(SobekCM_Navigation_Object currentMode, Custom_Tracer Tracer)
+        public Logon_MySobekViewer(SobekCM_Navigation_Object CurrentMode, Custom_Tracer Tracer)
             : base(null)
         {
-            Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
+	        Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
 
-            CurrentMode = currentMode;
+			this.CurrentMode = CurrentMode;
 
             errorMessage = String.Empty;
 
@@ -129,12 +129,10 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Logon_MySobekViewer.Add_Controls", String.Empty);
             StringBuilder literalBuilder = new StringBuilder();
@@ -197,11 +195,12 @@ namespace SobekCM.Library.MySobekViewer
             literalBuilder.AppendLine("<br />");
 
             literalBuilder.AppendLine("</div>");
+			literalBuilder.AppendLine("</div>");
             literalBuilder.AppendLine("<br />");
             literalBuilder.AppendLine("<br />");
 
             LiteralControl literal2 = new LiteralControl(literalBuilder.ToString());
-            placeHolder.Controls.Add(literal2);
+            MainPlaceHolder.Controls.Add(literal2);
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>

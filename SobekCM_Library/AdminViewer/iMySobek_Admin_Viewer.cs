@@ -49,11 +49,10 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
         void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer);
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
+        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer);
+        void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
     }
 }

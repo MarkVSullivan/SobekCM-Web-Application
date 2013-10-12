@@ -15,6 +15,8 @@
 **                                                                 
 **************************************************************************/
 
+input { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 .SobekAdminTitle
 {
@@ -25,6 +27,21 @@
 {
 	color:Gray; 
 }
+
+.sbkAdm_ActionLink { color:Gray;  }
+.sbkAdm_HomeText { text-align: justify; padding-bottom: 5px; }
+.sbkAdm_HomeText a:link { color:#000080; }
+.sbkAdm_HomeText A:hover { color:Blue; text-decoration:underline; }
+.sbkAdm_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
+.sbkAdm_HomeText p { padding-left: 42px; }
+
+.sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; cursor: hand; letter-spacing: 0.5px; }
+.sbkAdm_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+.sbkAdm_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; cursor: hand; letter-spacing: 0.5px;margin-left: 20px; }
+.sbkAdm_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+
+
+#sbkAdm_ActionMessage { width: 100%;text-align: center;margin-left: auto;margin-right: auto;font-weight: bold;}
 
 .add_new_link { color: Black; font-size: 0.9em; vertical-align:baseline;  }
 .add_new_link a:link { color: Black; text-decoration:none; vertical-align: baseline; }
@@ -38,9 +55,13 @@
 .form_linkline_focused  { color: #0000a8; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
 .form_linkline_empty_focused  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
-.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px; }
+
+.sbkAdm_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 6px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
+.sbkAdm_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
+
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
-.popup_table { padding-left: 20px; margin-left: 20px; }
+.popup_table { padding-left: 20px; margin-left: 20px;text-align: left; }
 .admin_existing_code_line { width: 220px;  }
 
 
@@ -70,14 +91,17 @@ input.admin_portal_input  {  color:Blue; width: 300px; border-style:solid; borde
 input.admin_portal_input_focused  {  color:#0000a8; width: 300px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 
-.admin_wordmark_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.admin_wordmark_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:215px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-input.admin_wordmark_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_wordmark_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_wordmark_medium_input  {  color:Blue;  width: 250px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_wordmark_medium_input_focused  {  color:#0000a8;  width: 250px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_wordmark_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_wordmark_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+/** Wordmarks_AdminViewer **/
+.sbkWav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;text-align: center; } 
+.sbkWav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:215px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
+.sbkWav_ItemWordmarkTitle { font-weight: bold; }
+input.sbkWav_small_input  { width: 120px;  margin-right: 10px; margin-top: 6px;  }
+input.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6px; }
+input.sbkWav_large_input  { width: 463px;  margin-right: 10px; margin-top: 6px;  }
+select.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6px; }
+
+
 
 input.admin_user_checkbox { margin-top: 10px; margin-left: 43px; }
 select.admin_user_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
@@ -138,7 +162,7 @@ select.admin_settings_select { color:Blue; border-style:solid; border-width: 1px
 
 .hidden_progress 
 { 
-	padding: 0px;
+	padding: 0;
 	width: 32px;
 	height: 32px;
 }
@@ -148,7 +172,11 @@ select.admin_settings_select { color:Blue; border-style:solid; border-width: 1px
 { 
 	background-image: url( http://128.227.223.117/UFDC/default/images/spinner.gif );
 	cursor: wait;
-	padding: 0px;
+	padding: 0;
 	width: 32px;
 	height: 32px;
 }
+
+
+/** Class used for all administrative boxes which take focus */
+.sbkAdmin_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
