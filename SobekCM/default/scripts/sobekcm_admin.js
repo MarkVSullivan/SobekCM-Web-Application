@@ -188,7 +188,7 @@ function reset_password( id, name )
 }
 
 // Populate the interface form and show it
-function interface_form_popup(linkname, code, base_code, bannerlink, notes, overrideBanner, overrideHeader, suppressTopNav, buildOnLaunch  ) 
+function interface_form_popup( code, base_code, bannerlink, notes, overrideBanner, overrideHeader, suppressTopNav, buildOnLaunch  ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_interface_tosave');
@@ -221,10 +221,9 @@ function interface_form_popup(linkname, code, base_code, bannerlink, notes, over
         document.getElementById('form_interface_buildlaunch').checked = false;
 
     // Toggle the interface form
-    blanket_size('form_interface', linkname, 215 );
-    window_pos('form_interface', 1000);
+    blanket_size('form_interface', 215);
     toggle('blanket_outer');
-    toggle('form_interface');	
+    toggle('form_interface');
             
     // Create the draggable object to allow this window to be dragged around
     $("#form_interface").draggable();
@@ -281,6 +280,21 @@ function reset_interface( code )
     return false;
 }
 
+// Verify deletion of the existing wordmark in the database and file
+function delete_interface(code) {
+	var input_box = confirm("Do you really want to delete web skin '" + code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_interface_delete');
+		hiddenfield.value = code;
+
+		document.itemNavForm.submit();
+
+		// Return false to prevent another return trip to the server
+		return false;
+	}
+}
+
 function delete_alias(alias_code) {
 
     input_box=confirm("Do you really want to delete the alias '" + alias_code + "'?");
@@ -298,7 +312,7 @@ function delete_alias(alias_code) {
 }
 
 // Populate the aggregation alias form and show it
-function alias_form_popup(linkname, alias, code ) 
+function alias_form_popup(alias, code ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_forwarding_tosave');
@@ -309,8 +323,7 @@ function alias_form_popup(linkname, alias, code )
     document.getElementById('form_forwarding_code').value = code;
 
     // Toggle the interface form
-    blanket_size('form_forwarding', linkname, 215 );
-    window_pos('form_forwarding', 1000);
+    blanket_size('form_forwarding', 215 );
     toggle('blanket_outer');
     toggle('form_forwarding');	
     
@@ -459,7 +472,7 @@ function delete_heading(theme_id, theme_name) {
 }
 
 // Populate the heading form and show it
-function heading_form_popup(linkname, theme_name, theme_id) {
+function heading_form_popup( theme_name, theme_id) {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_heading_tosave');
     hiddenfield.value = theme_id;
@@ -469,14 +482,13 @@ function heading_form_popup(linkname, theme_name, theme_id) {
     // Populate the visible fields
     document.getElementById('form_heading_name').value = theme_name;
 
-    // Toggle the heading form
-    blanket_size('form_heading', linkname, 215);
-    window_pos('form_heading', 1000);
+	// Toggle the hideading form
+    blanket_size('form_heading', 215);
     toggle('blanket_outer');
     toggle('form_heading');
 
-    // Create the draggable object to allow this window to be dragged around
-    $("#form_heading").draggable();
+	// Create the draggable object to allow this window to be dragged around
+    jQuery("#form_heading").draggable();
 
     // Put focus on the heading name code
     var focusfield = document.getElementById('form_heading_name');
@@ -557,7 +569,7 @@ function move_heading_down(id, current_order) {
 }
 
 // Populate the wordmark form and show it
-function wordmark_form_popup(linkname, code, title, file, link ) 
+function wordmark_form_popup(code, title, file, link ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_wordmark_code_tosave');
