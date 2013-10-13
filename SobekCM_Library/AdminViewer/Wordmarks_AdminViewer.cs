@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 = 10/12/2013 MVS
+
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -283,11 +285,12 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add line for banner link
 			Output.WriteLine("    <tr><td><label for=\"form_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"form_wordmark_link\" id=\"form_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
+
+			// Add the buttons
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\">");
 			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
 			Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button> &nbsp; &nbsp; ");
-
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -347,6 +350,8 @@ namespace SobekCM.Library.AdminViewer
 
 		        // Add line for banner link
 		        Output.WriteLine("        <tr><td><label for=\"admin_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_link\" id=\"admin_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
+
+				// Add the SAVE button
 		        Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE</button></td></tr>");
 		        Output.WriteLine("      </table>");
 		        Output.WriteLine("    </div>");
@@ -449,7 +454,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Build the action links
 				Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" id=\"VIEW_" + thisIcon.Code + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup('VIEW_" + thisIcon.Code + "', '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
+                Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
                 Output.Write("<a title=\"Click to delete\" href=\"javascript:delete_wordmark('" + thisIcon.Code + "');\">delete</a> )</span>");
                 Output.WriteLine("</td>");
 
@@ -466,7 +471,7 @@ namespace SobekCM.Library.AdminViewer
 
 			if (unused_column > 0)
 			{
-				Output.WriteLine("  <tr><td colspan=\"4\"style=\"background-color:#e7e7e7;\"></td></tr>");
+				Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\"></td></tr>");
 			}
 
             Output.WriteLine("  </table>");
