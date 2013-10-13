@@ -5899,8 +5899,10 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Web_Skin' stored procedure </remarks> 
-		public static bool Delete_Web_Skin(string Skin_Code, Custom_Tracer Tracer)
+		public static bool Delete_Web_Skin(string Skin_Code, bool Force_Delete, Custom_Tracer Tracer)
 		{
+			lastException = null;
+
 			if (Tracer != null)
 			{
 				Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", String.Empty);
@@ -5909,10 +5911,18 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
+				SqlParameter[] paramList = new SqlParameter[3];
 				paramList[0] = new SqlParameter("@webskincode", Skin_Code);
+				paramList[1] = new SqlParameter("@force_delete", Force_Delete);
+				paramList[2] = new SqlParameter("@links", -1) { Direction = ParameterDirection.Output };
 
+				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Web_Skin", paramList);
+
+				if (Convert.ToInt32(paramList[2].Value) > 0)
+				{
+					return false;
+				}
 				return true;
 			}
 			catch (Exception ee)
