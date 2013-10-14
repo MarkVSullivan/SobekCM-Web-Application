@@ -16,6 +16,15 @@ function clear_ip_address(key)
     return false;
 }
 
+function save_new_ip_range() {
+	// Set the hidden value this data
+	var hiddenfield = document.getElementById('action');
+	hiddenfield.value = 'new';
+
+	// Return TRUE to force a return trip to the server
+	return true;
+}
+
 // Reset an aggregation
 function reset_aggr( aggr_code )
 {
@@ -113,7 +122,7 @@ function aggr_form_popup(linkname, code, type, name, shortname, isActive, isHidd
 } 
 
 // Populate the project form and show it
-function project_form_popup(linkname, code, name  ) 
+function project_form_popup(code, name  ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_project_tosave');
@@ -124,8 +133,7 @@ function project_form_popup(linkname, code, name  )
     document.getElementById('form_project_name').value = name;
 
     // Toggle the project form
-    blanket_size('form_project', linkname, 215 );
-    window_pos('form_project', 1000);
+    blanket_size('form_project', 215 );
     toggle('blanket_outer');
     toggle('form_project');	
     
@@ -169,10 +177,25 @@ function save_new_project()
     return true;
 }
 
+// Verify deletion of the existing project in the database and file
+function delete_project(code) {
+	var input_box = confirm("Do you really want to delete project '" + code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_project_delete');
+		hiddenfield.value = code;
+
+		document.itemNavForm.submit();
+	}
+
+	// Return false to prevent another return trip to the server
+	return false;
+}
+
 // Reset a user's password
 function reset_password( id, name )
 {
-    input_box=confirm("Do you really want to reset the password for '" + name + "'?");
+    var input_box=confirm("Do you really want to reset the password for '" + name + "'?");
     if (input_box==true) 
     { 
         // Set the hidden value this data
@@ -181,10 +204,10 @@ function reset_password( id, name )
  
         // Submit this
         document.itemNavForm.submit();
-    
-        // Return false to prevent another return trip to the server
-        return false;
     }
+	
+	// Return false to prevent another return trip to the server
+    return false;
 }
 
 // Populate the interface form and show it
@@ -289,15 +312,15 @@ function delete_interface(code) {
 		hiddenfield.value = code;
 
 		document.itemNavForm.submit();
-
-		// Return false to prevent another return trip to the server
-		return false;
 	}
+	
+	// Return false to prevent another return trip to the server
+	return false;
 }
 
 function delete_alias(alias_code) {
 
-    input_box=confirm("Do you really want to delete the alias '" + alias_code + "'?");
+    var input_box=confirm("Do you really want to delete the alias '" + alias_code + "'?");
     if (input_box == true) {
 
         // Populate the hidden value this data
@@ -369,7 +392,7 @@ function save_new_alias()
 
 function delete_portal(portal_id, portal_name) {
 
-    input_box = confirm("Do you really want to delete the portal '" + portal_name + "'?");
+    var input_box = confirm("Do you really want to delete the portal '" + portal_name + "'?");
     if (input_box == true) {
 
         // Populate the hidden value this data
@@ -389,7 +412,7 @@ function delete_portal(portal_id, portal_name) {
 
 
 // Populate the url portal form and show it
-function portal_form_popup(linkname, portal_id, portal_name, portal_abbr, web_skin, aggregation, url_segment, base_purl ) {
+function portal_form_popup( portal_id, portal_name, portal_abbr, web_skin, aggregation, url_segment, base_purl ) {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_portal_tosave');
     hiddenfield.value = portal_id;
@@ -403,10 +426,14 @@ function portal_form_popup(linkname, portal_id, portal_name, portal_abbr, web_sk
     document.getElementById('form_portal_aggregation').value = aggregation;
     document.getElementById('form_portal_url').value = url_segment;
     document.getElementById('form_portal_purl').value = base_purl;
+	
+    if (url_segment.length == 0)
+    	document.getElementById("form_portal_url").readOnly = true;
+    else
+    	document.getElementById("form_portal_url").readOnly = false;
 
     // Toggle the url portal form
-    blanket_size('form_portal', linkname, 215);
-    window_pos('form_portal', 1175);
+    blanket_size('form_portal', 215);
     toggle('blanket_outer');
     toggle('form_portal');
 
@@ -454,7 +481,7 @@ function save_new_portal() {
 
 function delete_heading(theme_id, theme_name) {
 
-    input_box = confirm("Do you really want to delete the heading '" + theme_name + "'?");
+    var input_box = confirm("Do you really want to delete the heading '" + theme_name + "'?");
     if (input_box == true) {
 
         // Populate the hidden value this data
@@ -639,10 +666,10 @@ function delete_wordmark( code )
         hiddenfield.value = code;
  
         document.sbkAdm_AddedForm.submit();
-    
-        // Return false to prevent another return trip to the server
-        return false;
     }
+	
+	// Return false to prevent another return trip to the server
+    return false;
 }
 
 // Verify deletion of a wordmark/icon file which is neither referenced in the database nor used
@@ -654,10 +681,10 @@ function delete_wordmark_file(code) {
 		hiddenfield.value = code;
 
 		document.sbkAdm_AddedForm.submit();
-
-		// Return false to prevent another return trip to the server
-		return false;
 	}
+	
+	// Return false to prevent another return trip to the server
+	return false;
 }
 
 function wordmark_select_changed(url) {
@@ -701,8 +728,8 @@ function link_focused2( divname )
 function link_blurred2( divname )
 {
     var linkspan = document.getElementById(divname);
-    if ( linkspan.className.indexOf('_focused') > 0 )
-        linkspan.className = linkspan.className.replace( '_focused', '')
+	if (linkspan.className.indexOf('_focused') > 0)
+		linkspan.className = linkspan.className.replace('_focused', '');
 }
 
 function link_focused( divname )
@@ -715,8 +742,8 @@ function link_focused( divname )
 function link_blurred( divname )
 {
     var linkspan = document.getElementById(divname);
-    if ( linkspan.className.indexOf('_focused') > 0 )
-        linkspan.className = linkspan.className.replace( '_focused', '')
+	if (linkspan.className.indexOf('_focused') > 0)
+		linkspan.className = linkspan.className.replace('_focused', '');
 }
 
 // Save the aggregation updates

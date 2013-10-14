@@ -254,6 +254,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
 
+			Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
@@ -267,7 +268,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div class=\"sbkThav_PopupDiv\" id=\"form_heading\" style=\"display:none;\">");
 			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align: left;\">EDIT THEMATIC HEADING</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"heading_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"popup_table\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for heading
 			Output.WriteLine("    <tr><td style=\"width: 80px;\"><label for=\"form_heading_name\">Heading:</label></td><td colspan=\"2\"><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"form_heading_name\" id=\"form_heading_name\" type=\"text\" value=\"\" /></td></tr>");
@@ -279,14 +280,13 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button> &nbsp; &nbsp; ");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
-
 			Output.WriteLine("  </table>");
 			Output.WriteLine("</div>");
+			Output.WriteLine();
 
 
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form ");
 
-            Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
@@ -303,7 +303,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <h2>New Thematic Heading</h2>");
             Output.WriteLine("  <blockquote>");
 			Output.WriteLine("    <div class=\"sbkThav_NewDiv\">");
-            Output.WriteLine("      <table class=\"popup_table\">");
+			Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
 	        Output.WriteLine("        <tr>");
 	        Output.WriteLine("          <td><label for=\"admin_heading_name\">Heading:</label></td>");
 			Output.WriteLine("          <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
@@ -315,13 +315,13 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Existing Thematic Headings</h2>");
-			Output.WriteLine("  <table class=\"sbkThav_Table\">");
+			Output.WriteLine("  <table class=\"sbkThav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkThav_TableHeader1\">ACTIONS</th>");
 			Output.WriteLine("      <th class=\"sbkThav_TableHeader2\">REORDER</th>");
 			Output.WriteLine("      <th class=\"sbkThav_TableHeader3\">THEMATIC HEADING</th>");
             Output.WriteLine("     </tr>");
-			Output.WriteLine("     <tr><td style=\"background-color:#e7e7e7;\" colspan=\"3\"></td></tr>");
+			Output.WriteLine("     <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
             // Write the data for each interface
             int current_order = 1;
@@ -333,14 +333,14 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return heading_form_popup('" + thisTheme.ThemeName + "','" + thisTheme.ThematicHeadingID + "');\">edit</a> | ");
                 Output.WriteLine("<a title=\"Delete this thematic heading\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_heading('" + thisTheme.ThematicHeadingID + "', '" + thisTheme.ThemeName.Replace("\'", "") + "');\">delete</a> )</td>");
 
-				Output.Write("      <td class=\"sbkAdm_ActionLink\" style=\"text-align:center\">( ");
+				Output.Write("      <td class=\"sbkAdm_ActionLink\">( ");
                 Output.Write("<a title=\"Move this heading up in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_up('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">up</a> | ");
                 Output.WriteLine("<a title=\"Move this heading down in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_down('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">down</a> )</td>");
 
                 // Add the rest of the row with data
                 Output.WriteLine("      <td>" + thisTheme.ThemeName + "</td>");
                 Output.WriteLine("    </tr>");
-				Output.WriteLine("    <tr><td style=\"background-color:#e7e7e7;\" colspan=\"3\"></td></tr>");
+				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
                 current_order++;
             }
