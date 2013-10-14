@@ -177,6 +177,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Aliases_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
 
+			Output.WriteLine("<!-- Aliases_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
@@ -189,27 +190,27 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div class=\"sbkAav_PopupDiv\" id=\"form_forwarding\" style=\"display:none;\">");
 			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">EDIT AGGREGATION ALIAS</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"alias_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"popup_table\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for alias
 			Output.WriteLine("    <tr style=\"height: 30px;\"><td style=\"width:120px;\"><label for=\"form_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><span class=\"form_linkline admin_existing_code_line\" id=\"form_forwarding_alias\"></span></td></tr>");
 
             // Add line for aggregation
-			Output.WriteLine("    <tr style=\"height: 30px;\"><td><label for=\"form_forwarding_code\">Item Aggregation:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"form_forwarding_code\" id=\"form_forwarding_code\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('form_forwarding_code', 'admin_forwarding_input_focused')\" onblur=\"javascript:textbox_leave('form_forwarding_code', 'admin_forwarding_input')\" /></td></tr>");
+			Output.WriteLine("    <tr style=\"height: 30px;\"><td><label for=\"form_forwarding_code\">Item Aggregation:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"form_forwarding_code\" id=\"form_forwarding_code\" type=\"text\" value=\"\" /></td></tr>");
 
-			// Add the buttons
+			// Add the buttons and close the table
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\"> &nbsp; &nbsp; ");
 			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return alias_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing aggregation alias\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing aggregation alias\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
 			Output.WriteLine("</div>");
+			Output.WriteLine();
 
             Tracer.Add_Trace("Aliases_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form ");
 
-            Output.WriteLine("<!-- Aliases_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
@@ -225,7 +226,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <h2>New Item Aggregation Alias</h2>");
 			Output.WriteLine("    <div class=\"sbkAav_NewDiv\">");
-            Output.WriteLine("      <table class=\"popup_table\">");
+			Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for alias
 			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"\" /></td></tr>");
@@ -239,13 +240,13 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("  <h2>Existing Item Aggregation Aliases</h2>");
-			Output.WriteLine("  <table class=\"sbkAav_Table\">");
+			Output.WriteLine("  <table class=\"sbkAav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
 			Output.WriteLine("      <th class=\"sbkAav_TableHeader1\">ACTIONS</th>");
 			Output.WriteLine("      <th class=\"sbkAav_TableHeader2\">ALIAS</th>");
 			Output.WriteLine("      <th class=\"sbkAav_TableHeader3\">AGGREGATION</th>");
             Output.WriteLine("    </tr>");
-			Output.WriteLine("    <tr><td style=\"background-color:#e7e7e7;\" colspan=\"3\"></td></tr>");
+			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
 			SortedList<string, string> sorter = new SortedList<string, string>();
 	        foreach (KeyValuePair<string, string> thisForward in aggregationAliases)
@@ -267,8 +268,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td>" + thisForward.Key + "</span></td>");
                 Output.WriteLine("      <td>" + thisForward.Value + "</span></td>");
                 Output.WriteLine("    </tr>");
-				Output.WriteLine("    <tr><td style=\"background-color:#e7e7e7;\" colspan=\"3\"></td></tr>");
-
+				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
             }
 
             Output.WriteLine("  </table>");

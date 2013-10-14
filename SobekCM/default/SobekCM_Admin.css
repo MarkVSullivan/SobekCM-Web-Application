@@ -15,8 +15,54 @@
 **                                                                 
 **************************************************************************/
 
+
+
+
+/** Styles used for text areas throughout the admin pages **/
+.sbkAdm_HomeText { text-align: justify; padding-bottom: 5px; }
+.sbkAdm_HomeText a:link { color:#000080; }
+.sbkAdm_HomeText A:hover { color:Blue; text-decoration:underline; }
+.sbkAdm_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
+.sbkAdm_HomeText p { padding-left: 42px; }
+
+.sbkAdm_ActionLink { color:Gray; }
+.sbkAdm_ActionLink a:link { color:Gray; }
+.sbkAdm_ActionLink a:visited { color:Gray; }
+.sbkAdm_ActionLink a:hover { color:Blue; text-decoration:underline; }
+
+
+#sbkAdm_ActionMessage { width: 100%;text-align: center;margin-left: auto;margin-right: auto;font-weight: bold;}
+
+/** Styles used for controls throughout the admin pages **/
 input { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+
+
+.sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
+.sbkAdm_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+.sbkAdm_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px;margin-left: 20px; }
+.sbkAdm_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+
+/** Styles used for the forms (both pop-up and in-line) throughout the admin pages **/
+.sbkAdm_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 6px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
+.sbkAdm_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
+.sbkAdm_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
+
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px; }
+.popup_title a { color: White; text-decoration: none; font-weight: bold; }
+.popup_table { padding-left: 20px; margin-left: 20px;text-align: left; }
+.admin_existing_code_line { width: 220px;  }
+
+.form_linkline  { color: Blue; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_empty  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_focused  { color: #0000a8; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.form_linkline_empty_focused  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+
+/** Styles used for all the tables throughout the admin pages **/
+.sbkAdm_Table { border:0; border-collapse: collapse; border-spacing: 0; margin-bottom: 40px; }
+.sbkAdm_Table th { text-align: left; color: white; background-color: #0022a7; }
+.sbkAdm_TableRule { background-color:#e7e7e7; }
 
 .SobekAdminTitle
 {
@@ -28,66 +74,31 @@ select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9d
 	color:Gray; 
 }
 
-.sbkAdm_HomeText { text-align: justify; padding-bottom: 5px; }
-.sbkAdm_HomeText a:link { color:#000080; }
-.sbkAdm_HomeText A:hover { color:Blue; text-decoration:underline; }
-.sbkAdm_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
-.sbkAdm_HomeText p { padding-left: 42px; }
-
-.sbkAdm_ActionLink { color:Gray; }
-.sbkAdm_ActionLink a:link { color:Gray; }
-.sbkAdm_ActionLink a:hover { color:Blue; text-decoration:underline; }
-.sbkAdm_ActionLink a:visited { color:Gray; }
-
-
-.sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; cursor: hand; letter-spacing: 0.5px; }
-.sbkAdm_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
-.sbkAdm_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; cursor: hand; letter-spacing: 0.5px;margin-left: 20px; }
-.sbkAdm_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
-
-
-#sbkAdm_ActionMessage { width: 100%;text-align: center;margin-left: auto;margin-right: auto;font-weight: bold;}
-
 .add_new_link { color: Black; font-size: 0.9em; vertical-align:baseline;  }
 .add_new_link a:link { color: Black; text-decoration:none; vertical-align: baseline; }
 .add_new_link a:visited { color: Black; text-decoration:none; }
 .add_new_link a:hover { color: Blue; text-decoration:underline; }
 
 
-/* Generic styles used by all the pop-up forms and pop-up form element */
-.form_linkline  { color: Blue; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
-.form_linkline_empty  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: White;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
-.form_linkline_focused  { color: #0000a8; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
-.form_linkline_empty_focused  { color: Gray; cursor: pointer; margin-bottom: 4px; padding: 1px 2px 1px 2px; background-color: #fbf7b4;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
-
-
-.sbkAdm_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 6px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
-.sbkAdm_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
-
-.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px; }
-.popup_title a { color: White; text-decoration: none; font-weight: bold; }
-.popup_table { padding-left: 20px; margin-left: 20px;text-align: left; }
-.admin_existing_code_line { width: 220px;  }
 
 
 
-
-.admin_portal_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.admin_portal_popup_div { position:absolute; background-color:#eeeeee; width:590px; height:300px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-input.admin_portal_input  {  color:Blue; width: 300px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_portal_input_focused  {  color:#0000a8; width: 300px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 /** Aliases_AdminViewer */
 .sbkAav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
 .sbkAav_PopupDiv { position:fixed; background-color:#eeeeee; width:370px; height:170px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 input.sbkAav_input  { width: 120px; margin-right: 10px; margin-top: 6px; }
-.sbkAav_Table { border:0; border-collapse: collapse; border-spacing: 0; margin-left:42px; margin-bottom: 40px; }
-.sbkAav_TableHeader1 { width: 160px; text-align: left; color: white; background-color: #0022a7;padding-left: 15px;}
-.sbkAav_TableHeader2 { width: 180px; text-align: left; color: white; background-color: #0022a7; }
-.sbkAav_TableHeader3 { width: 180px; text-align: left; color: white; background-color: #0022a7; }
+.sbkAav_Table { margin-left:42px; }
+.sbkAav_TableHeader1 { width: 160px; padding-left: 15px;}
+.sbkAav_TableHeader2 { width: 180px; }
+.sbkAav_TableHeader3 { width: 180px; }
 
-
-
+/** Builder_AdminViewer **/
+.sbkBav_table {padding-left: 32px;padding-bottom: 20px; border-collapse: separate; border-spacing: 5px;border: 0;}
+.sbkBav_table td { padding: 5px; }
+.sbkBav_List { padding: 0 0 30px 70px; list-style-type: none;}
+.sbkBav_List li { padding-top: 10px; }
+select.sbkBav_select { width: 210px; margin-bottom: 1px; margin-right: 20px; }
 
 /** Home_AdminViewer **/
 .sbkHav_MainText { text-align: justify; padding-bottom: 25px;padding-left: 180px;padding-top: 30px; font-size: larger; }
@@ -95,31 +106,72 @@ input.sbkAav_input  { width: 120px; margin-right: 10px; margin-top: 6px; }
 .sbkHav_MainText A:hover { color:Blue; text-decoration:underline; }
 .sbkHav_MainText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
 .sbkHav_MainText p { font-size: smaller;padding-left: -30px; }
-#sbkHav_OptionsTable { padding-left: 40px;padding-top: 20px;padding-bottom: 20px;  }
+#sbkHav_OptionsTable { padding: 20px 0 20px 40px; }
 #sbkHav_OptionsTable tr {height: 40px;vertical-align: middle; }
 
+/** IP_Restrictions_AdminViewer **/
+.sbkIpav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+#sbkIpav_RangeList { padding: 0 0 30px 70px; list-style-type: none;}
+#sbkIpav_RangeList li { padding-top: 15px; }
+input.sbkIpav_small_input { width: 110px; margin-top: 6px; }
+input.sbkIpav_medium_input { width: 230px; margin-top: 6px; }
+input.sbkIpav_large_input { width: 466px; margin-top: 6px; }
+textarea.sbkIpav_input { width: 466px; margin-top: 6px; }
+.sbkIpav_Table { margin-left:42px; }
+.sbkIpav_TableHeader1 { width: 90px; padding-left: 5px;}
+.sbkIpav_TableHeader2 { width: 135px; }
+.sbkIpav_TableHeader3 { width: 135px; }
+.sbkIpav_TableHeader4 { width: 250px; }
+
+/** Portals_AdminViewer **/
+.sbkPoav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-left: 30px;padding-top: 10px; } 
+.sbkPoav_NewDiv table tr { height: 30px; }
+.sbkPoav_PopupDiv { position:fixed; background-color:#eeeeee; width:590px; height:300px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
+.sbkPoav_PopupDiv table tr { height: 30px; }
+input.sbkPoav_input { width: 300px; }
+.sbkPoav_HelpButton { border: 0; padding-left:5px; margin-top:3px; cursor:pointer; }
+.sbkPoav_Table { margin-left:12px; }
+.sbkPoav_TableHeader1 { width: 85px; padding-left: 15px;}
+.sbkPoav_TableHeader2 { width: 130px; }
+.sbkPoav_TableHeader3 { width: 110px; }
+.sbkPoav_TableHeader4 { width: 85px; }
+.sbkPoav_TableHeader5 { width: 105px; }
+.sbkPoav_TableHeader6 { width: 180px; }
+#sbkPoav_DefaultCell { font-weight: bold;font-style: italic; }
+
+/** Projects_AdminViewer **/
+.sbkPav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.sbkPav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:165px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
+input.sbkPav_small_input  {  width: 120px; margin-right: 10px; margin-top: 6px; }
+input.sbkPav_large_input  {  width: 463px; margin-right: 15px; margin-top: 6px; }
+select.sbkPav_select { width: 120px; margin-top: 6px; }
+.sbkPav_Table { margin-left:42px; }
+.sbkPav_TableHeader1 { width: 160px; padding-left: 15px;}
+.sbkPav_TableHeader2 { width: 140px; }
+.sbkPav_TableHeader3 { width: 450px; }
+
 /** Skins_AdminViewer **/
-.sbkSav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.sbkSav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-left: 22px;} 
 .sbkSav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:265px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 input.sbkSav_small_input  {  width: 120px; margin-right: 10px; margin-top: 6px; }
 input.sbkSav_small_input1  {  width: 120px; margin-right: 25px; margin-top: 6px; }
 input.sbkSav_small_input2  {  width: 120px; margin-right: 15px; margin-top: 6px; }
 input.sbkSav_large_input  {  width: 463px; margin-right: 15px; margin-top: 6px; }
 input.sbkSav_checkbox { padding-top: 3px;border: 0; }
-.sbkSav_Table { border:0; border-collapse: collapse; border-spacing: 0; margin-left:12px; margin-bottom: 40px; }
-.sbkSav_TableHeader1 { width: 190px; text-align: left; color: white; background-color: #0022a7;padding-left: 15px;}
-.sbkSav_TableHeader2 { width: 90px; text-align: left; color: white; background-color: #0022a7; }
-.sbkSav_TableHeader3 { width: 90px; text-align: left; color: white; background-color: #0022a7; }
-.sbkSav_TableHeader4 { width: 340px; text-align: left; color: white; background-color: #0022a7; }
+.sbkSav_Table { margin-left:12px; }
+.sbkSav_TableHeader1 { width: 190px; padding-left: 15px;}
+.sbkSav_TableHeader2 { width: 90px; }
+.sbkSav_TableHeader3 { width: 90px; }
+.sbkSav_TableHeader4 { width: 340px; }
 
 /** Thematic_Heading_AdminViewer */
 .sbkThav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
 .sbkThav_PopupDiv { position:fixed; background-color:#eeeeee; width:550px; height:140px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px;  } 
 input.sbkThav_input  {  width: 360px; margin-right: 10px; }
-.sbkThav_Table { border:0; border-collapse: collapse; border-spacing: 0; margin-left:42px; margin-bottom: 40px; }
-.sbkThav_TableHeader1 { width: 90px; text-align: left; color: white; background-color: #0022a7;padding-left: 15px;}
-.sbkThav_TableHeader2 { width: 120px; text-align: center; color: white; background-color: #0022a7; }
-.sbkThav_TableHeader3 { width: 350px; text-align: left; color: white; background-color: #0022a7; }
+.sbkThav_Table { margin-left:42px; }
+.sbkThav_TableHeader1 { width: 90px; padding-left: 15px;}
+.sbkThav_TableHeader2 { width: 120px; }
+.sbkThav_TableHeader3 { width: 350px; }
 
 /** Wordmarks_AdminViewer **/
 .sbkWav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;text-align: center; } 
@@ -130,6 +182,7 @@ input.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6px
 input.sbkWav_large_input  { width: 400px;  margin-right: 10px; margin-top: 6px;  }
 select.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6px; }
 #sbkWav_ContainerInner { margin: 0 auto; padding:0; width: 950px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+.sbkWav_TableRule { background-color:#e7e7e7; }
 
 
 
@@ -139,13 +192,6 @@ select.admin_user_select { color:Blue; width: 120px; margin-top: 6px; border-sty
 
 
 
-.admin_project_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.admin_project_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:165px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-input.admin_project_small_input  {  color:Blue;  width: 120px; margin-right: 10px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_project_small_input_focused  {  color:#0000a8;  width: 120px; margin-right: 10px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_project_large_input  {  color:Blue;  width: 463px; margin-right: 15px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_project_large_input_focused  {  color:#0000a8;  width: 463px; margin-right: 15px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-select.admin_project_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 .admin_aggr_label2 { padding-top: 8px;}
 .admin_aggr_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
@@ -163,21 +209,12 @@ textarea.admin_aggr_input  {  color:Blue;  margin-top: 6px; border-style:solid; 
 textarea.admin_aggr_focused  {  color:Blue;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small;}
 
 
-input.admin_ip_small_input  {  color:Blue;  width: 110px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_ip_small_input_focused  {  color:#0000a8;  width: 110px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_ip_medium_input  {  color:Blue;  width: 230px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_ip_medium_input_focused  {  color:#0000a8;  width: 230px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_ip_large_input  {  color:Blue;  width: 466px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_ip_large_input_focused  {  color:#0000a8;  width: 466px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-textarea.admin_ip_input  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
-textarea.admin_ip_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small;}
 
 input.admin_small_input  {  color:Blue;  width: 170px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.admin_small_input_focused  {  color:#0000a8;  width: 170px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.admin_large_input  {  color:Blue;  width: 500px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.admin_large_input_focused  {  color:#0000a8;  width: 500px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
-select.admin_builder_select { color:Blue; width: 210px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 20px; }
 
 input.users_code_input  {  color:Blue;  width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.users_code_input_focused  {  color:#0000a8;  width: 130px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }

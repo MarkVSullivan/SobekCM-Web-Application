@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 - 10/14
+
+#region Using directives
 
 using System;
 using System.Collections.Specialized;
@@ -36,19 +38,20 @@ namespace SobekCM.Library.AdminViewer
         private readonly int index;
         private readonly IP_Restriction_Ranges ipRestrictionInfo;
         private readonly IP_Restriction_Range thisRange;
+		private readonly string actionMessage;
 
-        /// <summary> Constructor for a new instance of the Aliases_AdminViewer class </summary>
+		/// <summary> Constructor for a new instance of the IP_Restrictions_AdminViewer class </summary>
         /// <param name="User"> Authenticated user information </param>
-        /// <param name="currentMode"> Mode / navigation information for the current request</param>
+		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
         /// <param name="IP_Restrictions"> List of all IP restrictions ranges used in this digital library to restrict access to certain digital resources </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
-        public IP_Restrictions_AdminViewer( User_Object User, SobekCM_Navigation_Object currentMode, IP_Restriction_Ranges IP_Restrictions, Custom_Tracer Tracer ) : base(User)
+        public IP_Restrictions_AdminViewer( User_Object User, SobekCM_Navigation_Object CurrentMode, IP_Restriction_Ranges IP_Restrictions, Custom_Tracer Tracer ) : base(User)
         {
             Tracer.Add_Trace("IP_Restrictions_AdminViewer.Constructor", String.Empty);
 
             ipRestrictionInfo = IP_Restrictions;
-            this.currentMode = currentMode;
+			currentMode = CurrentMode;
 
             // Ensure the user is the system admin
             if ((User == null) || (!User.Is_System_Admin))
@@ -79,90 +82,115 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            if ((currentMode.isPostBack) && ( details != null ) && ( thisRange != null ))
+            if (currentMode.isPostBack)
             {
-                try
-                {
-                    // Get a reference to this form
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+				// Get a reference to this form
+				NameValueCollection form = HttpContext.Current.Request.Form;
 
-                    // Pull the main values
-                    string title = form["admin_title"].Trim();
-                    string notes = form["admin_notes"].Trim();
-                    string message = form["admin_message"].Trim();
+				string action = form["action"].Trim();
 
-                    if (title.Length == 0)
-                    {
-                        title = thisRange.Title;
-                    }
+				if (action == "new")
+				{
+					// Pull the main values
+					string title = form["new_admin_title"].Trim();
+					string notes = form["new_admin_notes"].Trim();
+					string message = form["new_admin_message"].Trim();
 
-                    // Edit the main values in the database
-                    SobekCM_Database.Edit_IP_Range(thisRange.RangeID, title, notes, message, Tracer);
-                    thisRange.Title = title;
-                    thisRange.Notes = notes;
-                    thisRange.Item_Restricted_Statement = message;
+					if ((title.Length == 0) || (message.Length == 0))
+					{
+						actionMessage = "Both title and message are required fields";
+					}
+					else
+					{
+						if ( SobekCM_Database.Edit_IP_Range(-1, title, notes, message, Tracer))
+							actionMessage = "Saved new IP range '" + title + "'";
+						else
+							actionMessage = "Error saving new IP range '" + title + "'";
+					}
+				}
+				else if (( details != null ) && ( thisRange != null ))
+				{
+					try
+					{
+						// Pull the main values
+						string title = form["admin_title"].Trim();
+						string notes = form["admin_notes"].Trim();
+						string message = form["admin_message"].Trim();
 
-                    // Now check each individual IP address range
-                    string[] getKeys = form.AllKeys;
-                    int single_ip_index = 0;
-                    foreach (string thisKey in getKeys)
-                    {
-                        // Is this for a new ip address?
-                        if (thisKey.IndexOf("admin_ipstart_") == 0)
-                        {
-                            // Get the basic information for this single ip address
-                            string ip_index = thisKey.Replace("admin_ipstart_", "");
-                            string thisIpStart = form["admin_ipstart_" + ip_index].Trim();
-                            string thisIpEnd = form["admin_ipend_" + ip_index].Trim();
-                            string thisIpNote = form["admin_iplabel_" + ip_index].Trim();
+						if (title.Length == 0)
+						{
+							title = thisRange.Title;
+						}
 
-                            // Does this match an existing IP range?
-                            if ((ip_index.IndexOf("new") < 0) && ( single_ip_index < details.Tables[1].Rows.Count ))
-                            {
-                                // Get the pre-existing IP row
-                                DataRow ipRow = details.Tables[1].Rows[single_ip_index];
-                                int singleIpId = Convert.ToInt32(ipRow[0]);
-                                if (thisIpStart.Length == 0)
-                                {
-                                    SobekCM_Database.Delete_Single_IP(singleIpId, Tracer);
-                                }
-                                else
-                                {
-                                    // Is this the same?
-                                    if ((thisIpStart != ipRow[1].ToString().Trim()) || (thisIpEnd != ipRow[2].ToString().Trim()) || (thisIpNote != ipRow[3].ToString().Trim()))
-                                    {
-                                        int edit_point_count = thisIpStart.Count(thisChar => thisChar == '.');
+						// Edit the main values in the database
+						SobekCM_Database.Edit_IP_Range(thisRange.RangeID, title, notes, message, Tracer);
+						thisRange.Title = title;
+						thisRange.Notes = notes;
+						thisRange.Item_Restricted_Statement = message;
 
-                                        if (edit_point_count == 3)
-                                        {
-                                            SobekCM_Database.Edit_Single_IP(singleIpId, thisRange.RangeID, thisIpStart, thisIpEnd, thisIpNote, Tracer);
-                                        }
-                                    }
-                                }
+						// Now check each individual IP address range
+						string[] getKeys = form.AllKeys;
+						int single_ip_index = 0;
+						foreach (string thisKey in getKeys)
+						{
+							// Is this for a new ip address?
+							if (thisKey.IndexOf("admin_ipstart_") == 0)
+							{
+								// Get the basic information for this single ip address
+								string ip_index = thisKey.Replace("admin_ipstart_", "");
+								string thisIpStart = form["admin_ipstart_" + ip_index].Trim();
+								string thisIpEnd = form["admin_ipend_" + ip_index].Trim();
+								string thisIpNote = form["admin_iplabel_" + ip_index].Trim();
 
-                                // Be ready to look at the next pre-existing IP range
-                                single_ip_index++;
-                            }
-                            else
-                            {
-                                // Just add this as a new single ip address
-                                if (thisIpStart.Length > 0)
-                                {
-                                    int add_point_count = thisIpStart.Count(thisChar => thisChar == '.');
+								// Does this match an existing IP range?
+								if ((ip_index.IndexOf("new") < 0) && (single_ip_index < details.Tables[1].Rows.Count))
+								{
+									// Get the pre-existing IP row
+									DataRow ipRow = details.Tables[1].Rows[single_ip_index];
+									int singleIpId = Convert.ToInt32(ipRow[0]);
+									if (thisIpStart.Length == 0)
+									{
+										SobekCM_Database.Delete_Single_IP(singleIpId, Tracer);
+									}
+									else
+									{
+										// Is this the same?
+										if ((thisIpStart != ipRow[1].ToString().Trim()) || (thisIpEnd != ipRow[2].ToString().Trim()) || (thisIpNote != ipRow[3].ToString().Trim()))
+										{
+											int edit_point_count = thisIpStart.Count(ThisChar => ThisChar == '.');
 
-                                    if (add_point_count == 3)
-                                    {
-                                        SobekCM_Database.Edit_Single_IP(-1, thisRange.RangeID, thisIpStart, thisIpEnd, thisIpNote, Tracer);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch ( Exception)
-                {
-                    // Some error caught while handling postback
-                }
+											if (edit_point_count == 3)
+											{
+												SobekCM_Database.Edit_Single_IP(singleIpId, thisRange.RangeID, thisIpStart, thisIpEnd, thisIpNote, Tracer);
+											}
+										}
+									}
+
+									// Be ready to look at the next pre-existing IP range
+									single_ip_index++;
+								}
+								else
+								{
+									// Just add this as a new single ip address
+									if (thisIpStart.Length > 0)
+									{
+										int add_point_count = thisIpStart.Count(ThisChar => ThisChar == '.');
+
+										if (add_point_count == 3)
+										{
+											SobekCM_Database.Edit_Single_IP(-1, thisRange.RangeID, thisIpStart, thisIpEnd, thisIpNote, Tracer);
+										}
+									}
+								}
+							}
+						}
+					}
+					catch (Exception)
+					{
+						actionMessage = "Error saving IP range";
+					}
+				}
+ 
 
                 // Repopulate the restriction table
                 DataTable ipRestrictionTbl = SobekCM_Database.Get_IP_Restriction_Ranges(Tracer);
@@ -172,8 +200,11 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Forward back to the main form
-                currentMode.My_Sobek_SubMode = String.Empty;
-                currentMode.Redirect();
+	            if (String.IsNullOrEmpty(actionMessage))
+	            {
+		            currentMode.My_Sobek_SubMode = String.Empty;
+		            currentMode.Redirect();
+	            }
             }
         }
 
@@ -200,7 +231,29 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
         public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ((details != null) && (details.Tables[0].Rows.Count > 0))
+			Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Add_HTML_In_Main_Form -->");
+
+			// Add the stylesheet(s)and javascript  needed
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" ></script>");
+			Output.WriteLine();
+
+			// Add the hidden field
+			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+			if ( thisRange != null )
+				Output.WriteLine("<input type=\"hidden\" id=\"rangeid\" name=\"rangeid\" value=\"" + thisRange.RangeID + "\" />");
+			Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
+			Output.WriteLine();
+
+			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+
+			if (!String.IsNullOrEmpty(actionMessage))
+			{
+				Output.WriteLine("  <br />");
+				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
+			}
+			
+            if ((details != null) && (thisRange != null) && (details.Tables[0].Rows.Count > 0))
             {
                 Tracer.Add_Trace("IP_Restrictions_AdminViewer.Add_HTML_In_Main_Form", "Display details regarding one IP restrictive range");
 
@@ -208,65 +261,50 @@ namespace SobekCM.Library.AdminViewer
                 thisRange.Title = details.Tables[0].Rows[0]["Title"].ToString();
                 thisRange.Notes = details.Tables[0].Rows[0]["Notes"].ToString();
 
-                // Add the stylesheet(s)and javascript  needed
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" ></script>");
-
-                // Add the hidden field
-                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-                Output.WriteLine("<input type=\"hidden\" id=\"rangeid\" name=\"rangeid\" value=\"" + thisRange.RangeID + "\" />");
-                Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
-                Output.WriteLine();
-
-                // Start the HTML rendering
-                Output.WriteLine("<div class=\"SobekHomeText\">");
-
                 // Add the save and cancel button and link to help
                 currentMode.My_Sobek_SubMode = String.Empty;
                 Output.WriteLine("  <br />");
-                Output.WriteLine("  <table width=\"750px\"><tr><td align=\"left\"> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_22.gif\" alt=\"CLOSE\" /></a> &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\"></td></tr></table>");
+	            Output.WriteLine("  <table style=\"width:750px;\">");
+	            Output.WriteLine("    <tr>");
+	            Output.WriteLine("      <td> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td>");
+	            Output.WriteLine("      <td style=\"text-align:right\">");
+				Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"parent.location='" + currentMode.Redirect_URL() + "';\">CANCEL</button> &nbsp; &nbsp; ");
+				Output.WriteLine("        <button title=\"Save changes to this IP restriction range\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
+	            Output.WriteLine("      </td>");
+	            Output.WriteLine("    </tr>");
+				Output.WriteLine("  </table>");
+				Output.WriteLine();
 
                 // Add all the basic information
-                Output.WriteLine("  <span class=\"SobekAdminTitle\">Basic Information</span>");
-                Output.WriteLine("  <blockquote>");
-                Output.WriteLine("    <div class=\"admin_aggr_new_div\">");
-                Output.WriteLine("      <table class=\"popup_table\">");
+                Output.WriteLine("  <h2>Basic Information</h2>");
+				Output.WriteLine("  <div class=\"sbkIpav_NewDiv\">");
+				Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
                 // Add line for range title
-                Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td width=\"120px\"><label for=\"admin_title\">Title:</label></td>");
-                Output.WriteLine("          <td><input class=\"admin_ip_large_input\" name=\"admin_title\" id=\"admin_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisRange.Title) + "\"  onfocus=\"javascript:textbox_enter('admin_title', 'admin_ip_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_title', 'admin_ip_large_input')\" /></td>");
-                Output.WriteLine("        </tr>");
+                Output.WriteLine("      <tr>");
+                Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_title\">Title:</label></td>");
+				Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"admin_title\" id=\"admin_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisRange.Title) + "\" /></td>");
+                Output.WriteLine("      </tr>");
 
-                // Compute the size of the text boxes
-                int actual_cols = 75;
-                if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
-                    actual_cols = 70;
+				// Add the notes text area box
+				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"admin_notes\" id=\"admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + HttpUtility.HtmlEncode(thisRange.Notes) + "</textarea></td></tr>");
 
-                // Add the notes text area box
-                Output.WriteLine("        <tr valign=\"top\"><td valign=\"top\"><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" cols=\"" + actual_cols + "\" name=\"admin_notes\" id=\"admin_notes\" class=\"admin_ip_input\" onfocus=\"javascript:textbox_enter('admin_notes','admin_ip_focused')\" onblur=\"javascript:textbox_leave('admin_notes','admin_ip_input')\">" + HttpUtility.HtmlEncode(thisRange.Notes) + "</textarea></td></tr>");
+				// Add the message text area box
+				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"admin_message\" id=\"admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + HttpUtility.HtmlEncode(thisRange.Item_Restricted_Statement) + "</textarea></td></tr>");
 
-                // Add the message text area box
-                Output.WriteLine("        <tr valign=\"top\"><td valign=\"top\"><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" cols=\"" + actual_cols + "\" name=\"admin_message\" id=\"admin_message\" class=\"admin_ip_input\" onfocus=\"javascript:textbox_enter('admin_message','admin_ip_focused')\" onblur=\"javascript:textbox_leave('admin_message','admin_ip_input')\">" + HttpUtility.HtmlEncode(thisRange.Item_Restricted_Statement) + "</textarea></td></tr>");
+                Output.WriteLine("    </table>");
+                Output.WriteLine("  </div>");
+				Output.WriteLine();
 
-                Output.WriteLine("      </table>");
-                Output.WriteLine("    </div>");
-                Output.WriteLine("  </blockquote>");
-                Output.WriteLine("  <br />");
+                Output.WriteLine("  <h2>IP Addresses</h2>");
 
-
-
-                Output.WriteLine("  <span class=\"SobekAdminTitle\">IP Addresses</span>");
-                Output.WriteLine("  <br /><br />");
-                Output.WriteLine("    <blockquote>");
-
-                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-                Output.WriteLine("    <th width=\"90px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-                Output.WriteLine("    <th width=\"135px\" align=\"left\"><span style=\"color: White\">START IP</span></th>");
-                Output.WriteLine("    <th width=\"135px\" align=\"left\"><span style=\"color: White\">END IP</span></th>");
-                Output.WriteLine("    <th width=\"250px\" align=\"left\"><span style=\"color: White\">LABEL</span></th>");
-                Output.WriteLine("  </tr>");
+				Output.WriteLine("  <table class=\"sbkIpav_Table sbkAdm_Table\">");
+                Output.WriteLine("    <tr>");
+				Output.WriteLine("      <th class=\"sbkIpav_TableHeader1\">ACTIONS</th>");
+				Output.WriteLine("      <th class=\"sbkIpav_TableHeader2\">START IP</th>");
+				Output.WriteLine("      <th class=\"sbkIpav_TableHeader3\">END IP</th>");
+				Output.WriteLine("      <th class=\"sbkIpav_TableHeader4\">LABEL</th>");
+                Output.WriteLine("    </tr>");
 
                 foreach (DataRow thisRow in details.Tables[1].Rows)
                 {
@@ -274,63 +312,87 @@ namespace SobekCM.Library.AdminViewer
                     string ip_primary = thisRow["IP_SingleID"].ToString();
 
                     // Build the action links
-                    Output.WriteLine("  <tr align=\"left\" >");
-                    Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
-                    Output.WriteLine("<a title=\"Click to clear this ip address\" id=\"CLEAR_" + ip_primary + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return clear_ip_address('" + ip_primary + "');\">clear</a> )</td>");
+                    Output.WriteLine("    <tr>");
+					Output.WriteLine("      <td class=\"sbkAdm_ActionLink\" >( <a title=\"Click to clear this ip address\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return clear_ip_address('" + ip_primary + "');\">clear</a> )</td>");
 
                     // Add the rest of the row with data
-                    Output.WriteLine("    <td><input class=\"admin_ip_small_input\" name=\"admin_ipstart_" + ip_primary + "\" id=\"admin_ipstart_" + ip_primary + "\" type=\"text\" value=\"" + thisRow["StartIP"].ToString().Trim() + "\"  onfocus=\"javascript:textbox_enter('admin_ipstart_" + ip_primary + "', 'admin_ip_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_ipstart_" + ip_primary + "', 'admin_ip_small_input')\" /></td>");
-                    Output.WriteLine("    <td><input class=\"admin_ip_small_input\" name=\"admin_ipend_" + ip_primary + "\" id=\"admin_ipend_" + ip_primary + "\" type=\"text\" value=\"" + thisRow["EndIP"].ToString().Trim() + "\"  onfocus=\"javascript:textbox_enter('admin_ipend_" + ip_primary + "', 'admin_ip_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_ipend_" + ip_primary + "', 'admin_ip_small_input')\" /></td>");
-                    Output.WriteLine("    <td><input class=\"admin_ip_medium_input\" name=\"admin_iplabel_" + ip_primary + "\" id=\"admin_iplabel_" + ip_primary + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisRow["Notes"].ToString().Trim()) + "\"  onfocus=\"javascript:textbox_enter('admin_iplabel_" + ip_primary + "', 'admin_ip_medium_input_focused')\" onblur=\"javascript:textbox_leave('admin_iplabel_" + ip_primary + "', 'admin_ip_medium_input')\" /></td>");
-                    Output.WriteLine("   </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_small_input sbkAdmin_Focusable\" name=\"admin_ipstart_" + ip_primary + "\" id=\"admin_ipstart_" + ip_primary + "\" type=\"text\" value=\"" + thisRow["StartIP"].ToString().Trim() + "\" /></td>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_small_input sbkAdmin_Focusable\" name=\"admin_ipend_" + ip_primary + "\" id=\"admin_ipend_" + ip_primary + "\" type=\"text\" value=\"" + thisRow["EndIP"].ToString().Trim() + "\" /></td>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_medium_input sbkAdmin_Focusable\" name=\"admin_iplabel_" + ip_primary + "\" id=\"admin_iplabel_" + ip_primary + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisRow["Notes"].ToString().Trim()) + "\" /></td>");
+                    Output.WriteLine("     </tr>");
+					Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
                 }
 
                 // Now, always add ten empty IP rows here
                 for (int i = 1; i < 10; i++)
                 {
-                    Output.WriteLine("  <tr align=\"left\" >");
-                    Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
-                    Output.WriteLine("<a title=\"Click to clear this ip address\" id=\"CLEAR_new" + i + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return clear_ip_address('new" + i + "');\">clear</a> )</td>");
+                    Output.WriteLine("    <tr>");
+					Output.WriteLine("      <td class=\"sbkAdm_ActionLink\" >( <a title=\"Click to clear this ip address\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return clear_ip_address('new" + i + "');\">clear</a> )</td>");
 
                     // Add the rest of the row with data
-                    Output.WriteLine("    <td><input class=\"admin_ip_small_input\" name=\"admin_ipstart_new" + i + "\" id=\"admin_ipstart_new" + i + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('admin_ipstart_new" + i + "', 'admin_ip_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_ipstart_new" + i + "', 'admin_ip_small_input')\" /></td>");
-                    Output.WriteLine("    <td><input class=\"admin_ip_small_input\" name=\"admin_ipend_new" + i + "\" id=\"admin_ipend_new" + i + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('admin_ipend_new" + i + "', 'admin_ip_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_ipend_new" + i + "', 'admin_ip_small_input')\" /></td>");
-                    Output.WriteLine("    <td><input class=\"admin_ip_medium_input\" name=\"admin_iplabel_new" + i + "\" id=\"admin_iplabel_new" + i + "\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('admin_iplabel_new" + i + "', 'admin_ip_medium_input_focused')\" onblur=\"javascript:textbox_leave('admin_iplabel_new" + i + "', 'admin_ip_medium_input')\" /></td>");
-                    Output.WriteLine("   </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_small_input sbkAdmin_Focusable\" name=\"admin_ipstart_new" + i + "\" id=\"admin_ipstart_new" + i + "\" type=\"text\" value=\"\" /></td>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_small_input sbkAdmin_Focusable\" name=\"admin_ipend_new" + i + "\" id=\"admin_ipend_new" + i + "\" type=\"text\" value=\"\" /></td>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_medium_input sbkAdmin_Focusable\" name=\"admin_iplabel_new" + i + "\" id=\"admin_iplabel_new" + i + "\" type=\"text\" value=\"\" /></td>");
+                    Output.WriteLine("    </tr>");
+					Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
 
                 }
 
-                Output.WriteLine("</table>");
-                Output.WriteLine("    </blockquote>");
-
+                Output.WriteLine("  </table>");
                 Output.WriteLine("</div>");
 
                 return;
             }
 
             Tracer.Add_Trace("IP_Restrictions_AdminViewer.Add_HTML_In_Main_Form", "Display main IP restrictive range admin form");
-            Output.WriteLine("<div class=\"SobekHomeText\">");
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    Restrictive ranges of IP addresses may be used to restrict access to digital resources.  This form allows system administrators to edit the individual IP addresses and contiguous IP addresses associated with an existing restrictive range.<br /><br />");
-            Output.WriteLine("    For more information about IP restriction ranges and this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
-            Output.WriteLine("  </blockquote>");
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">Existing Ranges</span>");
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    Select an IP restrictive range below to view or edit:<br />");
-            Output.WriteLine("    <blockquote>");
 
-            for (int i = 0; i < ipRestrictionInfo.Count; i++)
-            {
-                currentMode.My_Sobek_SubMode = ipRestrictionInfo[i].RangeID.ToString();
-                Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">" + ipRestrictionInfo[i].Title + "</a><br /><br />");
-            }
 
-            Output.WriteLine("    </blockquote>");
-            Output.WriteLine("  </blockquote>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("</div>");
+            Output.WriteLine("  <p>Restrictive ranges of IP addresses may be used to restrict access to digital resources.  This form allows system administrators to edit the individual IP addresses and contiguous IP addresses associated with an existing restrictive range.</p>");
+            Output.WriteLine("  <p>For more information about IP restriction ranges and this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+	        Output.WriteLine();
+
+			// Add all the basic information
+			Output.WriteLine("  <h2>New IP Restrictive Range</h2>");
+			Output.WriteLine("  <div class=\"sbkIpav_NewDiv\">");
+			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
+
+			// Add line for range title
+			Output.WriteLine("      <tr>");
+			Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_title\">Title:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"new_admin_title\" id=\"new_admin_title\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      </tr>");
+
+			// Add the notes text area box
+			Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"new_admin_notes\" id=\"new_admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\" ></textarea></td></tr>");
+
+			// Add the message text area box
+			Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"new_admin_message\" id=\"new_admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\" ></textarea></td></tr>");
+			// Add the SAVE button
+			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td></td><td><button title=\"Save new IP restrictive range\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_ip_range();\">SAVE</button></td></tr>");
+			Output.WriteLine("    </table>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine();
+
+            Output.WriteLine("  <h2>Existing Ranges</h2>");
+	        if (ipRestrictionInfo.Count == 0)
+	        {
+				Output.WriteLine("  <p>No existing IP restrictive ranges exist.  To add one, enter the information above and press SAVE.</p>");
+	        }
+	        else
+	        {
+		        Output.WriteLine("  <p>Select an IP restrictive range below to view or edit:</p>");
+		        Output.WriteLine("  <ul id=\"sbkIpav_RangeList\">");
+
+		        for (int i = 0; i < ipRestrictionInfo.Count; i++)
+		        {
+			        currentMode.My_Sobek_SubMode = ipRestrictionInfo[i].RangeID.ToString();
+			        Output.WriteLine("<li><a href=\"" + currentMode.Redirect_URL() + "\">" + ipRestrictionInfo[i].Title + "</a></li>");
+		        }
+
+		        Output.WriteLine("  </ul>");
+	        }
+
+			Output.WriteLine("</div>");
         }
     }
 }

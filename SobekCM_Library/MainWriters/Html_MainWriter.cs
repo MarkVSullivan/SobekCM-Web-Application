@@ -794,7 +794,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (( currentMode.isPostBack) && ( currentMode.Mode != Display_Mode_Enum.My_Sobek )) return;
+			if ((currentMode.isPostBack) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative)) return;
             if (subwriter == null) return;
 
             Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);

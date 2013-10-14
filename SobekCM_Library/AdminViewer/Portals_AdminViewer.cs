@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 10/14/2013
+
+#region Using directives
 
 using System;
 using System.Collections.Specialized;
@@ -86,14 +88,10 @@ namespace SobekCM.Library.AdminViewer
                                 int portalid = Convert.ToInt32(save_value);
 
                                 // Look for this to see if this was the pre-existing default
-                                bool isDefault = false;
-                                if ( portals.Default_Portal.ID == portalid )
-                                {
-                                    isDefault = true;
-                                }
-                                
+		                        bool isDefault = portals.Default_Portal.ID == portalid;
 
-                                // Don't edit if the URL segment is empty and this is NOT default
+
+		                        // Don't edit if the URL segment is empty and this is NOT default
                                 if ((!isDefault) && (edit_url.Trim().Length == 0))
                                 {
                                     actionMessage = "ERROR: Non default portals MUST have a url segment associated.";
@@ -174,6 +172,7 @@ namespace SobekCM.Library.AdminViewer
 
             Tracer.Add_Trace("Portals_AdminViewer.Add_HTML_In_Main_Form", "Adds the portal information to the main form");
 
+			Output.WriteLine("<!-- Portals_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
@@ -184,185 +183,185 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<!-- URL Portal Edit Form -->");
-            Output.WriteLine("<div class=\"admin_portal_popup_div\" id=\"form_portal\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT URL PORTAL</td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"portal_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+			Output.WriteLine("<div class=\"sbkPoav_PopupDiv\" id=\"form_portal\" style=\"display:none;\">");
+			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr style=\"height:20px;\"><td style=\"text-align:left;\">EDIT URL PORTAL</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"portal_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"popup_table\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add the line for the url portal name
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("          <td width=\"145px\"><label for=\"form_portal_name\">Portal Name:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"form_portal_name\" id=\"form_portal_name\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_portal_name', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('form_portal_name', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"width:145px;\"><label for=\"form_portal_name\">Portal Name:</label></td>");
+			Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_name\" id=\"form_portal_name\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
             Output.WriteLine("    </tr>");
 
             // Add the line for the url portal abbreviation
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"form_portal_abbr\">System Abbreviation:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"form_portal_abbr\" id=\"form_portal_abbr\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_portal_abbr', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('form_portal_abbr', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
+			Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td><label for=\"form_portal_abbr\">System Abbreviation:</label></td>");
+			Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_abbr\" id=\"form_portal_abbr\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
             Output.WriteLine("    </tr>");
 
             // Add the line for the default web skin
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"form_portal_skin\">Default Web Skin:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"form_portal_skin\" id=\"form_portal_skin\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_portal_skin', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('form_portal_skin', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + WEB_SKIN_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
+			Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td><label for=\"form_portal_skin\">Default Web Skin:</label></td>");
+			Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_skin\" id=\"form_portal_skin\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + WEB_SKIN_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + WEB_SKIN_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
             Output.WriteLine("    </tr>");
 
             // Add the line for the default aggregation
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"form_portal_aggregation\">Default Aggregation:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"form_portal_aggregation\" id=\"form_portal_aggregation\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_portal_aggregation', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('form_portal_aggregation', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
+			Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td><label for=\"form_portal_aggregation\">Default Aggregation:</label></td>");
+			Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_aggregation\" id=\"form_portal_aggregation\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
             Output.WriteLine("    </tr>");
 
             // Add the line for the base url segment
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"form_portal_url\">URL Segment:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"form_portal_url\" id=\"form_portal_url\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_portal_url', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('form_portal_url', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td><label for=\"form_portal_url\">URL Segment:</label></td>");
+			Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_url\" id=\"form_portal_url\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
             Output.WriteLine("    </tr>");
 
             // Add the line for the base purl 
-            Output.WriteLine("    <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"form_portal_purl\">Base PURL:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"form_portal_purl\" id=\"form_portal_purl\" type=\"text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_portal_purl', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('form_portal_purl', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td><label for=\"form_portal_purl\">Base PURL:</label></td>");
+			Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_purl\" id=\"form_portal_purl\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
             Output.WriteLine("    </tr>");
-            Output.WriteLine("  </table>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <center><a href=\"\" onclick=\"return portal_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center>");
-            Output.WriteLine("</div>");
 
-            Output.WriteLine("<!-- Portals_AdminViewer.Add_HTML_In_Main_Form -->");
+			// Add the buttons and close out the pop-up table
+			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+			Output.WriteLine("      <td colspan=\"3\">");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return portal_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing portal\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
+			Output.WriteLine("      </td>");
+			Output.WriteLine("    </tr>");
+			Output.WriteLine("  </table>");
+			Output.WriteLine("</div>");
+			Output.WriteLine();
+
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<div class=\"SobekHomeText\">");
+			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-            if ( !String.IsNullOrEmpty(actionMessage))
-                Output.WriteLine("  <strong>" + actionMessage + "</strong>");
+			if (actionMessage.Length > 0)
+			{
+				Output.WriteLine("  <br />");
+				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
+			}
 
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    URL portals allow the same SobekCM library to have a very different look and feel and encompass different item aggregations.  Each portal is defined by the incoming URL and the URL for each incoming request is analyzed to ensure it is handled correctly.<br /><br />");
-            Output.WriteLine("    For more information about URL portals, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
-            Output.WriteLine("  </blockquote>");
+            Output.WriteLine("  <p>URL portals allow the same SobekCM library to have a very different look and feel and encompass different item aggregations.  Each portal is defined by the incoming URL and the URL for each incoming request is analyzed to ensure it is handled correctly.</p>");
+            Output.WriteLine("  <p>For more information about URL portals, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">New URL Portal</span>");
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("  To add a new URL portal to this system, enter the information below and press SAVE.<br /><br />");
-            Output.WriteLine("    <div class=\"admin_portal_new_div\">");
-            Output.WriteLine("      <table class=\"popup_table\">");
+            Output.WriteLine("  <h2>New URL Portal</h2>");
+            Output.WriteLine("  <p>To add a new URL portal to this system, enter the information below and press SAVE.</p>");
+			Output.WriteLine("  <div class=\"sbkPoav_NewDiv\">");
+			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
             Portal newPortal = new Portal(-1, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty);
 
-
-
             // Add the line for the url portal name
-            Output.WriteLine("        <tr height=\"30px\">");
-            Output.WriteLine("          <td width=\"145px\"><label for=\"admin_portal_name\">Portal Name:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"admin_portal_name\" id=\"admin_portal_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Name) + "\"  onfocus=\"javascript:textbox_enter('admin_portal_name', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('admin_portal_name', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
-            Output.WriteLine("        </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td style=\"width:145px;\"><label for=\"admin_portal_name\">Portal Name:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_name\" id=\"admin_portal_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Name) + "\" /></td>");
+			Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
+            Output.WriteLine("      </tr>");
 
             // Add the line for the url portal abbreviation
-            Output.WriteLine("        <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"admin_portal_abbr\">System Abbreviation:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"admin_portal_abbr\" id=\"admin_portal_abbr\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Abbreviation) + "\"  onfocus=\"javascript:textbox_enter('admin_portal_abbr', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('admin_portal_abbr', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
-            Output.WriteLine("        </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td><label for=\"admin_portal_abbr\">System Abbreviation:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_abbr\" id=\"admin_portal_abbr\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Abbreviation) + "\" /></td>");
+			Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
+            Output.WriteLine("      </tr>");
 
             // Add the line for the default web skin
-            Output.WriteLine("        <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"admin_portal_skin\">Default Web Skin:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"admin_portal_skin\" id=\"admin_portal_skin\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Default_Web_Skin) + "\"  onfocus=\"javascript:textbox_enter('admin_portal_skin', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('admin_portal_skin', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + WEB_SKIN_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
-            Output.WriteLine("        </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td><label for=\"admin_portal_skin\">Default Web Skin:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_skin\" id=\"admin_portal_skin\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Default_Web_Skin) + "\" /></td>");
+			Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + WEB_SKIN_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + WEB_SKIN_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
+            Output.WriteLine("      </tr>");
 
             // Add the line for the default aggregation
-            Output.WriteLine("        <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"admin_portal_aggregation\">Default Aggregation:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"admin_portal_aggregation\" id=\"admin_portal_aggregation\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Default_Aggregation) + "\"  onfocus=\"javascript:textbox_enter('admin_portal_aggregation', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('admin_portal_aggregation', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
-            Output.WriteLine("        </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td><label for=\"admin_portal_aggregation\">Default Aggregation:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_aggregation\" id=\"admin_portal_aggregation\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Default_Aggregation) + "\" /></td>");
+			Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
+            Output.WriteLine("      </tr>");
 
             // Add the line for the base url segment
-            Output.WriteLine("        <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"admin_portal_url\">URL Segment:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"admin_portal_url\" id=\"admin_portal_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.URL_Segment) + "\"  onfocus=\"javascript:textbox_enter('admin_portal_url', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('admin_portal_url', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
-            Output.WriteLine("        </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td><label for=\"admin_portal_url\">URL Segment:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_url\" id=\"admin_portal_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.URL_Segment) + "\" /></td>");
+			Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
+            Output.WriteLine("      </tr>");
 
             // Add the line for the base purl 
-            Output.WriteLine("        <tr height=\"30px\">");
-            Output.WriteLine("          <td><label for=\"admin_portal_purl\">Base PURL:</label></td>");
-            Output.WriteLine("          <td><input class=\"admin_portal_input\" name=\"admin_portal_purl\" id=\"admin_portal_purl\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Base_PURL) + "\"  onfocus=\"javascript:textbox_enter('admin_portal_purl', 'admin_portal_input_focused')\" onblur=\"javascript:textbox_leave('admin_portal_purl', 'admin_portal_input')\" /></td>");
-            Output.WriteLine("          <td><img border=\"0px\" style=\"padding-left:5px; margin-top:3px; cursor:pointer; cursor:hand;\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" /></td>");
-            Output.WriteLine("        </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td><label for=\"admin_portal_purl\">Base PURL:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_purl\" id=\"admin_portal_purl\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Base_PURL) + "\" /></td>");
+			Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
+            Output.WriteLine("      </tr>");
 
-            Output.WriteLine("        </table>");
+			// Add the SAVE button
+			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new portal\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_portal();\">SAVE</button></td></tr>");
+			Output.WriteLine("    </table>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("  <br />");
+			Output.WriteLine();
 
-            Output.WriteLine("        <center><input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\" onclick=\"return save_new_portal();\"/></center>");
+            Output.WriteLine("  <h2>Existing URL Portals</h2>");
+            Output.WriteLine("  <p>The following URL portals are currently cached in this web application.</p>");
 
-            Output.WriteLine("      </div>");
-            Output.WriteLine("    </blockquote>");
-
-
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">Existing URL Portals</span>");
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    The following URL portals are currently cached in this web application.<br /><br />");
-            Output.WriteLine("  </blockquote>");
-
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"85px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-            Output.WriteLine("    <th width=\"130px\" align=\"left\"><span style=\"color: White\">URL<br />SEGMENT</span></th>");
-            Output.WriteLine("    <th width=\"110px\" align=\"left\"><span style=\"color: White\">SYSTEM<br />ABBREVIATION</span></th>");
-            Output.WriteLine("    <th width=\"85px\" align=\"left\"><span style=\"color: White\">DEFAULT<br />WEB SKIN</span></th>");
-            Output.WriteLine("    <th width=\"105px\" align=\"left\"><span style=\"color: White\">DEFAULT<br />AGGREGATION</span></th>");
-            Output.WriteLine("    <th width=\"180px\" align=\"left\"><span style=\"color: White\">BASE<br />PURL</span></th>");
-            Output.WriteLine("   </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>");
+            Output.WriteLine("  <table class=\"sbkSav_Table sbkAdm_Table\">");
+            Output.WriteLine("    <tr>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader1\">ACTIONS</th>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader2\">URL<br />SEGMENT</th>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader3\">SYSTEM<br />ABBREVIATION</th>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader4\">DEFAULT<br />WEB SKIN</th>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader5\">DEFAULT<br />AGGREGATION</th>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader6\">BASE<br />PURL</th>");
+            Output.WriteLine("    </tr>");
+			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"6\"></td></tr>");
 
             // Write the default portal first
-            Output.WriteLine("  <tr align=\"left\" >");
+            Output.WriteLine("    <tr>");
             if (portals.Default_Portal.ID > 0)
             {
-                Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
+				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
                 Portal thisPortal = portals.Default_Portal;
-                Output.WriteLine("      <a title=\"Edit this portal\" id=\"VIEW_0\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup('VIEW_0','" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> ) </td>");
+                Output.WriteLine("      <a title=\"Edit this portal\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> ) </td>");
             }
             else
             {
                 Output.WriteLine("    <td>&nbsp;</td>");
             }
-            Output.WriteLine("    <td><i><b>default</b></i></span></td>");
-            Output.WriteLine("    <td>" + portals.Default_Portal.Abbreviation + "</span></td>");
-            Output.WriteLine("    <td>" + portals.Default_Portal.Default_Web_Skin + "</span></td>");
-            Output.WriteLine("    <td>" + portals.Default_Portal.Default_Aggregation + "</span></td>");
-            Output.WriteLine("    <td>" + portals.Default_Portal.Base_PURL + "</span></td>");
-            Output.WriteLine("   </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>");
+            Output.WriteLine("      <td id=\"sbkPoav_DefaultCell\">default</td>");
+            Output.WriteLine("      <td>" + portals.Default_Portal.Abbreviation + "</td>");
+            Output.WriteLine("      <td>" + portals.Default_Portal.Default_Web_Skin + "</td>");
+            Output.WriteLine("      <td>" + portals.Default_Portal.Default_Aggregation + "</td>");
+            Output.WriteLine("      <td>" + portals.Default_Portal.Base_PURL + "</td>");
+            Output.WriteLine("    </tr>");
+			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"6\"></td></tr>");
 
             // Write the data for each portal
             foreach (Portal thisPortal in portals.All_Portals)
             {
                 if (thisPortal != portals.Default_Portal)
                 {
-                    Output.WriteLine("  <tr align=\"left\" >");
-                    Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
-                    Output.Write("<a title=\"Edit this portal\" id=\"VIEW_" + thisPortal.ID + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup('VIEW_" + thisPortal.ID + "','" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'","")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> | ");
+                    Output.WriteLine("    <tr>");
+					Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
+                    Output.Write("<a title=\"Edit this portal\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'","")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> | ");
                     Output.WriteLine("<a title=\"Delete this portal\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_portal('" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "');\">delete</a> )</td>");
-                    Output.WriteLine("    <td>" + thisPortal.URL_Segment + "</span></td>");
-                    Output.WriteLine("    <td>" + thisPortal.Abbreviation + "</span></td>");
-                    Output.WriteLine("    <td>" + thisPortal.Default_Web_Skin + "</span></td>");
-                    Output.WriteLine("    <td>" + thisPortal.Default_Aggregation + "</span></td>");
-                    Output.WriteLine("    <td>" + thisPortal.Base_PURL + "</span></td>");
-                    Output.WriteLine("   </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>");
+                    Output.WriteLine("      <td>" + thisPortal.URL_Segment + "</td>");
+                    Output.WriteLine("      <td>" + thisPortal.Abbreviation + "</td>");
+                    Output.WriteLine("      <td>" + thisPortal.Default_Web_Skin + "</td>");
+                    Output.WriteLine("      <td>" + thisPortal.Default_Aggregation + "</td>");
+                    Output.WriteLine("      <td>" + thisPortal.Base_PURL + "</td>");
+                    Output.WriteLine("    </tr>");
+					Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"6\"></td></tr>");
                 }
             }
             Output.WriteLine("  </table>");
-            Output.WriteLine("  <br /><br />");
             Output.WriteLine("</div>");
 
         }

@@ -389,7 +389,7 @@
     <Compile Include="Search\Metadata_Search_Field.cs" />
     <Compile Include="AdminViewer\Home_AdminViewer.cs" />
     <Compile Include="AdminViewer\Aggregations_Mgmt_AdminViewer.cs" />
-    <Compile Include="AdminViewer\Builder_Admin_MySobekViewer.cs" />
+    <Compile Include="AdminViewer\Builder_AdminViewer.cs" />
     <Compile Include="MySobekViewer\Delete_Item_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Group_Behaviors_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Behaviors_MySobekViewer.cs" />

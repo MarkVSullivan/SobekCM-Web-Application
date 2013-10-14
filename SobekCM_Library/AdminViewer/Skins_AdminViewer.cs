@@ -332,7 +332,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     catch (Exception )
                                     {
-
+	                                    actionMessage = "Error creating some of the files for the new web skin";
                                     }
 
                                     // Reload the list of all skins from the database, to include this new skin
@@ -340,7 +340,10 @@ namespace SobekCM.Library.AdminViewer
                                     {
                                         SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinCollection, Tracer);
                                     }
-                                    actionMessage = "Saved new html skin <i>" + save_value + "</i>";
+	                                if (String.IsNullOrEmpty(actionMessage))
+	                                {
+		                                actionMessage = "Saved new html skin <i>" + save_value + "</i>";
+	                                }
                                 }
                                 else
                                 {
@@ -486,7 +489,8 @@ namespace SobekCM.Library.AdminViewer
         public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Skins_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
-
+			
+			Output.WriteLine("<!-- Skins_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
@@ -501,7 +505,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div class=\"sbkSav_PopupDiv\" id=\"form_interface\" style=\"display:none;\">");
 			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">EDIT WEB SKIN</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"interface_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"popup_table\" style=\"text-align:left;\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for interface code and base interface code
 			Output.WriteLine("    <tr style=\"height:25px;\">");
@@ -525,20 +529,17 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"3\">");
 			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return interface_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
 			Output.WriteLine("</div>");
+			Output.WriteLine();
 
-
-            Tracer.Add_Trace("Skins_AdminViewer.Add_HTML_In_Main_Form", "");
-
-            Output.WriteLine("<!-- Skins_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-			if (actionMessage.Length > 0)
+			if (!String.IsNullOrEmpty(actionMessage))
 			{
 				Output.WriteLine("  <br />");
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
@@ -547,46 +548,43 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
             Output.WriteLine("  <h2>New Web Skin</h2>");
-            Output.WriteLine("  <blockquote>");
-			Output.WriteLine("    <div class=\"sbkSav_NewDiv\">");
-			Output.WriteLine("      <table class=\"popup_table\" style=\"text-align:left;\">");
+			Output.WriteLine("  <div class=\"sbkSav_NewDiv\">");
+			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for interface code and base interface code
-	        Output.WriteLine("        <tr style=\"height:25px;\">");
-			Output.WriteLine("          <td style=\"width:112px;\"><label for=\"admin_interface_code\">Web Skin Code:</label></td>");
-			Output.WriteLine("          <td style=\"width:220px;\"><input class=\"sbkSav_small_input sbkAdmin_Focusable\" name=\"admin_interface_code\" id=\"admin_interface_code\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("          <td style=\"text-align:right;\"><label for=\"admin_interface_basecode\">Base Skin Code:</label> &nbsp; <input class=\"sbkSav_small_input2 sbkAdmin_Focusable\" name=\"admin_interface_basecode\" id=\"admin_interface_basecode\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("        </tr>");
+	        Output.WriteLine("      <tr style=\"height:25px;\">");
+			Output.WriteLine("        <td style=\"width:112px;\"><label for=\"admin_interface_code\">Web Skin Code:</label></td>");
+			Output.WriteLine("        <td style=\"width:220px;\"><input class=\"sbkSav_small_input sbkAdmin_Focusable\" name=\"admin_interface_code\" id=\"admin_interface_code\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("        <td style=\"text-align:right;\"><label for=\"admin_interface_basecode\">Base Skin Code:</label> &nbsp; <input class=\"sbkSav_small_input2 sbkAdmin_Focusable\" name=\"admin_interface_basecode\" id=\"admin_interface_basecode\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("      </tr>");
 
             // Add line for banner link
-			Output.WriteLine("        <tr style=\"height:25px;\"><td><label for=\"admin_interface_link\">Banner Link:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_link\" id=\"admin_interface_link\" type=\"text\" value=\"\" /></td></tr>");
+			Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_link\">Banner Link:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_link\" id=\"admin_interface_link\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add line for notes
-			Output.WriteLine("        <tr style=\"height:25px;\"><td><label for=\"admin_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_notes\" id=\"admin_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
+			Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_notes\" id=\"admin_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add checkboxes for overriding the header/footer and overriding banner
-			Output.WriteLine("        <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_header_override\" id=\"admin_interface_header_override\" checked=\"checked\" /> <label for=\"admin_interface_header_override\">Override header and footer?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" /> <label for=\"admin_interface_banner_override\">Override banner?</label></td></tr>");
-			Output.WriteLine("        <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress top-level navigation?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_buildlaunch\" id=\"admin_interface_buildlaunch\" /> <label for=\"admin_interface_buildlaunch\">Build on launch?</label></td></tr>");
-			Output.WriteLine("        <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
+			Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_header_override\" id=\"admin_interface_header_override\" checked=\"checked\" /> <label for=\"admin_interface_header_override\">Override header and footer?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" /> <label for=\"admin_interface_banner_override\">Override banner?</label></td></tr>");
+			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress top-level navigation?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_buildlaunch\" id=\"admin_interface_buildlaunch\" /> <label for=\"admin_interface_buildlaunch\">Build on launch?</label></td></tr>");
+			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
 			// Add the SAVE button
-		    Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE</button></td></tr>");
-		    Output.WriteLine("      </table>");
-		    Output.WriteLine("    </div>");
-            Output.WriteLine("  </blockquote>");
-            Output.WriteLine("  <br />");
+		    Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE</button></td></tr>");
+		    Output.WriteLine("    </table>");
+		    Output.WriteLine("  </div>");
 			Output.WriteLine();
             Output.WriteLine("  <h2>Existing Web Skins</h2>");
 
             // Get the list of all aggregations
-            Output.WriteLine("  <table class=\"sbkSav_Table\">");
+			Output.WriteLine("  <table class=\"sbkSav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader1\">ACTIONS</th>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader2\">CODE</th>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader3\">BASE</th>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader4\">NOTES</th>");
             Output.WriteLine("    </tr>");
-            Output.WriteLine("    <tr><td style=\"background-color:#e7e7e7;\" colspan=\"4\"></td></tr>");
+			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
 
             // Get the view URL
             string current_skin = currentMode.Skin;
@@ -620,7 +618,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td>" + base_code + "</span></td>");
                 Output.WriteLine("      <td>" + notes + "</span></td>");
                 Output.WriteLine("    </tr>");
-                Output.WriteLine("    <tr><td  style=\"background-color:#e7e7e7;\" colspan=\"4\"></td></tr>");
+				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
             }
 
             Output.WriteLine("  </table>");

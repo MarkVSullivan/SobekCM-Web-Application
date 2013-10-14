@@ -269,7 +269,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div class=\"sbkWav_PopupDiv\" id=\"form_wordmark\" name=\"form_wordmark\" style=\"display:none;\">");
 			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">EDIT WORDMARK / ICON <td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"wordmark_form_close()\">X</a> &nbsp; </td></tr></table></div>");
 			Output.WriteLine("  <br />");
-			Output.WriteLine("  <table class=\"popup_table\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
 			// Add line for interface code and base interface code
 	        Output.WriteLine("    <tr style=\"text-align:left;\">");
@@ -321,7 +321,7 @@ namespace SobekCM.Library.AdminViewer
 		        Output.WriteLine("  <div style=\"width:210px; float:right;\"><img id=\"sbkWav_SelectedImage\" name=\"sbkWav_SelectedImage\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + loweredFiles[0] + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
 
 		        Output.WriteLine("    <div class=\"sbkWav_NewDiv\">");
-		        Output.WriteLine("      <table class=\"popup_table\">");
+				Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
 
 		        // Add line for wordmark code
 		        Output.WriteLine("        <tr>");
@@ -410,7 +410,7 @@ namespace SobekCM.Library.AdminViewer
 				if (unused_column >= 4)
 				{
 					Output.WriteLine("    </tr>");
-					Output.WriteLine("    <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\"></td></tr>");
+					Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
 					Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
 					unused_column = 0;
 				}
@@ -418,7 +418,7 @@ namespace SobekCM.Library.AdminViewer
 
 	        if (unused_column > 0)
 	        {
-		        Output.WriteLine("    <tr><td colspan=\"4\"style=\"background-color:#e7e7e7;\"></td></tr>");
+				Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
 	        }
 
 	        Output.WriteLine("  </table>");
@@ -463,7 +463,7 @@ namespace SobekCM.Library.AdminViewer
                 if (current_column >= 4)
                 {
                     Output.WriteLine("    </tr>");
-					Output.WriteLine("    <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\"></td></tr>");
+					Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
 					Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
                     current_column = 0;
                 }
@@ -471,7 +471,7 @@ namespace SobekCM.Library.AdminViewer
 
 			if (unused_column > 0)
 			{
-				Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\"></td></tr>");
+				Output.WriteLine("  <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
 			}
 
             Output.WriteLine("  </table>");

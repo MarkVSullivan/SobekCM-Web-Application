@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 - 10/14
+
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -57,6 +59,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     // Set this value
                     SobekCM_Database.Set_Setting("Builder Operation Flag", save_value);
+					Current_Mode.Redirect();
                 }
             }
         }
@@ -96,12 +99,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 
             // Start to show the text 
-            Output.WriteLine("<div class=\"SobekHomeText\">");
+			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and updated the current status as well as view the most recent log files.<br /><br />");
-            Output.WriteLine("    For more information about the builder and possible actions from this screen, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
-            Output.WriteLine("  </blockquote>");
+            Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and updated the current status as well as view the most recent log files.</p>");
+            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine();
 
             // If missing values, display an error
             if ((!builderSettings.ContainsKey("Builder Operation Flag")) || (!builderSettings.ContainsKey("Log Files URL")) || (!builderSettings.ContainsKey("Log Files Directory")))
@@ -115,69 +117,75 @@ namespace SobekCM.Library.AdminViewer
                 string logURL = builderSettings["Log Files URL"];
 
 
-                Output.WriteLine("  <span class=\"SobekAdminTitle\">SobekCM Builder Status</span>");
-                Output.WriteLine("  <blockquote>");
-                Output.WriteLine("    <table cellspacing=\"5\" cellpadding=\"5\">");
-                Output.WriteLine("      <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
-                Output.Write("      <tr valign=\"center\"><td>Next Status: </td><td>");
-                Output.Write("<select class=\"admin_builder_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
+                Output.WriteLine("  <h2>SobekCM Builder Status</h2>");
+				Output.WriteLine("  <table class=\"sbkBav_table\">");
+                Output.WriteLine("    <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
+	            Output.WriteLine("    <tr>");
+				Output.WriteLine("      <td>Next Status: </td>");
+				Output.WriteLine("      <td>");
+				Output.WriteLine("        <select class=\"sbkBav_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
 
                 if ((operationFlag != "ABORT REQUESTED") && (operationFlag != "NO BUILDING REQUESTED"))
-                    Output.Write("<option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
+					Output.WriteLine("          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
                 else
-                    Output.Write("<option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
+					Output.WriteLine("          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
 
-                Output.Write(operationFlag == "PAUSE REQUESTED"
-                 ? "<option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
-                 : "<option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
+				Output.WriteLine(operationFlag == "PAUSE REQUESTED"
+				 ? "          <option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
+				 : "          <option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
 
-                Output.Write(operationFlag == "ABORT REQUESTED"
-                                 ? "<option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
-                                 : "<option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
+				Output.WriteLine(operationFlag == "ABORT REQUESTED"
+								 ? "          <option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
+								 : "          <option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
 
-                Output.Write(operationFlag == "NO BUILDING REQUESTED"
-                                 ? "<option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
-                                 : "<option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
+				Output.WriteLine(operationFlag == "NO BUILDING REQUESTED"
+								 ? "          <option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
+								 : "          <option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
+
+	            Output.WriteLine("        </select>");
+				Output.WriteLine("      </td>");
+				Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE</button></td>");
+				Output.WriteLine("    </tr>");
+                Output.WriteLine("  </table>");
+				Output.WriteLine();
 
 
-                Output.Write("</select> </td><td> <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\" onclick=\"return save_new_builder_status();\"/></td></tr>");
-                Output.WriteLine("    </table>");
-                Output.WriteLine("  </blockquote>");
-                Output.WriteLine("  <br />");
+                Output.WriteLine("  <h2>Recent Incoming Logs</h2>");
 
-                Output.WriteLine("  <span class=\"SobekAdminTitle\">Recent Incoming Logs</span>");
-                Output.WriteLine("  <blockquote>");
-                Output.WriteLine("    Select a date below to view the recent incoming resources log file:");
-                Output.WriteLine("    <blockquote>");
+				string logDirectory = SobekCM_Library_Settings.Base_Design_Location + "extra\\logs";
+				string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
 
-                string logDirectory = SobekCM_Library_Settings.Base_Design_Location + "extra\\logs";
-                string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
-                Output.WriteLine("    <table cellspacing=\"2\" cellpadding=\"2\">");
-                foreach (string logFile in logFiles)
-                {
-                    string logName = (new FileInfo(logFile)).Name;
-                    string date_string = logName.ToLower().Replace("incoming_","").Replace(".html","");
-                    if ( date_string.Length == 10 )
-                    {
-                        DateTime date = new DateTime(Convert.ToInt32(date_string.Substring(0, 4)), Convert.ToInt32(date_string.Substring(5, 2)), Convert.ToInt32(date_string.Substring(8)));
-                        Output.WriteLine("      <tr><td><a href=\"" + logURL + logName + "\">" + date.ToLongDateString() + "</a></td></tr>");
-                    }
-                }
-                Output.WriteLine("    </table>");
-                Output.WriteLine("    </blockquote>");
-                Output.WriteLine("  </blockquote>");
-                Output.WriteLine("  <br />");
+	            if (logFiles.Length > 0)
+	            {
+		            Output.WriteLine("  <p>Select a date below to view the recent incoming resources log file:</p>");
+		            Output.WriteLine("  <ul class=\"sbkBav_List\">");
+
+		            for (int i = logFiles.Length - 1; i >= 0; i--)
+		            {
+			            string logFile = logFiles[i];
+			            string logName = (new FileInfo(logFile)).Name;
+			            string date_string = logName.ToLower().Replace("incoming_", "").Replace(".html", "");
+			            if (date_string.Length == 10)
+			            {
+				            DateTime date = new DateTime(Convert.ToInt32(date_string.Substring(0, 4)), Convert.ToInt32(date_string.Substring(5, 2)), Convert.ToInt32(date_string.Substring(8)));
+				            Output.WriteLine("    <li><a href=\"" + logURL + logName + "\">" + date.ToLongDateString() + "</a></li>");
+			            }
+		            }
+		            Output.WriteLine("  </ul>");
+	            }
+	            else
+	            {
+					Output.WriteLine("  <p>No builder logs found.</p>");
+					Output.WriteLine("  <br />");
+	            }
             }
 
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">Related Links</span>");
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    <table cellspacing=\"2\" cellpadding=\"2\">");
-            Output.WriteLine("      <tr><td><a href=\"" + currentMode.Base_URL + "l/internal/new\">Newly added or updated items</a></td></tr>");
-            Output.WriteLine("      <tr><td><a href=\"" + currentMode.Base_URL + "l/internal/failures\">Failed packages or builder errors</a></td></tr>");
-            Output.WriteLine("    </table>");
-            Output.WriteLine("  </blockquote>");
-            Output.WriteLine("  <br />");
-
+			Output.WriteLine();
+            Output.WriteLine("  <h2>Related Links</h2>");
+			Output.WriteLine("  <ul class=\"sbkBav_List\">");
+            Output.WriteLine("      <li><a href=\"" + currentMode.Base_URL + "l/internal/new\">Newly added or updated items</a></li>");
+            Output.WriteLine("      <li><a href=\"" + currentMode.Base_URL + "l/internal/failures\">Failed packages or builder errors</a></li>");
+            Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
 
         }

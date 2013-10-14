@@ -151,43 +151,43 @@ namespace SobekCM.Library.Database
 			get	{	return connectionString;	}
 		}
 
-        /// <summary> Test connectivity to the database </summary>
-        /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
-        public static bool Test_Connection()
-        {
+		/// <summary> Test connectivity to the database </summary>
+		/// <returns> TRUE if connection can be made, otherwise FALSE </returns>
+		public static bool Test_Connection()
+		{
 
-            try
-            {
-                SqlConnection newConnection = new SqlConnection(connectionString);
-                newConnection.Open();
+			try
+			{
+				SqlConnection newConnection = new SqlConnection(connectionString);
+				newConnection.Open();
 
-                newConnection.Close();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+				newConnection.Close();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 
-        /// <summary> Test connectivity to the database </summary>
-        /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
-        public static bool Test_Connection( string Test_Connection_String )
-        {
+		/// <summary> Test connectivity to the database </summary>
+		/// <returns> TRUE if connection can be made, otherwise FALSE </returns>
+		public static bool Test_Connection( string Test_Connection_String )
+		{
 
-            try
-            {
-                SqlConnection newConnection = new SqlConnection(Test_Connection_String);
-                newConnection.Open();
+			try
+			{
+				SqlConnection newConnection = new SqlConnection(Test_Connection_String);
+				newConnection.Open();
 
-                newConnection.Close();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+				newConnection.Close();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 
 		/// <summary> Gets the datatable containging all possible disposition types </summary>
 		/// <remarks> This calls the 'Tracking_Get_All_Possible_Disposition_Types' stored procedure. </remarks>
@@ -2509,8 +2509,8 @@ namespace SobekCM.Library.Database
 				Resource.Behaviors.Main_Thumbnail = tempSet.Tables[0].Rows[0][1].ToString();
 				Resource.Behaviors.IP_Restriction_Membership = Convert.ToInt16(tempSet.Tables[0].Rows[0][2]);
 				Resource.Tracking.Born_Digital = Convert.ToBoolean(tempSet.Tables[0].Rows[0][3]);
-                Resource.Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
-                Resource.Behaviors.Dark_Flag = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Dark"]);
+				Resource.Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
+				Resource.Behaviors.Dark_Flag = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Dark"]);
 
 				// Add the aggregation codes
 				Resource.Behaviors.Clear_Aggregations();
@@ -2728,11 +2728,11 @@ namespace SobekCM.Library.Database
 					add_counts(aggrInfo, tempSet.Tables[ tempSet.Tables.Count - 2 ]);
 				}
 
-                // If this is not a robot, add the parents
-                if (!Is_Robot)
-                {
-                    add_parents(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 1]);
-                }
+				// If this is not a robot, add the parents
+				if (!Is_Robot)
+				{
+					add_parents(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 1]);
+				}
 
 				// Return the built argument set
 				return aggrInfo;
@@ -2842,8 +2842,8 @@ namespace SobekCM.Library.Database
 												External_Link = thisRow[19].ToString()
 											};
 
-            if (BasicInfo.Columns.Contains("ThematicHeadingID"))
-                aggrInfo.Thematic_Heading_ID = Convert.ToInt32(thisRow["ThematicHeadingID"]);
+			if (BasicInfo.Columns.Contains("ThematicHeadingID"))
+				aggrInfo.Thematic_Heading_ID = Convert.ToInt32(thisRow["ThematicHeadingID"]);
 
 			// return the built object
 			return aggrInfo;            
@@ -2893,17 +2893,17 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-        /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
+		/// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
 		/// <param name="AggrInfo">Partially built item aggregation object</param>
-        /// <param name="ParentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
-        private static void add_parents(Item_Aggregation AggrInfo, DataTable ParentInfo)
-        {
-            foreach (DataRow parentRow in ParentInfo.Rows)
-            {
-                Item_Aggregation_Related_Aggregations parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
-                AggrInfo.Add_Parent_Aggregation(parentObject);
-            }
-        }
+		/// <param name="ParentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
+		private static void add_parents(Item_Aggregation AggrInfo, DataTable ParentInfo)
+		{
+			foreach (DataRow parentRow in ParentInfo.Rows)
+			{
+				Item_Aggregation_Related_Aggregations parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
+				AggrInfo.Add_Parent_Aggregation(parentObject);
+			}
+		}
 
 		/// <summary> Adds the search terms to display under advanced search from the datatable extracted from the database 
 		/// and also the list of browseable fields for this collection </summary>
@@ -2925,13 +2925,13 @@ namespace SobekCM.Library.Database
 				AggrInfo.Advanced_Search_Fields.Add(1);
 				AggrInfo.Advanced_Search_Fields.Add(2);
 
-                AggrInfo.Browseable_Fields.Add(4);
-                AggrInfo.Browseable_Fields.Add(3);
-                AggrInfo.Browseable_Fields.Add(6);
-                AggrInfo.Browseable_Fields.Add(5);
-                AggrInfo.Browseable_Fields.Add(7);
-                AggrInfo.Browseable_Fields.Add(1);
-                AggrInfo.Browseable_Fields.Add(2);   
+				AggrInfo.Browseable_Fields.Add(4);
+				AggrInfo.Browseable_Fields.Add(3);
+				AggrInfo.Browseable_Fields.Add(6);
+				AggrInfo.Browseable_Fields.Add(5);
+				AggrInfo.Browseable_Fields.Add(7);
+				AggrInfo.Browseable_Fields.Add(1);
+				AggrInfo.Browseable_Fields.Add(2);   
 
 			}
 			else
@@ -2945,11 +2945,11 @@ namespace SobekCM.Library.Database
 						AggrInfo.Advanced_Search_Fields.Add(thisTypeId);
 						lastTypeId = thisTypeId;
 					}
-				    bool canBrowse = Convert.ToBoolean(thisRow[1]);
-                    if ((canBrowse) && (!AggrInfo.Browseable_Fields.Contains(thisTypeId)))
-                    {
-                        AggrInfo.Browseable_Fields.Add(thisTypeId);
-                    }
+					bool canBrowse = Convert.ToBoolean(thisRow[1]);
+					if ((canBrowse) && (!AggrInfo.Browseable_Fields.Contains(thisTypeId)))
+					{
+						AggrInfo.Browseable_Fields.Add(thisTypeId);
+					}
 				}
 			}
 		}
@@ -3048,11 +3048,11 @@ namespace SobekCM.Library.Database
 				// Return the built collection as readonly
 				return true;
 			}
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return false;
-            }
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
 		}
 
 		/// <summary> Populates the lookup tables for aliases which point to live aggregations </summary>
@@ -3436,7 +3436,7 @@ namespace SobekCM.Library.Database
 					while (reader.Read())
 					{
 						string code = reader.GetString(0).ToUpper();
-    					Icon_List[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
+						Icon_List[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
 					}
 					reader.Close();
 				}
@@ -3447,45 +3447,45 @@ namespace SobekCM.Library.Database
 			return true;
 		}
 
-        /// <summary> Populates the dictionary of all files and MIME types from the database </summary>
-        /// <param name="MIME_List"> List of files and MIME types to be populated with a successful database pulll </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
-        /// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
-        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
-            }
+		/// <summary> Populates the dictionary of all files and MIME types from the database </summary>
+		/// <param name="MIME_List"> List of files and MIME types to be populated with a successful database pulll </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
+		/// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
+		public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer Tracer)
+		{
+			if (Tracer != null)
+			{
+				Tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
+			}
 
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(connectionString))
-            {
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Mime_Types", connect) { CommandType = CommandType.StoredProcedure };
+			// Create the connection
+			using (SqlConnection connect = new SqlConnection(connectionString))
+			{
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Mime_Types", connect) { CommandType = CommandType.StoredProcedure };
 
 
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
-                {
-                    // Clear existing icons
-                    MIME_List.Clear();
+				// Create the data reader
+				connect.Open();
+				using (SqlDataReader reader = executeCommand.ExecuteReader())
+				{
+					// Clear existing icons
+					MIME_List.Clear();
 
-                    while (reader.Read())
-                    {
-                        string extension = reader.GetString(0).ToLower();
-                        MIME_List[extension] = new Mime_Type_Info(extension, reader.GetString(1), reader.GetBoolean(2), reader.GetBoolean(3));
-                    }
-                    reader.Close();
-                }
-                connect.Close();
-            }
+					while (reader.Read())
+					{
+						string extension = reader.GetString(0).ToLower();
+						MIME_List[extension] = new Mime_Type_Info(extension, reader.GetString(1), reader.GetBoolean(2), reader.GetBoolean(3));
+					}
+					reader.Close();
+				}
+				connect.Close();
+			}
 
-            // Succesful
-            return true;
-        }
+			// Succesful
+			return true;
+		}
 
 		/// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
 		/// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
@@ -3579,9 +3579,9 @@ namespace SobekCM.Library.Database
 				Tracer.Add_Trace("SobekCM_Database.Verify_Item_Lookup_Object", String.Empty);
 			}
 
-            // If no database string, don't try to connect
-            if (String.IsNullOrEmpty(connectionString))
-                return false;
+			// If no database string, don't try to connect
+			if (String.IsNullOrEmpty(connectionString))
+				return false;
 
 			lock (itemListPopulationLock)
 			{
@@ -3679,26 +3679,26 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-        /// <summary> Get the list of groups, with the top item (VID) </summary>
-        /// <returns> List of groups, with the top item (VID) </returns>
-        public static DataTable Get_All_Groups_First_VID()
-        {
-            // Define a temporary dataset
-            SqlConnection connection = new SqlConnection(connectionString + "Connection Timeout=45");
-            SqlCommand command = new SqlCommand("SobekCM_Get_All_Groups_First_VID", connection) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
-            DataSet tempSet = new DataSet();
-            adapter.Fill(tempSet);
+		/// <summary> Get the list of groups, with the top item (VID) </summary>
+		/// <returns> List of groups, with the top item (VID) </returns>
+		public static DataTable Get_All_Groups_First_VID()
+		{
+			// Define a temporary dataset
+			SqlConnection connection = new SqlConnection(connectionString + "Connection Timeout=45");
+			SqlCommand command = new SqlCommand("SobekCM_Get_All_Groups_First_VID", connection) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
+			SqlDataAdapter adapter = new SqlDataAdapter(command);
+			DataSet tempSet = new DataSet();
+			adapter.Fill(tempSet);
 
-            // If there was no data for this collection and entry point, return null (an ERROR occurred)
-            if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
-            {
-                return null;
-            }
+			// If there was no data for this collection and entry point, return null (an ERROR occurred)
+			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+			{
+				return null;
+			}
 
-            // Return the first table from the returned dataset
-            return tempSet.Tables[0];
-        }
+			// Return the first table from the returned dataset
+			return tempSet.Tables[0];
+		}
 
 
 		/// <summary> Gets the dataset of all public items and item groups </summary>
@@ -3890,7 +3890,7 @@ namespace SobekCM.Library.Database
 		}
 
 
-		/// <summary> Edits an existing IP restriction range </summary>
+		/// <summary> Edits an existing IP restriction range, or adds a new one </summary>
 		/// <param name="IP_RangeID"> Primary key for the IP restriction range  </param>
 		/// <param name="Title"> Title for this IP Restriction Range </param>
 		/// <param name="Notes"> Notes about this IP Restriction Range (for system admins)</param>
@@ -4080,29 +4080,29 @@ namespace SobekCM.Library.Database
 
 		}
 
-        /// <summary> Links a single user to a user group  </summary>
-        /// <param name="UserID"> Primary key for the user </param>
-        /// <param name="UserGroupID"> Primary key for the user group </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'mySobek_Link_User_To_User_Group' stored procedure</remarks> 
-        public static bool Link_User_To_User_Group( int UserID, int UserGroupID )
-        {
-            try
-            {
-                // Execute this non-query stored procedure
-                SqlParameter[] paramList = new SqlParameter[2];
-                paramList[0] = new SqlParameter("@userid", UserID);
-                paramList[1] = new SqlParameter("@usergroupip", UserGroupID);
+		/// <summary> Links a single user to a user group  </summary>
+		/// <param name="UserID"> Primary key for the user </param>
+		/// <param name="UserGroupID"> Primary key for the user group </param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'mySobek_Link_User_To_User_Group' stored procedure</remarks> 
+		public static bool Link_User_To_User_Group( int UserID, int UserGroupID )
+		{
+			try
+			{
+				// Execute this non-query stored procedure
+				SqlParameter[] paramList = new SqlParameter[2];
+				paramList[0] = new SqlParameter("@userid", UserID);
+				paramList[1] = new SqlParameter("@usergroupip", UserGroupID);
 
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_User_Group", paramList);
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return false;
-            }
-        }
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_User_Group", paramList);
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
+		}
 
 		/// <summary> Change an existing user's password </summary>
 		/// <param name="Username"> Username for the user </param>
@@ -5488,7 +5488,7 @@ namespace SobekCM.Library.Database
 		{
 			get
 			{
-                lastException = null;
+				lastException = null;
 				try
 				{
 					// Define a temporary dataset
@@ -5510,9 +5510,9 @@ namespace SobekCM.Library.Database
 		/// <remarks> This calls the 'SobekCM_MarcXML_Test_Feed' stored procedure </remarks>
 		public static DataTable MarcXML_Test_Feed_Records
 		{
-    		get
+			get
 			{
-                lastException = null;
+				lastException = null;
 				try
 				{
 					// Define a temporary dataset
@@ -6678,8 +6678,8 @@ namespace SobekCM.Library.Database
 				paramList[4] = new SqlParameter("@is_internal", Is_Internal);
 				paramList[6] = new SqlParameter("@can_edit_all", Can_Edit_All);
 				paramList[7] = new SqlParameter("@is_system_admin", Is_System_Admin);
-                paramList[8] = new SqlParameter("@is_portal_admin", Is_Portal_Admin);
-                paramList[9] = new SqlParameter("@include_tracking_standard_forms", Include_Tracking_Standard_Forms );
+				paramList[8] = new SqlParameter("@is_portal_admin", Is_Portal_Admin);
+				paramList[9] = new SqlParameter("@include_tracking_standard_forms", Include_Tracking_Standard_Forms );
 				paramList[10] = new SqlParameter("@clear_projects_templates", Clear_Projects_Templates);
 				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
 				paramList[12] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
@@ -6933,6 +6933,37 @@ namespace SobekCM.Library.Database
 			}
 		}
 
+		/// <summary> Deletes an existing project </summary>
+		/// <param name="Code"> Code for the project to delete </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'mySobek_Delete_Project' stored procedure</remarks> 
+		public static bool Delete_Project(string Code, Custom_Tracer Tracer)
+		{
+			if (Tracer != null)
+			{
+				Tracer.Add_Trace("SobekCM_Database.Delete_Project", String.Empty);
+			}
+
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] paramList = new SqlParameter[1];
+				paramList[0] = new SqlParameter("@project_code", Code);
+
+				// Execute this query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_Project", paramList);
+
+				// Succesful, so return true
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
+		}
+
 		/// <summary> Saves a new template, or edits an existing template name </summary>
 		/// <param name="Code"> Code for the new template, or template to edit </param>
 		/// <param name="Name"> Descriptive name for this template </param>
@@ -7167,50 +7198,50 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-        /// <summary> Gets the size of the online files and the size of the archived files, by aggregation </summary>
-        /// <param name="AggregationCode1"> Code for the primary aggregation  </param>
-        /// <param name="AggregationCode2"> Code for the secondary aggregation </param>
-        /// <param name="Online_Stats_Type"> Flag indicates if online content reporting should be included ( 0=skip, 1=summary, 2=details )</param>
-        /// <param name="Archival_Stats_Type"> Flag indicates if locally archived reporting should be included ( 0=skip, 1=summary, 2=details )</param>
-        /// <returns> Dataset with two tables, first is the online space, and second is the archived space </returns>
-        /// <remarks> If two codes are passed in, then the values returned is the size of all items which exist
-        ///  in both the provided aggregations.  Otherwise, it is just the size of all items in the primary 
-        ///  aggregation. <br /><br /> This calls the 'SobekCM_Online_Archived_Space' stored procedure </remarks> 
-        public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2, short Online_Stats_Type, short Archival_Stats_Type)
-        {
-            try
-            {
-                // Create the connection
-                SqlConnection connect = new SqlConnection(connectionString);
+		/// <summary> Gets the size of the online files and the size of the archived files, by aggregation </summary>
+		/// <param name="AggregationCode1"> Code for the primary aggregation  </param>
+		/// <param name="AggregationCode2"> Code for the secondary aggregation </param>
+		/// <param name="Online_Stats_Type"> Flag indicates if online content reporting should be included ( 0=skip, 1=summary, 2=details )</param>
+		/// <param name="Archival_Stats_Type"> Flag indicates if locally archived reporting should be included ( 0=skip, 1=summary, 2=details )</param>
+		/// <returns> Dataset with two tables, first is the online space, and second is the archived space </returns>
+		/// <remarks> If two codes are passed in, then the values returned is the size of all items which exist
+		///  in both the provided aggregations.  Otherwise, it is just the size of all items in the primary 
+		///  aggregation. <br /><br /> This calls the 'SobekCM_Online_Archived_Space' stored procedure </remarks> 
+		public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2, short Online_Stats_Type, short Archival_Stats_Type)
+		{
+			try
+			{
+				// Create the connection
+				SqlConnection connect = new SqlConnection(connectionString);
 
-                // Create the command 
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Online_Archived_Space", connect)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = 120
-                };
-                executeCommand.Parameters.AddWithValue("@code1", AggregationCode1);
-                executeCommand.Parameters.AddWithValue("@code2", AggregationCode2);
-                executeCommand.Parameters.AddWithValue("@include_online", Online_Stats_Type);
-                executeCommand.Parameters.AddWithValue("@include_archive", Archival_Stats_Type);
+				// Create the command 
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Online_Archived_Space", connect)
+				{
+					CommandType = CommandType.StoredProcedure,
+					CommandTimeout = 120
+				};
+				executeCommand.Parameters.AddWithValue("@code1", AggregationCode1);
+				executeCommand.Parameters.AddWithValue("@code2", AggregationCode2);
+				executeCommand.Parameters.AddWithValue("@include_online", Online_Stats_Type);
+				executeCommand.Parameters.AddWithValue("@include_archive", Archival_Stats_Type);
 
-                // Create the adapter
-                SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
+				// Create the adapter
+				SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
 
-                // Create the dataset
-                DataSet list = new DataSet();
+				// Create the dataset
+				DataSet list = new DataSet();
 
-                // Fill the dataset
-                adapter.Fill(list);
+				// Fill the dataset
+				adapter.Fill(list);
 
-                return list;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return null;
-            }
-        }
+				return list;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return null;
+			}
+		}
 
 		#endregion
 
@@ -7329,35 +7360,35 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-        /// <summary> Completes a given archive tivoli file request in the database </summary>
-        /// <param name="TivoliRequestID">Primary key for the tivolie request which either completed or failed </param>
-        /// <param name="Email_Body"> Body of the response email </param>
-        /// <param name="Email_Subject">Subject line to use for the response email </param>
-        /// <param name="IsFailure"> Flag indicates if this represents a failure to retrieve the material from TIVOLI</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
-        public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Email_Body, string Email_Subject, bool IsFailure)
-        {
-            try
-            {
-                // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[4];
-                paramList[0] = new SqlParameter("@tivolirequestid", TivoliRequestID);
-                paramList[1] = new SqlParameter("@email_body", Email_Body);
-                paramList[2] = new SqlParameter("@email_subject", Email_Subject);
-                paramList[3] = new SqlParameter("@isFailure", IsFailure);
+		/// <summary> Completes a given archive tivoli file request in the database </summary>
+		/// <param name="TivoliRequestID">Primary key for the tivolie request which either completed or failed </param>
+		/// <param name="Email_Body"> Body of the response email </param>
+		/// <param name="Email_Subject">Subject line to use for the response email </param>
+		/// <param name="IsFailure"> Flag indicates if this represents a failure to retrieve the material from TIVOLI</param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
+		public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Email_Body, string Email_Subject, bool IsFailure)
+		{
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] paramList = new SqlParameter[4];
+				paramList[0] = new SqlParameter("@tivolirequestid", TivoliRequestID);
+				paramList[1] = new SqlParameter("@email_body", Email_Body);
+				paramList[2] = new SqlParameter("@email_subject", Email_Subject);
+				paramList[3] = new SqlParameter("@isFailure", IsFailure);
 
-                // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
+				// Define a temporary dataset
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
 
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return false;
-            }
-        }
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
+		}
 
 		/// <summary> Requests a package or file from the archives/tivoli </summary>
 		/// <param name="BibID"> Bibliographic identifier (BibID) for the item to retrieve files for </param>
@@ -8222,7 +8253,7 @@ namespace SobekCM.Library.Database
 				{
 					paramList[5] = new SqlParameter("@replytoemailid", DBNull.Value);
 				}
-                paramList[6] = new SqlParameter("@userid", UserID);
+				paramList[6] = new SqlParameter("@userid", UserID);
 
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Send_Email", paramList);
@@ -8418,34 +8449,34 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-        #region Methods used by the Statistics Usage Reader
+		#region Methods used by the Statistics Usage Reader
 
-        /// <summary> Gets all the tables ued during the process of reading the statistics 
-        /// from the web iis logs and creating the associated SQL commands  </summary>
-        /// <returns> Large dataset with several tables ( all items, all titles, aggregations, etc.. )</returns>
-        public static DataSet Get_Statistics_Lookup_Tables()
-        {
-	        // Create the connection
-	        SqlConnection connect = new SqlConnection(connectionString);
+		/// <summary> Gets all the tables ued during the process of reading the statistics 
+		/// from the web iis logs and creating the associated SQL commands  </summary>
+		/// <returns> Large dataset with several tables ( all items, all titles, aggregations, etc.. )</returns>
+		public static DataSet Get_Statistics_Lookup_Tables()
+		{
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-	        // Create the command 
-	        SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect) {CommandType = CommandType.StoredProcedure};
+			// Create the command 
+			SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect) {CommandType = CommandType.StoredProcedure};
 
-	        // Create the adapter
-	        SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
+			// Create the adapter
+			SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
 
-	        // Create the dataset
-	        DataSet returnValue = new DataSet();
+			// Create the dataset
+			DataSet returnValue = new DataSet();
 
-	        // Fill the dataset
-	        adapter.Fill(returnValue);
+			// Fill the dataset
+			adapter.Fill(returnValue);
 
-	        // Return the results
-	        return returnValue;
-        }
+			// Return the results
+			return returnValue;
+		}
 
 
-        #endregion
+		#endregion
 	}
 
 }
