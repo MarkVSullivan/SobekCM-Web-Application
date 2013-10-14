@@ -78,7 +78,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             authors_list = new string[track_item.Bib_Info.Names_Count];
             for (int i = 0; i < track_item.Bib_Info.Names_Count; i++)
             {
-                authors_list[i] = track_item.Bib_Info.Names[i].Full_Name;
+                authors_list[i] = track_item.Bib_Info.Names[i].Full_Name  + track_item.Bib_Info.Names[i].Role_String;
             }
             
             //Determine the publisher(s) for display
@@ -160,7 +160,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Start the outer main table
             Output.WriteLine("<table class=\"sbkTs_MainTable\"><tr><td>");
 
-            //Add the Bib, VID, and TrackingBox numbers to the title
+            //Add the Bib, VID and TrackingBox numbers to the title
             Output.WriteLine("<span class = \"sbkTs_Title\">" + track_item.BibID + " : " + track_item.VID + "</span>");
             Output.WriteLine("<span class=\"sbkTs_Title_right\">" + track_item.Tracking.Tracking_Box + "</span>");
             
@@ -182,7 +182,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     continue;
                 Output.WriteLine("<span>"+author+" ;&nbsp;</span>");
             }
-            if(authors_list.Length>1)
+            if(authors_list.Length>0)
             Output.WriteLine("<span>" + authors_list[authors_list.Length-1] + " &nbsp;</span>");
             Output.WriteLine("               </span></td>");
             Output.WriteLine("</td></tr>");
@@ -213,7 +213,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Aggregations:</span></td>");
             Output.WriteLine("<td colspan=\"3\"><span>" + aggregations + "</span></td></tr>");
 
-            //End the table
+            //End this table
             Output.WriteLine("</table>");
             Output.WriteLine("<br/>");
 
