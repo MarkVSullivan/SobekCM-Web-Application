@@ -133,7 +133,7 @@ function file_delete( filename )
     hiddenfield2.value = filename;
     
     // Submit this
-    document.fileUploadForm.submit();
+    document.itemNavForm.submit();
     return false;
 }
 
@@ -185,7 +185,7 @@ function new_upload_next_phase( next_phase )
     hiddenfield2.value = next_phase;
     
     // Submit this
-    document.fileUploadForm.submit();    
+    document.itemNavForm.submit();    
     return false;
 }
 

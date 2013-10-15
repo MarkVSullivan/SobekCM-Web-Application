@@ -20,7 +20,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
             get { return ItemViewer_Type_Enum.Fragment_AddForm; }
         }
 
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Set caching on this
             HttpContext.Current.Response.Cache.SetCacheability( HttpCacheability.NoCache );
@@ -77,7 +77,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();
 
-                placeHolder.Controls.Add(new Literal() { Text = responseBuilder.ToString() });
+                MainPlaceHolder.Controls.Add(new Literal() { Text = responseBuilder.ToString() });
             }
         }
     }

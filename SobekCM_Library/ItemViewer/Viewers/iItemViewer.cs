@@ -212,9 +212,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer);
 
 	    /// <summary> Adds the main view section to the page turner </summary>
-	    /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+	    /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer);
+	    void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>

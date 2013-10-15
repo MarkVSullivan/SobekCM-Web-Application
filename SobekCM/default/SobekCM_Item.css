@@ -15,6 +15,9 @@
 **                                                                 
 **************************************************************************/    
 
+input { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 /******************************************************************************/
 /** Styles used directly by the item viewer main class ( Item_HtmlSubwriter ) */
@@ -51,8 +54,7 @@
 .manage_files_button:hover { background-position: 0 -39px; }
 .delete_button { width: 97px; background: url("images/delete_item.png") no-repeat;  }
 .delete_button:hover { background-position: 0 -39px; }
-textarea.intheader_comments_input  {  color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
-textarea.intheader_comments_input_focused  {  color:#0000a8; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
+textarea.intheader_comments_input  {  FONT-FAMILY: Arial, sans-serif; font-size: small; }
 .add_volume_button { background: url("images/add_volume.png") no-repeat; }
 .add_volume_button:hover { background-position: 0 -39px; }
 .autofill_volumes_button { background: url("images/autofill_volumes.png") no-repeat; }
@@ -193,7 +195,6 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 /* TEXT_SEARCH_ITEMVIEWER */
 input.sbkTsv_SearchBox  {  color: Blue;  width: 220px;  background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.sbkTsv_SearchBox_focused  {  color: #0000a8;  width: 220px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 .sbkTsv_ResultsArea { background-color: White; }
 .sbkTsv_ResultsArea h2 { FONT-SIZE: 1.25em; COLOR: #999; TEXT-ALIGN: left;padding-left: 25px; }
 #sbkTsv_ResultsTable { text-align: center;width: 100%; border-collapse:separate; border-spacing: 15px;background-color: white;color: #222222; }
@@ -319,3 +320,10 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 #sbkDrv_ButtonDiv {padding-top: 20px;font-size: 1.3em; text-align: center;margin-left: auto;margin-right: auto;}
 
 .fadeEffect { background-color: #6f6b06; border-radius: 5px; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white;  }
+
+/* TRACKINGSHEET_ITEM_VIEWER */
+.sbkTs_MainTable{ width: 800px; }
+
+/** Class used for all item-viewer boxes which take focus */
+.sbkIsw_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
+

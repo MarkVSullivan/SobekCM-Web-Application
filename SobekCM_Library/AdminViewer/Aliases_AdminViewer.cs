@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// hTML5
+
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -175,6 +177,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Aliases_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
 
+			Output.WriteLine("<!-- Aliases_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
@@ -184,95 +187,100 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<!-- Item Aggregation Aliases Edit Form -->");
-            Output.WriteLine("<div class=\"admin_forwarding_popup_div\" id=\"form_forwarding\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT AGGREGATION ALIAS</td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"alias_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+			Output.WriteLine("<div class=\"sbkAav_PopupDiv\" id=\"form_forwarding\" style=\"display:none;\">");
+			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">EDIT AGGREGATION ALIAS</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"alias_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"popup_table\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for alias
-            Output.WriteLine("    <tr><td width=\"120px\"><label for=\"form_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><span class=\"form_linkline admin_existing_code_line\" id=\"form_forwarding_alias\"></span></td></tr>");
+			Output.WriteLine("    <tr style=\"height: 30px;\"><td style=\"width:120px;\"><label for=\"form_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><span class=\"form_linkline admin_existing_code_line\" id=\"form_forwarding_alias\"></span></td></tr>");
 
             // Add line for aggregation
-            Output.WriteLine("    <tr><td><label for=\"form_forwarding_code\">Item Aggregation:</label></td><td colspan=\"2\"><input class=\"admin_forwarding_input\" name=\"form_forwarding_code\" id=\"form_forwarding_code\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('form_forwarding_code', 'admin_forwarding_input_focused')\" onblur=\"javascript:textbox_leave('form_forwarding_code', 'admin_forwarding_input')\" /></td></tr>");
+			Output.WriteLine("    <tr style=\"height: 30px;\"><td><label for=\"form_forwarding_code\">Item Aggregation:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"form_forwarding_code\" id=\"form_forwarding_code\" type=\"text\" value=\"\" /></td></tr>");
 
-            Output.WriteLine("  </table>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <center><a href=\"\" onclick=\"return alias_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center>");
-            Output.WriteLine("</div>");
+			// Add the buttons and close the table
+			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+			Output.WriteLine("      <td colspan=\"2\"> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return alias_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing aggregation alias\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
+			Output.WriteLine("      </td>");
+			Output.WriteLine("    </tr>");
+			Output.WriteLine("  </table>");
+			Output.WriteLine("</div>");
+			Output.WriteLine();
 
             Tracer.Add_Trace("Aliases_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form ");
 
-            Output.WriteLine("<!-- Aliases_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<div class=\"SobekHomeText\">");
+			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-            if (actionMessage.Length > 0)
-            {
-                Output.WriteLine("  <br />");
-                Output.WriteLine("  <center><b>" + actionMessage + "</b></center>");
-            }
+			if (actionMessage.Length > 0)
+			{
+				Output.WriteLine("  <br />");
+				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
+			}
 
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    Use item aggregation aliases to allow a term to forward to an existing item aggregation. ");
-            Output.WriteLine("    This creates a simpler URL and can forward from a discontinued item aggregation.<br /><br />");
-            Output.WriteLine("    For more information about aggregation aliases and forwarding, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
-            Output.WriteLine("  </blockquote>");
+            Output.WriteLine("  <p>Use item aggregation aliases to allow a term to forward to an existing item aggregation. ");
+            Output.WriteLine("  This creates a simpler URL and can forward from a discontinued item aggregation.</p>");
+	        Output.WriteLine("  <p>For more information about aggregation aliases and forwarding, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">New Item Aggregation Alias</span>");
-            Output.WriteLine("    <blockquote>");
-            Output.WriteLine("      <div class=\"admin_forwarding_new_div\">");
-            Output.WriteLine("        <table class=\"popup_table\">");
+            Output.WriteLine("  <h2>New Item Aggregation Alias</h2>");
+			Output.WriteLine("    <div class=\"sbkAav_NewDiv\">");
+			Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for alias
-            Output.WriteLine("          <tr><td width=\"120px\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"admin_forwarding_input\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('admin_forwarding_alias', 'admin_forwarding_input_focused')\" onblur=\"javascript:textbox_leave('admin_forwarding_alias', 'admin_forwarding_input')\" /></td></tr>");
+			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add line for aggregation
-            Output.WriteLine("          <tr><td><label for=\"admin_forwarding_code\">Item Aggregation:</label></td><td><input class=\"admin_forwarding_input\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('admin_forwarding_code', 'admin_forwarding_input_focused')\" onblur=\"javascript:textbox_leave('admin_forwarding_code', 'admin_forwarding_input')\" /></td>");
-
-            Output.WriteLine("          <td><input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\" onclick=\"return save_new_alias();\"/></td></tr>");
-
-            //            Output.WriteLine("          <td><a onclick=\"return save_new_alias();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" alt=\"SUBMIT\" /></a></td></tr>");
-            Output.WriteLine("        </table>");
+			Output.WriteLine("        <tr><td><label for=\"admin_forwarding_code\">Item Aggregation:</label></td><td><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\" type=\"text\" value=\"\" /></td><td><button title=\"Save new aggregation alias\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_alias();\">SAVE</button></td></tr>");
+			Output.WriteLine("      </table>");
+			Output.WriteLine("    </div>");
+            Output.WriteLine("  <br />");
 
 
-            //Output.WriteLine("        <center><input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\"></center>");
 
+            Output.WriteLine("  <h2>Existing Item Aggregation Aliases</h2>");
 
-            Output.WriteLine("      </div>");
-            Output.WriteLine("    </blockquote>");
-            Output.WriteLine("    <br />");
+	        if (aggregationAliases.Count > 0)
+	        {
+		        Output.WriteLine("  <table class=\"sbkAav_Table sbkAdm_Table\">");
+		        Output.WriteLine("    <tr>");
+		        Output.WriteLine("      <th class=\"sbkAav_TableHeader1\">ACTIONS</th>");
+		        Output.WriteLine("      <th class=\"sbkAav_TableHeader2\">ALIAS</th>");
+		        Output.WriteLine("      <th class=\"sbkAav_TableHeader3\">AGGREGATION</th>");
+		        Output.WriteLine("    </tr>");
+		        Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">Existing Item Aggregation Aliases</span>");
-            Output.WriteLine("    <blockquote>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"160px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-            Output.WriteLine("    <th width=\"180px\" align=\"left\"><span style=\"color: White\">ALIAS</span></th>");
-            Output.WriteLine("    <th width=\"120px\" align=\"left\"><span style=\"color: White\">AGGREGATION</span></th>");
-            Output.WriteLine("   </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+		        SortedList<string, string> sorter = new SortedList<string, string>();
+		        foreach (KeyValuePair<string, string> thisForward in aggregationAliases)
+		        {
+			        sorter.Add(thisForward.Key, thisForward.Value);
+		        }
 
-            // Write the data for each interface
-            foreach (KeyValuePair<string, string> thisForward in aggregationAliases)
-            {
-                // Build the action links
-                Output.WriteLine("  <tr align=\"left\" >");
-                Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" id=\"VIEW_" + thisForward.Key + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('VIEW_" + thisForward.Key + "', '" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
-                Output.Write("<a title=\"Click to view\" href=\"" + currentMode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
-                Output.Write("<a title=\"Delete this alias\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");
+		        // Write the data for each interface
+		        foreach (KeyValuePair<string, string> thisForward in sorter)
+		        {
+			        // Build the action links
+			        Output.WriteLine("    <tr>");
+			        Output.Write("    <td class=\"sbkAdm_ActionLink\" >( ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to view\" href=\"" + currentMode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
+			        Output.Write("<a title=\"Delete this alias\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");
 
-                // Add the rest of the row with data
-                Output.WriteLine("    <td>" + thisForward.Key + "</span></td>");
-                Output.WriteLine("    <td>" + thisForward.Value + "</span></td>");
-                Output.WriteLine("   </tr>");
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+			        // Add the rest of the row with data
+			        Output.WriteLine("      <td>" + thisForward.Key + "</span></td>");
+			        Output.WriteLine("      <td>" + thisForward.Value + "</span></td>");
+			        Output.WriteLine("    </tr>");
+			        Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
+		        }
 
-            }
-
-            Output.WriteLine("</table>");
-            Output.WriteLine("    </blockquote>");
-            Output.WriteLine("    <br />");
+		        Output.WriteLine("  </table>");
+	        }
+	        else
+	        {
+				Output.WriteLine("  <p>No existing aggregation aliases exist. To add one, enter the information above and press SAVE.</p>");
+	        }
+	        Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();
         }

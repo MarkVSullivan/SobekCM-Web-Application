@@ -16,11 +16,6 @@
 
 <%Write_Html();%>
 
-<form id="fileUploadForm" runat="server" >
-    <asp:PlaceHolder id="myUfdcUploadPlaceHolder" runat="server"></asp:PlaceHolder>
-<%Write_UploadForm_Additional_HTML();%>
-</form>
-
 <form id="itemNavForm" runat="server">
 <%Write_ItemNavForm_Opening();%>
     <asp:PlaceHolder id="tocPlaceHolder" runat="server"></asp:PlaceHolder>

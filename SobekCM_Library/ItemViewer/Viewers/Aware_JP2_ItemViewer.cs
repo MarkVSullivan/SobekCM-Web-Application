@@ -742,7 +742,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        //        map_builder.AppendLine("        <div id=\"map1\" name=\"map1\" style=\"width: 200px; height: 200px\" >&nbsp;</div>");
 	        //        System.Web.UI.WebControls.Literal mapLiteral = new System.Web.UI.WebControls.Literal();
 	        //        mapLiteral.Text = map_builder.ToString();
-	        //        placeHolder.Controls.Add(mapLiteral);
+	        //        MainPlaceHolder.Controls.Add(mapLiteral);
 	        //    }
 				
 	        //}
@@ -807,9 +807,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    }
 
 	    /// <summary> Adds the main view section to the page turner </summary>
-	    /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
+	    /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+	    public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
 	    {
 	        if (Tracer != null)
 	        {
@@ -831,13 +831,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            // Add the HTML for the error
 	            Literal errorLiteral = new Literal
 	                                       { Text ="\t\t<td style=\"text-align:center;\">" + Environment.NewLine +"<strong>JPEG2000 IMAGE NOT FOUND IN DATABASE!</strong>" +Environment.NewLine + "\t\t</td>" + Environment.NewLine };
-	            placeHolder.Controls.Add( errorLiteral );
+	            MainPlaceHolder.Controls.Add( errorLiteral );
 	        }
 	        else
 	        {			
 	            // Add the HTML to start this
                 Literal startLiteral = new Literal { Text = "<td>" + NavigationRow + "</td></tr><tr>\t\t<td style=\"text-align:center;\" id=\"sbkAj2_ImageTd\">" + Environment.NewLine };
-	            placeHolder.Controls.Add( startLiteral );
+	            MainPlaceHolder.Controls.Add( startLiteral );
 
                 // Build the filename
 	            string jpeg2000_filename = FileName.Replace(" ","%20");
@@ -890,20 +890,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	                        mainImage.ToolTip = "Click on image to center";
 	                        break;
 	                }
-	                placeHolder.Controls.Add( mainImage );
+	                MainPlaceHolder.Controls.Add( mainImage );
 	            }
 	            else
 	            {
 	                // Create the image object
 	                Image mainImage2 = new Image
 	                                       { CssClass="sbkAj2_Image", ImageUrl = url_builder.ToString(), AlternateText = "Main Image" };
-	                placeHolder.Controls.Add( mainImage2 );
+	                MainPlaceHolder.Controls.Add( mainImage2 );
 	            }
 
 
 	            // Add the HTML to end this
 	            Literal endLiteral = new Literal {Text = "\t\t</td>" + Environment.NewLine};
-	            placeHolder.Controls.Add( endLiteral );
+	            MainPlaceHolder.Controls.Add( endLiteral );
 	        }
 	    }
 

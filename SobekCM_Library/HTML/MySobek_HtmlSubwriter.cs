@@ -1,6 +1,5 @@
 ﻿#region Using directives
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -9,7 +8,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -43,8 +41,7 @@ namespace SobekCM.Library.HTML
         private readonly Item_Aggregation currentCollection;
         private readonly SobekCM_Item currentItem;
         private readonly Dictionary<string, Wordmark_Icon> iconTable;
-        private readonly IP_Restriction_Ranges ipRestrictions;
-        private readonly Item_Lookup_Object itemList;
+	    private readonly Item_Lookup_Object itemList;
         private readonly abstract_MySobekViewer mySobekViewer;
         private readonly List<iSearch_Title_Result> pagedResults;
         private readonly Search_Results_Statistics resultsStatistics;
@@ -54,26 +51,21 @@ namespace SobekCM.Library.HTML
  
         #region Constructor, which also creates the applicable MySobekViewer object
 
-        /// <summary> Constructor for a new instance of the MySobek_HtmlSubwriter class </summary>
-        /// <param name="Results_Statistics"> Information about the entire set of results for a browse of a user's bookshelf folder </param>
-        /// <param name="Paged_Results"> Single page of results for a browse of a user's bookshelf folder, within the entire set </param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Item">Current item to edit, if the user is requesting to edit an item</param>
-        /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations </param>
-        /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
-        /// <param name="Current_User"> Currently logged on user </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="IP_Restrictions"> List of all IP Restriction ranges in use by this digital library </param>
-        /// <param name="URL_Portals"> List of all web portals into this system </param>
-        /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
-        /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public MySobek_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
+	    /// <summary> Constructor for a new instance of the MySobek_HtmlSubwriter class </summary>
+	    /// <param name="Results_Statistics"> Information about the entire set of results for a browse of a user's bookshelf folder </param>
+	    /// <param name="Paged_Results"> Single page of results for a browse of a user's bookshelf folder, within the entire set </param>
+	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
+	    /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
+	    /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
+	    /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
+	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
+	    /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+	    /// <param name="Current_Item">Current item to edit, if the user is requesting to edit an item</param>
+	    /// <param name="Current_User"> Currently logged on user </param>
+	    /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+	    /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    public MySobek_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
                                      List<iSearch_Title_Result> Paged_Results,
                                      Aggregation_Code_Manager Code_Manager,
                                      Item_Lookup_Object All_Items_Lookup,
@@ -82,14 +74,9 @@ namespace SobekCM.Library.HTML
                                      Language_Support_Info Translator,
                                      SobekCM_Navigation_Object Current_Mode,
                                      SobekCM_Item Current_Item,
-                                     Dictionary<string,string> Aggregation_Aliases,
-                                     SobekCM_Skin_Collection Web_Skin_Collection,
                                      User_Object Current_User,
-                                     IP_Restriction_Ranges IP_Restrictions,
                                      Dictionary<string, Wordmark_Icon> Icon_Table,
-                                     Portal_List URL_Portals,
                                      Statistics_Dates Stats_Date_Range,
-                                     List<Thematic_Heading> Thematic_Headings,
                                      Custom_Tracer Tracer )
         {
 
@@ -104,8 +91,7 @@ namespace SobekCM.Library.HTML
             currentCollection = Hierarchy_Object;
             currentItem = Current_Item;
             user = Current_User;
-            ipRestrictions = IP_Restrictions;
-            iconTable = Icon_Table;
+	        iconTable = Icon_Table;
             statsDates = Stats_Date_Range;
 
 
@@ -260,19 +246,53 @@ namespace SobekCM.Library.HTML
             }
         }
 
+		/// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+		/// for the current request, or if it can be hidden. </summary>
+		public override bool Upload_File_Possible
+		{
+			get
+			{
+				if (user == null)
+					return false;
+
+				if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) ||
+				    (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
+					return true;
+
+				return false;
+			}
+		}
+
+
+		/// <summary> Write any additional values within the HTML Head of the
+		/// final served page </summary>
+		/// <param name="Output"> Output stream currently within the HTML head tags </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+		public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+		{
+			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
+			// If we are currently uploading files, add those specific upload styles 
+			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
+			{
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
+			}
+		}
+
         /// <summary> Writes additional HTML needed in the main form before the main place holder but after the other place holders.  </summary>
         /// <param name="Output">Stream to directly write to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Additional_HTML", "Adding any form elements popup divs");
-            if (( currentMode.Logon_Required ) || ( mySobekViewer.Contains_Popup_Forms ))
-            {
-                mySobekViewer.Add_Popup_HTML(Output, Tracer);
-            }
-
-            // Also, add any additional stuff here
-            mySobekViewer.Add_HTML_In_Main_Form(Output, Tracer);
+			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
+			if ((currentMode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
+			{
+				mySobekViewer.Add_Popup_HTML(Output, Tracer);
+			}
         }
 
         /// <summary> Writes the HTML generated by this my sobek html subwriter directly to the response stream </summary>
@@ -346,11 +366,21 @@ namespace SobekCM.Library.HTML
             return false;
         }
 
+		/// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+		/// <param name="Output"> Stream to which to write the text for this main writer </param>
+		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+		{
+			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
+
+			// Also, add any additional stuff here
+			mySobekViewer.Add_HTML_In_Main_Form(Output, Tracer);
+		}
+
         /// <summary> Adds any necessary controls to one of two place holders on the main ASPX page </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
-        /// <param name="uploadFilesPlaceHolder"> Alternate place holder ( &quot;myUfdcUploadPlaceHolder&quot; )in the fileUploadForm on the main ASPX page</param>
+		/// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Controls", "Build my sobek viewer and add controls");
 
@@ -392,32 +422,12 @@ namespace SobekCM.Library.HTML
 
                 // Now, add this literal
                 LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-                placeHolder.Controls.Add(header_literal);
+				MainPlaceHolder.Controls.Add(header_literal);
             }
 
             // Add any controls needed
-            mySobekViewer.Add_Controls(placeHolder, uploadFilesPlaceHolder, Tracer);
+			mySobekViewer.Add_Controls(MainPlaceHolder, Tracer);
          }
-
-
-        /// <summary> Write any additional values within the HTML Head of the
-        /// final served page </summary>
-        /// <param name="Output"> Output stream currently within the HTML head tags </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
-
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-
-            // If we are currently uploading files, add those specific upload styles 
-            if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
-            {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
-            }
-        }
 
         /// <summary> Writes final HTML after all the forms </summary>
         /// <param name="Output">Stream to directly write to</param>

@@ -16,6 +16,15 @@ function clear_ip_address(key)
     return false;
 }
 
+function save_new_ip_range() {
+	// Set the hidden value this data
+	var hiddenfield = document.getElementById('action');
+	hiddenfield.value = 'new';
+
+	// Return TRUE to force a return trip to the server
+	return true;
+}
+
 // Reset an aggregation
 function reset_aggr( aggr_code )
 {
@@ -113,7 +122,7 @@ function aggr_form_popup(linkname, code, type, name, shortname, isActive, isHidd
 } 
 
 // Populate the project form and show it
-function project_form_popup(linkname, code, name  ) 
+function project_form_popup(code, name  ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_project_tosave');
@@ -124,8 +133,7 @@ function project_form_popup(linkname, code, name  )
     document.getElementById('form_project_name').value = name;
 
     // Toggle the project form
-    blanket_size('form_project', linkname, 215 );
-    window_pos('form_project', 1000);
+    blanket_size('form_project', 215 );
     toggle('blanket_outer');
     toggle('form_project');	
     
@@ -169,10 +177,25 @@ function save_new_project()
     return true;
 }
 
+// Verify deletion of the existing project in the database and file
+function delete_project(code) {
+	var input_box = confirm("Do you really want to delete project '" + code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_project_delete');
+		hiddenfield.value = code;
+
+		document.itemNavForm.submit();
+	}
+
+	// Return false to prevent another return trip to the server
+	return false;
+}
+
 // Reset a user's password
 function reset_password( id, name )
 {
-    input_box=confirm("Do you really want to reset the password for '" + name + "'?");
+    var input_box=confirm("Do you really want to reset the password for '" + name + "'?");
     if (input_box==true) 
     { 
         // Set the hidden value this data
@@ -181,14 +204,14 @@ function reset_password( id, name )
  
         // Submit this
         document.itemNavForm.submit();
-    
-        // Return false to prevent another return trip to the server
-        return false;
     }
+	
+	// Return false to prevent another return trip to the server
+    return false;
 }
 
 // Populate the interface form and show it
-function interface_form_popup(linkname, code, base_code, bannerlink, notes, overrideBanner, overrideHeader, suppressTopNav, buildOnLaunch  ) 
+function interface_form_popup( code, base_code, bannerlink, notes, overrideBanner, overrideHeader, suppressTopNav, buildOnLaunch  ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_interface_tosave');
@@ -221,10 +244,9 @@ function interface_form_popup(linkname, code, base_code, bannerlink, notes, over
         document.getElementById('form_interface_buildlaunch').checked = false;
 
     // Toggle the interface form
-    blanket_size('form_interface', linkname, 215 );
-    window_pos('form_interface', 1000);
+    blanket_size('form_interface', 215);
     toggle('blanket_outer');
-    toggle('form_interface');	
+    toggle('form_interface');
             
     // Create the draggable object to allow this window to be dragged around
     $("#form_interface").draggable();
@@ -281,9 +303,24 @@ function reset_interface( code )
     return false;
 }
 
+// Verify deletion of the existing wordmark in the database and file
+function delete_interface(code) {
+	var input_box = confirm("Do you really want to delete web skin '" + code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_interface_delete');
+		hiddenfield.value = code;
+
+		document.itemNavForm.submit();
+	}
+	
+	// Return false to prevent another return trip to the server
+	return false;
+}
+
 function delete_alias(alias_code) {
 
-    input_box=confirm("Do you really want to delete the alias '" + alias_code + "'?");
+    var input_box=confirm("Do you really want to delete the alias '" + alias_code + "'?");
     if (input_box == true) {
 
         // Populate the hidden value this data
@@ -298,7 +335,7 @@ function delete_alias(alias_code) {
 }
 
 // Populate the aggregation alias form and show it
-function alias_form_popup(linkname, alias, code ) 
+function alias_form_popup(alias, code ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_forwarding_tosave');
@@ -309,8 +346,7 @@ function alias_form_popup(linkname, alias, code )
     document.getElementById('form_forwarding_code').value = code;
 
     // Toggle the interface form
-    blanket_size('form_forwarding', linkname, 215 );
-    window_pos('form_forwarding', 1000);
+    blanket_size('form_forwarding', 215 );
     toggle('blanket_outer');
     toggle('form_forwarding');	
     
@@ -356,7 +392,7 @@ function save_new_alias()
 
 function delete_portal(portal_id, portal_name) {
 
-    input_box = confirm("Do you really want to delete the portal '" + portal_name + "'?");
+    var input_box = confirm("Do you really want to delete the portal '" + portal_name + "'?");
     if (input_box == true) {
 
         // Populate the hidden value this data
@@ -376,7 +412,7 @@ function delete_portal(portal_id, portal_name) {
 
 
 // Populate the url portal form and show it
-function portal_form_popup(linkname, portal_id, portal_name, portal_abbr, web_skin, aggregation, url_segment, base_purl ) {
+function portal_form_popup( portal_id, portal_name, portal_abbr, web_skin, aggregation, url_segment, base_purl ) {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_portal_tosave');
     hiddenfield.value = portal_id;
@@ -390,10 +426,14 @@ function portal_form_popup(linkname, portal_id, portal_name, portal_abbr, web_sk
     document.getElementById('form_portal_aggregation').value = aggregation;
     document.getElementById('form_portal_url').value = url_segment;
     document.getElementById('form_portal_purl').value = base_purl;
+	
+    if (url_segment.length == 0)
+    	document.getElementById("form_portal_url").readOnly = true;
+    else
+    	document.getElementById("form_portal_url").readOnly = false;
 
     // Toggle the url portal form
-    blanket_size('form_portal', linkname, 215);
-    window_pos('form_portal', 1175);
+    blanket_size('form_portal', 215);
     toggle('blanket_outer');
     toggle('form_portal');
 
@@ -441,7 +481,7 @@ function save_new_portal() {
 
 function delete_heading(theme_id, theme_name) {
 
-    input_box = confirm("Do you really want to delete the heading '" + theme_name + "'?");
+    var input_box = confirm("Do you really want to delete the heading '" + theme_name + "'?");
     if (input_box == true) {
 
         // Populate the hidden value this data
@@ -459,7 +499,7 @@ function delete_heading(theme_id, theme_name) {
 }
 
 // Populate the heading form and show it
-function heading_form_popup(linkname, theme_name, theme_id) {
+function heading_form_popup( theme_name, theme_id) {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_heading_tosave');
     hiddenfield.value = theme_id;
@@ -469,14 +509,13 @@ function heading_form_popup(linkname, theme_name, theme_id) {
     // Populate the visible fields
     document.getElementById('form_heading_name').value = theme_name;
 
-    // Toggle the heading form
-    blanket_size('form_heading', linkname, 215);
-    window_pos('form_heading', 1000);
+	// Toggle the hideading form
+    blanket_size('form_heading', 215);
     toggle('blanket_outer');
     toggle('form_heading');
 
-    // Create the draggable object to allow this window to be dragged around
-    $("#form_heading").draggable();
+	// Create the draggable object to allow this window to be dragged around
+    jQuery("#form_heading").draggable();
 
     // Put focus on the heading name code
     var focusfield = document.getElementById('form_heading_name');
@@ -557,26 +596,25 @@ function move_heading_down(id, current_order) {
 }
 
 // Populate the wordmark form and show it
-function wordmark_form_popup(linkname, code, title, file, link ) 
+function wordmark_form_popup(code, title, file, link ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_wordmark_code_tosave');
     hiddenfield.value = code;
     
-    // Populate the visible fields
+	// Populate the visible fields
     document.getElementById('form_wordmark_code').innerHTML = code + ' &nbsp; &nbsp ';
     document.getElementById('form_wordmark_file').value = file;
     document.getElementById('form_wordmark_title').value = title;
     document.getElementById('form_wordmark_link').value = link;
 
     // Toggle the wordmark form
-    blanket_size('form_wordmark', linkname, 215 );
-    window_pos('form_wordmark', 1000);
+    blanket_size('form_wordmark', 215 );
     toggle('blanket_outer');
     toggle('form_wordmark');	
     
     // Create the draggable object to allow this window to be dragged around
-    $("#form_wordmark").draggable();
+    jQuery("#form_wordmark").draggable();
     
     // Put focus on the wordmark file field
     var focusfield = document.getElementById('form_wordmark_file');
@@ -617,22 +655,44 @@ function save_new_wordmark()
     return true;
 }
 
-// Save the new wordmark
+// Verify deletion of the existing wordmark in the database and file
 function delete_wordmark( code )
 {
-    input_box=confirm("Do you really want to delete wordmark '" + code + "'?");
+    var input_box=confirm("Do you really want to delete wordmark '" + code + "' and associated file?");
     if (input_box==true) 
     { 
         // Set the hidden value this data
         var hiddenfield = document.getElementById('admin_wordmark_code_delete');
         hiddenfield.value = code;
  
-        document.itemNavForm.submit();
-    
-        // Return false to prevent another return trip to the server
-        return false;
+        document.sbkAdm_AddedForm.submit();
     }
+	
+	// Return false to prevent another return trip to the server
+    return false;
 }
+
+// Verify deletion of a wordmark/icon file which is neither referenced in the database nor used
+function delete_wordmark_file(code) {
+	var input_box = confirm("Do you really want to delete unused image file '" + code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_wordmark_code_delete');
+		hiddenfield.value = code;
+
+		document.sbkAdm_AddedForm.submit();
+	}
+	
+	// Return false to prevent another return trip to the server
+	return false;
+}
+
+function wordmark_select_changed(url) {
+	var selectField = document.getElementById('admin_wordmark_file');
+	var new_url = url + selectField.value;
+	jQuery("#sbkWav_SelectedImage").attr("src", new_url);
+}
+
 
 // Delete an item
 function delete_item() {
@@ -668,8 +728,8 @@ function link_focused2( divname )
 function link_blurred2( divname )
 {
     var linkspan = document.getElementById(divname);
-    if ( linkspan.className.indexOf('_focused') > 0 )
-        linkspan.className = linkspan.className.replace( '_focused', '')
+	if (linkspan.className.indexOf('_focused') > 0)
+		linkspan.className = linkspan.className.replace('_focused', '');
 }
 
 function link_focused( divname )
@@ -682,8 +742,8 @@ function link_focused( divname )
 function link_blurred( divname )
 {
     var linkspan = document.getElementById(divname);
-    if ( linkspan.className.indexOf('_focused') > 0 )
-        linkspan.className = linkspan.className.replace( '_focused', '')
+	if (linkspan.className.indexOf('_focused') > 0)
+		linkspan.className = linkspan.className.replace('_focused', '');
 }
 
 // Save the aggregation updates

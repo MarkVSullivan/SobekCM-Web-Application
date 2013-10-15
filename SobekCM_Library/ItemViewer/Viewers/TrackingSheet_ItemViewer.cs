@@ -15,19 +15,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     public class TrackingSheet_ItemViewer : abstractItemViewer
     {
-        private SobekCM_Item track_item;
-        private int itemID;
-        private DataSet item_details_dataset;
-        private DataTable item_details;
-        private DataTable aggregation_details;
-        private string image_location;
-        private string username;
-        private List<string> aggregation_list;
-        private string aggregations;
+        private readonly SobekCM_Item track_item;
+        private readonly int itemID;
+        private readonly string image_location;
+        private readonly string aggregations;
+        private readonly string oclc;
+        private readonly string aleph;
+        private readonly string username;
+        private readonly string[] authors_list;
+        private readonly string[] publishers_list;
 
-        /// <summary>
-        /// Constructor for the Tracking Sheet ItemViewer
-        /// </summary>
+    
+        /// <summary> Constructor for the Tracking Sheet ItemViewer </summary>
         /// <param name="Current_Object"></param>
         /// <param name="Current_User"></param>
         /// <param name="Current_Mode"></param>
@@ -55,28 +54,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Assign the current resource object to track_item
             track_item = Current_Object;
-
-            //Get the ItemID for this Item from the database
-            itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(track_item.BibID, track_item.VID);
-
-            //Also get the item & aggregation details from the database
-            item_details_dataset = Database.SobekCM_Database.Get_Item_Details(track_item.BibID, track_item.VID, null);
-            item_details = item_details_dataset.Tables[2];
-            aggregation_details = item_details_dataset.Tables[1];
-
-            //Get the list of aggregations from the data table
-            aggregation_list = new List<string>();
-            foreach (DataRow row in aggregation_details.Rows)
-            {
-                aggregation_list.Add(row["Code"].ToString());
-                aggregations = aggregations + row["Code"].ToString() + ", ";
-            }
-            //Remove extra comma and space from the end
-            aggregations = aggregations.Substring(0, aggregations.Length - 2);
-
             
 
-            //Get the temporary location for saving the barcode images
+            //Get the ItemID for this Item from the database
+            itemID = track_item.Web.ItemID;
+
+            //Get aggregation info
+            aggregations = track_item.Behaviors.Aggregation_Codes;
+
+            //If no aggregations present, display "none"
+            aggregations = aggregations.Length>0 ? aggregations.ToUpper() : "(none)";
+
+            //Determine the OCLC & Aleph number for display
+            oclc = track_item.Bib_Info.OCLC_Record;
+            aleph = track_item.Bib_Info.ALEPH_Record;
+           
+            if (String.IsNullOrEmpty(oclc) || oclc.Trim() == "0" || oclc.Trim() == "1")
+                oclc = "(none)";
+            if (String.IsNullOrEmpty(aleph) || aleph.Trim() == "0" || aleph.Trim() == "1")
+                aleph = "(none)";
+
+            //Determine the author(s) for display
+            authors_list = new string[track_item.Bib_Info.Names_Count];
+            for (int i = 0; i < track_item.Bib_Info.Names_Count; i++)
+            {
+                authors_list[i] = track_item.Bib_Info.Names[i].Full_Name  + track_item.Bib_Info.Names[i].Role_String;
+            }
+            
+            //Determine the publisher(s) for display
+            publishers_list=new string[track_item.Bib_Info.Publishers_Count];
+            for (int i = 0; i < track_item.Bib_Info.Publishers_Count; i++)
+                publishers_list[i] = track_item.Bib_Info.Publishers[i].Name;
+           
+                
+
+                //Create the temporary location for saving the barcode images
             image_location = SobekCM_Library_Settings.Base_Temporary_Directory + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\tsBarcodes\\" + itemID.ToString();
             username = Current_User.UserName.Replace(".", "").Replace("@", "");
             if (Current_User.UFID.Trim().Length > 0)
@@ -136,120 +148,185 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("\t\t<!-- TRACKING SHEET VIEWER OUTPUT -->");
 
+            #region Variable definitions
+            
+            //Spaces to use as empty fields in the tables
+            const string LABEL_SPACE = "&nbsp;&nbsp;&nbsp;";
+			const string LABEL1_SPACE = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+            
+            #endregion
+
             //Start the outer main table
             Output.WriteLine("<table class=\"sbkTs_MainTable\"><tr><td>");
 
-            //Add the Bib, VID, and TrackingBox numbers in the title
+            //Add the Bib, VID and TrackingBox numbers to the title
             Output.WriteLine("<span class = \"sbkTs_Title\">" + track_item.BibID + " : " + track_item.VID + "</span>");
-            Output.WriteLine("<span class=\"sbkTs_Title_right\">"+item_details.Rows[0]["Tracking_Box"]+"</span>");
-
+            Output.WriteLine("<span class=\"sbkTs_Title_right\">" + track_item.Tracking.Tracking_Box + "</span>");
+            
             //Start the Material Information Box
-            Output.WriteLine("<table class=\"sbkTs_tblMaterialInfo\">");
-            Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableHeader\">Material Information</span></td></tr>");
+            Output.WriteLine("<table class=\"sbkTs_tblMaterialInfo\"><col width=\"40\">");
+            Output.WriteLine("<tr><td colspan=\"4\"><br/></td></tr>");
+            Output.WriteLine("<tr><td colspan=\"4\"><span class=\"sbkTs_tableHeader\">Material Information</span></td></tr>");
 
-            string label_space = "&nbsp;&nbsp;&nbsp;";
             //Add the title
-            Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableLabel\">Title:" + label_space+"</span>");
-            Output.WriteLine("<span>" + item_details.Rows[0]["Title"] + "</span></td></tr>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Title:</span></td>");
+            Output.WriteLine("<td colspan=\"3\"><span>" + track_item.Bib_Info.Main_Title + "</span></td></tr>");
 
-            //Add the Author
-            Output.WriteLine("<tr><td colspan=\"3\" ><span class=\"sbkTs_tableLabel\">Author:" + label_space+"</span>");
-            Output.WriteLine("<span>" + item_details.Rows[0]["Author"] + "</span></td></tr>");
+            //Add the Author info
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Author:</span></td>");
+            Output.WriteLine("<td colspan=\"3\" ><span>");
+            foreach (string author in authors_list)
+            {
+                if (authors_list[authors_list.Length - 1] == author)
+                    continue;
+                Output.WriteLine("<span>"+author+" ;&nbsp;</span>");
+            }
+            if(authors_list.Length>0)
+            Output.WriteLine("<span>" + authors_list[authors_list.Length-1] + " &nbsp;</span>");
+            Output.WriteLine("               </span></td>");
+            Output.WriteLine("</td></tr>");
 
-            //Add the publisher
-            Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableLabel\">Publisher:" + label_space+"</span>");
-            Output.WriteLine("<span>" + item_details.Rows[0]["Publisher"] + "</span></td></tr>");
+            //Add the publisher info
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Publisher:</span></td>");
+            Output.WriteLine("<td colspan=\"3\" ><span>");
+            foreach (string publisher in publishers_list)
+            {
+                if (publishers_list[publishers_list.Length - 1] == publisher)
+                    continue;
+                Output.WriteLine("<span>" + publisher + " ;&nbsp;</span>");
+            }
+            if(publishers_list.Length>0)
+            Output.WriteLine("<span>" + publishers_list[publishers_list.Length - 1] + " &nbsp;</span>");
+            Output.WriteLine("               </span></td>");
+            Output.WriteLine("</td></tr>");
 
             //Add the OCLC, Aleph, Material Type info
-            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">OCLC:" + label_space+"</span>");
-            Output.WriteLine("<span>" + item_details.Rows[0]["OCLC_Number"] + "</span></td>");
-            Output.WriteLine("<td><span class=\"sbkTs_tableLabel\"> Aleph: " + label_space+"</span>");
-            Output.WriteLine("<span>" + item_details.Rows[0]["ALEPH_Number"] + "</span></td>");
-            Output.WriteLine("<td> <span class=\"sbkTs_tableLabel\">  Material Type:" + label_space+"</span>");
-            Output.WriteLine("<span>" + item_details.Rows[0]["Type"] + "</span></td></tr>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">OCLC:</span></td>");
+            Output.WriteLine("<td><span>" + oclc + "</span></td>");
+            Output.WriteLine("<td><span class=\"sbkTs_tableLabel\"> Aleph:</span>");
+            Output.WriteLine("<span>" + aleph + "</span></td>");
+            Output.WriteLine("<td> <span class=\"sbkTs_tableLabel\">  Material Type:</span>");
+            Output.WriteLine("<span>" +track_item.Bib_Info.SobekCM_Type + "</span></td></tr>");
             
             //Add the aggregation info
-            Output.WriteLine("<tr><td colspan=\"3\"><span class=\"sbkTs_tableLabel\">Aggregations:"+label_space+"</span>");
-            Output.WriteLine("<span>" + aggregations + "</span></td></tr>");
+            Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Aggregations:</span></td>");
+            Output.WriteLine("<td colspan=\"3\"><span>" + aggregations + "</span></td></tr>");
 
-            //End the table
+            //End this table
             Output.WriteLine("</table>");
-            Output.WriteLine("<br/><br/><br/>");
+            Output.WriteLine("<br/>");
 
             //Write the serial hierarchy info, if there is any data available
-            if (!((String.IsNullOrEmpty(item_details.Rows[0]["Level1_Text"].ToString())) && String.IsNullOrEmpty(item_details.Rows[0]["Level2_Text"].ToString()) && String.IsNullOrEmpty(item_details.Rows[0]["Level3_Text"].ToString())))
+            if(track_item.Behaviors.hasSerialInformation)
             {
                 //Start the Serial Hierarchy Table
                 Output.WriteLine("<table class=\"sbkTs_tblSerialHierarchy\">");
                 Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">Serial Hierarchy</span></td></tr>");
 
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 1:"+label_space+"</span>");
-                Output.WriteLine( item_details.Rows[0]["Level1_Text"] + "</td></tr>");
+                for (int i = 0; i < track_item.Behaviors.Serial_Info.Count; i++)
+                {
+                    Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level "+(i+1).ToString()+":" + LABEL_SPACE + "</span>");
+                    Output.WriteLine(track_item.Behaviors.Serial_Info[i].Display + "</td></tr>");
 
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 2:"+label_space+"</span>");
-                Output.WriteLine(item_details.Rows[0]["Level2_Text"] + "</td></tr>");
+                }
 
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Level 3:"+label_space+"</span>");
-                Output.WriteLine(item_details.Rows[0]["Level3_Text"] + "</td></tr>");
-                
+               
                 //End this table
                 Output.WriteLine("</table>");
             }
-            Output.WriteLine("<br/><br/><br/>");
+            Output.WriteLine("<br/>");
 
             //Start the Imaging Progress Table
             Output.WriteLine("<table class=\"sbkTs_tblImagingProgress\">");
             Output.WriteLine("<tr><td colspan=\"8\"><span class=\"sbkTs_tableHeader\">Imaging Progress</span></td></tr>");
            
-            //Long space to use as empty fields in the tables
-            string label1_space = "&nbsp;";
-            for (int i = 0; i < 17; i++)
-                label1_space += "&nbsp;";
-          
-            for (int rowCount = 0; rowCount < 4; rowCount++)
+   
+            for (int rowCount = 0; rowCount < 2; rowCount++)
             {
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label1_space+label1_space + label1_space + label1_space + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Date:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label_space + label_space + "/" + label_space + label_space + " / " + label_space + "</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Page Range:</span></td><td class=\"sbkTs_tblCellUnderline\">"+label_space+label_space+label_space +"</td>");
-                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Duration:</span></td><td class=\"sbkTs_tblCellUnderline\">" + label_space +label_space+label_space+ "</td></tr>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Name:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL1_SPACE+LABEL1_SPACE + LABEL1_SPACE + LABEL1_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Date:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE + LABEL_SPACE + "/" + LABEL_SPACE + LABEL_SPACE + " / " + LABEL_SPACE + "</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Page Range:</span></td><td class=\"sbkTs_tblCellUnderline\">"+LABEL_SPACE+LABEL_SPACE+LABEL_SPACE +"</td>");
+                Output.WriteLine("<td><span class=\"sbkTs_tableLabel\">Duration:</span></td><td class=\"sbkTs_tblCellUnderline\">" + LABEL_SPACE +LABEL_SPACE+LABEL_SPACE+ "</td></tr>");
             }
             Output.WriteLine("</table>");
-            Output.WriteLine("<br/><br/><br/>");
+            Output.WriteLine("<br/><br/>");
 
-            //Add the Disposition Notes (only if  there is any data available)
-            if (!String.IsNullOrEmpty(item_details.Rows[0][33].ToString()))
+
+            string checked_html = String.Empty;
+          if(track_item.Tracking.Born_Digital)
+                checked_html = "checked=\"checked\"";
+
+            //Determine the Material & Disposition text for display
+            string materialRecd_text = "&nbsp;&nbsp;&nbsp;";
+            string materialRecd_class = "sbkTs_tblCellUnderline";
+            string disposition_text = "&nbsp;&nbsp;&nbsp;";
+            string disposition_class = "sbkTs_tblCellUnderline";
+
+            if (!String.IsNullOrEmpty(track_item.Tracking.Material_Received_Date.ToString()))
             {
-                Output.WriteLine("<table class=\"sbkTs_tblDisposition\">");
-                Output.WriteLine("<tr><td><span class=\"sbkTs_tableHeader\">Disposition Notes:</span>" + label_space + item_details.Rows[0][33] + "</td></tr>");
-                Output.WriteLine("</table>");
-                Output.WriteLine("<br/><br/><br/>");
+                materialRecd_class = "";
+                materialRecd_text = track_item.Tracking.Material_Received_Date.ToString();
+                if (!String.IsNullOrEmpty(track_item.Tracking.Material_Received_Date.ToString()))
+                {
+                    materialRecd_text += " (" +track_item.Tracking.Material_Received_Notes + ")";
+                }
             }
+            
+            if (!String.IsNullOrEmpty(track_item.Tracking.Disposition_Advice_Notes))
+            {
+                disposition_class = "";
+                disposition_text = track_item.Tracking.Disposition_Advice_Notes;
+                if (!String.IsNullOrEmpty(track_item.Tracking.Disposition_Notes))
+                {
+                    disposition_text += " (" +track_item.Tracking.Disposition_Notes + ")";
+                }
+            }
+
+
+            //Add the Physical Material Info 
+            Output.WriteLine("<table class=\"sbkTs_tblPhysicalMaterial\"><col width=\"130\">");
+            Output.WriteLine("<tr><td colspan=\"2\"><span class=\"sbkTs_tableHeader\">Physical Material</span>" + LABEL_SPACE + LABEL_SPACE+"<input type=\"checkbox\" disabled=\"true\" "+checked_html+"/><span class=\"sbkTs_greyText\">Item is born digital</span></td></tr>");
+            Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">Material Recd:</span></td>");
+            Output.WriteLine("         <td class=\""+materialRecd_class+"\">"+materialRecd_text+"</td>");
+            Output.WriteLine("</tr>");
+            Output.WriteLine("<tr><td width=\"auto\"><span class=\"sbkTs_tableLabel\">Disposition Advice:</span></td>");
+            Output.WriteLine("         <td class=\""+disposition_class+"\">"+disposition_text+"</td>");
+            Output.WriteLine("</tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br/>");
+
             
             //Add the Additional Notes table
             Output.WriteLine("<table class=\"sbkTs_tblAdditionalNotes\">");
             Output.WriteLine("<tr><td class=\"sbkTs_tableHeader\">Additional Notes:</td></tr>");
             Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
             Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
-            Output.WriteLine("<tr><td  class=\"sbkTs_tblCellUnderline\">&nbsp;&nbsp;&nbsp;&nbsp; </td></tr>");
             Output.WriteLine("</table>");
-            Output.WriteLine("<br/><br/><br/>");
+            Output.WriteLine("<br/>");
 
-            //Is this item born digital?
-            bool born_digital = false;
-            Boolean.TryParse(item_details.Rows[0]["Born_Digital"].ToString(), out born_digital);
 
-            if (!born_digital)
-            {
+            //if (!born_digital)
+            //{
                 //Get the barcode images for the events
                 string imageUrl1 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "A", track_item.BibID + track_item.VID + "A");
                 string imageUrl2 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "B", track_item.BibID + track_item.VID + "B");
+                string imageUrl3 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "C", track_item.BibID + track_item.VID + "C");
+                string imageUrl4 = Get_BarcodeImageUrl_from_string(int_to_base26(itemID), "D", track_item.BibID + track_item.VID + "D");
 
-                //Start the table for the event barcodes
+                //Start the table for the barcodes
                 Output.WriteLine("<table class=\"sbkTs_tblBarcodes\">");
                 Output.WriteLine("<tr><td><img id=\"barcode1\" src=\"" + imageUrl1 + "\"/></td>");
                 Output.WriteLine("<td><img id=\"barcode2\" src=\"" + imageUrl2 + "\"/></td></tr>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_barcode_label1\">Start Scan</span></td>");
+                Output.WriteLine("<td><span class=\"sbkTs_barcode_label1\">End Scan</span></td></tr>");
+
+                Output.WriteLine("<tr><td><img id=\"barcode3\" src=\"" + imageUrl3 + "\"/></td>");
+                Output.WriteLine("<td><img id=\"barcode4\" src=\"" + imageUrl4 + "\"/></td></tr>");
+                Output.WriteLine("<tr><td><span class=\"sbkTs_barcode_label\">Start Processing</span></td>");
+                Output.WriteLine("<td><span class=\"sbkTs_barcode_label\">End Processing</span></td></tr>");
                 Output.WriteLine("</table>");
-            }
+            //}
             
             //Close the outer table
             Output.WriteLine("</td></tr></table>");
@@ -257,48 +334,45 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Converts a base-10 integer to the base-26 equivalent </summary>
-        /// <param name="input_number"></param>
-        /// <returns>returnValue</returns>
-        public string int_to_base26(int input_number)
+        /// <param name="InputNumber"> Integer to convert to base-26 equivalent </param>
+        /// <returns> Base-26 equivalent, utilizing the alphabet to encode the number </returns>
+        public string int_to_base26(int InputNumber)
         {
-            string returnValue = String.Empty;
+            string convertedNumber = String.Empty;
 
-            input_number = Math.Abs(input_number);
+            InputNumber = Math.Abs(InputNumber);
 
             do
             {
-                int remainder = input_number % 26;
-                returnValue = (char)(remainder + 'A') + returnValue;
-                input_number = (input_number - remainder) / 26;
-            } while (input_number > 0);
+                int remainder = InputNumber % 26;
+                convertedNumber = (char)(remainder + 'A') + convertedNumber;
+                InputNumber = (InputNumber - remainder) / 26;
+            } while (InputNumber > 0);
 
-            return returnValue;
+            return convertedNumber;
         }
 
 
         /// <summary> Generates a barcode(with checksum) for a given string </summary>
-        /// <param name="inputString">This is the itemID, in base 26 number system</param>
-        /// <param name="action">Indicates the Imaging action represented by this barcode</param>
-        /// <param name="filename_to_save"></param>
+        /// <param name="InputString"> This is the itemID, in base 26 number system</param>
+		/// <param name="Action"> Indicates the Imaging action represented by this barcode</param>
+        /// <param name="FilenameToSave"> Name of the output file to save </param>
         /// <returns>The url of the generated barcode GIF image</returns>
-        public string Get_BarcodeImageUrl_from_string(string inputString, string action, string filename_to_save)
+        public string Get_BarcodeImageUrl_from_string(string InputString, string Action, string FilenameToSave)
         {
-            string returnUrl = String.Empty;
+	        if (InputString == null) throw new ArgumentNullException("InputString");
+			string barcodeString = (InputString + Action).ToUpper();
+            string image_save_location = image_location + "\\" + FilenameToSave + ".gif";
 
-            string barcodeString = (inputString + action).ToUpper();
-
+            //Generate the image
             Code39BarcodeDraw barcode39 = BarcodeDrawFactory.Code39WithChecksum;
-            System.Drawing.Image barcode_image = barcode39.Draw(barcodeString, 40);
-
-            string image_save_location = image_location + "\\" + filename_to_save + ".gif";
+            System.Drawing.Image barcode_image = barcode39.Draw(barcodeString, 60);
             
-
-
             //Save the image
             barcode_image.Save(@image_save_location, System.Drawing.Imaging.ImageFormat.Gif);
-            returnUrl = "/sobekcm/temp/"+username+"/tsBarcodes/" + itemID.ToString() + "/" + filename_to_save + ".gif";
+	        string url = CurrentMode.Base_URL + "temp/" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "/tsBarcodes/" + itemID.ToString();
 
-            return returnUrl;
+			return url + "/" + FilenameToSave + ".gif";
         }
 
 
