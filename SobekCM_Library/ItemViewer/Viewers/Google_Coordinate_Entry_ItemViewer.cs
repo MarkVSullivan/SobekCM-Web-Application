@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -28,7 +29,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private static SobekCM_Item CurrentItem;
         private static GeoSpatial_Information geoInfo2;
         private static GeoSpatial_Information itemGeoInfo;
-        private static List<Coordinate_Polygon> itemPolygons;
+     //   private static List<Coordinate_Polygon> itemPolygons;
         List<Coordinate_Polygon> allPolygons;
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
@@ -89,24 +90,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
             }
 
-            //create a new list of all the polygons for a resource item
-            itemPolygons = new List<Coordinate_Polygon>();
+
             List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
-            for (int i = 0; i < pages.Count; i++)
+
+            //create a new list of all the polygons for a resource item
+            Dictionary<string, Page_TreeNode> pageLookup = new Dictionary<string, Page_TreeNode>();
+            int page_index = 1;
+            foreach (Page_TreeNode pageNode in pages)
             {
-                abstract_TreeNode pageNode = pages[i];
-                itemGeoInfo = pageNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                if ((itemGeoInfo != null) && (itemGeoInfo.hasData))
-                {
-                    if (itemGeoInfo.Polygon_Count > 0)
-                    {
-                        foreach (Coordinate_Polygon thisPolygon in itemGeoInfo.Polygons)
-                        {
-                            thisPolygon.Page_Sequence = (ushort)(i + 1);
-                            itemPolygons.Add(thisPolygon);
-                        }
-                    }
-                }
+                if (pageNode.Label.Length == 0 )
+                    pageLookup["Page " + page_index] = pageNode;
+                else
+                    pageLookup[pageNode.Label] = pageNode;
+                page_index++;
             }
 
             //get the length of incoming message
@@ -151,14 +147,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             resourceGeoInfo.Add_Point(newPoint);
                             break;
                         case "overlay":
-                            //search through existing overlays and modify if match found
-                            if (itemPolygons.Count > 0)
+                            bool handled = false;
+                            if (pages.Count == 1)
                             {
-                                //go through each polygon
-                                foreach (Coordinate_Polygon itemPolygon in itemPolygons)
+                                // get the geocoordinate object
+                                GeoSpatial_Information singlePageGeo = pages[0].Get_Metadata_Module( GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                                if (singlePageGeo == null)
+                                {
+                                    singlePageGeo = new GeoSpatial_Information();
+                                    pages[0].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, singlePageGeo);
+                                }
+                                foreach (Coordinate_Polygon itemPolygon in singlePageGeo.Polygons )
                                 {
                                     //is there a match?
-                                    if (itemPolygon.Label == ar[2])
+                                    if (itemPolygon.FeatureType != "poi" )
                                     {
                                         //prep incoming bounds
                                         string[] temp2 = ar[3].Split(',');
@@ -170,50 +172,77 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         itemPolygon.Rotation = Convert.ToDouble(ar[5]);
                                         //add the featureType (explicitly add to make sure it is there)
                                         itemPolygon.FeatureType = "main";
+                                        handled = true;
+                                        break;
                                     }
+                                }
+                                if (!handled)
+                                {
+                                    //create new polygon
+                                    Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
+                                    //add the bounds
+                                    string[] temp2 = ar[3].Split(',');
+                                    itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                    itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                    itemPolygon.Recalculate_Bounding_Box();
+                                    //add the label
+                                    itemPolygon.Label = ar[2] != "undefined" ? ar[2] : CurrentItem.Bib_Title;
+                                    //add the rotation
+                                    itemPolygon.Rotation = Convert.ToDouble(ar[5]);
+                                    //add the feature type 
+                                    itemPolygon.FeatureType = "main";
+                                    singlePageGeo.Add_Polygon(itemPolygon);
                                 }
                             }
                             else
                             {
-                                //create new polygon
-                                Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
-                                //add the bounds
-                                string[] temp2 = ar[3].Split(',');
-                                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                                itemPolygon.Recalculate_Bounding_Box();
-                                //add the label
-                                itemPolygon.Label = ar[2] != "undefined" ? ar[2] : CurrentItem.Bib_Title;
-                                //add the rotation
-                                itemPolygon.Rotation = Convert.ToDouble(ar[5]);
-                                //add the feature type 
-                                itemPolygon.FeatureType = "main";
-                                //clear all objs with main featureType
-                                resourceGeoInfo.Clear_NonPOIs();
-                                ////clear a specific polygon
-                                //foreach (var coordinatePolygon in itemPolygons)
-                                //    if (coordinatePolygon.Label==itemPolygon.Label)
-                                //        resourceGeoInfo.Clear_Specific_Polygon(coordinatePolygon);
-                                //add obj to appropriate geo obj level
-                                if (itemGeoInfo != null)
-                                    itemGeoInfo.Add_Polygon(itemPolygon);
-                                else
-                                    resourceGeoInfo.Add_Polygon(itemPolygon);
-                            }
-                            //add current geo 
-                            if (itemGeoInfo != null)
-                            {
-                                //add to item
-                                CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
-                            }
-                            else
-                            {
-                                if (resourceGeoInfo != null)
+                                // Look for the matching page
+                                if (pageLookup.ContainsKey(ar[2]))
                                 {
-                                    //clear all the previous mains featureTypes
-                                    resourceGeoInfo.Clear_NonPOIs();
-                                    //add to resource
-                                    CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
+                                    Page_TreeNode thisPage = pageLookup[ar[2]];
+                                    GeoSpatial_Information singlePageGeo = thisPage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                                    if (singlePageGeo == null)
+                                    {
+                                        singlePageGeo = new GeoSpatial_Information();
+                                        thisPage.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, singlePageGeo);
+                                    }
+
+                                    foreach (Coordinate_Polygon itemPolygon in singlePageGeo.Polygons)
+                                    {
+                                        //is there a match?
+                                        if (itemPolygon.FeatureType != "poi")
+                                        {
+                                            //prep incoming bounds
+                                            string[] temp2 = ar[3].Split(',');
+                                            itemPolygon.Clear_Edge_Points();
+                                            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                            itemPolygon.Recalculate_Bounding_Box();
+                                            //add the rotation
+                                            itemPolygon.Rotation = Convert.ToDouble(ar[5]);
+                                            //add the featureType (explicitly add to make sure it is there)
+                                            itemPolygon.FeatureType = "main";
+                                            handled = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!handled)
+                                    {
+                                        //create new polygon
+                                        Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
+                                        //add the bounds
+                                        string[] temp2 = ar[3].Split(',');
+                                        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                        itemPolygon.Recalculate_Bounding_Box();
+                                        //add the label
+                                        itemPolygon.Label = ar[2] != "undefined" ? ar[2] : CurrentItem.Bib_Title;
+                                        //add the rotation
+                                        itemPolygon.Rotation = Convert.ToDouble(ar[5]);
+                                        //add the feature type 
+                                        itemPolygon.FeatureType = "main";
+                                        singlePageGeo.Add_Polygon(itemPolygon);
+                                    }
                                 }
                             }
                             break;
