@@ -851,7 +851,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					if (jpeg.Length > 0)
 					{
 						result.AppendLine();
-						result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "\\" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+						result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
 						result.AppendLine();
 						thumb_added = true;
 					}
@@ -863,7 +863,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{					
 				string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
 				result.AppendLine();
-				result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "\\" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+				result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
 				result.AppendLine();
 			}
 

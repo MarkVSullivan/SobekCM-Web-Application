@@ -101,8 +101,14 @@ namespace SobekCM.Library.HTML
             // Determine if this item is actually restricted 
             itemRestrictedFromUserByIp = Item_Restricted_Message.Length > 0;
 
+			// Determine if this user can edit this item
+			if (currentUser != null)
+            {
+				userCanEditItem = currentUser.Can_Edit_This_Item(currentItem);
+            }
+
             // If this item is restricted by IP than alot of the upcoming code is unnecessary
-            if (!itemRestrictedFromUserByIp)
+            if (( currentUser != null ) && ((!itemRestrictedFromUserByIp) || ( userCanEditItem ) || ( currentUser.Is_Internal_User )))
             {
                 #region Region suppressed currently - was for adding feature to a map image?
 
@@ -166,14 +172,8 @@ namespace SobekCM.Library.HTML
 
                 #endregion
 
-                // Determine if this user can edit this item
-                if (currentUser != null)
-                {
-                    userCanEditItem = currentUser.Can_Edit_This_Item(currentItem);
-                }
-
                 // Is this a postback?
-                if ((currentMode.isPostBack) && ( currentUser != null))
+                if (currentMode.isPostBack) 
                 {
                     // Handle any actions from standard user action (i.e., email, add to bookshelf, etc.. )
                     if (HttpContext.Current.Request.Form["item_action"] != null)

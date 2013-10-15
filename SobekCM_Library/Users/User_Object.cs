@@ -616,6 +616,9 @@ namespace SobekCM.Library.Users
             if (Item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
                 return Is_System_Admin;
 
+	        if ((Is_Portal_Admin) || (Is_System_Admin))
+		        return true;
+
             if (bibids.Contains( Item.BibID.ToUpper()))
                 return true;
 

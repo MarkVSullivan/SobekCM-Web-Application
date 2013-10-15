@@ -116,20 +116,19 @@ public partial class Files : System.Web.UI.Page
 
                 // Now, look for BIBID and VID
                 //if ((SobekCM_Database.Verify_Item_Lookup_Object(true, ref Global.Item_List, null)) && (Global.Item_List.Contains_BibID(url_relative_list[2].ToUpper())))
-                if ( url_relative_list[2].Length == 10 )
+                if (( url_relative_list.Count >2 ) && ( url_relative_list[2].Length == 10 ))
                 {
                     // This is a BibID for an existing title with at least one public item
                     BibID = url_relative_list[2].ToUpper();
 
                     // Is the next part a VID?
-                    string possible_vid = url_relative_list[3].Trim().PadLeft(5, '0');
-                    //if (Global.Item_List.Contains_BibID_VID(BibID, possible_vid))
-                    //{
-                    int vid_as_int = -1;
-                    if (Int32.TryParse(possible_vid, out vid_as_int))
-                        VID = possible_vid;
-                    //}
-
+	                if (url_relative_list.Count > 3)
+	                {
+		                string possible_vid = url_relative_list[3].Trim().PadLeft(5, '0');
+		                int vid_as_int = -1;
+		                if (Int32.TryParse(possible_vid, out vid_as_int))
+			                VID = possible_vid;
+	                }
                 }
 
                 // Only continue if there is a BibID / VID

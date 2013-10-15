@@ -184,6 +184,14 @@ namespace SobekCM.Library.MySobekViewer
                         saveItem.Bib_Info.Series_Part_Info.Clear();
                         saveItem.Behaviors.Clear_Ticklers();
                         saveItem.Tracking.Internal_Comments = String.Empty;
+				        saveItem.Bib_Info.Location.PURL = String.Empty;
+						saveItem.Behaviors.Main_Thumbnail = String.Empty;
+						saveItem.METS_Header.Create_Date = DateTime.Now;
+						saveItem.METS_Header.Modify_Date = saveItem.METS_Header.Create_Date;
+	                    saveItem.METS_Header.Creator_Software = "SobekCM Web - Online add a volume (derived from VID " + vid + ")";
+						saveItem.METS_Header.Clear_Creator_Individual_Notes();
+	                    saveItem.METS_Header.Creator_Individual = user.Full_Name;
+
 
                         // Save the template changes to this item
                         template.Save_To_Bib(saveItem, user, 1);

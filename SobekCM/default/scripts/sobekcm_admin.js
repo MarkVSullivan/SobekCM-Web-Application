@@ -61,66 +61,6 @@ function save_new_aggr()
     return true;
 }
 
-// Close the item aggregation form
-function aggr_form_close()
-{
-    // Clear the hidden value this data
-    var hiddenfield = document.getElementById('admin_aggr_tosave');
-    hiddenfield.value = '';
-    
-    // Clear the data
-    document.getElementById('form_aggr_code').value = '';
-    document.getElementById('form_aggr_type').value = '';
-    document.getElementById('form_aggr_name').value = '';
-    document.getElementById('form_aggr_shortname').value = '';
-    
-    // Close the associated form
-    popdown( 'form_aggr' );    
-    
-    // Return false to prevent a return trip to the server
-    return false;
-}
-
-// Populate the aggregation form and show it
-function aggr_form_popup(linkname, code, type, name, shortname, isActive, isHidden, link  ) 
-{
-    // Populate the hidden value this data
-    var hiddenfield = document.getElementById('admin_aggr_tosave');
-    hiddenfield.value = code;
-    
-    // Populate the visible fields
-    document.getElementById('form_aggr_code').value = code;
-    document.getElementById('form_aggr_type').value = type;
-    document.getElementById('form_aggr_name').value = name;
-    document.getElementById('form_aggr_shortname').value = shortname;
-    document.getElementById('form_aggr_link').value = link;
-    
-    if ( isActive == 'True' )
-        document.getElementById('form_aggr_isactive').checked = true;
-    else
-        document.getElementById('form_aggr_isactive').checked = false;
-        
-    if ( isHidden == 'True' )
-        document.getElementById('form_aggr_ishidden').checked = true;
-    else
-        document.getElementById('form_aggr_ishidden').checked = false;
-
-    // Toggle the aggregation form
-    blanket_size('form_aggr', linkname, 400 );
-    window_pos('form_aggr', 1175);
-    toggle('blanket_outer');
-    toggle('form_aggr');
-
-    // Create the draggable object to allow this window to be dragged around
-    $("#form_aggr").draggable();
-    
-    // Put focus on the agrgegation code
-    var focusfield = document.getElementById('form_aggr_name');
-    focusfield.focus();	
-        
-    return false;
-} 
-
 // Populate the project form and show it
 function project_form_popup(code, name  ) 
 {
@@ -694,13 +634,6 @@ function wordmark_select_changed(url) {
 }
 
 
-// Delete an item
-function delete_item() {
-    var hiddenfield = document.getElementById('admin_delete_item');
-    hiddenfield.value = "delete";
-    document.itemNavForm.submit();
-    return false;
-}
 
 // Save the user updates
 function save_user_edits() {
