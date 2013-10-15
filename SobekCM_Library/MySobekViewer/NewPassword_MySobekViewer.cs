@@ -67,12 +67,11 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("NewPassword_MySobekViewer.Write_HTML", "Do nothing");
         }
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file [UNUSED IN THIS VIEWER] </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> The bulk of this page is added here, as controls </remarks>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("NewPassword_MySobekViewer.Add_Controls", "");
 
@@ -177,7 +176,7 @@ namespace SobekCM.Library.MySobekViewer
             literalBuilder.AppendLine("<td width=\"180px\">");
             LiteralControl literal1 = new LiteralControl(literalBuilder.ToString());
             literalBuilder.Remove(0, literalBuilder.Length);
-            placeHolder.Controls.Add(literal1);
+            MainPlaceHolder.Controls.Add(literal1);
 
             existingPasswordBox = new TextBox
                                       {
@@ -187,10 +186,10 @@ namespace SobekCM.Library.MySobekViewer
                                       };
             existingPasswordBox.Attributes.Add("onfocus", "textbox_enter('current_password_enter', 'preferences_small_input_focused')");
             existingPasswordBox.Attributes.Add("onblur", "textbox_leave('current_password_enter', 'preferences_small_input')");
-            placeHolder.Controls.Add(existingPasswordBox);
+            MainPlaceHolder.Controls.Add(existingPasswordBox);
 
             LiteralControl literal2 = new LiteralControl("</td><td width=\"140px\">&nbsp;</td></tr>" + Environment.NewLine + "<tr><td>&nbsp;</td><td><label for=\"new_password_enter\">New Password:</label></td><td>");
-            placeHolder.Controls.Add(literal2);
+            MainPlaceHolder.Controls.Add(literal2);
 
             passwordBox = new TextBox
                               {
@@ -200,10 +199,10 @@ namespace SobekCM.Library.MySobekViewer
                               };
             passwordBox.Attributes.Add("onfocus", "textbox_enter('new_password_enter', 'preferences_small_input_focused')");
             passwordBox.Attributes.Add("onblur", "textbox_leave('new_password_enter', 'preferences_small_input')");
-            placeHolder.Controls.Add(passwordBox);
+            MainPlaceHolder.Controls.Add(passwordBox);
 
             LiteralControl literal3 = new LiteralControl("</td><td>&nbsp;</td></tr>" + Environment.NewLine + "<tr><td>&nbsp;</td><td><label for=\"new_password_confirm\">Confirm New Password:</label></td><td>");
-            placeHolder.Controls.Add(literal3);
+            MainPlaceHolder.Controls.Add(literal3);
 
             confirmPasswordBox = new TextBox
                                      {
@@ -213,7 +212,7 @@ namespace SobekCM.Library.MySobekViewer
                                      };
             confirmPasswordBox.Attributes.Add("onfocus", "textbox_enter('new_password_confirm', 'preferences_small_input_focused')");
             confirmPasswordBox.Attributes.Add("onblur", "textbox_leave('new_password_confirm', 'preferences_small_input')");
-            placeHolder.Controls.Add(confirmPasswordBox);
+            MainPlaceHolder.Controls.Add(confirmPasswordBox);
 
             literalBuilder.AppendLine("   </td><td>&nbsp;</td></tr>");
             literalBuilder.AppendLine("  <tr align=\"right\" valign=\"bottom\" height=\"50px\" ><td colspan=\"3\">");
@@ -222,7 +221,7 @@ namespace SobekCM.Library.MySobekViewer
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
 
             LiteralControl literal4 = new LiteralControl(literalBuilder.ToString());
-            placeHolder.Controls.Add(literal4);
+            MainPlaceHolder.Controls.Add(literal4);
 
             // Add the submit button
             ImageButton submitButton = new ImageButton
@@ -231,10 +230,10 @@ namespace SobekCM.Library.MySobekViewer
                                                AlternateText = "SAVE"
                                            };
             submitButton.Click += submitButton_Click;
-            placeHolder.Controls.Add(submitButton);
+            MainPlaceHolder.Controls.Add(submitButton);
 
             LiteralControl literal5 = new LiteralControl("</td></tr></table></blockquote></div>\n\n<!-- Focus on current password text box -->\n<script type=\"text/javascript\">focus_element('current_password_enter');</script>\n\n");
-            placeHolder.Controls.Add(literal5);
+            MainPlaceHolder.Controls.Add(literal5);
 
         }
 

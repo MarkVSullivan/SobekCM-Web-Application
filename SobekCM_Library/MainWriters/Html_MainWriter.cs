@@ -250,7 +250,7 @@ namespace SobekCM.Library.MainWriters
                     break;
 
                 case Display_Mode_Enum.My_Sobek:
-                    subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
+                    subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, Tracer);
                     break;
 
                 case Display_Mode_Enum.Administrative:
@@ -400,6 +400,17 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
+		/// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+		/// for the current request, or if it can be hidden. </summary>
+		/// <value> This value can be override by child classes, but by default this returns FALSE </value>
+		public override bool File_Upload_Possible
+		{
+			get
+			{
+				return subwriter != null && subwriter.Upload_File_Possible;
+			}
+		}
+
         /// <summary> Gets the enumeration of the type of main writer </summary>
         /// <value> This property always returns the enumerational value <see cref="SobekCM.Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
@@ -407,10 +418,9 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
         /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
-        /// <param name="MyUfdcUploadPlaceHolder"> Place holder is used to add more complex server-side objects during execution </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, PlaceHolder MyUfdcUploadPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
             if (currentMode.Request_Completed)
@@ -453,7 +463,7 @@ namespace SobekCM.Library.MainWriters
                         }
 
                         // Add any necessary controls
-                        mySobekWriter.Add_Controls(Main_Place_Holder, MyUfdcUploadPlaceHolder, Tracer);
+                        mySobekWriter.Add_Controls(Main_Place_Holder, Tracer);
 
                         // Finally, add the footer
                         if (mySobekWriter.Contains_Popup_Forms)
@@ -489,7 +499,7 @@ namespace SobekCM.Library.MainWriters
                         }
 
                         // Add any necessary controls
-                        adminWriter.Add_Controls(Main_Place_Holder, MyUfdcUploadPlaceHolder, Tracer);
+                        adminWriter.Add_Controls(Main_Place_Holder, Tracer);
 
                         // Finally, add the footer
                         if (adminWriter.Contains_Popup_Forms)
@@ -784,7 +794,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (( currentMode.isPostBack) && ( currentMode.Mode != Display_Mode_Enum.My_Sobek )) return;
+			if ((currentMode.isPostBack) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative)) return;
             if (subwriter == null) return;
 
             Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
@@ -1115,6 +1125,13 @@ namespace SobekCM.Library.MainWriters
             string container_inner = "container-inner";
             switch (currentMode.Mode)
             {
+				case Display_Mode_Enum.Administrative:
+					if (currentMode.Admin_Type == Admin_Type_Enum.Wordmarks )
+					{
+						container_inner = "sbkWav_ContainerInner";
+					}
+					break;
+
                 case Display_Mode_Enum.My_Sobek :
                     if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && ( currentMode.My_Sobek_SubMode.IndexOf("0.2") == 0 ))
                     {
@@ -1247,12 +1264,6 @@ namespace SobekCM.Library.MainWriters
         protected internal void Display_Footer(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Html_MainWriter.Display_Footer", "Adding footer to HTML");
-
-            // Some subwriters (for example item viewer with Gnu page turning view) suppress the footer
-            if (subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
-            {
-                return;
-            }
 
             // Get the current contact URL
             Display_Mode_Enum thisMode = currentMode.Mode;

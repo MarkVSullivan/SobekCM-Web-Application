@@ -75,12 +75,11 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Preferences_MySobekViewer.Write_HTML", "Do nothing");
         }
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file [UNUSED IN THIS VIEWER] </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> The bulk of this page is added here, as controls </remarks>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Preferences_MySobekViewer.Add_Controls", "Do nothing");
 
@@ -513,7 +512,7 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"password_enter\">" + passwordLabel + ":</label></b></td><td>");
                 LiteralControl registerLiteral1 = new LiteralControl(builder.ToString());
                 builder.Remove(0, builder.Length);
-                placeHolder.Controls.Add(registerLiteral1);
+                MainPlaceHolder.Controls.Add(registerLiteral1);
 
                 passwordBox = new TextBox
                                   {
@@ -523,10 +522,10 @@ namespace SobekCM.Library.MySobekViewer
                                   };
                 passwordBox.Attributes.Add("onfocus", "textbox_enter('password_enter', 'preferences_small_input_focused')");
                 passwordBox.Attributes.Add("onblur", "textbox_leave('password_enter', 'preferences_small_input')");
-                placeHolder.Controls.Add(passwordBox);
+                MainPlaceHolder.Controls.Add(passwordBox);
 
                 LiteralControl registerLiteral2 = new LiteralControl("   &nbsp; &nbsp; (minimum of eight digits, different than username)</td></tr>" + Environment.NewLine + "<tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"password_confirm\">" + confirmPasswordLabel + ":</label></b></td><td>");
-                placeHolder.Controls.Add(registerLiteral2);
+                MainPlaceHolder.Controls.Add(registerLiteral2);
 
                 confirmPasswordBox = new TextBox
                                          {
@@ -536,7 +535,7 @@ namespace SobekCM.Library.MySobekViewer
                                          };
                 confirmPasswordBox.Attributes.Add("onfocus", "textbox_enter('password_confirm', 'preferences_small_input_focused')");
                 confirmPasswordBox.Attributes.Add("onblur", "textbox_leave('password_confirm', 'preferences_small_input')");
-                placeHolder.Controls.Add(confirmPasswordBox);
+                MainPlaceHolder.Controls.Add(confirmPasswordBox);
 
                 builder.AppendLine("   &nbsp; &nbsp; (minimum of eight digits, different than username)</td></tr>");
             }
@@ -676,7 +675,7 @@ namespace SobekCM.Library.MySobekViewer
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
 
             LiteralControl literal1 = new LiteralControl(builder.ToString());
-            placeHolder.Controls.Add(literal1);
+            MainPlaceHolder.Controls.Add(literal1);
 
             // Add the submit button
             ImageButton submitButton = new ImageButton
@@ -685,9 +684,9 @@ namespace SobekCM.Library.MySobekViewer
                                                AlternateText = "SAVE"
                                            };
             submitButton.Click += submitButton_Click;
-            placeHolder.Controls.Add(submitButton);
+            MainPlaceHolder.Controls.Add(submitButton);
 
-            placeHolder.Controls.Add(registration
+            MainPlaceHolder.Controls.Add(registration
                                          ? new LiteralControl( "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first registration text box -->\n<script type=\"text/javascript\">focus_element('prefUsername');</script>\n\n")
                                          : new LiteralControl("</td></tr></table></blockquote></div>\n\n<!-- Focus on the first preferences text box -->\n<script type=\"text/javascript\">focus_element('prefFamilyName');</script>\n\n"));
         }

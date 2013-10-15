@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 = 10/12/2013 MVS
+
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -90,7 +92,7 @@ namespace SobekCM.Library.AdminViewer
                                 if (new_name != null)
                                 {
                                     int id = Convert.ToInt32(save_value);
-                                    int order = 1 + Thematic_Headings.TakeWhile(thisHeading => thisHeading.ThematicHeadingID != id).Count();
+                                    int order = 1 + Thematic_Headings.TakeWhile(ThisHeading => ThisHeading.ThematicHeadingID != id).Count();
                                     if (SobekCM_Database.Edit_Thematic_Heading(id, order, new_name, Tracer) < 1)
                                     {
                                         actionMessage = "Unable to edit existing thematic heading";
@@ -252,6 +254,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
 
+			Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 
@@ -262,83 +265,86 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<!-- Thematic Heading Edit Form -->");
-            Output.WriteLine("<div class=\"admin_heading_popup_div\" id=\"form_heading\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT THEMATIC HEADING</td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"heading_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+			Output.WriteLine("<div class=\"sbkThav_PopupDiv\" id=\"form_heading\" style=\"display:none;\">");
+			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align: left;\">EDIT THEMATIC HEADING</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"heading_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"popup_table\">");
+			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for heading
-            Output.WriteLine("    <tr><td width=\"80px\"><label for=\"form_heading_name\">Heading:</label></td><td colspan=\"2\"><input class=\"admin_heading_input\" name=\"form_heading_name\" id=\"form_heading_name\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('form_heading_name', 'admin_heading_input_focused')\" onblur=\"javascript:textbox_leave('form_heading_name', 'admin_heading_input')\" /></td></tr>");
+			Output.WriteLine("    <tr><td style=\"width: 80px;\"><label for=\"form_heading_name\">Heading:</label></td><td colspan=\"2\"><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"form_heading_name\" id=\"form_heading_name\" type=\"text\" value=\"\" /></td></tr>");
 
-            Output.WriteLine("  </table>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <center><a href=\"\" onclick=\"return heading_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center>");
-            Output.WriteLine("</div>");
+			// Add the buttons
+			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+			Output.WriteLine("      <td colspan=\"2\">");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button> &nbsp; &nbsp; ");
+			Output.WriteLine("      </td>");
+			Output.WriteLine("    </tr>");
+			Output.WriteLine("  </table>");
+			Output.WriteLine("</div>");
+			Output.WriteLine();
+
 
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form ");
 
-            Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<div class=\"SobekHomeText\">");
+			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-            if (actionMessage.Length > 0)
-            {
-                Output.WriteLine("  <br />");
-                Output.WriteLine("  <center><b>" + actionMessage + "</b></center>");
-            }
+			if (actionMessage.Length > 0)
+			{
+				Output.WriteLine("  <br />");
+				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
+			}
 
-            Output.WriteLine("  <blockquote>");
-            Output.WriteLine("    Thematic headings are the headings on the main library home page, under which all the item ");
-            Output.WriteLine("    aggregation icons appear.<br /><br />");
-            Output.WriteLine("    For more information about thematic headings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.");
-            Output.WriteLine("  </blockquote>");
+            Output.WriteLine("  <p>Thematic headings are the headings on the main library home page, under which all the item aggregation icons appear.</p>");
+            Output.WriteLine("  <p>For more information about thematic headings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine();
 
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">New Thematic Heading</span>");
-            Output.WriteLine("    <blockquote>");
-            Output.WriteLine("      <div class=\"admin_heading_new_div\">");
-            Output.WriteLine("        <table class=\"popup_table\">");
-            Output.WriteLine("          <tr><td><label for=\"admin_heading_name\">Heading:</label></td><td><input class=\"admin_heading_input\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('admin_heading_name', 'admin_heading_input_focused')\" onblur=\"javascript:textbox_leave('admin_heading_name', 'admin_heading_input')\" /></td>");
-            Output.WriteLine("          <td><input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif\" value=\"Submit\" alt=\"Submit\" onclick=\"return save_new_heading();\"/></td></tr>");
-            Output.WriteLine("        </table>");
-            Output.WriteLine("      </div>");
-            Output.WriteLine("    </blockquote>");
-            Output.WriteLine("    <br />");
+            Output.WriteLine("  <h2>New Thematic Heading</h2>");
+			Output.WriteLine("  <div class=\"sbkThav_NewDiv\">");
+			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
+	        Output.WriteLine("      <tr>");
+	        Output.WriteLine("        <td><label for=\"admin_heading_name\">Heading:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
+            Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE</button></td>");
+			Output.WriteLine("      </tr>");
+            Output.WriteLine("    </table>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("  <br />");
 
-            Output.WriteLine("  <span class=\"SobekAdminTitle\">Existing Thematic Headings</span>");
-            Output.WriteLine("    <blockquote>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"90px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-            Output.WriteLine("    <th width=\"120px\" align=\"center\"><span style=\"color: White\">REORDER</span></th>");
-            Output.WriteLine("    <th width=\"350px\" align=\"left\"><span style=\"color: White\">THEMATIC HEADING</span></th>");
-            Output.WriteLine("   </tr>");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+            Output.WriteLine("  <h2>Existing Thematic Headings</h2>");
+			Output.WriteLine("  <table class=\"sbkThav_Table sbkAdm_Table\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th class=\"sbkThav_TableHeader1\">ACTIONS</th>");
+			Output.WriteLine("      <th class=\"sbkThav_TableHeader2\">REORDER</th>");
+			Output.WriteLine("      <th class=\"sbkThav_TableHeader3\">THEMATIC HEADING</th>");
+            Output.WriteLine("     </tr>");
+			Output.WriteLine("     <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
             // Write the data for each interface
             int current_order = 1;
             foreach (Thematic_Heading thisTheme in thematicHeadings)
             {
                 // Build the action links
-                Output.WriteLine("  <tr align=\"left\" >");
-                Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" id=\"VIEW_" + thisTheme.ThematicHeadingID + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return heading_form_popup('VIEW_" + thisTheme.ThematicHeadingID + "', '" + thisTheme.ThemeName + "','" + thisTheme.ThematicHeadingID + "');\">edit</a> | ");
-                Output.Write("<a title=\"Delete this thematic heading\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_heading('" + thisTheme.ThematicHeadingID + "', '" + thisTheme.ThemeName.Replace("\'", "") + "');\">delete</a> )</td>");
+                Output.WriteLine("    <tr style=\"text-align:left;\" >");
+				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
+                Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return heading_form_popup('" + thisTheme.ThemeName + "','" + thisTheme.ThematicHeadingID + "');\">edit</a> | ");
+                Output.WriteLine("<a title=\"Delete this thematic heading\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_heading('" + thisTheme.ThematicHeadingID + "', '" + thisTheme.ThemeName.Replace("\'", "") + "');\">delete</a> )</td>");
 
-                Output.Write("    <td class=\"SobekAdminActionLink\" align=\"center\" >( ");
+				Output.Write("      <td class=\"sbkAdm_ActionLink\">( ");
                 Output.Write("<a title=\"Move this heading up in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_up('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">up</a> | ");
-                Output.Write("<a title=\"Move this heading down in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_down('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">down</a> )</td>");
+                Output.WriteLine("<a title=\"Move this heading down in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_down('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">down</a> )</td>");
 
                 // Add the rest of the row with data
-                Output.WriteLine("    <td>" + thisTheme.ThemeName + "</td>");
-                Output.WriteLine("   </tr>");
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+                Output.WriteLine("      <td>" + thisTheme.ThemeName + "</td>");
+                Output.WriteLine("    </tr>");
+				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
                 current_order++;
             }
 
-            Output.WriteLine("</table>");
-            Output.WriteLine("    </blockquote>");
-            Output.WriteLine("    <br />");
+            Output.WriteLine("  </table>");
+            Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();
         }

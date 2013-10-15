@@ -238,12 +238,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("        </tr>");
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
-                if (viewType == View_Type.Thumbnail)
-                    Output.WriteLine("            <div id=\"sbkMviv_ThumbnailsArea\">");
-                else
-                    Output.WriteLine("            <div id=\"sbkMviv_MainArea\">");
+	            Output.WriteLine(viewType == View_Type.Thumbnail ? "            <div id=\"sbkMviv_ThumbnailsArea\">" : "            <div id=\"sbkMviv_MainArea\">");
 
-                if (viewType == View_Type.List)
+	            if (viewType == View_Type.List)
                 {
                     Write_List(Output, Item_List.Item_Table);
                 }
@@ -256,9 +253,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
         /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Add the tree view as controls
             if (viewType == View_Type.Tree)
@@ -274,19 +271,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("        </tr>");
                 builder.AppendLine("        <tr>");
                 builder.AppendLine("          <td>");
-                if (viewType == View_Type.Thumbnail)
-                    builder.AppendLine("            <div id=\"sbkMviv_ThumbnailsArea\">");
-                else
-                    builder.AppendLine("            <div id=\"sbkMviv_MainArea\">");
+	            builder.AppendLine(viewType == View_Type.Thumbnail ? "            <div id=\"sbkMviv_ThumbnailsArea\">" : "            <div id=\"sbkMviv_MainArea\">");
 
-                // Add the HTML for the image
+	            // Add the HTML for the image
                 Literal mainLiteral = new Literal {Text = builder.ToString()};
-                placeHolder.Controls.Add(mainLiteral);
+                MainPlaceHolder.Controls.Add(mainLiteral);
 
                 // Add the tree view
                 TreeView treeView1 = new TreeView {EnableViewState = false, CssClass = "sbkMviv_Tree"};
                 Build_Tree(treeView1, Item_List.Item_Table);
-                placeHolder.Controls.Add(treeView1);
+                MainPlaceHolder.Controls.Add(treeView1);
             }
 
             // Add the final HTML
@@ -323,7 +317,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 secondLiteral.Text = "" + Environment.NewLine + "            </div><!-- FINISHING -->" + Environment.NewLine + "</td>" + Environment.NewLine ;
             }
-            placeHolder.Controls.Add(secondLiteral);
+            MainPlaceHolder.Controls.Add(secondLiteral);
         }
 
         /// <summary> Writes the list of volumes associated with the same title as a digital resource to the output stream </summary>
@@ -348,6 +342,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             DataColumn vid_column = Volumes.Columns[13];
             DataColumn title_column = Volumes.Columns[1];
             DataColumn restriction_column = Volumes.Columns[14];
+			DataColumn dark_column = Volumes.Columns[16];
 
             // Make a view
             DataView vidSorted = new DataView(Volumes) {Sort = "VID ASC"};
@@ -384,7 +379,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             foreach (DataRowView thisItem in vidSorted)
             {
-                int access_int = Convert.ToInt32(thisItem.Row[restriction_column]);
+				int access_int = Convert.ToInt32(thisItem.Row[restriction_column]);
+				bool dark = Convert.ToBoolean(thisItem.Row[dark_column]);
+				if (dark) access_int = -1;
+
                 if (access_int < 0)
                 {
                     Output.WriteLine("  <tr class=\"sbkMviv_TablePrivateItem\">");
@@ -415,7 +413,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (access_int < 0)
                 {
-                    Output.WriteLine("    <td>private</td>");
+					if ( dark )
+	                    Output.WriteLine("    <td>dark</td>");
+					else
+						Output.WriteLine("    <td>private</td>");
                 }
                 else
                 {
@@ -446,13 +447,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Save the current viewer code
             string current_view_code = CurrentMode.ViewerCode;
             ushort current_view_page = CurrentMode.Page;
-
-            // Start this table
-            string width_statement = String.Empty;
-            if (Volumes.Rows.Count > 2)
-            {
-                width_statement = " width=\"33%\"";
-            }
 
             //Outer div which contains all the thumbnails
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
@@ -486,8 +480,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             DataRow[] matches = Volumes.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false')");
 
             // Step through item in the results
-            int col = 0;
-            int startItemCount = (CurrentMode.SubPage - 1) * 60;
+	        int startItemCount = (CurrentMode.SubPage - 1) * 60;
             int endItemCount = (CurrentMode.SubPage) * 60;
             if (Volumes.Rows.Count < 100)
                 endItemCount = matches.Length;
@@ -527,15 +520,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string vid = thisItem[vid_column].ToString();
                     string url = redirect_url.Replace("<%VID%>", vid).Replace("&", "&amp;");
 
-                    if (Convert.ToInt32(thisItem[itemid_column]) == CurrentItem.Web.ItemID)
-                    {
-                        Output.WriteLine("  <table class=\"sbkMviv_Thumbnail\" id=\"sbkMviv_ThumbnailCurrent\">");
-                    }
-                    else
-                    {
-                        Output.WriteLine("  <table class=\"sbkMviv_Thumbnail\">");
-                    }
-                    Output.WriteLine("    <tr>");
+	                Output.WriteLine(Convert.ToInt32(thisItem[itemid_column]) == CurrentItem.Web.ItemID ? "  <table class=\"sbkMviv_Thumbnail\" id=\"sbkMviv_ThumbnailCurrent\">" : "  <table class=\"sbkMviv_Thumbnail\">");
+	                Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>");
                     Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
                     Output.WriteLine("          <img src=\"" + jpeg_base + vid + "/" + thisItem[main_thumbnail_column] + "\" alt=\"MISSING THUMBNAIL\" />");
@@ -559,9 +545,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Populates a tree view control with the hierarchical collection of volumes associated with the same title as a digital resource </summary>
-        /// <param name="treeView1"> Treeview control to populate with the associated volumes </param>
+        /// <param name="TreeView1"> Treeview control to populate with the associated volumes </param>
         /// <param name="Volumes"> Source datatable with all affiliated volumes </param>
-        protected internal void Build_Tree(TreeView treeView1, DataTable Volumes)
+        protected internal void Build_Tree(TreeView TreeView1, DataTable Volumes)
         {
             const int LINE_TO_LONG = 100;
 
@@ -570,7 +556,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentItem.Behaviors.GroupTitle.Length > LINE_TO_LONG)
                 rootNode.Text = "<span id=\"sbkMviv_TableGroupTitle\">" + CurrentItem.Behaviors.GroupTitle.Substring(0, LINE_TO_LONG) + "...</span>";
             rootNode.SelectAction = TreeNodeSelectAction.None;
-            treeView1.Nodes.Add(rootNode);
+            TreeView1.Nodes.Add(rootNode);
 
             // Is this a newspaper?
             bool newspaper = CurrentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
@@ -693,7 +679,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 currentSelectedNode = singleNode1;
                                 singleNode1.SelectAction = TreeNodeSelectAction.None;
-                                singleNode1.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + singleNode1.Text + access_string + "</span>"; ;
+                                singleNode1.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + singleNode1.Text + "</span>";
 
                             }
                             else
@@ -709,10 +695,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 // Since this is the TOP level, let's look down and see if there are any non-private, non-dark items
                                 string nontranslated = thisItem[level1_text_column].ToString();
                                 int index = Convert.ToInt32(thisItem["Level1_Index"]);
-                                bool allPrivate = Volumes.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false') and ( " + level1_text_column.ColumnName + "='" + nontranslated + "') and ( Level1_Index=" + index + ")").Length == 0;
-
                                 DataRow[] test = Volumes.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false') and ( " + level1_text_column.ColumnName + "='" + nontranslated + "') and ( Level1_Index=" + index + ")");
-                                allPrivate = test.Length == 0;
+                                bool allPrivate = test.Length == 0;
 
                                 lastNode1 = new TreeNode(level1_text);
                                 if (level1_text.Length > LINE_TO_LONG)
@@ -759,7 +743,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 currentSelectedNode = singleNode2;
                                 singleNode2.SelectAction = TreeNodeSelectAction.None;
-                                singleNode2.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level2_text + access_string + "</span>"; ;
+                                singleNode2.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level2_text + access_string + "</span>"; 
                             }
                             else
                             {
@@ -812,7 +796,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 currentSelectedNode = singleNode3;
                                 singleNode3.SelectAction = TreeNodeSelectAction.None;
-                                singleNode3.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level3_text + access_string + "</span>"; ;
+                                singleNode3.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level3_text + access_string + "</span>";
                             }
                             else
                             {
@@ -858,7 +842,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 currentSelectedNode = singleNode4;
                                 singleNode4.SelectAction = TreeNodeSelectAction.None;
-                                singleNode4.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level4_text + access_string + "</span>"; ;
+                                singleNode4.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level4_text + access_string + "</span>";
                             }
                             else
                             {
@@ -897,7 +881,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             currentSelectedNode = lastNode5;
                             lastNode5.SelectAction = TreeNodeSelectAction.None;
-                            lastNode5.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level5_text + access_string + "</span>"; ;
+                            lastNode5.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level5_text + access_string + "</span>";
                         }
                         else
                         {

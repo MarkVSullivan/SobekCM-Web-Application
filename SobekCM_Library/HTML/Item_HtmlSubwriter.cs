@@ -766,12 +766,12 @@ namespace SobekCM.Library.HTML
 
                     // Add the internal comments row ( hidden content initially )
                     Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
-                    Output.WriteLine("      <td colspan=\"3\">");
+					Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;\">");
                     Output.WriteLine("        <table id=\"internal_notes_div\">");
                     Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
-                    Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
+					Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\" \">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");

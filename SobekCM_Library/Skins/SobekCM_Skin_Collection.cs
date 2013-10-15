@@ -140,10 +140,10 @@ namespace SobekCM.Library.Skins
         /// <returns> TRUE if the skin was found and removed, otherwise FALSE </returns>
         public bool Remove(string Skin_Code)
         {
-            if (!defaultSkins.ContainsKey(Skin_Code))
+			if (!defaultSkins.ContainsKey(Skin_Code.ToLower()))
                 return false;
-            
-            defaultSkins.Remove(Skin_Code);
+
+			defaultSkins.Remove(Skin_Code.ToLower());
             return true;
         }
 	}

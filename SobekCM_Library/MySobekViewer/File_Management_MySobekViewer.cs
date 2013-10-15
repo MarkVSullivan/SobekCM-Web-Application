@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,16 +28,15 @@ namespace SobekCM.Library.MySobekViewer
     /// </summary>
     public class File_Management_MySobekViewer : abstract_MySobekViewer
     {
-        private DJAccessibleProgressBar DJAccessibleProgrssBar1;
-        private DJFileUpload DJFileUpload1;
-        private DJUploadController DJUploadController1;
+        private DJAccessibleProgressBar djAccessibleProgrssBar1;
+        private DJFileUpload djFileUpload1;
+        private DJUploadController djUploadController1;
         private readonly Aggregation_Code_Manager codeManager;
         private bool criticalErrorEncountered;
         private readonly string digitalResourceDirectory;
         private readonly Dictionary<string, Wordmark_Icon> iconList;
         private readonly SobekCM_Item item;
         private readonly Item_Lookup_Object itemList;
-        private readonly List<string> validationErrors;
         private readonly SobekCM_Skin_Object webSkin;
 
         #region Constructor
@@ -73,8 +71,7 @@ namespace SobekCM.Library.MySobekViewer
             iconList = Icon_Table;
             currentMode = Current_Mode;
             webSkin = HTML_Skin;
-            this.validationErrors = validationErrors;
-            base.Translator = Translator;
+	        base.Translator = Translator;
             item = Current_Item;
             digitalResourceDirectory = Current_Item.Source_Directory;
 
@@ -141,13 +138,8 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         case 2:
                             // Clear all the file keys in the session state
-                            List<string> keys = new List<string>();
-                            foreach (string thisKey in HttpContext.Current.Session.Keys)
-                            {
-                                if (thisKey.IndexOf("file_" + item.Web.ItemID + "_") == 0)
-                                    keys.Add(thisKey);
-                            }
-                            foreach (string thisKey in keys)
+                            List<string> keys = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + item.Web.ItemID + "_") == 0).ToList();
+		                    foreach (string thisKey in keys)
                             {
                                 HttpContext.Current.Session.Remove(thisKey);
                             }
@@ -161,13 +153,8 @@ namespace SobekCM.Library.MySobekViewer
                             if (!complete_item_submission(item, null))
                             {
                                 // Clear all the file keys in the session state
-                                List<string> keys2 = new List<string>();
-                                foreach (string thisKey in HttpContext.Current.Session.Keys)
-                                {
-                                    if (thisKey.IndexOf("file_" + item.Web.ItemID + "_") == 0)
-                                        keys2.Add(thisKey);
-                                }
-                                foreach (string thisKey in keys2)
+                                List<string> keys2 = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + item.Web.ItemID + "_") == 0).ToList();
+	                            foreach (string thisKey in keys2)
                                 {
                                     HttpContext.Current.Session.Remove(thisKey);
                                 }
@@ -235,7 +222,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && ( String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", true ) != 0 ))
+                        if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && ( String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0 ))
                         {
 							// Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
 							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
@@ -293,7 +280,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(digitalResourceDirectory);
-                double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
+                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length)/1024));
                 Item_To_Complete.DiskSize_MB = size;
 
                 // Save to the database
@@ -328,9 +315,8 @@ namespace SobekCM.Library.MySobekViewer
                     string filename = digitalResourceDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
-                    string error = ee.Message;
                 }
 
                 currentMode.Base_URL = base_url;
@@ -346,13 +332,10 @@ namespace SobekCM.Library.MySobekViewer
             }
             catch (Exception ee)
             {
-                validationErrors.Add("Error encountered during item save!");
-                validationErrors.Add(ee.ToString().Replace("\r", "<br />"));
-
                 // Set an initial flag 
                 criticalErrorEncountered = true;
 
-                string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + base.currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + base.currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />User: " + user.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
+                string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />User: " + user.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
                 string error_subject = "Error during file management for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
                 string email_to = SobekCM_Library_Settings.System_Error_Email;
                 if (email_to.Length == 0)
@@ -497,9 +480,9 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, item.BibID + "_" + item.VID + ".html", true) != 0))
+                        if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, item.BibID + "_" + item.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
-	                        if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
+							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("_ingest.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
 	                            ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(item.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
 	                        {
 		                        // Is this the first image file with this name?
@@ -667,18 +650,15 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("</table></blockquote><br />");
             }
 
-            const string completionMessage = "Once all files are uploaded, press SUBMIT to finish this item.";
+            const string COMPLETION_MESSAGE = "Once all files are uploaded, press SUBMIT to finish this item.";
 
             Output.WriteLine("<table width=\"750px\">");
             Output.WriteLine("  <tr height=\"40px\" align=\"left\" valign=\"middle\" >");
-            Output.WriteLine("    <td height=\"40px\" width=\"450\">" + completionMessage + "</td>");
+            Output.WriteLine("    <td height=\"40px\" width=\"450\">" + COMPLETION_MESSAGE + "</td>");
             Output.WriteLine("    <td height=\"40px\" align=\"right\">");
             Output.WriteLine("      <button title=\"Cancel this and remove the recentely uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
-            if (download_files.Count == 0)
-                Output.WriteLine("      <button title=\"You must upload some files before you can submit your changes\" disabled=\"disabled\" class=\"sbkPiu_RoundButtonDisabled\">SUBMIT</button> &nbsp; ");
-            else
-                Output.WriteLine("      <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
-            Output.WriteLine("    </td>");
+	        Output.WriteLine(download_files.Count == 0 ? "      <button title=\"You must upload some files before you can submit your changes\" disabled=\"disabled\" class=\"sbkPiu_RoundButtonDisabled\">SUBMIT</button> &nbsp; " : "      <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+	        Output.WriteLine("    </td>");
             Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine("  <tr>");
@@ -701,19 +681,18 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        /// <summary> Add controls directly to the form, either to the main control area or to the file upload placeholder </summary>
-        /// <param name="placeHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="uploadFilesPlaceHolder"> Place holder is used for uploading file </param>
+		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder placeHolder, PlaceHolder uploadFilesPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
             // Add the upload controls to the file place holder
-            add_upload_controls(uploadFilesPlaceHolder, Tracer);
+            add_upload_controls(MainPlaceHolder, Tracer);
         }
 
-        private void add_upload_controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        private void add_upload_controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
@@ -723,36 +702,36 @@ namespace SobekCM.Library.MySobekViewer
             filesBuilder.AppendLine("<blockquote>");
 
             LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-            placeHolder.Controls.Add(filesLiteral2);
+            MainPlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
-            DJUploadController1 = new DJUploadController
+            djUploadController1 = new DJUploadController
                                       {
                                           CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
                                           ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
                                           ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
                                           AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types
                                       };
-            placeHolder.Controls.Add(DJUploadController1);
+            MainPlaceHolder.Controls.Add(djUploadController1);
 
-            DJAccessibleProgrssBar1 = new DJAccessibleProgressBar();
-            placeHolder.Controls.Add(DJAccessibleProgrssBar1);
+            djAccessibleProgrssBar1 = new DJAccessibleProgressBar();
+            MainPlaceHolder.Controls.Add(djAccessibleProgrssBar1);
 
-            DJFileUpload1 = new DJFileUpload { ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1, AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types, GoButton_CSS = "sbkPiu_RoundButton" };
-            placeHolder.Controls.Add(DJFileUpload1);
+            djFileUpload1 = new DJFileUpload { ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1, AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types, GoButton_CSS = "sbkPiu_RoundButton" };
+            MainPlaceHolder.Controls.Add(djFileUpload1);
 
             // Set the default processor
             FileSystemProcessor fs = new FileSystemProcessor { OutputPath = digitalResourceDirectory};
-            DJUploadController1.DefaultFileProcessor = fs;
+            djUploadController1.DefaultFileProcessor = fs;
 
             // Change the file processor and set it's properties.
             FieldTestProcessor fsd = new FieldTestProcessor {OutputPath = digitalResourceDirectory};
-            DJFileUpload1.FileProcessor = fsd;
+            djFileUpload1.FileProcessor = fsd;
 
             filesBuilder.AppendLine("</blockquote><br />");
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            placeHolder.Controls.Add(literal1);
+            MainPlaceHolder.Controls.Add(literal1);
         }
     }
 }
