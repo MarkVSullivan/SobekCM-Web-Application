@@ -415,9 +415,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Abstract method adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Start to build the response
             StringBuilder mapeditBuilder = new StringBuilder();
@@ -1195,7 +1195,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the literal to the placeholder
             Literal placeHolderText = new Literal();
             placeHolderText.Text = mapeditBuilder.ToString();
-            placeHolder.Controls.Add(placeHolderText);
+            MainPlaceHolder.Controls.Add(placeHolderText);
 
         }
     }

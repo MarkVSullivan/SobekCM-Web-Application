@@ -386,97 +386,103 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <br />");
 			Output.WriteLine("  <br />");
 
-			Output.WriteLine("  <h2>Unused Image Files</h2>");
-			Output.WriteLine("  <p>These are uploaded image files which are not associated with a wordmark/icon.  Use the form above to register the unused image files and allow them to be attached to digital resources.</p>");
-
-			Output.WriteLine("  <table style=\"border:0; width:100%; border-collapse: collapse; border-spacing: 0;\" class=\"statsTable\">");
-			//			Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\" ></td></tr>");
-			Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
-
-			int unused_column = 0;
-			foreach (string thisIcon in loweredFiles)
-			{
-				Output.Write("      <td style=\"width:210px;\">");
-				Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmark\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon + "\" alt=\"Missing Thumbnail\" title=\"" + thisIcon + "\" />");
-				Output.Write("<br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon + "</span>");
-
-				// Build the action links
-				Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-				Output.Write("<a title=\"Click to delete this file\" href=\"javascript:delete_wordmark_file('" + thisIcon + "');\">delete</a> )</span>");
-				Output.WriteLine("</td>");
-
-				unused_column++;
-
-				if (unused_column >= 4)
-				{
-					Output.WriteLine("    </tr>");
-					Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
-					Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
-					unused_column = 0;
-				}
-			}
-
-	        if (unused_column > 0)
+	        if (loweredFiles.Count > 0)
 	        {
-				Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+		        Output.WriteLine("  <h2>Unused Image Files</h2>");
+		        Output.WriteLine("  <p>These are uploaded image files which are not associated with a wordmark/icon.  Use the form above to register the unused image files and allow them to be attached to digital resources.</p>");
+
+		        Output.WriteLine("  <table style=\"border:0; width:100%; border-collapse: collapse; border-spacing: 0;\" class=\"statsTable\">");
+		        //			Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\" ></td></tr>");
+		        Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+
+		        int unused_column = 0;
+		        foreach (string thisIcon in loweredFiles)
+		        {
+			        Output.Write("      <td style=\"width:210px;\">");
+			        Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmark\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon + "\" alt=\"Missing Thumbnail\" title=\"" + thisIcon + "\" />");
+			        Output.Write("<br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon + "</span>");
+
+			        // Build the action links
+			        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
+			        Output.Write("<a title=\"Click to delete this file\" href=\"javascript:delete_wordmark_file('" + thisIcon + "');\">delete</a> )</span>");
+			        Output.WriteLine("</td>");
+
+			        unused_column++;
+
+			        if (unused_column >= 4)
+			        {
+				        Output.WriteLine("    </tr>");
+				        Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+				        Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+				        unused_column = 0;
+			        }
+		        }
+
+		        if (unused_column > 0)
+		        {
+			        Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+		        }
+
+		        Output.WriteLine("  </table>");
+		        Output.WriteLine("  <br />");
+		        Output.WriteLine("  <br />");
 	        }
 
-	        Output.WriteLine("  </table>");
-			Output.WriteLine("  <br />");
-			Output.WriteLine("  <br />");
+	        if (wordmarks.Count > 0)
+	        {
+		        Output.WriteLine("  <h2>Existing Wordmarks / Icons</h2>");
+		        Output.WriteLine("  <p>Wordmark/icons which exist within the system and are ready to be attached to digital resources.</p>");
 
-            Output.WriteLine("  <h2>Existing Wordmarks / Icons</h2>");
-			Output.WriteLine("  <p>Wordmark/icons which exist within the system and are ready to be attached to digital resources.</p>");
+		        Output.WriteLine("  <table style=\"border:0; width:100%; border-collapse: collapse; border-spacing: 0;\" class=\"statsTable\">");
+		        //			Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\" ></td></tr>");
+		        Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
 
-			Output.WriteLine("  <table style=\"border:0; width:100%; border-collapse: collapse; border-spacing: 0;\" class=\"statsTable\">");
-//			Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\" ></td></tr>");
-            Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+		        int current_column = 0;
+		        SortedList<string, Wordmark_Icon> sortedIcons = new SortedList<string, Wordmark_Icon>();
+		        foreach (Wordmark_Icon thisIcon in wordmarks.Values)
+		        {
+			        sortedIcons.Add(thisIcon.Code, thisIcon);
+		        }
 
-            int current_column = 0;
-            SortedList<string, Wordmark_Icon> sortedIcons = new SortedList<string, Wordmark_Icon>();
-            foreach (Wordmark_Icon thisIcon in wordmarks.Values)
-            {
-                sortedIcons.Add(thisIcon.Code, thisIcon);
-            }
+		        foreach (Wordmark_Icon thisIcon in sortedIcons.Values)
+		        {
+			        Output.Write("      <td style=\"width:210px;\">");
+			        if (thisIcon.Link.Length > 0)
+				        Output.Write("<a href=\"" + thisIcon.Link.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%?URLOPTS%>", "") + "\" target=\"_blank\">");
+			        Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmarkTitle\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
+			        if (thisIcon.Title.Length > 0)
+				        Output.Write(" title=\"" + thisIcon.Title + "\"");
+			        Output.Write(" />");
+			        if (thisIcon.Link.Length > 0)
+				        Output.Write("</a>");
+			        Output.Write("<br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon.Code + "</span>");
 
-            foreach (Wordmark_Icon thisIcon in sortedIcons.Values)
-            {
-                Output.Write("      <td style=\"width:210px;\">");
-                if (thisIcon.Link.Length > 0)
-                    Output.Write("<a href=\"" + thisIcon.Link.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%?URLOPTS%>","") + "\" target=\"_blank\">");
-				Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmarkTitle\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
-                if (thisIcon.Title.Length > 0)
-                    Output.Write(" title=\"" + thisIcon.Title + "\"");
-                Output.Write(" />");
-                if (thisIcon.Link.Length > 0)
-                    Output.Write("</a>");
-				Output.Write("<br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon.Code + "</span>");
+			        // Build the action links
+			        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to delete\" href=\"javascript:delete_wordmark('" + thisIcon.Code + "');\">delete</a> )</span>");
+			        Output.WriteLine("</td>");
 
-                // Build the action links
-				Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
-                Output.Write("<a title=\"Click to delete\" href=\"javascript:delete_wordmark('" + thisIcon.Code + "');\">delete</a> )</span>");
-                Output.WriteLine("</td>");
+			        current_column++;
 
-                current_column++;
+			        if (current_column >= 4)
+			        {
+				        Output.WriteLine("    </tr>");
+				        Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+				        Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+				        current_column = 0;
+			        }
+		        }
 
-                if (current_column >= 4)
-                {
-                    Output.WriteLine("    </tr>");
-					Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
-					Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
-                    current_column = 0;
-                }
-            }
+				if (current_column > 0)
+		        {
+			        Output.WriteLine("  <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+		        }
 
-			if (unused_column > 0)
-			{
-				Output.WriteLine("  <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
-			}
-
-            Output.WriteLine("  </table>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("</div>");
+		        Output.WriteLine("  </table>");
+		        Output.WriteLine("  <br />");
+	        }
+	        Output.WriteLine("</div>");
             Output.WriteLine();
 
 			Output.WriteLine("<!-- END Wordmarks_AdminViewer.Add_HTML_In_Main_Form -->");

@@ -80,9 +80,21 @@ textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f
 .add_new_link a:hover { color: Blue; text-decoration:underline; }
 
 
-
-
-
+/** Aggregations_Mgmt_AdminViewer **/
+.sbkAsav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-bottom: 20px; } 
+.sbkAsav_small_input { width: 120px; margin-right: 40px; margin-top: 2px; margin-bottom: 4px;  }
+select.sbkAsav_select { width: 155px; margin-right: 38px; margin-top: 2px; margin-bottom: 4px; }
+select.sbkAsav_select_large { width: 470px; margin-right: 16px; margin-top: 2px; margin-bottom: 4px;  }
+input.sbkAsav_large_input  { width: 466px; margin-top: 2px; margin-bottom: 4px;  }
+textarea.sbkAsav_input  { width: 466px; margin-top:2px;margin-bottom: 4px; FONT-FAMILY: Arial, sans-serif; font-size: small;}
+input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
+.sbkAsav_List { padding: 0 0 30px 70px; list-style-type: none;}
+.sbkAsav_List li { padding-top: 10px; }
+.sbkAsav_Table { margin-left:22px; }
+.sbkAsav_TableHeader1 { width: 130px; padding-left: 10px;}
+.sbkAsav_TableHeader2 { width: 120px; }
+.sbkAsav_TableTitleRow { background-color:#7d90d5;color: white;font-weight: bold;}
+.sbkAsav_TableTitleRow td { padding-left: 10px; }
 
 /** Aliases_AdminViewer */
 .sbkAav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
