@@ -30,7 +30,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
             get { return ItemViewer_Type_Enum.Fragment_PrintForm; }
         }
 
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
 
             if (CurrentItem.Web.ItemID > 0)
@@ -175,7 +175,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();
 
-                placeHolder.Controls.Add(new Literal() {Text = responseBuilder.ToString()});
+                MainPlaceHolder.Controls.Add(new Literal() {Text = responseBuilder.ToString()});
             }
         }
     }

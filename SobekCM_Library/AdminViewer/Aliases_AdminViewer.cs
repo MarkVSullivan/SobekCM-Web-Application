@@ -240,39 +240,47 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("  <h2>Existing Item Aggregation Aliases</h2>");
-			Output.WriteLine("  <table class=\"sbkAav_Table sbkAdm_Table\">");
-            Output.WriteLine("    <tr>");
-			Output.WriteLine("      <th class=\"sbkAav_TableHeader1\">ACTIONS</th>");
-			Output.WriteLine("      <th class=\"sbkAav_TableHeader2\">ALIAS</th>");
-			Output.WriteLine("      <th class=\"sbkAav_TableHeader3\">AGGREGATION</th>");
-            Output.WriteLine("    </tr>");
-			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
-			SortedList<string, string> sorter = new SortedList<string, string>();
-	        foreach (KeyValuePair<string, string> thisForward in aggregationAliases)
+	        if (aggregationAliases.Count > 0)
 	        {
-				sorter.Add(thisForward.Key, thisForward.Value);
+		        Output.WriteLine("  <table class=\"sbkAav_Table sbkAdm_Table\">");
+		        Output.WriteLine("    <tr>");
+		        Output.WriteLine("      <th class=\"sbkAav_TableHeader1\">ACTIONS</th>");
+		        Output.WriteLine("      <th class=\"sbkAav_TableHeader2\">ALIAS</th>");
+		        Output.WriteLine("      <th class=\"sbkAav_TableHeader3\">AGGREGATION</th>");
+		        Output.WriteLine("    </tr>");
+		        Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
+
+		        SortedList<string, string> sorter = new SortedList<string, string>();
+		        foreach (KeyValuePair<string, string> thisForward in aggregationAliases)
+		        {
+			        sorter.Add(thisForward.Key, thisForward.Value);
+		        }
+
+		        // Write the data for each interface
+		        foreach (KeyValuePair<string, string> thisForward in sorter)
+		        {
+			        // Build the action links
+			        Output.WriteLine("    <tr>");
+			        Output.Write("    <td class=\"sbkAdm_ActionLink\" >( ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to view\" href=\"" + currentMode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
+			        Output.Write("<a title=\"Delete this alias\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");
+
+			        // Add the rest of the row with data
+			        Output.WriteLine("      <td>" + thisForward.Key + "</span></td>");
+			        Output.WriteLine("      <td>" + thisForward.Value + "</span></td>");
+			        Output.WriteLine("    </tr>");
+			        Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
+		        }
+
+		        Output.WriteLine("  </table>");
 	        }
-
-	        // Write the data for each interface
-            foreach (KeyValuePair<string, string> thisForward in sorter)
-            {
-                // Build the action links
-                Output.WriteLine("    <tr>");
-				Output.Write("    <td class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
-                Output.Write("<a title=\"Click to view\" href=\"" + currentMode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
-                Output.Write("<a title=\"Delete this alias\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");
-
-                // Add the rest of the row with data
-                Output.WriteLine("      <td>" + thisForward.Key + "</span></td>");
-                Output.WriteLine("      <td>" + thisForward.Value + "</span></td>");
-                Output.WriteLine("    </tr>");
-				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
-            }
-
-            Output.WriteLine("  </table>");
-            Output.WriteLine("  <br />");
+	        else
+	        {
+				Output.WriteLine("  <p>No existing aggregation aliases exist. To add one, enter the information above and press SAVE.</p>");
+	        }
+	        Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();
         }

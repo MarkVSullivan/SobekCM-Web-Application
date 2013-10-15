@@ -304,8 +304,12 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <tr>");
 				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
 				Output.Write("<a title=\"Click to edit this project\" href=\"" + redirect.Replace("XXXXXXX", "1" + code) + "\" >edit</a> | ");
-				Output.Write("<a title=\"Click to change the name of this project\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return project_form_popup('" + code + "','" + name + "');\">rename</a> | ");
-				Output.WriteLine("<a title=\"Click to delete this project\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_project('" + code + "');\">delete</a> )</td>");
+				Output.Write("<a title=\"Click to change the name of this project\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return project_form_popup('" + code + "','" + name + "');\">rename</a> ");
+				if ( String.Compare(code, "none", StringComparison.OrdinalIgnoreCase ) != 0 )	
+					Output.WriteLine("| <a title=\"Click to delete this project\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_project('" + code + "');\">delete</a> )</td>");
+				else
+					Output.WriteLine(")</td>");
+
 
 				// Add the rest of the row with data
 				Output.WriteLine("      <td>" + code + "</td>");

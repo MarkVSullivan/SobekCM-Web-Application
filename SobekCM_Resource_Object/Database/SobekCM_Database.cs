@@ -4,13 +4,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.ApplicationBlocks.Data;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 
 namespace SobekCM.Resource_Object.Database
@@ -64,22 +64,22 @@ namespace SobekCM.Resource_Object.Database
 		#region Methods to save a single digital resource to SobekCM
 
 		/// <summary> Save a brand new bibliographic item to the SobekCM database </summary>
-		/// <param name="thisPackage"> New bibliographic package to save to the SobekCM database </param>
-		/// <param name="online_submit"> Flag indicates if this was submitted via the online interface or some other means </param>
-		/// <param name="textFlag"> Flag indicates if there are text files asscociated with this item, which would case the text searchable flag to be set to true </param>
-		/// <param name="userid"> User id of the user that submitted this item, to associate with the user's submitted folder </param>
-		/// <param name="username"> Name of the user that submitted this item, for the worklog history </param>
-		/// <param name="usernotes"> Any user notes entered while sumitting this item </param>
+		/// <param name="ThisPackage"> New bibliographic package to save to the SobekCM database </param>
+		/// <param name="OnlineSubmit"> Flag indicates if this was submitted via the online interface or some other means </param>
+		/// <param name="TextFlag"> Flag indicates if there are text files asscociated with this item, which would case the text searchable flag to be set to true </param>
+		/// <param name="Userid"> User id of the user that submitted this item, to associate with the user's submitted folder </param>
+		/// <param name="Username"> Name of the user that submitted this item, for the worklog history </param>
+		/// <param name="Usernotes"> Any user notes entered while sumitting this item </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This saves the item information, the serial hierarchy, the behaviors, tracking information, and links 
 		/// to the user and the user's folders, all in a single procedure call </remarks>
-		public static bool Save_New_Digital_Resource(SobekCM_Item thisPackage, bool textFlag, bool online_submit, string username, string usernotes, int userid )
+		public static bool Save_New_Digital_Resource(SobekCM_Item ThisPackage, bool TextFlag, bool OnlineSubmit, string Username, string Usernotes, int Userid )
 		{
 			// Save the group information ( group, interfaces, links to collections ) for this item
-            thisPackage.Web.GroupID = Save_Item_Group_Information(thisPackage, DateTime.Now);
+            ThisPackage.Web.GroupID = Save_Item_Group_Information(ThisPackage, DateTime.Now);
 
 			// Get the pub date and year
-			string pubdate = thisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
+			string pubdate = ThisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
 			int year = -1;
 			if (pubdate.Length > 0)
 			{
@@ -102,18 +102,15 @@ namespace SobekCM.Resource_Object.Database
 			// Get the spatial display and subjects information
 			StringBuilder spatialDisplayBuilder = new StringBuilder();
 			StringBuilder subjectsDisplayBuilder = new StringBuilder();
-			Bib_Info.Subject_Info_HierarchicalGeographic hierarchicalSubject;
-			Bib_Info.Subject_Info_Standard standardSubject;
-			foreach (Bib_Info.Subject_Info subject in thisPackage.Bib_Info.Subjects)
+			foreach (Bib_Info.Subject_Info subject in ThisPackage.Bib_Info.Subjects)
 			{
 				if (subject.Class_Type == Bib_Info.Subject_Info_Type.Hierarchical_Spatial)
 				{
-					hierarchicalSubject = (Bib_Info.Subject_Info_HierarchicalGeographic)subject;
 				}
 
 				if (subject.Class_Type == Bib_Info.Subject_Info_Type.Standard)
 				{
-					standardSubject = (Bib_Info.Subject_Info_Standard)subject;
+					Bib_Info.Subject_Info_Standard standardSubject = (Bib_Info.Subject_Info_Standard)subject;
 					string subjectText = standardSubject.ToString(false);
 					if (subjectsDisplayBuilder.Length > 0)
 						subjectsDisplayBuilder.Append("|");
@@ -123,30 +120,30 @@ namespace SobekCM.Resource_Object.Database
 
 			// Get the publishers
 			StringBuilder publisher_builder = new StringBuilder();
-			foreach (Bib_Info.Publisher_Info thisPublisher in thisPackage.Bib_Info.Publishers)
+			foreach (Bib_Info.Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
 			{
 				if (publisher_builder.Length > 0)
 				{
-					publisher_builder.Append("|" + thisPublisher.ToString());
+					publisher_builder.Append("|" + thisPublisher);
 				}
 				else
 				{
-					publisher_builder.Append(thisPublisher.ToString());
+					publisher_builder.Append(thisPublisher);
 				}
 			}
 
 			// Get the authors
 			StringBuilder author_builder = new StringBuilder();
 			string mainAuthor = String.Empty;
-			if (thisPackage.Bib_Info.hasMainEntityName)
-				mainAuthor = thisPackage.Bib_Info.Main_Entity_Name.ToString();
+			if (ThisPackage.Bib_Info.hasMainEntityName)
+				mainAuthor = ThisPackage.Bib_Info.Main_Entity_Name.ToString();
 			if ((mainAuthor.Length > 0) && (mainAuthor.IndexOf("unknown") < 0))
 			{
 				author_builder.Append(mainAuthor);
 			}
-			if (thisPackage.Bib_Info.Names_Count > 0)
+			if (ThisPackage.Bib_Info.Names_Count > 0)
 			{
-				foreach (Bib_Info.Name_Info thisAuthor in thisPackage.Bib_Info.Names)
+				foreach (Bib_Info.Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
 				{
 					string thisAuthorString = thisAuthor.ToString();
 					if ((thisAuthorString.Length > 0) && (thisAuthorString.IndexOf("unknown") < 0))
@@ -165,9 +162,9 @@ namespace SobekCM.Resource_Object.Database
 
 			// Get the donor
 			string donor = String.Empty;
-			if (thisPackage.Bib_Info.Donor != null)
+			if (ThisPackage.Bib_Info.Donor != null)
 			{
-				string donor_temp = thisPackage.Bib_Info.Donor.ToString();
+				string donor_temp = ThisPackage.Bib_Info.Donor.ToString();
 				if ((donor_temp.Length > 0) && (donor_temp.IndexOf("unknown") < 0))
 					donor = donor_temp;
 			}
@@ -182,7 +179,7 @@ namespace SobekCM.Resource_Object.Database
 
 			// Pull out the spatial strings (for testing)
 			string spatial_kml = String.Empty;
-            double spatial_distance = -1;
+            const double SPATIAL_DISTANCE = -1;
             //if (thisPackage.Bib_Info.hasCoordinateInformation)
             //{
             //    spatial_kml = thisPackage.Bib_Info.Coordinates.SobekCM_Main_Spatial_String;
@@ -191,7 +188,7 @@ namespace SobekCM.Resource_Object.Database
 
 			// Get the source and holding codes and the institution display information
 			StringBuilder institutionDisplayBuilder = new StringBuilder();
-			string source_code = thisPackage.Bib_Info.Source.Code;
+			string source_code = ThisPackage.Bib_Info.Source.Code;
 			string holding_code = String.Empty;
 			if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
 			{
@@ -201,20 +198,18 @@ namespace SobekCM.Resource_Object.Database
 				source_code = source_code.Substring(1);
 			if ((source_code.ToUpper().IndexOf("UF") != 0) && (source_code.ToUpper().IndexOf("IUF") != 0))
 			{
-				if (thisPackage.Bib_Info.Source.Statement.Length > 0)
-					institutionDisplayBuilder.Append(thisPackage.Bib_Info.Source.Statement);
+				if (ThisPackage.Bib_Info.Source.Statement.Length > 0)
+					institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Source.Statement);
 			}
 
-			string purl = String.Empty;
-			if (thisPackage.Bib_Info.hasLocationInformation)
+			if (ThisPackage.Bib_Info.hasLocationInformation)
 			{
-				purl = thisPackage.Bib_Info.Location.PURL;
-				holding_code = thisPackage.Bib_Info.Location.Holding_Code;
+				holding_code = ThisPackage.Bib_Info.Location.Holding_Code;
 				if ((holding_code.ToUpper().IndexOf("UF") != 0) && (holding_code.ToUpper().IndexOf("IUF") != 0))
 				{
 					if (institutionDisplayBuilder.Length == 0)
 					{
-						institutionDisplayBuilder.Append(thisPackage.Bib_Info.Location.Holding_Name);
+						institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Location.Holding_Name);
 					}
 					//else
 					//{
@@ -234,9 +229,9 @@ namespace SobekCM.Resource_Object.Database
 
 			// Determine the link
 			string link = String.Empty;
-			if ((!thisPackage.Divisions.Physical_Tree.Has_Files) && (!thisPackage.Divisions.Download_Tree.Has_Files) && (thisPackage.Bib_Info.Location.Other_URL.Length > 0))
+			if ((!ThisPackage.Divisions.Physical_Tree.Has_Files) && (!ThisPackage.Divisions.Download_Tree.Has_Files) && (ThisPackage.Bib_Info.Location.Other_URL.Length > 0))
 			{
-				link = thisPackage.Bib_Info.Location.Other_URL;
+				link = ThisPackage.Bib_Info.Location.Other_URL;
 			}
 
 			// Pull some data out (which may or may not exist)
@@ -247,24 +242,20 @@ namespace SobekCM.Resource_Object.Database
 			string icon5_name = String.Empty;
 
 			// Add the icon names, if they exist
-			thisPackage.Behaviors.Dedupe_Wordmarks();
-			if (thisPackage.Behaviors.Wordmarks.Count > 0)
-				icon1_name = thisPackage.Behaviors.Wordmarks[0].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 1)
-				icon2_name = thisPackage.Behaviors.Wordmarks[1].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 2)
-				icon3_name = thisPackage.Behaviors.Wordmarks[2].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 3)
-				icon4_name = thisPackage.Behaviors.Wordmarks[3].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 4)
-				icon5_name = thisPackage.Behaviors.Wordmarks[4].Code;
+			ThisPackage.Behaviors.Dedupe_Wordmarks();
+			if (ThisPackage.Behaviors.Wordmarks.Count > 0)
+				icon1_name = ThisPackage.Behaviors.Wordmarks[0].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 1)
+				icon2_name = ThisPackage.Behaviors.Wordmarks[1].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 2)
+				icon3_name = ThisPackage.Behaviors.Wordmarks[2].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 3)
+				icon4_name = ThisPackage.Behaviors.Wordmarks[3].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 4)
+				icon5_name = ThisPackage.Behaviors.Wordmarks[4].Code;
 
 			// Get the list of aggregation codes
-			List<string> aggregationCodes = new List<string>();
-			foreach (Aggregation_Info aggregation in thisPackage.Behaviors.Aggregations)
-			{
-				aggregationCodes.Add(aggregation.Code);
-			}
+			List<string> aggregationCodes = ThisPackage.Behaviors.Aggregations.Select(Aggregation => Aggregation.Code).ToList();
 
 			// Ensure there are at least seven here
 			while (aggregationCodes.Count < 8)
@@ -274,7 +265,7 @@ namespace SobekCM.Resource_Object.Database
 			List<int> view_type_ids = new List<int>();
 			List<string> view_labels = new List<string>();
 			List<string> view_attributes = new List<string>();
-			foreach (View_Object thisView in thisPackage.Behaviors.Item_Level_Page_Views)
+			foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
 			{
 				switch (thisView.View_Type)
 				{
@@ -316,7 +307,7 @@ namespace SobekCM.Resource_Object.Database
 				}
 			}
 
-			foreach (View_Object thisView in thisPackage.Behaviors.Views)
+			foreach (View_Object thisView in ThisPackage.Behaviors.Views)
 			{
 				switch (thisView.View_Type)
 				{
@@ -445,39 +436,39 @@ namespace SobekCM.Resource_Object.Database
 			int level4_index = -1;
 			int level5_index = -1;
 
-			if (thisPackage.Behaviors.hasSerialInformation)
+			if (ThisPackage.Behaviors.hasSerialInformation)
 			{
-				if (thisPackage.Behaviors.Serial_Info.Count > 0)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 0)
 				{
-					Serial_Info.Single_Serial_Hierarchy level1 = thisPackage.Behaviors.Serial_Info[0];
+					Serial_Info.Single_Serial_Hierarchy level1 = ThisPackage.Behaviors.Serial_Info[0];
 					level1_index = level1.Order;
 					level1_text = level1.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 1)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 1)
 				{
-					Serial_Info.Single_Serial_Hierarchy level2 = thisPackage.Behaviors.Serial_Info[1];
+					Serial_Info.Single_Serial_Hierarchy level2 = ThisPackage.Behaviors.Serial_Info[1];
 					level2_index = level2.Order;
 					level2_text = level2.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 2)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 2)
 				{
-					Serial_Info.Single_Serial_Hierarchy level3 = thisPackage.Behaviors.Serial_Info[2];
+					Serial_Info.Single_Serial_Hierarchy level3 = ThisPackage.Behaviors.Serial_Info[2];
 					level3_index = level3.Order;
 					level3_text = level3.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 3)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 3)
 				{
-					Serial_Info.Single_Serial_Hierarchy level4 = thisPackage.Behaviors.Serial_Info[3];
+					Serial_Info.Single_Serial_Hierarchy level4 = ThisPackage.Behaviors.Serial_Info[3];
 					level4_index = level4.Order;
 					level4_text = level4.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 4)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 4)
 				{
-					Serial_Info.Single_Serial_Hierarchy level5 = thisPackage.Behaviors.Serial_Info[4];
+					Serial_Info.Single_Serial_Hierarchy level5 = ThisPackage.Behaviors.Serial_Info[4];
 					level5_index = level5.Order;
 					level5_text = level5.Display;
 				}
@@ -489,24 +480,24 @@ namespace SobekCM.Resource_Object.Database
 				int i = 0;
 				// Build the parameter list
 				SqlParameter[] param_list = new SqlParameter[89];
-                param_list[i++] = new SqlParameter("@GroupID", thisPackage.Web.GroupID);
-				param_list[i++] = new SqlParameter("@VID", thisPackage.VID);
-				param_list[i++] = new SqlParameter("@PageCount", thisPackage.Divisions.Page_Count);
-				param_list[i++] = new SqlParameter("@FileCount", thisPackage.Divisions.Files.Count);
-				param_list[i++] = new SqlParameter("@Title", thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title);
-				param_list[i++] = new SqlParameter("@SortTitle", thisPackage.Bib_Info.SortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false));
+                param_list[i++] = new SqlParameter("@GroupID", ThisPackage.Web.GroupID);
+				param_list[i++] = new SqlParameter("@VID", ThisPackage.VID);
+				param_list[i++] = new SqlParameter("@PageCount", ThisPackage.Divisions.Page_Count);
+				param_list[i++] = new SqlParameter("@FileCount", ThisPackage.Divisions.Files.Count);
+				param_list[i++] = new SqlParameter("@Title", ThisPackage.Bib_Info.Main_Title.NonSort + ThisPackage.Bib_Info.Main_Title.Title);
+				param_list[i++] = new SqlParameter("@SortTitle", ThisPackage.Bib_Info.SortSafeTitle(ThisPackage.Bib_Info.Main_Title.Title, false));
 				param_list[i++] = new SqlParameter("@AccessMethod", 1);
 				param_list[i++] = new SqlParameter("@Link", link);
 				param_list[i++] = new SqlParameter("@CreateDate", DateTime.Now);
 				param_list[i++] = new SqlParameter("@PubDate", pubdate);
-				param_list[i++] = new SqlParameter("@SortDate", thisPackage.Bib_Info.SortSafeDate(pubdate));
+				param_list[i++] = new SqlParameter("@SortDate", ThisPackage.Bib_Info.SortSafeDate(pubdate));
 				param_list[i++] = new SqlParameter("@Author", author_builder.ToString());
 				param_list[i++] = new SqlParameter("@Spatial_KML", spatial_kml);
-				param_list[i++] = new SqlParameter("@Spatial_KML_Distance", spatial_distance);
-				param_list[i++] = new SqlParameter("@DiskSize_MB", thisPackage.DiskSize_MB);
+				param_list[i++] = new SqlParameter("@Spatial_KML_Distance", SPATIAL_DISTANCE);
+				param_list[i++] = new SqlParameter("@DiskSize_MB", ThisPackage.DiskSize_MB);
 				param_list[i++] = new SqlParameter("@Spatial_Display", spatialDisplayBuilder.ToString());
 				param_list[i++] = new SqlParameter("@Institution_Display", institutionDisplayBuilder.ToString());
-				param_list[i++] = new SqlParameter("@Edition_Display", thisPackage.Bib_Info.Origin_Info.Edition);
+				param_list[i++] = new SqlParameter("@Edition_Display", ThisPackage.Bib_Info.Origin_Info.Edition);
 				param_list[i++] = new SqlParameter("@Material_Display", materialDisplayBuilder.ToString());
 				param_list[i++] = new SqlParameter("@Measurement_Display", measurements);
 				param_list[i++] = new SqlParameter("@StylePeriod_Display", stylePeriodDisplayBuilder.ToString());
@@ -514,11 +505,11 @@ namespace SobekCM.Resource_Object.Database
 				param_list[i++] = new SqlParameter("@Subjects_Display", subjectsDisplayBuilder.ToString());
 				param_list[i++] = new SqlParameter("@Donor", donor);
 				param_list[i++] = new SqlParameter("@Publisher", publisher_builder.ToString());
-				param_list[i++] = new SqlParameter("@TextSearchable", textFlag);
-				param_list[i++] = new SqlParameter("@MainThumbnail", thisPackage.Behaviors.Main_Thumbnail);
-				param_list[i++] = new SqlParameter("@MainJPEG", thisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""));
-				param_list[i++] = new SqlParameter("@IP_Restriction_Mask", (short)thisPackage.Behaviors.IP_Restriction_Membership);
-				param_list[i++] = new SqlParameter("@CheckoutRequired", thisPackage.Behaviors.CheckOut_Required);
+				param_list[i++] = new SqlParameter("@TextSearchable", TextFlag);
+				param_list[i++] = new SqlParameter("@MainThumbnail", ThisPackage.Behaviors.Main_Thumbnail);
+				param_list[i++] = new SqlParameter("@MainJPEG", ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""));
+				param_list[i++] = new SqlParameter("@IP_Restriction_Mask", ThisPackage.Behaviors.IP_Restriction_Membership);
+				param_list[i++] = new SqlParameter("@CheckoutRequired", ThisPackage.Behaviors.CheckOut_Required);
 				param_list[i++] = new SqlParameter("@AggregationCode1", aggregationCodes[0]);
 				param_list[i++] = new SqlParameter("@AggregationCode2", aggregationCodes[1]);
 				param_list[i++] = new SqlParameter("@AggregationCode3", aggregationCodes[2]);
@@ -608,14 +599,14 @@ namespace SobekCM.Resource_Object.Database
 					param_list[i++] = new SqlParameter("@Level5_Index", DBNull.Value);
 				}
 
-				param_list[i++] = new SqlParameter("@VIDSource", thisPackage.Tracking.VID_Source);
+				param_list[i++] = new SqlParameter("@VIDSource", ThisPackage.Tracking.VID_Source);
 				param_list[i++] = new SqlParameter("@CopyrightIndicator", 0);
-				param_list[i++] = new SqlParameter("@Born_Digital", thisPackage.Tracking.Born_Digital);
-				param_list[i++] = new SqlParameter("@Dark", thisPackage.Behaviors.Dark_Flag);
-				if (thisPackage.Tracking.Material_Received_Date.HasValue)
+				param_list[i++] = new SqlParameter("@Born_Digital", ThisPackage.Tracking.Born_Digital);
+				param_list[i++] = new SqlParameter("@Dark", ThisPackage.Behaviors.Dark_Flag);
+				if (ThisPackage.Tracking.Material_Received_Date.HasValue)
 				{
-					param_list[i++] = new SqlParameter("@Material_Received_Date", thisPackage.Tracking.Material_Received_Date.Value);
-					param_list[i++] = new SqlParameter("@Material_Recd_Date_Estimated", thisPackage.Tracking.Material_Rec_Date_Estimated);
+					param_list[i++] = new SqlParameter("@Material_Received_Date", ThisPackage.Tracking.Material_Received_Date.Value);
+					param_list[i++] = new SqlParameter("@Material_Recd_Date_Estimated", ThisPackage.Tracking.Material_Rec_Date_Estimated);
 				}
 				else
 				{
@@ -623,31 +614,30 @@ namespace SobekCM.Resource_Object.Database
 					param_list[i++] = new SqlParameter("@Material_Recd_Date_Estimated", false);
 				}
 
-				if (thisPackage.Tracking.Disposition_Advice <= 0)
+				if (ThisPackage.Tracking.Disposition_Advice <= 0)
 					param_list[i++] = new SqlParameter("@Disposition_Advice", DBNull.Value);
 				else
-					param_list[i++] = new SqlParameter("@Disposition_Advice", thisPackage.Tracking.Disposition_Advice);
+					param_list[i++] = new SqlParameter("@Disposition_Advice", ThisPackage.Tracking.Disposition_Advice);
 
-				param_list[i++] = new SqlParameter("@Disposition_Advice_Notes", thisPackage.Tracking.Disposition_Advice_Notes);
-				param_list[i++] = new SqlParameter("@Internal_Comments", thisPackage.Tracking.Internal_Comments);
-				param_list[i++] = new SqlParameter("@Tracking_Box", thisPackage.Tracking.Tracking_Box);
-				param_list[i++] = new SqlParameter("@Online_Submit", online_submit);
-				param_list[i++] = new SqlParameter("@User", username);
-				param_list[i++] = new SqlParameter("@UserNotes", usernotes);
-				param_list[i++] = new SqlParameter("@UserID_To_Link", userid);
+				param_list[i++] = new SqlParameter("@Disposition_Advice_Notes", ThisPackage.Tracking.Disposition_Advice_Notes);
+				param_list[i++] = new SqlParameter("@Internal_Comments", ThisPackage.Tracking.Internal_Comments);
+				param_list[i++] = new SqlParameter("@Tracking_Box", ThisPackage.Tracking.Tracking_Box);
+				param_list[i++] = new SqlParameter("@Online_Submit", OnlineSubmit);
+				param_list[i++] = new SqlParameter("@User", Username);
+				param_list[i++] = new SqlParameter("@UserNotes", Usernotes);
+				param_list[i++] = new SqlParameter("@UserID_To_Link", Userid);
 
 				param_list[i] = new SqlParameter("@ItemID", -1);
 				param_list[i++].Direction = ParameterDirection.InputOutput;
-				param_list[i] = new SqlParameter("@New_VID", "00000");
-				param_list[i++].Direction = ParameterDirection.InputOutput;
+				param_list[i] = new SqlParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
 
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
 
 
 				// Save the item id and VID into the package
-                thisPackage.Web.ItemID = (int)param_list[87].Value;
-				thisPackage.VID = param_list[88].Value.ToString();
+                ThisPackage.Web.ItemID = (int)param_list[87].Value;
+				ThisPackage.VID = param_list[88].Value.ToString();
 			}
 			catch (Exception ee)
 			{
@@ -658,13 +648,13 @@ namespace SobekCM.Resource_Object.Database
 
 			// If the material reced date is filled in and there are notes about the receipt,
 			// add a workflow for this 
-			if ((thisPackage.Tracking.Material_Received_Date.HasValue) && (thisPackage.Tracking.Material_Received_Notes.Length > 0))
+			if ((ThisPackage.Tracking.Material_Received_Date.HasValue) && (ThisPackage.Tracking.Material_Received_Notes.Length > 0))
 			{
-                Update_Material_Received(thisPackage.Web.ItemID, thisPackage.Tracking.Material_Received_Date.Value, false, username, thisPackage.Tracking.Material_Received_Notes);
+                Update_Material_Received(ThisPackage.Web.ItemID, ThisPackage.Tracking.Material_Received_Date.Value, false, Username, ThisPackage.Tracking.Material_Received_Notes);
 			}
 
 			// Save any additional metadat present in the item
-			Save_Item_Metadata_Information(thisPackage);
+			Save_Item_Metadata_Information(ThisPackage);
 
             //// Save coordinates, if there are some
             //if (thisPackage.Bib_Info.hasCoordinateInformation)
@@ -677,52 +667,52 @@ namespace SobekCM.Resource_Object.Database
 		}
 		
 		/// <summary> Saves this bibliographic package to the SobekCM database </summary>
-		/// <param name="thisPackage"> Bibliographic package to save to the SobekCM database </param>
+		/// <param name="ThisPackage"> Bibliographic package to save to the SobekCM database </param>
 		/// <returns> Item ID for this... (may need it for something in the future?) </returns>
-		public static int Save_Digital_Resource( SobekCM_Item thisPackage )
+		public static int Save_Digital_Resource( SobekCM_Item ThisPackage )
 		{
-			return Save_Digital_Resource(thisPackage, DateTime.Now, false);
+			return Save_Digital_Resource(ThisPackage, DateTime.Now, false);
 		}
 
 		/// <summary> Saves this bibliographic package to the SobekCM database </summary>
-		/// <param name="thisPackage"> Bibliographic package to save to the SobekCM database </param>
-		/// <param name="createDate"> Date this item was originally created </param>
+		/// <param name="ThisPackage"> Bibliographic package to save to the SobekCM database </param>
+		/// <param name="CreateDate"> Date this item was originally created </param>
 		/// <param name="Existed"> Flag indicates if this item pre-existed </param>
 		/// <returns> Item ID for this... (may need it for something in the future?) </returns>
-		public static int Save_Digital_Resource(SobekCM_Item thisPackage, DateTime createDate, bool Existed)
+		public static int Save_Digital_Resource(SobekCM_Item ThisPackage, DateTime CreateDate, bool Existed)
 		{
 			// Save the group information ( group, interfaces, links to collections ) for this item
-            thisPackage.Web.GroupID = Save_Item_Group_Information(thisPackage, createDate);
+            ThisPackage.Web.GroupID = Save_Item_Group_Information(ThisPackage, CreateDate);
 
 			// Save the actual item information ( item, downloads, icons, link to group ) for this item
-            Save_Item_Information(thisPackage, thisPackage.Web.GroupID, createDate);
+            Save_Item_Information(ThisPackage, ThisPackage.Web.GroupID, CreateDate);
 
 			// Save the serial hierarchy information, if there was one
-			if (( thisPackage.Behaviors.hasSerialInformation ) && (  thisPackage.Behaviors.Serial_Info.Count > 0 ))
+			if (( ThisPackage.Behaviors.hasSerialInformation ) && (  ThisPackage.Behaviors.Serial_Info.Count > 0 ))
 			{
-                Save_Serial_Hierarchy_Information(thisPackage, thisPackage.Web.GroupID, thisPackage.Web.ItemID);
+                Save_Serial_Hierarchy_Information(ThisPackage, ThisPackage.Web.GroupID, ThisPackage.Web.ItemID);
 			}
 
 			// Save any additional metadata present in the item
-			Save_Item_Metadata_Information(thisPackage);
+			Save_Item_Metadata_Information(ThisPackage);
 
             // Step through all the metadata modules and allow the modules to save to the database
-            if (thisPackage.Metadata_Modules_Count > 0)
+            if (ThisPackage.Metadata_Modules_Count > 0)
             {
-                string error_message;
-                foreach (iMetadata_Module thisModule in thisPackage.All_Metadata_Modules)
+	            foreach (iMetadata_Module thisModule in ThisPackage.All_Metadata_Modules)
                 {
-                    thisModule.Save_Additional_Info_To_Database(thisPackage.Web.ItemID, connectionString, thisPackage, out error_message);
+	                string error_message;
+	                thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
                 }
             }
 
 			// Return the item id
-            return thisPackage.Web.ItemID;
+            return ThisPackage.Web.ItemID;
 		}
 
 
 
-		private static void Save_Streets_and_Features_To_Item(SobekCM_Item thisPackage, int ItemID)
+		private static void Save_Streets_and_Features_To_Item(SobekCM_Item ThisPackage, int ItemID)
 		{
 			//// Clear any existing links
 			//if (ItemID > 0)
@@ -839,7 +829,7 @@ namespace SobekCM.Resource_Object.Database
 			//}
 		}
 
-		private static void Save_GeoRegion_Links( SobekCM_Item thisPackage, int ItemID )
+		private static void Save_GeoRegion_Links( SobekCM_Item ThisPackage, int ItemID )
 		{
 			//// Clear any existing links
 			//if (ItemID > 0)
@@ -1259,82 +1249,46 @@ namespace SobekCM.Resource_Object.Database
 		#region Private helper methods for saving an individual item
 
 		/// <summary> Saves the item group information for this bibliographic package to the SobekCM database </summary>
-		/// <param name="thisPackage"> Bibliographic package to save to the SobekCM database </param>
-		/// <param name="createDate"> Day this item group was created</param>
+		/// <param name="ThisPackage"> Bibliographic package to save to the SobekCM database </param>
+		/// <param name="CreateDate"> Day this item group was created</param>
 		/// <returns> Group ID for this package </returns>
-		private static int Save_Item_Group_Information( SobekCM_Item thisPackage, DateTime createDate )
+		private static int Save_Item_Group_Information( SobekCM_Item ThisPackage, DateTime CreateDate )
 		{
 			// Pull some data out (which may or may not exist)
-			string groupTitle = thisPackage.Bib_Info.Main_Title.Title;
+			string groupTitle = ThisPackage.Bib_Info.Main_Title.Title;
 
 			// Try to determine an integer value for ALEPH number
-			string ALEPH = thisPackage.Bib_Info.ALEPH_Record;
-			int ALEPH_Number = -1;
-			if (ALEPH.Length > 0)
+			string aleph = ThisPackage.Bib_Info.ALEPH_Record;
+			int alephNumber = -1;
+			if (aleph.Length > 0)
 			{
-				bool isNumber = true;
-				foreach (char thisChar in ALEPH)
-				{
-					if (!Char.IsNumber(thisChar))
-					{
-						isNumber = false;
-						break;
-					}
-				}
-
-				if (isNumber)
-				{
-					try
-					{
-						ALEPH_Number = Convert.ToInt32(ALEPH);
-					}
-					catch
-					{
-
-					}
-				}
+				int aleph_temp;
+				if (Int32.TryParse(aleph, out aleph_temp))
+					alephNumber = Convert.ToInt32(aleph_temp);
 			}
 
 			// Try to determine a long integer value for OCLC number
-			string OCLC = thisPackage.Bib_Info.OCLC_Record;
-			int OCLC_Number = -1;
-			if (OCLC.Length > 0)
+			string oclc = ThisPackage.Bib_Info.OCLC_Record;
+			int oclcNumber = -1;
+			if (oclc.Length > 0)
 			{
-				bool isNumber = true;
-				foreach (char thisChar in OCLC)
-				{
-					if (!Char.IsNumber(thisChar))
-					{
-						isNumber = false;
-						break;
-					}
-				}
-
-				if (isNumber)
-				{
-					try
-					{
-						OCLC_Number = Convert.ToInt32(OCLC);
-					}
-					catch
-					{
-
-					}
-				}
+				int oclc_temp;
+				if ( Int32.TryParse(oclc, out oclc_temp))
+					oclcNumber = oclc_temp;
 			}
 
 			// Look for primary identifier
-			string primary_alternate_type = thisPackage.Behaviors.Primary_Identifier.Type;
-			string primary_alternate_id = thisPackage.Behaviors.Primary_Identifier.Identifier;
+			string primary_alternate_type = ThisPackage.Behaviors.Primary_Identifier.Type;
+			string primary_alternate_id = ThisPackage.Behaviors.Primary_Identifier.Identifier;
 			string accession_type = String.Empty;
 			string accession_id = String.Empty;
-			if (( thisPackage.Bib_Info.Identifiers_Count > 0 ) && (primary_alternate_id.Length == 0) || (primary_alternate_type.Length == 0))
+			if (( ThisPackage.Bib_Info.Identifiers_Count > 0 ) && (primary_alternate_id.Length == 0) || (primary_alternate_type.Length == 0))
 			{
 				// Get the type here
-			    bool artifact = thisPackage.Bib_Info.SobekCM_Type == SobekCM.Resource_Object.Bib_Info.TypeOfResource_SobekCM_Enum.Artifact;
+			    bool artifact = ThisPackage.Bib_Info.SobekCM_Type == Bib_Info.TypeOfResource_SobekCM_Enum.Artifact;
 
 			    // Step through the identifiers
-				foreach (Bib_Info.Identifier_Info thisIdentifier in thisPackage.Bib_Info.Identifiers)
+				foreach (Bib_Info.Identifier_Info thisIdentifier in ThisPackage.Bib_Info.Identifiers)
 				{
 					if (thisIdentifier.Type.IndexOf("*") >= 0)
 					{
@@ -1342,7 +1296,8 @@ namespace SobekCM.Resource_Object.Database
 						primary_alternate_id = thisIdentifier.Identifier;
 						break;
 					}
-					else if ( artifact )
+					
+					if ( artifact )
 					{
 						if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
 						{
@@ -1364,22 +1319,22 @@ namespace SobekCM.Resource_Object.Database
 			}           
 
 			// Save the main information, and keep the item id
-            Save_Item_Group_Args saveArgs = Save_Item_Group(thisPackage.BibID, groupTitle, thisPackage.Bib_Info.SortSafeTitle(groupTitle, true), thisPackage.Bib_Info.SobekCM_Type_String, thisPackage.Web.File_Root, String.Empty, false, createDate, OCLC_Number, ALEPH_Number, thisPackage.Tracking.Large_Format, thisPackage.Tracking.Track_By_Month, thisPackage.Tracking.Never_Overlay_Record, primary_alternate_type, primary_alternate_id);
-            thisPackage.Web.GroupID = saveArgs.GroupID;
-			thisPackage.BibID = saveArgs.New_BibID;
+            Save_Item_Group_Args saveArgs = Save_Item_Group(ThisPackage.BibID, groupTitle, ThisPackage.Bib_Info.SortSafeTitle(groupTitle, true), ThisPackage.Bib_Info.SobekCM_Type_String, ThisPackage.Web.File_Root, String.Empty, false, CreateDate, oclcNumber, alephNumber, ThisPackage.Tracking.Large_Format, ThisPackage.Tracking.Track_By_Month, ThisPackage.Tracking.Never_Overlay_Record, primary_alternate_type, primary_alternate_id);
+            ThisPackage.Web.GroupID = saveArgs.GroupID;
+			ThisPackage.BibID = saveArgs.New_BibID;
 
 			// If this was a new bib id, or only a single item belongs to this item group, 
 			// try to update the OAI-PMH data stored for this item
-            if ((saveArgs.Is_New) || ((thisPackage.Web.Siblings.HasValue) && (thisPackage.Web.Siblings < 1)))
+            if ((saveArgs.Is_New) || ((ThisPackage.Web.Siblings.HasValue) && (ThisPackage.Web.Siblings < 1)))
 			{
 				// Get the OAI-PMH dublin core information
 				StringBuilder oaiDataBuilder = new StringBuilder(1000);
 				StringWriter writer = new StringWriter(oaiDataBuilder);
-                METS_Sec_ReaderWriters.DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisPackage.Bib_Info);
+                METS_Sec_ReaderWriters.DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, ThisPackage.Bib_Info);
 
                 // Also add the URL as identifier
-                if (thisPackage.Web.Service_URL.Length > 0)
-                    oaiDataBuilder.AppendLine("<dc:identifier>" + thisPackage.Web.Service_URL.Replace("/" + thisPackage.VID, "") + "</dc:identifier>");
+                if (ThisPackage.Web.Service_URL.Length > 0)
+                    oaiDataBuilder.AppendLine("<dc:identifier>" + ThisPackage.Web.Service_URL.Replace("/" + ThisPackage.VID, "") + "</dc:identifier>");
 				Save_Item_Group_OAI(saveArgs.GroupID, oaiDataBuilder.ToString(), "oai_dc", false);
 
 				writer.Flush();
@@ -1387,62 +1342,61 @@ namespace SobekCM.Resource_Object.Database
 			}
 
 			// If there were web skins, save that as well
-            Save_Item_Group_Web_Skins(thisPackage.Web.GroupID, thisPackage);
+            Save_Item_Group_Web_Skins(ThisPackage.Web.GroupID, ThisPackage);
 
 			// Now, also save any external record numbers ( OCLC, ALEPH, etc.. )
 			bool aleph_or_oclc_exists = false;
-			if (thisPackage.Bib_Info.Identifiers_Count > 0)
+			if (ThisPackage.Bib_Info.Identifiers_Count > 0)
 			{
-				ReadOnlyCollection<SobekCM.Resource_Object.Bib_Info.Identifier_Info> identifiers = thisPackage.Bib_Info.Identifiers;
-				foreach (SobekCM.Resource_Object.Bib_Info.Identifier_Info identifier in identifiers)
+				ReadOnlyCollection<Bib_Info.Identifier_Info> identifiers = ThisPackage.Bib_Info.Identifiers;
+				foreach (Bib_Info.Identifier_Info identifier in identifiers)
 				{
 					string identifier_type_upper = identifier.Type.ToUpper();
 					bool added = false;
 					if (identifier_type_upper.IndexOf("OCLC") >= 0)
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "OCLC");
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "OCLC");
 						aleph_or_oclc_exists = true;
 						added = true;
 					}
 					if ((!added) && (identifier_type_upper.IndexOf("ALEPH") >= 0))
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "ALEPH");
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "ALEPH");
 						aleph_or_oclc_exists = true;
 						added = true;
 					}
 					if ((!added) && (identifier_type_upper.IndexOf("LTUF") >= 0))
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "LTUF");
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "LTUF");
 						added = true;
 					}
 					if ((!added) && (identifier_type_upper.IndexOf("LTQF") >= 0))
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "LTQF");
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "LTQF");
 						added = true;
 					}
 					if ((!added) && (identifier_type_upper.IndexOf("LCCN") >= 0))
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "LCCN");
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "LCCN");
 						added = true;
 					}
 					if ((!added) && (identifier_type_upper.IndexOf("ISBN") >= 0))
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "ISBN");
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "ISBN");
 						added = true;
 					}
 					if ((!added) && (identifier_type_upper.IndexOf("ISSN") >= 0))
 					{
-                        Add_External_Record_Number(thisPackage.Web.GroupID, identifier.Identifier, "ISSN");
-						added = true;
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "ISSN");
 					}
 				}
 			}
 
 			// Set the endeca suppress flag (which may not be actually used)
 			if (aleph_or_oclc_exists)
-				thisPackage.Behaviors.Suppress_Endeca = false;
+				ThisPackage.Behaviors.Suppress_Endeca = false;
 
-            return thisPackage.Web.GroupID;
+            return ThisPackage.Web.GroupID;
 
 		}
 		
@@ -1471,14 +1425,14 @@ namespace SobekCM.Resource_Object.Database
 		}
           
 		/// <summary> Saves information about single item </summary>
-		/// <param name="thisPackage"></param>
+		/// <param name="ThisPackage"></param>
 		/// <param name="GroupID"></param>
 		/// <param name="CreateDate"> Day this item was created </param>
 		/// <returns>TRUE if successful, otherwise FALSE </returns>
-		private static bool Save_Item_Information( SobekCM_Item thisPackage, int GroupID, DateTime CreateDate )
+		private static bool Save_Item_Information( SobekCM_Item ThisPackage, int GroupID, DateTime CreateDate )
 		{
 			// Get the pub date and year
-			string pubdate = thisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
+			string pubdate = ThisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
 			int year = -1;
 			if (pubdate.Length > 0)
 			{
@@ -1501,18 +1455,11 @@ namespace SobekCM.Resource_Object.Database
 			// Get the spatial display and subjects information
 			StringBuilder spatialDisplayBuilder = new StringBuilder();
 			StringBuilder subjectsDisplayBuilder = new StringBuilder();
-			Bib_Info.Subject_Info_HierarchicalGeographic hierarchicalSubject;
-			Bib_Info.Subject_Info_Standard standardSubject;
-			foreach (Bib_Info.Subject_Info subject in thisPackage.Bib_Info.Subjects)
+			foreach (Bib_Info.Subject_Info subject in ThisPackage.Bib_Info.Subjects)
 			{
-				if (subject.Class_Type == Bib_Info.Subject_Info_Type.Hierarchical_Spatial)
-				{
-					hierarchicalSubject = (Bib_Info.Subject_Info_HierarchicalGeographic)subject;
-				}
-
 				if (subject.Class_Type == Bib_Info.Subject_Info_Type.Standard)
 				{
-					standardSubject = (Bib_Info.Subject_Info_Standard)subject;
+					Bib_Info.Subject_Info_Standard standardSubject = (Bib_Info.Subject_Info_Standard)subject;
 					string subjectText = standardSubject.ToString(false);
 					if (subjectsDisplayBuilder.Length > 0)
 						subjectsDisplayBuilder.Append("|");
@@ -1522,7 +1469,7 @@ namespace SobekCM.Resource_Object.Database
 
 			// Get the publishers
 			StringBuilder publisher_builder = new StringBuilder();
-			foreach (Bib_Info.Publisher_Info thisPublisher in thisPackage.Bib_Info.Publishers)
+			foreach (Bib_Info.Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
 			{
 				if (publisher_builder.Length > 0)
 				{
@@ -1537,15 +1484,15 @@ namespace SobekCM.Resource_Object.Database
 			// Get the authors
 			StringBuilder author_builder = new StringBuilder();
 			string mainAuthor = String.Empty;
-			if ( thisPackage.Bib_Info.hasMainEntityName)
-				mainAuthor = thisPackage.Bib_Info.Main_Entity_Name.ToString();
+			if ( ThisPackage.Bib_Info.hasMainEntityName)
+				mainAuthor = ThisPackage.Bib_Info.Main_Entity_Name.ToString();
 			if ((mainAuthor.Length > 0) && ( mainAuthor.IndexOf("unknown") < 0 ))
 			{
 				author_builder.Append(mainAuthor);
 			}
-			if (thisPackage.Bib_Info.Names_Count > 0)
+			if (ThisPackage.Bib_Info.Names_Count > 0)
 			{
-				foreach (Bib_Info.Name_Info thisAuthor in thisPackage.Bib_Info.Names)
+				foreach (Bib_Info.Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
 				{
 					string thisAuthorString = thisAuthor.ToString();
 					if ((thisAuthorString.Length > 0) && (thisAuthorString.IndexOf("unknown") < 0))
@@ -1564,9 +1511,9 @@ namespace SobekCM.Resource_Object.Database
 
 			// Get the donor
 			string donor = String.Empty;
-			if (thisPackage.Bib_Info.Donor != null )
+			if (ThisPackage.Bib_Info.Donor != null )
 			{
-				string donor_temp = thisPackage.Bib_Info.Donor.ToString();
+				string donor_temp = ThisPackage.Bib_Info.Donor.ToString();
 				if ((donor_temp.Length > 0) && (donor_temp.IndexOf("unknown") < 0))
 					donor = donor_temp;
 			}
@@ -1579,7 +1526,7 @@ namespace SobekCM.Resource_Object.Database
 
 			// Get the source and holding codes and the institution display information
 			StringBuilder institutionDisplayBuilder = new StringBuilder();
-			string source_code = thisPackage.Bib_Info.Source.Code;
+			string source_code = ThisPackage.Bib_Info.Source.Code;
 			string holding_code = String.Empty;
 			if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
 			{
@@ -1589,20 +1536,20 @@ namespace SobekCM.Resource_Object.Database
 				source_code = source_code.Substring(1);
 			if ((source_code.ToUpper().IndexOf("UF") != 0) && (source_code.ToUpper().IndexOf("IUF") != 0))
 			{
-				if (thisPackage.Bib_Info.Source.Statement.Length > 0)
-					institutionDisplayBuilder.Append(thisPackage.Bib_Info.Source.Statement);
+				if (ThisPackage.Bib_Info.Source.Statement.Length > 0)
+					institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Source.Statement);
 			}
 
 			string purl = String.Empty;
-			if (thisPackage.Bib_Info.hasLocationInformation)
+			if (ThisPackage.Bib_Info.hasLocationInformation)
 			{
-				purl = thisPackage.Bib_Info.Location.PURL;
-				holding_code = thisPackage.Bib_Info.Location.Holding_Code;
+				purl = ThisPackage.Bib_Info.Location.PURL;
+				holding_code = ThisPackage.Bib_Info.Location.Holding_Code;
 				if ((holding_code.ToUpper().IndexOf("UF") != 0) && (holding_code.ToUpper().IndexOf("IUF") != 0))
 				{
 					if ( institutionDisplayBuilder.Length == 0 )
 					{
-						institutionDisplayBuilder.Append(thisPackage.Bib_Info.Location.Holding_Name);
+						institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Location.Holding_Name);
 					}
 					//else
 					//{
@@ -1622,7 +1569,7 @@ namespace SobekCM.Resource_Object.Database
 
 			// Pull out the spatial strings (for testing)
 			string spatial_kml = String.Empty;
-			double spatial_distance = -1;
+			const double SPATIAL_DISTANCE = -1;
             //if (thisPackage.Bib_Info.hasCoordinateInformation)
             //{
             //    spatial_kml = thisPackage.Bib_Info.Coordinates.SobekCM_Main_Spatial_String;
@@ -1631,17 +1578,17 @@ namespace SobekCM.Resource_Object.Database
 
 			// Determine the link
 			string link = String.Empty;
-			if (( !thisPackage.Divisions.Physical_Tree.Has_Files ) && ( !thisPackage.Divisions.Download_Tree.Has_Files ) && ( thisPackage.Bib_Info.Location.Other_URL.Length > 0 ))
+			if (( !ThisPackage.Divisions.Physical_Tree.Has_Files ) && ( !ThisPackage.Divisions.Download_Tree.Has_Files ) && ( ThisPackage.Bib_Info.Location.Other_URL.Length > 0 ))
 			{
-				link = thisPackage.Bib_Info.Location.Other_URL;
+				link = ThisPackage.Bib_Info.Location.Other_URL;
 			}
 
 			// Save the main information, and return the item id
-			Save_Item_Args returnVal = Save_Item( GroupID, thisPackage.VID, thisPackage.Divisions.Page_Count, thisPackage.Divisions.Files.Count,
-				thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title, thisPackage.Bib_Info.SortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false),
-				link, CreateDate, pubdate, thisPackage.Bib_Info.SortSafeDate(pubdate), holding_code, 
-				source_code, author_builder.ToString(), spatial_kml, spatial_distance, thisPackage.DiskSize_MB, donor, publisher_builder.ToString(),
-				spatialDisplayBuilder.ToString(),institutionDisplayBuilder.ToString(), thisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
+			Save_Item_Args returnVal = Save_Item( GroupID, ThisPackage.VID, ThisPackage.Divisions.Page_Count, ThisPackage.Divisions.Files.Count,
+				ThisPackage.Bib_Info.Main_Title.NonSort + ThisPackage.Bib_Info.Main_Title.Title, ThisPackage.Bib_Info.SortSafeTitle(ThisPackage.Bib_Info.Main_Title.Title, false),
+				link, CreateDate, pubdate, ThisPackage.Bib_Info.SortSafeDate(pubdate), holding_code, 
+				source_code, author_builder.ToString(), spatial_kml, SPATIAL_DISTANCE, ThisPackage.DiskSize_MB, donor, publisher_builder.ToString(),
+				spatialDisplayBuilder.ToString(),institutionDisplayBuilder.ToString(), ThisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
 				measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());
 
 			// If this was existing, clear the old data
@@ -1651,8 +1598,8 @@ namespace SobekCM.Resource_Object.Database
 			}
 
 			// Save the item id and VID into the package
-            thisPackage.Web.ItemID = returnVal.ItemID;
-			thisPackage.VID = returnVal.New_VID;
+            ThisPackage.Web.ItemID = returnVal.ItemID;
+			ThisPackage.VID = returnVal.New_VID;
 
 			//// Save all the behavior information as well
 			//Save_Behaviors(thisPackage, textFlag);	
@@ -1661,13 +1608,13 @@ namespace SobekCM.Resource_Object.Database
 		}
 
 		/// <summary> Save all the item behaviors associated with a SobekCM Digital Resource  </summary>
-		/// <param name="thisPackage"> Digital resource which needs to have its behaviors saved to the SobekCM database </param>
-		/// <param name="textFlag"> Flag indicates if this item has text files </param>
+		/// <param name="ThisPackage"> Digital resource which needs to have its behaviors saved to the SobekCM database </param>
+		/// <param name="TextFlag"> Flag indicates if this item has text files </param>
 		/// <param name="Mass_Update_Mode"> Flag indicates if this is a mass-update mode, in which case all items within a single item group will be updated </param>
-		public static void Save_Behaviors(SobekCM_Item thisPackage, bool textFlag, bool Mass_Update_Mode )
+		public static void Save_Behaviors(SobekCM_Item ThisPackage, bool TextFlag, bool Mass_Update_Mode )
 		{
 			// Get the source and holding codes
-			string source_code = thisPackage.Bib_Info.Source.Code;
+			string source_code = ThisPackage.Bib_Info.Source.Code;
 			string holding_code = String.Empty;
 			if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
 			{
@@ -1686,23 +1633,19 @@ namespace SobekCM.Resource_Object.Database
 			string icon5_name = String.Empty;
 
 			// Add the icon names, if they exist
-			if (thisPackage.Behaviors.Wordmarks.Count > 0)
-				icon1_name = thisPackage.Behaviors.Wordmarks[0].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 1)
-				icon2_name = thisPackage.Behaviors.Wordmarks[1].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 2)
-				icon3_name = thisPackage.Behaviors.Wordmarks[2].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 3)
-				icon4_name = thisPackage.Behaviors.Wordmarks[3].Code;
-			if (thisPackage.Behaviors.Wordmarks.Count > 4)
-				icon5_name = thisPackage.Behaviors.Wordmarks[4].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 0)
+				icon1_name = ThisPackage.Behaviors.Wordmarks[0].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 1)
+				icon2_name = ThisPackage.Behaviors.Wordmarks[1].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 2)
+				icon3_name = ThisPackage.Behaviors.Wordmarks[2].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 3)
+				icon4_name = ThisPackage.Behaviors.Wordmarks[3].Code;
+			if (ThisPackage.Behaviors.Wordmarks.Count > 4)
+				icon5_name = ThisPackage.Behaviors.Wordmarks[4].Code;
 
 			// Get the list of aggregation codes
-			List<string> aggregationCodes = new List<string>();
-			foreach (Aggregation_Info aggregation in thisPackage.Behaviors.Aggregations)
-			{
-				aggregationCodes.Add(aggregation.Code);
-			}
+			List<string> aggregationCodes = ThisPackage.Behaviors.Aggregations.Select(Aggregation => Aggregation.Code).ToList();
 
 			// Ensure there are at least seven here
 			while (aggregationCodes.Count < 8)
@@ -1712,7 +1655,7 @@ namespace SobekCM.Resource_Object.Database
 			List<int> view_type_ids = new List<int>();
 			List<string> view_labels = new List<string>();
 			List<string> view_attributes = new List<string>();
-			foreach (View_Object thisView in thisPackage.Behaviors.Item_Level_Page_Views)
+			foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
 			{
 				switch (thisView.View_Type)
 				{
@@ -1754,7 +1697,7 @@ namespace SobekCM.Resource_Object.Database
 				}
 			}
 
-			foreach ( View_Object thisView in thisPackage.Behaviors.Views)
+			foreach ( View_Object thisView in ThisPackage.Behaviors.Views)
 			{
 				switch (thisView.View_Type)
 				{
@@ -1873,17 +1816,17 @@ namespace SobekCM.Resource_Object.Database
 			}
 
             // Determine flags for restriction and dark
-            bool darkFlag = thisPackage.Behaviors.Dark_Flag;
-            bool darkFlag_Null = thisPackage.Behaviors.Dark_Flag_Is_Null;
-            short ip_restrict = (short)thisPackage.Behaviors.IP_Restriction_Membership;
-            bool ip_restrict_Null = thisPackage.Behaviors.IP_Restriction_Membership_Is_Null;
+            bool darkFlag = ThisPackage.Behaviors.Dark_Flag;
+            bool darkFlag_Null = ThisPackage.Behaviors.Dark_Flag_Is_Null;
+            short ip_restrict = ThisPackage.Behaviors.IP_Restriction_Membership;
+            bool ipRestrictNull = ThisPackage.Behaviors.IP_Restriction_Membership_Is_Null;
 
 			if (Mass_Update_Mode)
 			{
-                Mass_Update_Item_Behaviors(thisPackage.Web.GroupID, ip_restrict_Null, ip_restrict,
-					thisPackage.Behaviors.CheckOut_Required_Is_Null, thisPackage.Behaviors.CheckOut_Required,
+                Mass_Update_Item_Behaviors(ThisPackage.Web.GroupID, ipRestrictNull, ip_restrict,
+					ThisPackage.Behaviors.CheckOut_Required_Is_Null, ThisPackage.Behaviors.CheckOut_Required,
 					darkFlag_Null, darkFlag,
-					thisPackage.Tracking.Born_Digital_Is_Null, thisPackage.Tracking.Born_Digital,
+					ThisPackage.Tracking.Born_Digital_Is_Null, ThisPackage.Tracking.Born_Digital,
 					aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
 					aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
 					view_type_ids[0], view_labels[0], view_attributes[0],
@@ -1898,25 +1841,46 @@ namespace SobekCM.Resource_Object.Database
 
 
 
-                Save_Item_Behaviors(thisPackage.Web.ItemID, textFlag, thisPackage.Behaviors.Main_Thumbnail, 
-                    thisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
-                    thisPackage.Behaviors.CheckOut_Required, darkFlag, thisPackage.Tracking.Born_Digital, thisPackage.Tracking.Disposition_Advice, thisPackage.Tracking.Disposition_Advice_Notes,
-					thisPackage.Tracking.Material_Received_Date, thisPackage.Tracking.Material_Rec_Date_Estimated, thisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
+                Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail, 
+                    ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
+                    ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
+					ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
 					aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
 					view_type_ids[0], view_labels[0], view_attributes[0],
 					view_type_ids[1], view_labels[1], view_attributes[1],
 					view_type_ids[2], view_labels[2], view_attributes[2],
 					view_type_ids[3], view_labels[3], view_attributes[3],
 					view_type_ids[4], view_labels[4], view_attributes[4],
-					view_type_ids[5], view_labels[5], view_attributes[5], thisPackage.Behaviors.Left_To_Right );
+					view_type_ids[5], view_labels[5], view_attributes[5], ThisPackage.Behaviors.Left_To_Right );
 			}
+
+			// Also, save the ticlers
+			string tickler1 = String.Empty;
+			string tickler2 = String.Empty;
+			string tickler3 = String.Empty;
+			string tickler4 = String.Empty;
+			string tickler5 = String.Empty;
+
+			if (ThisPackage.Behaviors.Ticklers_Count > 0)
+				tickler1 = ThisPackage.Behaviors.Ticklers[0];
+			if (ThisPackage.Behaviors.Ticklers_Count > 1)
+				tickler2 = ThisPackage.Behaviors.Ticklers[1];
+			if (ThisPackage.Behaviors.Ticklers_Count > 2)
+				tickler3 = ThisPackage.Behaviors.Ticklers[2];
+			if (ThisPackage.Behaviors.Ticklers_Count > 3)
+				tickler4 = ThisPackage.Behaviors.Ticklers[3];
+			if (ThisPackage.Behaviors.Ticklers_Count > 4)
+				tickler5 = ThisPackage.Behaviors.Ticklers[4];
+
+			Save_Item_Ticklers(ThisPackage.Web.ItemID, tickler1, tickler2, tickler3, tickler4, tickler5);
+
 		}
 
 		/// <summary> Saves the serial hierarchy information for a single item </summary>
-		/// <param name="thisPackage"></param>
+		/// <param name="ThisPackage"></param>
 		/// <param name="GroupID"></param>
 		/// <param name="ItemID"></param>
-		public static void Save_Serial_Hierarchy_Information( SobekCM_Item thisPackage, int GroupID, int ItemID )
+		public static void Save_Serial_Hierarchy_Information( SobekCM_Item ThisPackage, int GroupID, int ItemID )
 		{
 			string level1_text = String.Empty;
 			string level2_text = String.Empty;
@@ -1931,48 +1895,48 @@ namespace SobekCM.Resource_Object.Database
 
 			StringBuilder builder = new StringBuilder();
 
-			if (thisPackage.Behaviors.hasSerialInformation)
+			if (ThisPackage.Behaviors.hasSerialInformation)
 			{
-				if (thisPackage.Behaviors.Serial_Info.Count > 0)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 0)
 				{
-					Serial_Info.Single_Serial_Hierarchy level1 = thisPackage.Behaviors.Serial_Info[0];
+					Serial_Info.Single_Serial_Hierarchy level1 = ThisPackage.Behaviors.Serial_Info[0];
 					level1_index = level1.Order;
 					level1_text = level1.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 1)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 1)
 				{
-					Serial_Info.Single_Serial_Hierarchy level2 = thisPackage.Behaviors.Serial_Info[1];
+					Serial_Info.Single_Serial_Hierarchy level2 = ThisPackage.Behaviors.Serial_Info[1];
 					level2_index = level2.Order;
 					level2_text = level2.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 2)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 2)
 				{
-					Serial_Info.Single_Serial_Hierarchy level3 = thisPackage.Behaviors.Serial_Info[2];
+					Serial_Info.Single_Serial_Hierarchy level3 = ThisPackage.Behaviors.Serial_Info[2];
 					level3_index = level3.Order;
 					level3_text = level3.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 3)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 3)
 				{
-					Serial_Info.Single_Serial_Hierarchy level4 = thisPackage.Behaviors.Serial_Info[3];
+					Serial_Info.Single_Serial_Hierarchy level4 = ThisPackage.Behaviors.Serial_Info[3];
 					level4_index = level4.Order;
 					level4_text = level4.Display;
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 4)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 4)
 				{
-					Serial_Info.Single_Serial_Hierarchy level5 = thisPackage.Behaviors.Serial_Info[4];
+					Serial_Info.Single_Serial_Hierarchy level5 = ThisPackage.Behaviors.Serial_Info[4];
 					level5_index = level5.Order;
 					level5_text = level5.Display;
 				}
 
 				
-				for (int i = 0; i < thisPackage.Behaviors.Serial_Info.Count; i++)
+				for (int i = 0; i < ThisPackage.Behaviors.Serial_Info.Count; i++)
 				{
-					builder.Append(thisPackage.Behaviors.Serial_Info[i].Display + "|" + thisPackage.Behaviors.Serial_Info[i].Order);
-					if ((i + 1) < thisPackage.Behaviors.Serial_Info.Count)
+					builder.Append(ThisPackage.Behaviors.Serial_Info[i].Display + "|" + ThisPackage.Behaviors.Serial_Info[i].Order);
+					if ((i + 1) < ThisPackage.Behaviors.Serial_Info.Count)
 						builder.Append(";");
 				}
 			}
@@ -1981,24 +1945,24 @@ namespace SobekCM.Resource_Object.Database
 			SobekCM_Database.Save_Serial_Hierarchy(GroupID, ItemID, level1_text, level1_index, level2_text, level2_index, level3_text, level3_index, level4_text, level4_index, level5_text, level5_index, builder.ToString() );
 		}
 
-		private static bool Save_Item_Metadata_Information( SobekCM_Item thisPackage )
+		private static bool Save_Item_Metadata_Information( SobekCM_Item ThisPackage )
 		{
 			// Clear any existing item metadata
-            SobekCM_Database.Clear_Item_Metadata(thisPackage.Web.ItemID, false);
+            SobekCM_Database.Clear_Item_Metadata(ThisPackage.Web.ItemID, false);
 
 			// Build lists of the metadata now
             List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
 
             // Add the BibID
-            metadataTerms.Add(new KeyValuePair<string, string>("BibID", thisPackage.BibID));
+            metadataTerms.Add(new KeyValuePair<string, string>("BibID", ThisPackage.BibID));
 
             // Add the main bibliographic terms
-            metadataTerms.AddRange(thisPackage.Bib_Info.Metadata_Search_Terms);
+            metadataTerms.AddRange(ThisPackage.Bib_Info.Metadata_Search_Terms);
 
             // Step through all the metadata modules and add any additional metadata search terms
-            if (thisPackage.Metadata_Modules_Count > 0)
+            if (ThisPackage.Metadata_Modules_Count > 0)
             {
-                foreach (iMetadata_Module thisModule in thisPackage.All_Metadata_Modules)
+                foreach (iMetadata_Module thisModule in ThisPackage.All_Metadata_Modules)
                 {
                     List<KeyValuePair<string, string>> moduleMetadata = thisModule.Metadata_Search_Terms;
                     if ( moduleMetadata != null )
@@ -2007,48 +1971,48 @@ namespace SobekCM.Resource_Object.Database
             }
 
 			// Add serial information
-			if (thisPackage.Behaviors.hasSerialInformation)
+			if (ThisPackage.Behaviors.hasSerialInformation)
 			{
-				if (thisPackage.Behaviors.Serial_Info.Count > 0)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 0)
 				{
-                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisPackage.Behaviors.Serial_Info[0].Display));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", ThisPackage.Behaviors.Serial_Info[0].Display));
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 1)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 1)
 				{
-                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisPackage.Behaviors.Serial_Info[1].Display));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", ThisPackage.Behaviors.Serial_Info[1].Display));
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 2)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 2)
 				{
-                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisPackage.Behaviors.Serial_Info[2].Display));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", ThisPackage.Behaviors.Serial_Info[2].Display));
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 3)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 3)
 				{
-                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisPackage.Behaviors.Serial_Info[3].Display));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", ThisPackage.Behaviors.Serial_Info[3].Display));
 				}
 
-				if (thisPackage.Behaviors.Serial_Info.Count > 4)
+				if (ThisPackage.Behaviors.Serial_Info.Count > 4)
 				{
-                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisPackage.Behaviors.Serial_Info[4].Display));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", ThisPackage.Behaviors.Serial_Info[4].Display));
 				}
 			}
 
 			// Add in the ticklers
-			if (thisPackage.Behaviors.Ticklers_Count > 0)
+			if (ThisPackage.Behaviors.Ticklers_Count > 0)
 			{
-				foreach (string thisTickler in thisPackage.Behaviors.Ticklers)
+				foreach (string thisTickler in ThisPackage.Behaviors.Ticklers)
 				{
                     metadataTerms.Add(new KeyValuePair<string, string>("Tickler", thisTickler));
 				}
 			}
 
 			// Add any download MIME Types
-			if ( thisPackage.Divisions.Download_Tree.Has_Files )
+			if ( ThisPackage.Divisions.Download_Tree.Has_Files )
 			{
 				List<string> mimeTypes = new List<string>();
-				List<SobekCM_File_Info> allDownloads = thisPackage.Divisions.Download_Tree.All_Files;
+				List<SobekCM_File_Info> allDownloads = ThisPackage.Divisions.Download_Tree.All_Files;
 				foreach (SobekCM_File_Info thisDownload in allDownloads)
 				{
 					string thisMimeType = thisDownload.MIME_Type(thisDownload.File_Extension);
@@ -2065,7 +2029,7 @@ namespace SobekCM.Resource_Object.Database
 
 			// Add all the TOC here
 			List<string> tocterms = new List<string>();
-			List<SobekCM.Resource_Object.Divisions.abstract_TreeNode> divsAndPages = thisPackage.Divisions.Physical_Tree.Divisions_PreOrder;
+			List<SobekCM.Resource_Object.Divisions.abstract_TreeNode> divsAndPages = ThisPackage.Divisions.Physical_Tree.Divisions_PreOrder;
 			foreach (SobekCM.Resource_Object.Divisions.abstract_TreeNode thisNode in divsAndPages)
 			{
 				if (thisNode.Page)
@@ -2089,11 +2053,8 @@ namespace SobekCM.Resource_Object.Database
 						tocterms.Add(thisNode.Type);
 				}
 			}
-			foreach( string thisTocTerm in tocterms )
-			{
-                metadataTerms.Add(new KeyValuePair<string, string>("TOC", thisTocTerm));
-			}
-         
+			metadataTerms.AddRange(tocterms.Select(ThisTocTerm => new KeyValuePair<string, string>("TOC", ThisTocTerm)));
+
 			// Just add blanks in at the end to get this to an increment of ten
             while ((metadataTerms.Count % 10) != 0)
 			{
@@ -2105,7 +2066,7 @@ namespace SobekCM.Resource_Object.Database
             while ((current_index + 10) <= metadataTerms.Count)
 			{
 				// Save the next ten values
-                SobekCM_Database.Save_Item_Metadata(thisPackage.Web.ItemID, 
+                SobekCM_Database.Save_Item_Metadata(ThisPackage.Web.ItemID, 
                     metadataTerms[current_index].Key, metadataTerms[current_index].Value,
                     metadataTerms[current_index + 1].Key, metadataTerms[current_index + 1].Value,
                     metadataTerms[current_index + 2].Key, metadataTerms[current_index + 2].Value,
@@ -2122,7 +2083,7 @@ namespace SobekCM.Resource_Object.Database
 			}
 
 			// Finally, have the database build the full citation based on each metadata element
-            SobekCM_Database.Create_Full_Citation_Value(thisPackage.Web.ItemID);
+            Create_Full_Citation_Value(ThisPackage.Web.ItemID);
 
 			return true;
 		}
@@ -2202,12 +2163,9 @@ namespace SobekCM.Resource_Object.Database
 				param_list[11] = new SqlParameter("@Update_Existing", Update_Existing);
 				param_list[12] = new SqlParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
 				param_list[13] = new SqlParameter("@PrimaryIdentifier", Primary_Identifier);
-				param_list[14] = new SqlParameter("@GroupID", -1);
-				param_list[14].Direction = ParameterDirection.InputOutput;
-				param_list[15] = new SqlParameter("@New_BibID", "0000000000" );
-				param_list[15].Direction = ParameterDirection.InputOutput;
-				param_list[16] = new SqlParameter("@New_Group", false);
-				param_list[16].Direction = ParameterDirection.InputOutput;
+				param_list[14] = new SqlParameter("@GroupID", -1) {Direction = ParameterDirection.InputOutput};
+				param_list[15] = new SqlParameter("@New_BibID", "0000000000" ) {Direction = ParameterDirection.InputOutput};
+				param_list[16] = new SqlParameter("@New_Group", false) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group", param_list);
@@ -2262,12 +2220,12 @@ namespace SobekCM.Resource_Object.Database
 
 		/// <summary> Saves the links between an item group and the web skins possible </summary>
 		/// <param name="GroupID"> Primary key to this item group / title in the SobekCM database </param>
-		/// <param name="thisPackage"> Digital resource object from which to save the web skins </param>
+		/// <param name="ThisPackage"> Digital resource object from which to save the web skins </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Group_Web_Skins'. </remarks>
 		/// <exception cref="ApplicationException"> Exception is thrown if an error is caught during 
 		/// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-		public static bool Save_Item_Group_Web_Skins(int GroupID, SobekCM_Item thisPackage )
+		public static bool Save_Item_Group_Web_Skins(int GroupID, SobekCM_Item ThisPackage )
 		{
 			// Get all the web skin restrictions from this package, if they exist
 			string primaryInterface = String.Empty;
@@ -2280,27 +2238,27 @@ namespace SobekCM.Resource_Object.Database
 			string altInterface7 = String.Empty;
 			string altInterface8 = String.Empty;
 			string altInterface9 = String.Empty;
-			if (thisPackage.Behaviors.Web_Skins.Count > 0)
+			if (ThisPackage.Behaviors.Web_Skins.Count > 0)
 			{
-				primaryInterface = thisPackage.Behaviors.Web_Skins[0];
-				if (thisPackage.Behaviors.Web_Skins.Count > 1)
-					altInterface1 = thisPackage.Behaviors.Web_Skins[1];
-				if (thisPackage.Behaviors.Web_Skins.Count > 2)
-					altInterface2 = thisPackage.Behaviors.Web_Skins[2];
-				if (thisPackage.Behaviors.Web_Skins.Count > 3)
-					altInterface3 = thisPackage.Behaviors.Web_Skins[3];
-				if (thisPackage.Behaviors.Web_Skins.Count > 4)
-					altInterface4 = thisPackage.Behaviors.Web_Skins[4];
-				if (thisPackage.Behaviors.Web_Skins.Count > 5)
-					altInterface5 = thisPackage.Behaviors.Web_Skins[5];
-				if (thisPackage.Behaviors.Web_Skins.Count > 6)
-					altInterface6 = thisPackage.Behaviors.Web_Skins[6];
-				if (thisPackage.Behaviors.Web_Skins.Count > 7)
-					altInterface7 = thisPackage.Behaviors.Web_Skins[7];
-				if (thisPackage.Behaviors.Web_Skins.Count > 8)
-					altInterface8 = thisPackage.Behaviors.Web_Skins[8];
-				if (thisPackage.Behaviors.Web_Skins.Count > 9)
-					altInterface9 = thisPackage.Behaviors.Web_Skins[9];
+				primaryInterface = ThisPackage.Behaviors.Web_Skins[0];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 1)
+					altInterface1 = ThisPackage.Behaviors.Web_Skins[1];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 2)
+					altInterface2 = ThisPackage.Behaviors.Web_Skins[2];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 3)
+					altInterface3 = ThisPackage.Behaviors.Web_Skins[3];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 4)
+					altInterface4 = ThisPackage.Behaviors.Web_Skins[4];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 5)
+					altInterface5 = ThisPackage.Behaviors.Web_Skins[5];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 6)
+					altInterface6 = ThisPackage.Behaviors.Web_Skins[6];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 7)
+					altInterface7 = ThisPackage.Behaviors.Web_Skins[7];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 8)
+					altInterface8 = ThisPackage.Behaviors.Web_Skins[8];
+				if (ThisPackage.Behaviors.Web_Skins.Count > 9)
+					altInterface9 = ThisPackage.Behaviors.Web_Skins[9];
 
 
 			}
@@ -2374,7 +2332,7 @@ namespace SobekCM.Resource_Object.Database
 		/// <param name="Author"> Display field includes all authors' names </param>
 		/// <param name="Spatial_KML"> List of main coordinate points in the main display for this item</param>
 		/// <param name="Spatial_KML_Distance"> Distance of the hypotenuse of the bounding box made up by the coordinates in this item </param>
-		/// <param name="DiskSize_MB"> Total size (in MB) of this entire package on the digital library </param>
+		/// <param name="DiskSizeMb"> Total size (in MB) of this entire package on the digital library </param>
 		/// <param name="Donor">Donor string to display for this item within any search or browse results</param>
 		/// <param name="Publisher">Publishers string to display for this item within any search or browse results ( multiple publishers are seperated by a '|' character )</param>
 		/// <param name="Edition"> Edition/state string to display for this item within any search or browse results</param>
@@ -2390,7 +2348,7 @@ namespace SobekCM.Resource_Object.Database
 		protected static Save_Item_Args Save_Item(int GroupID, string VID, int PageCount, int FileCount,
 			string Title, string SortTitle, string Link, DateTime CreateDate, string PubDate, int SortDate,
 			string Holding_Code, string Source_Code, string Author, string Spatial_KML, double Spatial_KML_Distance, 
-			double DiskSize_MB, string Donor, string Publisher, string Spatial_Display, string Institution_Display, 
+			double DiskSizeMb, string Donor, string Publisher, string Spatial_Display, string Institution_Display, 
 			string Edition, string Material_Display, string Measurement_Display, string StylePeriod_Display, string Technique_Display,
 			string Subjects_Display )
 		{
@@ -2414,7 +2372,7 @@ namespace SobekCM.Resource_Object.Database
 				param_list[13] = new SqlParameter("@Author", Author);
 				param_list[14] = new SqlParameter("@Spatial_KML", Spatial_KML);
 				param_list[15] = new SqlParameter("@Spatial_KML_Distance", Spatial_KML_Distance);
-				param_list[16] = new SqlParameter("@DiskSize_MB", DiskSize_MB);
+				param_list[16] = new SqlParameter("@DiskSize_MB", DiskSizeMb);
 				param_list[17] = new SqlParameter("@Spatial_Display", Spatial_Display);
 				param_list[18] = new SqlParameter("@Institution_Display", Institution_Display);
 				param_list[19] = new SqlParameter("@Edition_Display", Edition );
@@ -2425,12 +2383,9 @@ namespace SobekCM.Resource_Object.Database
 				param_list[24] = new SqlParameter("@Subjects_Display", Subjects_Display );
 				param_list[25] = new SqlParameter("@Donor", Donor);
 				param_list[26] = new SqlParameter("@Publisher", Publisher);
-				param_list[27] = new SqlParameter("@ItemID", -1);
-				param_list[27].Direction = ParameterDirection.InputOutput;
-				param_list[28] = new SqlParameter("@Existing", false);
-				param_list[28].Direction = ParameterDirection.InputOutput;
-				param_list[29] = new SqlParameter("@New_VID", "00000");
-				param_list[29].Direction = ParameterDirection.InputOutput;
+				param_list[27] = new SqlParameter("@ItemID", -1) {Direction = ParameterDirection.InputOutput};
+				param_list[28] = new SqlParameter("@Existing", false) {Direction = ParameterDirection.InputOutput};
+				param_list[29] = new SqlParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
 
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
@@ -2731,6 +2686,42 @@ namespace SobekCM.Resource_Object.Database
 			}
 		}
 
+		/// <summary> Saves up to five ticklers for a single item in a SobekCM digital library </summary>
+		/// <param name="ItemID"> Item ID to associate these ticklers with </param>
+		/// <param name="Tickler1"> Tickler to save for this item </param>
+		/// <param name="Tickler2"> Tickler to save for this item </param>
+		/// <param name="Tickler3"> Tickler to save for this item </param>
+		/// <param name="Tickler4"> Tickler to save for this item </param>
+		/// <param name="Tickler5"> Tickler to save for this item </param>
+		/// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Ticklers'. </remarks>
+		/// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+		/// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+		protected static bool Save_Item_Ticklers(int ItemID, string Tickler1, string Tickler2, string Tickler3, string Tickler4, string Tickler5 )
+		{
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] param_list = new SqlParameter[6];
+				param_list[0] = new SqlParameter("@ItemID", ItemID);
+				param_list[1] = new SqlParameter("@Tickler1", Tickler1);
+				param_list[2] = new SqlParameter("@Tickler2", Tickler2);
+				param_list[3] = new SqlParameter("@Tickler3", Tickler3);
+				param_list[4] = new SqlParameter("@Tickler4", Tickler4);
+				param_list[5] = new SqlParameter("@Tickler5", Tickler5);
+				
+				// Execute this non-query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Ticklers", param_list);
+
+				return true;
+			}
+			catch (Exception ee)
+			{
+				// Pass this exception onto the method to handle it
+				exception_caught("SobekCM_Save_Item_Ticklers", ee);
+				return false;
+			}
+		}
+
 
 		/// <summary> Adds up to three additional views for a single item in a SobekCM digital library </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item to add </param>
@@ -3015,28 +3006,28 @@ namespace SobekCM.Resource_Object.Database
         /// <param name="BibID"></param>BibID for the item
         /// <param name="VID"></param>VID for this item
         /// <param name="MainThumbnailFileName"></param>Filename of the main thumbnail image (.thm extension)
-        /// <param name="MainJPGFileName"></param>Filename of the main thumbnail JPEG image (.jpg extension)
+        /// <param name="MainJpgFileName"></param>Filename of the main thumbnail JPEG image (.jpg extension)
         /// <param name="PageCount"></param>Updated count of the pages for this item
         /// <param name="FileCount"></param>Total count of all the files for the pages of this item
-        /// <param name="Disksize_mb"></param>Total disk space occupied by all the files of this item
+        /// <param name="DisksizeMb"></param>Total disk space occupied by all the files of this item
         /// <param name="Notes"></param>Notes/Comments entered by the user through the QC interface
         /// <param name="User"></param>Logged in user info
         /// <returns></returns>
-		public static bool QC_Update_Item_Info(string BibID, string VID, string User, string MainThumbnailFileName, string MainJPGFileName, int PageCount, int FileCount, double Disksize_mb, string Notes)
+		public static bool QC_Update_Item_Info(string BibID, string VID, string User, string MainThumbnailFileName, string MainJpgFileName, int PageCount, int FileCount, double DisksizeMb, string Notes)
 		{
 		    try
 		    {
-		        int ItemID = Get_ItemID(BibID, VID);
+		        int itemID = Get_ItemID(BibID, VID);
                 //Build the parameter list
                 SqlParameter[] param_list = new SqlParameter[8];
-                param_list[0] =new SqlParameter("@itemid", ItemID);
+                param_list[0] =new SqlParameter("@itemid", itemID);
                 param_list[1] = new SqlParameter("@notes", Notes); 
 		        param_list[2] = new SqlParameter("@onlineuser", User);
                 param_list[3] = new SqlParameter("@mainthumbnail", MainThumbnailFileName);
-                param_list[4] = new SqlParameter("@mainjpeg", MainJPGFileName); 
+                param_list[4] = new SqlParameter("@mainjpeg", MainJpgFileName); 
                 param_list[5] = new SqlParameter("@pagecount", PageCount); 
                 param_list[6] = new SqlParameter("@filecount", FileCount);
-                param_list[7] = new SqlParameter("@disksize_mb", Disksize_mb);
+                param_list[7] = new SqlParameter("@disksize_mb", DisksizeMb);
 
 
                 //Execute this non-query stored procedure
@@ -3419,10 +3410,10 @@ namespace SobekCM.Resource_Object.Database
 		/// <param name="VID"> Volume identifier for the item/volume to update </param>
 		/// <param name="PageCount"> Number of pages linked to this item in the library </param>
 		/// <param name="FileCount"> Number of page image files linked to this item in the library </param>
-		/// <param name="DiskSize_MB"> Size of the entire digital resource on the image server  </param>
+		/// <param name="DiskSizeMb"> Size of the entire digital resource on the image server  </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Item_Online_Statistics' stored procedure </remarks> 
-		public static bool Update_Item_Online_Statistics(string BibID, string VID, int PageCount, int FileCount, double DiskSize_MB)
+		public static bool Update_Item_Online_Statistics(string BibID, string VID, int PageCount, int FileCount, double DiskSizeMb)
 		{
 			try
 			{
@@ -3432,7 +3423,7 @@ namespace SobekCM.Resource_Object.Database
 				param_list[1] = new SqlParameter("@vid", VID);
 				param_list[2] = new SqlParameter("@pagecount", PageCount);
 				param_list[3] = new SqlParameter("@filecount", FileCount);
-				param_list[4] = new SqlParameter("@disksize_mb", DiskSize_MB);
+				param_list[4] = new SqlParameter("@disksize_mb", DiskSizeMb);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Online_Statistics", param_list);
@@ -3495,49 +3486,15 @@ namespace SobekCM.Resource_Object.Database
 			int aleph = -999;
 			if (OCLC.Length > 0)
 			{
-				bool isNumeric = true;
-				foreach (char thisChar in OCLC)
-				{
-					if (!Char.IsNumber(thisChar))
-					{
-						isNumeric = false;
-						break;
-					}
-				}
-				if (isNumeric)
-				{
-					try
-					{
-						oclc = Convert.ToInt64(OCLC);
-					}
-					catch
-					{
-
-					}
-				}
+				long oclc_temp;
+				if (Int64.TryParse(OCLC, out oclc_temp))
+					oclc = oclc_temp;
 			}
 			if (Local_Catalog_ID.Length > 0)
 			{
-				bool isNumeric = true;
-				foreach (char thisChar in Local_Catalog_ID)
-				{
-					if (!Char.IsNumber(thisChar))
-					{
-						isNumeric = false;
-						break;
-					}
-				}
-				if (isNumeric)
-				{
-					try
-					{
-						aleph = Convert.ToInt32(Local_Catalog_ID);
-					}
-					catch
-					{
-
-					}
-				}
+				int catalog_temp;
+				if (Int32.TryParse(Local_Catalog_ID, out catalog_temp))
+					aleph = catalog_temp;
 			}
 
 			try
@@ -3570,27 +3527,27 @@ namespace SobekCM.Resource_Object.Database
         #region Public non-database related methods
 
         /// <summary> Gets a flag indicating if the provided string appears to be in bib id format </summary>
-		/// <param name="test_string"> string to check for bib id format </param>
+		/// <param name="TestString"> string to check for bib id format </param>
 		/// <returns> TRUE if this string appears to be in bib id format, otherwise FALSE </returns>
-		public static bool is_bibid_format( string test_string )
+		public static bool is_bibid_format( string TestString )
 		{
 			// Must be 10 characters long to start with
-			if ( test_string.Length != Bib_Length)
+			if ( TestString.Length != Bib_Length)
 				return false;
 
 			// Use regular expressions to check format
 			Regex myReg = new Regex("[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
-			return myReg.IsMatch( test_string.ToUpper() );
+			return myReg.IsMatch( TestString.ToUpper() );
 		}
 
 		/// <summary> Static method to set if a string is a vid VIDS format</summary>
-		/// <param name="test_string"> string to check for vid VIDS format</param>
+		/// <param name="TestString"> string to check for vid VIDS format</param>
 		/// <returns>TRUE if this string appears to be in VID format, otherwise FALSE</returns>
-		public static bool is_vids_format( string test_string)
+		public static bool is_vids_format( string TestString)
 		{
-			if (test_string.Length != Vids_Length)
+			if (TestString.Length != Vids_Length)
 				return false; 
-			return Regex.Match(test_string.ToUpper(), @"^[0-9]{5}$").Success;
+			return Regex.Match(TestString.ToUpper(), @"^[0-9]{5}$").Success;
 		}
 
 		#endregion
@@ -3637,38 +3594,38 @@ namespace SobekCM.Resource_Object.Database
 		/// <summary> Flag indicates whether exceptions should be thrown </summary>
 		/// <remarks> If this flag is set to TRUE, a <see cref="SobekCM_Database_Exception"/> 
 		/// will be thrown if any error occurs while accessing the database. </remarks>
-		protected static bool THROW_EXCEPTIONS = true;
+		protected static bool ThrowExceptions = true;
 
 		/// <summary> Flag indicates whether a message should be displayed when
 		/// errors occur. </summary>
 		/// <remarks> Set this flag to TRUE to show a message box when errors occur. </remarks>
-		protected static bool DISPLAY_ERRORS = false;
+		protected static bool DisplayErrors = false;
 
 		/// <summary> Flag indicates if the text of the internal exception should
 		/// be included in any message or exception thrown.  </summary>
 		/// <remarks> Set to TRUE to show the text from the inner exception. </remarks>
-		protected static bool DISPLAY_INNER_EXCEPTIONS = false;
+		protected static bool DisplayInnerExceptions = false;
 
 		/// <summary> Error string displayed in the case of an error </summary>
-		private static string ERROR_STRING = "Error while executing stored procedure '{0}'.       ";
+		private const string ERROR_STRING = "Error while executing stored procedure '{0}'.       ";
 
 		#endregion
 
 		#region Helper methods and classes
 
 		/// <summary> Method is called when an exception is caught while accessing the database. </summary>
-		/// <param name="stored_procedure_name"> Name of the stored procedure called </param>
-		/// <param name="exception"> Exception caught while accessing the database </param>
+		/// <param name="StoredProcedureName"> Name of the stored procedure called </param>
+		/// <param name="Exception"> Exception caught while accessing the database </param>
 		/// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
 		/// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-		private static void exception_caught( string stored_procedure_name, Exception exception )
+		private static void exception_caught( string StoredProcedureName, Exception Exception )
 		{
 			// Determine the text to either show or throw
-			string exception_text = string.Format( ERROR_STRING, stored_procedure_name );
+			string exception_text = string.Format( ERROR_STRING, StoredProcedureName );
 
 			// Show the internal error if that flag is set
-			if ( DISPLAY_INNER_EXCEPTIONS )
-				exception_text = exception_text + "\n\n" + exception.ToString();
+			if ( DisplayInnerExceptions )
+				exception_text = exception_text + "\n\n" + Exception;
 
 			//// If display is set, then display the errors
 			//if ( DISPLAY_ERRORS )
@@ -3677,7 +3634,7 @@ namespace SobekCM.Resource_Object.Database
 			//}
 
 			// If an exception should be thrown, throw it
-			if ( THROW_EXCEPTIONS )
+			if ( ThrowExceptions )
 			{
 				throw new SobekCM_Database_Exception( exception_text );
 			}
@@ -3689,8 +3646,8 @@ namespace SobekCM.Resource_Object.Database
 		internal class SobekCM_Database_Exception : ApplicationException
 		{
 			/// <summary> Constructor for a new SobekCM_Database_Exception object </summary>
-			/// <param name="exceptionText"> Text of the exception to be displayed </param>
-			public SobekCM_Database_Exception( string exceptionText ) : base ( exceptionText )
+			/// <param name="ExceptionText"> Text of the exception to be displayed </param>
+			public SobekCM_Database_Exception( string ExceptionText ) : base ( ExceptionText )
 			{
 				// All work completed in the base class
 			}
@@ -3793,8 +3750,7 @@ namespace SobekCM.Resource_Object.Database
 				SqlConnection connect = new SqlConnection(connectionString);
 
 				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Simple_Item_List", connect);
-				executeCommand.CommandType = CommandType.StoredProcedure;
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Simple_Item_List", connect) {CommandType = CommandType.StoredProcedure};
 				executeCommand.Parameters.AddWithValue("@collection_code", Aggregation_Code);
 
 				// Create the adapter
@@ -3835,8 +3791,7 @@ namespace SobekCM.Resource_Object.Database
 				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tivoli_Get_File_By_Bib_VID", param_list);
 				if ((tempSet == null) || (tempSet.Tables.Count == 0) || (tempSet.Tables[0].Rows.Count == 0))
 					return null;
-				else
-					return tempSet.Tables[0];
+				return tempSet.Tables[0];
 			}
 			catch
 			{

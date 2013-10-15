@@ -41,9 +41,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Adds the main view section to the page turner </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -96,7 +96,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             Literal mainLiteral = new Literal {Text = builder.ToString()};
-            placeHolder.Controls.Add( mainLiteral );
+            MainPlaceHolder.Controls.Add( mainLiteral );
         }
 
         #region Commented out, obsolete code

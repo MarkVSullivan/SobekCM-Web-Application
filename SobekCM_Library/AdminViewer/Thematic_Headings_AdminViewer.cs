@@ -301,17 +301,15 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("  <h2>New Thematic Heading</h2>");
-            Output.WriteLine("  <blockquote>");
-			Output.WriteLine("    <div class=\"sbkThav_NewDiv\">");
-			Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
-	        Output.WriteLine("        <tr>");
-	        Output.WriteLine("          <td><label for=\"admin_heading_name\">Heading:</label></td>");
-			Output.WriteLine("          <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
-            Output.WriteLine("          <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE</button></td>");
-			Output.WriteLine("        </tr>");
-            Output.WriteLine("      </table>");
-            Output.WriteLine("    </div>");
-            Output.WriteLine("  </blockquote>");
+			Output.WriteLine("  <div class=\"sbkThav_NewDiv\">");
+			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
+	        Output.WriteLine("      <tr>");
+	        Output.WriteLine("        <td><label for=\"admin_heading_name\">Heading:</label></td>");
+			Output.WriteLine("        <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
+            Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE</button></td>");
+			Output.WriteLine("      </tr>");
+            Output.WriteLine("    </table>");
+            Output.WriteLine("  </div>");
             Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Existing Thematic Headings</h2>");
