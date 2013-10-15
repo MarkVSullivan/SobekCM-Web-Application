@@ -6,8 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Solr;
@@ -210,7 +208,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Look that some of these have thumbnails
                 char columns = '2';
                 bool hasThumbs = false;
-                if (results.Results.Any(result => result.Thumbnail.Length > 0))
+                if (results.Results.Any(Result => Result.Thumbnail.Length > 0))
                 {
                     columns = '3';
                     hasThumbs = true;
