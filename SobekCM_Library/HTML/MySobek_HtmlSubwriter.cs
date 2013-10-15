@@ -275,12 +275,19 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
+			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Logon) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item))
+			{
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			}
+
 			// If we are currently uploading files, add those specific upload styles 
 			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 			{
 				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
 				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
 			}
+
+
 		}
 
         /// <summary> Writes additional HTML needed in the main form before the main place holder but after the other place holders.  </summary>
@@ -426,7 +433,8 @@ namespace SobekCM.Library.HTML
             }
 
             // Add any controls needed
-			mySobekViewer.Add_Controls(MainPlaceHolder, Tracer);
+			if ( mySobekViewer != null )
+				mySobekViewer.Add_Controls(MainPlaceHolder, Tracer);
          }
 
         /// <summary> Writes final HTML after all the forms </summary>
