@@ -645,10 +645,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     int itemid = Convert.ToInt32(thisItem[itemid_column]);
                     if (level1_text.Length == 0)
                     {
-                        TreeNode singleNode = new TreeNode(title);
-                        if (title.Length > LINE_TO_LONG)
-                            singleNode.Text = title.Substring(0, LINE_TO_LONG) + "...";
-                        if (itemid == CurrentItem.Web.ItemID)
+						TreeNode singleNode = new TreeNode(access_span_start + title + access_string + access_span_end);
+	                    if (title.Length > LINE_TO_LONG)
+	                    {
+		                    singleNode.ToolTip = title;
+							title = title.Substring(0, LINE_TO_LONG) + "...";
+		                    singleNode.Text = access_span_start + title + access_string + access_span_end;
+	                    }
+	                    if (itemid == CurrentItem.Web.ItemID)
                         {
                             currentSelectedNode = singleNode;
                             singleNode.SelectAction = TreeNodeSelectAction.None;

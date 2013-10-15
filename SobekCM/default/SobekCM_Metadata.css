@@ -589,14 +589,8 @@ select.form_relateditem_select { color:Blue; width: 110px; margin-top: 6px; bord
 .bibid_div { padding-top: 8px; line-height: 1.5; color:Blue; } 
 .vid_div { padding-top: 8px; line-height: 1.5; color:Blue; } 
 
-.logon_popup_div { position:absolute; background-color:#eeeeee; width:400px; height:280px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 
+
 #form_related_url_div { padding-top: 12px; } 
-input.logon_username_input  {  color:Blue;  width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.logon_username_input_focused  {  color:#0000a8;  width: 180px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.logon_password_input  {  color:Blue;  width: 180px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.logon_password_input_focused  {  color:#0000a8;  width: 180px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-
-
 
 .form_serial_hierarchy_line { width: 500px; }
 .serial_hierarchy_popup_div { position:absolute; background-color:#eeeeee; width:565px; height:395px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;} 

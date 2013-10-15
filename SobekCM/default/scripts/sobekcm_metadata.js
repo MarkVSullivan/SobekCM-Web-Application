@@ -1824,17 +1824,6 @@ function name_type_changed( nameid )
     }
 }
 
-function close_logon_form()
-{
-    // Close the associated form
-    popdown( 'form_logon' );    
-    
-        // Perform post back
-    //__doPostBack('' );
-        
-    // Return TRUE to cause a return trip to the server
-    return true;
-}
 
 function close_name_form( windowname )
 {

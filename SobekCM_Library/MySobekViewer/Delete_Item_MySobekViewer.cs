@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 10/15/2013
+
+#region Using directives
 
 using System;
 using System.Data;
@@ -78,7 +80,10 @@ namespace SobekCM.Library.MySobekViewer
 						if (User.Can_Delete_This_Item(testItem))
 							canDelete = true;
 					}
-					catch { }
+					catch
+					{
+						canDelete = false;
+					}
 				}
 
 				if (!canDelete)
@@ -145,10 +150,10 @@ namespace SobekCM.Library.MySobekViewer
                     // Perform the database delete
                         Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
                     bool database_result2 = SobekCM_Database.Delete_SobekCM_Item(currentMode.BibID, currentMode.VID, User.Is_System_Admin, String.Empty );
-
+ 
                     // Perform the SOLR delete
                     Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");
-                    bool solr_result2 = Solr.Solr_Controller.Delete_Resource_From_Index( SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
+                    Solr.Solr_Controller.Delete_Resource_From_Index( SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
 
                     if (!database_result2)
                     {
@@ -234,19 +239,21 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the hidden field
                 Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
                 Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
-                Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_mysobek.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine();
 
-                Output.WriteLine("<div class=\"SobekHomeText\" >");
-                Output.WriteLine("<br /><br />");
-                Output.WriteLine("<blockquote>");
-
-                Output.WriteLine("Enter DELETE in the textbox below and select GO to complete this deletion.<br /><br />");
-                Output.WriteLine("<input class=\"admin_small_input\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('admin_delete_confirm', 'admin_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_delete_confirm', 'admin_small_input')\" /> &nbsp; &nbsp; ");
-                Output.WriteLine("<button title=\"Delete Item\" class=\"go_button\" onclick=\"delete_item(); return false;\"></button>");
-
-                Output.WriteLine("</blockquote>");
+				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
+                Output.WriteLine("  <br /><br />");
+                Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
+				Output.WriteLine("  <div id=\"sbkDimv_VerifyDiv\">");
+				Output.WriteLine("    <input class=\"sbkDimv_input sbkMySobek_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button title=\"Confirm delete of this item\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("  </div>");
                 Output.WriteLine("</div>");
-                Output.WriteLine("<br /><br />");
+				Output.WriteLine();
+				Output.WriteLine("<!-- Focus on confirm box -->");
+				Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
+				Output.WriteLine();
             }
         }
 
@@ -260,34 +267,34 @@ namespace SobekCM.Library.MySobekViewer
             if (errorCode >= 0)
             {
 
-                Output.WriteLine("<div class=\"SobekHomeText\" >");
-                Output.WriteLine("<br /><br />");
-                Output.WriteLine("<blockquote>");
+				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
+                Output.WriteLine("  <br /><br />");
+                Output.WriteLine("  <p>");
 
                 switch (errorCode)
                 {
                     case 0:
-                        Output.WriteLine("<span style=\"color:Blue; font-size:1.3em;\"><center><strong>DELETE SUCCESSFUL</strong></center></span>");
+						Output.WriteLine("    <div class=\"sbkDimv_SuccessMsg\">DELETE SUCCESSFUL</div>");
                         break;
 
                     case 1:
-                        Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE FAILED</strong><br /><br />Insufficient user permissions to perform delete</center></span>");
+						Output.WriteLine("    <div class=\"sbkDimv_ErrorMsg\">DELETE FAILED<br /><br />Insufficient user permissions to perform delete</div>");
                         break;
 
                     case 2:
-                        Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE FAILED</strong><br /><br />Item indicated does not exists</center></span>");
+						Output.WriteLine("    <div class=\"sbkDimv_ErrorMsg\">DELETE FAILED<br /><br />Item indicated does not exists</div>");
                         break;
 
                     case 3:
-                        Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE FAILED</strong><br /><br />Error while performing delete in database</center></span>");
+						Output.WriteLine("    <div class=\"sbkDimv_ErrorMsg\">DELETE FAILED<br /><br />Error while performing delete in database</div>");
                         break;
 
                     case 4:
-						Output.WriteLine("<span style=\"color:Red; font-size:1.3em;\"><center><strong>DELETE PARTIALLY SUCCESSFUL</strong><br /><br />Unable to move all files to the RECYCLE BIN folder</center></span>");
+						Output.WriteLine("    <div class=\"sbkDimv_ErrorMsg\">DELETE PARTIALLY SUCCESSFUL<br /><br />Unable to move all files to the RECYCLE BIN folder</div>");
                         break;
                 }
 
-                Output.WriteLine("</blockquote>");
+                Output.WriteLine("  </p>");
                 Output.WriteLine("</div>");
                 Output.WriteLine("<br /><br />");
             }

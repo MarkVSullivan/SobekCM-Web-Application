@@ -2,36 +2,7 @@
 // and the standard forms readily available to most users
 
 
-function logonTrapKD(event) {
 
-    var return_caught = false;
-    if (document.all) {
-        if (event.keyCode == 13) {
-            return_caught = true;
-        }
-    }
-
-    else if (document.getElementById) {
-        if (event.which == 13) {
-            return_caught = true;
-        }
-    }
-
-    else if (document.layers) {
-        if (event.which == 13) {
-            return_caught = true;
-        }
-    }
-
-    if (return_caught) {
-        event.returnValue = false;
-        event.cancel = true;
-
-        document.itemNavForm.submit();
-    }
-
-        return false;    
-}
 
 // Code used for the pop up forms
 function toggle(div_id) {
