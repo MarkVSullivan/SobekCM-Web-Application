@@ -975,6 +975,12 @@ namespace SobekCM.Library.Navigation
                                 return this_base_url + "admin/headings/" + mysobekSubmode + urlOptions1;
                             return this_base_url + "admin/headings" + urlOptions1;
 
+                         case Admin_Type_Enum.Item_Tracking:
+                              if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "admin/itemtracking/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "admin/itemtracking" + urlOptions1;
+
+
                         case Admin_Type_Enum.Settings:
                             if (!String.IsNullOrEmpty(mysobekSubmode))
                                 return this_base_url + "admin/settings/" + mysobekSubmode + urlOptions1;

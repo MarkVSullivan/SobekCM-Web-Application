@@ -176,6 +176,10 @@ namespace SobekCM.Library.HTML
                     adminViewer = new Settings_AdminViewer(user, Current_Mode, Tracer);
                     break;
 
+                case Admin_Type_Enum.Item_Tracking:
+                    adminViewer = new Track_Item_MySobekViewer(user, Current_Mode, Current_Item, codeManager, Tracer);
+                    break;
+
                 case Admin_Type_Enum.Projects:
                     if (Current_Mode.My_Sobek_SubMode.Length > 1)
                     {
@@ -211,6 +215,7 @@ namespace SobekCM.Library.HTML
                             }
                         }
                     }
+
 
                     if (adminViewer == null)
                         adminViewer = new Projects_AdminViewer(user, Current_Mode, Tracer);
