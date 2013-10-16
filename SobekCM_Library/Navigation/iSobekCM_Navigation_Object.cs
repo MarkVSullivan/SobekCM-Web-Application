@@ -413,6 +413,9 @@ namespace SobekCM.Library.Navigation
         /// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
         IP_Restrictions,
 
+        /// <summary>Allows admin to update the item tracking information from the tracking sheet </summary>
+        Item_Tracking,
+        
         /// <summary> Provides list of all existing projects and allows admin to enter a new project or edit an existing project </summary>
         Projects,
 
@@ -424,7 +427,7 @@ namespace SobekCM.Library.Navigation
 
         /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
         Thematic_Headings,
-
+        
         /// <summary> Allows admin to perform some limited actions against the URL Portals data </summary>
         URL_Portals,
 
