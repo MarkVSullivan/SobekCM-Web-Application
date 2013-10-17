@@ -580,7 +580,11 @@ namespace SobekCM.Library.Navigation
 											if (QueryString["return"] != null)
 												Navigator.Return_URL = QueryString["return"];
 											break;
- 
+
+                                        case "itemtracking":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Item_Tracking;
+                                            break;
+
 										case "searches":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
 											break;
@@ -669,10 +673,6 @@ namespace SobekCM.Library.Navigation
 
                                         case "reset":
                                             Navigator.Admin_Type = Admin_Type_Enum.Reset;
-                                            break;
-
-                                        case "itemtracking":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Item_Tracking;
                                             break;
 
                                         case "headings":

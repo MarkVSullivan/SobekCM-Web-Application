@@ -902,6 +902,11 @@ namespace SobekCM.Library.Navigation
 						case My_Sobek_Type_Enum.Saved_Searches:
 							return this_base_url + "my/searches" + urlOptions1;
 
+                        case My_Sobek_Type_Enum.Item_Tracking:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "my/itemtracking/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "my/itemtracking" + urlOptions1;
+
 						case My_Sobek_Type_Enum.User_Tags:
 							if (!String.IsNullOrEmpty(mysobekSubmode))
 								return this_base_url + "my/tags/" + mysobekSubmode + urlOptions1;
@@ -975,13 +980,7 @@ namespace SobekCM.Library.Navigation
                                 return this_base_url + "admin/headings/" + mysobekSubmode + urlOptions1;
                             return this_base_url + "admin/headings" + urlOptions1;
 
-                         case Admin_Type_Enum.Item_Tracking:
-                              if (!String.IsNullOrEmpty(mysobekSubmode))
-                                return this_base_url + "admin/itemtracking/" + mysobekSubmode + urlOptions1;
-                            return this_base_url + "admin/itemtracking" + urlOptions1;
-
-
-                        case Admin_Type_Enum.Settings:
+                            case Admin_Type_Enum.Settings:
                             if (!String.IsNullOrEmpty(mysobekSubmode))
                                 return this_base_url + "admin/settings/" + mysobekSubmode + urlOptions1;
                             return this_base_url + "admin/settings" + urlOptions1;

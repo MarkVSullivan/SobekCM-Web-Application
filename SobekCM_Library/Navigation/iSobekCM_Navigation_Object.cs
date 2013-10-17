@@ -382,6 +382,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary> List of all saved searches for this user </summary>
 		Saved_Searches,
 
+        /// <summary>Enter the tracking information for a given item using the physical tracking sheet </summary>
+        Item_Tracking,
+
 		/// <summary> Provides way to view all user lists entered by a user or by aggregation </summary>
 		User_Tags,
 
@@ -412,10 +415,7 @@ namespace SobekCM.Library.Navigation
 
         /// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
         IP_Restrictions,
-
-        /// <summary>Allows admin to update the item tracking information from the tracking sheet </summary>
-        Item_Tracking,
-        
+       
         /// <summary> Provides list of all existing projects and allows admin to enter a new project or edit an existing project </summary>
         Projects,
 

@@ -81,8 +81,14 @@ input.sbkLomv_username_input  { width: 180px; margin-top: 6px; }
 input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 
 
-
-
+/**Track_Item Viewer**/
+.sbkTi_table{border:0; border-collapse: collapse; border-spacing: 0; margin-bottom: 40px; }
+.sbkTi_table td{ padding-left: 30px;padding-right: 5px;}
+.sbkTi_HomeText { text-align: justify; padding-bottom: 5px; }
+.sbkTi_HomeText a:link { color:#000080; }
+.sbkTi_HomeText A:hover { color:Blue; text-decoration:underline; }
+.sbkTi_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
+.sbkTi_HomeText p { padding-left: 42px; }
 
 
 
