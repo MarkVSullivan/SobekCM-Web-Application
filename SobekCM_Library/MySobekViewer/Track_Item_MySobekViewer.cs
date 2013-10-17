@@ -53,6 +53,7 @@ namespace SobekCM.Library.MySobekViewer
 
             user_name = user.Full_Name;
             user_id = user.UserName;
+            
             // If the user cannot edit this item, go back
             //if (!user.Can_Edit_This_Item(item))
             //{
@@ -124,6 +125,7 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
+        
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -141,9 +143,10 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder builder = new StringBuilder(2000);
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
             builder.AppendLine("<div class=\"SobekHomeText\">");
 
-            builder.AppendLine("<span class=\"sbkAdm_HomeText\"><h2>Item Information</h2></span>");
+            builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Item Information</h2></span>");
            //Start the Item info table
             //TODO: Get the correct Bib and VID 
             string bibid = (String.IsNullOrEmpty(BibID))? String.Empty:BibID;
@@ -159,7 +162,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("</table>");
 
             //Start the next section
-            builder.AppendLine("<span class=\"sbkAdm_HomeText\"><h2>Add Tracking Information</h2></span>");
+            builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
             //Start the Tracking Info 
 
             //Start the table for the 'Start' Stage
@@ -203,7 +206,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("</table>");
 
 
-            builder.AppendLine("<span class=\"sbkAdm_HomeText\"><h2>Current Tracking Information</h2></span>");
+            builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Current Tracking Information</h2></span>");
             builder.AppendLine("<table class=\"sbkTi_table\">");
             builder.AppendLine("<tr><td>ADD EXISTING INFO HERE</td></tr>");
             builder.AppendLine("</table>");
@@ -214,13 +217,7 @@ namespace SobekCM.Library.MySobekViewer
             LiteralControl control1 = new LiteralControl(builder.ToString());
 
             MainPlaceHolder.Controls.Add(control1);
-
-
-
-            //StringBuilder builder = new StringBuilder(2000);
-            //StringWriter output = new StringWriter(builder);
-
-       
+   
 
 
         }
