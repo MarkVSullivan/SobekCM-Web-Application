@@ -177,7 +177,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Admin_Type_Enum.Item_Tracking:
-                    adminViewer = new Track_Item_MySobekViewer(user, Current_Mode, Current_Item, codeManager, Tracer);
+                    adminViewer = new Track_Item_MySobekViewer(user, Current_Mode, Tracer);
                     break;
 
                 case Admin_Type_Enum.Projects:

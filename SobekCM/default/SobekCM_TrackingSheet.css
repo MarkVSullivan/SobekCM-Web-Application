@@ -33,7 +33,9 @@
 .sbkTs_tblBarcodes{width: 90%; border-spacing: 5px;margin-left: 25px;}
 
 .sbkTs_barcode_label{font-size: 1.1em;color: #999999;font-weight: bold;margin-left: 26px;}
-.sbkTs_barcode_label1{font-size: 1.1em;color: #999999;font-weight: bold;margin-left: 40px;}
+.sbkTs_barcode_label1{font-size: 1.1em;color: #999999;font-weight: bold;margin-left: 30px;}
+
+.sbkTs_extraText{ color: #999999;}
 
 .sbkTs_tblCellUnderline{ border-bottom-style: solid;border-bottom-width: 1px;border-color: #999999;}
 

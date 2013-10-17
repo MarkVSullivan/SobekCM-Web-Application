@@ -36,23 +36,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode = Current_Mode;
             CurrentUser = Current_User;
             
-            //// If there is no user, send to the login
-            //if (CurrentUser == null)
-            //{
-            //    CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-            //    CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-            //    CurrentMode.Redirect();
-            //    return;
-            //}
-
-            //// If the user cannot edit this item, go back
-            //if (!CurrentUser.Can_Edit_This_Item(Current_Object))
-            //{
-            //    CurrentMode.ViewerCode = String.Empty;
-            //    CurrentMode.Redirect();
-            //    return;
-            //}
-
             //Assign the current resource object to track_item
             track_item = Current_Object;
             
@@ -80,6 +63,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             authors_list = new string[track_item.Bib_Info.Names_Count];
             for (int i = 0; i < track_item.Bib_Info.Names_Count; i++)
             {
+                //Skip any publishers in this list
+                if(track_item.Bib_Info.Names[i].Role_String.ToUpper().Contains("PUBLISHER"))
+                    continue;
                 authors_list[i] = track_item.Bib_Info.Names[i].Full_Name  + track_item.Bib_Info.Names[i].Role_String;
             }
             
@@ -90,14 +76,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 
 
             //Create the temporary location for saving the barcode images
-       //     image_location = SobekCM_Library_Settings.Base_Temporary_Directory + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\tsBarcodes\\" + itemID.ToString();
-            image_location = SobekCM_Library_Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
-            //username = Current_User.UserName.Replace(".", "").Replace("@", "");
-            //if (Current_User.UFID.Trim().Length > 0)
-            //{
-            //    image_location = SobekCM_Library_Settings.Base_Temporary_Directory + "\\" + Current_User.UFID + "\\tsBarcodes\\" + itemID.ToString();
-            //    username = Current_User.UFID;
-            //}
+           image_location = SobekCM_Library_Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
+
 
             // Create the folder for the user in the temp directory
             if (!Directory.Exists(image_location))
@@ -175,7 +155,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Title:</span></td>");
             Output.WriteLine("<td colspan=\"3\"><span>" + track_item.Bib_Info.Main_Title + "</span></td></tr>");
 
-            //Add the Author info
+            //Add the Author information
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Author:</span></td>");
             Output.WriteLine("<td colspan=\"3\" ><span>");
             if (authors_list.Length == 1)
@@ -185,22 +165,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 Output.WriteLine("<table>");
+                int count = 1;
+                string extra_authors = String.Empty;
                 foreach (string author in authors_list)
                 {
-                    //if (authors_list[authors_list.Length - 1] == author)
-                    //    continue;
-                    //Output.WriteLine("<span>"+author+" ;&nbsp;</span>");
-                    Output.WriteLine("<tr><td>" + author + "</td></tr>");
+                    if (count == 5 && authors_list.Length > 5)
+                        extra_authors = "<span class=\"sbkTs_extraText\"> "+LABEL_SPACE+"  ...+" + (authors_list.Length - 5) + " more</span>";
+                    Output.WriteLine("<tr><td>" + author + extra_authors+ "</td></tr>");
+                    count++;
+                    //Limit the display to 5
+                    if (count > 5)
+                        break;
                 }
              Output.WriteLine("</table>");
             }
-            //Add the last author in the list, since this was not included in the previous for loop
-            //if(authors_list.Length>0)
-            //Output.WriteLine("<span>" + authors_list[authors_list.Length-1] + " &nbsp;</span>");
             Output.WriteLine("               </span></td>");
             Output.WriteLine("</td></tr>");
 
-            //Add the publisher info
+            //Add the publisher information
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Publisher:</span></td>");
             Output.WriteLine("<td colspan=\"3\" ><span>");
 
@@ -211,38 +193,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 Output.WriteLine("<table>");
+                int count = 1;
+                string extra_publishers = String.Empty;
                 foreach (string publisher in publishers_list)
                 {
-                    //if (authors_list[authors_list.Length - 1] == author)
-                    //    continue;
-                    //Output.WriteLine("<span>"+author+" ;&nbsp;</span>");
-                    Output.WriteLine("<tr><td>" + publisher + "</td></tr>");
+                    if(count==5 && publishers_list.Length>5)
+                        extra_publishers = "<span class=\"sbkTs_extraText\">  " + LABEL_SPACE + "...+" + (publishers_list.Length - 5) + " more</span>";
+                    Output.WriteLine("<tr><td>" + publisher + extra_publishers+"</td></tr>");
+                    count++;
+                   //Limit the display to 5
+                    if (count > 5)
+                        break;
                 }
                 Output.WriteLine("</table>");
             }
 
-
-            //foreach (string publisher in publishers_list)
-            //{
-            //    if (publishers_list[publishers_list.Length - 1] == publisher)
-            //        continue;
-            //    Output.WriteLine("<span>" + publisher + " ;&nbsp;</span>");
-            //}
-            ////Add the last publisher in the list, since this was not included in the previous for loop
-            //if(publishers_list.Length>0)
-            //Output.WriteLine("<span>" + publishers_list[publishers_list.Length - 1] + " &nbsp;</span>");
             Output.WriteLine("               </span></td>");
             Output.WriteLine("</td></tr>");
 
-            //Add the OCLC, Aleph, Material Type info
+            //Add the OCLC, Aleph, Material Type information
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">OCLC:</span></td>");
             Output.WriteLine("<td><span>" + oclc + "</span></td>");
             Output.WriteLine("<td><span class=\"sbkTs_tableLabel\"> Aleph:</span>");
             Output.WriteLine("<span>" + aleph + "</span></td>");
             Output.WriteLine("<td> <span class=\"sbkTs_tableLabel\">  Material Type:</span>");
             Output.WriteLine("<span>" +track_item.Bib_Info.SobekCM_Type + "</span></td></tr>");
-            
-            //Add the aggregation info
+
+            //Add the aggregation information
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Aggregations:</span></td>");
             Output.WriteLine("<td colspan=\"3\"><span>" + aggregations + "</span></td></tr>");
 
@@ -350,8 +327,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("     <td><img id=\"barcode2\" src=\"" + imageUrl2 + "\"/></td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine("  <tr>");
-            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">Start Scan</span></td>");
-            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">End Scan</span></td>");
+            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">Start Scanning</span></td>");
+            Output.WriteLine("     <td><span class=\"sbkTs_barcode_label1\">End Scanning</span></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine(" <tr>");
@@ -404,22 +381,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Calculate the checksum
             int actionNum = 0;
             Int32.TryParse(Action, out actionNum);
-            int checksumInt = (itemID + actionNum)/1000 + (itemID + actionNum)%1000;
+            int checksumInt = (itemID + actionNum)%26;
             string checksum = int_to_base26(checksumInt).ToUpper();
-			//string barcodeString = (InputString + Action).ToUpper();
+			
             string barcodeString = InputString + checksum;
-           
+          
             string image_save_location = image_location + "\\" + FilenameToSave + ".gif";
-
-            //SHA1 sha1 = SHA1.Create();
-            //byte[] buffer = System.Text.Encoding.UTF8.GetBytes(barcodeString);
-            //byte[] hash = sha1.ComputeHash(buffer, 0, buffer.Length);
-            //string hashString = System.BitConverter.ToString(hash).Replace("-", "");
-            
-            ////Calculate the checksum
-            //MD5 md5 = MD5.Create();
-            //byte[] checksum = md5.ComputeHash(buffer, 0, buffer.Length);
-            //string check = System.BitConverter.ToString(checksum).Replace("-", "");
 
             //Generate the image
            Code39BarcodeDraw barcode39 = BarcodeDrawFactory.Code39WithoutChecksum;

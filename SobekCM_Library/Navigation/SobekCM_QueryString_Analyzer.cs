@@ -671,6 +671,10 @@ namespace SobekCM.Library.Navigation
                                             Navigator.Admin_Type = Admin_Type_Enum.Reset;
                                             break;
 
+                                        case "itemtracking":
+                                            Navigator.Admin_Type = Admin_Type_Enum.Item_Tracking;
+                                            break;
+
                                         case "headings":
                                             Navigator.Admin_Type = Admin_Type_Enum.Thematic_Headings;
                                             if (url_relative_list.Count > 2)
