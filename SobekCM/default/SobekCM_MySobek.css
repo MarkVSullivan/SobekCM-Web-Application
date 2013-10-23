@@ -63,8 +63,6 @@ h1 { margin-left: auto; margin-right: auto; width: 710px; background-color: #eee
 
 
 
-
-
 /** Delete_Item_MySobekViewer **/
 #sbkDimv_VerifyDiv { padding-left: 100px;padding-top: 30px;padding-bottom: 100px; }
 .sbkDimv_input { width: 220px; }
@@ -89,6 +87,7 @@ input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 .sbkTi_HomeText A:hover { color:Blue; text-decoration:underline; }
 .sbkTi_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
 .sbkTi_HomeText p { padding-left: 42px; }
+.sbkTi_tblSubHeader{color:Gray; font-weight: bold; font-size: 1.0em;}
 
 
 
