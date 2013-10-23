@@ -66,52 +66,55 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  What would you like to edit today?");
 			Output.WriteLine("  <table id=\"sbkHav_OptionsTable\">");
 
+			// Edit aggregation aliases
+			currentMode.Admin_Type = Admin_Type_Enum.Aliases;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "forwarding.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Aliases</a></td></tr>");
+
+			// View and set SobekCM Builder Status
+			currentMode.Admin_Type = Admin_Type_Enum.Builder_Status;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "gears.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Builder Status</a></td></tr>");
+			
+
+			// Edit Default_Metadata
+			currentMode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "pmets.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Default Metadata</a></td></tr>");
+
+			// Edit IP Restrictions
+			currentMode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "firewall.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">IP Restriction Ranges</a></td></tr>");
+
+
 			// Edit item aggregations
 			currentMode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "building.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Item Aggregations</a></td></tr>");
-
-			// Edit interfaces
-			currentMode.Admin_Type = Admin_Type_Enum.Interfaces;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "skins.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Web Skins</a></td></tr>");
-
-			// Edit wordmarks
-			currentMode.Admin_Type = Admin_Type_Enum.Wordmarks;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wordmarks.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Wordmarks / Icons</a></td></tr>");
-
-			// Edit forwarding
-			currentMode.Admin_Type = Admin_Type_Enum.Forwarding;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "forwarding.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Aliases</a></td></tr>");
-
-			// Edit Projects
-			currentMode.Admin_Type = Admin_Type_Enum.Projects;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "pmets.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Projects</a></td></tr>"); 
+			
+			// Edit Settings
+			currentMode.Admin_Type = Admin_Type_Enum.Settings;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wrench.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">System-Wide Settings</a></td></tr>");
 
 			// Edit Thematic Headings
 			currentMode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Thematic Headings</a></td></tr>");
 
+
+			// Edit URL Portals
+			currentMode.Admin_Type = Admin_Type_Enum.URL_Portals;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "portals.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">URL Portals</a></td></tr>");
+
 			if (user.Is_System_Admin)
 			{
 				// Edit users
 				currentMode.Admin_Type = Admin_Type_Enum.Users;
-				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "users.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Registered Users and Groups</a></td></tr>");
-
-				// Edit IP Restrictions
-				currentMode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "firewall.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">IP Restriction Ranges</a></td></tr>");
-
-				// Edit URL Portals
-				currentMode.Admin_Type = Admin_Type_Enum.URL_Portals;
-				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "portals.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">URL Portals</a></td></tr>");
-
-				// Edit Settings
-				currentMode.Admin_Type = Admin_Type_Enum.Settings;
-				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wrench.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">System-Wide Settings</a></td></tr>");
-
-				// View and set SobekCM Builder Status
-				currentMode.Admin_Type = Admin_Type_Enum.Builder_Status;
-				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "gears.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">SobekCM Builder Status</a></td></tr>");
+				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "users.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Users and Groups</a></td></tr>");
 			}
+
+			// Edit web skins
+			currentMode.Admin_Type = Admin_Type_Enum.Skins;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "skins.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Web Skins</a></td></tr>");
+
+			// Edit wordmarks
+			currentMode.Admin_Type = Admin_Type_Enum.Wordmarks;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wordmarks.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Wordmarks / Icons</a></td></tr>");
 
 			// Reset cache
 			currentMode.Admin_Type = Admin_Type_Enum.Reset;

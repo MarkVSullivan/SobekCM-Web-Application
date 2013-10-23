@@ -1,6 +1,33 @@
 // Functions related to the system wide administrative tasks for logged on system administrators
 
 
+// Clear the text boxes for a single custom settings
+function settings_reorder(selectbox) {
+	var startfield = document.getElementById('admin_settings_order');
+	startfield.value = selectbox.value;
+
+	var endfield = document.getElementById('admin_settings_action');
+	endfield.value = 'reorder';
+
+	// Submit this
+	document.itemNavForm.submit();
+
+	return false;
+}
+
+
+// Clear the text boxes for a single custom settings
+function clear_setting(key) {
+	var startfield = document.getElementById('admin_customkey_' + key);
+	startfield.value = '';
+
+	var endfield = document.getElementById('admin_customvalue_' + key);
+	endfield.value = '';
+
+	return false;
+}
+
+
 // Clear the text boxes for a single IP address
 function clear_ip_address(key) 
 {
@@ -59,6 +86,21 @@ function save_new_aggr()
  
     // Return TRUE to force a return trip to the server
     return true;
+}
+
+// Delete an existing aggregation
+function delete_aggr(Code) {
+	
+	var input_box = confirm("Do you really want to delete aggregation '" + Code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_aggr_delete');
+		hiddenfield.value = Code;
+
+		document.itemNavForm.submit();
+	}
+	
+	return false;
 }
 
 // Populate the project form and show it
@@ -363,6 +405,7 @@ function portal_form_popup( portal_id, portal_name, portal_abbr, web_skin, aggre
     document.getElementById('form_portal_name').value = portal_name;
     document.getElementById('form_portal_abbr').value = portal_abbr;
     document.getElementById('form_portal_skin').value = web_skin;
+    document.getElementById('form_portal_skin').text = web_skin;
     document.getElementById('form_portal_aggregation').value = aggregation;
     document.getElementById('form_portal_url').value = url_segment;
     document.getElementById('form_portal_purl').value = base_purl;

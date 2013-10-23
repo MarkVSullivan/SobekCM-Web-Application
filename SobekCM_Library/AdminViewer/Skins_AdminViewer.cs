@@ -105,27 +105,30 @@ namespace SobekCM.Library.AdminViewer
                     }
 					else if (delete_value.Length > 0)
 					{
-						Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Delete skin '" + delete_value + "' from the database");
-
-						// Delete from the database
-						if (SobekCM_Database.Delete_Web_Skin(delete_value, false, Tracer))
+						if (user.Is_System_Admin)
 						{
-							// Set the deleted wordmark message
-							actionMessage = "Deleted web skin <i>" + delete_value + "</i>";
+							Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Delete skin '" + delete_value + "' from the database");
 
-							// Remove this web skin from the collection
-							SobekCM_Skin_Collection_Builder.Populate_Default_Skins(Web_Skin_Collection, Tracer);
-						}
-						else
-						{
-							// Report the error
-							if (SobekCM_Database.Last_Exception == null)
+							// Delete from the database
+							if (SobekCM_Database.Delete_Web_Skin(delete_value, false, Tracer))
 							{
-								actionMessage = "Unable to delete web skin <i>" + delete_value + "</i> since it is linked to an item, aggregation, or portal";
+								// Set the deleted wordmark message
+								actionMessage = "Deleted web skin <i>" + delete_value + "</i>";
+
+								// Remove this web skin from the collection
+								SobekCM_Skin_Collection_Builder.Populate_Default_Skins(Web_Skin_Collection, Tracer);
 							}
 							else
 							{
-								actionMessage = "Unknown error while deleting web skin <i>" + delete_value + "</i>";
+								// Report the error
+								if (SobekCM_Database.Last_Exception == null)
+								{
+									actionMessage = "Unable to delete web skin <i>" + delete_value + "</i> since it is linked to an item, aggregation, or portal";
+								}
+								else
+								{
+									actionMessage = "Unknown error while deleting web skin <i>" + delete_value + "</i>";
+								}
 							}
 						}
 					}
@@ -528,8 +531,8 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"3\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return interface_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return interface_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -570,7 +573,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
 			// Add the SAVE button
-		    Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE</button></td></tr>");
+			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 		    Output.WriteLine("    </table>");
 		    Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -611,7 +614,12 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return interface_form_popup('" + code + "','" + base_code + "','" + bannerLink + "','" + notes + "','" + overrideBanner + "','" + overrideHeader + "','" + suppressTopNav + "','" + buildOnLaunch + "');\">edit</a> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + view_url.Replace("testskincode", code) + "\" >view</a> | ");
 				Output.Write("<a title=\"Click to reset\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
-				Output.WriteLine("<a title=\"Click to delete this web skin\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_interface('" + code + "');\">delete</a> )</td>");
+
+				if ( user.Is_System_Admin )	
+					Output.WriteLine("<a title=\"Click to delete this web skin\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_interface('" + code + "');\">delete</a> )</td>");
+				else
+					Output.WriteLine("<a title=\"Only SYSTEM administrators can delete web skins\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete web skins'); return false;\">delete</a> )</td>");
+
 
                 // Add the rest of the row with data
                 Output.WriteLine("      <td>" + code + "</span></td>");

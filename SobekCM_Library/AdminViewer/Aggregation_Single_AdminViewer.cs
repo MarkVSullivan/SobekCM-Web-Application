@@ -219,7 +219,7 @@ namespace SobekCM.Library.AdminViewer
 		}
 
 		/// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-		/// <value> This always returns the value 'HTML Interfaces' </value>
+		/// <value> This always returns the value 'HTML Skins' </value>
 		public override string Web_Title
 		{
 			get { return itemAggregation != null ? "Edit " + itemAggregation.ShortName : "Edit Item Aggregation"; }

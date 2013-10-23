@@ -933,16 +933,16 @@ namespace SobekCM.Library.Navigation
                         case Admin_Type_Enum.Builder_Status:
                             return this_base_url + "admin/builder" + urlOptions1;
 
-                        case Admin_Type_Enum.Forwarding:
+                        case Admin_Type_Enum.Aliases:
                             return this_base_url + "admin/aliases" + urlOptions1;
 
-                        case Admin_Type_Enum.Interfaces:
+                        case Admin_Type_Enum.Skins:
                             return this_base_url + "admin/webskins" + urlOptions1;
 
-                        case Admin_Type_Enum.Projects:
+                        case Admin_Type_Enum.Default_Metadata:
                             if (!String.IsNullOrEmpty(mysobekSubmode))
-                                return this_base_url + "admin/projects/" + mysobekSubmode + urlOptions1;
-                            return this_base_url + "admin/projects" + urlOptions1;
+                                return this_base_url + "admin/defaults/" + mysobekSubmode + urlOptions1;
+							return this_base_url + "admin/defaults" + urlOptions1;
 
                         case Admin_Type_Enum.IP_Restrictions:
                             if (!String.IsNullOrEmpty(mysobekSubmode))
@@ -983,7 +983,6 @@ namespace SobekCM.Library.Navigation
                         default:
                             return this_base_url + "admin" + urlOptions1;
                     }
-                    break;
 
 				case Display_Mode_Enum.Preferences:
 					return this_base_url + "preferences" + urlOptions1;

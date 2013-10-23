@@ -136,11 +136,11 @@ namespace SobekCM.Library.HTML
                     adminViewer = new Builder_AdminViewer(user, Current_Mode);
                     break;
 
-                case Admin_Type_Enum.Interfaces:
+                case Admin_Type_Enum.Skins:
                     adminViewer = new Skins_AdminViewer(user, Current_Mode, Web_Skin_Collection, Tracer);
                     break;
 
-                case Admin_Type_Enum.Forwarding:
+                case Admin_Type_Enum.Aliases:
                     adminViewer = new Aliases_AdminViewer(user, Current_Mode, Aggregation_Aliases, Tracer);
                     break;
 
@@ -149,7 +149,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Admin_Type_Enum.URL_Portals:
-                    adminViewer = new Portals_AdminViewer(user, Current_Mode, URL_Portals, Tracer);
+                    adminViewer = new Portals_AdminViewer(user, Current_Mode, URL_Portals, Web_Skin_Collection, Tracer);
                     break;
 
                 case Admin_Type_Enum.Users:
@@ -161,7 +161,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Admin_Type_Enum.Aggregations_Mgmt:
-                    adminViewer = new Aggregations_Mgmt_AdminViewer(user, Current_Mode, codeManager, Tracer);
+                    adminViewer = new Aggregations_Mgmt_AdminViewer(user, Current_Mode, codeManager, Thematic_Headings, Tracer);
                     break;
 
                 case Admin_Type_Enum.IP_Restrictions:
@@ -176,7 +176,7 @@ namespace SobekCM.Library.HTML
                     adminViewer = new Settings_AdminViewer(user, Current_Mode, Tracer);
                     break;
 
-                case Admin_Type_Enum.Projects:
+                case Admin_Type_Enum.Default_Metadata:
                     if (Current_Mode.My_Sobek_SubMode.Length > 1)
                     {
                         string project_code = Current_Mode.My_Sobek_SubMode.Substring(1);
@@ -213,7 +213,7 @@ namespace SobekCM.Library.HTML
                     }
 
                     if (adminViewer == null)
-                        adminViewer = new Projects_AdminViewer(user, Current_Mode, Tracer);
+                        adminViewer = new Default_Metadata_AdminViewer(user, Current_Mode, Tracer);
                     break;
             }
 
@@ -293,7 +293,7 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("Admin_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-			//if (currentMode.Admin_Type != Admin_Type_Enum.Wordmarks)
+			//if (CurrentMode.Admin_Type != Admin_Type_Enum.Wordmarks)
 			//	return;
 
 			//// Add the text here
@@ -309,7 +309,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-	       // if (currentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
+	       // if (CurrentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
 		   //     return false;
 
             if ((!adminViewer.Contains_Popup_Forms) && (!currentMode.Logon_Required))
@@ -400,10 +400,16 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // If editing projects, add the mySobek stylesheet as well
-            if ((currentMode.Admin_Type == Admin_Type_Enum.Projects) && (currentMode.My_Sobek_SubMode.Length > 0))
+            if ((currentMode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (currentMode.My_Sobek_SubMode.Length > 0))
             {
-                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
             }
+
+			// If editing settings, add the tab styling
+			if (currentMode.Admin_Type == Admin_Type_Enum.Settings) 
+			{
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Tabs.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			}
         }
 
         /// <summary> Writes final HTML after all the forms </summary>

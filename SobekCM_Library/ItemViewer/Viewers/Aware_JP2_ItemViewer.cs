@@ -678,7 +678,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        StringBuilder url_builder = new StringBuilder(500);
 	        if (string.IsNullOrEmpty(featureType))
 	        {
-	            url_builder.Append(SobekCM_Library_Settings.JP2_Server + "thumbnailserver?res=" + (zoom_levels() - CurrentMode.Viewport_Zoom + 1));
+	            url_builder.Append(SobekCM_Library_Settings.JP2ServerUrl + "thumbnailserver?res=" + (zoom_levels() - CurrentMode.Viewport_Zoom + 1));
 	            if (CurrentMode.Viewport_Zoom != 1)
 	                url_builder.Append("&viewwidth=" + size_pixels + "&viewheight=" + size_pixels + "&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
 	            url_builder.Append("&rotation=" + rotation + "&filename=" + jpeg2000_filename + "&maxthumbnailwidth=200&maxthumbnailheight=300");
@@ -851,7 +851,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            int actual_zoom_level = (zoomlevels - CurrentMode.Viewport_Zoom + 1);
 	            if ((string.IsNullOrEmpty(featureType) || ( actual_zoom_level == 1 )))
 	            {
-	                url_builder.Append(SobekCM_Library_Settings.JP2_Server + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
+	                url_builder.Append(SobekCM_Library_Settings.JP2ServerUrl + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
 	                if (CurrentMode.Viewport_Zoom != 1)
 	                    url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
 	                url_builder.Append("&rotation=" + rotation + "&filename=" + jpeg2000_filename);

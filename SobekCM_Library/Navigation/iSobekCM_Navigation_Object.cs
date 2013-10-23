@@ -398,29 +398,29 @@ namespace SobekCM.Library.Navigation
         /// <summary> Provides list of all existing aggregations and allows admin to enter a new aggregation </summary>
         Aggregations_Mgmt,
 
+		/// <summary> Provides list of all aggregation aliases and allows admin to perform some very basic tasks </summary>
+		Aliases,
+
         /// <summary> Gives the current SobekCM status and allows an authenticated system admin to temporarily halt the builder remotely via a database flag </summary>
         Builder_Status,
 
-        /// <summary> Provides list of all forwards (or collection aliases) and allows admin to perform some very basic tasks </summary>
-        Forwarding,
+		/// <summary> Provides list of all existing default metadata files and allows admin to enter a new default or edit an existing default </summary>
+		Default_Metadata,
 
         /// <summary> Administrative home page with links to all the Admin tasks </summary>
         Home,
 
-        /// <summary> Provides list of all existing interfaces and allows admin to enter a new interface or edit an existing interface </summary>
-        Interfaces,
-
         /// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
         IP_Restrictions,
-
-        /// <summary> Provides list of all existing projects and allows admin to enter a new project or edit an existing project </summary>
-        Projects,
 
         /// <summary> Allows admin to perform some limited cache reset functions </summary>
         Reset,
 
         /// <summary> Allows admins to view and edit system-wide settings from the database </summary>
         Settings,
+
+		/// <summary> Provides list of all existing web skins and allows admin to enter a new web skin or edit an existing web skin </summary>
+		Skins,
 
         /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
         Thematic_Headings,

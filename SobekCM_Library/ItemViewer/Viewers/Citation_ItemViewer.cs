@@ -2227,7 +2227,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 				}
 
-				//                result.Append(Single_Citation_HTML_Row("Interfaces", currentItem.METS.String_RecordStatus, indent));
+				//                result.Append(Single_Citation_HTML_Row("Skins", currentItem.METS.String_RecordStatus, indent));
 
 				result.AppendLine(INDENT + "  </dl>");
 				result.AppendLine(INDENT + "</div>");

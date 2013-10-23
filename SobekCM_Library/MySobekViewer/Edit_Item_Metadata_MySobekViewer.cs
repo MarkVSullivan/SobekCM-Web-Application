@@ -240,7 +240,7 @@ namespace SobekCM.Library.MySobekViewer
                     Cached_Data_Manager.Remove_Project(user.UserID, item.BibID, null);
 
                     currentMode.Mode = Display_Mode_Enum.Administrative;
-                    currentMode.Admin_Type = Admin_Type_Enum.Projects;
+                    currentMode.Admin_Type = Admin_Type_Enum.Default_Metadata;
                     currentMode.My_Sobek_SubMode = String.Empty;
                     currentMode.Redirect();
  }
@@ -326,7 +326,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Redirect
                 currentMode.Mode = Display_Mode_Enum.Administrative;
-                currentMode.Admin_Type = Admin_Type_Enum.Projects;
+                currentMode.Admin_Type = Admin_Type_Enum.Default_Metadata;
                 currentMode.My_Sobek_SubMode = String.Empty;
                 currentMode.Redirect();
             }
@@ -715,13 +715,13 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //System.Web.UI.WebControls.ImageButton cancelButton = new System.Web.UI.WebControls.ImageButton();
-            //cancelButton.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif";
+            //cancelButton.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel_button_g.gif";
             //cancelButton.AlternateText = "CANCEL";
             //cancelButton.Click += new System.Web.UI.ImageClickEventHandler(cancelButton_Click);
             //MainPlaceHolder.Controls.Add(cancelButton);
             //MainPlaceHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
             //System.Web.UI.WebControls.ImageButton saveButton = new System.Web.UI.WebControls.ImageButton();
-            //saveButton.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif";
+            //saveButton.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/save_button_g.gif";
             //saveButton.AlternateText = "SAVE";
             //saveButton.Click += new System.Web.UI.ImageClickEventHandler(saveButton_Click);
             //MainPlaceHolder.Controls.Add(saveButton);
@@ -766,13 +766,13 @@ namespace SobekCM.Library.MySobekViewer
             page = lastPage;
 
             //System.Web.UI.WebControls.ImageButton cancelButton2 = new System.Web.UI.WebControls.ImageButton();
-            //cancelButton2.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif";
+            //cancelButton2.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel_button_g.gif";
             //cancelButton2.AlternateText = "CANCEL";
             //cancelButton2.Click += new System.Web.UI.ImageClickEventHandler(cancelButton_Click);
             //MainPlaceHolder.Controls.Add(cancelButton2);
             //MainPlaceHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
             //System.Web.UI.WebControls.ImageButton saveButton2 = new System.Web.UI.WebControls.ImageButton();
-            //saveButton2.ImageUrl = "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif";
+            //saveButton2.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/save_button_g.gif";
             //saveButton2.AlternateText = "SAVE";
             //saveButton2.Click += new System.Web.UI.ImageClickEventHandler(saveButton_Click);
             //MainPlaceHolder.Controls.Add(saveButton2);

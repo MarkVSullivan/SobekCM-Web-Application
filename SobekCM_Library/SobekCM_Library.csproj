@@ -401,7 +401,7 @@
     <Compile Include="MySobekViewer\Mass_Update_Items_MySobekViewer.cs" />
     <Compile Include="AdminViewer\Portals_AdminViewer.cs" />
     <Compile Include="AdminViewer\Skins_AdminViewer.cs" />
-    <Compile Include="AdminViewer\Projects_AdminViewer.cs" />
+    <Compile Include="AdminViewer\Default_Metadata_AdminViewer.cs" />
     <Compile Include="MySobekViewer\Saved_Searches_MySobekViewer.cs" />
     <Compile Include="AdminViewer\Users_AdminViewer.cs" />
     <Compile Include="AdminViewer\User_Group_AdminViewer.cs" />
