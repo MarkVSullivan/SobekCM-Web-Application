@@ -174,7 +174,7 @@ namespace SobekCM.Library.HTML
                     }
 
                     // Build the source URL
-                    Output.Write("<img src=\"" + SobekCM_Library_Settings.JP2_Server + "imageserver?res=" + (zoomlevels - currentMode.Viewport_Zoom + 1) + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
+                    Output.Write("<img src=\"" + SobekCM_Library_Settings.JP2ServerUrl + "imageserver?res=" + (zoomlevels - currentMode.Viewport_Zoom + 1) + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
                     if (currentMode.Viewport_Zoom != 1)
                         Output.Write("&x=" + currentMode.Viewport_Point_X + "&y=" + currentMode.Viewport_Point_Y);
                     Output.WriteLine("&rotation=" + rotation + "&filename=" + jpeg2000_filename + "\" />");

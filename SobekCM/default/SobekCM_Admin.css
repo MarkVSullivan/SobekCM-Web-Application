@@ -16,8 +16,6 @@
 **************************************************************************/
 
 
-
-
 /** Styles used for text areas throughout the admin pages **/
 .sbkAdm_HomeText { text-align: justify; padding-bottom: 5px; }
 .sbkAdm_HomeText a:link { color:#000080; }
@@ -39,10 +37,14 @@ select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9d
 textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
 
 
-.sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
+.sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 4px 10px; cursor: pointer; letter-spacing: 0.5px; }
 .sbkAdm_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 .sbkAdm_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px;margin-left: 20px; }
 .sbkAdm_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+
+.sbkAdm_RoundButton_RightImg { vertical-align: top; padding-left: 3px; padding-top: 1px; } 
+.sbkAdm_RoundButton_LeftImg { vertical-align: top; padding-right: 3px; padding-top: 1px; } 
+
 
 /** Styles used for the forms (both pop-up and in-line) throughout the admin pages **/
 .sbkAdm_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 6px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
@@ -85,13 +87,13 @@ textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f
 .sbkAsav_small_input { width: 120px; margin-right: 40px; margin-top: 2px; margin-bottom: 4px;  }
 select.sbkAsav_select { width: 155px; margin-right: 38px; margin-top: 2px; margin-bottom: 4px; }
 select.sbkAsav_select_large { width: 470px; margin-right: 16px; margin-top: 2px; margin-bottom: 4px;  }
-input.sbkAsav_large_input  { width: 466px; margin-top: 2px; margin-bottom: 4px;  }
+input.sbkAsav_large_input  { width: 466px; margin-top: 2px; margin-bottom: 0px;  }
 textarea.sbkAsav_input  { width: 466px; margin-top:2px;margin-bottom: 4px; FONT-FAMILY: Arial, sans-serif; font-size: small;}
 input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 .sbkAsav_List { padding: 0 0 30px 70px; list-style-type: none;}
 .sbkAsav_List li { padding-top: 10px; }
 .sbkAsav_Table { margin-left:22px; }
-.sbkAsav_TableHeader1 { width: 130px; padding-left: 10px;}
+.sbkAsav_TableHeader1 { width: 170px; padding-left: 10px;}
 .sbkAsav_TableHeader2 { width: 120px; }
 .sbkAsav_TableTitleRow { background-color:#7d90d5;color: white;font-weight: bold;}
 .sbkAsav_TableTitleRow td { padding-left: 10px; }
@@ -141,6 +143,7 @@ textarea.sbkIpav_input { width: 466px; margin-top: 6px; }
 .sbkPoav_PopupDiv { position:fixed; background-color:#eeeeee; width:590px; height:300px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 .sbkPoav_PopupDiv table tr { height: 30px; }
 input.sbkPoav_input { width: 300px; }
+select.sbkPoav_select { width: 302px; }
 .sbkPoav_HelpButton { border: 0; padding-left:5px; margin-top:3px; cursor:pointer; }
 .sbkPoav_Table { margin-left:12px; }
 .sbkPoav_TableHeader1 { width: 85px; padding-left: 15px;}
@@ -151,7 +154,7 @@ input.sbkPoav_input { width: 300px; }
 .sbkPoav_TableHeader6 { width: 180px; }
 #sbkPoav_DefaultCell { font-weight: bold;font-style: italic; }
 
-/** Projects_AdminViewer **/
+/** Default_Metadata_AdminViewer **/
 .sbkPav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
 .sbkPav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:165px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 input.sbkPav_small_input  {  width: 120px; margin-right: 10px; margin-top: 6px; }
@@ -161,6 +164,29 @@ select.sbkPav_select { width: 120px; margin-top: 6px; }
 .sbkPav_TableHeader1 { width: 160px; padding-left: 15px;}
 .sbkPav_TableHeader2 { width: 140px; }
 .sbkPav_TableHeader3 { width: 450px; }
+
+/** Settings_AdminViewer **/
+#sbkSeav_ContainerInner { margin: 0 auto; padding:0; width: 1100px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+#sbkSeav_Explanation {  margin: 0 auto; width: 750px; }
+#sbkSeav_Explanation p {  margin: 0;padding: 10px 0 10px 0; }
+.sbkSeav_ButtonsDiv { float: right; }
+.sbkSeav_SettingsTable {margin: 20px 0 20px 35px; border-collapse: collapse; border-spacing: 0;border: 1px solid silver; text-align: left; width: 800px; }
+.sbkSeav_SettingsTable tr { height: 35px;vertical-align: middle;border-bottom: 1px solid silver; }
+.sbkSeav_SettingsTable th {padding-left: 5px;text-transform: uppercase; background-color: silver;text-align: left;font-weight: bold; }
+.sbkSeav_SettingsTable td {padding-left: 3px; }
+.sbkSeav_TableOddRow { background-color: #eeeeee; }
+.sbkSeav_TableKeyCell { font-weight: bold;width: 260px;color: #222222; }
+.sbkSeav_HelpButton { padding-left:5px; margin-top:3px; cursor:pointer; border:0; }
+.sbkSeav_TableRule { background-color:#e7e7e7; }
+.sbkSeav_InnerTable { padding: 0;margin: 0;}
+input.sbkSeav_input { width: 440px; }
+.sbkSeav_InnerTableConstant { padding: 0;margin: 0; }
+.sbkSeav_CustomSettingsTable {margin: 20px 0 20px 35px; border-collapse: collapse; border-spacing: 0;border: 1px solid silver; text-align: left; width: 860px; }
+.sbkSeav_CustomSettingsTable tr { height: 35px;vertical-align: middle;border-bottom: 1px solid silver; }
+.sbkSeav_CustomSettingsTable th {padding-left: 5px;text-transform: uppercase; background-color: silver;text-align: left;font-weight: bold; }
+.sbkSeav_CustomSettingsTable td {padding-left: 3px; }
+input.sbkSeav_CustomKey_Input { width: 400px; }
+input.sbkSeav_CustomValue_Input { width: 300px; }
 
 /** Skins_AdminViewer **/
 .sbkSav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-left: 22px;} 
@@ -232,9 +258,6 @@ input.users_code_input_focused  {  color:#0000a8;  width: 130px; margin-top: 6px
 input.users_large_input  {  color:Blue;  width: 400px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.users_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
-input.admin_settings_input  {  color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.admin_settings_input_focused  {  color:#0000a8; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-select.admin_settings_select { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 
 

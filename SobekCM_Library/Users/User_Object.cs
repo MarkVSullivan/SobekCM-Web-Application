@@ -82,6 +82,13 @@ namespace SobekCM.Library.Users
 
         #endregion
 
+		/// <summary> Flag indicates if this user is logged on, or if this represents
+		/// a non-logged on user's session-specific data </summary>
+	    public bool LoggedOn
+	    {
+			get { return true; }
+	    }
+
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <returns> Option, as an uncast object, or NULL </returns>

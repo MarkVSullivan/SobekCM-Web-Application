@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // create the node reader
                 nodeReader = new XmlTextReader(reader);
 
-                MarcXML_METS_dmdSec_ReaderWriter.Read_MarcXML_Info(nodeReader, Return_Package.Bib_Info, Return_Package, true);
+                MarcXML_METS_dmdSec_ReaderWriter.Read_MarcXML_Info(nodeReader, Return_Package.Bib_Info, Return_Package, true, Options );
             }
             catch (Exception ee)
             {
