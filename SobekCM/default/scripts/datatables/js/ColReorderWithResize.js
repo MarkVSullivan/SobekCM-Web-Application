@@ -103,7 +103,7 @@ function fnDomSwitch( nParent, iFrom, iTo )
  * DataTables plug-in API functions
  *
  * This are required by ColReorder in order to perform the tasks required, and also keep this
- * code portable, to be used for other column reordering projects with DataTables, if needed.
+ * code portable, to be used for other column reordering Default_Metadata with DataTables, if needed.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 

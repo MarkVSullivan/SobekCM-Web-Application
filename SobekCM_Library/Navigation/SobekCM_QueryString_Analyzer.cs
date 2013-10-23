@@ -632,15 +632,15 @@ namespace SobekCM.Library.Navigation
                                             break;
 
                                         case "aliases":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Forwarding;
+                                            Navigator.Admin_Type = Admin_Type_Enum.Aliases;
                                             break;
 
                                         case "webskins":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Interfaces;
+                                            Navigator.Admin_Type = Admin_Type_Enum.Skins;
                                             break;
 
-                                        case "projects":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Projects;
+                                        case "defaults":
+                                            Navigator.Admin_Type = Admin_Type_Enum.Default_Metadata;
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;

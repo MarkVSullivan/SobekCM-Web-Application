@@ -16,6 +16,7 @@ using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
+using SobekCM.Tools;
 
 #endregion
 
@@ -37,6 +38,7 @@ namespace SobekCM.Library.AdminViewer
     {
         private readonly string actionMessage;
         private readonly Aggregation_Code_Manager codeManager;
+		private readonly List<Thematic_Heading> thematicHeadings;
         private readonly string enteredCode;
         private readonly string enteredDescription;
         private readonly bool enteredIsActive;
@@ -51,15 +53,17 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="User"> Authenticated user information </param>
         /// <param name="CurrentMode"> Mode / navigation information for the current request</param>
         /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
+		/// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>       
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-		public Aggregations_Mgmt_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer)
+		public Aggregations_Mgmt_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Aggregation_Code_Manager Code_Manager, List<Thematic_Heading> Thematic_Headings, Custom_Tracer Tracer)
             : base(User)
         {
             Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Constructor", String.Empty);
 
             codeManager = Code_Manager;
 	        currentMode = CurrentMode;
+			thematicHeadings = Thematic_Headings;
 
             // Set some defaults
             actionMessage = String.Empty;
@@ -73,7 +77,7 @@ namespace SobekCM.Library.AdminViewer
             enteredIsHidden = false;
 
             // If the user cannot edit this, go back
-            if ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin ))
+            if (( user == null ) || ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin )))
             {
                 currentMode.Mode = Display_Mode_Enum.My_Sobek;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -98,6 +102,37 @@ namespace SobekCM.Library.AdminViewer
                     string reset_aggregation_code = String.Empty;
                     if (form["admin_aggr_reset"] != null)
                         reset_aggregation_code = form["admin_aggr_reset"].ToLower().Trim();
+
+	                string delete_aggregation_code = String.Empty;
+					if (form["admin_aggr_delete"] != null)
+						delete_aggregation_code = form["admin_aggr_delete"].ToLower().Trim();
+
+					// Was this to delete the aggregation?
+					if (( user.Is_System_Admin ) && ( delete_aggregation_code.Length > 0))
+					{
+						string delete_error;
+						int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, Tracer, out delete_error);
+						if (errorCode <= 0)
+						{
+							string delete_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
+							if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
+								actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
+							else
+								actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation";
+						}
+						else
+						{
+							actionMessage = delete_error;
+						}
+
+
+						// Reload the list of all codes, to include this new one and the new hierarchy
+						lock (codeManager)
+						{
+							SobekCM_Database.Populate_Code_Manager(codeManager, Tracer);
+						}
+					}
+
 
                     // If there is a reset request here, purge the aggregation from the cache
                     if (reset_aggregation_code.Length > 0)
@@ -245,8 +280,13 @@ namespace SobekCM.Library.AdminViewer
                                         new_aggregation_code = "i" + new_aggregation_code;
                                 }
 
+								// Get the thematic heading id (no checks here)
+	                            int thematicHeadingId = -1;
+								if (form["admin_aggr_heading"] != null)
+									thematicHeadingId = Convert.ToInt32(form["admin_aggr_heading"]);
+
                                 // Try to save the new item aggregation
-                                if (SobekCM_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, correct_type, is_active, is_hidden, new_link, parentid, Tracer))
+								if (SobekCM_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, Tracer))
                                 {
                                     // Ensure a folder exists for this, otherwise create one
                                     try
@@ -310,7 +350,7 @@ namespace SobekCM.Library.AdminViewer
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-        /// <value> This always returns the value 'HTML Interfaces' </value>
+        /// <value> This always returns the value 'HTML Skins' </value>
         public override string Web_Title
         {
             get { return "Item Aggregations"; }
@@ -341,9 +381,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_tosave\" name=\"admin_aggr_tosave\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_reset\" name=\"admin_aggr_reset\" value=\"\" />");
+			Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_delete\" name=\"admin_aggr_delete\" value=\"\" />");
             Output.WriteLine();
 
-               Output.WriteLine("<!-- Aggregations_Mgmt_AdminViewer.Add_HTML_In_Main_Form -->");
+            Output.WriteLine("<!-- Aggregations_Mgmt_AdminViewer.Add_HTML_In_Main_Form -->");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
@@ -413,7 +454,7 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("      <tr>");
 	            Output.WriteLine("        <td>");
 				Output.WriteLine("          <label for=\"admin_aggr_parent\">Parent:</label></td><td colspan=\"2\">");
-                Output.WriteLine("          <select class=\"sbkAsav_select_large\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
+				Output.WriteLine("          <select class=\"sbkAsav_select\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
                 if (enteredParent == String.Empty)
                     Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations)
@@ -440,6 +481,22 @@ namespace SobekCM.Library.AdminViewer
                 // Add the link line
                 Output.WriteLine("      <tr><td><label for=\"admin_aggr_link\">External Link:</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredLink) + "\" /></td></tr>");
 
+				// Add the thematic heading line
+	            Output.WriteLine("      <tr>");
+				Output.WriteLine("        <td><label for=\"admin_aggr_heading\">Thematic Heading:</label></td>");
+				Output.WriteLine("        <td colspan=\"2\">");
+				Output.WriteLine("          <select class=\"admin_aggr_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
+				Output.WriteLine("            <option value=\"-1\" selected=\"selected\" ></option>");
+				foreach (Thematic_Heading thisHeading in thematicHeadings)
+				{
+					Output.Write("            <option value=\"" + thisHeading.ThematicHeadingID + "\">" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+				}
+	            Output.WriteLine("          </select>");
+	            Output.WriteLine("        </td>");
+				Output.WriteLine("      </tr>");
+
+
+
                 // Add the description box
                 Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"sbkAsav_input sbkAdmin_Focusable\">" + HttpUtility.HtmlEncode(enteredDescription) + "</textarea></td></tr>");
 
@@ -457,7 +514,7 @@ namespace SobekCM.Library.AdminViewer
 
 
 				// Add the SAVE button
-				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE</button></td></tr>");
+				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 				Output.WriteLine("    </table>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
@@ -526,7 +583,12 @@ namespace SobekCM.Library.AdminViewer
                         else
                             Output.Write("view | ");
 
-                        Output.Write("<a title=\"Click to reset the instance in the application cache\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
+						if ( user.Is_System_Admin )
+							Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
+						else
+							Output.Write("<a title=\"Only SYSTEM administrators can delete item aggregations\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('Only SYSTEM administrators can delete item aggregations');return false;\">delete</a> | ");
+
+                        Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
 
                         // Add the rest of the row with data
                         Output.WriteLine("      <td>" + thisAggr.Code + "</td>");

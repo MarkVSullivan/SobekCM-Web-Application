@@ -319,7 +319,7 @@ namespace SobekCM.Library.MainWriters
                         }
 
                         // Create the item viewer writer
-                        subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2_Server.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer); 
+                        subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2ServerUrl.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer); 
                         ((Item_HtmlSubwriter) subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
                     }
                     else
@@ -1129,6 +1129,10 @@ namespace SobekCM.Library.MainWriters
 					if (currentMode.Admin_Type == Admin_Type_Enum.Wordmarks )
 					{
 						container_inner = "sbkWav_ContainerInner";
+					}
+					if (currentMode.Admin_Type == Admin_Type_Enum.Settings)
+					{
+						container_inner = "sbkSeav_ContainerInner";
 					}
 					break;
 

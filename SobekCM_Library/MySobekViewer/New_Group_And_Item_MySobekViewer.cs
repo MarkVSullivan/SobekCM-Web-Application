@@ -277,19 +277,28 @@ namespace SobekCM.Library.MySobekViewer
 				        // Is one missing?
 				        if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
 				        {
-					        try
-					        {
-						        var tiffImg = System.Drawing.Image.FromFile(thisFile);
-						        var mainImg = ScaleImage(tiffImg, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height);
-						        mainImg.Save(jpeg, ImageFormat.Jpeg);
-						        var thumbnailImg = ScaleImage(tiffImg, 150, 400);
-						        thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+							using (System.Drawing.Image tiffImg = System.Drawing.Image.FromFile(thisFile))
+							{
+								try
+								{
+									var mainImg = ScaleImage(tiffImg, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height);
+									mainImg.Save(jpeg, ImageFormat.Jpeg);
+									mainImg.Dispose();
+									var thumbnailImg = ScaleImage(tiffImg, 150, 400);
+									thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+									thumbnailImg.Dispose();
+								}
+								catch (Exception)
+								{
+									bool error = true;
+								}
+								finally
+								{
+									if ( tiffImg != null )
+										tiffImg.Dispose();
+								}
+							}
 
-					        }
-					        catch (Exception)
-					        {
-						        bool error = true;
-					        }
 				        }
 			        }
 		        }

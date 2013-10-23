@@ -713,11 +713,11 @@ namespace SobekCM.Library.AdminViewer
                 text_builder.Append(thisProject + "<br />");
             if (text_builder.Length == 0)
             {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Projects:</b></td><td><i>none</i></td></tr>");
+                Output.WriteLine("  <tr valign=\"top\"><td><b>Default_Metadata:</b></td><td><i>none</i></td></tr>");
             }
             else
             {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Projects:</b></td><td>" + text_builder + "</td></tr>");
+                Output.WriteLine("  <tr valign=\"top\"><td><b>Default_Metadata:</b></td><td>" + text_builder + "</td></tr>");
                 text_builder.Remove(0, text_builder.Length);
             }
 
@@ -962,7 +962,7 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("  <br />");
                     Output.WriteLine("  <br />");
-                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Templates and Projects</span>");
+                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Templates and Default_Metadata</span>");
                     Output.WriteLine("  <blockquote>");
                     Output.WriteLine("    <table>");
                     Output.WriteLine("      <tr height=\"35px\" valign=\"top\" >");
