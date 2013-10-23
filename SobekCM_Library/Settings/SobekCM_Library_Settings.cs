@@ -37,7 +37,7 @@ namespace SobekCM.Library.Settings
         public static long METS_Only_Package_Required_Aging = 60L * 10000000L;          // 1 Minute (in ticks)
 
 		/// <summary> Flag indicates whether checksums should be verified </summary>
-		public static readonly bool Verify_CheckSum = true;
+		public static readonly bool VerifyCheckSum = true;
 
         // Values pulled from database 
         private static string packageArchivalFolder, logFilesDirectory, logFilesUrl, staticPagesLocation;
@@ -52,16 +52,16 @@ namespace SobekCM.Library.Settings
         private static string filesToExcludeFromDownloads;
         private static string prearchiveFilesToDelete;
         private static string postarchiveFilesToDelete;
-        private static string jpeg2000Server;
+	    private static string jpeg2000ServerUrl, jpeg2000ServerType;
         private static string systemErrorEmail, systemEmail;
-        private static string shibbolethSystemUrl, shibbolethSystemName;
+	    private static string shibbolethSystemUrl, shibbolethSystemName, shibbolethUserAttribute;
         private static string systemBaseUrl;
         private static string systemBaseName;
         private static string systemBaseAbbreviation;
         private static string oaiResourceIdentifierBase;
         private static string oaiRepositoryIdentifier;
         private static string oaiRepositoryName;
-        private static string ocrCommandPrompt;
+	    private static string ocrCommandPrompt, kakaduJp2CreateCommand;
         private static string imageMagickExecutable;
         private static string ghostscriptExecutable;
         private static bool statisticsCachingEnabled;
@@ -105,9 +105,9 @@ namespace SobekCM.Library.Settings
         private static readonly Object thisLock = new Object();
 
 
-	    private static List<Database_Instance_Configuration> databaseInfo; 
+	    private static readonly List<Database_Instance_Configuration> databaseInfo; 
 
-        private static Dictionary<string, string> additionalGlobalSettings;
+        private static readonly Dictionary<string, string> additionalGlobalSettings;
 
         /// <summary> Static constructor sets all the values to default empty strings </summary>
         static SobekCM_Library_Settings()
@@ -118,7 +118,8 @@ namespace SobekCM.Library.Settings
 				databaseInfo = new List<Database_Instance_Configuration>();
                 
                 Base_SobekCM_Location_Relative = String.Empty;
-                jpeg2000Server = String.Empty;
+                jpeg2000ServerUrl = String.Empty;
+	            jpeg2000ServerType = String.Empty;
                 base_url = String.Empty;
                 baseDirectory = String.Empty;
                 imageServerUrl = String.Empty;
@@ -136,6 +137,8 @@ namespace SobekCM.Library.Settings
                 builderVerbose = false;
                 uploadFileTypes = String.Empty;
                 uploadImageTypes = String.Empty;
+	            kakaduJp2CreateCommand = String.Empty;
+	            ocrCommandPrompt = String.Empty;
 
                 // Define new empty collections
                 dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -286,7 +289,9 @@ namespace SobekCM.Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", ref includePartnersOnSystemHome, ref error, false);               
                 Get_Integer_Value(settingsDictionary, "JPEG Height", ref jpegHeight, ref error, -1);
                 Get_Integer_Value(settingsDictionary, "JPEG Width", ref jpegWidth, ref error, -1);
-                Get_String_Value(settingsDictionary, "JPEG2000 Server", ref jpeg2000Server, ref error);
+                Get_String_Value(settingsDictionary, "JPEG2000 Server", ref jpeg2000ServerUrl, ref error);
+				Get_String_Value(settingsDictionary, "JPEG2000 Server Type", ref jpeg2000ServerType, ref error);
+				Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
                 Get_String_Value(settingsDictionary, "Log Files Directory", ref logFilesDirectory, ref error);
                 Get_String_Value(settingsDictionary, "Log Files URL", ref logFilesUrl, ref error);
                 Get_String_Value(settingsDictionary, "Main Builder Input Folder", ref mainBuilderInputFolder, String.Empty);
@@ -296,13 +301,14 @@ namespace SobekCM.Library.Settings
                 Get_String_Value(settingsDictionary, "OAI Resource Identifier Base", ref oaiResourceIdentifierBase, ref error);
                 Get_String_Value(settingsDictionary, "OAI Repository Identifier", ref oaiRepositoryIdentifier, ref error);
                 Get_String_Value(settingsDictionary, "OAI Repository Name", ref oaiRepositoryName, ref error);
-                Get_String_Value(settingsDictionary, "OCR Command Prompt", ref ocrCommandPrompt, String.Empty);
+                Get_String_Value(settingsDictionary, "OCR Engine Command", ref ocrCommandPrompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Package Archival Folder", ref packageArchivalFolder, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", ref pageSolrUrl, String.Empty);
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", ref postarchiveFilesToDelete, String.Empty);
                 Get_String_Value(settingsDictionary, "PreArchive Files To Delete", ref prearchiveFilesToDelete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", ref privacyEmailAddress, String.Empty);
                 Get_String_Value(settingsDictionary, "Shibboleth System URL", ref shibbolethSystemUrl, String.Empty);
+				Get_String_Value(settingsDictionary, "Shibboleth User Identity Attribute", ref shibbolethUserAttribute, String.Empty);
                 Get_String_Value(settingsDictionary, "Shibboleth System Name", ref shibbolethSystemName, String.Empty);
                 Get_Boolean_Value(settingsDictionary, "Show Florida SUS Settings", ref showFloridaSusSettings, ref error, false);
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", ref sobekcmImageserver, String.Empty);
@@ -319,7 +325,7 @@ namespace SobekCM.Library.Settings
                 Get_String_Value(settingsDictionary, "Upload File Types", ref uploadFileTypes, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
                 Get_String_Value(settingsDictionary, "Upload Image Types", ref uploadImageTypes, ".txt,.tif,.jpg,.jp2,.pro");
                 Get_String_Value(settingsDictionary, "Web In Process Submission Location", ref inProcessSubmissionLocation, String.Empty);
-                Get_Integer_Value(settingsDictionary, "Web Output Suggested Caching", ref webOutputCachingMinutes, ref error, 0);
+				Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", ref webOutputCachingMinutes, ref error, 0);
                 
 
                 // Pull the language last, since it must be converted into a Language_Enum
@@ -327,6 +333,20 @@ namespace SobekCM.Library.Settings
                 Get_String_Value(settingsDictionary, "System Default Language", ref default_ui_language_string, "English");
                 Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(default_ui_language_string);
 
+				// Pull out some values, which are stored in this portion of the database, 
+				// but are not really setting values
+				settingsDictionary.Remove("Builder Last Message");
+				settingsDictionary.Remove("Builder Last Run Finished");
+				settingsDictionary.Remove("Builder Version");
+				settingsDictionary.Remove("Builder Operation Flag");
+
+				// Save the remaining values
+	            additionalGlobalSettings.Clear();
+				foreach (KeyValuePair<string, string> thisSetting in settingsDictionary)
+				{
+					additionalGlobalSettings[thisSetting.Key] = thisSetting.Value;
+				}
+					
 
                 return !error;
             }
@@ -773,29 +793,26 @@ namespace SobekCM.Library.Settings
         /// <summary> Flag indicates if the builder should try to convert office files (Word and Powerpoint) to PDF during load and post-processing </summary>
         public static bool Convert_Office_Files_To_PDF
         {
-            get
-            {
-                return convertOfficeFilesToPdf;
-            }
+            get { return convertOfficeFilesToPdf; }
         }
+
+		/// <summary> Kakadu JPEG2000 script will override the specifications used when creating zoomable images </summary>
+	    public static string Kakadu_JP2_Create_Command
+	    {
+		    get { return kakaduJp2CreateCommand; }
+	    }
 
         /// <summary> Command to launch the OCR engine against a single TIFF to produce a single TEXT file </summary>
         public static string OCR_Command_Prompt
         {
-            get
-            {
-                return ocrCommandPrompt;
-            }
+            get { return ocrCommandPrompt; }
         }
 
         /// <summary> Flag indicates if the statistics information should be cached for very quick 
         /// retrieval for search engine robots. </summary>
         public static bool Statistics_Caching_Enabled
         {
-            get
-            {
-                return statisticsCachingEnabled;
-            }
+            get { return statisticsCachingEnabled; }
         }
 
         /// <summary> Returns the base string for the resource identifiers within OAI.</summary>
@@ -816,6 +833,12 @@ namespace SobekCM.Library.Settings
         {
             get { return oaiRepositoryName; }
         }
+
+		/// <summary> Gets the name of the attribute from Shibboleth which holds the user identity information, for user identification </summary>
+	    public static string Shibboleth_User_Identity_Attribute
+	    {
+			get { return shibbolethUserAttribute; }
+		}
 
         /// <summary> Gets the URL for any related Shibboleth authentication system </summary>
         public static string Shibboleth_System_URL
@@ -1082,10 +1105,17 @@ namespace SobekCM.Library.Settings
         public static string Base_SobekCM_Location_Relative { get; set; }
 
         /// <summary> URL to the Aware JPEG2000 zoomable image server </summary>
-        public static string JP2_Server
+        public static string JP2ServerUrl
         {
-            get { return jpeg2000Server; }
+            get { return jpeg2000ServerUrl; }
         }
+
+		/// <summary> Gets the TYPE of the JPEG2000 server - allowing the system to support different
+		/// types of the zoomable server ( i.e., Aware, Djatoka, etc.. ) </summary>
+	    public static string JP2ServerType
+	    {
+		    get { return jpeg2000ServerType; }
+	    }
 
 	    /// <summary> Database connection string(s) built from the system config file (usually sits in a config subfolder)</summary>
 	    public static ReadOnlyCollection<Database_Instance_Configuration> Database_Connections
@@ -1164,12 +1194,12 @@ namespace SobekCM.Library.Settings
             get { return mainBuilderInputFolder; }
         }
 
-        /// <summary> IP address for the SobekCM web server </summary>
-        public static string SobekCM_Web_Server_IP
-        {
-            get { return webServerIp; }
-            set { webServerIp = value; }
-        }
+		/// <summary> IP address for the SobekCM web server </summary>
+		public static string SobekCM_Web_Server_IP
+		{
+			get { return webServerIp; }
+			set { webServerIp = value; }
+		}
 
         /// <summary> Network location of the recycle bin, where deleted items and
         /// files are placed for a while, in case of accidental deletion </summary>
@@ -1192,9 +1222,17 @@ namespace SobekCM.Library.Settings
             get { return uploadImageTypes; }
         }
 
-        #region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
-        
-        /// <summary> Directory for this application's myUFDC folder, where the template and project files reside for online submittal and editing</summary>
+		/// <summary> Additional custom settings associated with this SobekCM system at
+		/// the highest level </summary>
+	    public static Dictionary<string,string> Additional_Settings
+	    {
+			get { return additionalGlobalSettings; }
+	    }
+
+
+		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
+
+		/// <summary> Directory for this application's myUFDC folder, where the template and project files reside for online submittal and editing</summary>
         /// <value> [Base_Directory] + 'myUFDC\' </value>
         public static string Base_MySobek_Directory
         {

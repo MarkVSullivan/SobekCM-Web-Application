@@ -42,7 +42,7 @@ namespace SobekCM.Library.AdminViewer
             currentMode = Current_Mode;
 
             // Ensure the user is the system admin
-            if ((User == null) || (!User.Is_System_Admin))
+            if ((User == null) || ((!User.Is_System_Admin) && (!User.Is_Portal_Admin )))
             {
                 Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -51,7 +51,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
            // If this is a postback, handle any events first
-            if (Current_Mode.isPostBack)
+            if ((Current_Mode.isPostBack) && ( User.Is_System_Admin ))
             {
                 // Pull the hidden value
                 string save_value = HttpContext.Current.Request.Form["admin_builder_tosave"].ToUpper().Trim();
@@ -101,7 +101,7 @@ namespace SobekCM.Library.AdminViewer
             // Start to show the text 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-            Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and updated the current status as well as view the most recent log files.</p>");
+            Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and update the current status as well as view the most recent log files.</p>");
             Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 			Output.WriteLine();
 
@@ -120,33 +120,37 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <h2>SobekCM Builder Status</h2>");
 				Output.WriteLine("  <table class=\"sbkBav_table\">");
                 Output.WriteLine("    <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
-	            Output.WriteLine("    <tr>");
-				Output.WriteLine("      <td>Next Status: </td>");
-				Output.WriteLine("      <td>");
-				Output.WriteLine("        <select class=\"sbkBav_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
 
-                if ((operationFlag != "ABORT REQUESTED") && (operationFlag != "NO BUILDING REQUESTED"))
-					Output.WriteLine("          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
-                else
-					Output.WriteLine("          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
+	            if (user.Is_System_Admin)
+	            {
+		            Output.WriteLine("    <tr>");
+		            Output.WriteLine("      <td>Next Status: </td>");
+		            Output.WriteLine("      <td>");
+		            Output.WriteLine("        <select class=\"sbkBav_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
 
-				Output.WriteLine(operationFlag == "PAUSE REQUESTED"
-				 ? "          <option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
-				 : "          <option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
+		            if ((operationFlag != "ABORT REQUESTED") && (operationFlag != "NO BUILDING REQUESTED"))
+			            Output.WriteLine("          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
+		            else
+			            Output.WriteLine("          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
 
-				Output.WriteLine(operationFlag == "ABORT REQUESTED"
-								 ? "          <option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
-								 : "          <option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
+		            Output.WriteLine(operationFlag == "PAUSE REQUESTED"
+			                             ? "          <option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
+			                             : "          <option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
 
-				Output.WriteLine(operationFlag == "NO BUILDING REQUESTED"
-								 ? "          <option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
-								 : "          <option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
+		            Output.WriteLine(operationFlag == "ABORT REQUESTED"
+			                             ? "          <option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
+			                             : "          <option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
 
-	            Output.WriteLine("        </select>");
-				Output.WriteLine("      </td>");
-				Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE</button></td>");
-				Output.WriteLine("    </tr>");
-                Output.WriteLine("  </table>");
+		            Output.WriteLine(operationFlag == "NO BUILDING REQUESTED"
+			                             ? "          <option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
+			                             : "          <option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
+
+		            Output.WriteLine("        </select>");
+		            Output.WriteLine("      </td>");
+					Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+		            Output.WriteLine("    </tr>");
+	            }
+	            Output.WriteLine("  </table>");
 				Output.WriteLine();
 
 

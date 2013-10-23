@@ -205,9 +205,9 @@ namespace SobekCM.Library.HTML
 			        //// If this user is internal, add that
 			        //if ((New_Items != null) && (New_Items.Rows.Count > 0))
 			        //{
-			        //    currentMode.Mode = Display_Mode_Enum.Internal;
-			        //    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Selected_Tab_Start + internalTab + Selected_Tab_End + "</a>");
-			        //    currentMode.Mode = Display_Mode_Enum.My_Sobek;
+			        //    CurrentMode.Mode = Display_Mode_Enum.Internal;
+			        //    Output.WriteLine("  <a href=\"" + CurrentMode.Redirect_URL() + "\">" + Selected_Tab_Start + internalTab + Selected_Tab_End + "</a>");
+			        //    CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 			        //}
 			        //else
 			        //{
@@ -224,56 +224,56 @@ namespace SobekCM.Library.HTML
 			        Mode.Admin_Type = Admin_Type_Enum.Home;
 			        Output.WriteLine("\t\t<li id=\"sbkUsm_Admin\"><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
 
+			        // Edit forwarding
+			        Mode.Admin_Type = Admin_Type_Enum.Aliases;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminForwarding\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+
+			        // View and set SobekCM Builder Status
+			        Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminStatus\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
+
+			        // Edit Default_Metadata
+			        Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminProjects\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Default Metadata</div></a></li>");
+
+			        // Edit IP Restrictions
+			        Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
+
 			        // Edit item aggregations
 			        Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
 			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminAggr\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Item Aggregations</div></a></li>");
 
+			        // Edit Settings
+			        Mode.Admin_Type = Admin_Type_Enum.Settings;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSettings\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
+
+			        // Edit Thematic Headings
+			        Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminThematic\"><a href=\"" + Mode.Redirect_URL() + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
+
+			        // Edit URL Portals
+			        Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminPortals\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
+
+			        if (User.Is_System_Admin)
+			        {
+				        // Edit users
+				        Mode.Admin_Type = Admin_Type_Enum.Users;
+				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminUsers\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+			        }
+
 			        // Edit interfaces
-			        Mode.Admin_Type = Admin_Type_Enum.Interfaces;
+			        Mode.Admin_Type = Admin_Type_Enum.Skins;
 			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSkin\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
 
 			        // Edit wordmarks
 			        Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
 			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wordmarks.gif\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
 
-			        // Edit forwarding
-			        Mode.Admin_Type = Admin_Type_Enum.Forwarding;
-			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminForwarding\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
-
-			        // Edit Projects
-			        Mode.Admin_Type = Admin_Type_Enum.Projects;
-			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminProjects\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Projects</div></a></li>");
-
-			        // Edit Thematic Headings
-			        Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminThematic\"><a href=\"" + Mode.Redirect_URL() + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
-
-			        if (User.Is_System_Admin)
-			        {
-				        // Edit users
-				        Mode.Admin_Type = Admin_Type_Enum.Users;
-				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminUsers\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Registered Users and Groups</div></a></li>");
-
-				        // Edit IP Restrictions
-				        Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
-
-				        // Edit URL Portals
-				        Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
-				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminPortals\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
-
-				        // Edit Settings
-				        Mode.Admin_Type = Admin_Type_Enum.Settings;
-				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminSettings\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
-
-				        // View and set SobekCM Builder Status
-				        Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminStatus\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">SobekCM Builder Status</div></a></li>");
-
-				        // Reset cache
-				        Mode.Admin_Type = Admin_Type_Enum.Reset;
-				        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminReset\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
-			        }
+			        // Reset cache
+			        Mode.Admin_Type = Admin_Type_Enum.Reset;
+			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminReset\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
 
 			        Output.WriteLine("\t\t</ul></li>");
 		        }

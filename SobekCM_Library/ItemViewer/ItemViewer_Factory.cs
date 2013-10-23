@@ -129,6 +129,8 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.TRACKING_SHEET:
                     return new TrackingSheet_ItemViewer(Current_Object, Current_User, Current_Mode);
 
+				case View_Enum.YOUTUBE_VIDEO:
+					return new YouTube_Embedded_Video_ItemViewer();
 
             }
 

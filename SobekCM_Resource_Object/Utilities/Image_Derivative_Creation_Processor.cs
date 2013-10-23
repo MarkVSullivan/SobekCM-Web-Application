@@ -207,11 +207,11 @@ namespace SobekCM.Resource_Object.Utilities
             int totalCount = tif_files.Length;
             if (totalCount > 0)
             {
+				OnNewTask("\t\tProcessing Images for " + package_name);
+
                 // Step through each TIF file
                 foreach (string tifFile in tif_files)
                 {
-                    OnNewTask("\t\tProcessing Images for " + package_name);
-
                     // Get the basic file information
                     FileInfo tifFileInfo = new FileInfo(tifFile);
                     string fileName = tifFileInfo.Name;

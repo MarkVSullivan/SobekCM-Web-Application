@@ -2969,7 +2969,7 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-		#region Methods to get the support objects.. Interfaces, Portals, Search stop words, and Search Fields
+		#region Methods to get the support objects.. Skins, Portals, Search stop words, and Search Fields
 
 		/// <summary> Gets the list of all search stop words which are ignored during searching ( such as 'The', 'A', etc.. ) </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -5477,6 +5477,29 @@ namespace SobekCM.Library.Database
 			}
 		}
 
+
+		/// <summary> Delete a value from the settings table </summary>
+		/// <param name="Setting_Key"> Key for the setting to update or insert </param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'SobekCM_Delete_Settinge' stored procedure </remarks> 
+		public static bool Delete_Setting(string Setting_Key)
+		{
+			try
+			{
+				// Execute this non-query stored procedure
+				SqlParameter[] paramList = new SqlParameter[1];
+				paramList[0] = new SqlParameter("@Setting_Key", Setting_Key);
+
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Setting", paramList);
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
+		}
+
 		#endregion
 
 		#region Methods used by the SobekCM Builder  (moved from bib package)
@@ -6135,6 +6158,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Name"> Name for this item aggregation </param>
 		/// <param name="ShortName"> Short version of this item aggregation </param>
 		/// <param name="Description"> Description of this item aggregation </param>
+		/// <param name="ThematicHeadingID"> Thematic heading id for this item aggregation (or -1)</param>
 		/// <param name="Type"> Type of item aggregation (i.e., Collection Group, Institution, Exhibit, etc..)</param>
 		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
 		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
@@ -6143,9 +6167,9 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, Custom_Tracer Tracer)
+		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, Custom_Tracer Tracer)
 		{
-			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, -1, Type, IsActive, IsHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, Tracer);
+			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, ThematicHeadingID, Type, IsActive, IsHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, Tracer);
 		}
 
 		/// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
@@ -6212,6 +6236,45 @@ namespace SobekCM.Library.Database
 			{
 				lastException = ee;
 				return false;
+			}
+		}
+
+		/// <summary> Delete an item aggregation from the database </summary>
+		/// <param name="Code"> Aggregation code for the aggregation to delete</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Error_Message"> [OUT] Error message, if there was an error</param>
+		/// <returns> Error code - 0 if there was no error </returns>
+		/// <remarks> This calls the 'SobekCM_Delete_Item_Aggregation' stored procedure</remarks> 
+		public static int Delete_Item_Aggregation(string Code, Custom_Tracer Tracer, out string Error_Message )
+		{
+			Error_Message = String.Empty;
+
+			if (Tracer != null)
+			{
+				Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", String.Empty);
+			}
+
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] paramList = new SqlParameter[3];
+				paramList[0] = new SqlParameter("@aggrcode", Code);
+				paramList[1] = new SqlParameter("@message", "                                        ") { Direction = ParameterDirection.InputOutput };
+				paramList[2] = new SqlParameter("@errorcode", -1) { Direction = ParameterDirection.InputOutput };
+
+				// Execute this query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item_Aggregation", paramList);
+
+				Error_Message = paramList[1].Value.ToString();
+
+				// Save the error message
+				// Succesful, so return new id, if there was one
+				return Convert.ToInt32(paramList[2].Value);
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return -1;
 			}
 		}
 

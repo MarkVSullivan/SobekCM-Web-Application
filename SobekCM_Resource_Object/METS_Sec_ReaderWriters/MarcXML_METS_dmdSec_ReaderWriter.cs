@@ -135,12 +135,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         #region Static methods to read the MarcXML information
 
-        /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
+	    /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
+	    /// <param name="r"> XmlTextReader from which to read the marc data </param>
+	    /// <param name="thisBibInfo">Bibliographic object into which most the values are read</param>
+	    /// <param name="package"> Digital resource object to save the data to if this is reading the top-level bibDesc (OPTIONAL)</param>
+	    /// <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
+	    public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record )
+	    {
+			Read_MarcXML_Info(r, thisBibInfo, package, Importing_Record, null );
+	    }
+
+	    /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
         /// <param name="r"> XmlTextReader from which to read the marc data </param>
         /// <param name="thisBibInfo">Bibliographic object into which most the values are read</param>
         /// <param name="package"> Digital resource object to save the data to if this is reading the top-level bibDesc (OPTIONAL)</param>
         /// <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
-        public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record)
+		/// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
+		public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record, Dictionary<string, object> Options )
         {
             // Create the MARC_XML_Reader to load everything into first
             MARC_Record record = new MARC_Record();
@@ -148,7 +159,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Read from the file
             record.Read_MARC_Info(r);
 
-            // Now, load values into the bib package 
+			// Handle optional mapping first for retaining the 856 as a related link
+		    if ((Options != null) && (Options.ContainsKey("MarcXML_File_ReaderWriter.Retain_856_As_Related_Link")))
+		    {
+			    if (Options["MarcXML_File_ReaderWriter.Retain_856_As_Related_Link"].ToString().ToUpper() == "TRUE")
+			    {
+				    if ((record.Get_Data_Subfield(856, 'u').Length > 0) && (record.Get_Data_Subfield(856, 'y').Length > 0))
+				    {
+					    string url856 = record.Get_Data_Subfield(856, 'u');
+					    string label856 = record.Get_Data_Subfield(856, 'y');
+
+					    thisBibInfo.Location.Other_URL = url856;
+					    thisBibInfo.Location.Other_URL_Note = label856;
+				    }
+			    }
+		    }
+
+		    // Now, load values into the bib package 
             // Load the date ( 260 |c )
             thisBibInfo.Origin_Info.MARC_DateIssued = Remove_Trailing_Punctuation(record.Get_Data_Subfield(260, 'c'));
 

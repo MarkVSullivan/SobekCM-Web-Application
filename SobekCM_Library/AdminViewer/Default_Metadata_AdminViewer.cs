@@ -18,7 +18,7 @@ using SobekCM.Library.Users;
 
 namespace SobekCM.Library.AdminViewer
 {
-	/// <summary> Class allows an authenticated system admin to view and edit existing projects, and add new projects </summary>
+	/// <summary> Class allows an authenticated system admin to view and edit existing default metadata files, and add new default metadata files </summary>
 	/// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
 	/// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
 	/// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -28,23 +28,23 @@ namespace SobekCM.Library.AdminViewer
 	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
 	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
 	/// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-	/// <li>The mySobek subwriter creates an instance of this viewer to manage the projects in this digital library</li>
+	/// <li>The mySobek subwriter creates an instance of this viewer to manage the default metadata in this digital library</li>
 	/// </ul></remarks>
-	public class Projects_AdminViewer : abstract_AdminViewer
+	public class Default_Metadata_AdminViewer : abstract_AdminViewer
 	{
 		private readonly string actionMessage;
 
 		#region Constructor
 
-		/// <summary> Constructor for a new instance of the Projects_AdminViewer class </summary>
+		/// <summary> Constructor for a new instance of the Default_Metadata_AdminViewer class </summary>
 		/// <param name="User"> Authenticated user information </param>
 		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
 		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <remarks> Postback from handling a new project is handled here in the constructor </remarks>
-		public Projects_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Custom_Tracer Tracer)
+		public Default_Metadata_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Custom_Tracer Tracer)
 			: base(User)
 		{
-			Tracer.Add_Trace("Projects_AdminViewer.Constructor", String.Empty);
+			Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", String.Empty);
 
 			// Save the mode and settings  here
 			currentMode = CurrentMode;
@@ -74,15 +74,15 @@ namespace SobekCM.Library.AdminViewer
 					string code_value = form["admin_project_code"].ToUpper().Trim();
 
 					// Was this a delete request?
-					if (delete_value.Length > 0)
+					if (( user.Is_System_Admin ) && ( delete_value.Length > 0))
 					{
-						Tracer.Add_Trace("Projects_AdminViewer.Constructor", "Delete project '" + delete_value + "'");
+						Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", "Delete default metadata '" + delete_value + "'");
 					
 						// Try to delete in the database
 						if (SobekCM_Database.Delete_Project(delete_value, Tracer))
 						{
 							// Set the message
-							actionMessage = "Delete project '" + delete_value + "'";
+							actionMessage = "Deletes default metadata '" + delete_value + "'";
 
 							// Look for the file to delete as well
 							string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
@@ -94,18 +94,18 @@ namespace SobekCM.Library.AdminViewer
 								}
 								catch 
 								{
-									actionMessage = "Deleted project '" + delete_value + "' but failed to delete associated pmets file";
+									actionMessage = "Deleted default metadata '" + delete_value + "' but failed to delete associated pmets file";
 								}
 							}
 						}
 						else
 						{
-							actionMessage = "Error encountered deleting project '" + delete_value + "' from the database";
+							actionMessage = "Error encountered deleting default metadata '" + delete_value + "' from the database";
 						}
 					}
 					else if (save_value.Length > 0) // Or.. was this a save request
 					{
-						Tracer.Add_Trace("Projects_AdminViewer.Constructor", "Save project '" + save_value + "'");
+						Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", "Save default metadata '" + save_value + "'");
 
 						// Was this to save a new project (from the main page) or rename an existing (from the popup form)?
 						if (save_value == code_value)
@@ -116,11 +116,11 @@ namespace SobekCM.Library.AdminViewer
 							// Save this new interface
 							if (SobekCM_Database.Save_Project(save_value.ToUpper(), new_name, Tracer))
 							{
-								actionMessage = "Saved new project <i>" + save_value + "</i>";
+								actionMessage = "Saved new default metadata <i>" + save_value + "</i>";
 							}
 							else
 							{
-								actionMessage = "Unable to save new project <i>" + save_value + "</i>";
+								actionMessage = "Unable to save new default metadata <i>" + save_value + "</i>";
 							}
 
 							// Try to creating the PMETS file if there was a base PMETS code provided
@@ -137,7 +137,7 @@ namespace SobekCM.Library.AdminViewer
 							}
 							catch ( Exception )
 							{
-								actionMessage = "Error copying new project METS to the project folder";
+								actionMessage = "Error copying new default metadata METS to the project folder";
 							}
 						}
 						else
@@ -147,11 +147,11 @@ namespace SobekCM.Library.AdminViewer
 							// Save this existing interface
 							if (SobekCM_Database.Save_Project(save_value.ToUpper(), edit_name, Tracer))
 							{
-								actionMessage = "Renamed existing project <i>" + save_value + "</i>";
+								actionMessage = "Renamed existing default metadata <i>" + save_value + "</i>";
 							}
 							else
 							{
-								actionMessage = "Unable to rename existing project <i>" + save_value + "</i>";
+								actionMessage = "Unable to rename existing default metadata <i>" + save_value + "</i>";
 							}
 						}
 					}
@@ -166,10 +166,10 @@ namespace SobekCM.Library.AdminViewer
 		#endregion
 
 		/// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-		/// <value> This always returns the value 'Projects' </value>
+		/// <value> This always returns the value 'Default Metadata' </value>
 		public override string Web_Title
 		{
-			get { return "Projects"; }
+			get { return "Default Metadata"; }
 		}
 
 		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
@@ -178,7 +178,7 @@ namespace SobekCM.Library.AdminViewer
 		/// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
 		public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 		{
-			Tracer.Add_Trace("Projects_AdminViewer.Write_HTML", "Do nothing");
+			Tracer.Add_Trace("Default_Metadata_AdminViewer.Write_HTML", "Do nothing");
 		}
 
 				/// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -188,9 +188,9 @@ namespace SobekCM.Library.AdminViewer
 		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
 		public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
 		{
-			Tracer.Add_Trace("Projects_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
+			Tracer.Add_Trace("Default_Metadata_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<!-- Projects_AdminViewer.Add_HTML_In_Main_Form -->");
+			Output.WriteLine("<!-- Default_Metadata_AdminViewer.Add_HTML_In_Main_Form -->");
 
 			// Add the scripts needed
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
@@ -202,36 +202,36 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_project_delete\" name=\"admin_project_delete\" value=\"\" />");
 			Output.WriteLine();
 
-			Output.WriteLine("<!-- Projects Rename Form -->");
+			Output.WriteLine("<!-- Default_Metadata Rename Form -->");
 			Output.WriteLine("<div class=\"sbkPav_PopupDiv\" id=\"form_project\" style=\"display:none;\">");
-			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">RENAME PROJECT</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"project_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">RENAME DEFAULT METADATA</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"project_form_close()\">X</a> &nbsp; </td></tr></table></div>");
 			Output.WriteLine("  <br />");
 			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
 			// Add line for code
 			Output.WriteLine("    <tr>");
-			Output.WriteLine("      <td style=\"width:120px;\"><label for=\"form_project_code\">Project Code:</label></td>");
+			Output.WriteLine("      <td style=\"width:120px;\"><label for=\"form_project_code\">Metadata Code:</label></td>");
 			Output.WriteLine("      <td><span class=\"form_linkline admin_existing_code_line\" id=\"form_project_code\"></span></td>");
 			Output.WriteLine("    </tr>");
 
 			// Add line for name
 			Output.WriteLine("    <tr>");
-			Output.WriteLine("      <td><label for=\"form_project_name\">Project Name:</label></td>");
+			Output.WriteLine("      <td><label for=\"form_project_name\">Metadata Name:</label></td>");
 			Output.WriteLine("      <td><input class=\"sbkPav_large_input sbkAdmin_Focusable\" name=\"form_project_name\" id=\"form_project_name\" type=\"text\" value=\"\" /></td>");
 			Output.WriteLine("    </tr>");
 
 			// Add the buttons and close the table
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\"> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return project_form_close();\">CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this project\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE</button>");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return project_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this default metadata\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-			Tracer.Add_Trace("Projects_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form html");
+			Tracer.Add_Trace("Default_Metadata_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form html");
 
 			// Get the list of all projects
 			DataSet projectsSet = SobekCM_Database.Get_All_Projects_Templates(Tracer);
@@ -247,16 +247,16 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
-			Output.WriteLine("  <h2>New Project</h2>");
+			Output.WriteLine("  <h2>New Default Metadata</h2>");
 			Output.WriteLine("  <div class=\"sbkPav_NewDiv\">");
 			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
 			// Add line for code and base code
 			Output.WriteLine("      <tr>");
-			Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_project_code\">Project Code:</label></td>");
+			Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_project_code\">Metadata Code:</label></td>");
 			Output.WriteLine("        <td><input class=\"sbkPav_small_input sbkAdmin_Focusable\" name=\"admin_project_code\" id=\"admin_project_code\" type=\"text\" value=\"\" /></td>");
 			Output.WriteLine("        <td style=\"width:285px;\">");
-			Output.WriteLine("          <label for=\"admin_project_base\">Base Project Code:</label> &nbsp; ");
+			Output.WriteLine("          <label for=\"admin_project_base\">Base Metadata Code:</label> &nbsp; ");
 			Output.WriteLine("          <select class=\"sbkPav_select\" name=\"admin_project_base\" id=\"admin_project_base\">");
 			Output.WriteLine("            <option value=\"(none)\" selected=\"selected\">(none)</option>");
 			foreach (DataRow thisRow in projectsSet.Tables[0].Rows)
@@ -269,19 +269,19 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add line for name
 			Output.WriteLine("      <tr>");
-			Output.WriteLine("        <td><label for=\"admin_project_name\">Project Name:</label></td>");
+			Output.WriteLine("        <td><label for=\"admin_project_name\">Metadata Name:</label></td>");
 			Output.WriteLine("        <td colspan=\"2\"><input class=\"sbkPav_large_input sbkAdmin_Focusable\" name=\"admin_project_name\" id=\"admin_project_name\" type=\"text\" value=\"\" /></td>");
 			Output.WriteLine("      <tr>");
 
 			// Add the SAVE button
-			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new project\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_project();\">SAVE</button></td></tr>");
+			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new default metadata\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_project();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 			Output.WriteLine("    </table>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine("  <br />");
 			Output.WriteLine();
 
 			// Add all the existing proejcts
-			Output.WriteLine("  <h2>Existing Projects</h2>");
+			Output.WriteLine("  <h2>Existing Default Metadata</h2>");
 			Output.WriteLine("  <table class=\"sbkPav_Table sbkAdm_Table\">");
 			Output.WriteLine("    <tr>");
 			Output.WriteLine("      <th class=\"sbkPav_TableHeader1\">ACTIONS</th>");
@@ -303,10 +303,15 @@ namespace SobekCM.Library.AdminViewer
 				// Build the action links
 				Output.WriteLine("    <tr>");
 				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-				Output.Write("<a title=\"Click to edit this project\" href=\"" + redirect.Replace("XXXXXXX", "1" + code) + "\" >edit</a> | ");
-				Output.Write("<a title=\"Click to change the name of this project\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return project_form_popup('" + code + "','" + name + "');\">rename</a> ");
-				if ( String.Compare(code, "none", StringComparison.OrdinalIgnoreCase ) != 0 )	
-					Output.WriteLine("| <a title=\"Click to delete this project\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_project('" + code + "');\">delete</a> )</td>");
+				Output.Write("<a title=\"Click to edit this default metadata\" href=\"" + redirect.Replace("XXXXXXX", "1" + code) + "\" >edit</a> | ");
+				Output.Write("<a title=\"Click to change the name of this default metadata\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return project_form_popup('" + code + "','" + name + "');\">rename</a> ");
+				if (String.Compare(code, "none", StringComparison.OrdinalIgnoreCase) != 0)
+				{
+					if ( user.Is_System_Admin )
+						Output.WriteLine("| <a title=\"Click to delete this default metadata\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_project('" + code + "');\">delete</a> )</td>");
+					else
+						Output.WriteLine("| <a title=\"Only SYSTEM administrators can delete default metadata\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete default metadata'); return false;\">delete</a> )</td>");
+				}
 				else
 					Output.WriteLine(")</td>");
 

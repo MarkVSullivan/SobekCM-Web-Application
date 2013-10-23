@@ -189,7 +189,7 @@ namespace SobekCM.Library.MainWriters
             Output.Write("   <a href=\"#group_table\" >Group</a> | " + Environment.NewLine );
             Output.Write("   <a href=\"#item_table\" >Items</a> | " + Environment.NewLine );
             Output.Write("   <a href=\"#icon_table\" >Icons</a> | " + Environment.NewLine );
-            Output.Write("   <a href=\"#interface_table\" >Interfaces</a> " + Environment.NewLine );
+            Output.Write("   <a href=\"#interface_table\" >Skins</a> " + Environment.NewLine );
             Output.Write("</font>" + Environment.NewLine );
             Output.Write("<br /><br />" + Environment.NewLine );
 
@@ -310,7 +310,7 @@ namespace SobekCM.Library.MainWriters
             //Output.Write("   <a href=\"#item_download_table\" >Item Downloads</a> | " + Environment.NewLine );
             //Output.Write("   <a href=\"#page_download_table\" >Page Downloads</a> | " + Environment.NewLine );
             //Output.Write("   <a href=\"#icon_table\" >Icons</a> | " + Environment.NewLine );
-            //Output.Write("   <a href=\"#interface_table\" >Interfaces</a> | " + Environment.NewLine );
+            //Output.Write("   <a href=\"#interface_table\" >Skins</a> | " + Environment.NewLine );
             //Output.Write("   <a href=\"#view_table\" >Views</a>" + Environment.NewLine );
             //Output.Write("</font>" + Environment.NewLine );
             //Output.Write("<br /><br />" + Environment.NewLine );

@@ -1,0 +1,99 @@
+/**************************************************************************
+**     SOBEKCM_Tabs.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for the tab pages                                          
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**
+**	   Original code by: Matt Walker
+**     Original source (2013):  http://www.my-html-codes.com/jquery-tabs-my-first-plugin
+**                                                                 
+**************************************************************************/
+
+
+
+.one {
+	margin: 0;
+	/*width:700px;*/
+	padding:15px;
+	/*background-color:#2e2e2e;*/
+	-moz-border-radius: 4px;
+	border-radius: 4px; 
+}
+
+.one h3 { padding-left: 20px; }
+.one p { padding-left: 45px;padding-right: 45px;text-align: left;}
+
+.one > .tabs{
+	margin: 0;
+	padding: 0;
+	height:29px;
+	overflow:hidden;
+}
+
+.one > .tabs > ul{
+	font-size: 1.0em;
+	list-style:none;
+	margin: 0;
+	padding: 0;
+}
+
+.one > .tabs > ul > li{
+	font-size: 1em;
+	font-weight: bold;
+	margin:0 2px 0 0;
+	padding:7px 10px;
+	display:block;
+	float:left;
+	color:#FFF;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	-moz-border-radius-topleft: 6px;
+	-moz-border-radius-topright: 6px;
+	-moz-border-radius-bottomright: 0;
+	-moz-border-radius-bottomleft: 0;
+	border-top-left-radius:6px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0; 
+	background-color: #7d90d5; 
+}
+
+.one > .tabs > ul > li:hover{
+	background: #888888; /* old browsers */
+	background: -moz-linear-gradient(top, #888888 0%, #999999 10%, #999999 50%, #888888 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#888888), color-stop(10%,#999999), color-stop(50%,#999999), color-stop(100%,#888888)); /* webkit */
+	cursor:pointer;
+	color: #333;
+}
+
+.one > .tabs > ul > li.tabActiveHeader{
+	background: #555555; /* old browsers */
+	background: -moz-linear-gradient(top, #555555 0%, #666666 10%, #666666 50%, #555555 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#555555), color-stop(10%,#666666), color-stop(50%,#666666), color-stop(100%,#555555)); /* webkit */
+	cursor:pointer;
+	color: white;
+}
+
+.one > .tabscontent {
+	border-left: 2px solid #555555;
+	border-right: 2px solid #555555;
+	border-bottom: 2px solid #555555;
+	border-top: 2px solid #555555;
+	padding: 10px 10px 25px 0;
+	background: #FFFFFF; /* old browsers */
+	background: -moz-linear-gradient(top, #FFFFFF 0%, #FFFFFF 90%, #e4e9ed 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFFFFF), color-stop(90%,#FFFFFF), color-stop(100%,#e4e9ed)); /* webkit */
+	margin:0;
+	color:#333;
+}
+
