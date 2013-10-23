@@ -175,7 +175,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     switch (Input_XmlReader.Name) //get name of
                     {
                         case "gml:Point": //is a point
-                            // Read the featureType
+                            //read the featureType
                             string pointFeatureType = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("featureType"))
                                 pointFeatureType = Input_XmlReader.Value;
@@ -183,7 +183,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             string pointLabel = String.Empty;
                             if (Input_XmlReader.MoveToAttribute("label"))
                                 pointLabel = Input_XmlReader.Value;
-                            //get the rest
+                            //get the rest of the information
                             do
                             {
                                 //check to see if end of element
@@ -462,9 +462,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 Output_Stream.WriteLine("<gml:featureMember>");
                 if (thisPolygon.Label.Length > 0)
-                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.FeatureType) + "\" polygonType=\"" + Convert_String_To_XML_Safe(thisPolygon.PolygonType) + "\" label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon pageId=\"" + Convert_String_To_XML_Safe(thisPolygon.Page_Sequence.ToString()) + "\" featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.FeatureType) + "\" polygonType=\"" + Convert_String_To_XML_Safe(thisPolygon.PolygonType) + "\" label=\"" + Convert_String_To_XML_Safe(thisPolygon.Label) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
                 else
-                    Output_Stream.WriteLine("<gml:Polygon featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.FeatureType) + "\" polygonType=\"" + Convert_String_To_XML_Safe(thisPolygon.PolygonType) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
+                    Output_Stream.WriteLine("<gml:Polygon pageId=\"" + Convert_String_To_XML_Safe(thisPolygon.Page_Sequence.ToString()) + "\" featureType=\"" + Convert_String_To_XML_Safe(thisPolygon.FeatureType) + "\" polygonType=\"" + Convert_String_To_XML_Safe(thisPolygon.PolygonType) + "\" rotation=\"" + thisPolygon.Rotation + "\">");
                 Output_Stream.WriteLine("<gml:exterior>");
                 Output_Stream.WriteLine("<gml:LinearRing>");
                 Output_Stream.Write("<gml:Coordinates>");

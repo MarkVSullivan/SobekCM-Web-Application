@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -22,13 +23,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
     {
-        private StringBuilder mapBuilder;
-        private List<string> matchingTilesList;
         private static User_Object CurrentUser;
         private static SobekCM_Item CurrentItem;
         private static GeoSpatial_Information geoInfo2;
-        private static GeoSpatial_Information itemGeoInfo;
-        private static List<Coordinate_Polygon> itemPolygons;
         List<Coordinate_Polygon> allPolygons;
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
@@ -89,24 +86,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
             }
 
-            //create a new list of all the polygons for a resource item
-            itemPolygons = new List<Coordinate_Polygon>();
+
             List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
-            for (int i = 0; i < pages.Count; i++)
+
+            //create a new list of all the polygons for a resource item
+            Dictionary<string, Page_TreeNode> pageLookup = new Dictionary<string, Page_TreeNode>();
+            int page_index = 1;
+            foreach (Page_TreeNode pageNode in pages)
             {
-                abstract_TreeNode pageNode = pages[i];
-                itemGeoInfo = pageNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                if ((itemGeoInfo != null) && (itemGeoInfo.hasData))
-                {
-                    if (itemGeoInfo.Polygon_Count > 0)
-                    {
-                        foreach (Coordinate_Polygon thisPolygon in itemGeoInfo.Polygons)
-                        {
-                            thisPolygon.Page_Sequence = (ushort)(i + 1);
-                            itemPolygons.Add(thisPolygon);
-                        }
-                    }
-                }
+                if (pageNode.Label.Length == 0)
+                    pageLookup["Page " + page_index] = pageNode;
+                else
+                    pageLookup[pageNode.Label] = pageNode;
+                page_index++;
             }
 
             //get the length of incoming message
@@ -151,71 +143,189 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             resourceGeoInfo.Add_Point(newPoint);
                             break;
                         case "overlay":
-                            //search through existing overlays and modify if match found
-                            if (itemPolygons.Count > 0)
+                            //parse the array id of the page
+                            int arrayId = Convert.ToInt32(ar[2]) - 1; //is this always true (minus one of the human page id)?
+                            //add the label to page obj
+                            pages[arrayId].Label = ar[3];
+                            //get the geocoordinate object for that pageId
+                            GeoSpatial_Information pageGeo = pages[arrayId].Get_Metadata_Module( GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                            //if there isnt any already there
+                            if (pageGeo == null)
                             {
-                                //go through each polygon
-                                foreach (Coordinate_Polygon itemPolygon in itemPolygons)
-                                {
-                                    //is there a match?
-                                    if (itemPolygon.Label == ar[2])
-                                    {
-                                        //prep incoming bounds
-                                        string[] temp2 = ar[3].Split(',');
-                                        itemPolygon.Clear_Edge_Points();
-                                        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                                        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                                        itemPolygon.Recalculate_Bounding_Box();
-                                        //add the rotation
-                                        itemPolygon.Rotation = Convert.ToDouble(ar[5]);
-                                        //add the featureType (explicitly add to make sure it is there)
-                                        itemPolygon.FeatureType = "main";
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //create new polygon
-                                Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
-                                //add the bounds
-                                string[] temp2 = ar[3].Split(',');
-                                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                                itemPolygon.Recalculate_Bounding_Box();
-                                //add the label
-                                itemPolygon.Label = ar[2] != "undefined" ? ar[2] : CurrentItem.Bib_Title;
+                                //create new
+                                pageGeo = new GeoSpatial_Information();
+                                //create a polygon
+                                Coordinate_Polygon pagePolygon = new Coordinate_Polygon();
+                                //prep incoming bounds
+                                string[] temp2 = ar[4].Split(',');
+                                pagePolygon.Clear_Edge_Points();
+                                pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                pagePolygon.Recalculate_Bounding_Box();
                                 //add the rotation
-                                itemPolygon.Rotation = Convert.ToDouble(ar[5]);
-                                //add the feature type 
-                                itemPolygon.FeatureType = "main";
-                                //clear all objs with main featureType
-                                resourceGeoInfo.Clear_NonPOIs();
-                                ////clear a specific polygon
-                                //foreach (var coordinatePolygon in itemPolygons)
-                                //    if (coordinatePolygon.Label==itemPolygon.Label)
-                                //        resourceGeoInfo.Clear_Specific_Polygon(coordinatePolygon);
-                                //add obj to appropriate geo obj level
-                                if (itemGeoInfo != null)
-                                    itemGeoInfo.Add_Polygon(itemPolygon);
-                                else
-                                    resourceGeoInfo.Add_Polygon(itemPolygon);
-                            }
-                            //add current geo 
-                            if (itemGeoInfo != null)
-                            {
-                                //add to item
-                                CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, itemGeoInfo);
+                                pagePolygon.Rotation = Convert.ToDouble(ar[6]);
+                                //add the featureType (explicitly add to make sure it is there)
+                                pagePolygon.FeatureType = "main";
+                                //add the label
+                                pagePolygon.Label = ar[3];
+                                //add the polygon type
+                                pagePolygon.PolygonType = "rectangle";
+                                //add polygon to pagegeo
+                                pageGeo.Add_Polygon(pagePolygon);
                             }
                             else
                             {
-                                if (resourceGeoInfo != null)
-                                {
-                                    //clear all the previous mains featureTypes
-                                    resourceGeoInfo.Clear_NonPOIs();
-                                    //add to resource
-                                    CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
-                                }
+                                //get current polygon info
+                                Coordinate_Polygon pagePolygon = pageGeo.Polygons[0];
+                                //prep incoming bounds
+                                string[] temp2 = ar[4].Split(',');
+                                pagePolygon.Clear_Edge_Points();
+                                pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                pagePolygon.Recalculate_Bounding_Box();
+                                //add the rotation
+                                pagePolygon.Rotation = Convert.ToDouble(ar[6]);
+                                //add the featureType (explicitly add to make sure it is there)
+                                pagePolygon.FeatureType = "main";
+                                //add the label
+                                pagePolygon.Label = ar[3];
+                                //add the polygon type
+                                pagePolygon.PolygonType = "rectangle";
+                                //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
+                                pageGeo.Clear_NonPOIs();
+                                //add polygon to pagegeo
+                                pageGeo.Add_Polygon(pagePolygon);
+
+                                ////grab all polygons (wont there always be one -IE we do not support pois for pages yet)?
+                                //foreach (Coordinate_Polygon pagePolygon in pageGeo.Polygons)
+                                //{
+                                //    //determine if not a poi
+                                //    if (pagePolygon.FeatureType != "poi")
+                                //    {
+                                //        //prep incoming bounds
+                                //        string[] temp2 = ar[4].Split(',');
+                                //        pagePolygon.Clear_Edge_Points();
+                                //        pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                //        pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                //        pagePolygon.Recalculate_Bounding_Box();
+                                //        //add the rotation
+                                //        pagePolygon.Rotation = Convert.ToDouble(ar[6]);
+                                //        //add the featureType (explicitly add to make sure it is there)
+                                //        pagePolygon.FeatureType = "main";
+                                //        //add the label
+                                //        pagePolygon.Label = ar[3];
+                                //        //add the polygon type
+                                //        pagePolygon.PolygonType = "rectangle";
+                                //        //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
+                                //        pageGeo.Clear_NonPOIs();
+                                //        //add polygon to pagegeo
+                                //        pageGeo.Add_Polygon(pagePolygon);
+                                //    }
+                                //}
                             }
+                            //add the pagegeo obj
+                            pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
+
+                            //bool handled = false;
+                            //if (pages.Count == 1)
+                            //{
+                            //    // get the geocoordinate object
+                            //    GeoSpatial_Information singlePageGeo = pages[0].Get_Metadata_Module( GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                            //    if (singlePageGeo == null)
+                            //    {
+                            //        singlePageGeo = new GeoSpatial_Information();
+                            //        //save the new page's label
+                            //        pages[0].Label = ar[3];
+                            //        pages[0].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, singlePageGeo);
+                            //    }
+                            //    foreach (Coordinate_Polygon itemPolygon in singlePageGeo.Polygons )
+                            //    {
+                            //        //is there a match?
+                            //        if (itemPolygon.FeatureType != "poi" )
+                            //        {
+                            //            //prep incoming bounds
+                            //            string[] temp2 = ar[4].Split(',');
+                            //            itemPolygon.Clear_Edge_Points();
+                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                            //            itemPolygon.Recalculate_Bounding_Box();
+                            //            //add the rotation
+                            //            itemPolygon.Rotation = Convert.ToDouble(ar[6]);
+                            //            //add the featureType (explicitly add to make sure it is there)
+                            //            itemPolygon.FeatureType = "main";
+                            //            handled = true;
+                            //            break;
+                            //        }
+                            //    }
+                            //    if (!handled)
+                            //    {
+                            //        //create new polygon
+                            //        Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
+                            //        //add the bounds
+                            //        string[] temp2 = ar[4].Split(',');
+                            //        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                            //        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                            //        itemPolygon.Recalculate_Bounding_Box();
+                            //        //add the label
+                            //        itemPolygon.Label = ar[3] != "undefined" ? ar[3] : CurrentItem.Bib_Title;
+                            //        //add the rotation
+                            //        itemPolygon.Rotation = Convert.ToDouble(ar[6]);
+                            //        //add the feature type 
+                            //        itemPolygon.FeatureType = "main";
+                            //        singlePageGeo.Add_Polygon(itemPolygon);
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    // Look for the matching page
+                            //    if (pageLookup.ContainsKey(ar[3]))
+                            //    {
+                            //        Page_TreeNode thisPage = pageLookup[ar[3]];
+                            //        GeoSpatial_Information singlePageGeo = thisPage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                            //        if (singlePageGeo == null)
+                            //        {
+                            //            singlePageGeo = new GeoSpatial_Information();
+                            //            thisPage.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, singlePageGeo);
+                            //        }
+
+                            //        foreach (Coordinate_Polygon itemPolygon in singlePageGeo.Polygons)
+                            //        {
+                            //            //is there a match?
+                            //            if (itemPolygon.FeatureType != "poi")
+                            //            {
+                            //                //prep incoming bounds
+                            //                string[] temp2 = ar[4].Split(',');
+                            //                itemPolygon.Clear_Edge_Points();
+                            //                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                            //                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                            //                itemPolygon.Recalculate_Bounding_Box();
+                            //                //add the rotation
+                            //                itemPolygon.Rotation = Convert.ToDouble(ar[6]);
+                            //                //add the featureType (explicitly add to make sure it is there)
+                            //                itemPolygon.FeatureType = "main";
+                            //                handled = true;
+                            //                break;
+                            //            }
+                            //        }
+                            //        if (!handled)
+                            //        {
+                            //            //create new polygon
+                            //            Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
+                            //            //add the bounds
+                            //            string[] temp2 = ar[4].Split(',');
+                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                            //            itemPolygon.Recalculate_Bounding_Box();
+                            //            //add the label
+                            //            itemPolygon.Label = ar[3] != "undefined" ? ar[3] : CurrentItem.Bib_Title;
+                            //            //add the rotation
+                            //            itemPolygon.Rotation = Convert.ToDouble(ar[6]);
+                            //            //add the feature type 
+                            //            itemPolygon.FeatureType = "main";
+                            //            singlePageGeo.Add_Polygon(itemPolygon);
+                            //        }
+                            //    }
+                            //}
                             break;
 
                         case "poi":
@@ -314,34 +424,45 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //create inprocessing directory
             string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
+            string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
 
             //ensure the user's process directory exists
             if (!Directory.Exists(userInProcessDirectory))
                 Directory.CreateDirectory(userInProcessDirectory);
+            //ensure the backup directory exists
+            if (!Directory.Exists(backupDirectory))
+                Directory.CreateDirectory(backupDirectory);
 
             string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
             string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
+            string backup_mets = backupDirectory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + ".mets.xml.BAK";
             string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
-
+            
             //determine what to do from here
             switch (saveTypeHandle)
             {
                 case "save":
                     //save the item to the temporary location
                     CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
-                    //CurrentItem.Save_SobekCM_METS(); //save the mets
+                    //move temp mets to prod
+                    File.Copy(metsInProcessFile, current_mets, true);
+                    //delete in process mets file 
+                    File.Delete(metsInProcessFile);
+                    //create a backup mets file
+                    File.Copy(current_mets, backup_mets, true);
+                    //save to db
+                    Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
                     break;
                 case "apply":
                     //in theory, this should only be called after the 'save' thus we do not need to save only apply (IE send to live)
-
-                    //move temp mets to prod
-                    File.Copy(metsInProcessFile, current_mets, true);
-                    File.Delete(metsInProcessFile); //delete it
-                    
-                    //save the mets (to live)    
-                    //CurrentItem.Save_SobekCM_METS();
-                    //save to db
-                    Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                    ////move temp mets to prod
+                    //File.Copy(metsInProcessFile, current_mets, true);
+                    ////delete in process mets file 
+                    //File.Delete(metsInProcessFile); 
+                    ////create a backup mets file
+                    //File.Copy(current_mets, backup_mets, true);
+                    ////save to db
+                    //Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
                     break;
                 case "reset":
                     //currently not used
@@ -459,10 +580,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-infobox.js\"></script>");
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/superfish.js\"></script>");
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverintent.js\"></script>");
-            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
+            mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&sensor=false\"></script>");
             mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script>");
 
-            //custom js 
+            //custom js
             #region
 
             mapeditBuilder.AppendLine(" ");
@@ -470,28 +591,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" ");
 
             //setup server to client vars writer
-            mapeditBuilder.AppendLine(" <!-- Add Server Vars -->");
+            mapeditBuilder.AppendLine(" // Add Server Vars ");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
-            mapeditBuilder.AppendLine("   <!-- Add Base URL Var -->");
-            mapeditBuilder.AppendLine("   globalVar.baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            mapeditBuilder.AppendLine("   globalVar.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
 
             //geo objects writer section 
-            mapeditBuilder.AppendLine(" <!-- Begin Geo Objects Writer --> ");
-            mapeditBuilder.AppendLine(" ");
+            mapeditBuilder.AppendLine(" // Add Geo Objects ");
             mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
-            mapeditBuilder.AppendLine(" ");
-
-            #endregion
-
-            //write geo objects as js vars
-            #region
-
-            mapBuilder = new StringBuilder();
-
-            // Keep track of any matching tiles
-            matchingTilesList = new List<string>();
 
             // Add the points
             if (CurrentItem != null)
@@ -501,7 +609,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 allPoints = new List<Coordinate_Point>();
                 allLines = new List<Coordinate_Line>();
                 allCircles = new List<Coordinate_Circle>();
-                
+
                 // Collect all the polygons, points, and lines
                 GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                 if ((geoInfo != null) && (geoInfo.hasData))
@@ -527,7 +635,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             allCircles.Add(thisCircle);
                     }
                 }
-                
+
                 List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
                 for (int i = 0; i < pages.Count; i++)
                 {
@@ -627,7 +735,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURLConverted = \"\"; ");
                     }
-                    mapeditBuilder.AppendLine("      globalVar.incomingPointLabelConverted = \"" + CurrentItem.Bib_Title + "\"; ");
+                    //mapeditBuilder.AppendLine("      globalVar.incomingPointLabelConverted = \"" + CurrentItem.Bib_Title + "\"; ");
+                    mapeditBuilder.AppendLine("      globalVar.incomingPointLabelConverted = \"" + CurrentItem.BibID + "\"; ");
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPoints();");
                     mapeditBuilder.AppendLine(" ");
@@ -676,20 +785,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             mapeditBuilder.Append("new google.maps.LatLng(" + point.Latitude + "," + point.Longitude + "), ");
                         }
                         mapeditBuilder.AppendLine("];");
-                        
+
                     }
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingLines();");
                     mapeditBuilder.AppendLine(" ");
                 }
-                
+
+                int pageCount = 0;
+                foreach (var page in pages)
+                {
+
+                    pageCount++;
+                }
+
                 // Add all the polygons to page
-                if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1)) 
+                if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
                 {
                     //go through each polygone
                     int it = 0;
+                    int totalAddedOverlays = 0;
                     foreach (Coordinate_Polygon itemPolygon in allPolygons)
                     {
+
                         //add the featureType
                         mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + it + "] = \"" + itemPolygon.FeatureType + "\";");
                         //add the polygonType
@@ -744,7 +862,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     }
                                     else
                                     {
-
+                                        //hold
                                     }
                                 }
                             }
@@ -783,6 +901,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             //add rotation
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + it + "] = " + itemPolygon.Rotation + ";");
+                            //add page sequence
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + it + "] = " + itemPolygon.Page_Sequence + ";");
+                            //iterate how many overlays we have gone through already
+                            totalAddedOverlays++;
                         }
                         else
                         {
@@ -794,24 +916,65 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             mapeditBuilder.AppendLine("];");
                         }
-                        
                         //iterate
                         it++;
 
                     }
+
+                    foreach (var page in pages)
+                    {
+                        if (totalAddedOverlays < pages.Count)
+                        {
+                            //add featuretype
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedOverlays + "] = \"hidden\";");
+                            //add polygontype
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedOverlays + "] = \"hidden\";");
+                            //add label
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedOverlays + "] = \"" + page.Label + "\";");
+                            //add page sequence
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedOverlays + "] = " + (totalAddedOverlays + 1) + ";");
+                            //add image url
+                            try
+                            {
+                                //your way
+                                List<SobekCM_File_Info> first_page_files = CurrentItem.Web.Pages_By_Sequence[totalAddedOverlays].Files;
+
+                                string first_page_jpeg = String.Empty;
+                                foreach (SobekCM_File_Info thisFile in first_page_files)
+                                {
+                                    if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                        (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                                    {
+                                        first_page_jpeg = thisFile.System_Name;
+                                        break;
+                                    }
+                                }
+                                string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                                ////polygonURL[it] = first_page_complete_url;
+                                //polygonURL.Add(first_page_complete_url);
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedOverlays + "] = " + first_page_complete_url + ";");
+                            }
+                            catch (Exception)
+                            {
+                                //my way
+                                string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedOverlays + "] = \"" + current_image_file + "\"; ");
+                                //throw;
+                            }
+                            totalAddedOverlays++;
+                        }
+                    }
+
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPolygons(); ");
                     mapeditBuilder.AppendLine(" ");
                 }
-
                 mapeditBuilder.AppendLine(" }");
                 mapeditBuilder.AppendLine(" ");
-                mapeditBuilder.AppendLine(" <!-- End Geo Objects Writer --> ");
-                mapeditBuilder.AppendLine(" ");
-                mapeditBuilder.AppendLine(" </script> ");
-                mapeditBuilder.AppendLine(" ");
-
             }
+            
+            mapeditBuilder.AppendLine(" </script> ");
+            mapeditBuilder.AppendLine(" ");
 
             #endregion
 
