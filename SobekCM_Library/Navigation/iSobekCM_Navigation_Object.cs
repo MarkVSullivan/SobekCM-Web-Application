@@ -382,6 +382,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary> List of all saved searches for this user </summary>
 		Saved_Searches,
 
+        /// <summary>Enter the tracking information for a given item using the physical tracking sheet </summary>
+        Item_Tracking,
+
 		/// <summary> Provides way to view all user lists entered by a user or by aggregation </summary>
 		User_Tags,
 
@@ -412,7 +415,7 @@ namespace SobekCM.Library.Navigation
 
         /// <summary> Provides list of the IP restriction lists and allows admins to edit the single IPs within the range(s) </summary>
         IP_Restrictions,
-
+       
         /// <summary> Allows admin to perform some limited cache reset functions </summary>
         Reset,
 
@@ -424,7 +427,7 @@ namespace SobekCM.Library.Navigation
 
         /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
         Thematic_Headings,
-
+        
         /// <summary> Allows admin to perform some limited actions against the URL Portals data </summary>
         URL_Portals,
 

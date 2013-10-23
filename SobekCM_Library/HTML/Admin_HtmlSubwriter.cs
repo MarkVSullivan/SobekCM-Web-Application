@@ -212,6 +212,7 @@ namespace SobekCM.Library.HTML
                         }
                     }
 
+
                     if (adminViewer == null)
                         adminViewer = new Default_Metadata_AdminViewer(user, Current_Mode, Tracer);
                     break;

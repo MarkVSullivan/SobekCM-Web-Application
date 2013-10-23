@@ -169,6 +169,10 @@ namespace SobekCM.Library.HTML
                     mySobekViewer = new Edit_Serial_Hierarchy_MySobekViewer(user);
                     break;
 
+                case My_Sobek_Type_Enum.Item_Tracking:
+                    mySobekViewer = new Track_Item_MySobekViewer(user, Current_Mode, Tracer);
+                    break;
+
                 case My_Sobek_Type_Enum.Group_Add_Volume:
                     // Pull the list of items tied to this group
                     SobekCM_Items_In_Title itemsInTitle = Cached_Data_Manager.Retrieve_Items_In_Title(currentItem.BibID, Tracer);

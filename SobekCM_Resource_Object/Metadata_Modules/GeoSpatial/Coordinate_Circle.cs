@@ -17,7 +17,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         private double radius;
         private string featureType;
         private int order_temp;
-
+        
         #region Constructors
 
         /// <summary> Constructor for a new instance of the Coordinate_Point class </summary>
