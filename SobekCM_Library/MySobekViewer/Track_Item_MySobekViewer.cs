@@ -12,6 +12,7 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using System.Collections.Generic;
+using AjaxControlToolkit;
 #endregion
 
 namespace SobekCM.Library.MySobekViewer
@@ -174,7 +175,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                return "Track Item";
+                return "Item Tracking";
             }
         }
 
@@ -186,6 +187,13 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML", "Do nothing");
+
+            //Include the js files
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css\"></script>");
         }
 
 
@@ -202,8 +210,8 @@ namespace SobekCM.Library.MySobekViewer
             //Start the Entry Type Table
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Entry Type</h2></span>");
             builder.AppendLine("<table class=\"sbkTi_table\">");
-            builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 checked>Barcode Entry</td></tr>");
-            builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1>Manual Entry</td></tr>");
+            builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
+            builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
             builder.AppendLine("</table>");
 
 
@@ -216,26 +224,34 @@ namespace SobekCM.Library.MySobekViewer
             string vid = (String.IsNullOrEmpty(VID)) ? String.Empty : VID;
             
             builder.AppendLine("<table class=\"sbkTi_table\">");
-            builder.AppendLine("<tr><td>Scan barcode here:</td>");
+            builder.AppendLine("<tr id=\"tblrow_Barcode\"><td>Scan barcode here:</td>");
             builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus /></td></tr>");
-            builder.AppendLine("<tr><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\"/>"+bibid+"</td>");
+            builder.AppendLine("<tr id=\"tblrow_Manual1\" style=\"display:none\"><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\">"+bibid+"</input></td>");
             builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\"/>"+vid+"</td>");
+            builder.AppendLine("</tr>");
+            builder.AppendLine("<tr id=\"tblrow_Manual2\" style=\"display:none\">");
+            builder.AppendLine("<td>Event:</td><td><select id=\"ddlManualEvent\" name=\"ddlManualEvent\">");
+            builder.AppendLine("                                       <option value=\"1\" selected>Scanning</option>");
+            builder.AppendLine("                                        <option value=\"2\">Processing</option></select>");
+            builder.AppendLine("</td>");
+            builder.AppendLine("<td>Title:</td><td><input type=\"text\" id=\"txtTitle\" disabled/></input></td>");
+
             builder.AppendLine("</tr>");
             //End this table
             builder.AppendLine("</table>");
 
-            //Start the next section
+            //Start the Tracking Info section
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
-            //Start the Tracking Info 
-
+       
             //Start the table for the current tracking event
             builder.AppendLine("<table class=\"sbkTi_table\">");
             builder.AppendLine("<tr><td>Event:</td>");
-            builder.AppendLine("         <td><select id=\"ddlEvent\" name=\"ddlEvent\">");
+            builder.AppendLine("         <td><select id=\"ddlEvent\" name=\"ddlEvent\"> disabled");
             builder.AppendLine("                  <option value=\"1\" selected>Scanning</option>");
-            builder.AppendLine("                  <option value=\"2\">Processing</option>");
+            builder.AppendLine("                  <option value=\"2\">Processing</option></select>");
             builder.AppendLine("         </td>");
             builder.AppendLine("         <td>Date:</td>");
+
             builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + DateTime.Now.Date.ToShortDateString() + "\" /> </td>");
             builder.AppendLine("</tr>");
             builder.AppendLine("<tr>");
@@ -270,15 +286,24 @@ namespace SobekCM.Library.MySobekViewer
             //End this table
             builder.AppendLine("</table>");
 
-
+            //Add the Save and Done buttons
+            builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
+            builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
+            builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">DONE</button>");
+            builder.AppendLine("</div");
+            builder.AppendLine("<br/><br/>");
+            //Close the main div
             builder.AppendLine("</div>");
+
+            builder.AppendLine("<script>$(function() {$( \"#txtStartDate\" ).datepicker();});</script>");
+
             LiteralControl control1 = new LiteralControl(builder.ToString());
-
+          
             MainPlaceHolder.Controls.Add(control1);
-   
 
 
-        }
+     }
+
 
 
     }
