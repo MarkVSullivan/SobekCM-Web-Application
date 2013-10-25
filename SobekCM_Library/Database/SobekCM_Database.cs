@@ -8540,6 +8540,82 @@ namespace SobekCM.Library.Database
 
 
 		#endregion
-	}
+
+        #region Methods used by the Track_Item_MySobekViewer
+     
+        /// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>
+        /// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
+        public static DataTable Tracking_Get_Users_Scanning_Processing()
+        {
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+            
+            try
+            {
+                //Create the command
+                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Users_Scanning_Processing", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                //Open the connection
+                connect.Open();
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                DataTable returnValue = new DataTable();
+                adapter.Fill(returnValue);
+                
+                //Close the connection
+                connect.Close();
+
+                //Return the data table
+                return (returnValue);
+
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error retrieving the list of users who are scanning/processing technicians from the Database"+ee.Message);
+            }
+
+        }
+
+        /// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>
+        /// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
+        public static DataTable Tracking_Get_Scanners_List()
+        {
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Create the command
+                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Scanners_List", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                //Open the connection
+                connect.Open();
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                DataTable returnValue = new DataTable();
+                adapter.Fill(returnValue);
+
+                //Close the connection
+                connect.Close();
+
+                //Return the data table
+                return (returnValue);
+
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error retrieving the list of users who are scanning/processing technicians from the Database" + ee.Message);
+            }
+
+        }
+
+
+        #endregion
+
+    }
 
 }
