@@ -198,6 +198,9 @@ namespace SobekCM.Library.HTML
 				// Clear this aggreation from the cache
 				Cached_Data_Manager.Remove_Item_Aggregation(Hierarchy_Object.Code, Tracer);
 
+				// Force the next page to refresh
+				HttpContext.Current.Session["REFRESH"] = true;
+
 				// Forward along
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 				currentMode.Redirect();
@@ -468,7 +471,21 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
-            if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
+			// Force a refresh?
+	        if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
+	        {
+		        Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
+		        if ((refreshFlag.HasValue) && (refreshFlag.Value))
+		        {
+			        HttpContext.Current.Session["REFRESH"] = null;
+			        Output.WriteLine("  <script type=\"text/javascript\">");
+			        Output.WriteLine("    history.go(0);");
+			        Output.WriteLine("  </script>");
+		        }
+	        }
+
+
+	        if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
             {
                 Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader_aggr\">");
                 Output.WriteLine("    <tr height=\"45px\">");

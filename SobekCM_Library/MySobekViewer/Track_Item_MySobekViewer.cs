@@ -12,7 +12,6 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using System.Collections.Generic;
-using AjaxControlToolkit;
 #endregion
 
 namespace SobekCM.Library.MySobekViewer
