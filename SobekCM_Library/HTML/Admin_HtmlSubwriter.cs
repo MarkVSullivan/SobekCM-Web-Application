@@ -2,12 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -15,12 +15,9 @@ using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
-using SobekCM.Library.Items;
-using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Users;
 
@@ -28,6 +25,16 @@ using SobekCM.Library.Users;
 
 namespace SobekCM.Library.HTML
 {
+	/// <summary> Adminl subwriter is used for administrative tasks, either collection admin, portal admin, or system admin </summary>
+	/// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. <br /><br />
+	/// During a valid html request, the following steps occur:
+	/// <ul>
+	/// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
+	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
+	/// <li>The HTML writer will create this necessary subwriter since this action requires administrative rights. </li>
+	/// <li>This class will create a admin subwriter (extending <see cref="AdminViewer.abstract_AdminViewer"/> ) for the specified task.The admin subwriter creates an instance of this viewer to view and edit existing item aggregations in this digital library</li>
+	/// </ul></remarks>
     public class Admin_HtmlSubwriter: abstractHtmlSubwriter
     {
         private readonly Aggregation_Code_Manager codeManager;
@@ -42,40 +49,32 @@ namespace SobekCM.Library.HTML
         #region Constructor, which also creates the applicable MySobekViewer object
 
         /// <summary> Constructor for a new instance of the Admin_HtmlSubwriter class </summary>
-        /// <param name="Results_Statistics"> Information about the entire set of results for a browse of a user's bookshelf folder </param>
-        /// <param name="Paged_Results"> Single page of results for a browse of a user's bookshelf folder, within the entire set </param>
         /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
         /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Item">Current item to edit, if the user is requesting to edit an item</param>
         /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations </param>
         /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
         /// <param name="Current_User"> Currently logged on user </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
         /// <param name="IP_Restrictions"> List of all IP Restriction ranges in use by this digital library </param>
         /// <param name="URL_Portals"> List of all web portals into this system </param>
-        /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
         /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Admin_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
-                                     List<iSearch_Title_Result> Paged_Results,
-                                     Aggregation_Code_Manager Code_Manager,
+        public Admin_HtmlSubwriter(  Aggregation_Code_Manager Code_Manager,
                                      Item_Lookup_Object All_Items_Lookup,
                                      Item_Aggregation Hierarchy_Object,
                                      SobekCM_Skin_Object HTML_Skin,
                                      Language_Support_Info Translator,
                                      SobekCM_Navigation_Object Current_Mode,
-                                     SobekCM_Item Current_Item,
                                      Dictionary<string,string> Aggregation_Aliases,
                                      SobekCM_Skin_Collection Web_Skin_Collection,
                                      User_Object Current_User,
                                      IP_Restriction_Ranges IP_Restrictions,
                                      Dictionary<string, Wordmark_Icon> Icon_Table,
                                      Portal_List URL_Portals,
-                                     Statistics_Dates Stats_Date_Range,
                                      List<Thematic_Heading> Thematic_Headings,
                                      Custom_Tracer Tracer )
         {
@@ -233,12 +232,9 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum>();
+                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner};
 
-
-                returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
-
-                if (Contains_Popup_Forms)
+	            if (Contains_Popup_Forms)
                 {
                     returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Header);
                     returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Footer);
@@ -268,8 +264,9 @@ namespace SobekCM.Library.HTML
 				if (user == null)
 					return false;
 
-				if ( currentMode.Admin_Type == Admin_Type_Enum.Wordmarks )
+				if (( currentMode.Admin_Type == Admin_Type_Enum.Wordmarks ) || ( currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
 					return true;
+
 
 				return false;
 			}
@@ -285,6 +282,8 @@ namespace SobekCM.Library.HTML
             {
                 adminViewer.Add_Popup_HTML(Output, Tracer);
             }
+
+
         }
 
 		/// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
@@ -294,11 +293,8 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("Admin_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-			//if (CurrentMode.Admin_Type != Admin_Type_Enum.Wordmarks)
-			//	return;
-
-			//// Add the text here
-			//adminViewer.Write_HTML(Output, Tracer);
+			// Add any intro html text here
+			adminViewer.Write_ItemNavForm_Opening(Output, Tracer);
 			return;
 		}
 
@@ -354,7 +350,7 @@ namespace SobekCM.Library.HTML
 			Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Closing", "");
 
 			// Also, add any additional stuff here
-			adminViewer.Add_HTML_In_Main_Form(Output, Tracer);
+			adminViewer.Write_ItemNavForm_Closing(Output, Tracer);
 		}
 
 		/// <summary> Add controls directly to the form in the main control area placeholder</summary>
@@ -406,8 +402,8 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
-			// If editing settings, add the tab styling
-			if (currentMode.Admin_Type == Admin_Type_Enum.Settings) 
+			// If editing settings or single aggregation, add the tab styling
+			if ((currentMode.Admin_Type == Admin_Type_Enum.Settings) || ( currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
 			{
 				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Tabs.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			}

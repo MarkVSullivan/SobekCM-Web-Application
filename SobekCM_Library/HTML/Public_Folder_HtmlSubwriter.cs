@@ -117,7 +117,8 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
 
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+            currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
             Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + homeText + Unselected_Tab_End + "</a>");
             currentMode.Mode = Display_Mode_Enum.Public_Folder;
             

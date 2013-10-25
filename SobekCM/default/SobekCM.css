@@ -1360,3 +1360,12 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 }
 
 .upFileNormal_IE { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 10px; }
+
+
+
+#sbkAghsw_HomeTextEdit { width: 100%;height: 500px; }
+#sbkAghsw_Home { padding: 3px 3px 28px 3px; }
+#sbkAghsw_EditableHome { padding: 3px 3px 28px 3px; }
+#sbkAghsw_EditableHome:hover {padding: 0 0 25px 0; border: 3px solid #cccccc; background-color: #eeeeee; }
+#sbkAghsw_EditableHomeLink { float: right; vertical-align:text-top;padding-right: 15px;display: none; }
+#sbkAghsw_HomeEditButtons { float: right;padding: 10px 10px 0 0; }

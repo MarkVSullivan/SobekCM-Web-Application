@@ -48,18 +48,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Compute the redirect stem to use
             string fields = currentMode.Search_Fields;
             string search_string = currentMode.Search_String;
+			Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
             currentMode.Search_String = String.Empty;
             currentMode.Search_Fields = String.Empty;
             currentMode.Home_Type = Home_Type_Enum.List;
             currentMode.Mode = Display_Mode_Enum.Results;
             currentMode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             string redirect_stem = currentMode.Redirect_URL().Replace("&m=hhh", "").Replace("m=hht", "").Replace("&m=lhh", "").Replace("m=lht", "");
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+            currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             currentMode.Info_Browse_Mode = "all";
             browse_url = currentMode.Redirect_URL();
             currentMode.Search_String = search_string;
             currentMode.Search_Fields = fields;
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+	        currentMode.Aggregation_Type = aggrType;
             currentMode.Info_Browse_Mode = String.Empty;
 
             // Write the advanced search box

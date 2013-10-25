@@ -53,7 +53,8 @@ namespace SobekCM.Library.HTML
                 int user_sort = Convert.ToInt32(form["defaultSortDropDown"]);
                 HttpContext.Current.Session["User_Default_Sort"] = user_sort;
 
-                currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                currentMode.Mode = Display_Mode_Enum.Aggregation;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 currentMode.Redirect();
 
             }

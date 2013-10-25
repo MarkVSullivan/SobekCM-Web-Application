@@ -229,9 +229,9 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-			Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Add_HTML_In_Main_Form -->");
+			Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			// Add the stylesheet(s)and javascript  needed
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
@@ -255,7 +255,7 @@ namespace SobekCM.Library.AdminViewer
 			
             if ((details != null) && (thisRange != null) && (details.Tables[0].Rows.Count > 0))
             {
-                Tracer.Add_Trace("IP_Restrictions_AdminViewer.Add_HTML_In_Main_Form", "Display details regarding one IP restrictive range");
+                Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing", "Display details regarding one IP restrictive range");
 
                 // Assign some of the values from the details to the range
                 thisRange.Title = details.Tables[0].Rows[0]["Title"].ToString();
@@ -367,7 +367,7 @@ namespace SobekCM.Library.AdminViewer
                 return;
             }
 
-            Tracer.Add_Trace("IP_Restrictions_AdminViewer.Add_HTML_In_Main_Form", "Display main IP restrictive range admin form");
+            Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing", "Display main IP restrictive range admin form");
 
 
             Output.WriteLine("  <p>Restrictive ranges of IP addresses may be used to restrict access to digital resources.  This form allows system administrators to edit the individual IP addresses and contiguous IP addresses associated with an existing restrictive range.</p>");

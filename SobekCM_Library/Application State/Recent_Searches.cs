@@ -114,7 +114,8 @@ namespace SobekCM.Library.Application_State
 
 				// Save the collection as a link
 				Display_Mode_Enum lastMode = currentMode.Mode;
-				currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+				currentMode.Mode = Display_Mode_Enum.Aggregation;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 this.Aggregation = "<a href=\"" + currentMode.Redirect_URL() + "\">" + Aggregation.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>";
 
 				// Save the search terms as a link to the search

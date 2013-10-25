@@ -275,7 +275,8 @@ namespace SobekCM.Library.HTML
                     Output.Write("<a href=\"?" + lastMode + "\">");
                 else
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\">");
                     currentMode.Mode = Display_Mode_Enum.Contact;
                 }

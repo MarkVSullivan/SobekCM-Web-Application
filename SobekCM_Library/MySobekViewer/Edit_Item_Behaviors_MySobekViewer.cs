@@ -151,7 +151,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since the template html is added in the <see cref="Add_HTML_In_Main_Form" /> method </remarks>
+        /// <remarks> This class does nothing, since the template html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_HTML", "Do nothing");
@@ -160,15 +160,15 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void  Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+        public override void  Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Add_HTML_In_Main_Form", "");
+            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
 
-            Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Add_HTML_In_Main_Form -->");
+            Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("  <br />");
 

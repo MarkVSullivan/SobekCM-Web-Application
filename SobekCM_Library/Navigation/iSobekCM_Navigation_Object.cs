@@ -80,29 +80,8 @@ namespace SobekCM.Library.Navigation
         /// <summary> System and portal administrator tasks </summary>
         Administrative,
 
-		/// <summary> Admin view of the aggregation information </summary>
-		Aggregation_Admin_View,
-
-		/// <summary>Browse item metadata values within an aggregation </summary>
-		Aggregation_Browse_By,
-
-		/// <summary>Browse items within an aggregation or static html collection pages</summary>
-		Aggregation_Browse_Info,
-
-		/// <summary> View all the coordinates linked to this item aggregation on a map </summary>
-		Aggregation_Browse_Map,
-
-		/// <summary>Display the home page for an aggregation (and default search option)</summary>
-		Aggregation_Home,
-
-		/// <summary> Display the item count information for a single item aggregation  </summary>
-		Aggregation_Item_Count,
-
-		/// <summary> Display the list of private items for a single item aggregation </summary>
-		Aggregation_Private_Items,
-
-		/// <summary> Display the usage statistics for a single item aggregation </summary>
-		Aggregation_Usage_Statistics,
+		/// <summary> Aggregation views, such as viewing the home page, child pages, etc.. </summary>
+		Aggregation,
 
 		/// <summary>Request to send an email and contact the digital library team</summary>
 		Contact,
@@ -440,6 +419,34 @@ namespace SobekCM.Library.Navigation
         /// <summary> Provides list of all existing wordmarks/icons and allows admin to enter a new wordmark or edit an existing wordmark </summary>
         Wordmarks
     };
+
+	/// <summary> Type of aggregation display </summary>
+	public enum Aggregation_Type_Enum : byte
+	{
+		/// <summary>Browse item metadata values within an aggregation </summary>
+		Browse_By,
+
+		/// <summary>Browse items within an aggregation or static html collection pages</summary>
+		Browse_Info,
+
+		/// <summary> View all the coordinates linked to this item aggregation on a map </summary>
+		Browse_Map,
+
+		/// <summary>Display the home page for an aggregation (and default search option)</summary>
+		Home,
+
+		/// <summary>Display the home page for an aggregation (and default search option) with ability to edit the home page HTML</summary>
+		Home_Edit,
+
+		/// <summary> Display the item count information for a single item aggregation  </summary>
+		Item_Count,
+
+		/// <summary> Display the list of private items for a single item aggregation </summary>
+		Private_Items,
+
+		/// <summary> Display the usage statistics for a single item aggregation </summary>
+		Usage_Statistics,
+	}
 
 
 	/// <summary> Flag is used to determine whether the table of contents should be displayed in the item viewer </summary>

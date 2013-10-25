@@ -460,9 +460,9 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Settings_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form ");
+            Tracer.Add_Trace("Settings_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
 
 
             // Add the hidden field
@@ -475,7 +475,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine();
 
-            Output.WriteLine("<!-- Settings_AdminViewer.Add_HTML_In_Main_Form -->");
+            Output.WriteLine("<!-- Settings_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_tabs.js\" type=\"text/javascript\"></script>");

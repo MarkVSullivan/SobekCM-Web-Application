@@ -187,7 +187,8 @@ namespace SobekCM.Library.Navigation
 			// current mode should be the default
 			if (( QueryString.Keys.Count == 0 ) && ( aggregation.Length == 0 ))
 			{
-                Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+                Navigator.Mode = Display_Mode_Enum.Aggregation;
+				Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
                 Navigator.Home_Type = Home_Type_Enum.List;
 				return;
 			}
@@ -263,7 +264,8 @@ namespace SobekCM.Library.Navigation
                     return;
 
 				case 'b':
-					Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+					Navigator.Mode = Display_Mode_Enum.Aggregation;
+					Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 					Browse_Info_Block( Navigator );
 					return;
 
@@ -301,7 +303,8 @@ namespace SobekCM.Library.Navigation
 					return;
 
                 case 'i':
-                    Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+                    Navigator.Mode = Display_Mode_Enum.Aggregation;
+					Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
                     Browse_Info_Block(Navigator);
                     return;
 
@@ -497,61 +500,61 @@ namespace SobekCM.Library.Navigation
 
 	    #region Private methods for handling each different mode type
 
-	    private void Public_Folder_Block(SobekCM_Navigation_Object navigator)
+	    private void Public_Folder_Block(SobekCM_Navigation_Object Navigator)
 	    {
 	        // Set the mode first
-	        navigator.Mode = Display_Mode_Enum.Public_Folder;
+	        Navigator.Mode = Display_Mode_Enum.Public_Folder;
 	        try
 	        {
-	            navigator.FolderID = Convert.ToInt32(folderid);
+	            Navigator.FolderID = Convert.ToInt32(folderid);
 	        }
 	        catch
 	        {
-	            navigator.FolderID = -1;
+	            Navigator.FolderID = -1;
 	        }
-	        navigator.Result_Display_Type = Result_Display_Type_Enum.Brief;
+	        Navigator.Result_Display_Type = Result_Display_Type_Enum.Brief;
 
 	        if (mode.Length > 2)
 	        {
 	            switch (mode[2])
 	            {
 	                case 't':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Table;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Table;
 	                    break;
 
 	                case 'b':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Brief;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Brief;
 	                    break;
 
 	                case 'h':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
 	                    break;
 
 	                case 'm':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Map;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Map;
 	                    break;
 
 	                case 'f':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Full_Citation;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Full_Citation;
 	                    break;
 
 	                case 'g':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Full_Image;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Full_Image;
 	                    break;
 
 	                case 'i':
-	                    navigator.Result_Display_Type = Result_Display_Type_Enum.Export;
+	                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Export;
 	                    break;
 	            }
 	        }
 
 	        // Look for the first number
-	        navigator.Page = 1;
+	        Navigator.Page = 1;
 	        if (mode.Length > 3)
 	        {
 	            try
 	            {
-	                navigator.Page = Convert.ToUInt16(mode.Substring(3));
+	                Navigator.Page = Convert.ToUInt16(mode.Substring(3));
 	            }
 	            catch
 	            {
@@ -940,7 +943,7 @@ namespace SobekCM.Library.Navigation
 	        // There must be an aggregation listed here, unless this is XML
 	        if (( aggregation.Length == 0 ) && ( navigator.Info_Browse_Mode != "new" ))
 	        {
-	            if ((navigator.Mode == Display_Mode_Enum.Aggregation_Browse_Info) || (navigator.Writer_Type == Writer_Type_Enum.XML) || (navigator.Writer_Type == Writer_Type_Enum.DataSet) || (navigator.Writer_Type == Writer_Type_Enum.Text))
+	            if (((navigator.Mode == Display_Mode_Enum.Aggregation) && (navigator.Aggregation_Type == Aggregation_Type_Enum.Browse_Info)) || (navigator.Writer_Type == Writer_Type_Enum.XML) || (navigator.Writer_Type == Writer_Type_Enum.DataSet) || (navigator.Writer_Type == Writer_Type_Enum.Text))
 	            {
 	                // This is okay since this will just pull EVERY ITEM from the database
 	            }
@@ -1130,54 +1133,55 @@ namespace SobekCM.Library.Navigation
 	    }
 
 
-	    private void Home_Block( SobekCM_Navigation_Object navigator )
+	    private void Home_Block( SobekCM_Navigation_Object Navigator )
 	    {
 	        // Save the group and collection values
-	        navigator.Mode = Display_Mode_Enum.Aggregation_Home;
-	        navigator.Home_Type = Home_Type_Enum.List;
+	        Navigator.Mode = Display_Mode_Enum.Aggregation;
+			Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
+	        Navigator.Home_Type = Home_Type_Enum.List;
 
 	        if (mode.Length > 2)
 	        {
 	            switch (mode[2])
 	            {
 	                case 'h':
-	                    navigator.Home_Type = Home_Type_Enum.List;
+	                    Navigator.Home_Type = Home_Type_Enum.List;
 	                    break;
 
 	                case 's':
-	                    navigator.Home_Type = Home_Type_Enum.List;
-	                    navigator.Show_Selection_Panel = true;
+	                    Navigator.Home_Type = Home_Type_Enum.List;
+	                    Navigator.Show_Selection_Panel = true;
 	                    break;
 
 	                case 'd':
-	                    navigator.Home_Type = Home_Type_Enum.Descriptions;
+	                    Navigator.Home_Type = Home_Type_Enum.Descriptions;
 	                    break;
 
 	                case 't':
-	                    navigator.Home_Type = Home_Type_Enum.Tree_Collapsed;
+	                    Navigator.Home_Type = Home_Type_Enum.Tree_Collapsed;
 	                    break;
 
 	                case 'e':
-	                    navigator.Home_Type = Home_Type_Enum.Tree_Expanded;
+	                    Navigator.Home_Type = Home_Type_Enum.Tree_Expanded;
 	                    break;
 
 	                case 'i':
-	                    navigator.Home_Type = Home_Type_Enum.Partners_List;
+	                    Navigator.Home_Type = Home_Type_Enum.Partners_List;
 	                    break;
 
 	                case 'j':
-	                    navigator.Home_Type = Home_Type_Enum.Partners_Thumbnails;
+	                    Navigator.Home_Type = Home_Type_Enum.Partners_Thumbnails;
 	                    break;
 
 	                case 'p':
-	                    navigator.Home_Type = Home_Type_Enum.Personalized;
+	                    Navigator.Home_Type = Home_Type_Enum.Personalized;
 	                    break;
 	            }
 	        }
 
 	        // Save the search information as well
 	        if ( search.Length > 0 )
-	            navigator.Search_String = search;
+	            Navigator.Search_String = search;
 	    }
 
 	    private void Search_Block( SobekCM_Navigation_Object navigator )

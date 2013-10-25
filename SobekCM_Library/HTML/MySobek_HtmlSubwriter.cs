@@ -385,7 +385,7 @@ namespace SobekCM.Library.HTML
 			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
 
 			// Also, add any additional stuff here
-			mySobekViewer.Add_HTML_In_Main_Form(Output, Tracer);
+			mySobekViewer.Write_ItemNavForm_Closing(Output, Tracer);
 		}
 
         /// <summary> Adds any necessary controls to one of two place holders on the main ASPX page </summary>
