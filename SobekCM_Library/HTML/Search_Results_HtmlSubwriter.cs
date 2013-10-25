@@ -124,6 +124,7 @@ namespace SobekCM.Library.HTML
                 string fields = currentMode.Search_Fields;
                 string search_string = currentMode.Search_String;
                 Search_Type_Enum currentSearchType = currentMode.Search_Type;
+	            Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
                 currentMode.Mode = Display_Mode_Enum.Search;
                 string refine_redirect_url;
                 if ((currentMode.Search_Type == Search_Type_Enum.Basic) || (currentMode.Search_Type == Search_Type_Enum.Newspaper)|| (currentMode.Search_Type == Search_Type_Enum.Advanced))
@@ -145,7 +146,8 @@ namespace SobekCM.Library.HTML
                 if (currentMode.Search_Type == Search_Type_Enum.Map)
                     currentMode.Search_String = String.Empty;
 
-                currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+	            currentMode.Mode = Display_Mode_Enum.Aggregation;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + home_text + Unselected_Tab_End + "</a>");
                 currentMode.Mode = Display_Mode_Enum.Search;
 
@@ -158,14 +160,16 @@ namespace SobekCM.Library.HTML
                 currentMode.Search_Fields = String.Empty;
                 if (currentMode.Aggregation == ".all")
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     currentMode.Aggregation = "";
                     Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + new_search + Unselected_Tab_End + "</a>");
                     currentMode.Aggregation = ".all";
                 }
                 else
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + new_search + Unselected_Tab_End + "</a>");
                 }
                 currentMode.Mode = Display_Mode_Enum.Results;

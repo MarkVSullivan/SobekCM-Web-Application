@@ -253,7 +253,6 @@
     <Compile Include="AggregationViewer\Viewers\Metadata_Browse_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Private_Items_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Rotating_Highlight_Search_AggregationViewer.cs" />
-    <Compile Include="AggregationViewer\Viewers\Admin_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Full_Text_Search_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Usage_Statistics_AggregationViewer.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />

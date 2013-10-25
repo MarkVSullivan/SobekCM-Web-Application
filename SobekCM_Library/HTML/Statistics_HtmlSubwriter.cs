@@ -108,7 +108,8 @@ namespace SobekCM.Library.HTML
             string currentInfoBrowseMode = Mode.Info_Browse_Mode;
 
             // Add the 'SOBEK HOME' first menu option and suboptions
-            Mode.Mode = Display_Mode_Enum.Aggregation_Home;
+            Mode.Mode = Display_Mode_Enum.Aggregation;
+			Mode.Aggregation_Type = Aggregation_Type_Enum.Home; 
             Mode.Home_Type = Home_Type_Enum.List;
             Output.WriteLine("\t\t<li id=\"sbkShs_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkShs_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkShs_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkShs_HomeSubMenu\">");
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");

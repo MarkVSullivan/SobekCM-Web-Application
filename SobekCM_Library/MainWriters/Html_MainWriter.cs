@@ -254,7 +254,7 @@ namespace SobekCM.Library.MainWriters
                     break;
 
                 case Display_Mode_Enum.Administrative:
-                    subwriter = new Admin_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, statsDateRange, thematicHeadings, Tracer);
+                    subwriter = new Admin_HtmlSubwriter(codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, thematicHeadings, Tracer);
                     break;
 
                 case Display_Mode_Enum.Results:
@@ -266,14 +266,7 @@ namespace SobekCM.Library.MainWriters
                     break;
 
                 case Display_Mode_Enum.Search:
-                case Display_Mode_Enum.Aggregation_Home:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                case Display_Mode_Enum.Aggregation_Browse_By:
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                case Display_Mode_Enum.Aggregation_Private_Items:
-                case Display_Mode_Enum.Aggregation_Item_Count:
-                case Display_Mode_Enum.Aggregation_Usage_Statistics:
-                case Display_Mode_Enum.Aggregation_Admin_View:
+				case Display_Mode_Enum.Aggregation:
                     subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, htmlBasedContent, Tracer);
                     break;
 
@@ -364,14 +357,18 @@ namespace SobekCM.Library.MainWriters
                     case Display_Mode_Enum.Simple_HTML_CMS:
                         return siteMap != null;
 
-                    case Display_Mode_Enum.Aggregation_Home:
-                        if ((currentMode.Aggregation.Length != 0) && (currentMode.Aggregation.ToUpper() != "ALL"))
-                        {
-                            return false;
-                        }
-                        return (currentMode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (currentMode.Home_Type == Home_Type_Enum.Tree_Expanded);
+                    case Display_Mode_Enum.Aggregation:
+		                if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+		                {
+			                if ((currentMode.Aggregation.Length != 0) && (currentMode.Aggregation.ToUpper() != "ALL"))
+			                {
+				                return false;
+			                }
+			                return (currentMode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (currentMode.Home_Type == Home_Type_Enum.Tree_Expanded);
+		                }
+		                return true;
 
-                    default: 
+	                default: 
                         return true;
                 }
             }
@@ -549,14 +546,7 @@ namespace SobekCM.Library.MainWriters
                 #region Add HTML and controls for COLLECTION VIEWS
 
                 case Display_Mode_Enum.Search:
-                case Display_Mode_Enum.Aggregation_Home:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                case Display_Mode_Enum.Aggregation_Browse_By:
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                case Display_Mode_Enum.Aggregation_Private_Items:
-                case Display_Mode_Enum.Aggregation_Item_Count:
-                case Display_Mode_Enum.Aggregation_Usage_Statistics:
-                case Display_Mode_Enum.Aggregation_Admin_View:
+                case Display_Mode_Enum.Aggregation:
                     if (subwriter is Aggregation_HtmlSubwriter)
                     {
                         // Also try to add any controls
@@ -842,14 +832,7 @@ namespace SobekCM.Library.MainWriters
                                 displayHeader = true;
                             break;
 
-                        case Display_Mode_Enum.Aggregation_Admin_View:
-                        case Display_Mode_Enum.Aggregation_Browse_By:
-                        case Display_Mode_Enum.Aggregation_Browse_Info:
-                        case Display_Mode_Enum.Aggregation_Browse_Map:
-                        case Display_Mode_Enum.Aggregation_Home:
-                        case Display_Mode_Enum.Aggregation_Item_Count:
-                        case Display_Mode_Enum.Aggregation_Private_Items:
-                        case Display_Mode_Enum.Aggregation_Usage_Statistics:
+                        case Display_Mode_Enum.Aggregation:
                         case Display_Mode_Enum.Results:
                         case Display_Mode_Enum.Search:
                             if (( currentUser.Is_Aggregation_Curator( currentMode.Aggregation )) || ( currentUser.Can_Edit_All_Items( currentMode.Aggregation )))
@@ -1018,12 +1001,23 @@ namespace SobekCM.Library.MainWriters
                     breadcrumbs = breadcrumb_builder.ToString();
                     break;
 
-                case Display_Mode_Enum.Aggregation_Home:
-                    if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
-                    {
-                        breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
-                    }
-                    break;
+                case Display_Mode_Enum.Aggregation:
+		            if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+		            {
+			            if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+			            {
+				            breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+			            }
+		            }
+		            else
+		            {
+						breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+						if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+						{
+							breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>";
+						}
+		            }
+		            break;
 
                 default:
                     breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
@@ -1123,81 +1117,99 @@ namespace SobekCM.Library.MainWriters
 
             // Determine which container to use, depending on the current mode
             string container_inner = "container-inner";
-            switch (currentMode.Mode)
-            {
+			switch (currentMode.Mode)
+			{
 				case Display_Mode_Enum.Administrative:
-					if (currentMode.Admin_Type == Admin_Type_Enum.Wordmarks )
+					switch (currentMode.Admin_Type)
 					{
-						container_inner = "sbkWav_ContainerInner";
-					}
-					if (currentMode.Admin_Type == Admin_Type_Enum.Settings)
-					{
-						container_inner = "sbkSeav_ContainerInner";
+						case Admin_Type_Enum.Wordmarks:
+							container_inner = "sbkWav_ContainerInner";
+							break;
+
+						case Admin_Type_Enum.Settings:
+							container_inner = "sbkSeav_ContainerInner";
+							break;
+
+						case Admin_Type_Enum.Aggregation_Single:
+							container_inner = "sbkSaav_ContainerInner";
+							break;
 					}
 					break;
 
-                case Display_Mode_Enum.My_Sobek :
-                    if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && ( currentMode.My_Sobek_SubMode.IndexOf("0.2") == 0 ))
-                    {
-                        container_inner = "container-inner1000";
-                    }
-                    break;
+				case Display_Mode_Enum.My_Sobek:
+					if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (currentMode.My_Sobek_SubMode.IndexOf("0.2") == 0))
+					{
+						container_inner = "container-inner1000";
+					}
+					break;
 
-                case Display_Mode_Enum.Statistics:
-                    switch (currentMode.Statistics_Type)
-                    {
+				case Display_Mode_Enum.Statistics:
+					switch (currentMode.Statistics_Type)
+					{
 						case Statistics_Type_Enum.Item_Count_Standard_View:
-                        case Statistics_Type_Enum.Item_Count_Growth_View:
-                        case Statistics_Type_Enum.Item_Count_Arbitrary_View:
+						case Statistics_Type_Enum.Item_Count_Growth_View:
+						case Statistics_Type_Enum.Item_Count_Arbitrary_View:
 						case Statistics_Type_Enum.Usage_Collections_By_Date:
 						case Statistics_Type_Enum.Usage_Item_Views_By_Date:
 							container_inner = "container-innerfull";
-                            break;
+							break;
 
-                    }
-                    break;
+					}
+					break;
 
-                case Display_Mode_Enum.Internal:
-                    if (currentMode.Internal_Type == Internal_Type_Enum.Wordmarks)
-                    {
-                        container_inner = "container-inner1000";
-                    }
-                    if ( currentMode.Internal_Type == Internal_Type_Enum.Aggregations )
-                        container_inner = "container-inner1215";
-                    break;
+				case Display_Mode_Enum.Internal:
+					if (currentMode.Internal_Type == Internal_Type_Enum.Wordmarks)
+					{
+						container_inner = "container-inner1000";
+					}
+					if (currentMode.Internal_Type == Internal_Type_Enum.Aggregations)
+						container_inner = "container-inner1215";
+					break;
 
-				case Display_Mode_Enum.Aggregation_Browse_By:
-					container_inner = "container-facets";
-		            break;
+				case Display_Mode_Enum.Aggregation:
+					switch (currentMode.Aggregation_Type)
+					{
+						case Aggregation_Type_Enum.Browse_By:
+							container_inner = "container-facets";
+							break;
 
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                    container_inner = "container-inner1000";
-                    break;
+						case Aggregation_Type_Enum.Browse_Map:
+							container_inner = "container-inner1000";
+							break;
 
-                case Display_Mode_Enum.Aggregation_Private_Items:
-                    container_inner = "container-inner1215";
-                    break;
+						case Aggregation_Type_Enum.Private_Items:
+							container_inner = "container-inner1215";
+							break;
+
+						case Aggregation_Type_Enum.Browse_Info:
+							if (paged_results != null)
+							{
+								container_inner = "container-facets";
+							}
+							break;
+					}
+					break;
+
 
 				case Display_Mode_Enum.Results:
-				case Display_Mode_Enum.Aggregation_Browse_Info:
-		            if (paged_results != null)
-		            {
-			            container_inner = "container-facets";
-		            }
-		            break;
+					if (paged_results != null)
+					{
+						container_inner = "container-facets";
+					}
+					break;
 
 				case Display_Mode_Enum.Item_Display:
 				case Display_Mode_Enum.Item_Print:
-		            container_inner = String.Empty;
-		            break;
+					container_inner = String.Empty;
+					break;
 
 				case Display_Mode_Enum.Simple_HTML_CMS:
-					if ( siteMap != null )
+					if (siteMap != null)
 						container_inner = String.Empty;
 					break;
 
 
-            }
+			}
 
             // Get the skin url
             string skin_url = currentMode.Base_Design_URL + "skins/" + currentMode.Skin + "/";

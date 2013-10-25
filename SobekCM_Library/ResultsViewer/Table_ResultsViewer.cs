@@ -102,7 +102,7 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-                if (CurrentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info)
+                if (( CurrentMode.Mode == Display_Mode_Enum.Aggregation ) && ( CurrentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 // Start this row

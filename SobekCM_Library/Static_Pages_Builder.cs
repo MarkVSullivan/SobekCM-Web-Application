@@ -309,7 +309,8 @@ namespace SobekCM.Library
 
 
             // Set the mode away from the display item mode
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+            currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 
             // Get the list of all collections
             DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);

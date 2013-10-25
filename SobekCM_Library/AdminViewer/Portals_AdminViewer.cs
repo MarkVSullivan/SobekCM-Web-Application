@@ -164,7 +164,7 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             // Set the help for these subelements
             const string PORTAL_NAME_HELP = "Name for the system when accessed through this url portal.  This additionally identifies this url portal to administrators.\n\nFor example, Digital Library of the Caribbean, or University of Florida Digital Collections.";
@@ -174,9 +174,9 @@ namespace SobekCM.Library.AdminViewer
             const string URL_SEGMENT_HELP = "URL segment used for matching purposes to determine which url portal a user is accessing this system from.\n\nA blank URL portal will make this the default portal.";
             const string BASE_PURL_HELP = "Base permanent link URL to be used when constructing permanent URLs for items which do not have itt explicitly entered.\n\nA blank value here will result in the current URL being used as the base for the purl.";
 
-            Tracer.Add_Trace("Portals_AdminViewer.Add_HTML_In_Main_Form", "Adds the portal information to the main form");
+            Tracer.Add_Trace("Portals_AdminViewer.Write_ItemNavForm_Closing", "Adds the portal information to the main form");
 
-			Output.WriteLine("<!-- Portals_AdminViewer.Add_HTML_In_Main_Form -->");
+			Output.WriteLine("<!-- Portals_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 

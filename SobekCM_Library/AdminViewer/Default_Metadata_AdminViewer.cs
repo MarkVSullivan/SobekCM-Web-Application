@@ -186,11 +186,11 @@ namespace SobekCM.Library.AdminViewer
 		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
 		{
-			Tracer.Add_Trace("Default_Metadata_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
+			Tracer.Add_Trace("Default_Metadata_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<!-- Default_Metadata_AdminViewer.Add_HTML_In_Main_Form -->");
+			Output.WriteLine("<!-- Default_Metadata_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			// Add the scripts needed
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
@@ -231,7 +231,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-			Tracer.Add_Trace("Default_Metadata_AdminViewer.Add_HTML_In_Main_Form", "Write the rest of the form html");
+			Tracer.Add_Trace("Default_Metadata_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form html");
 
 			// Get the list of all projects
 			DataSet projectsSet = SobekCM_Database.Get_All_Projects_Templates(Tracer);

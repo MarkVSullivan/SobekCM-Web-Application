@@ -51,10 +51,11 @@ namespace SobekCM.Library.MainWriters
             switch (currentMode.Mode)
             {
                 case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
+                case Display_Mode_Enum.Aggregation:
                     if (paged_results != null)
                         display_search_results(Output);
                      break;
+
                 default:
                     Output.Write("DataSet Writer - Unknown Mode");
                     break;

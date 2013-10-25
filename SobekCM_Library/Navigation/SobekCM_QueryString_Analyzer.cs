@@ -196,7 +196,8 @@ namespace SobekCM.Library.Navigation
 
 
 			// Set the default mode
-			Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+			Navigator.Mode = Display_Mode_Enum.Aggregation;
+			Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 			Navigator.Home_Type = Home_Type_Enum.List;
 
 			// Get any url rewrite which occurred
@@ -818,7 +819,8 @@ namespace SobekCM.Library.Navigation
 							case "partners":
 								if (Navigator.Default_Aggregation == "all")
 								{
-									Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+									Navigator.Mode = Display_Mode_Enum.Aggregation;
+									Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 									Navigator.Aggregation = String.Empty;
 									Navigator.Home_Type = Home_Type_Enum.Partners_List;
 									if ((url_relative_list.Count > 1) && (url_relative_list[1] == "thumbs"))
@@ -833,7 +835,8 @@ namespace SobekCM.Library.Navigation
 								break;
 
 							case "tree":
-								Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+								Navigator.Mode = Display_Mode_Enum.Aggregation;
+								Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 								Navigator.Aggregation = String.Empty;
 								Navigator.Home_Type = Home_Type_Enum.Tree_Collapsed;
 								if ((url_relative_list.Count > 1) && (url_relative_list[1] == "expanded"))
@@ -843,13 +846,15 @@ namespace SobekCM.Library.Navigation
 								break;
 
 							case "brief":
-								Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+								Navigator.Mode = Display_Mode_Enum.Aggregation;
+								Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 								Navigator.Aggregation = String.Empty;
 								Navigator.Home_Type = Home_Type_Enum.Descriptions;
 								break;
 
 							case "personalized":
-								Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+								Navigator.Mode = Display_Mode_Enum.Aggregation;
+								Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 								Navigator.Aggregation = String.Empty;
 								Navigator.Home_Type = Home_Type_Enum.Personalized;
 								break;
@@ -1123,7 +1128,8 @@ namespace SobekCM.Library.Navigation
 		private void aggregation_querystring_analyze(SobekCM_Navigation_Object Navigator, NameValueCollection QueryString, string Aggregation, List<string> RemainingURLRedirectList)
 		{
 			Navigator.Aggregation = Aggregation;
-			Navigator.Mode = Display_Mode_Enum.Aggregation_Home;
+			Navigator.Mode = Display_Mode_Enum.Aggregation;
+			Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 
             // Collect any search and search field values
             if (QueryString["t"] != null) Navigator.Search_String = QueryString["t"].Trim();
@@ -1135,15 +1141,19 @@ namespace SobekCM.Library.Navigation
 				switch (RemainingURLRedirectList[0])
 				{
 					case "usage":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Usage_Statistics;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Usage_Statistics;
 						if (RemainingURLRedirectList.Count > 1)
 						{
 							Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
 						}
 						break;
 
+					case "edit":
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+						break;
+
 					case "itemcount":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Item_Count;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Item_Count;
 						if (RemainingURLRedirectList.Count > 1)
 						{
 							Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
@@ -1151,7 +1161,7 @@ namespace SobekCM.Library.Navigation
 						break;
 
 					case "inprocess":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Private_Items;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Private_Items;
 						Navigator.Page = 1;
 						if (RemainingURLRedirectList.Count > 1)
 						{
@@ -1167,11 +1177,6 @@ namespace SobekCM.Library.Navigation
 							Navigator.Sort = 0;
 						}
 						break;
-
-					case "admin":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Admin_View;
-						break;
-
 
 					case "contact":
 						Navigator.Mode = Display_Mode_Enum.Contact;
@@ -1206,13 +1211,13 @@ namespace SobekCM.Library.Navigation
 						break;
 
 					case "info":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 						if (RemainingURLRedirectList.Count > 1)
 							Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
 						break;
 
 					case "browseby":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_By;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 						if (RemainingURLRedirectList.Count > 1)
 							Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
 						if ( RemainingURLRedirectList.Count > 2 )
@@ -1227,7 +1232,7 @@ namespace SobekCM.Library.Navigation
 						break;
 
 					case "geography":
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Map;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Map;
 						break;
 
 					case "results":
@@ -1392,7 +1397,8 @@ namespace SobekCM.Library.Navigation
 						break;
 
 					default:
-						Navigator.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+						Navigator.Mode = Display_Mode_Enum.Aggregation;
+						Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 						Navigator.Info_Browse_Mode = RemainingURLRedirectList[0];
 						Navigator.Result_Display_Type = Result_Display_Type_Enum.Default;
 						Navigator.Page = 1;

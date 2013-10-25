@@ -381,7 +381,7 @@ namespace SobekCM.Library.HTML
 			if ((resultWriter.Sortable) && (!currentMode.Is_Robot))
 			{
 				// Add the special sorts for browses
-				if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info)
+				if (currentMode.Mode == Display_Mode_Enum.Aggregation) // browse info only
 				{
 					if (currentMode.Info_Browse_Mode.ToUpper().IndexOf("NEW") >= 0)
 					{
@@ -660,7 +660,7 @@ namespace SobekCM.Library.HTML
 					Output.WriteLine("<div class=\"SobekFolderDescPanel\">");
 					break;
 
-				case Display_Mode_Enum.Aggregation_Browse_Info:
+				case Display_Mode_Enum.Aggregation:  // browse info only
 					Output.WriteLine("<div class=\"SobekBrowseDescPanel\">");
 					break;
 
@@ -697,7 +697,7 @@ namespace SobekCM.Library.HTML
 			}
 
 			string summation;
-			if ((currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info) || ( currentMode.Mode == Display_Mode_Enum.Public_Folder ) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management)))
+			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
 			{
 				if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && ( currentMode.Mode != Display_Mode_Enum.Public_Folder ))
 				{
@@ -1242,7 +1242,7 @@ namespace SobekCM.Library.HTML
 			string url = String.Empty;
 			string aggregation_url = String.Empty;
 
-			if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info) 
+			if (currentMode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
 			{
 				Display_Mode_Enum displayMode = currentMode.Mode;
 				currentMode.Mode = Display_Mode_Enum.Results;

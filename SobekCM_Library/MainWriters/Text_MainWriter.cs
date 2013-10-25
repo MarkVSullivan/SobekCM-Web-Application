@@ -83,10 +83,11 @@ namespace SobekCM.Library.MainWriters
                     Output.WriteLine("<b>INVALID ITEM INDICATED</b>");
                     break;
                 case Display_Mode_Enum.Results:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
+                case Display_Mode_Enum.Aggregation:
                     if (paged_results != null)
                         display_search_results(Output);
                     break;
+
                 default:
                     Output.Write("<b>TEXT WRITER - UNKNOWN MODE</b>");
                     break;

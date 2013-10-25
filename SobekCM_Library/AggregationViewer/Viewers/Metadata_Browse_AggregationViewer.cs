@@ -704,7 +704,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Set the current mode back
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_By;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+            currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");

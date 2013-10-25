@@ -405,17 +405,29 @@ namespace SobekCM.Library.Users
             return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
         }
 
-        /// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
+        /// <summary> Checks to see if this user can perform curatorial tasks against an item aggregation </summary>
         /// <param name="AggregationCode"> Code for this item aggregation </param>
         /// <returns> TRUE if this user is curator on either this aggregation or all of this library, otherwise FALSE </returns>
         public bool Is_Aggregation_Curator(string AggregationCode)
         {
-            if (Is_System_Admin)
+			if ((Is_System_Admin) || (Is_Portal_Admin))
                 return true;
 
             string aggrCodeUpper = AggregationCode.ToUpper();
             return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsCurator).FirstOrDefault();
         }
+
+		/// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
+		/// <param name="AggregationCode"> Code for this item aggregation </param>
+		/// <returns> TRUE if this user is admin on either this aggregation or all of this library, otherwise FALSE </returns>
+		public bool Is_Aggregation_Admin(string AggregationCode)
+		{
+			if ((Is_System_Admin) || ( Is_Portal_Admin ))
+				return true;
+
+			string aggrCodeUpper = AggregationCode.ToUpper();
+			return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
+		}
 
         /// <summary> Checks to see if this user can edit all the items within this aggregation </summary>
         /// <param name="AggregationCode"> Code for this item aggregation </param>
