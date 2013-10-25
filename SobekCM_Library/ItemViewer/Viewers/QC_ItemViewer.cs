@@ -2345,7 +2345,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 			    Roman = Roman.ToUpper().Trim();
 				if (Roman.Split('V').Length > 2 || Roman.Split('L').Length > 2 || Roman.Split('D').Length > 2)
-					throw new ArgumentException("Rule 4 violated");
+                    throw new ArgumentException("Invalid Roman Numeral");
 
 				//Rule 1-single letter may be repeated upto 3 times consecutively
 				int count = 1;
