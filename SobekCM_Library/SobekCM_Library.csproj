@@ -116,6 +116,7 @@
     <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Custom_Directive.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Front_Banner.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="Application State\Application_State_Builder.cs" />

@@ -216,6 +216,14 @@ h1 {
 
 }
 
+.sbkRhav_RotatingBanner { width: 754px; text-align: center;vertical-align: top; }
+.sbkRhav_RotatingBanner tr { vertical-align: top; }
+.sbkRhav_RotatingBannerLeft { text-align: left; }
+.sbkRhav_RotatingBannerLeftSearch { padding-top: 145px; padding-left: 240px; }
+.sbkRhav_RotatingBannerRight { text-align: left; }
+.sbkRhav_RotatingBannerRightSearch { padding-top: 145px; padding-left: 20px; }
+.sbkRhav_SearchPrompt { font-weight: bold; }
+
 .SobekHomeBannerButton
 {
     padding-top: 5px;	
@@ -265,7 +273,7 @@ visibility: hidden; /*leave as is*/
 position: absolute; /*leave as is*/
 left: 0;  /*leave as is*/
 top: 0;  /*leave as is*/
-padding: 5px;
+padding: 0;
 background: white;
 /* width: 204px; /*width of content DIVs within slider. */
 height: 100%;

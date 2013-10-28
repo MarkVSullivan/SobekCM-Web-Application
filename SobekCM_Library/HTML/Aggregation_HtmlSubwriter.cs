@@ -195,6 +195,9 @@ namespace SobekCM.Library.HTML
 				homeWriter.Flush();
 				homeWriter.Close();
 
+				// Also save this change
+				SobekCM_Database.Save_Item_Aggregation_Milestone(Hierarchy_Object.Code, "Home page edited (" + Web_Language_Enum_Converter.Enum_To_Name(currentMode.Language) + ")", currentUser.Full_Name);
+
 				// Clear this aggreation from the cache
 				Cached_Data_Manager.Remove_Item_Aggregation(Hierarchy_Object.Code, Tracer);
 
@@ -203,7 +206,15 @@ namespace SobekCM.Library.HTML
 
 				// Forward along
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-				currentMode.Redirect();
+				string redirect_url = currentMode.Redirect_URL();
+				if (redirect_url.IndexOf("?") > 0)
+					redirect_url = redirect_url + "&refresh=always";
+				else
+					redirect_url = redirect_url + "?refresh=always";
+				currentMode.Request_Completed = true;
+				HttpContext.Current.Response.Redirect(redirect_url, false);
+				HttpContext.Current.ApplicationInstance.CompleteRequest();
+
 				return;
 			}
             
@@ -472,17 +483,17 @@ namespace SobekCM.Library.HTML
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
 			// Force a refresh?
-	        if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
-	        {
-		        Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
-		        if ((refreshFlag.HasValue) && (refreshFlag.Value))
-		        {
-			        HttpContext.Current.Session["REFRESH"] = null;
-			        Output.WriteLine("  <script type=\"text/javascript\">");
-			        Output.WriteLine("    history.go(0);");
-			        Output.WriteLine("  </script>");
-		        }
-	        }
+			//if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
+			//{
+			//	Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
+			//	if ((refreshFlag.HasValue) && (refreshFlag.Value))
+			//	{
+			//		HttpContext.Current.Session["REFRESH"] = null;
+			//		Output.WriteLine("  <script type=\"text/javascript\">");
+			//		Output.WriteLine("    history.go(0);");
+			//		Output.WriteLine("  </script>");
+			//	}
+			//}
 
 
 	        if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))

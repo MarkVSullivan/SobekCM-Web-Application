@@ -331,7 +331,7 @@ namespace SobekCM.Library.Settings
                 // Pull the language last, since it must be converted into a Language_Enum
                 string default_ui_language_string = "English";
                 Get_String_Value(settingsDictionary, "System Default Language", ref default_ui_language_string, "English");
-                Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(default_ui_language_string);
+	            Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(Web_Language_Enum_Converter.Name_To_Code(default_ui_language_string));
 
 				// Pull out some values, which are stored in this portion of the database, 
 				// but are not really setting values
@@ -600,6 +600,11 @@ namespace SobekCM.Library.Settings
         {
             lock (thisLock)
             {
+				metadataFields.Clear();
+				metadataFieldsByCode.Clear();
+	            metadataFieldsByID.Clear();
+				metadataFieldsByName.Clear();
+
                 // Add ANYWHERE
                 Metadata_Search_Field anywhere = new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "all");
                 metadataFields.Add(anywhere);

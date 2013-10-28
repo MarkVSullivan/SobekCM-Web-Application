@@ -598,7 +598,7 @@ namespace SobekCM.Library
                 Collection_Code = "all";
 
             // Pull the item aggregation object
-            Item_Aggregation aggregation = Item_Aggregation_Builder.Get_Item_Aggregation( Collection_Code.ToLower(), "en", null, true, null );
+            Item_Aggregation aggregation = Item_Aggregation_Builder.Get_Item_Aggregation( Collection_Code.ToLower(), "en", null, true, false, null );
 
             // Get the skin to use
             SobekCM_Skin_Object skin = ufdcInterface;
