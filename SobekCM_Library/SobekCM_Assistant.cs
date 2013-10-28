@@ -1731,7 +1731,7 @@ namespace SobekCM.Library
             Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation(Aggregation_Code, Language_Code, !IsRobot, Tracer);
 
             // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, Tracer);
+            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, true, Tracer);
 
             // If the collection is null, then this subcollection code was invalid.
             if (returned == null) 
@@ -1758,7 +1758,7 @@ namespace SobekCM.Library
                 Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation("all", Language_Code, !IsRobot, Tracer);
 
                 // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, Tracer);
+                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, true, Tracer);
 
                 // If the object is null, then this group code was invalid.
                 if (returned == null) 

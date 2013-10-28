@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.MemoryMgmt;
@@ -21,29 +20,30 @@ namespace SobekCM.Library.Aggregations
 		/// <summary> Gets a fully built item aggregation object for a particular aggregation code and language code.  </summary>
 		/// <param name="AggregationCode">Code for this aggregation object</param>
 		/// <param name="Language_Code">Code for the language for this aggregation object</param>
-		/// <param name="cacheInstance">Instance of this item aggregation pulled from cache (or NULL)</param>
-		/// <param name="isRobot">Flag tells if this request is from a robot (which will vary cacheing time)</param>
-		/// <param name="tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="CacheInstance">Instance of this item aggregation pulled from cache (or NULL)</param>
+		/// <param name="IsRobot">Flag tells if this request is from a robot (which will vary cacheing time)</param>
+		/// <param name="StoreInCache"> Flag indicates if this should be stored in the cache once built </param>
+		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns>Fully built item aggregation object for the particular aggregation code and language code</returns>
 		/// <remarks>Item aggregation object is also placed in the cache.<br /><br />
 		/// Building of an item aggregation always starts by pulling the item from the database ( either <see cref="SobekCM_Database.Get_Item_Aggregation"/> or <see cref="SobekCM_Database.Get_Main_Aggregation"/> ).<br /><br />
 		/// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
-		public static Item_Aggregation Get_Item_Aggregation(string AggregationCode, string Language_Code, Item_Aggregation cacheInstance, bool isRobot, Custom_Tracer tracer)
+		public static Item_Aggregation Get_Item_Aggregation(string AggregationCode, string Language_Code, Item_Aggregation CacheInstance, bool IsRobot, bool StoreInCache, Custom_Tracer Tracer)
 		{
 			// Does this exist in the cache?
-			if (cacheInstance == null)
+			if (CacheInstance == null)
 			{
-				if (tracer != null)
+				if (Tracer != null)
 				{
-					tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
+					Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
 				}
 
 				// Get the information about this collection and this entry point
 				Item_Aggregation hierarchyObject;
 				if ((AggregationCode.Length > 0) && (AggregationCode != "all"))
-					hierarchyObject = SobekCM_Database.Get_Item_Aggregation(AggregationCode, false, isRobot, tracer);
+					hierarchyObject = SobekCM_Database.Get_Item_Aggregation(AggregationCode, false, IsRobot, Tracer);
 				else
-					hierarchyObject = SobekCM_Database.Get_Main_Aggregation(tracer);
+					hierarchyObject = SobekCM_Database.Get_Main_Aggregation(Tracer);
 
 				// If no value was returned, don't do anything else here
 				if (hierarchyObject != null)
@@ -52,9 +52,9 @@ namespace SobekCM.Library.Aggregations
 					string xmlDataFile = SobekCM_Library_Settings.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
 					if (File.Exists(xmlDataFile))
 					{
-						if (tracer != null)
+						if (Tracer != null)
 						{
-							tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Reading XML Configuration File");
+							Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Reading XML Configuration File");
 						}
 
 						// Add the ALL and NEW browses
@@ -66,20 +66,20 @@ namespace SobekCM.Library.Aggregations
 					}
 					else
 					{
-						if (tracer != null)
+						if (Tracer != null)
 						{
-							tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
+							Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
 						}
 
 						Add_HTML(hierarchyObject);
 						Add_All_New_Browses(hierarchyObject);
-						if (!isRobot)
+						if (!IsRobot)
 						{
-						    if (tracer != null)
+						    if (Tracer != null)
 						    {
-						        tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Scanning Design Directory for browse and info files");
+						        Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Scanning Design Directory for browse and info files");
 						    }
-                            Add_Browse_Files(hierarchyObject, tracer);
+                            Add_Browse_Files(hierarchyObject, Tracer);
 						}
 
                         // Since there was no configuration file, save one
@@ -88,15 +88,15 @@ namespace SobekCM.Library.Aggregations
 					}
 
 					// Now, save this to the cache
-					if (!isRobot)
+					if ((!IsRobot) && ( StoreInCache ))
 					{
-						Cached_Data_Manager.Store_Item_Aggregation(AggregationCode, Language_Code, hierarchyObject, tracer);
+						Cached_Data_Manager.Store_Item_Aggregation(AggregationCode, Language_Code, hierarchyObject, Tracer);
 					}
 					else
 					{
-						if (tracer != null)
+						if (Tracer != null)
 						{
-							tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Skipping storing item aggregation on cache due to robot flag");
+							Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Skipping storing item aggregation on cache due to robot flag");
 						}
 					}
 
@@ -104,86 +104,86 @@ namespace SobekCM.Library.Aggregations
 					return hierarchyObject;
 				}
 			    
-                if (tracer != null)
+                if (Tracer != null)
 			    {
-			        tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "NULL value returned from database");
+			        Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "NULL value returned from database");
 			    }
 			    return null;
 			}
 		    
-            if (tracer != null)
+            if (Tracer != null)
 		    {
-		        tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Found '" + AggregationCode + "' item aggregation in cache");
+		        Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Found '" + AggregationCode + "' item aggregation in cache");
 		    }
 
 		    // Get the HTML element and search fields and return all this
-		    return cacheInstance;
+		    return CacheInstance;
 		}
 
 
 		/// <summary> Adds the ALL ITEMS and NEW ITEMS browses to the item aggregation, if the display options and last added
 		/// item date call for it </summary>
-		/// <param name="thisObject"> Item aggregation to which to add the ALL ITEMS and NEW ITEMS browse</param>
+		/// <param name="ThisObject"> Item aggregation to which to add the ALL ITEMS and NEW ITEMS browse</param>
 		/// <remarks>This method is always called while building an item aggregation, irregardless of whether there is an
 		/// item aggregation configuration XML file or not.</remarks>
-		protected static void Add_All_New_Browses(Item_Aggregation thisObject)
+		protected static void Add_All_New_Browses(Item_Aggregation ThisObject)
 		{
 			// If this is the main home page for this site, do not show ALL since we cannot browse ALL items
-			if (!thisObject.Can_Browse_Items )
+			if (!ThisObject.Can_Browse_Items )
 				return;
 
 			// If this is in the display options, and the item browses
-			if ((thisObject.Display_Options.Length == 0) || (thisObject.Display_Options.IndexOf("I") >= 0))
+			if ((ThisObject.Display_Options.Length == 0) || (ThisObject.Display_Options.IndexOf("I") >= 0))
 			{
 				// Add the ALL browse, if there should be one
-				thisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, "all", String.Empty, "All Items");
+				ThisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, "all", String.Empty, "All Items");
 
 				// Add the NEW search, if the ALL search exists
-				if ((thisObject.Get_Browse_Info_Object("all") != null) && (thisObject.Show_New_Item_Browse))
+				if ((ThisObject.Get_Browse_Info_Object("all") != null) && (ThisObject.Show_New_Item_Browse))
 				{
-					thisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, "new", String.Empty, "Recently Added Items");
+					ThisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, "new", String.Empty, "Recently Added Items");
 				}
 			}
 			else
 			{
 				// Add the ALL browse as an info
-				thisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Info, "all", String.Empty, "All Items");
+				ThisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Info, "all", String.Empty, "All Items");
 			}
 		}
 
 		/// <summary> Checks the appropriate design folders to add any existing browse or info pages to the item aggregation </summary>
-		/// <param name="thisObject"> Item aggregation object to add the browse and info pages to</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="ThisObject"> Item aggregation object to add the browse and info pages to</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <remarks>This method is only called if the item aggregation does not have an existing XML configuration file.</remarks>
-		protected static void Add_Browse_Files( Item_Aggregation thisObject, Custom_Tracer tracer  )
+		protected static void Add_Browse_Files( Item_Aggregation ThisObject, Custom_Tracer Tracer  )
 		{
 			// Collect the list of items in the browse folder
-			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/browse"))
+			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/browse"))
 			{
-				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/browse", "*.htm*");
+				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/browse", "*.htm*");
 				foreach (string thisFile in files)
 				{
 					// Get the new browse info object
-					Item_Aggregation_Browse_Info newBrowse = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, tracer);
+					Item_Aggregation_Browse_Info newBrowse = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, Tracer);
 					if (newBrowse != null)
 					{
-						thisObject.Add_Browse_Info(newBrowse);
+						ThisObject.Add_Browse_Info(newBrowse);
 					}
 				}
 			}
 
 			// Collect the list of items in the info folder
-			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/info"))
+			if (Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/info"))
 			{
-				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/info", "*.htm*");
+				string[] files = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/info", "*.htm*");
 				foreach (string thisFile in files)
 				{
 					// Get the title for this file
 					// Get the new browse info object
-					Item_Aggregation_Browse_Info newInfo = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Browse_Info.Browse_Info_Type.Info, tracer);
+					Item_Aggregation_Browse_Info newInfo = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Browse_Info.Browse_Info_Type.Info, Tracer);
 					if (newInfo != null)
 					{
-						thisObject.Add_Browse_Info(newInfo);
+						ThisObject.Add_Browse_Info(newInfo);
 					}
 				}
 			}
@@ -191,45 +191,45 @@ namespace SobekCM.Library.Aggregations
 
 		/// <summary>Reads the item aggregation browse or info file and returns a built <see cref="Item_Aggregation_Browse_Info"/> object for
 		/// inclusion in the item aggregation </summary>
-		/// <param name="fileName"> Filename of the browse or info file</param>
+		/// <param name="FileName"> Filename of the browse or info file</param>
 		/// <param name="Browse_Type"> Flag indicates if this is a browse or info file</param>
-		/// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Built object containing all of the pertinent details about this info or browse </returns>
-		private static Item_Aggregation_Browse_Info Get_Item_Aggregation_Browse_Info( string fileName, Item_Aggregation_Browse_Info.Browse_Info_Type Browse_Type, Custom_Tracer tracer )
+		private static Item_Aggregation_Browse_Info Get_Item_Aggregation_Browse_Info( string FileName, Item_Aggregation_Browse_Info.Browse_Info_Type Browse_Type, Custom_Tracer Tracer )
 		{
-			HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(fileName, false, tracer);
-			Item_Aggregation_Browse_Info returnObject = new Item_Aggregation_Browse_Info(Browse_Type, Item_Aggregation_Browse_Info.Source_Type.Static_HTML, fileContent.Code, fileName, fileContent.Title);
+			HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(FileName, false, Tracer);
+			Item_Aggregation_Browse_Info returnObject = new Item_Aggregation_Browse_Info(Browse_Type, Item_Aggregation_Browse_Info.Source_Type.Static_HTML, fileContent.Code, FileName, fileContent.Title);
 			return returnObject;
 		}
 
 		/// <summary> Finds the home page source file and banner images or html for this item aggregation </summary>
-		/// <param name="thisObject"> Item aggregation to add the home page link and banner html </param>
+		/// <param name="ThisObject"> Item aggregation to add the home page link and banner html </param>
 		/// <remarks>This method is only called if the item aggregation does not have an existing XML configuration file. </remarks>
-		protected static void Add_HTML( Item_Aggregation thisObject )
+		protected static void Add_HTML( Item_Aggregation ThisObject )
 		{
 			// Just use the standard home text
-            if ( File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text.html"))
-    			thisObject.Add_Home_Page_File(  "html/home/text.html", SobekCM_Library_Settings.Default_UI_Language );
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_en.html"))
-                thisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English );
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_fr.html"))
-                thisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_es.html"))
-                thisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "html/home/text_sp.html"))
-                thisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish);
+            if ( File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
+    			ThisObject.Add_Home_Page_File(  "html/home/text.html", SobekCM_Library_Settings.Default_UI_Language );
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_en.html"))
+                ThisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English );
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_fr.html"))
+                ThisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_es.html"))
+                ThisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_sp.html"))
+                ThisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish);
 
 			// Just use the standard banner image
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll.jpg", SobekCM_Library_Settings.Default_UI_Language);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_en.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_en.jpg", Web_Language_Enum.English);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_fr.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Web_Language_Enum.French);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_es.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
-            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + thisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
-                thisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll.jpg"))
+                ThisObject.Add_Banner_Image("images/banners/coll.jpg", SobekCM_Library_Settings.Default_UI_Language);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_en.jpg"))
+                ThisObject.Add_Banner_Image("images/banners/coll_en.jpg", Web_Language_Enum.English);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_fr.jpg"))
+                ThisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Web_Language_Enum.French);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_es.jpg"))
+                ThisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
+            if (File.Exists(SobekCM_Library_Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
+                ThisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
 		}
 	}
 }

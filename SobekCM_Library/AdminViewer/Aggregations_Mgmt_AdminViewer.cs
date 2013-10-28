@@ -111,7 +111,7 @@ namespace SobekCM.Library.AdminViewer
 					if (( user.Is_System_Admin ) && ( delete_aggregation_code.Length > 0))
 					{
 						string delete_error;
-						int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, Tracer, out delete_error);
+						int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, user.Is_System_Admin, user.Full_Name, Tracer, out delete_error);
 						if (errorCode <= 0)
 						{
 							string delete_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
@@ -145,7 +145,7 @@ namespace SobekCM.Library.AdminViewer
                     {
 
                         bool is_active = false;
-                        bool is_hidden = false;
+                        bool is_hidden = true;
 
 
 	                    // Was this to save a new aggregation (from the main page) or edit an existing (from the popup form)?
@@ -169,7 +169,7 @@ namespace SobekCM.Library.AdminViewer
                             temp_object = form["admin_aggr_ishidden"];
                             if (temp_object != null)
                             {
-                                is_hidden = true;
+                                is_hidden = false;
                             }
 
                             // Convert to the integer id for the parent and begin to do checking
@@ -286,7 +286,7 @@ namespace SobekCM.Library.AdminViewer
 									thematicHeadingId = Convert.ToInt32(form["admin_aggr_heading"]);
 
                                 // Try to save the new item aggregation
-								if (SobekCM_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, Tracer))
+								if (SobekCM_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, user.Full_Name, Tracer))
                                 {
                                     // Ensure a folder exists for this, otherwise create one
                                     try
@@ -304,7 +304,7 @@ namespace SobekCM.Library.AdminViewer
 
 		                                    // Create a default home text file
 		                                    StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
-		                                    writer.WriteLine("<br />New collection home page text goes here.<br /><br />To edit this, edit the following file: " + folder + "\\html\\home\\text.html.<br /><br />");
+		                                    writer.WriteLine("<br />New collection home page text goes here.<br /><br />To edit this, log on as the aggregation admin and hover over this text to edit it.<br /><br />");
 		                                    writer.Flush();
 		                                    writer.Close();
 
@@ -317,7 +317,7 @@ namespace SobekCM.Library.AdminViewer
 			                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
 
 		                                    // Now, try to create the item aggregation and write the configuration file
-		                                    Item_Aggregation itemAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, Tracer);
+		                                    Item_Aggregation itemAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, Tracer);
 		                                    itemAggregation.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory);
 	                                    }
                                     }
@@ -418,7 +418,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <td><input class=\"sbkAsav_small_input sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + enteredCode + "\" /></td>");
 	            Output.WriteLine("        <td style=\"width:300px;text-align:right;\">");
 				Output.WriteLine("          <label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
-                Output.WriteLine("          <select class=\"sbkAsav_select\" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
+				Output.WriteLine("          <select class=\"sbkAsav_select \" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
                 if (enteredType == String.Empty)
                     Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
 
@@ -454,7 +454,7 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("      <tr>");
 	            Output.WriteLine("        <td>");
 				Output.WriteLine("          <label for=\"admin_aggr_parent\">Parent:</label></td><td colspan=\"2\">");
-				Output.WriteLine("          <select class=\"sbkAsav_select\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
+				Output.WriteLine("          <select class=\"sbkAsav_select_large\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
                 if (enteredParent == String.Empty)
                     Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations)
@@ -485,7 +485,7 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("      <tr>");
 				Output.WriteLine("        <td><label for=\"admin_aggr_heading\">Thematic Heading:</label></td>");
 				Output.WriteLine("        <td colspan=\"2\">");
-				Output.WriteLine("          <select class=\"admin_aggr_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
+				Output.WriteLine("          <select class=\"sbkAsav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
 				Output.WriteLine("            <option value=\"-1\" selected=\"selected\" ></option>");
 				foreach (Thematic_Heading thisHeading in thematicHeadings)
 				{
@@ -502,19 +502,17 @@ namespace SobekCM.Library.AdminViewer
 
                 // Add checkboxes for is active and is hidden
                 Output.Write(enteredIsActive
-								 ? "          <tr style=\"height:30px\"><td>Behavior:</td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label> "
-								 : "          <tr style=\"height:30px\"><td>Behavior:</td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label> ");
+								 ? "          <tr style=\"height:30px\"><td>Behavior:</td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label></td></tr> "
+								 : "          <tr style=\"height:30px\"><td>Behavior:</td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label></td></tr> ");
 
-                Output.Write("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ");
 
                 Output.Write(enteredIsHidden
-                                 ? "<input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Hidden?</label> "
-                                 : "<input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Hidden?</label> ");
-                Output.WriteLine("</td></tr>");
-
+								 ? "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label></td></tr> "
+								 : "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label></td></tr> ");
+ 
 
 				// Add the SAVE button
-				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 				Output.WriteLine("    </table>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();

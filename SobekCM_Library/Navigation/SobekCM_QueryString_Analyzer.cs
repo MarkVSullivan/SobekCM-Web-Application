@@ -100,20 +100,9 @@ namespace SobekCM.Library.Navigation
 
 			// Is there a language defined?  If so, load right into the navigator
 			Navigator.Language = Navigator.Default_Language;
-			if ( QueryString["l"] != null )
+			if ( !String.IsNullOrEmpty(QueryString["l"]))
 			{
-				if (( QueryString["l"] == "es" ) || ( QueryString["l"] == "sp" ))
-				{
-					Navigator.Language = Web_Language_Enum.Spanish;
-				}
-				if ( QueryString["l"] == "fr" )
-				{
-					Navigator.Language = Web_Language_Enum.French;
-				}
-				if (QueryString["l"] == "en")
-				{
-					Navigator.Language = Web_Language_Enum.English;
-				}
+				Navigator.Language = Web_Language_Enum_Converter.Code_To_Enum(QueryString["l"]);
 			}
 
 			// If there is flag indicating to show the trace route, save it
