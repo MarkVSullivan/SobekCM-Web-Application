@@ -42,12 +42,17 @@ namespace SobekCM.Library.AdminViewer
         ///  <remarks> No html is added here, although some children class override this virtual method to add pop-up form HTML </remarks>
         void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer);
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
+		/// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
+		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+		void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer);
+
+        /// <summary> This is an opportunity to write HTML directly into the main form after any controls are placed </summary>
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer);
+        void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>

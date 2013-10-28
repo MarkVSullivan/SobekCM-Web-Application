@@ -1078,11 +1078,11 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_HTML_In_Main_Form", "");
+                Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
             }
 
             string templateLabel = "Template";

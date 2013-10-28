@@ -561,7 +561,8 @@ namespace SobekCM.Library.MySobekViewer
                 currentMode.My_Sobek_SubMode = String.Empty;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
                 string saved_search_url = currentMode.Redirect_URL();
-                currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                currentMode.Mode = Display_Mode_Enum.Aggregation;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 currentMode.Home_Type = Home_Type_Enum.Personalized;
                 currentMode.Aggregation = String.Empty;
                 string personalized_home = currentMode.Redirect_URL();

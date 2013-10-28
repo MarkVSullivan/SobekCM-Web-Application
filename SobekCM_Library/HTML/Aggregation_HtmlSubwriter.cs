@@ -81,19 +81,33 @@ namespace SobekCM.Library.HTML
             resultsStatistics = Results_Statistics;
             pagedResults = Paged_Results;
 
+			// Check to see if the user should be able to edit the home page
+			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+			{
+				if ( currentUser == null )
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+				else
+				{
+					if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (!currentUser.Is_Aggregation_Admin(Hierarchy_Object.Code)))
+					{
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+					}
+				}
+			}
+
             NameValueCollection form = HttpContext.Current.Request.Form;
             if (form["item_action"] != null)
             {
                 string action = form["item_action"].ToLower().Trim();
 
-                if (action == "add_aggregation")
+                if ((action == "add_aggregation") && ( currentUser != null ))
                 {
                     SobekCM_Database.User_Set_Aggregation_Home_Page_Flag(currentUser.UserID, base.Hierarchy_Object.Aggregation_ID, true, Tracer);
                     currentUser.Set_Aggregation_Home_Page_Flag(base.Hierarchy_Object.Code, base.Hierarchy_Object.Name, true);
                     HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Added aggregation to your home page");
                 }
 
-                if (action == "remove_aggregation")
+                if (( action == "remove_aggregation") && ( currentUser != null ))
                 {
                     int removeAggregationID = base.Hierarchy_Object.Aggregation_ID;
                     string remove_code = base.Hierarchy_Object.Code;
@@ -118,7 +132,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (action == "private_folder")
+                if ((action == "private_folder") && ( currentUser != null ))
                 {
                     User_Folder thisFolder = currentUser.Get_Folder(form["aggregation"]);
                     if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, currentUser.UserID, -1, thisFolder.Folder_Name, false, String.Empty, Tracer) >= 0)
@@ -126,7 +140,7 @@ namespace SobekCM.Library.HTML
                 }
 
 
-                if (action == "email")
+                if ((action == "email") && ( currentUser != null ))
                 {
                     string address = form["email_address"].Replace(";", ",").Trim();
                     string comments = form["email_comments"].Trim();
@@ -161,6 +175,37 @@ namespace SobekCM.Library.HTML
                     }
                 }
             }
+
+			if (( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( form["sbkAghsw_HomeTextEdit"] != null))
+			{
+				string aggregation_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + Hierarchy_Object.Code + "\\";
+				string file = aggregation_folder + Hierarchy_Object.Home_Page_File(currentMode.Language);
+
+				// Make a backup from today, if none made yet
+				if (File.Exists(file))
+				{
+					string new_file = file.ToLower().Replace(".txt", "").Replace(".html", "").Replace(".htm", "") + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString() + ".bak";
+					if ( !File.Exists(new_file))
+						File.Move(file, new_file);
+				}
+
+				// Write to the file now
+				StreamWriter homeWriter = new StreamWriter(file, false);
+				homeWriter.WriteLine(form["sbkAghsw_HomeTextEdit"]);
+				homeWriter.Flush();
+				homeWriter.Close();
+
+				// Clear this aggreation from the cache
+				Cached_Data_Manager.Remove_Item_Aggregation(Hierarchy_Object.Code, Tracer);
+
+				// Force the next page to refresh
+				HttpContext.Current.Session["REFRESH"] = true;
+
+				// Forward along
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+				currentMode.Redirect();
+				return;
+			}
             
             // If this is a search, verify it is a valid search type
             if (currentMode.Mode == Display_Mode_Enum.Search)
@@ -191,7 +236,8 @@ namespace SobekCM.Library.HTML
 
                     if ( !found_valid )
                     {
-                        currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+						currentMode.Mode = Display_Mode_Enum.Aggregation;
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     }
                 }
             }
@@ -201,53 +247,48 @@ namespace SobekCM.Library.HTML
                 collectionViewer = AggregationViewer_Factory.Get_Viewer(currentMode.Search_Type, base.Hierarchy_Object, currentMode, currentUser);
             }
 
+			if (currentMode.Mode == Display_Mode_Enum.Aggregation)
+			{
+				switch (currentMode.Aggregation_Type)
+				{
+					case Aggregation_Type_Enum.Home:
+					case Aggregation_Type_Enum.Home_Edit:
+						collectionViewer = AggregationViewer_Factory.Get_Viewer(base.Hierarchy_Object.Views_And_Searches[0], base.Hierarchy_Object, currentMode);
+						break;
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
-            {
-                collectionViewer = AggregationViewer_Factory.Get_Viewer(base.Hierarchy_Object.Views_And_Searches[0], base.Hierarchy_Object, currentMode);
-            }
+					case Aggregation_Type_Enum.Browse_Info:
+						if (resultsStatistics == null)
+						{
+							collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject);
+						}
+						else
+						{
+							collectionViewer = new DataSet_Browse_Info_AggregationViewer(thisBrowseObject, resultsStatistics, pagedResults, codeManager, itemList, currentUser);
+						}
+						break;
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info)
-            {
-                if ( resultsStatistics == null )
-                {
-                    collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject);
-                }
-                else
-                {
-                    collectionViewer = new DataSet_Browse_Info_AggregationViewer(thisBrowseObject, resultsStatistics, pagedResults, codeManager, itemList, currentUser );
-                }
-            }
+					case Aggregation_Type_Enum.Browse_By:
+						collectionViewer = new Metadata_Browse_AggregationViewer(Current_Mode, Hierarchy_Object, Tracer);
+						break;
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_By)
-            {
-                collectionViewer = new Metadata_Browse_AggregationViewer( Current_Mode, Hierarchy_Object, Tracer );
-            }
+					case Aggregation_Type_Enum.Browse_Map:
+						collectionViewer = new Map_Browse_AggregationViewer(Current_Mode, Hierarchy_Object, Tracer);
+						break;
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Map)
-            {
-                collectionViewer = new Map_Browse_AggregationViewer(Current_Mode, Hierarchy_Object, Tracer);
-            }
+					case Aggregation_Type_Enum.Item_Count:
+						collectionViewer = new Item_Count_AggregationViewer(Current_Mode, Hierarchy_Object);
+						break;
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Item_Count)
-            {
-                collectionViewer = new Item_Count_AggregationViewer(Current_Mode, Hierarchy_Object);
-            }
+					case Aggregation_Type_Enum.Usage_Statistics:
+						collectionViewer = new Usage_Statistics_AggregationViewer(Current_Mode, Hierarchy_Object);
+						break;
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Usage_Statistics)
-            {
-                collectionViewer = new Usage_Statistics_AggregationViewer(Current_Mode, Hierarchy_Object);
-            }
+					case Aggregation_Type_Enum.Private_Items:
+						collectionViewer = new Private_Items_AggregationViewer(Current_Mode, Hierarchy_Object, Tracer);
+						break;
+				}
+			}
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Private_Items)
-            {
-                collectionViewer = new Private_Items_AggregationViewer(Current_Mode, Hierarchy_Object, Tracer);
-            }
-
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Admin_View)
-            {
-                collectionViewer = new Admin_AggregationViewer(Hierarchy_Object);
-            }
 
             // If execution should end, do it now
             if (currentMode.Request_Completed)
@@ -309,11 +350,16 @@ namespace SobekCM.Library.HTML
             // Based on display mode, add ROBOT instructions
             switch (currentMode.Mode)
             {
-                case Display_Mode_Enum.Aggregation_Home:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
                 case Display_Mode_Enum.Search:
                     Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
                     break;
+
+				case Display_Mode_Enum.Aggregation:
+					if (( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home ) || ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
+						Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+					else
+						Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+		            break;
 
                 default:
                     Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
@@ -321,10 +367,22 @@ namespace SobekCM.Library.HTML
             }
 
             // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
+            if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
             {
                 Output.WriteLine("  <link rel=\"search\" href=\"" + currentMode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + currentMode.SobekCM_Instance_Abbreviation + " Search\" />");
             }
+
+			// If this is to edit the home page, add the html editor
+	        if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+	        {
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+		        Output.WriteLine("  <script type=\"text/javascript\">");
+				Output.WriteLine("    $(document).ready(function () { $(\"#sbkAghsw_HomeTextEdit\").cleditor({height:400}); });");
+		        Output.WriteLine("  </script>");
+	        }
         }
 
 
@@ -333,35 +391,39 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                switch (currentMode.Mode)
-                {
-                    case Display_Mode_Enum.Aggregation_Home:
-                        if (Hierarchy_Object != null)
-                        {
-                            return (Hierarchy_Object.Code == "ALL") ? "{0} Home" : "{0} Home - " + Hierarchy_Object.Name;
-                        }
-                        return "{0} Home";
+	            if (currentMode.Mode == Display_Mode_Enum.Search)
+	            {
+		            return (Hierarchy_Object != null) ? "{0} Search - " + Hierarchy_Object.Name : "{0} Search";
+	            }
+	            
+				if (currentMode.Mode == Display_Mode_Enum.Aggregation)
+	            {
+		            switch (currentMode.Aggregation_Type)
+		            {
+			            case Aggregation_Type_Enum.Home:
+				            if (Hierarchy_Object != null)
+				            {
+					            return (Hierarchy_Object.Code == "ALL") ? "{0} Home" : "{0} Home - " + Hierarchy_Object.Name;
+				            }
+				            return "{0} Home";
 
-                    case Display_Mode_Enum.Search:
-                        return (Hierarchy_Object != null) ? "{0} Search - " + Hierarchy_Object.Name : "{0} Search";
+			            case Aggregation_Type_Enum.Browse_Info:
+				            if (Hierarchy_Object != null)
+				            {
+					            return "{0} - " + Hierarchy_Object.Name;
+				            }
+				            break;
 
-                    case Display_Mode_Enum.Aggregation_Browse_Info:
-                        if (Hierarchy_Object != null)
-                        {
-                            return "{0} - " + Hierarchy_Object.Name;
-                        }
-                        break;
+						case Aggregation_Type_Enum.Browse_By:
+						case Aggregation_Type_Enum.Browse_Map:
+						case Aggregation_Type_Enum.Private_Items:
+						case Aggregation_Type_Enum.Item_Count:
+						case Aggregation_Type_Enum.Usage_Statistics:
+				            return "{0} - " + Hierarchy_Object.Name;
+		            }
+	            }
 
-                    case Display_Mode_Enum.Aggregation_Browse_By:
-                    case Display_Mode_Enum.Aggregation_Browse_Map:
-                    case Display_Mode_Enum.Aggregation_Private_Items:
-                    case Display_Mode_Enum.Aggregation_Item_Count:
-                    case Display_Mode_Enum.Aggregation_Usage_Statistics:
-                    case Display_Mode_Enum.Aggregation_Admin_View:
-                        return "{0} - " + Hierarchy_Object.Name;
-                }
-
-                // default
+	            // default
                 return (Hierarchy_Object != null) ? "{0} - " + Hierarchy_Object.Name : "{0}";
             }
         }
@@ -373,28 +435,29 @@ namespace SobekCM.Library.HTML
             get
             {
                 List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+	            if (currentMode.Mode == Display_Mode_Enum.Search)
+	            {
+		            if (currentMode.Search_Type == Search_Type_Enum.Map)
+		            {
+			            returnValue.Add(new Tuple<string, string>("onload", "load();"));
+		            }
+				}
+				else if (currentMode.Mode == Display_Mode_Enum.Aggregation)
+				{
+					switch (currentMode.Aggregation_Type)
+					{
+						case Aggregation_Type_Enum.Browse_Info:
+							if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
+							{
+								returnValue.Add(new Tuple<string, string>("onload", "load();"));
+							}
+							break;
 
-                switch (currentMode.Mode)
-                {
-                    case Display_Mode_Enum.Aggregation_Browse_Info:
-                        if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
-                        {
-                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Search:
-                        if (currentMode.Search_Type == Search_Type_Enum.Map)
-                        {
-                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
-
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Aggregation_Browse_Map:
-                        returnValue.Add(new Tuple<string, string>("onload", "load();"));
-                        break;
-                }
+						case Aggregation_Type_Enum.Browse_Map:
+							returnValue.Add(new Tuple<string, string>("onload", "load();"));
+							break;
+					}
+				}
 
                 return returnValue;
             }
@@ -408,7 +471,21 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
-            if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
+			// Force a refresh?
+	        if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
+	        {
+		        Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
+		        if ((refreshFlag.HasValue) && (refreshFlag.Value))
+		        {
+			        HttpContext.Current.Session["REFRESH"] = null;
+			        Output.WriteLine("  <script type=\"text/javascript\">");
+			        Output.WriteLine("    history.go(0);");
+			        Output.WriteLine("  </script>");
+		        }
+	        }
+
+
+	        if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
             {
                 Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader_aggr\">");
                 Output.WriteLine("    <tr height=\"45px\">");
@@ -420,18 +497,20 @@ namespace SobekCM.Library.HTML
 
                 // Add button to view private items
                 Display_Mode_Enum displayMode = currentMode.Mode;
+	            Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
                 string submode = currentMode.Info_Browse_Mode;
 
-                currentMode.Mode = Display_Mode_Enum.Aggregation_Private_Items;
+				currentMode.Mode = Display_Mode_Enum.Aggregation;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Private_Items;
                 currentMode.Info_Browse_Mode = String.Empty;
                 Output.WriteLine("          <button title=\"View Private Items\" class=\"intheader_button_aggr view_private_items\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
 
                 // Add button to view item count information
-                currentMode.Mode = Display_Mode_Enum.Aggregation_Item_Count;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Item_Count;
                 Output.WriteLine("          <button title=\"View Item Count\" class=\"intheader_button_aggr show_item_count\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                 // Add button to view usage statistics information
-                currentMode.Mode = Display_Mode_Enum.Aggregation_Usage_Statistics;
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Usage_Statistics;
                 Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 
                 // Add admin view is system administrator
@@ -441,15 +520,12 @@ namespace SobekCM.Library.HTML
                     currentMode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
                     Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
                 }
-                else
-                {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Admin_View;
-                    Output.WriteLine("          <button title=\"View Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\" ></button>");
-                }
+
                 Output.WriteLine("      </td>");
 
                 currentMode.Info_Browse_Mode = submode;
                 currentMode.Mode = displayMode;
+	            currentMode.Aggregation_Type = aggrType;
 
                 // Add the HELP icon next
                 Output.WriteLine("      <td align=\"left\" width=\"30px\">");
@@ -494,7 +570,7 @@ namespace SobekCM.Library.HTML
             }
 
             // If this is the map browse, end the page container here
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Map)
+            if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map))
                 Output.WriteLine("</div>");
 
             // Is there a script to be included?
@@ -516,7 +592,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 const string FORM_NAME = "search_form";
-                if (currentMode.Mode == Display_Mode_Enum.Aggregation_Home)
+                if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && (( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home ) || ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit )))
                 {
                     // Determine the number of columns for text areas, depending on browser
                     int actual_cols = 50;
@@ -611,7 +687,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    if (currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Map)
+                    if (( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map ))
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
                 }
 
@@ -629,7 +705,7 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     collectionViewer.Add_Search_Box_HTML(Output, Tracer);
-                    Output.WriteLine(currentMode.Mode != Display_Mode_Enum.Aggregation_Browse_Map ? "</div>" : "<div id=\"pagecontainer_resumed\">");
+                    Output.WriteLine((( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map )) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
                 }
 
                 Output.WriteLine();
@@ -640,7 +716,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Prepare to add the collection selector information, but first, check to see if this the main home page
-            bool sobekcm_main_home_page = (currentMode.Mode == Display_Mode_Enum.Aggregation_Home) && (Hierarchy_Object.Code == "all");
+            bool sobekcm_main_home_page = ( currentMode.Mode == Display_Mode_Enum.Aggregation ) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) && (Hierarchy_Object.Code == "all");
 
             // Add the collection selector, if it ever appears here
             if ((!sobekcm_main_home_page) && (collectionViewer.Selection_Panel_Display != Selection_Panel_Display_Enum.Never) && (Hierarchy_Object.Children_Count > 0))
@@ -737,10 +813,12 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("  <br />");
 
                     Display_Mode_Enum lastDisplayMode = currentMode.Mode;
+	                Aggregation_Type_Enum lastAggrType = currentMode.Aggregation_Type;
                     string thisAggr = currentMode.Aggregation;
                     string thisAlias = currentMode.Aggregation_Alias;
                     currentMode.Aggregation_Alias = String.Empty;
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     foreach (Item_Aggregation_Related_Aggregations t in child_aggregations)
                     {
                         if ((t.Active) && (!t.Hidden))
@@ -758,6 +836,7 @@ namespace SobekCM.Library.HTML
                     currentMode.Aggregation = thisAggr;
                     currentMode.Aggregation_Alias = thisAlias;
                     currentMode.Mode = lastDisplayMode;
+	                currentMode.Aggregation_Type = lastAggrType;
                     Output.WriteLine("</div>");
                 }
             }
@@ -768,7 +847,7 @@ namespace SobekCM.Library.HTML
 
             // Add the secondary HTML ot the home page
             bool finish_page = true;
-            if ((currentMode.Mode == Display_Mode_Enum.Aggregation_Home) || (collectionViewer.Always_Display_Home_Text))
+            if (((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home )) || (collectionViewer.Always_Display_Home_Text))
             {
                 finish_page = add_home_html(Output, Tracer);
             }
@@ -777,7 +856,7 @@ namespace SobekCM.Library.HTML
                 collectionViewer.Add_Secondary_HTML(Output, Tracer);
             }
 
-            if (currentMode.Mode == Display_Mode_Enum.Aggregation_Browse_Info)
+            if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
             {
                 if (resultsStatistics != null)
                     finish_page = false;
@@ -827,10 +906,11 @@ namespace SobekCM.Library.HTML
 
             // Save the current mode and browse
             Display_Mode_Enum thisMode = currentMode.Mode;
+	        Aggregation_Type_Enum thisAggrType = currentMode.Aggregation_Type;
             Search_Type_Enum thisSearch = currentMode.Search_Type;
             Home_Type_Enum thisHomeType = currentMode.Home_Type;
             string browse_code = currentMode.Info_Browse_Mode;
-            if (thisMode == Display_Mode_Enum.Aggregation_Browse_Info)
+            if (( thisMode == Display_Mode_Enum.Aggregation ) && ( thisAggrType == Aggregation_Type_Enum.Browse_Info ))
             {
                 browse_code = currentMode.Info_Browse_Mode;
             }
@@ -866,7 +946,7 @@ namespace SobekCM.Library.HTML
             // Add the HOME tab
             if (Hierarchy_Object.Code == "all")
             {
-                if (((currentMode.Mode == Display_Mode_Enum.Aggregation_Home) && (currentMode.Home_Type != Home_Type_Enum.Personalized) && (currentMode.Home_Type != Home_Type_Enum.Partners_List) && (currentMode.Home_Type != Home_Type_Enum.Partners_Thumbnails)) ||
+                if (((currentMode.Mode == Display_Mode_Enum.Aggregation) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home ) && (currentMode.Home_Type != Home_Type_Enum.Personalized) && (currentMode.Home_Type != Home_Type_Enum.Partners_List) && (currentMode.Home_Type != Home_Type_Enum.Partners_Thumbnails)) ||
                     ((currentMode.Mode == Display_Mode_Enum.Search) &&
                      (Aggregation_Nav_Bar_HTML_Factory.Do_Search_Types_Match(homeView, currentMode.Search_Type))))
                 {
@@ -874,14 +954,15 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+					currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     currentMode.Home_Type = Home_Type_Enum.List;
                     Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + libraryHome + unselected_end + "</a>");
                 }
             }
             else
             {
-                if ((currentMode.Mode == Display_Mode_Enum.Aggregation_Home) ||
+                if (((currentMode.Mode == Display_Mode_Enum.Aggregation) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home )) ||
                     ((currentMode.Mode == Display_Mode_Enum.Search) &&
                      (Aggregation_Nav_Bar_HTML_Factory.Do_Search_Types_Match(homeView, currentMode.Search_Type))))
                 {
@@ -889,7 +970,8 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+					currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     currentMode.Home_Type = Home_Type_Enum.List;
                     Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + home + unselected_end + "</a>");
                 }
@@ -908,13 +990,14 @@ namespace SobekCM.Library.HTML
             // Check for the existence of any BROWSE BY pages
             if (Hierarchy_Object.Has_Browse_By_Pages)
             {
-                if ((thisMode == Display_Mode_Enum.Aggregation_Browse_By) || ( currentMode.Is_Robot ))
+                if ((( thisMode == Display_Mode_Enum.Aggregation ) && ( thisAggrType == Aggregation_Type_Enum.Browse_By )) || ( currentMode.Is_Robot ))
                 {
                     Output.WriteLine("  " + unselected_start + browseBy + unselected_end);
                 }
                 else
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_By;
+					currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
                     currentMode.Info_Browse_Mode = String.Empty;
                     Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + browseBy + unselected_end + "</a>");
                 }
@@ -923,20 +1006,22 @@ namespace SobekCM.Library.HTML
             // Check for the existence of any MAP BROWSE pages
             if (Hierarchy_Object.Views_And_Searches.Contains( Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Browse ))
             {
-                if (thisMode == Display_Mode_Enum.Aggregation_Browse_Map)
+                if (( thisMode == Display_Mode_Enum.Aggregation ) && ( thisAggrType == Aggregation_Type_Enum.Browse_Map ))
                 {
                     Output.WriteLine("  " + selected_start + BROWSE_MAP + selected_end);
                 }
                 else
                 {
-                    currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Map;
+					currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Map;
                     currentMode.Info_Browse_Mode = String.Empty;
                     Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + BROWSE_MAP + unselected_end + "</a>");
                 }
             }
 
             // Add all the BROWSES
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 
             // Find the URL for all these browses
             currentMode.Info_Browse_Mode = "XYXYXYXYXY";
@@ -1009,7 +1094,8 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+						currentMode.Mode = Display_Mode_Enum.Aggregation;
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                         currentMode.Home_Type = Home_Type_Enum.Personalized;
                         Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + myCollections + unselected_end + "</a>");
                     }
@@ -1042,7 +1128,8 @@ namespace SobekCM.Library.HTML
                     // Is this library set to show the partners tab?
                     if ( SobekCM_Library_Settings.Include_Partners_On_System_Home )
                     {
-                        currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+	                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                         currentMode.Home_Type = Home_Type_Enum.Partners_List;
                         Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + unselected_start + partners + unselected_end + "</a>");
                     }
@@ -1055,6 +1142,7 @@ namespace SobekCM.Library.HTML
 
             // Return the code and mode back
             currentMode.Info_Browse_Mode = browse_code;
+	        currentMode.Aggregation_Type = thisAggrType;
             currentMode.Search_Type = thisSearch;
             currentMode.Mode = thisMode;
             currentMode.Home_Type = thisHomeType;
@@ -1192,61 +1280,107 @@ namespace SobekCM.Library.HTML
                     urlOptions2 = "&" + url_options;
                 }
 
-                // Add the highlights
-                if ((Hierarchy_Object.Highlights.Count > 0) && (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
-                {
-                    Output.WriteLine(Hierarchy_Object.Highlights[0].ToHTML(currentMode.Language, currentMode.Base_Design_URL + Hierarchy_Object.ObjDirectory).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
-                }
+				// Get the raw home hteml text
+				string home_html = Hierarchy_Object.Get_Home_HTML(currentMode.Language, Tracer);
 
-                // Get the raw home hteml text
-                string home_html = Hierarchy_Object.Get_Home_HTML(currentMode.Language, Tracer);
+	            bool isAdmin = (currentUser != null ) && ( currentUser.Is_Aggregation_Admin(Hierarchy_Object.Code));
 
-                // Determine the different counts as strings and replace if they exist
-                if ((home_html.Contains("<%PAGES%>")) || (home_html.Contains("<%TITLES%>")) || (home_html.Contains("<%ITEMS%>")))
-                {
-                    if ((Hierarchy_Object.Page_Count < 0) && (Hierarchy_Object.Item_Count < 0) && (Hierarchy_Object.Title_Count < 0))
-                    {
-                        if ((!currentMode.Is_Robot) && (SobekCM_Database.Get_Item_Aggregation_Counts(Hierarchy_Object, Tracer)))
-                        {
-                            Cached_Data_Manager.Store_Item_Aggregation(Hierarchy_Object.Code, currentMode.Language_Code, Hierarchy_Object, Tracer);
+	            if (( isAdmin ) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+	            {
+					string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+					Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
+					Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
+					Output.WriteLine(home_html);
+					Output.WriteLine("  </textarea>");
+					Output.WriteLine();
 
-                            string page_count = Int_To_Comma_String(Hierarchy_Object.Page_Count);
-                            string item_count = Int_To_Comma_String(Hierarchy_Object.Item_Count);
-                            string title_count = Int_To_Comma_String(Hierarchy_Object.Title_Count);
+					Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
+					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+					Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+					Output.WriteLine(" <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+					Output.WriteLine("</div>");
+					Output.WriteLine("</form>");
+					Output.WriteLine("<br /><br />");
+					Output.WriteLine();
 
-                            home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
-                        }
-                        else
-                        {
-                            home_html = home_html.Replace("<%PAGES%>", String.Empty).Replace("<%ITEMS%>", String.Empty).Replace("<%TITLES%>", String.Empty);
-                        }
-                    }
-                    else
-                    {
-                        string page_count = Int_To_Comma_String(Hierarchy_Object.Page_Count);
-                        string item_count = Int_To_Comma_String(Hierarchy_Object.Item_Count);
-                        string title_count = Int_To_Comma_String(Hierarchy_Object.Title_Count);
+	            }
+	            else
+	            {
 
-                        home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
-                    }
-                }
+		            // Add the highlights
+		            if ((Hierarchy_Object.Highlights.Count > 0) && (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
+		            {
+			            Output.WriteLine(Hierarchy_Object.Highlights[0].ToHTML(currentMode.Language, currentMode.Base_Design_URL + Hierarchy_Object.ObjDirectory).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+		            }
 
-                // Replace any item aggregation specific custom directives
-                string original_home = home_html;
-                home_html = Hierarchy_Object.Custom_Directives.Keys.Where(original_home.Contains).Aggregate(home_html, (current, thisKey) => current.Replace(thisKey, Hierarchy_Object.Custom_Directives[thisKey].Replacement_HTML));
+		            // Determine the different counts as strings and replace if they exist
+		            if ((home_html.Contains("<%PAGES%>")) || (home_html.Contains("<%TITLES%>")) || (home_html.Contains("<%ITEMS%>")))
+		            {
+			            if ((Hierarchy_Object.Page_Count < 0) && (Hierarchy_Object.Item_Count < 0) && (Hierarchy_Object.Title_Count < 0))
+			            {
+				            if ((!currentMode.Is_Robot) && (SobekCM_Database.Get_Item_Aggregation_Counts(Hierarchy_Object, Tracer)))
+				            {
+					            Cached_Data_Manager.Store_Item_Aggregation(Hierarchy_Object.Code, currentMode.Language_Code, Hierarchy_Object, Tracer);
 
-                // Replace any standard directives last
-                home_html = home_html.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2);
+					            string page_count = Int_To_Comma_String(Hierarchy_Object.Page_Count);
+					            string item_count = Int_To_Comma_String(Hierarchy_Object.Item_Count);
+					            string title_count = Int_To_Comma_String(Hierarchy_Object.Title_Count);
 
-                // Output the adjusted home html
-                Output.WriteLine(home_html);
+					            home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+				            }
+				            else
+				            {
+					            home_html = home_html.Replace("<%PAGES%>", String.Empty).Replace("<%ITEMS%>", String.Empty).Replace("<%TITLES%>", String.Empty);
+				            }
+			            }
+			            else
+			            {
+				            string page_count = Int_To_Comma_String(Hierarchy_Object.Page_Count);
+				            string item_count = Int_To_Comma_String(Hierarchy_Object.Item_Count);
+				            string title_count = Int_To_Comma_String(Hierarchy_Object.Title_Count);
 
-                // If there are sub aggregations here, show them
+				            home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+			            }
+		            }
+
+		            // Replace any item aggregation specific custom directives
+		            string original_home = home_html;
+		            home_html = Hierarchy_Object.Custom_Directives.Keys.Where(original_home.Contains).Aggregate(home_html, (Current, ThisKey) => Current.Replace(ThisKey, Hierarchy_Object.Custom_Directives[ThisKey].Replacement_HTML));
+
+		            // Replace any standard directives last
+		            home_html = home_html.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2);
+
+		            // Output the adjusted home html
+		            if (isAdmin)
+		            {
+						Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
+			            Output.WriteLine(home_html);
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+						Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this home text\"><img src=\"" + currentMode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+						Output.WriteLine("</div>");
+						Output.WriteLine();
+
+						Output.WriteLine("<script>");
+						Output.WriteLine("  $(\"#sbkAghsw_EditableHome\").mouseover(function() { $(\"#sbkAghsw_EditableHomeLink\").css(\"display\",\"inline-block\"); });");
+						Output.WriteLine("  $(\"#sbkAghsw_EditableHome\").mouseout(function() { $(\"#sbkAghsw_EditableHomeLink\").css(\"display\",\"none\"); });");
+						Output.WriteLine("</script>");
+						Output.WriteLine();
+		            }
+		            else
+		            {
+						Output.WriteLine("<div id=\"sbkAghsw_Home\">");
+						Output.WriteLine(home_html);
+						Output.WriteLine("</div>");
+		            }
+	            }
+
+	            // If there are sub aggregations here, show them
                 if (Hierarchy_Object.Children_Count > 0)
                 {
                     // Get the list of all aggregation types
                     SortedList<string, string> aggregationTypes = new SortedList<string, string>();
-                    foreach (Item_Aggregation_Related_Aggregations childAggr in Hierarchy_Object.Children.Where(childAggr => (!childAggr.Hidden) && (childAggr.Active)).Where(childAggr => !aggregationTypes.ContainsKey(childAggr.Type.ToUpper() + "S")))
+                    foreach (Item_Aggregation_Related_Aggregations childAggr in Hierarchy_Object.Children.Where(ChildAggr => (!ChildAggr.Hidden) && (ChildAggr.Active)).Where(ChildAggr => !aggregationTypes.ContainsKey(ChildAggr.Type.ToUpper() + "S")))
                     {
                         aggregationTypes.Add(childAggr.Type.ToUpper() + "S", childAggr.Type.ToUpper() + "S");
                     }
@@ -1254,8 +1388,6 @@ namespace SobekCM.Library.HTML
                     // If all children were hidden, no need to continnue
                     if (aggregationTypes.Count > 0)
                     {
-                        Output.WriteLine("<br />");
-
                         // Add the gray bar first
                         Output.Write("<h2>");
                         if (aggregationTypes.Count == 1)
@@ -1263,7 +1395,7 @@ namespace SobekCM.Library.HTML
                             // Write the name of the sub aggregations
                             StringBuilder aggregationTypeBuilder = new StringBuilder(30);
                             string[] splitter = aggregationTypes.Keys[0].Trim().Split(" ".ToCharArray());
-                            foreach (string thisSplit in splitter.Where(thisSplit => thisSplit.Length > 0))
+                            foreach (string thisSplit in splitter.Where(ThisSplit => ThisSplit.Length > 0))
                             {
                                 if (thisSplit.Length == 1)
                                 {
@@ -1417,7 +1549,7 @@ namespace SobekCM.Library.HTML
                     bool aggrsLinkedToThemes = false;
                     if ((!SobekCM_Library_Settings.Include_TreeView_On_System_Home) && ( thematicHeadings.Count > 0 ))
                     {
-                        if (thematicHeadings.Any(thisTheme => codeManager.Aggregations_By_ThemeID(thisTheme.ThematicHeadingID).Count > 0))
+                        if (thematicHeadings.Any(ThisTheme => codeManager.Aggregations_By_ThemeID(ThisTheme.ThematicHeadingID).Count > 0))
                         {
                             aggrsLinkedToThemes = true;
                         } 
@@ -1540,13 +1672,13 @@ namespace SobekCM.Library.HTML
             return true;
         }
 
-        private string Int_To_Comma_String(int value)
+        private string Int_To_Comma_String(int Value)
         {
-            if (value < 1000)
-                return value.ToString();
+            if (Value < 1000)
+                return Value.ToString();
 
-            string value_string = value.ToString();
-            if ((value >= 1000) && (value < 1000000))
+            string value_string = Value.ToString();
+            if ((Value >= 1000) && (Value < 1000000))
             {
                 return value_string.Substring(0, value_string.Length - 3) + "," + value_string.Substring(value_string.Length - 3);
             }
@@ -1558,11 +1690,11 @@ namespace SobekCM.Library.HTML
 
         #region Method to create the tree view
 
-        private void Create_TreeView_From_Collections(TreeView treeView1)
+        private void Create_TreeView_From_Collections(TreeView TreeView1)
         {
             // Save the current home type
             TreeNode rootNode = new TreeNode("Collection Hierarchy") {SelectAction = TreeNodeSelectAction.None};
-            treeView1.Nodes.Add(rootNode);
+            TreeView1.Nodes.Add(rootNode);
 
             // Step through each node under this
             SortedList<string, TreeNode> sorted_node_list = new SortedList<string, TreeNode>();
@@ -1611,11 +1743,11 @@ namespace SobekCM.Library.HTML
 
             if ((currentMode.Home_Type == Home_Type_Enum.Tree_Expanded) || ( currentMode.Is_Robot ))
             {
-                treeView1.ExpandAll();
+                TreeView1.ExpandAll();
             }
             else
             {
-                treeView1.CollapseAll();
+                TreeView1.CollapseAll();
                 rootNode.Expand();
             }
         }
@@ -1875,7 +2007,7 @@ namespace SobekCM.Library.HTML
             // Build the list of html to display, first adding collections and subcollections
             SortedList<string, string> html_list = new SortedList<string, string>();
 
-            foreach (User_Editable_Aggregation thisAggregation in currentUser.Aggregations.Where(thisAggregation => thisAggregation.OnHomePage))
+            foreach (User_Editable_Aggregation thisAggregation in currentUser.Aggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
             {
                 currentMode.Aggregation = thisAggregation.Code.ToLower();
                 string image_url = currentMode.Base_URL + "design/aggregations/" + thisAggregation.Code + "/images/buttons/coll.gif";
@@ -1956,7 +2088,7 @@ namespace SobekCM.Library.HTML
             currentMode.Mode = Display_Mode_Enum.Public_Folder;
             currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
             currentMode.Aggregation = String.Empty;
-            foreach (User_Folder thisFolder in currentUser.All_Folders.Where(thisFolder => thisFolder.isPublic))
+            foreach (User_Folder thisFolder in currentUser.All_Folders.Where(ThisFolder => ThisFolder.isPublic))
             {
                 currentMode.FolderID = thisFolder.Folder_ID;
                 if ((thisFolder.Folder_Name.IndexOf("The ") == 0) && (thisFolder.Folder_Name.Length > 4))
@@ -1968,7 +2100,8 @@ namespace SobekCM.Library.HTML
                     public_folder_list[thisFolder.Folder_Name] = "    <td align=\"left\" width=\"203px\">" + Environment.NewLine + "      <span class=\"homePageCollectionButtonLeft2\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "default/images/closed_folder_public_big.jpg\" alt=\"" + thisFolder.Folder_Name.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"SobekMainButtons\"><a href=\"" + currentMode.Redirect_URL() + "\">" + thisFolder.Folder_Name.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a><br /><span class=\"MyHomeActionLink\" >( <a href=\"\" onclick=\"return make_folder_private('" + thisFolder.Folder_Name.Replace("&", "&amp;").Replace("\"", "&quot;") + "');\">make private</a> )</span></span>" + Environment.NewLine + "    </td>";
                 }
             }
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 
             // if there were any public folders
             if (public_folder_list.Count > 0)
@@ -2025,7 +2158,8 @@ namespace SobekCM.Library.HTML
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
             Output.WriteLine("    <td align=\"left\" width=\"203px\">" + Environment.NewLine + "      <span class=\"homePageCollectionButtonLeft2\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "default/images/saved_searches_big.gif\" alt=\"Go to my saved searches\" /></a></span>" + Environment.NewLine + "      <span class=\"SobekMainButtons\"><a href=\"" + currentMode.Redirect_URL() + "\">My Saved Searches</a></span>" + Environment.NewLine + "    </td>");
 
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 
             Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");

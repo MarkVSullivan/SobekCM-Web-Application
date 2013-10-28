@@ -87,7 +87,7 @@ textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f
 .sbkAsav_small_input { width: 120px; margin-right: 40px; margin-top: 2px; margin-bottom: 4px;  }
 select.sbkAsav_select { width: 155px; margin-right: 38px; margin-top: 2px; margin-bottom: 4px; }
 select.sbkAsav_select_large { width: 470px; margin-right: 16px; margin-top: 2px; margin-bottom: 4px;  }
-input.sbkAsav_large_input  { width: 466px; margin-top: 2px; margin-bottom: 0px;  }
+input.sbkAsav_large_input  { width: 466px; margin-top: 2px; margin-bottom: 0;  }
 textarea.sbkAsav_input  { width: 466px; margin-top:2px;margin-bottom: 4px; FONT-FAMILY: Arial, sans-serif; font-size: small;}
 input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 .sbkAsav_List { padding: 0 0 30px 70px; list-style-type: none;}
@@ -97,6 +97,49 @@ input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 .sbkAsav_TableHeader2 { width: 120px; }
 .sbkAsav_TableTitleRow { background-color:#7d90d5;color: white;font-weight: bold;}
 .sbkAsav_TableTitleRow td { padding-left: 10px; }
+
+/** Aggregations_Single_AdminViewer  **/
+#sbkSaav_ContainerInner { margin: 0 auto; padding:0; width: 1100px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+#sbkSaav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;  }
+.sbkSaav_HomeText  { padding-left: 50px; padding-bottom: 5px;text-align: left;}
+.sbkSaav_HomeText a:link { color:#000080; }
+.sbkSaav_HomeText a:hover { color:Blue; text-decoration:underline; }
+.sbkSaav_ButtonsDiv { float: right;padding-top: 30px;padding-right: 45px; }
+.sbkSaav_TitleRow { font-size: 1.1em; color: #888888; font-weight: bold;}
+.sbkSaav_TitleRow2 { font-size: 1.1em; color: #888888; font-weight: bold; }
+.sbkSaav_TitleRow2 td { padding-top: 40px; }
+.sbkSaav_TextRow td {padding: 10px 50px 10px 80px; line-height: 140%; }
+.sbkSaav_TextRow p { padding: 0 0 10px 0;margin: 0; }
+.sbkSaav_SingleRow { height: 35px;vertical-align: middle;text-align: left; }
+.sbkSaav_TallRow { vertical-align: top; text-align: left; }
+.sbkSaav_ButtonRow { height: 80px;vertical-align: middle;text-align: left; }
+.sbkSaav_small_input  { width: 120px;  }
+.sbkSaav_medium_input  { width: 300px; padding-bottom: 4px; }
+.sbkSaav_large_input  { width: 466px; padding-bottom: 4px; }
+.sbkSaav_large_textbox { width: 466px; padding-bottom: 4px; }
+select.sbkSaav_select { width: 155px;margin-bottom: 14px; }
+.sbkSaav_MetadataSelect { width: 155px;margin-bottom: 14px; margin-right: 50px; }
+select.sbkSaav_SelectSingle { width: 155px;  }
+select.sbkSaav_select2 { width: 140px; margin-top: 6px; margin-right: 8px; }
+select.sbkSaav_select_large { width: 470px; margin-top: 6px; }
+textarea.sbkSaav_input  { margin-top: 6px; font-size: small;}
+.sbkSaav_TableLabel { font-weight: bold; }
+.sbkSaav_TableLabel2 { font-weight: bold;padding-top: 12px; }
+.sbkSaav_HelpButton { padding-left:5px; cursor:pointer; border:0; }
+.sbkSaav_InnerTable { margin: 0;padding: 0;display: inline-block; }
+.sbkSaav_InnerTable2 { margin: 0;padding: 4px 0 0 0; }
+.sbkSaav_checkbox { border: 0;}
+.sbkSaav_ButtonImg { padding-right: 40px; }
+.sbkSaav_UploadInstr { font-size: 0.90em;font-style: italic;}
+
+
+.admin_aggr_label2 { padding-top: 8px;}
+.admin_aggr_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+.admin_aggr_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:260px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
+
+
+
+
 
 /** Aliases_AdminViewer */
 .sbkAav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 

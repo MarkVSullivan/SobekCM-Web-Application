@@ -151,7 +151,8 @@ namespace SobekCM.Library.MySobekViewer
             literalBuilder.AppendLine("");
 
             // Write the Sobek home tab
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
             literalBuilder.AppendLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_home + Unselected_Tab_End + "</a>");
             currentMode.Mode = Display_Mode_Enum.My_Sobek;
             literalBuilder.AppendLine("");

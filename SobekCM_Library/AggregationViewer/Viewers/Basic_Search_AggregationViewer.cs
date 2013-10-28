@@ -46,6 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Determine the complete script action name
             Display_Mode_Enum displayMode = currentMode.Mode;
+	        Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
             Search_Type_Enum searchType = currentMode.Search_Type;
             currentMode.Mode = Display_Mode_Enum.Results;
             currentMode.Search_Type = Search_Type_Enum.Basic;
@@ -55,7 +56,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.Search_Fields = String.Empty;
             arg2 = String.Empty;
             arg1 = currentMode.Redirect_URL();
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+            currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             currentMode.Info_Browse_Mode = "all";
             browse_url = currentMode.Redirect_URL();
 
@@ -74,6 +76,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.Search_Type = searchType;
             currentMode.Search_String = search_string;
             currentMode.Info_Browse_Mode = String.Empty;
+	        currentMode.Aggregation_Type = aggrType;
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>

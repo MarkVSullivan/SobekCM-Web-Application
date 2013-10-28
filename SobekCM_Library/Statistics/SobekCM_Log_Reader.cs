@@ -236,15 +236,13 @@ namespace SobekCM.Library.Statistics
                                 // hit just so the full use of the site is recorded
                                 if (code.Length > 0)
                                 {
-                                    returnValue.Add_Collection_Hit(code.ToLower(), currentMode.Mode,
-                                                                   thisSession.SessionID);
+                                    returnValue.Add_Collection_Hit(code.ToLower(), currentMode.Mode, currentMode.Aggregation_Type, thisSession.SessionID);
                                 }
 
                                 // Was this an institutional level hit?
                                 if (institution.Length > 0)
                                 {
-                                    returnValue.Add_Institution_Hit(institution.ToLower(), currentMode.Mode,
-                                                                    thisSession.SessionID);
+                                    returnValue.Add_Institution_Hit(institution.ToLower(), currentMode.Mode, currentMode.Aggregation_Type, thisSession.SessionID);
                                 }
 
                                 // Is this a static "webcontent" top-level page?

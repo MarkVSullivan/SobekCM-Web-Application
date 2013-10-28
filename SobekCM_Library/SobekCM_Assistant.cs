@@ -792,7 +792,8 @@ namespace SobekCM.Library
                 {
                     if (Tracer != null && !Tracer.Enabled)
                     {
-                        Current_Mode.Mode = Display_Mode_Enum.Aggregation_Home;
+	                    Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+						Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                         return false;
                     }
                     return false;
