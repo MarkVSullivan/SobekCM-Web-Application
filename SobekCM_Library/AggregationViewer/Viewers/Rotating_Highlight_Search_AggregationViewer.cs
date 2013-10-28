@@ -59,11 +59,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.Search_Fields = String.Empty;
             arg2 = String.Empty;
             arg1 = currentMode.Redirect_URL();
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+            currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             currentMode.Info_Browse_Mode = "all";
             browse_url = currentMode.Redirect_URL();
             currentMode.Info_Browse_Mode = String.Empty;
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Home;
+            currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
             if ((!currentMode.Show_Selection_Panel) || (Current_Aggregation.Children_Count == 0))
             {
                 scriptActionName = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "')";

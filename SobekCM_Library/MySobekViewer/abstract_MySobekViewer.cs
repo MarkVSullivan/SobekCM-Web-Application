@@ -168,19 +168,29 @@ namespace SobekCM.Library.MySobekViewer
             // No html to be added here
         }
 
+		/// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
+		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+		public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+		{
+			if (Tracer != null)
+			{
+				Tracer.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
+			}
+		}
+
         /// <summary> This is an opportunity to write HTML directly into the main form, without
         /// using the pop-up html form architecture </summary>
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public virtual void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+        public virtual void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("abstract_MySobekViewer.Add_HTML_In_Main_Form", "No HTML Added");
+                Tracer.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Closing", "No HTML Added");
             }
-
-            // No controls to be added here
         }
 
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>

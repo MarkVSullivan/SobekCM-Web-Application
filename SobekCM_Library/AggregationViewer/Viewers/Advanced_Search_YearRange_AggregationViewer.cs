@@ -38,6 +38,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string fields = currentMode.Search_Fields;
             string searchCollections = currentMode.SubAggregation;
             Display_Mode_Enum lastMode = currentMode.Mode;
+			Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
             currentMode.SubAggregation = String.Empty;
             string searchString = currentMode.Search_String;
             currentMode.Search_String = String.Empty;
@@ -49,6 +50,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.Search_Fields = fields;
             currentMode.SubAggregation = searchCollections;
             currentMode.Mode = lastMode;
+	        currentMode.Aggregation_Type = aggrType;
 
             // If there are children under this hierarchy that can be selected
             //script_action_name = "Javascript:advanced_select_search_sobekcm('" + redirect_stem + "', '" + sub_code + "')";

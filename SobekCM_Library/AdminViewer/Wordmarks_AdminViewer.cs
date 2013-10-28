@@ -54,8 +54,7 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Postback from editing an existing wordmark, deleting a wordmark, or creating a new wordmark is handled here in the constructor </remarks>
-        public Wordmarks_AdminViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer)
-            : base(User)
+        public Wordmarks_AdminViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer) : base(User)
         {
             Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", String.Empty);
 
@@ -250,7 +249,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("<!-- Wordmarks_AdminViewer.Write_HTML -->");
 
-			Tracer.Add_Trace("Wordmarks_AdminViewer.Add_HTML_In_Main_Form", "Add any popup divisions for form elements");
+			Tracer.Add_Trace("Wordmarks_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
@@ -376,9 +375,9 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Add_HTML_In_Main_Form(TextWriter Output, Custom_Tracer Tracer)
+		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-			Output.WriteLine("<!-- Wordmarks_AdminViewer.Add_HTML_In_Main_Form -->");
+			Output.WriteLine("<!-- Wordmarks_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			Output.WriteLine("  </blockquote>");
 
@@ -485,7 +484,7 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("</div>");
             Output.WriteLine();
 
-			Output.WriteLine("<!-- END Wordmarks_AdminViewer.Add_HTML_In_Main_Form -->");
+			Output.WriteLine("<!-- END Wordmarks_AdminViewer.Write_ItemNavForm_Closing -->");
 			Output.WriteLine();
         }
 

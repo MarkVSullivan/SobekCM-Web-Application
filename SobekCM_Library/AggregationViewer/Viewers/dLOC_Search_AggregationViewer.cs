@@ -44,6 +44,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Determine the complete script action name
             Display_Mode_Enum displayMode = currentMode.Mode;
+	        Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
             Search_Type_Enum searchType = currentMode.Search_Type;
             currentMode.Mode = Display_Mode_Enum.Results;
             currentMode.Search_Type = Search_Type_Enum.Full_Text;
@@ -53,7 +54,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             arg2 = String.Empty;
             currentMode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             arg1 = currentMode.Redirect_URL();
-            currentMode.Mode = Display_Mode_Enum.Aggregation_Browse_Info;
+            currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             currentMode.Info_Browse_Mode = "all";
             browse_url = currentMode.Redirect_URL();
 
@@ -69,6 +71,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //    script_include_name = "<script src=\"" + currentMode.Base_URL + "default/scripts/dloc_select_search_sobekcm.js\" type=\"text/javascript\"></script>";
             //}
             currentMode.Mode = displayMode;
+	        currentMode.Aggregation_Type = aggrType;
             currentMode.Search_Type = searchType;
             currentMode.Search_String = search_string;
             currentMode.Info_Browse_Mode = String.Empty;

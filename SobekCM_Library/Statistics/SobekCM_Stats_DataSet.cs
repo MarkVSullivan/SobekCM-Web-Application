@@ -323,11 +323,12 @@ namespace SobekCM.Library.Statistics
             }
         }
 
-        /// <summary> Add a single hit against an aggregation (or collection) </summary>
-        /// <param name="Code"> Aggregation Code </param>
-        /// <param name="mode"> Mode information </param>
-        /// <param name="SessionID"> ID for the session from which this hit originated </param>
-        public void Add_Collection_Hit(string Code, Display_Mode_Enum mode, int SessionID)
+	    /// <summary> Add a single hit against an aggregation (or collection) </summary>
+	    /// <param name="Code"> Aggregation Code </param>
+	    /// <param name="Mode"> Mode information </param>
+	    /// <param name="AggrType"> Aggregation type, if this is Aggregation mode </param>
+	    /// <param name="SessionID"> ID for the session from which this hit originated </param>
+	    public void Add_Collection_Hit(string Code, Display_Mode_Enum Mode, Aggregation_Type_Enum AggrType, int SessionID)
         {
             // Determine if this session is already linked to this collection
             int increment_session = 0;
@@ -375,38 +376,46 @@ namespace SobekCM.Library.Statistics
             }
 
             // If there is no mode, this is home page
-            switch (mode)
-            {
-                case Display_Mode_Enum.Aggregation_Home:
-                    newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
-                    break;
+			switch (Mode)
+			{
+				case Display_Mode_Enum.Aggregation:
+					switch (AggrType)
+					{
+						case Aggregation_Type_Enum.Browse_By:
+						case Aggregation_Type_Enum.Browse_Info: 
+						case Aggregation_Type_Enum.Browse_Map:
+							newRow["browse_hits"] = Convert.ToInt32(newRow["browse_hits"]) + 1;
+							break;
 
-                case Display_Mode_Enum.Aggregation_Browse_By:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                    newRow["browse_hits"] = Convert.ToInt32(newRow["browse_hits"]) + 1;
-                    break;
+						default:
+							// Just call this home page then.
+							newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
+							break;
+					}
+					break;
 
-                case Display_Mode_Enum.Search:
-                    newRow["advanced_search_hits"] = Convert.ToInt32(newRow["advanced_search_hits"]) + 1;
-                    break;
 
-                case Display_Mode_Enum.Results:
-                    newRow["results_hits"] = Convert.ToInt32(newRow["results_hits"]) + 1;
-                    break;
+				case Display_Mode_Enum.Search:
+					newRow["advanced_search_hits"] = Convert.ToInt32(newRow["advanced_search_hits"]) + 1;
+					break;
 
-                default:
-                    // Just call this home page then.
-                    newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
-                    break;
-            }
+				case Display_Mode_Enum.Results:
+					newRow["results_hits"] = Convert.ToInt32(newRow["results_hits"]) + 1;
+					break;
+
+				default:
+					// Just call this home page then.
+					newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
+					break;
+			}
         }
 
-        /// <summary> Add a single hit against an institutional aggregation </summary>
-        /// <param name="Code"> Institutional aggregation code </param>
-        /// <param name="mode"> Mode information </param>
-        /// <param name="SessionID"> ID for the session from which this hit originated </param>
-        public void Add_Institution_Hit(string Code, Display_Mode_Enum mode, int SessionID)
+	    /// <summary> Add a single hit against an institutional aggregation </summary>
+	    /// <param name="Code"> Institutional aggregation code </param>
+	    /// <param name="Mode"> Mode information </param>
+	    /// <param name="AggrType"> Aggregation type, if this is aggregation mode </param>
+	    /// <param name="SessionID"> ID for the session from which this hit originated </param>
+	    public void Add_Institution_Hit(string Code, Display_Mode_Enum Mode, Aggregation_Type_Enum AggrType, int SessionID)
         {
             // Determine if this session is already linked to this institution
             int increment_session = 0;
@@ -455,31 +464,37 @@ namespace SobekCM.Library.Statistics
             }
 
             // If there is no mode, this is home page
-            switch (mode)
-            {
-                case Display_Mode_Enum.Aggregation_Home:
-                    newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
-                    break;
+			switch (Mode)
+			{
+				case Display_Mode_Enum.Aggregation:
+					switch (AggrType)
+					{
+						case Aggregation_Type_Enum.Browse_By: 
+						case Aggregation_Type_Enum.Browse_Info: 
+						case Aggregation_Type_Enum.Browse_Map:
+							newRow["browse_hits"] = Convert.ToInt32(newRow["browse_hits"]) + 1;
+							break;
 
-                case Display_Mode_Enum.Aggregation_Browse_By:
-                case Display_Mode_Enum.Aggregation_Browse_Info:
-                case Display_Mode_Enum.Aggregation_Browse_Map:
-                    newRow["browse_hits"] = Convert.ToInt32(newRow["browse_hits"]) + 1;
-                    break;
+						default:
+							// Just call this home page then.
+							newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
+							break;
+					}
+					break;
 
-                case Display_Mode_Enum.Search:
-                    newRow["advanced_search_hits"] = Convert.ToInt32(newRow["advanced_search_hits"]) + 1;
-                    break;
+				case Display_Mode_Enum.Search:
+					newRow["advanced_search_hits"] = Convert.ToInt32(newRow["advanced_search_hits"]) + 1;
+					break;
 
-                case Display_Mode_Enum.Results:
-                    newRow["results_hits"] = Convert.ToInt32(newRow["results_hits"]) + 1;
-                    break;
+				case Display_Mode_Enum.Results:
+					newRow["results_hits"] = Convert.ToInt32(newRow["results_hits"]) + 1;
+					break;
 
-                default:
-                    // Just call this home page then.
-                    newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
-                    break;
-            }
+				default:
+					// Just call this home page then.
+					newRow["home_page_hits"] = Convert.ToInt32(newRow["home_page_hits"]) + 1;
+					break;
+			}
         }
 
         /// <summary> Add a single hit against a title (or BibID) </summary>

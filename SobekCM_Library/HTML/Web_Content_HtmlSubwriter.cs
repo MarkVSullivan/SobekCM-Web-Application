@@ -342,9 +342,6 @@ namespace SobekCM.Library.HTML
 
             // Save the current mode and browse
             Display_Mode_Enum thisMode = currentMode.Mode;
-            if (thisMode == Display_Mode_Enum.Aggregation_Browse_Info)
-            {
-            }
 
             if ((thisStaticBrowseObject.Banner.Length > 0) && (thisStaticBrowseObject.Banner.ToUpper().Trim() != "NONE"))
             {

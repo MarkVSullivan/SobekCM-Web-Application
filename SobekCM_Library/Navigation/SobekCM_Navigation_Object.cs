@@ -369,6 +369,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Mode determined by parsing the query string </summary>
 		public Display_Mode_Enum Mode { get; set; }
 
+		/// <summary> Submode for agrgegation views </summary>
+		public Aggregation_Type_Enum Aggregation_Type { get; set;  }
+
 		/// <summary> Submode for searching </summary>
 		public Search_Type_Enum Search_Type { get; set; }
 
@@ -1405,205 +1408,209 @@ namespace SobekCM.Library.Navigation
 					return returnValue2 + urlOptions1;
 
 
-				case Display_Mode_Enum.Aggregation_Home:
-					if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
-						return this_base_url + adjusted_aggregation + urlOptions1;
-					switch (Home_Type)
+				case Display_Mode_Enum.Aggregation:
+					switch (Aggregation_Type)
 					{
-						case Home_Type_Enum.Descriptions:
-							return this_base_url + "brief" + urlOptions1;
+						case Aggregation_Type_Enum.Home:
+							if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
+								return this_base_url + adjusted_aggregation + urlOptions1;
+							switch (Home_Type)
+							{
+								case Home_Type_Enum.Descriptions:
+									return this_base_url + "brief" + urlOptions1;
 
-						case Home_Type_Enum.Tree_Collapsed:
-							return this_base_url + "tree" + urlOptions1;
+								case Home_Type_Enum.Tree_Collapsed:
+									return this_base_url + "tree" + urlOptions1;
 
-						case Home_Type_Enum.Tree_Expanded:
-							return this_base_url + "tree/expanded" + urlOptions1;
+								case Home_Type_Enum.Tree_Expanded:
+									return this_base_url + "tree/expanded" + urlOptions1;
 
-						case Home_Type_Enum.Partners_List:
-							return this_base_url + "partners" + urlOptions1;
+								case Home_Type_Enum.Partners_List:
+									return this_base_url + "partners" + urlOptions1;
 
-						case Home_Type_Enum.Partners_Thumbnails:
-							return this_base_url + "partners/thumbs" + urlOptions1;
+								case Home_Type_Enum.Partners_Thumbnails:
+									return this_base_url + "partners/thumbs" + urlOptions1;
 
-						case Home_Type_Enum.Personalized:
-							return this_base_url + "personalized" + urlOptions1;
+								case Home_Type_Enum.Personalized:
+									return this_base_url + "personalized" + urlOptions1;
 
-						default:
-							return this_base_url + urlOptions1;
-					}
+								default:
+									return this_base_url + urlOptions1;
+							}
 
+						case Aggregation_Type_Enum.Home_Edit:
+							if (!String.IsNullOrEmpty(adjusted_aggregation))
+							{
+								return this_base_url + adjusted_aggregation + "/edit" + urlOptions1;
+							}
+							return this_base_url + "edit" + urlOptions1;
 
-				case Display_Mode_Enum.Aggregation_Browse_By:
-					string browse_by_mode = String.Empty;
-					if (!String.IsNullOrEmpty(infoBrowseMode))
-						browse_by_mode = infoBrowseMode.Replace(" ", "_");
-					if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
-					{
-						if ((Page > 1) && (browse_by_mode.Length > 0))
-						{
-							return this_base_url + adjusted_aggregation + "/browseby/" + browse_by_mode + "/" + Page + urlOptions1;
-						}
-						return this_base_url + adjusted_aggregation + "/browseby/" + browse_by_mode + urlOptions1;
-					}
-					if ((Page > 1) && (browse_by_mode.Length > 0))
-					{
-						return this_base_url + "browseby/" + browse_by_mode + "/" + Page + urlOptions1;
-					}
-					return this_base_url + "browseby/" + browse_by_mode + urlOptions1;
+						case Aggregation_Type_Enum.Browse_By:
+							string browse_by_mode = String.Empty;
+							if (!String.IsNullOrEmpty(infoBrowseMode))
+								browse_by_mode = infoBrowseMode.Replace(" ", "_");
+							if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
+							{
+								if ((Page > 1) && (browse_by_mode.Length > 0))
+								{
+									return this_base_url + adjusted_aggregation + "/browseby/" + browse_by_mode + "/" + Page + urlOptions1;
+								}
+								return this_base_url + adjusted_aggregation + "/browseby/" + browse_by_mode + urlOptions1;
+							}
+							if ((Page > 1) && (browse_by_mode.Length > 0))
+							{
+								return this_base_url + "browseby/" + browse_by_mode + "/" + Page + urlOptions1;
+							}
+							return this_base_url + "browseby/" + browse_by_mode + urlOptions1;
 
-				case Display_Mode_Enum.Aggregation_Browse_Map:
-					if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
-					{
-						return this_base_url + adjusted_aggregation + "/geography/" + infoBrowseMode + urlOptions1;
-					}
-					return this_base_url + "geography/" + infoBrowseMode + urlOptions1;
+						case Aggregation_Type_Enum.Browse_Map:
+							if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
+							{
+								return this_base_url + adjusted_aggregation + "/geography/" + infoBrowseMode + urlOptions1;
+							}
+							return this_base_url + "geography/" + infoBrowseMode + urlOptions1;
 
-				case Display_Mode_Enum.Aggregation_Item_Count:
-					if (!String.IsNullOrEmpty(adjusted_aggregation))
-					{
-						return this_base_url + adjusted_aggregation + "/itemcount/" + infoBrowseMode + urlOptions1;
-					}
-					return this_base_url + "itemcount/" + infoBrowseMode + urlOptions1;
+						case Aggregation_Type_Enum.Item_Count:
+							if (!String.IsNullOrEmpty(adjusted_aggregation))
+							{
+								return this_base_url + adjusted_aggregation + "/itemcount/" + infoBrowseMode + urlOptions1;
+							}
+							return this_base_url + "itemcount/" + infoBrowseMode + urlOptions1;
 
-				case Display_Mode_Enum.Aggregation_Usage_Statistics:
-					if (!String.IsNullOrEmpty(adjusted_aggregation))
-					{
-						return this_base_url + adjusted_aggregation + "/usage/" + infoBrowseMode + urlOptions1;
-					}
-					return this_base_url + "usage/" + infoBrowseMode + urlOptions1;
+						case Aggregation_Type_Enum.Usage_Statistics:
+							if (!String.IsNullOrEmpty(adjusted_aggregation))
+							{
+								return this_base_url + adjusted_aggregation + "/usage/" + infoBrowseMode + urlOptions1;
+							}
+							return this_base_url + "usage/" + infoBrowseMode + urlOptions1;
 
-				case Display_Mode_Enum.Aggregation_Private_Items:
-					if (Page > 1)
-					{
-						if (!String.IsNullOrEmpty(adjusted_aggregation))
-						{
+						case Aggregation_Type_Enum.Private_Items:
+							if (Page > 1)
+							{
+								if (!String.IsNullOrEmpty(adjusted_aggregation))
+								{
+									if (Sort == 0)
+										return this_base_url + adjusted_aggregation + "/inprocess/" + Page + urlOptions1;
+									return this_base_url + adjusted_aggregation + "/inprocess/" + Page + "?o=" + Sort + urlOptions2;
+								}
+								if (Sort == 0)
+									return this_base_url + "inprocess/" + Page + urlOptions1;
+								return this_base_url + "inprocess/" + Page + "?o=" + Sort + urlOptions2;
+							}
+							if (!String.IsNullOrEmpty(adjusted_aggregation))
+							{
+								if (Sort == 0)
+									return this_base_url + adjusted_aggregation + "/inprocess" + urlOptions1;
+								return this_base_url + adjusted_aggregation + "/inprocess?o=" + Sort + urlOptions2;
+							}
 							if (Sort == 0)
-								return this_base_url + adjusted_aggregation + "/inprocess/" + Page + urlOptions1;
-							return this_base_url + adjusted_aggregation + "/inprocess/" + Page + "?o=" + Sort + urlOptions2;
-						}
-						if (Sort == 0)
-							return this_base_url + "inprocess/" + Page + urlOptions1;
-						return this_base_url + "inprocess/" + Page + "?o=" + Sort + urlOptions2;
-					}
-					if (!String.IsNullOrEmpty(adjusted_aggregation))
-					{
-						if (Sort == 0)
-							return this_base_url + adjusted_aggregation + "/inprocess" + urlOptions1;
-						return this_base_url + adjusted_aggregation + "/inprocess?o=" + Sort + urlOptions2;
-					}
-					if (Sort == 0)
-						return this_base_url + "inprocess" + urlOptions1;
-					return this_base_url + "inprocess?o=" + Sort + urlOptions2;
+								return this_base_url + "inprocess" + urlOptions1;
+							return this_base_url + "inprocess?o=" + Sort + urlOptions2;
 
-				case Display_Mode_Enum.Aggregation_Admin_View:
-					if (!String.IsNullOrEmpty(adjusted_aggregation))
-					{
-						return this_base_url + adjusted_aggregation + "/admin" + urlOptions1;
-					}
-					return this_base_url + "admin" +  urlOptions1;
+						case Aggregation_Type_Enum.Browse_Info:
+							if ( Sort > 0 )
+							{
+								if (url_options.Length > 0)
+								{
+									urlOptions1 = "?" + url_options + "&o=" + Sort;
+								}
+								else
+								{
+									urlOptions1 = "?o=" + Sort;
+								}
+							}
 
-				case Display_Mode_Enum.Aggregation_Browse_Info:
-					if ( Sort > 0 )
-					{
-						if (url_options.Length > 0)
-						{
-							urlOptions1 = "?" + url_options + "&o=" + Sort;
-						}
-						else
-						{
-							urlOptions1 = "?o=" + Sort;
-						}
-					}
-
-					if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
-					{
-						if (Page > 1)
-						{
+							if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
+							{
+								if (Page > 1)
+								{
+									switch (Result_Display_Type)
+									{
+										case Result_Display_Type_Enum.Brief:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/brief/" + Page + urlOptions1;
+										case Result_Display_Type_Enum.Export:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/export/" + Page + urlOptions1;
+										case Result_Display_Type_Enum.Full_Citation:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/citation/" + Page + urlOptions1;
+										case Result_Display_Type_Enum.Full_Image:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/image/" + Page + urlOptions1;
+										case Result_Display_Type_Enum.Map:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/map/" + Page + urlOptions1;
+										case Result_Display_Type_Enum.Table:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/table/" + Page + urlOptions1;
+										case Result_Display_Type_Enum.Thumbnails:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/thumbs/" + Page + urlOptions1;
+										default:
+											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/" + Page + urlOptions1;
+									}
+								}
+								switch (Result_Display_Type)
+								{
+									case Result_Display_Type_Enum.Brief:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/brief" + urlOptions1;
+									case Result_Display_Type_Enum.Export:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/export" + urlOptions1;
+									case Result_Display_Type_Enum.Full_Citation:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/citation" + urlOptions1;
+									case Result_Display_Type_Enum.Full_Image:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/image" + urlOptions1;
+									case Result_Display_Type_Enum.Map:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/map" + urlOptions1;
+									case Result_Display_Type_Enum.Table:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/table" + urlOptions1;
+									case Result_Display_Type_Enum.Thumbnails:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/thumbs" + urlOptions1;
+									default:
+										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + urlOptions1;
+								}
+							}
+							// See if you need to include 'info' here
+							string pre_mode_string = "info/";
+							if ((infoBrowseMode == "all") || (infoBrowseMode == "new"))
+								pre_mode_string = String.Empty;
+							if (Page > 1)
+							{
+								switch (Result_Display_Type)
+								{
+									case Result_Display_Type_Enum.Brief:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/brief/" + Page + urlOptions1;
+									case Result_Display_Type_Enum.Export:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/export/" + Page + urlOptions1;
+									case Result_Display_Type_Enum.Full_Citation:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/citation/" + Page + urlOptions1;
+									case Result_Display_Type_Enum.Full_Image:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/image/" + Page + urlOptions1;
+									case Result_Display_Type_Enum.Map:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/map/" + Page + urlOptions1;
+									case Result_Display_Type_Enum.Table:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/table/" + Page + urlOptions1;
+									case Result_Display_Type_Enum.Thumbnails:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/thumbs/" + Page + urlOptions1;
+									default:
+										return this_base_url + pre_mode_string + infoBrowseMode + "/" + Page + urlOptions1;
+								}
+							}
 							switch (Result_Display_Type)
 							{
 								case Result_Display_Type_Enum.Brief:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/brief/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/brief" + urlOptions1;
 								case Result_Display_Type_Enum.Export:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/export/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/export" + urlOptions1;
 								case Result_Display_Type_Enum.Full_Citation:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/citation/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/citation" + urlOptions1;
 								case Result_Display_Type_Enum.Full_Image:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/image/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/image" + urlOptions1;
 								case Result_Display_Type_Enum.Map:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/map/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/map" + urlOptions1;
 								case Result_Display_Type_Enum.Table:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/table/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/table" + urlOptions1;
 								case Result_Display_Type_Enum.Thumbnails:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/thumbs/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + "/thumbs" + urlOptions1;
 								default:
-									return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/" + Page + urlOptions1;
+									return this_base_url + pre_mode_string + infoBrowseMode + urlOptions1;
 							}
-						}
-						switch (Result_Display_Type)
-						{
-							case Result_Display_Type_Enum.Brief:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/brief" + urlOptions1;
-							case Result_Display_Type_Enum.Export:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/export" + urlOptions1;
-							case Result_Display_Type_Enum.Full_Citation:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/citation" + urlOptions1;
-							case Result_Display_Type_Enum.Full_Image:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/image" + urlOptions1;
-							case Result_Display_Type_Enum.Map:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/map" + urlOptions1;
-							case Result_Display_Type_Enum.Table:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/table" + urlOptions1;
-							case Result_Display_Type_Enum.Thumbnails:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/thumbs" + urlOptions1;
-							default:
-								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + urlOptions1;
-						}
 					}
-					// See if you need to include 'info' here
-					string pre_mode_string = "info/";
-					if ((infoBrowseMode == "all") || (infoBrowseMode == "new"))
-						pre_mode_string = String.Empty;
-					if (Page > 1)
-					{
-						switch (Result_Display_Type)
-						{
-							case Result_Display_Type_Enum.Brief:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/brief/" + Page + urlOptions1;
-							case Result_Display_Type_Enum.Export:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/export/" + Page + urlOptions1;
-							case Result_Display_Type_Enum.Full_Citation:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/citation/" + Page + urlOptions1;
-							case Result_Display_Type_Enum.Full_Image:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/image/" + Page + urlOptions1;
-							case Result_Display_Type_Enum.Map:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/map/" + Page + urlOptions1;
-							case Result_Display_Type_Enum.Table:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/table/" + Page + urlOptions1;
-							case Result_Display_Type_Enum.Thumbnails:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/thumbs/" + Page + urlOptions1;
-							default:
-								return this_base_url + pre_mode_string + infoBrowseMode + "/" + Page + urlOptions1;
-						}
-					}
-					switch (Result_Display_Type)
-					{
-						case Result_Display_Type_Enum.Brief:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/brief" + urlOptions1;
-						case Result_Display_Type_Enum.Export:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/export" + urlOptions1;
-						case Result_Display_Type_Enum.Full_Citation:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/citation" + urlOptions1;
-						case Result_Display_Type_Enum.Full_Image:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/image" + urlOptions1;
-						case Result_Display_Type_Enum.Map:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/map" + urlOptions1;
-						case Result_Display_Type_Enum.Table:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/table" + urlOptions1;
-						case Result_Display_Type_Enum.Thumbnails:
-							return this_base_url + pre_mode_string + infoBrowseMode + "/thumbs" + urlOptions1;
-						default:
-							return this_base_url + pre_mode_string + infoBrowseMode + urlOptions1;
-					}
+					break;
 			}
 
 			return this_base_url + "unknown";
@@ -1624,7 +1631,7 @@ namespace SobekCM.Library.Navigation
 				redirect.Append("trace=yes");
 
 			// Was there an interface?
-			if (!string.IsNullOrEmpty(currSkin) && ( String.Compare( currSkin,  defaultSkin, true  ) != 0 ))
+			if (!string.IsNullOrEmpty(currSkin) && ( String.Compare(currSkin, defaultSkin, StringComparison.OrdinalIgnoreCase) != 0 ))
 			{
 				if (redirect.Length > 0)
 					redirect.Append("&");
@@ -1720,9 +1727,10 @@ namespace SobekCM.Library.Navigation
         /// further actions. </remarks>
         public void Redirect()
         {
+			Request_Completed = true;
             HttpContext.Current.Response.Redirect(Redirect_URL(), false);
             HttpContext.Current.ApplicationInstance.CompleteRequest();
-            Request_Completed = true;
+
         }
 
         /// <summary> Redirect the user to the current mode's URL </summary>
@@ -1735,8 +1743,9 @@ namespace SobekCM.Library.Navigation
         {
             if (Flush_Response)
                 HttpContext.Current.Response.Flush();
+			Request_Completed = true;
             HttpContext.Current.Response.Redirect(Redirect_URL(), false);
-            Request_Completed = true;
+			HttpContext.Current.ApplicationInstance.CompleteRequest();
         }
 	}
 }
