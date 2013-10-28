@@ -12,7 +12,6 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using System.Collections.Generic;
-using AjaxControlToolkit;
 #endregion
 
 namespace SobekCM.Library.MySobekViewer
@@ -251,8 +250,8 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("                  <option value=\"2\">Processing</option></select>");
             builder.AppendLine("         </td>");
             builder.AppendLine("         <td>Date:</td>");
-
-            builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + DateTime.Now.Date.ToShortDateString() + "\" /> </td>");
+            string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + currentDate + "\" /> </td>");
             builder.AppendLine("</tr>");
             builder.AppendLine("<tr>");
             builder.AppendLine("          <td>Scanned/Processed by:</td>");
@@ -279,9 +278,9 @@ namespace SobekCM.Library.MySobekViewer
             //Add the Start and End Times
             builder.AppendLine("<tr>");
             builder.AppendLine("<td>Start Time:</td>");
-            builder.AppendLine("<td><input type=\"text\" name=\"txtStartTime\" id=\"txtStartTime\"/></td>");
+            builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\"/></td>");
             builder.AppendLine("<td>End Time:</td>");
-            builder.AppendLine("<td><input type=\"text\" name=\"txtEndTime\" id=\"txtEndTime\"/></td>");
+            builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\"/></td>");
 
             //End this table
             builder.AppendLine("</table>");
@@ -295,7 +294,7 @@ namespace SobekCM.Library.MySobekViewer
             //Close the main div
             builder.AppendLine("</div>");
 
-            builder.AppendLine("<script>$(function() {$( \"#txtStartDate\" ).datepicker();});</script>");
+       //     builder.AppendLine("<script>$(function() {$( \"#txtStartDate\" ).datepicker();});</script>");
 
             LiteralControl control1 = new LiteralControl(builder.ToString());
           
