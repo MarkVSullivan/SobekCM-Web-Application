@@ -3254,9 +3254,11 @@ function displayIncomingPolygons() {
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
+            
             globalVar.currentlyEditing = "no";
             //set the overlay to the map
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]].setMap(map);
+            //keepRotate(globalVar.incomingPolygonRotation[i]);
             //set hotspot on top of overlay
             setGhostOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i]);
             de("I created ghost: " + globalVar.incomingPolygonPageId[i]);
@@ -3750,7 +3752,9 @@ CustomOverlay.prototype.draw = function () {
 
     //for a preserved rotation
     if (globalVar.preservedRotation != 0) {
-        keepRotate(globalVar.preservedRotation);
+        globalVar.workingOverlayIndex = this.index_;
+        keepRotate(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex-1]);
+        //keepRotate(globalVar.preservedRotation);
     }
 
 };
@@ -4429,8 +4433,8 @@ function overlayEditMe(id) {
             //reset editing marker
             globalVar.currentlyEditing = "no";
             //set preserved rotation to the rotation of the current overlay
-            //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + globalVar.workingOverlayIndex + "] (" + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex] + ")");
-            //globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex];
+            //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
+            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1];
             //globalVar.preservedRotation = 0;
         }
         //if editing is not being done, make it so
@@ -4439,21 +4443,64 @@ function overlayEditMe(id) {
             globalVar.currentlyEditing = "yes";
             globalVar.workingOverlayIndex = id;
             de("editing overlay " + globalVar.workingOverlayIndex);
-            //reset preserved rotation value
+            //set preserved rotation value
             globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //set visual rotation knob value
-            try {
-                if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1] < 0) {
-                    $('.knob').val(((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex]) + 180)).trigger('change');
-                    de("setting knob to: " + ((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1]) + 180));
-                } else {
-                    $('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1]).trigger('change');
-                    //alert("setting knob to: globalVar.savingOverlayRotation[" + globalVar.workingOverlayIndex + "] (" + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex] + ")");
-                    de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1]);
+            //$('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+            //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
+            //de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
+            
+            //try {
+            //    if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] < 0) {
+            //        $('.knob').val(((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
+            //        de("setting knob to: " + ((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180));
+            //    } else {
+            //        $('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+            //        //alert("setting knob to: globalVar.savingOverlayRotation[" + globalVar.workingOverlayIndex + "] (" + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex] + ")");
+            //        de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
+            //    }
+            //} catch (e) {
+            //    de("rotation error catch: " + e);
+            //}
+            
+            if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] != null) {
+                globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
+                //set visual rotation knob value
+                try {
+                    if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] < 0) {
+                        $('.knob').val((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180).trigger('change');
+                        //$('.knob').val(((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
+                        //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                        de("setting knob to: " + ((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180));
+                    } else {
+                        $('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+                        //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                        de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
+                    }
+                } catch (e) {
+                    de("rotation error catch: " + e);
                 }
-            } catch (e) {
-                de("rotation error catch: " + e);
+            } else {
+                if (globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1] != null) {
+                    globalVar.preservedRotation = globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1];
+                }
+                //set visual rotation knob value
+                try {
+                    if (globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1] < 0) {
+                        //$('.knob').val(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+                        $('.knob').val(((180 + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
+                        //alert("setting knob to: globalVar.incomingPolygonRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.incomingPolygonRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                        de("setting knob to: " + ((180 + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]) + 180));
+                    } else {
+                        $('.knob').val(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+                        //alert("setting knob to: globalVar.incomingPolygonRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.incomingPolygonRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                        de("setting knob to: " + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]);
+                    }
+                } catch (e) {
+                    de("rotation error catch: " + e);
+                }
             }
+            
             //show ghost
             globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setOptions(globalVar.editable);
             //iterate top z index
@@ -4754,6 +4801,7 @@ $(function ($) {
 
 //used to maintain specific rotation of overlay
 function keepRotate(degreeIn) {
+    //alert("keepRotate: " + degreeIn + " woi: " + globalVar.workingOverlayIndex);
     globalVar.currentlyEditing = "yes"; //used to signify we are editing this overlay
     $(function () {
         $("#overlay" + globalVar.workingOverlayIndex).rotate(degreeIn);
@@ -5165,7 +5213,7 @@ function writeHTML(type, param1, param2, param3) {
 
 //resizes container based on the viewport
 function resizeView() {
-
+    
     //get sizes of elements already drawn
     var totalPX = document.documentElement.clientHeight;
     var headerPX = $("#mapedit_container").offset().top;
