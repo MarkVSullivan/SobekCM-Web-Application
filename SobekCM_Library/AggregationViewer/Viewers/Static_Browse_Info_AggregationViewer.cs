@@ -23,13 +23,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public class Static_Browse_Info_AggregationViewer : abstractAggregationViewer
     {
-        private readonly Item_Aggregation_Browse_Info browseObject;
+        private readonly Item_Aggregation_Child_Page browseObject;
         private readonly HTML_Based_Content staticWebContent;
 
         /// <summary> Constructor for a new instance of the Static_Browse_Info_AggregationViewer class </summary>
         /// <param name="Browse_Object"> Browse or information object to be displayed </param>
         /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
-        public Static_Browse_Info_AggregationViewer(Item_Aggregation_Browse_Info Browse_Object, HTML_Based_Content Static_Web_Content ):base(null, null)
+        public Static_Browse_Info_AggregationViewer(Item_Aggregation_Child_Page Browse_Object, HTML_Based_Content Static_Web_Content ):base(null, null)
         {
             browseObject = Browse_Object;
             staticWebContent = Static_Web_Content;

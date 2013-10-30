@@ -32,7 +32,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public class Metadata_Browse_AggregationViewer : abstractAggregationViewer
     {
-        private readonly Item_Aggregation_Browse_Info browseObject;
+        private readonly Item_Aggregation_Child_Page browseObject;
         private readonly List<string> results;
 
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
@@ -53,7 +53,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             browseObject = Current_Aggregation.Get_Browse_Info_Object(Current_Mode.Info_Browse_Mode);
 
             // Was this a metadata browseby, or just a static html?
-            if (( browseObject == null ) || ( browseObject.Source != Item_Aggregation_Browse_Info.Source_Type.Static_HTML))
+            if (( browseObject == null ) || ( browseObject.Source != Item_Aggregation_Child_Page.Source_Type.Static_HTML))
             {
                 // Determine the correct metadata code
                 string metadata_code = Current_Mode.Info_Browse_Mode.Trim().Replace("_", " ");
@@ -115,7 +115,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-            if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML))
+            if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML))
             {
                 Output.WriteLine("  <h1>" + browseObject.Get_Label(currentMode.Language) + "</h1>");
 
@@ -145,7 +145,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Get collection of (public) browse bys linked to this aggregation
-            ReadOnlyCollection<Item_Aggregation_Browse_Info> public_browses = currentCollection.Browse_By_Pages(currentMode.Language);
+            ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = currentCollection.Browse_By_Pages(currentMode.Language);
 
             // Determine if this is an internal user and create list of internal user browses
             List<string> internal_browses = new List<string>();
@@ -182,10 +182,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (public_browses.Count > 0)
                 {
                     // Sort these by title
-                    SortedList<string, Item_Aggregation_Browse_Info> sortedBrowses = new SortedList<string, Item_Aggregation_Browse_Info>();
-                    foreach (Item_Aggregation_Browse_Info thisBrowse in public_browses)
+                    SortedList<string, Item_Aggregation_Child_Page> sortedBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
+                    foreach (Item_Aggregation_Child_Page thisBrowse in public_browses)
                     {
-                        if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML)
+                        if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
                         {
                             sortedBrowses[thisBrowse.Code.ToLower()] = thisBrowse;
                         }
@@ -206,10 +206,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     Output.WriteLine("<b> &nbsp;Public Browses</b><br />");
                     Output.WriteLine("<div class=\"SobekFacetBox\">");
-                    foreach (Item_Aggregation_Browse_Info thisBrowse in sortedBrowses.Values)
+                    foreach (Item_Aggregation_Child_Page thisBrowse in sortedBrowses.Values)
                     {
                         // Static HTML or metadata browse by?
-                        if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML)
+                        if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
                         {
                             if (original_browse_mode != thisBrowse.Code)
                             {
@@ -276,7 +276,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.Info_Browse_Mode = original_browse_mode;
 
             // Was this static or metadata browse by?
-            if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML))
+            if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML))
             {
                 // Read the content file for this browse
                 HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + currentCollection.ObjDirectory, Tracer);

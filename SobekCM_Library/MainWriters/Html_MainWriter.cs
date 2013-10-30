@@ -85,7 +85,7 @@ namespace SobekCM.Library.MainWriters
             Item_Aggregation Hierarchy_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
-            Item_Aggregation_Browse_Info Browse_Object,
+            Item_Aggregation_Child_Page Browse_Object,
             SobekCM_Item Current_Item,
             Page_TreeNode Current_Page,
             SobekCM_Skin_Object HTML_Skin,

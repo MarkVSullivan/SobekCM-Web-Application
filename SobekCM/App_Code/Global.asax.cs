@@ -47,7 +47,7 @@ public class Global : HttpApplication
 		{
 			// Justs clear the error for a number of common errors, caused by invalid requests to the server
 			if ((objErr.Message.IndexOf("potentially dangerous") >= 0) || (objErr.Message.IndexOf("a control with id ") >= 0) || (objErr.Message.IndexOf("Padding is invalid and cannot be removed") >= 0) || (objErr.Message.IndexOf("This is an invalid webresource request") >= 0) ||
-				((objErr.Message.IndexOf("The file") >= 0 ) && ( objErr.Message.IndexOf("does not exist") >= 0 )))
+				((objErr.Message.IndexOf("File") >= 0 ) && ( objErr.Message.IndexOf("does not exist") >= 0 )))
 			{
 				// Clear the error
 				Server.ClearError();

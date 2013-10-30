@@ -136,18 +136,18 @@ namespace SobekCM.Library.Aggregations
 			if ((ThisObject.Display_Options.Length == 0) || (ThisObject.Display_Options.IndexOf("I") >= 0))
 			{
 				// Add the ALL browse, if there should be one
-				ThisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, "all", String.Empty, "All Items");
+				ThisObject.Add_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU, "all", String.Empty, "All Items");
 
 				// Add the NEW search, if the ALL search exists
 				if ((ThisObject.Get_Browse_Info_Object("all") != null) && (ThisObject.Show_New_Item_Browse))
 				{
-					ThisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, "new", String.Empty, "Recently Added Items");
+					ThisObject.Add_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU, "new", String.Empty, "Recently Added Items");
 				}
 			}
 			else
 			{
 				// Add the ALL browse as an info
-				ThisObject.Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Info, "all", String.Empty, "All Items");
+				ThisObject.Add_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.NONE, "all", String.Empty, "All Items");
 			}
 		}
 
@@ -164,10 +164,10 @@ namespace SobekCM.Library.Aggregations
 				foreach (string thisFile in files)
 				{
 					// Get the new browse info object
-					Item_Aggregation_Browse_Info newBrowse = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home, Tracer);
+					Item_Aggregation_Child_Page newBrowse = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU, Tracer);
 					if (newBrowse != null)
 					{
-						ThisObject.Add_Browse_Info(newBrowse);
+						ThisObject.Add_Child_Page(newBrowse);
 					}
 				}
 			}
@@ -180,25 +180,25 @@ namespace SobekCM.Library.Aggregations
 				{
 					// Get the title for this file
 					// Get the new browse info object
-					Item_Aggregation_Browse_Info newInfo = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Browse_Info.Browse_Info_Type.Info, Tracer);
+					Item_Aggregation_Child_Page newInfo = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Child_Page.Visibility_Type.NONE, Tracer);
 					if (newInfo != null)
 					{
-						ThisObject.Add_Browse_Info(newInfo);
+						ThisObject.Add_Child_Page(newInfo);
 					}
 				}
 			}
 		}
 
-		/// <summary>Reads the item aggregation browse or info file and returns a built <see cref="Item_Aggregation_Browse_Info"/> object for
+		/// <summary>Reads the item aggregation browse or info file and returns a built <see cref="Item_Aggregation_Child_Page"/> object for
 		/// inclusion in the item aggregation </summary>
 		/// <param name="FileName"> Filename of the browse or info file</param>
 		/// <param name="Browse_Type"> Flag indicates if this is a browse or info file</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Built object containing all of the pertinent details about this info or browse </returns>
-		private static Item_Aggregation_Browse_Info Get_Item_Aggregation_Browse_Info( string FileName, Item_Aggregation_Browse_Info.Browse_Info_Type Browse_Type, Custom_Tracer Tracer )
+		private static Item_Aggregation_Child_Page Get_Item_Aggregation_Browse_Info( string FileName, Item_Aggregation_Child_Page.Visibility_Type Browse_Type, Custom_Tracer Tracer )
 		{
 			HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(FileName, false, Tracer);
-			Item_Aggregation_Browse_Info returnObject = new Item_Aggregation_Browse_Info(Browse_Type, Item_Aggregation_Browse_Info.Source_Type.Static_HTML, fileContent.Code, FileName, fileContent.Title);
+			Item_Aggregation_Child_Page returnObject = new Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Page.Source_Type.Static_HTML, fileContent.Code, FileName, fileContent.Title);
 			return returnObject;
 		}
 
