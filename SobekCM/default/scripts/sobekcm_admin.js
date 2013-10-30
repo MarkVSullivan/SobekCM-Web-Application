@@ -815,6 +815,42 @@ function save_new_child_aggr() {
 }
 
 
+// Delete an existing aggregation
+function edit_aggr_delete_child_aggr(Code) {
+
+	var input_box = confirm("Do you really want to delete subcollection '" + Code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_' + Code;
+
+		document.itemNavForm.submit();
+	}
+
+	return false;
+}
+
+function save_new_child_page() {
+	// Set the hidden value this data
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'save_childpage';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function edit_aggr_delete_child_page(Code) {
+	var input_box = confirm("Do you really want to delete child page '" + Code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_' + Code;
+
+		document.itemNavForm.submit();
+	}
+
+	return false;
+}
+
 // Trim the input string from the search box
 function trimString (str) 
 {

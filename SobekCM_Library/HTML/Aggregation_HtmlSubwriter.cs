@@ -39,7 +39,7 @@ namespace SobekCM.Library.HTML
         private readonly List<iSearch_Title_Result> pagedResults;
         private readonly Search_Results_Statistics resultsStatistics;
         private List<Thematic_Heading> thematicHeadings;
-        private readonly Item_Aggregation_Browse_Info thisBrowseObject;
+        private readonly Item_Aggregation_Child_Page thisBrowseObject;
         private readonly HTML_Based_Content thisStaticBrowseObject;
         private readonly Language_Support_Info translator;
 
@@ -60,7 +60,7 @@ namespace SobekCM.Library.HTML
         public Aggregation_HtmlSubwriter(Item_Aggregation Hierarchy_Object, 
             SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, 
             Language_Support_Info Translator, 
-            Item_Aggregation_Browse_Info Browse_Object,
+            Item_Aggregation_Child_Page Browse_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
             Aggregation_Code_Manager Code_Manager, Item_Lookup_Object All_Items_Lookup,
@@ -1072,11 +1072,11 @@ namespace SobekCM.Library.HTML
             }
 
             // Are there any additional browses to include?
-            ReadOnlyCollection<Item_Aggregation_Browse_Info> otherBrowses = Hierarchy_Object.Browse_Home_Pages(currentMode.Language);
+            ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = Hierarchy_Object.Browse_Home_Pages(currentMode.Language);
             if (otherBrowses.Count > included_browses)
             {
                 // Now, step through the sorted list
-                foreach (Item_Aggregation_Browse_Info thisBrowseObj in otherBrowses)
+                foreach (Item_Aggregation_Child_Page thisBrowseObj in otherBrowses)
                 {
                     if ((thisBrowseObj.Code != "all") && (thisBrowseObj.Code != "new"))
                     {

@@ -64,6 +64,11 @@ namespace SobekCM.Library.AdminViewer
 		private string enteredShortname;
 		private string enteredType;
 
+		private string childPageCode;
+		private string childPageLabel;
+		private string childPageVisibility;
+		private string childPageParent;
+
 
 		/// <summary> Constructor for a new instance of the Aggregation_Single_AdminViewer class </summary>
 		/// <param name="User"> Authenticated user information </param>
@@ -123,7 +128,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Determine the page
 			page = 1;
-			if (currentMode.My_Sobek_SubMode == "b" )
+			if (currentMode.My_Sobek_SubMode == "b")
 				page = 2;
 			else if (currentMode.My_Sobek_SubMode == "c")
 				page = 3;
@@ -139,6 +144,8 @@ namespace SobekCM.Library.AdminViewer
 				page = 8;
 			else if (currentMode.My_Sobek_SubMode == "y")
 				page = 9;
+			else if (currentMode.My_Sobek_SubMode.IndexOf("g_") == 0)
+				page = 10;
 
 			// If this is a postback, handle any events first
 			if (currentMode.isPostBack)
@@ -208,6 +215,10 @@ namespace SobekCM.Library.AdminViewer
 						case 9:
 							Save_Page_CSS_Postback(form);
 							break;
+
+						case 10:
+							Save_Child_Page_Postback(form);
+							break;
 					}
 
 					// Should this be saved to the database?
@@ -244,8 +255,12 @@ namespace SobekCM.Library.AdminViewer
 							actionMessage = "Error saving aggregation information!";
 						}
 					}
-					else if (( page != 8 ) || ( action != "h" ))
+					else 
 					{
+						// In some cases, skip this part
+						if (((page == 8) && (action == "h")) || ((page == 7) && (action == "g")))
+							return;
+
 						// Save to the admins session
 						HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 						currentMode.My_Sobek_SubMode = action;
@@ -326,7 +341,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <div id=\"tabContainer\" class=\"one\">");
 
 			// Add all the possible tabs (unless this is a sub-page like editing the CSS file)
-			if (page != 9)
+			if (page < 9)
 			{
 				Output.WriteLine("    <div class=\"tabs\">");
 				Output.WriteLine("      <ul>");
@@ -460,6 +475,10 @@ namespace SobekCM.Library.AdminViewer
 
 				case 9:
 					Add_Page_CSS(Output);
+					break;
+
+				case 10:
+					Add_Child_Page(Output);
 					break;
 			}
 
@@ -1180,22 +1199,12 @@ namespace SobekCM.Library.AdminViewer
 		private void Save_Page_4_Postback(NameValueCollection Form)
 		{
 			// Get the metadata browses
-			List<Item_Aggregation_Browse_Info> metadata_browse_bys = new List<Item_Aggregation_Browse_Info>();
-			foreach (Item_Aggregation_Browse_Info thisBrowse in itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language))
-			{
-				if (thisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By)
-				{
-					if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Database)
-					{
-						metadata_browse_bys.Add(thisBrowse);
-					}
-				}
-			}
+			List<Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY).Where(ThisBrowse => ThisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Database).ToList();
 
 			// Remove all these browse by's
-			foreach (Item_Aggregation_Browse_Info browseBy in metadata_browse_bys)
+			foreach (Item_Aggregation_Child_Page browseBy in metadata_browse_bys)
 			{
-				itemAggregation.Remove_Browse_Info_Page(browseBy);
+				itemAggregation.Remove_Child_Page(browseBy);
 			}
 
 			// Look for the default browse by
@@ -1208,8 +1217,8 @@ namespace SobekCM.Library.AdminViewer
 					Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(default_browseby_id);
 					if (field != null)
 					{
-						Item_Aggregation_Browse_Info newBrowse = new Item_Aggregation_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By, Item_Aggregation_Browse_Info.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
-						itemAggregation.Add_Browse_Info(newBrowse);
+						Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
+						itemAggregation.Add_Child_Page(newBrowse);
 						itemAggregation.Default_BrowseBy = field.Display_Term;
 					}
 				}
@@ -1230,8 +1239,8 @@ namespace SobekCM.Library.AdminViewer
 						Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(browseby_id);
 						if (field != null)
 						{
-							Item_Aggregation_Browse_Info newBrowse = new Item_Aggregation_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By, Item_Aggregation_Browse_Info.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
-							itemAggregation.Add_Browse_Info(newBrowse);
+							Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
+							itemAggregation.Add_Child_Page(newBrowse);
 						}
 					}
 				}
@@ -1250,11 +1259,11 @@ namespace SobekCM.Library.AdminViewer
 			List<string> metadata_browse_bys = new List<string>();
 			string default_browse_by = itemAggregation.Default_BrowseBy;
 			List<string> otherBrowseBys = new List<string>();
-			foreach (Item_Aggregation_Browse_Info thisBrowse in itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language))
+			foreach (Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language))
 			{
-				if (thisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By)
+				if (thisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
 				{
-					if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Database)
+					if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Database)
 					{
 						metadata_browse_bys.Add(thisBrowse.Code);
 					}
@@ -1480,9 +1489,7 @@ namespace SobekCM.Library.AdminViewer
 							itemAggregation.Home_Page_File_Dictionary[enumVal] = "html\\home\\" + new_file_name;
 
 							// Add this to the list of JUST ADDED home pages, which can't be edited or viewed until saved
-							List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum>;
-							if ( newLanguages == null )
-								newLanguages = new List<Web_Language_Enum>();
+							List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 							newLanguages.Add(enumVal);
 							HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = newLanguages;
 						}
@@ -1506,8 +1513,7 @@ namespace SobekCM.Library.AdminViewer
 									btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
 								if ( btype == "right" )
 									btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
-								Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile);
-								newFront.Banner_Type = btypeEnum;
+								Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) {Banner_Type = btypeEnum};
 
 								try
 								{
@@ -1698,7 +1704,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">Existing Home Pages:</td>");
 			Output.WriteLine("    <td>");
 
-			Output.WriteLine("      <table class=\"sbkSaav_HomeTable sbkAdm_Table\">");
+			Output.WriteLine("      <table class=\"sbkSaav_HomeTable sbkSaav_Table\">");
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader1\">LANGUAGE</th>");
 			Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader2\">SOURCE FILE</th>");
@@ -1706,9 +1712,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        </tr>");
 
 			// Get the list of all recently added home page languages
-			List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum>;
-			if (newLanguages == null)
-				newLanguages = new List<Web_Language_Enum>();
+			List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 
 			// Add all the home page information
 			Web_Language_Enum currLanguage = currentMode.Language;
@@ -1718,7 +1722,7 @@ namespace SobekCM.Library.AdminViewer
 			{
 				Output.WriteLine("        <tr>");
 				bool canDelete = true;
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED ) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
 				{
 					canDelete = false;
 					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language));
@@ -1820,7 +1824,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td colspan=\"2\">");
-			Output.WriteLine("      <table class=\"sbkSaav_BannerTable sbkAdm_Table\">");
+			Output.WriteLine("      <table class=\"sbkSaav_BannerTable sbkSaav_Table\">");
 			Output.WriteLine("        <tr style=\"height:25px;\">");
 			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader1\">LANGUAGE</th>");
 			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader2\">TYPE</th>");
@@ -2184,73 +2188,324 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Save_Page_7_Postback(NameValueCollection Form)
 		{
+			string action = Form["admin_aggr_action"];
+			if (!String.IsNullOrEmpty(action))
+			{
+				if ((action.IndexOf("delete_") == 0) && ( action.Length > 7 ))
+				{
+					string code_to_delete = action.Substring(7);
+					itemAggregation.Remove_Child_Page(code_to_delete);
 
+					// Save to the admins session
+					HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+				}
+
+				if (action == "save_childpage")
+				{
+					childPageCode = Form["admin_aggr_code"];
+					childPageLabel = Form["admin_aggr_label"];
+					childPageVisibility = Form["admin_aggr_visibility"];
+					childPageParent = Form["admin_aggr_parent"];
+
+					// Convert to the integer id for the parent and begin to do checking
+					List<string> errors = new List<string>();
+
+					// Validate the code
+					if (childPageCode.Length > 20)
+					{
+						errors.Add("New child page code must be twenty characters long or less");
+					}
+					else if (childPageCode.Length == 0)
+					{
+						errors.Add("You must enter a CODE for this child page");
+
+					}
+					else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(childPageCode.ToLower()))
+					{
+						errors.Add("That code is a system-reserved keyword.  Try a different code.");
+					}
+					else if (itemAggregation.Child_Page_By_Code(childPageCode.ToUpper()) != null)
+					{
+						errors.Add("New code must be unique... <i>" + childPageCode + "</i> already exists");
+					}
+
+
+					if (childPageLabel.Trim().Length == 0)
+						errors.Add("You must enter a LABEL for this child page");
+					if (childPageVisibility.Trim().Length == 0)
+						errors.Add("You must select a VISIBILITY for this child page");
+
+					if (errors.Count > 0)
+					{
+						// Create the error message
+						actionMessage = "ERROR: Invalid entry for new item child page<br />";
+						foreach (string error in errors)
+							actionMessage = actionMessage + "<br />" + error;
+					}
+					else
+					{
+						Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page {Code = childPageCode, Parent_Code = childPageParent, Source = Item_Aggregation_Child_Page.Source_Type.Static_HTML };
+						newPage.Add_Label(childPageLabel, SobekCM_Library_Settings.Default_UI_Language);
+						switch (childPageVisibility)
+						{
+							case "none":
+								newPage.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.NONE;
+								break;
+
+							case "browse":
+								newPage.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU;
+								break;
+
+							case "browseby":
+								newPage.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY;
+								break;
+						}
+						string html_source_dir = aggregationDirectory + "\\html\\browse";
+						if (!Directory.Exists(html_source_dir))
+							Directory.CreateDirectory(html_source_dir);
+						string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(SobekCM_Library_Settings.Default_UI_Language) + ".html";
+						if (!File.Exists(html_source_file))
+						{
+							StreamWriter writer = new StreamWriter(html_source_file, false);
+							writer.WriteLine("<html>");
+							writer.WriteLine("  <head>");
+							writer.WriteLine("    <title>" + HttpUtility.HtmlEncode(childPageLabel) + "</title>");
+							writer.WriteLine("    <meta name=\"author\" content=\"" + HttpUtility.HtmlEncode(user.Full_Name) + "\" />" );
+							writer.WriteLine("    <meta name=\"date\" content=\"" + DateTime.Now.ToLongDateString() + "\" />");
+							writer.WriteLine("  </head>");
+							writer.WriteLine("  <body>");
+							writer.WriteLine("    <br /><br />");
+							writer.WriteLine("    This is a new browse page.<br /><br />");
+							writer.WriteLine("    " + childPageLabel + "<br /><br />");
+							writer.WriteLine("    The code for this browse is: " + childPageCode );
+							writer.WriteLine("  </body>");
+							writer.WriteLine("</html>");
+							writer.WriteLine();
+							writer.Flush();
+							writer.Close();
+						}
+						newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(SobekCM_Library_Settings.Default_UI_Language) + ".html", SobekCM_Library_Settings.Default_UI_Language);
+
+						itemAggregation.Add_Child_Page(newPage);
+
+						// Save to the admins session
+						HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+
+					}
+				}
+			}
 		}
 
 		private void Add_Page_7(TextWriter Output)
 		{
-			Output.WriteLine("<table class=\"popup_table\">");
+			const string CODE_HELP = "New child page code help placeholder";
+			const string LABEL_HELP = "New child page label help placeholder";
+			const string VISIBILITY_HELP = "New child page visibility help placeholder";
+			const string PARENT_HELP = "New child page parent help place holder";
 
-			// Determine the maximum number of languages used in tooltips and text
-			int max_labels = 0;
-			int max_sources = 0;
-			List<Item_Aggregation_Browse_Info> browse_infos = new List<Item_Aggregation_Browse_Info>();
-			foreach (Item_Aggregation_Browse_Info thisBrowse in itemAggregation.Browse_Home_Pages(SobekCM_Library_Settings.Default_UI_Language))
+			if (actionMessage.Length > 0)
 			{
-				if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML)
+				Output.WriteLine("  <br />");
+				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\" style=\"color:Maroon;\">" + actionMessage + "</div>");
+			}
+
+
+			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+
+			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Child Pages</td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+			// Put in alphabetical order
+			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
+			foreach (Item_Aggregation_Child_Page childPage in itemAggregation.Child_Pages)
+			{
+				if (childPage.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
 				{
-					max_labels = Math.Max(max_labels, thisBrowse.Label_Dictionary.Count);
-					max_sources = Math.Max(max_sources, thisBrowse.Source_Dictionary.Count);
-					browse_infos.Add(thisBrowse);
+					sortedChildren.Add(childPage.Code, childPage);
 				}
 			}
-			foreach (Item_Aggregation_Browse_Info thisBrowse in itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language))
-			{
-				if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML)
-				{
-					max_labels = Math.Max(max_labels, thisBrowse.Label_Dictionary.Count);
-					max_sources = Math.Max(max_sources, thisBrowse.Source_Dictionary.Count);
-					browse_infos.Add(thisBrowse);
-				}
-			}
-			foreach (Item_Aggregation_Browse_Info thisBrowse in itemAggregation.Info_Pages)
-			{
-				if (thisBrowse.Source == Item_Aggregation_Browse_Info.Source_Type.Static_HTML)
-				{
-					max_labels = Math.Max(max_labels, thisBrowse.Label_Dictionary.Count);
-					max_sources = Math.Max(max_sources, thisBrowse.Source_Dictionary.Count);
-					browse_infos.Add(thisBrowse);
-				}
-			}
-			max_labels += 1;
-			max_sources += 1;
 
-			// Add each browse and info page
-			for (int i = 0; i < browse_infos.Count + 1; i++)
+
+			// Collect all the static-html based browse and info pages 
+			if (sortedChildren.Count == 0)
 			{
-				if (i > 0)
-				{
-					// Add some space and a line
-					Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-					Output.WriteLine("<tr style=\"background:#333333\"><td colspan=\"2\"></td></tr>");
-					Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-				}
-
-				// Get the info/browse object to display, or make an empty one
-				Item_Aggregation_Browse_Info emptyBrowseInfo = new Item_Aggregation_Browse_Info { Source = Item_Aggregation_Browse_Info.Source_Type.Static_HTML, Browse_Type = Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home };
-				if (i < browse_infos.Count)
-					emptyBrowseInfo = browse_infos[i];
-
-				// Now, add it to the form
-				Browse_Writer_Helper(Output, i + 1, emptyBrowseInfo, max_labels, max_sources);
+				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+				Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel\">Existing Child Pages:</td>");
+				Output.WriteLine("    <td style=\"font-style:italic\">This aggregation currently has no child pages</td>");
+				Output.WriteLine("  </tr>");
 			}
+			else
+			{
+				// Add EXISTING subcollections
+				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+				Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Child Pages:</td>");
+				Output.WriteLine("  </tr>");
+				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+				Output.WriteLine("    <td>&nbsp;</td>");
+				Output.WriteLine("    <td colspan=\"2\">");
+				Output.WriteLine("      <table class=\"sbkSaav_ChildPageTable sbkSaav_Table\">");
+				Output.WriteLine("        <tr>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader1\">ACTION</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader2\">CODE</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader3\">LABEL</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader4\">VISIBILITY</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader5\">PARENT</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader6\">LANGUAGE(S)</th>");
+				Output.WriteLine("        </tr>");
+
+				foreach (Item_Aggregation_Child_Page childPage in sortedChildren.Values)
+				{
+					Output.WriteLine("        <tr>");
+					Output.Write("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 5px;\" >( ");
+					currentMode.Mode = Display_Mode_Enum.Aggregation;
+					currentMode.Aggregation_Type = childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY ? Aggregation_Type_Enum.Browse_By : Aggregation_Type_Enum.Browse_Info;
+					currentMode.Info_Browse_Mode = childPage.Code;
+
+					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this child page\" target=\"VIEW_" + childPage.Code + "\">view</a> | ");
+
+					currentMode.Mode = Display_Mode_Enum.Administrative;
+					currentMode.My_Sobek_SubMode = "g_" + childPage.Code;
+					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this child page\" >edit</a> | ");
+					Output.WriteLine("<a title=\"Click to delete this subcollection\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_page('" + childPage.Code + "');\">delete</a> )</td>");
+
+					Output.WriteLine("          <td>" + childPage.Code + "</td>");
+					Output.WriteLine("          <td>" + childPage.Get_Label(SobekCM_Library_Settings.Default_UI_Language) + "</td>");
+
+					switch (childPage.Browse_Type)
+					{
+						case Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU:
+							Output.WriteLine("          <td>Main Menu</td>");
+							break;
+
+						case Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY:
+							Output.WriteLine("          <td>Browse By</td>");
+							break;
+
+						case Item_Aggregation_Child_Page.Visibility_Type.NONE:
+							Output.WriteLine("          <td>None</td>");
+							break;
+					}
+					Output.WriteLine("          <td>" + childPage.Parent_Code + "</td>");
+
+					Output.Write("          <td>");
+					int language_count = 0;
+					int total_language_count = childPage.Source_Dictionary.Count;
+					foreach (Web_Language_Enum thisLanguage in childPage.Source_Dictionary.Keys)
+					{
+						string languageName = Web_Language_Enum_Converter.Enum_To_Name(thisLanguage);
+						if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == currentMode.Default_Language))
+							languageName = "<span style=\"font-style:italic\">default</span>";
+						if ( language_count == 0 )
+							Output.Write(languageName);
+						else
+							Output.Write(", " + languageName);
+
+						language_count++;
+						if ((language_count > 4) && (language_count < total_language_count - 1))
+						{
+							Output.Write("... (" + ( total_language_count - language_count ) + "more)");
+							break;
+						}
+					}
+
+					Output.WriteLine("</td>");
+
+					Output.WriteLine("        </tr>");
+				}
+				currentMode.Mode = Display_Mode_Enum.Administrative;
+
+				Output.WriteLine("      </table>");
+				Output.WriteLine("    </td>");
+				Output.WriteLine("  </tr>");
+			}
+
+			// Add ability to add NEW chid pages
+			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+			Output.WriteLine("    <td>&nbsp;</td>");
+			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" style=\"width:145px\">New Child Page:</td>");
+			Output.WriteLine("    <td>");
+			Output.WriteLine("      <table class=\"sbkSaav_ChildInnerTable\">");
+
+			// Add line for child page code
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td style=\"width:120px;\"><label for=\"admin_aggr_code\">Code:</label></td>");
+			Output.WriteLine("          <td style=\"width:165px\"><input class=\"sbkSaav_NewChildCode sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + ( childPageCode ?? String.Empty ) + "\" /></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + CODE_HELP + "');\"  title=\"" + CODE_HELP + "\" /></td>");
+			Output.WriteLine("        </tr>");
+
+			// Add the default language label
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td><label for=\"admin_aggr_label\">Label (default):</label></td>");
+			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_label\" id=\"admin_aggr_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
+			Output.WriteLine("          <td style=\"width:30px\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + LABEL_HELP + "');\"  title=\"" + LABEL_HELP + "\" /></td>");
+			Output.WriteLine("        </tr>");
+
+			// Add the visibility line
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td><label for=\"admin_aggr_visibility\">Visibility:</label></td>");
+			Output.Write    ("          <td><select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\">");
+			Output.Write    ("<option value=\"\"></option>");
+
+			if (( !String.IsNullOrEmpty(childPageVisibility)) && ( childPageVisibility == "browse"))
+				Output.Write    ("<option value=\"browse\" selected=\"selected\">Main Menu</option>");
+			else
+				Output.Write("<option value=\"browse\">Main Menu</option>");
+
+			if ((!String.IsNullOrEmpty(childPageVisibility)) && (childPageVisibility == "browseby"))
+				Output.Write("<option value=\"browseby\" selected=\"selected\">Browse By</option>");
+			else
+				Output.Write("<option value=\"browseby\">Browse By</option>");
+
+			if ((!String.IsNullOrEmpty(childPageVisibility)) && (childPageVisibility == "none"))
+				Output.Write("<option value=\"none\" selected=\"selected\">None</option>");
+			else
+				Output.Write("<option value=\"none\">None</option>");
+
+			Output.WriteLine("</select></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td>");
+			Output.WriteLine("        </tr>");
+
+			// Add line for parent code
+			Output.WriteLine("        <tr id=\"sbkSaav_NewChildParentRow\">");
+			Output.WriteLine("          <td><label for=\"admin_aggr_parent\">Parent:</label></td>");
+			Output.Write("          <td><select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
+			Output.Write("<option value=\"\">(none - top level)</option>");
+			foreach (Item_Aggregation_Child_Page childPage in sortedChildren.Values)
+			{
+				// Only show main menu stuff
+				if (childPage.Browse_Type != Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+					continue;
+
+				if ( childPageParent == childPage.Code )
+					Output.Write("<option value=\"" + childPage.Code + "\" selected=\"selected\">" + childPage.Code + "</option>");
+				else
+					Output.Write("<option value=\"" + childPage.Code + "\">" + childPage.Code + "</option>");
+
+			}
+			Output.WriteLine("</select></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td>");
+			Output.WriteLine("        </tr>");
+
+			// Add line for button
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td></td>");
+			Output.WriteLine("          <td colspan=\"3\" style=\"text-align: left; padding-left: 50px;\"><button title=\"Save new child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page();\">ADD</button></td>");
+			Output.WriteLine("        </tr>");
+
+			// Add the SAVE button
+			Output.WriteLine("      </table>");
+			Output.WriteLine("    </td>");
+			Output.WriteLine("  </tr>");
+
 
 			Output.WriteLine("</table>");
 			Output.WriteLine("<br />");
 		}
 
 
-		private void Browse_Writer_Helper(TextWriter Output, int BrowseCounter, Item_Aggregation_Browse_Info ThisBrowse, int Max_Labels, int Max_Sources)
+		private void Browse_Writer_Helper(TextWriter Output, int BrowseCounter, Item_Aggregation_Child_Page ThisBrowse, int Max_Labels, int Max_Sources)
 		{
 			string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory).ToLower().Replace("/", "\\");
 
@@ -2259,11 +2514,11 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add the type line
 			Output.Write("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_link_" + BrowseCounter + "\">Type:</label></td><td><select class=\"admin_aggr_select\" name=\"admin_aggr_browse_type_" + BrowseCounter + "\" id=\"admin_aggr_browse_type_" + BrowseCounter + "\">");
-			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home ? "<option value=\"browse\" selected=\"selected\">Browse</option>" : "<option value=\"browse\">Browse</option>");
+			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU ? "<option value=\"browse\" selected=\"selected\">Browse</option>" : "<option value=\"browse\">Browse</option>");
 
-			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By ? "<option value=\"browseby\" selected=\"selected\">Browse By</option>" : "<option value=\"browseby\">Browse By</option>");
+			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY ? "<option value=\"browseby\" selected=\"selected\">Browse By</option>" : "<option value=\"browseby\">Browse By</option>");
 
-			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Info ? "<option value=\"info\" selected=\"selected\">Info</option>" : "<option value=\"info\">Info</option>");
+			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.NONE ? "<option value=\"info\" selected=\"selected\">Info</option>" : "<option value=\"info\">Info</option>");
 
 			Output.WriteLine("</td></tr>");
 
@@ -2356,7 +2611,7 @@ namespace SobekCM.Library.AdminViewer
 		private void Save_Page_8_Postback(NameValueCollection Form)
 		{
 			string action = Form["admin_aggr_action"];
-			if ((String.IsNullOrEmpty(action)) || (action != "save_aggr"))
+			if ((String.IsNullOrEmpty(action)) || ((action != "save_aggr") && ( action.IndexOf("delete_") < 0 )))
 			{
 				return;
 			}
@@ -2365,31 +2620,40 @@ namespace SobekCM.Library.AdminViewer
 			if (Form["admin_aggr_code"] != null)
 				new_aggregation_code = Form["admin_aggr_code"].ToUpper().Trim();
 
-			//// Was this to delete the aggregation?
-			//if ((user.Is_System_Admin) && (delete_aggregation_code.Length > 0))
-			//{
-			//	string delete_error;
-			//	int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, user.Is_System_Admin, user.Full_Name, null, out delete_error);
-			//	if (errorCode <= 0)
-			//	{
-			//		string delete_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
-			//		if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
-			//			actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
-			//		else
-			//			actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation";
-			//	}
-			//	else
-			//	{
-			//		actionMessage = delete_error;
-			//	}
+			
+			// Was this to delete the aggregation?
+			if ((action.IndexOf("delete_") == 0) && ( action.Length > 7))
+			{
+				string code_to_delete = action.Substring(7);
+
+				string delete_error;
+				int errorCode = SobekCM_Database.Delete_Item_Aggregation(code_to_delete, user.Is_System_Admin, user.Full_Name, null, out delete_error);
+				if (errorCode <= 0)
+				{
+					string delete_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + code_to_delete;
+					if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
+						actionMessage = "Deleted '" + code_to_delete + "' subcollection<br /><br />Unable to remove subcollection directory<br /><br />Some of the files may be in use";
+					else
+						actionMessage = "Deleted '" + code_to_delete + "' subcollection";
+
+					itemAggregation.Remove_Child(code_to_delete);
+					HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+
+				}
+				else
+				{
+					actionMessage = delete_error;
+				}
 
 
-			//	// Reload the list of all codes, to include this new one and the new hierarchy
-			//	lock (codeManager)
-			//	{
-			//		SobekCM_Database.Populate_Code_Manager(codeManager, null);
-			//	}
-			//}
+				// Reload the list of all codes, to include this new one and the new hierarchy
+				lock (codeManager)
+				{
+					SobekCM_Database.Populate_Code_Manager(codeManager, null);
+				}
+
+				return;
+			}
 
 
 			// If there was a save value continue to pull the rest of the data
@@ -2420,7 +2684,7 @@ namespace SobekCM.Library.AdminViewer
 			// Convert to the integer id for the parent and begin to do checking
 			List<string> errors = new List<string>();
 
-			// Get the list of all aggregations
+			// Validate the code
 			if (new_aggregation_code.Length > 20)
 			{
 				errors.Add("New aggregation code must be twenty characters long or less");
@@ -2430,12 +2694,13 @@ namespace SobekCM.Library.AdminViewer
 				errors.Add("You must enter a CODE for this item aggregation");
 
 			}
-			else
+			else if (codeManager[new_aggregation_code.ToUpper()] != null)
 			{
-				if (codeManager[new_aggregation_code] != null)
-				{
-					errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
-				}
+				errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
+			}
+			else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+			{
+				errors.Add("That code is a system-reserved keyword.  Try a different code.");
 			}
 
 			// Was there a type and name
@@ -2575,7 +2840,7 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Add_Page_8(TextWriter Output)
 		{
-			const string NEW_SUBCOLLECTION_HELP = "New subcollection help place holder";
+		//	const string NEW_SUBCOLLECTION_HELP = "New subcollection help place holder";
 
 
 			if (actionMessage.Length > 0)
@@ -2590,57 +2855,75 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">SubCollections</td></tr>");
 			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
-			// Add EXISTING subcollections
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Subcollections:</td>");
-			Output.WriteLine("  </tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td colspan=\"2\">");
-			Output.WriteLine("      <table class=\"sbkSaav_SubCollectionTable sbkAdm_Table\">");
-			Output.WriteLine("        <tr>");
-			Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader1\">ACTION</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader2\">CODE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader3\">TYPE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader4\">ACTIVE?</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader5\">NAME</th>");
-			Output.WriteLine("        </tr>");
-
-			// Put in alphabetical order
-			SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
-			foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
-				sortedChildren[childAggrs.Code] = childAggrs;
-
-			foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
+			if (itemAggregation.Children_Count <= 0)
 			{
-				Output.WriteLine("        <tr>");
-				Output.Write    ("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 10px;\" >( ");
-				currentMode.Aggregation = childAggrs.Key;
-				currentMode.Mode = Display_Mode_Enum.Aggregation;
-				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-				Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this subcollection\">view</a> | ");
-
-				currentMode.Mode = Display_Mode_Enum.Administrative;
-				currentMode.My_Sobek_SubMode = childAggrs.Key;
-				Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this subcollection\">edit</a> )</td>");
-
-				Output.WriteLine("          <td>" + childAggrs.Key + "</td>");
-				Output.WriteLine("          <td>" + childAggrs.Value.Type + "</td>");
-				if ( childAggrs.Value.Active )
-					Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + currentMode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
-				else
-					Output.WriteLine("          <td></td>");
-
-				Output.WriteLine("          <td>" + childAggrs.Value.Name + "</td>");
-				Output.WriteLine("        </tr>");
+				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+				Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel\">Existing Subcollections:</td>");
+				Output.WriteLine("    <td style=\"font-style:italic\">This aggregation currently has no subcollections</td>");
+				Output.WriteLine("  </tr>");
 			}
-			currentMode.Mode = Display_Mode_Enum.Administrative;
-			currentMode.My_Sobek_SubMode = itemAggregation.Code;
+			else
+			{
+				// Add EXISTING subcollections
+				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+				Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Subcollections:</td>");
+				Output.WriteLine("  </tr>");
+				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+				Output.WriteLine("    <td>&nbsp;</td>");
+				Output.WriteLine("    <td colspan=\"2\">");
+				Output.WriteLine("      <table class=\"sbkSaav_SubCollectionTable sbkSaav_Table\">");
+				Output.WriteLine("        <tr>");
+				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader1\">ACTION</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader2\">CODE</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader3\">TYPE</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader4\">ACTIVE?</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader5\">NAME</th>");
+				Output.WriteLine("        </tr>");
 
-			Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
+				// Put in alphabetical order
+				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+				foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
+					sortedChildren[childAggrs.Code] = childAggrs;
+
+				foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
+				{
+					string code = childAggrs.Key;
+					Item_Aggregation_Related_Aggregations relatedAggr = codeManager[code];
+					if (relatedAggr != null)
+					{
+						Output.WriteLine("        <tr>");
+						Output.Write("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 5px;\" >( ");
+						currentMode.Aggregation = childAggrs.Key;
+						currentMode.Mode = Display_Mode_Enum.Aggregation;
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this subcollection\" target=\"VIEW_" + childAggrs.Key + "\">view</a> | ");
+
+						currentMode.Mode = Display_Mode_Enum.Administrative;
+						currentMode.My_Sobek_SubMode = childAggrs.Key;
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this subcollection\" target=\"EDIT_" + childAggrs.Key + "\">edit</a> | ");
+						Output.WriteLine("<a title=\"Click to delete this subcollection\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_aggr('" + childAggrs.Value.Code + "');\">delete</a> )</td>");
+
+
+						Output.WriteLine("          <td>" + childAggrs.Key + "</td>");
+						Output.WriteLine("          <td>" + childAggrs.Value.Type + "</td>");
+						if (relatedAggr.Active)
+							Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + currentMode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
+						else
+							Output.WriteLine("          <td></td>");
+
+						Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
+						Output.WriteLine("        </tr>");
+					}
+				}
+				currentMode.Mode = Display_Mode_Enum.Administrative;
+				currentMode.My_Sobek_SubMode = itemAggregation.Code;
+
+				Output.WriteLine("      </table>");
+				Output.WriteLine("    </td>");
+				Output.WriteLine("  </tr>");
+			}
 
 			if (itemAggregation.Aggregation_Type.ToUpper() != "EXHIBIT")
 			{
@@ -2715,18 +2998,18 @@ namespace SobekCM.Library.AdminViewer
 					             : "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>");
 
 
-				Output.WriteLine("        <td>");
+				Output.WriteLine("        </td>");
+				Output.WriteLine("      </tr>");
 
 				// Add the SAVE button
 				Output.WriteLine("    </table>");
-
+				Output.WriteLine("    </td>");
+				Output.WriteLine("  </tr>");
 				//Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_SUBCOLLECTION_HELP + "');\"  title=\"" + NEW_SUBCOLLECTION_HELP + "\" /></td>");
 			}
 
 
-			Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
+
 			Output.WriteLine("</table>");
 		}
 
@@ -2797,6 +3080,193 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("</table>");
 			Output.WriteLine("<br />");
+		}
+
+		#endregion
+
+		#region Methods to render (and parse) the single Child Page 
+
+		private void Save_Child_Page_Postback(NameValueCollection Form)
+		{
+
+		}
+
+		private void Add_Child_Page(TextWriter Output)
+		{
+			const string VISIBILITY_HELP = "Existing child page visibility help placeholder";
+			const string PARENT_HELP = "Existing child page parent help place holder";
+
+			string code = currentMode.My_Sobek_SubMode.Substring(2);
+			Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
+
+			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+
+			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Edit Child Page Details : " + code.ToUpper() + "</td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This page allows you to edit the basic information about a single child page and add the ability to display this child page in alternate languages.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+
+			// Add the visibility line
+			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:145px\">Visibility:</td>");
+			Output.WriteLine("    <td>");
+			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+			Output.Write    ("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\">");
+
+			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+				Output.Write("<option value=\"browse\" selected=\"selected\">Main Menu</option>");
+			else
+				Output.Write("<option value=\"browse\">Main Menu</option>");
+
+			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+				Output.Write("<option value=\"browseby\" selected=\"selected\">Browse By</option>");
+			else
+				Output.Write("<option value=\"browseby\">Browse By</option>");
+
+			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.NONE)
+				Output.Write("<option value=\"none\" selected=\"selected\">None</option>");
+			else
+				Output.Write("<option value=\"none\">None</option>");
+
+			Output.WriteLine("</select>"); 
+			Output.WriteLine("        </td>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("     </td>");
+			Output.WriteLine("  </tr>");
+
+
+			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+			{
+				// Put OTHER children in alphabetical order
+				SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
+				foreach (Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
+				{
+					if (childPage2.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+					{
+						sortedChildren.Add(childPage2.Code, childPage2);
+					}
+				}
+
+				// Add line for parent code
+				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+				Output.WriteLine("    <td>&nbsp;</td>");
+				Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Parent:</td>");
+				Output.WriteLine("    <td>");
+				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+				Output.Write    ("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
+				Output.Write("<option value=\"\">(none - top level)</option>");
+				foreach (Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
+				{
+					// Don't show itself in the possible parent list
+					if (String.Compare(childPage.Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
+						continue;
+
+					// Only show main menu stuff
+					if (childPage2.Browse_Type != Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+						continue;
+
+					if (String.Compare(childPage.Parent_Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
+						Output.Write("<option value=\"" + childPage2.Code + "\" selected=\"selected\">" + childPage.Code + "</option>");
+					else
+						Output.Write("<option value=\"" + childPage2.Code + "\">" + childPage.Code + "</option>");
+
+				}
+				Output.WriteLine("</select>");
+				Output.WriteLine("        </td>");
+				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td></tr></table>");
+				Output.WriteLine("     </td>");
+				Output.WriteLine("  </tr>");
+			}
+
+			// Add all the existing child page version information
+			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+			Output.WriteLine("    <td style=\"width: 50px\">&nbsp;</td>");
+			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Versions:</td>");
+			Output.WriteLine("  </tr>");
+
+
+			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+			Output.WriteLine("    <td>&nbsp;</td>");
+			Output.WriteLine("    <td colspan=\"2\">");
+			Output.WriteLine("      <table class=\"sbkSaav_SingleChildTable sbkSaav_Table\">");
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader1\">LANGUAGE</th>");
+			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader2\">LABEL</th>");
+			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader3\">SOURCE FILE</th>");
+			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader4\">ACTIONS</th>");
+			Output.WriteLine("        </tr>");
+
+			// Get the list of all recently added home page languages
+			List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+
+			// Add all the home page information
+			Web_Language_Enum currLanguage = currentMode.Language;
+			currentMode.Mode = Display_Mode_Enum.Aggregation;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+				currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
+			currentMode.Info_Browse_Mode = childPage.Code;
+
+			List<string> existing_languages = new List<string>();
+			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
+			{
+				currentMode.Language = thisHomeSource.Key;
+
+				Output.WriteLine("        <tr>");
+				bool canDelete = true;
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				{
+					canDelete = false;
+					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language));
+					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+				}
+				else
+				{
+					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
+					Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
+				}
+
+				string label = childPage.Get_Label(thisHomeSource.Key);
+				Output.WriteLine("          <td>" + HttpUtility.HtmlEncode(label) + "</td>");
+
+				string file = currentMode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\", "/");
+				string[] file_splitter = file.Split("\\/".ToCharArray());
+				string filename = file_splitter[file_splitter.Length - 1];
+				Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + filename + "</a></td>");
+
+				Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
+
+				if (!newLanguages.Contains(thisHomeSource.Key))
+				{
+					currentMode.Language = thisHomeSource.Key;
+					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+
+					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+				}
+				else
+				{
+					Output.Write("<a href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added child page versions.');return false\">view</a> | ");
+					Output.Write("<a href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added child page versions.');return false\">edit</a> ");
+				}
+
+				if (canDelete)
+				{
+					Output.Write("| <a  href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this version\" >delete</a> ");
+				}
+
+				Output.WriteLine(" )</td>");
+				Output.WriteLine("        </tr>");
+			}
+			Output.WriteLine("      </table>");
+			Output.WriteLine("    </td>");
+			Output.WriteLine("  </tr>");
+			currentMode.Language = currLanguage;
+			currentMode.Mode = Display_Mode_Enum.Administrative;
+
+
+
+
+			Output.WriteLine("</table>");
 		}
 
 		#endregion

@@ -39,7 +39,7 @@ namespace SobekCM.Library.MainWriters
         protected Search_Results_Statistics results_statistics;
 
         /// <summary> Protected field contains the basic information about any browse or info display</summary>
-        protected Item_Aggregation_Browse_Info thisBrowseObject;
+        protected Item_Aggregation_Child_Page thisBrowseObject;
 
         /// <summary> Constructor for a new instance of the abstractMainWriter abstract class </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
@@ -54,7 +54,7 @@ namespace SobekCM.Library.MainWriters
             Item_Aggregation Hierarchy_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
-            Item_Aggregation_Browse_Info Browse_Object,
+            Item_Aggregation_Child_Page Browse_Object,
             SobekCM_Item Current_Item,
             Page_TreeNode Current_Page,
             HTML_Based_Content Static_Web_Content )

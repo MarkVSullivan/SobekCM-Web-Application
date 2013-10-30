@@ -30,7 +30,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public class DataSet_Browse_Info_AggregationViewer : abstractAggregationViewer
     {
-        private readonly Item_Aggregation_Browse_Info browseObject;
+        private readonly Item_Aggregation_Child_Page browseObject;
         private readonly Aggregation_Code_Manager codeManager;
         private readonly Item_Lookup_Object itemList;
         private readonly List<iSearch_Title_Result> pagedResults;
@@ -46,7 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Code_Manager"> Code manager object maintains mapping between SobekCM codes and greenstone codes (used by result_dataset_html_subwriter)</param>
         /// <param name="Item_List"> Object for pulling additional information about each item during display </param>
         /// <param name="Current_User"> Currently logged on user, or NULL </param>
-        public DataSet_Browse_Info_AggregationViewer(Item_Aggregation_Browse_Info Browse_Object,
+        public DataSet_Browse_Info_AggregationViewer(Item_Aggregation_Child_Page Browse_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
             Aggregation_Code_Manager Code_Manager,

@@ -570,11 +570,11 @@ namespace SobekCM.Library.Aggregations
         private static void read_browse(bool Browse, XmlNodeReader NodeReader, Item_Aggregation HierarchyObject )
         {
             // Create a new browse/info object
-            Item_Aggregation_Browse_Info newBrowse = new Item_Aggregation_Browse_Info
+            Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page
                                 {
-                                    Browse_Type = Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home,
-                                    Source = Item_Aggregation_Browse_Info.Source_Type.Static_HTML,
-                                    Data_Type = Item_Aggregation_Browse_Info.Result_Data_Type.Text
+                                    Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU,
+                                    Source = Item_Aggregation_Child_Page.Source_Type.Static_HTML,
+                                    Data_Type = Item_Aggregation_Child_Page.Result_Data_Type.Text
                                 };
 
             bool isDefault = false;
@@ -584,7 +584,7 @@ namespace SobekCM.Library.Aggregations
             if (!Browse)
             {
                 lastName = "HI:INFO";
-                newBrowse.Browse_Type = Item_Aggregation_Browse_Info.Browse_Info_Type.Info;
+                newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.NONE;
             }
 
             // Check for the attributes
@@ -593,13 +593,34 @@ namespace SobekCM.Library.Aggregations
                 if (NodeReader.MoveToAttribute("location"))
                 {
                     if (NodeReader.Value == "BROWSEBY")
-                        newBrowse.Browse_Type = Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By;
+                        newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY;
                 }
                 if (NodeReader.MoveToAttribute("default"))
                 {
                     if (NodeReader.Value == "DEFAULT")
                         isDefault = true;
                 }
+				if (NodeReader.MoveToAttribute("visibility"))
+				{
+					switch (NodeReader.Value)
+					{
+						case "NONE":
+							newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.NONE;
+							break;
+
+						case "MAIN_MENU":
+							newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU;
+							break;
+
+						case "BROWSEBY":
+							newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY;
+							break;
+					}
+				}
+				if (NodeReader.MoveToAttribute("parent"))
+				{
+					newBrowse.Parent_Code = NodeReader.Value;
+				}
             }
 
             // Step through the XML and build this browse/info object
@@ -617,8 +638,8 @@ namespace SobekCM.Library.Aggregations
                         case "HI:METADATA":
                             NodeReader.Read();
                             newBrowse.Code = NodeReader.Value.ToLower();
-                            newBrowse.Source = Item_Aggregation_Browse_Info.Source_Type.Database;
-                            newBrowse.Data_Type = Item_Aggregation_Browse_Info.Result_Data_Type.Table;
+                            newBrowse.Source = Item_Aggregation_Child_Page.Source_Type.Database;
+                            newBrowse.Data_Type = Item_Aggregation_Child_Page.Result_Data_Type.Table;
                             break;
 
                         case "HI:CODE":
@@ -659,10 +680,11 @@ namespace SobekCM.Library.Aggregations
                 {
                     if (NodeReader.Name.Trim().ToUpper() == lastName )
                     {
-                        HierarchyObject.Add_Browse_Info(newBrowse);
+                        HierarchyObject.Add_Child_Page(newBrowse);
+						//HierarchyObject.Add
 
                         // If this set the default browse by save that information
-                        if ((newBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By) && (isDefault))
+                        if ((newBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY) && (isDefault))
                         {
                             HierarchyObject.Default_BrowseBy = newBrowse.Code;
                         }

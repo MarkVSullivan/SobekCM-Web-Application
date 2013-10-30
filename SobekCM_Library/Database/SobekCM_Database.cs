@@ -6266,7 +6266,7 @@ namespace SobekCM.Library.Database
 				paramList[0] = new SqlParameter("@aggrcode", Code);
 				paramList[1] = new SqlParameter("@isadmin", Is_SysAdmin);
 				paramList[2] = new SqlParameter("@username", Username);
-				paramList[3] = new SqlParameter("@message", "                                        ") { Direction = ParameterDirection.InputOutput };
+				paramList[3] = new SqlParameter("@message", "                                                                                               ") { Direction = ParameterDirection.InputOutput };
 				paramList[4] = new SqlParameter("@errorcode", -1) { Direction = ParameterDirection.InputOutput };
 
 				// Execute this query stored procedure

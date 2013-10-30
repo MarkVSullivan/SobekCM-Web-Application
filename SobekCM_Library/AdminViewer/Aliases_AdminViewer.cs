@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
+using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -41,9 +42,10 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="User"> Authenticated user information </param>
         /// <param name="CurrentMode"> Mode / navigation information for the current request</param>
         /// <param name="Aggregation_Aliases"> Dictionary of all current item aggregation aliases </param>
+		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
-        public Aliases_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Dictionary<string,string> Aggregation_Aliases, Custom_Tracer Tracer)
+        public Aliases_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Dictionary<string,string> Aggregation_Aliases, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer)
             : base(User)
         {
             Tracer.Add_Trace("Aliases_AdminViewer.Constructor", String.Empty);
@@ -103,6 +105,25 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 string new_code = form["admin_forwarding_code"].ToLower().Trim();
 
+								// Validate the code
+								if (new_code.Length > 20)
+								{
+									actionMessage = "New alias code must be twenty characters long or less";
+								}
+								else if (new_code.Length == 0)
+								{
+									actionMessage = "You must enter a CODE for this aggregation alias";
+
+								}
+								else if (Code_Manager[new_code.ToUpper()] != null)
+								{
+									actionMessage = "Aggregation with this code already exists";
+								}
+								else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(new_code.ToLower()))
+								{
+									actionMessage = "That code is a system-reserved keyword.  Try a different code.";
+								}
+
                                 // Save this new forwarding
                                 if (SobekCM_Database.Save_Aggregation_Alias(save_value, new_code, Tracer))
                                 {
@@ -153,7 +174,7 @@ namespace SobekCM.Library.AdminViewer
         /// <value> This always returns the value 'Item Aggregation Aliases' </value>
         public override string Web_Title
         {
-            get { return "Item Aggregation Aliases"; }
+            get { return "Aggregation Aliases"; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>

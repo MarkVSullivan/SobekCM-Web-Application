@@ -108,7 +108,7 @@ namespace SobekCM.Library.AdminViewer
 						delete_aggregation_code = form["admin_aggr_delete"].ToLower().Trim();
 
 					// Was this to delete the aggregation?
-					if (( user.Is_System_Admin ) && ( delete_aggregation_code.Length > 0))
+					if ( delete_aggregation_code.Length > 0)
 					{
 						string delete_error;
 						int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, user.Is_System_Admin, user.Full_Name, Tracer, out delete_error);
@@ -191,18 +191,24 @@ namespace SobekCM.Library.AdminViewer
                                 errors.Add("You must select a PARENT for this new aggregation");
                             }
 
-                            // Get the list of all aggregations
-                            if (new_aggregation_code.Length > 20)
-                            {
-                                errors.Add("New aggregation code must be twenty characters long or less");
-                            }
-                            else
-                            {
-                                if (codeManager[new_aggregation_code] != null )
-                                {
-                                    errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
-                                }
-                            }
+							// Validate the code
+							if (new_aggregation_code.Length > 20)
+							{
+								errors.Add("New aggregation code must be twenty characters long or less");
+							}
+							else if (new_aggregation_code.Length == 0)
+							{
+								errors.Add("You must enter a CODE for this item aggregation");
+
+							}
+							else if (codeManager[new_aggregation_code.ToUpper()] != null)
+							{
+								errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
+							}
+							else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+							{
+								errors.Add("That code is a system-reserved keyword.  Try a different code.");
+							}
 
                             // Was there a type and name
                             if (new_type.Length == 0)
@@ -353,7 +359,7 @@ namespace SobekCM.Library.AdminViewer
         /// <value> This always returns the value 'HTML Skins' </value>
         public override string Web_Title
         {
-            get { return "Item Aggregations"; }
+            get { return "Aggregation Management"; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
@@ -581,10 +587,7 @@ namespace SobekCM.Library.AdminViewer
                         else
                             Output.Write("view | ");
 
-						if ( user.Is_System_Admin )
-							Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
-						else
-							Output.Write("<a title=\"Only SYSTEM administrators can delete item aggregations\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('Only SYSTEM administrators can delete item aggregations');return false;\">delete</a> | ");
+						Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
 
                         Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
 
