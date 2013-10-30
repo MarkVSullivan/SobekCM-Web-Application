@@ -51,7 +51,7 @@ public partial class SobekMain : System.Web.UI.Page
                 }
             }
 
-            if (SobekCM_Library_Settings.Web_Output_Caching_Minutes > 0)
+            if ((SobekCM_Library_Settings.Web_Output_Caching_Minutes > 0) && ( String.IsNullOrEmpty(Request.QueryString["refresh"])))
             {
                 if ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Error) &&
                     (pageGlobals.currentMode.Mode != Display_Mode_Enum.My_Sobek) &&
@@ -76,6 +76,10 @@ public partial class SobekMain : System.Web.UI.Page
                     Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 }
             }
+			else
+			{
+				Response.Cache.SetCacheability(HttpCacheability.NoCache);
+			}
 
             // Check if the item nav form should be shown
             if (!pageGlobals.mainWriter.Include_Navigation_Form)

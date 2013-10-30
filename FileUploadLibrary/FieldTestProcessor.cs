@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Web;
 
 namespace darrenjohnstone.net.FileUpload
 {
@@ -120,10 +121,14 @@ namespace darrenjohnstone.net.FileUpload
                 prefix = previousFields["lstFilePrefix"];
             }
 
+			
+
+
             try
             {
                 _fileName = fileName;
                 _fullFileName = _outputPath + prefix + Path.GetFileName(fileName);
+				HttpContext.Current.Items["Uploaded File"] = _fullFileName;
                 _fs = new FileStream(_fullFileName, FileMode.Create);
             }
             catch (Exception ex)

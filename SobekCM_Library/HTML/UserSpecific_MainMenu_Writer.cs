@@ -229,6 +229,11 @@ namespace SobekCM.Library.HTML
 			        Mode.Admin_Type = Admin_Type_Enum.Aliases;
 			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminForwarding\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
 
+					// Edit item aggregations
+					Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+					Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminAggr\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Management</div></a></li>");
+
+
 			        // View and set SobekCM Builder Status
 			        Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
 			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminStatus\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
@@ -240,10 +245,6 @@ namespace SobekCM.Library.HTML
 			        // Edit IP Restrictions
 			        Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
 			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
-
-			        // Edit item aggregations
-			        Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-			        Output.WriteLine("\t\t\t<li id=\"sbkUsm_AdminAggr\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Item Aggregations</div></a></li>");
 
 			        // Edit Settings
 			        Mode.Admin_Type = Admin_Type_Enum.Settings;

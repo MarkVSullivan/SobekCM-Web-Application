@@ -6164,12 +6164,13 @@ namespace SobekCM.Library.Database
 		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
 		/// <param name="ParentID"> ID for the item aggregation parent</param>
 		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregations to provide a link back to the institution's actual home page)</param>
+		/// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, Custom_Tracer Tracer)
+		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
 		{
-			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, ThematicHeadingID, Type, IsActive, IsHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, Tracer);
+			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, ThematicHeadingID, Type, IsActive, IsHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, Username, Tracer);
 		}
 
 		/// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
@@ -6191,10 +6192,11 @@ namespace SobekCM.Library.Database
 		/// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregations)</param>
 		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregations to provide a link back to the institution's actual home page)</param>
 		/// <param name="ParentID"> ID for the item aggregation parent</param>
+		/// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Display, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, Custom_Tracer Tracer )
+		public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Display, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer )
 		{
 			if (Tracer != null)
 			{
@@ -6204,7 +6206,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[19];
+				SqlParameter[] paramList = new SqlParameter[20];
 				paramList[0] = new SqlParameter("@aggregationid", AggregationID);
 				paramList[1] = new SqlParameter("@code", Code);
 				paramList[2] = new SqlParameter("@name", Name);
@@ -6223,7 +6225,8 @@ namespace SobekCM.Library.Database
 				paramList[15] = new SqlParameter("@defaultinterface", DefaultInterface);
 				paramList[16] = new SqlParameter("@externallink", ExternalLink);
 				paramList[17] = new SqlParameter("@parentid", ParentID);
-				paramList[18] = new SqlParameter("@newaggregationid", 0) {Direction = ParameterDirection.InputOutput};
+				paramList[18] = new SqlParameter("@username", Username);
+				paramList[19] = new SqlParameter("@newaggregationid", 0) {Direction = ParameterDirection.InputOutput};
 
 
 				// Execute this query stored procedure
@@ -6241,11 +6244,13 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Delete an item aggregation from the database </summary>
 		/// <param name="Code"> Aggregation code for the aggregation to delete</param>
+		/// <param name="Username"> Name of the user that deleted this aggregation, for the milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Error_Message"> [OUT] Error message, if there was an error</param>
+		/// <param name="Is_SysAdmin"> Flag indicates if this is a system admin, who can delete aggregations with items </param>
 		/// <returns> Error code - 0 if there was no error </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Item_Aggregation' stored procedure</remarks> 
-		public static int Delete_Item_Aggregation(string Code, Custom_Tracer Tracer, out string Error_Message )
+		public static int Delete_Item_Aggregation(string Code, bool Is_SysAdmin, string Username, Custom_Tracer Tracer, out string Error_Message )
 		{
 			Error_Message = String.Empty;
 
@@ -6257,24 +6262,78 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
+				SqlParameter[] paramList = new SqlParameter[5];
 				paramList[0] = new SqlParameter("@aggrcode", Code);
-				paramList[1] = new SqlParameter("@message", "                                        ") { Direction = ParameterDirection.InputOutput };
-				paramList[2] = new SqlParameter("@errorcode", -1) { Direction = ParameterDirection.InputOutput };
+				paramList[1] = new SqlParameter("@isadmin", Is_SysAdmin);
+				paramList[2] = new SqlParameter("@username", Username);
+				paramList[3] = new SqlParameter("@message", "                                                                                               ") { Direction = ParameterDirection.InputOutput };
+				paramList[4] = new SqlParameter("@errorcode", -1) { Direction = ParameterDirection.InputOutput };
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item_Aggregation", paramList);
 
-				Error_Message = paramList[1].Value.ToString();
+				Error_Message = paramList[3].Value.ToString();
 
 				// Save the error message
 				// Succesful, so return new id, if there was one
-				return Convert.ToInt32(paramList[2].Value);
+				return Convert.ToInt32(paramList[4].Value);
 			}
 			catch (Exception ee)
 			{
 				lastException = ee;
 				return -1;
+			}
+		}
+
+		/// <summary> Add a new milestone to an existing item aggregation </summary>
+		/// <param name="AggregationCode"> Item aggregation code </param>
+		/// <param name="Milestone"> Milestone to add to this item aggregation </param>
+		/// <param name="User"> User name which performed this work </param>
+		/// <returns> TRUE if successful saving the new milestone </returns>
+		/// <remarks> This calls the 'SobekCM_Add_Item_Aggregation_Milestone' stored procedure</remarks> 
+		public static bool Save_Item_Aggregation_Milestone(string AggregationCode, string Milestone, string User )
+		{
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] paramList = new SqlParameter[3];
+				paramList[0] = new SqlParameter("@AggregationCode", AggregationCode);
+				paramList[1] = new SqlParameter("@Milestone", Milestone);
+				paramList[2] = new SqlParameter("@MilestoneUser", User);
+
+				// Execute this query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
+
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
+		}
+
+		/// <summary> Gets all the milestones for a single item aggregation  </summary>
+		/// <param name="AggregationCode"> Item aggregation code </param>
+		/// <returns> Table of latest updates </returns>
+		/// <remarks> This calls the 'SobekCM_Get_Item_Aggregation_Milestone' stored procedure</remarks> 
+		public static DataTable Get_Item_Aggregation_Milestone(string AggregationCode, string Milestone, string User)
+		{
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] paramList = new SqlParameter[1];
+				paramList[0] = new SqlParameter("@AggregationCode", AggregationCode);
+
+				// Execute this query stored procedure
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
+
+				return tempSet.Tables[0];
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return null;
 			}
 		}
 
@@ -6332,12 +6391,12 @@ namespace SobekCM.Library.Database
 		/// <param name="Clear_User_Groups"> Flag indicates whether to clear user group membership for this user </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Update_UFDC_User' stored procedure</remarks> 
+		/// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
 		public static bool Update_SobekCM_User(int UserID, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Can_Delete_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, string Edit_Template, string Edit_Template_MARC, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_User_Groups, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Update_UFDC_User", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", String.Empty);
 			}
 
 			try
@@ -6359,7 +6418,7 @@ namespace SobekCM.Library.Database
 				paramList[12] = new SqlParameter("@clear_user_groups", Clear_User_Groups);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Update_UFDC_User", paramList);
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);
 
 				// Succesful, so return true
 				return true;

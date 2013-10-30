@@ -43,7 +43,7 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
                     return SearchType2 == Search_Type_Enum.Newspaper;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.dLOC_FullText_Search:
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
                     return SearchType2 == Search_Type_Enum.dLOC_Full_Text;
 
                 default:
@@ -84,7 +84,7 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View:
                     return String.Empty; // HTML_Helper(Skin_Code, SobekCM.Library.Navigation.Search_Type_Enum.Admin_View, Translations.Get_Translation("ADMIN", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.dLOC_FullText_Search:
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
                     return HTML_Helper(skinCode, Search_Type_Enum.dLOC_Full_Text, Translations.Get_Translation("TEXT SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:

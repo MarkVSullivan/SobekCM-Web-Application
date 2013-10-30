@@ -401,7 +401,7 @@ namespace SobekCM.Library
                                     Item_Aggregation Aggregation_Object,
                                     string Base_Directory,
                                     Custom_Tracer Tracer,
-                                    out Item_Aggregation_Browse_Info Browse_Object,
+                                    out Item_Aggregation_Child_Page Browse_Object,
                                     out Search_Results_Statistics Complete_Result_Set_Info,
                                     out List<iSearch_Title_Result> Paged_Results,
                                     out HTML_Based_Content Browse_Info_Display_Text )
@@ -425,7 +425,7 @@ namespace SobekCM.Library
                 string[] matching_file = Directory.GetFiles(source, Current_Mode.Info_Browse_Mode + ".*");
                 if (matching_file.Length > 0)
                 {
-                    Browse_Object = new Item_Aggregation_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type.Info, Item_Aggregation_Browse_Info.Source_Type.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
+                    Browse_Object = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.NONE, Item_Aggregation_Child_Page.Source_Type.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
                 }
             }
             else
@@ -441,7 +441,7 @@ namespace SobekCM.Library
             // Is this a table result, or a string?
             switch (Browse_Object.Data_Type)
             {
-                case Item_Aggregation_Browse_Info.Result_Data_Type.Table:
+                case Item_Aggregation_Child_Page.Result_Data_Type.Table:
 
                     // Set the current sort to ZERO, if currently set to ONE and this is an ALL BROWSE.
                     // Those two sorts are the same in this case
@@ -544,7 +544,7 @@ namespace SobekCM.Library
                     }
                     break;
 
-                case Item_Aggregation_Browse_Info.Result_Data_Type.Text:
+                case Item_Aggregation_Child_Page.Result_Data_Type.Text:
                     Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
                     break;
             }
@@ -1731,7 +1731,7 @@ namespace SobekCM.Library
             Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation(Aggregation_Code, Language_Code, !IsRobot, Tracer);
 
             // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, Tracer);
+            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, true, Tracer);
 
             // If the collection is null, then this subcollection code was invalid.
             if (returned == null) 
@@ -1758,7 +1758,7 @@ namespace SobekCM.Library
                 Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation("all", Language_Code, !IsRobot, Tracer);
 
                 // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, Tracer);
+                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, true, Tracer);
 
                 // If the object is null, then this group code was invalid.
                 if (returned == null) 

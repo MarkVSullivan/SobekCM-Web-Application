@@ -1639,33 +1639,19 @@ namespace SobekCM.Library.Navigation
 			}
 
 			// Add language if it is not the browser default
-			if (Language != Default_Language)
+			if ((Language != Default_Language) && ( Language != Web_Language_Enum.DEFAULT ))
 			{
-				switch (Language)
+				if (Language == Web_Language_Enum.TEMPLATE)
 				{
-					case Web_Language_Enum.English:
-						if (redirect.Length > 0)
-							redirect.Append("&");
-						redirect.Append("l=en");
-						break;
-
-					case Web_Language_Enum.French:
-						if (redirect.Length > 0)
-							redirect.Append("&");
-						redirect.Append("l=fr");
-						break;
-
-					case Web_Language_Enum.Spanish:
-						if (redirect.Length > 0)
-							redirect.Append("&");
-						redirect.Append("l=sp");
-						break;
-
-					case Web_Language_Enum.TEMPLATE:
-						if (redirect.Length > 0)
-							redirect.Append("&");
-						redirect.Append("l=XXXXX");
-						break;
+					if (redirect.Length > 0)
+						redirect.Append("&");
+					redirect.Append("l=XXXXX");
+				}
+				else
+				{
+					if (redirect.Length > 0)
+						redirect.Append("&");
+					redirect.Append("l=" + Web_Language_Enum_Converter.Enum_To_Code(Language).ToLower());
 				}
 			}
 

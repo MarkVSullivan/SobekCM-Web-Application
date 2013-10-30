@@ -32,6 +32,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly string arg2;
         private readonly string browse_url;
         private readonly string textBoxValue;
+	    private readonly Item_Aggregation_Front_Banner frontBannerInfo;
 
         /// <summary> Constructor for a new instance of the Basic_Search_AggregationViewer class </summary>
         /// <param name="Current_Aggregation"> Current item aggregation object </param>
@@ -50,6 +51,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Determine the complete script action name
             Display_Mode_Enum displayMode = currentMode.Mode;
+	        Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
             Search_Type_Enum searchType = currentMode.Search_Type;
             currentMode.Mode = Display_Mode_Enum.Results;
             currentMode.Search_Type = Search_Type_Enum.Basic;
@@ -76,8 +78,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
             }
             currentMode.Mode = displayMode;
+	        currentMode.Aggregation_Type = aggrType;
             currentMode.Search_Type = searchType;
             currentMode.Search_String = search_string;
+
+			// Get the front banner
+	        frontBannerInfo = Current_Aggregation.Front_Banner_Image(currentMode.Language);
         }
 
         /// <summary> Sets the sharing buttons HTML to display over the banner </summary>
@@ -132,24 +138,25 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("     *********************************************** -->");
             }
 
-            Output.WriteLine("<table cellpadding=\"0px\" cellspacing=\"0px\" class=\"SobekHomeBanner\">");
-            Output.WriteLine("  <tr valign=\"top\">");
+            Output.WriteLine("<table cellpadding=\"0px\" cellspacing=\"0px\" class=\"sbkRhav_RotatingBanner\">");
+            Output.WriteLine("  <tr>");
 
-            if (currentCollection.Front_Banner_Left_Side)
-            {
-                string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + currentCollection.Front_Banner_Image(currentMode.Language);
-                Output.Write("    <td style=\"background-image: url( " + banner_image + "); width: " + currentCollection.Front_Banner_Width + "px; height: " + currentCollection.Front_Banner_Height + "px;\" ");
-                Output.WriteLine("align=\"left\">");
+
+
+			if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
+			{
+				string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
+				Output.Write("    <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
-                Output.WriteLine("      <div style=\"padding-top: 145px;padding-left: 240px;\">");
+				Output.WriteLine("      <div class=\"sbkRhav_RotatingBannerLeftSearch\">");
                 Output.WriteLine("        <table>");
                 Output.WriteLine("          <tr>");
-                Output.WriteLine("            <td colspan=\"2\">");
-                Output.WriteLine("               <b><label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label></b>");
+				Output.WriteLine("            <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
+                Output.WriteLine("               <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
                 Output.WriteLine("            </td>");
                 Output.WriteLine("          </tr>");
-                Output.WriteLine("          <tr valign=\"bottom\">");
+                Output.WriteLine("          <tr style=\"vertical-align:bottom\">");
                 Output.WriteLine("            <td>");
                 Output.Write("              <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
                 if (currentMode.Browser_Type.IndexOf("IE") >= 0)
@@ -175,7 +182,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Either draw all the highlights to flip through, or just the one highlight
             if (currentCollection.Highlights.Count > 1)
             {
-                int width = 754 - currentCollection.Front_Banner_Width;
+                int width = 754 - frontBannerInfo.Width;
 
                 Output.WriteLine("      <div id=\"slider1\" class=\"sliderwrapper\" style=\"width:" + width + "px\">");
 
@@ -211,7 +218,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("        </div>");
                 }
                 Output.WriteLine("      </div>");
-                int pagination_width = 735 - currentCollection.Front_Banner_Width;
+                int pagination_width = 735 - frontBannerInfo.Width;
                 Output.WriteLine("      <div id=\"paginate-slider1\" class=\"pagination\" style=\"width:" + pagination_width + "px\" >  </div>");
 
 
@@ -249,21 +256,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </td>");
 
 
-            if (!currentCollection.Front_Banner_Left_Side)
+            if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT)
             {
-                string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + currentCollection.Front_Banner_Image(currentMode.Language);
-                Output.Write("    <td style=\"background-image: url( " + banner_image + "); width: " + currentCollection.Front_Banner_Width + "px; height: " + currentCollection.Front_Banner_Height + "px;\" ");
-                Output.WriteLine("align=\"left\">");
+				string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/"); 
+				Output.WriteLine("    <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
-                Output.WriteLine("      <div style=\"padding-top: 145px; padding-left: 20px; \">");
+				Output.WriteLine("      <div class=\"sbkRhav_RotatingBannerRightSearch\">");
                 Output.WriteLine("        <table>");
                 Output.WriteLine("          <tr>");
-                Output.WriteLine("            <td colspan=\"2\">");
-                Output.WriteLine("               <b><label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label></b>");
+                Output.WriteLine("            <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
+                Output.WriteLine("               <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
                 Output.WriteLine("            </td>");
                 Output.WriteLine("          </tr>");
-                Output.WriteLine("          <tr valign=\"bottom\">");
+                Output.WriteLine("          <tr style=\"vertial-align:bottom\">");
                 Output.WriteLine("            <td>");
                 Output.Write("              <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
                 if (currentMode.Browser_Type.IndexOf("IE") >= 0)
