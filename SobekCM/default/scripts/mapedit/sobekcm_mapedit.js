@@ -4380,10 +4380,6 @@ function createSavedPOI(handle) {
 
 //sends save dataPackages to the server via json
 function toServer(dataPackage) {
-
-    //alert(dataPackage);
-    return;
-
     jQuery('form').each(function() {
 
         var payload = JSON.stringify({ sendData: dataPackage });
@@ -4444,7 +4440,7 @@ function overlayEditMe(id) {
             globalVar.workingOverlayIndex = id;
             de("editing overlay " + globalVar.workingOverlayIndex);
             //reset preserved rotation value
-            globalVar.preservedRotation = 0;
+            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //set visual rotation knob value
             try {
                 if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1] < 0) {
