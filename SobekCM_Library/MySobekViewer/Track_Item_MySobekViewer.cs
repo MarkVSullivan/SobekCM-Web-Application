@@ -29,6 +29,8 @@ namespace SobekCM.Library.MySobekViewer
         private string error_message = String.Empty;
         private SobekCM_Item item;
         private int stage=1;
+        private string hidden_request ;
+        private string hidden_value;
 
         private DataTable tracking_users;
 
@@ -61,31 +63,9 @@ namespace SobekCM.Library.MySobekViewer
             scanners_list = new List<string>();
 
             //Get the barcode (scanned by the user) from the form
-            barcodeString = HttpContext.Current.Request.Form["txtScannedString"] ?? String.Empty;
-           
-            //Decode the scanned barcode 
-            if (!String.IsNullOrEmpty(barcodeString))
-            {
-                //Find a match for a number within the string, which corresponds to the event
-                Match val = Regex.Match(barcodeString, @"\d");
-                if (val.Success)
-                {
-                    int len = barcodeString.IndexOf(val.Value);
-                    Int32.TryParse(val.Value, out stage);
-                    
-                    //Extract the item ID & checksum from the barcode string
-                    encodedItemID = barcodeString.Substring(0, len);
-                    checksum = barcodeString.Substring(len - 1);
-
-                    bool isValidChecksum = Is_Valid_Checksum(encodedItemID, val.Value, checksum);
-                    if (!isValidChecksum)
-                        error_message = "Barcode error- checksum error";
-
-                    bool IsValidItem= Get_Item_Info_from_Barcode(encodedItemID);
-                    if (!IsValidItem)
-                        error_message = "Barcode error - invalid ItemID referenced";
-                }
-            }
+   //         barcodeString = HttpContext.Current.Request.Form["txtScannedString"] ?? String.Empty;
+        
+   
 
             //Get the list of users who are possible Scanning/Processing technicians from the DB
             tracking_users = Database.SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
@@ -106,7 +86,52 @@ namespace SobekCM.Library.MySobekViewer
             {
                 scanners_list.Add(row["ScanningEquipment"].ToString());
             }
+
+            //See if there were any hidden requests
+            hidden_request = HttpContext.Current.Request.Form["Track_Item_behaviors_request"] ?? String.Empty;
+            hidden_value = HttpContext.Current.Request.Form["Track_Item_hidden_value"] ?? String.Empty;
+
+            switch (hidden_request.ToLower())
+            {
+                case "decode_barcode":
+                    barcodeString = hidden_value;
+                    //Decode the scanned barcode 
+                    if (!String.IsNullOrEmpty(barcodeString))
+                    {
+                        //Find a match for a number within the string, which corresponds to the event
+                        Match val = Regex.Match(barcodeString, @"\d");
+                        if (val.Success)
+                        {
+                            int len = barcodeString.IndexOf(val.Value);
+                            Int32.TryParse(val.Value, out stage);
+
+                            //Extract the item ID & checksum from the barcode string
+                            encodedItemID = barcodeString.Substring(0, len);
+                            checksum = barcodeString.Substring(len+1, (barcodeString.Length-len-1));
+
+                            bool isValidChecksum = Is_Valid_Checksum(encodedItemID, val.Value, checksum);
+                            if (!isValidChecksum)
+                                error_message = "Barcode error- checksum error";
+
+                            bool IsValidItem = Get_Item_Info_from_Barcode(encodedItemID);
+                            if (!IsValidItem)
+                                error_message = "Barcode error - invalid ItemID referenced";
+                        }
+                    }
+                    break;
+            }
+            
+
           }
+
+
+        private bool Get_Bib_VID_from_ItemID(int item_ID)
+        {
+            bool success = false;
+
+            DataRow temp = Database.SobekCM_Database.
+            return success;
+        }
 
 
         /// <summary> Validate the checksum on the barcode value </summary>
@@ -116,7 +141,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <returns>Returns TRUE if the checksum is valid, else FALSE</returns>
         private bool Is_Valid_Checksum(string encoded_ItemID, string Stage, string checksum_string)
         {
-            bool valid_checksum = true;
+            bool is_valid_checksum = true;
             int event_num=0;
             int thisItemID = 0;
             int thisChecksumValue = 0;
@@ -126,9 +151,9 @@ namespace SobekCM.Library.MySobekViewer
             thisChecksumValue = Int_from_Base26(checksum_string);
 
             if (thisChecksumValue != (thisItemID + event_num)%26)
-                valid_checksum = false;
-
-            return valid_checksum;
+                is_valid_checksum = false;
+ 
+            return is_valid_checksum;
         }
 
         /// <summary>
@@ -192,7 +217,6 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css\"></script>");
         }
 
 
@@ -205,6 +229,11 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
             builder.AppendLine("<div class=\"SobekHomeText\">");
+
+            //Add the hidden variables
+            builder.AppendLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
+            builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_behaviors_request\" name=\"Track_Item_behaviors_request\" value=\"\"/>");
+            builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_hidden_value\" name=\"Track_Item_hidden_value\"value=\"\"/>");
 
             //Start the Entry Type Table
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Entry Type</h2></span>");
@@ -224,7 +253,7 @@ namespace SobekCM.Library.MySobekViewer
             
             builder.AppendLine("<table class=\"sbkTi_table\">");
             builder.AppendLine("<tr id=\"tblrow_Barcode\"><td>Scan barcode here:</td>");
-            builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus /></td></tr>");
+            builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td></tr>");
             builder.AppendLine("<tr id=\"tblrow_Manual1\" style=\"display:none\"><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\">"+bibid+"</input></td>");
             builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\"/>"+vid+"</td>");
             builder.AppendLine("</tr>");

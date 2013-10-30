@@ -8614,6 +8614,40 @@ namespace SobekCM.Library.Database
         }
 
 
+        public static DataRow Tracking_Get_Item_Bib_VID_from_ItemID(int itemID)
+        {
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Create the command
+                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Item_Bib_VID_from_ItemID", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@itemID", itemID);
+
+                //Open the connection
+                connect.Open();
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                DataTable returnValue = new DataTable();
+                adapter.Fill(returnValue);
+
+                //Close the connection
+                connect.Close();
+
+                //Return the data table
+                return (returnValue.Rows[0]);
+
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error retrieving item details from itemID from the Database" + ee.Message);
+            }
+
+        }
+
         #endregion
 
     }
