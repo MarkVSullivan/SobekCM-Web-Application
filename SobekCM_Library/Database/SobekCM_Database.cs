@@ -8672,8 +8672,10 @@ namespace SobekCM.Library.Database
 
         }
 
-
-        public static DataRow Tracking_Get_Item_Bib_VID_from_ItemID(int itemID)
+        /// <summary> Gets the corresponding BibID, VID for a given itemID </summary>
+        /// <param name="itemID"></param>
+        /// <returns></returns>
+        public static DataRow Tracking_Get_Item_Info_from_ItemID(int itemID)
         {
             // Create the connection
             SqlConnection connect = new SqlConnection(connectionString);
@@ -8681,7 +8683,7 @@ namespace SobekCM.Library.Database
             try
             {
                 //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Item_Bib_VID_from_ItemID", connect);
+                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Item_Info_from_ItemID", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@itemID", itemID);
 
