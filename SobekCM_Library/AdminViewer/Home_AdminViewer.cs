@@ -70,6 +70,11 @@ namespace SobekCM.Library.AdminViewer
 			currentMode.Admin_Type = Admin_Type_Enum.Aliases;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "forwarding.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Aliases</a></td></tr>");
 
+			// Edit item aggregations
+			currentMode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "building.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Management</a></td></tr>");
+			
+
 			// View and set SobekCM Builder Status
 			currentMode.Admin_Type = Admin_Type_Enum.Builder_Status;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "gears.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Builder Status</a></td></tr>");
@@ -83,11 +88,6 @@ namespace SobekCM.Library.AdminViewer
 			currentMode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "firewall.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">IP Restriction Ranges</a></td></tr>");
 
-
-			// Edit item aggregations
-			currentMode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "building.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Item Aggregations</a></td></tr>");
-			
 			// Edit Settings
 			currentMode.Admin_Type = Admin_Type_Enum.Settings;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wrench.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">System-Wide Settings</a></td></tr>");

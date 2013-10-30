@@ -364,7 +364,7 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("  <h2>Existing URL Portals</h2>");
             Output.WriteLine("  <p>The following URL portals are currently cached in this web application.</p>");
 
-            Output.WriteLine("  <table class=\"sbkSav_Table sbkAdm_Table\">");
+            Output.WriteLine("  <table class=\"sbkPoav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
 			if ( user.Is_System_Admin )
 				Output.WriteLine("      <th class=\"sbkPoav_TableHeader1\">ACTIONS</th>");

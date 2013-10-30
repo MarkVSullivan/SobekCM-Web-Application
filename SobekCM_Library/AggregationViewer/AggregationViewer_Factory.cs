@@ -31,8 +31,8 @@ namespace SobekCM.Library.AggregationViewer
 
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
-                    string frontBannerImage = Current_Aggregation.Front_Banner_Image(Current_Mode.Language);
-                    if ((frontBannerImage.Length > 0) && (Current_Aggregation.Highlights.Count > 0))
+                    Item_Aggregation_Front_Banner frontBannerImage = Current_Aggregation.Front_Banner_Image(Current_Mode.Language);
+					if ((frontBannerImage != null ) && (Current_Aggregation.Highlights.Count > 0))
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(Current_Aggregation, Current_Mode);
                     }
@@ -53,7 +53,7 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
                     return new Map_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.dLOC_FullText_Search:
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
                     return new dLOC_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
                 default:
@@ -75,7 +75,8 @@ namespace SobekCM.Library.AggregationViewer
                     return new Advanced_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
                 case Search_Type_Enum.Basic:
-                    if ((Current_Aggregation.Front_Banner_Image(Current_Mode.Language ).Length > 0) && (Current_Aggregation.Highlights.Count > 0))
+					Item_Aggregation_Front_Banner frontBannerImage = Current_Aggregation.Front_Banner_Image(Current_Mode.Language);
+					if ((frontBannerImage != null ) && (Current_Aggregation.Highlights.Count > 0))
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(Current_Aggregation, Current_Mode);
                     }

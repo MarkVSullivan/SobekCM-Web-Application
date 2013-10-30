@@ -1,8 +1,11 @@
 
 
 alter table mySobek_User add Can_Delete_All_Items bit not null default('false');
+GO
 alter table mySobek_User_Group add Can_Delete_All_Items bit not null default('false');
+GO
 alter table mySobek_User_Group_Edit_Aggregation add IsAdmin bit not null default('false');
+GO
 alter table mySobek_User_Edit_Aggregation add IsAdmin bit not null default('false');
 GO
 

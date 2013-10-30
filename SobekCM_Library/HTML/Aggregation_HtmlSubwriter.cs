@@ -39,7 +39,7 @@ namespace SobekCM.Library.HTML
         private readonly List<iSearch_Title_Result> pagedResults;
         private readonly Search_Results_Statistics resultsStatistics;
         private List<Thematic_Heading> thematicHeadings;
-        private readonly Item_Aggregation_Browse_Info thisBrowseObject;
+        private readonly Item_Aggregation_Child_Page thisBrowseObject;
         private readonly HTML_Based_Content thisStaticBrowseObject;
         private readonly Language_Support_Info translator;
 
@@ -60,7 +60,7 @@ namespace SobekCM.Library.HTML
         public Aggregation_HtmlSubwriter(Item_Aggregation Hierarchy_Object, 
             SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, 
             Language_Support_Info Translator, 
-            Item_Aggregation_Browse_Info Browse_Object,
+            Item_Aggregation_Child_Page Browse_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
             Aggregation_Code_Manager Code_Manager, Item_Lookup_Object All_Items_Lookup,
@@ -195,6 +195,9 @@ namespace SobekCM.Library.HTML
 				homeWriter.Flush();
 				homeWriter.Close();
 
+				// Also save this change
+				SobekCM_Database.Save_Item_Aggregation_Milestone(Hierarchy_Object.Code, "Home page edited (" + Web_Language_Enum_Converter.Enum_To_Name(currentMode.Language) + ")", currentUser.Full_Name);
+
 				// Clear this aggreation from the cache
 				Cached_Data_Manager.Remove_Item_Aggregation(Hierarchy_Object.Code, Tracer);
 
@@ -203,7 +206,15 @@ namespace SobekCM.Library.HTML
 
 				// Forward along
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-				currentMode.Redirect();
+				string redirect_url = currentMode.Redirect_URL();
+				if (redirect_url.IndexOf("?") > 0)
+					redirect_url = redirect_url + "&refresh=always";
+				else
+					redirect_url = redirect_url + "?refresh=always";
+				currentMode.Request_Completed = true;
+				HttpContext.Current.Response.Redirect(redirect_url, false);
+				HttpContext.Current.ApplicationInstance.CompleteRequest();
+
 				return;
 			}
             
@@ -472,17 +483,17 @@ namespace SobekCM.Library.HTML
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
 			// Force a refresh?
-	        if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
-	        {
-		        Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
-		        if ((refreshFlag.HasValue) && (refreshFlag.Value))
-		        {
-			        HttpContext.Current.Session["REFRESH"] = null;
-			        Output.WriteLine("  <script type=\"text/javascript\">");
-			        Output.WriteLine("    history.go(0);");
-			        Output.WriteLine("  </script>");
-		        }
-	        }
+			//if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
+			//{
+			//	Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
+			//	if ((refreshFlag.HasValue) && (refreshFlag.Value))
+			//	{
+			//		HttpContext.Current.Session["REFRESH"] = null;
+			//		Output.WriteLine("  <script type=\"text/javascript\">");
+			//		Output.WriteLine("    history.go(0);");
+			//		Output.WriteLine("  </script>");
+			//	}
+			//}
 
 
 	        if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
@@ -1061,11 +1072,11 @@ namespace SobekCM.Library.HTML
             }
 
             // Are there any additional browses to include?
-            ReadOnlyCollection<Item_Aggregation_Browse_Info> otherBrowses = Hierarchy_Object.Browse_Home_Pages(currentMode.Language);
+            ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = Hierarchy_Object.Browse_Home_Pages(currentMode.Language);
             if (otherBrowses.Count > included_browses)
             {
                 // Now, step through the sorted list
-                foreach (Item_Aggregation_Browse_Info thisBrowseObj in otherBrowses)
+                foreach (Item_Aggregation_Child_Page thisBrowseObj in otherBrowses)
                 {
                     if ((thisBrowseObj.Code != "all") && (thisBrowseObj.Code != "new"))
                     {

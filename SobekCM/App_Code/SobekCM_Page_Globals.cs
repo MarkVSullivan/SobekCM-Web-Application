@@ -45,7 +45,7 @@ public class SobekCM_Page_Globals
     public Search_Results_Statistics searchResultStatistics;
     public SobekCM_SiteMap siteMap;
     public HTML_Based_Content staticWebContent;
-    public Item_Aggregation_Browse_Info thisBrowseObject;
+    public Item_Aggregation_Child_Page thisBrowseObject;
     public Custom_Tracer tracer;
 
     #endregion
@@ -241,6 +241,9 @@ public class SobekCM_Page_Globals
                         // Nothing to do here.. shouldn't ever really be here..
                     }
                 }
+
+	            if (currentMode.Request_Completed)
+		            return;
 
                 // If this was a call for RESET, clear the memory
                 if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type == Admin_Type_Enum.Reset))
@@ -805,7 +808,7 @@ public class SobekCM_Page_Globals
 
     public void On_Page_Load()
     {
-        if (currentMode != null)
+        if (( currentMode != null) && ( !currentMode.Request_Completed ))
         {
             // If this is not a post back, log it
             if (!currentMode.isPostBack)

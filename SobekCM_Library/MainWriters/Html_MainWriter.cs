@@ -85,7 +85,7 @@ namespace SobekCM.Library.MainWriters
             Item_Aggregation Hierarchy_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
-            Item_Aggregation_Browse_Info Browse_Object,
+            Item_Aggregation_Child_Page Browse_Object,
             SobekCM_Item Current_Item,
             Page_TreeNode Current_Page,
             SobekCM_Skin_Object HTML_Skin,
@@ -641,10 +641,14 @@ namespace SobekCM.Library.MainWriters
             // Include the interface's style sheet if it has one
             if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
             {
-                Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-                Output.WriteLine("    @import url( " + currentMode.Base_URL + htmlSkin.CSS_Style + " );");
-                Output.WriteLine("  </style>");
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + htmlSkin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
             }
+
+			// Finally add the aggregation-level CSS if it exists
+			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
+			{
+				Output.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			}
 
             // Add a printer friendly CSS
             Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + currentMode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" /> ");

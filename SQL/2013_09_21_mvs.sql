@@ -2812,7 +2812,7 @@ GO
 
 
 -- Perform metadata search 
-CREATE PROCEDURE [dbo].[SobekCM_Metadata_Search_Paged2]
+ALTER PROCEDURE [dbo].[SobekCM_Metadata_Search_Paged2]
 	@term1 nvarchar(255),
 	@field1 int,
 	@link2 int,

@@ -737,6 +737,120 @@ function new_aggr_edit_page(page) {
     return false;
 }
 
+function save_css_edits() {
+	var hiddenfield = document.getElementById('admin_aggr_save');
+	hiddenfield.value = 'e';
+	var hiddenfield2 = document.getElementById('admin_aggr_action');
+	hiddenfield2.value = 'save_css';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function aggr_edit_enable_css() {
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'enable_css';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function aggr_edit_disable_css() {
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'disable_css';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function new_aggr_add_home() {
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'add_home';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function aggr_edit_delete_home(code)
+{
+	var input_box = confirm("Do you really want to delete this home page?");
+	if (input_box == true) {
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_home_' + code;
+		document.itemNavForm.submit();
+	}
+
+	// Return false to prevent another return trip to the server
+	return false;
+}
+
+function aggr_edit_delete_banner(code, type) {
+	var input_box = confirm("Do you really want to delete this banner?");
+	if (input_box == true) {
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_' + type + '_' + code;
+		document.itemNavForm.submit();
+	}
+
+	// Return false to prevent another return trip to the server
+	return false;
+}
+
+function edit_aggr_banner_select_changed(url) {
+	var selectField = document.getElementById('admin_aggr_new_banner_image');
+	var new_url = url + selectField.value;
+	jQuery("#sbkSaav_SelectedBannerImage").attr("src", new_url);
+}
+
+function new_aggr_add_banner() {
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'add_banner';
+	document.itemNavForm.submit();
+	return false;
+}
+
+// Save the new aggregation
+function save_new_child_aggr() {
+	// Set the hidden value this data
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'save_aggr';
+	document.itemNavForm.submit();
+	return false;
+}
+
+
+// Delete an existing aggregation
+function edit_aggr_delete_child_aggr(Code) {
+
+	var input_box = confirm("Do you really want to delete subcollection '" + Code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_' + Code;
+
+		document.itemNavForm.submit();
+	}
+
+	return false;
+}
+
+function save_new_child_page() {
+	// Set the hidden value this data
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'save_childpage';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function edit_aggr_delete_child_page(Code) {
+	var input_box = confirm("Do you really want to delete child page '" + Code + "'?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_' + Code;
+
+		document.itemNavForm.submit();
+	}
+
+	return false;
+}
+
 // Trim the input string from the search box
 function trimString (str) 
 {

@@ -62,7 +62,7 @@ namespace SobekCM.Library.Aggregations
             DataSet_Browse,
 
             /// <summary> dLOC search is a basic search which also includes a check box to exclude or include newspapers </summary>
-            dLOC_FullText_Search,
+            DLOC_FullText_Search,
 
             /// <summary> Full text search allows the full text of the documents to be searched </summary>
             FullText_Search,
@@ -103,13 +103,15 @@ namespace SobekCM.Library.Aggregations
         #region Private variables
 
         private readonly Dictionary<Web_Language_Enum, string> bannerImagesByLanguage;
-        private readonly Dictionary<string, Item_Aggregation_Browse_Info> browseInfoHash;
         private List<Item_Aggregation_Related_Aggregations> children;
         private string defaultBrowseBy;
-        private readonly Dictionary<Web_Language_Enum, string> frontBannerImageByLanguage;
+		private readonly Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> frontBannerImageByLanguage;
         private readonly Dictionary<Web_Language_Enum, string> homeFilesByLanguage;
         private List<Item_Aggregation_Related_Aggregations> parents;
         private readonly List<CollectionViewsAndSearchesEnum> viewsAndSearches;
+
+		private readonly Dictionary<string, Item_Aggregation_Child_Page> childPagesHash;
+	    private readonly List<Item_Aggregation_Child_Page> childPages;
 
         #endregion
 
@@ -177,15 +179,13 @@ namespace SobekCM.Library.Aggregations
             Default_Skin = String.Empty;
             Show_New_Item_Browse = false;
             Load_Email = String.Empty;
-            browseInfoHash = new Dictionary<string, Item_Aggregation_Browse_Info>();
+            childPagesHash = new Dictionary<string, Item_Aggregation_Child_Page>();
             Highlights = new List<Item_Aggregation_Highlights>();
             Rotating_Highlights = false;
             homeFilesByLanguage = new Dictionary<Web_Language_Enum, string>();
             bannerImagesByLanguage = new Dictionary<Web_Language_Enum, string>();
-            frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, string>();
-            Front_Banner_Left_Side = true;
-            Front_Banner_Width = 550;
-            Front_Banner_Height = 230;
+			frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
+			childPages = new List<Item_Aggregation_Child_Page>();
             Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>();
             Title_Count = -1;
             Page_Count = -1;
@@ -195,6 +195,8 @@ namespace SobekCM.Library.Aggregations
             Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
             Thematic_Heading_ID = -1;
+	        CSS_File = String.Empty;
+	        Custom_Home_Page_Source_File = String.Empty;
 
             // Add the default result views
             Result_Views = new List<Result_Display_Type_Enum>
@@ -240,15 +242,13 @@ namespace SobekCM.Library.Aggregations
             Default_Skin = String.Empty;
             Show_New_Item_Browse = false;
             Load_Email = String.Empty;
-            browseInfoHash = new Dictionary<string, Item_Aggregation_Browse_Info>();
+            childPagesHash = new Dictionary<string, Item_Aggregation_Child_Page>();
             Highlights = new List<Item_Aggregation_Highlights>();
             Rotating_Highlights = false;
             homeFilesByLanguage = new Dictionary<Web_Language_Enum, string>();
             bannerImagesByLanguage = new Dictionary<Web_Language_Enum, string>();
-            frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, string>();
-            Front_Banner_Left_Side = true;
-            Front_Banner_Width = 550;
-            Front_Banner_Height = 230;
+			frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
+			childPages = new List<Item_Aggregation_Child_Page>();
             Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>();
             Title_Count = -1;
             Page_Count = -1;
@@ -258,6 +258,8 @@ namespace SobekCM.Library.Aggregations
             Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
             Thematic_Heading_ID = -1;
+			CSS_File = String.Empty;
+	        Custom_Home_Page_Source_File = String.Empty;
 
             // Add the searches and views
             viewsAndSearches = new List<CollectionViewsAndSearchesEnum>();
@@ -286,7 +288,7 @@ namespace SobekCM.Library.Aggregations
                         break;
 
 					case 'C':
-						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.dLOC_FullText_Search);
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.DLOC_FullText_Search);
 						home_search_found = true;
 						break;
 
@@ -352,241 +354,158 @@ namespace SobekCM.Library.Aggregations
 
         #region Public Properties
 
-        /// <summary>
-        ///   Returns the list of the primary identifiers for all metadata fields which have data and thus should appear in the advanced search drop downs
-        /// </summary>
+        /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus should appear in the advanced search drop downs  </summary>
         public List<short> Advanced_Search_Fields { get; private set; }
 
-        /// <summary>
-        ///   Returns the list of the primary identifiers for all metadata fields which have data and thus could appear in the metadata browse
-        /// </summary>
+        /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus could appear in the metadata browse </summary>
         public List<short> Browseable_Fields { get; private set; }
 
-        /// <summary>
-        ///   Returns the list of all facets to display during searches and browses within this aggregation
-        /// </summary>
-        /// <remarks>
-        ///   This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8.
-        /// </remarks>
+        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
+        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
         public List<short> Facets { get; private set; }
 
-        /// <summary>
-        ///   Gets the list of web skins this aggregation can appear under
-        /// </summary>
-        /// <remarks>
-        ///   If no web skins are indicated, this is not restricted to any set of web skins, and can appear under any skin
-        /// </remarks>
+        /// <summary> Gets the list of web skins this aggregation can appear under </summary>
+        /// <remarks> If no web skins are indicated, this is not restricted to any set of web skins, and can appear under any skin </remarks>
         public List<string> Web_Skins { get; private set; }
 
-        /// <summary>
-        ///   Gets the list of custom directives (which function like Server-Side Includes) 
-        ///   for this item aggregation
-        /// </summary>
+        /// <summary> Gets the list of custom directives (which function like Server-Side Includes) 
+        ///   for this item aggregation </summary>
         public Dictionary<string, Item_Aggregation_Custom_Directive> Custom_Directives { get; private set; }
 
-        /// <summary>
-        ///   Default browse by code, if no code is provided in the request
-        /// </summary>
+        /// <summary> Default browse by code, if no code is provided in the request </summary>
         public string Default_BrowseBy
         {
             get { return defaultBrowseBy ?? String.Empty; }
             set { defaultBrowseBy = value; }
         }
 
-        /// <summary>
-        ///   Gets the default results view mode for this item aggregation
-        /// </summary>
+        /// <summary> Gets the default results view mode for this item aggregation </summary>
         public Result_Display_Type_Enum Default_Result_View { get; set; }
 
-        /// <summary>
-        ///   Gets the list of all result views present in this item aggregation
-        /// </summary>
+        /// <summary> Gets the list of all result views present in this item aggregation </summary>
         public List<Result_Display_Type_Enum> Result_Views { get; private set; }
 
-        /// <summary>
-        ///   Number of pages for all the items within this item aggregation
-        /// </summary>
+        /// <summary> Number of pages for all the items within this item aggregation </summary>
         public int Page_Count { get; set; }
 
-        /// <summary>
-        ///   Number of titles within this item aggregation
-        /// </summary>
+        /// <summary> Number of titles within this item aggregation </summary>
         public int Title_Count { get; set; }
 
-        /// <summary>
-        ///   Number of items within this item aggregation
-        /// </summary>
+        /// <summary> Number of items within this item aggregation </summary>
         public int Item_Count { get; set; }
 
-        /// <summary>
-        ///   Gets the list of highlights associated with this item
-        /// </summary>
+        /// <summary> Gets the list of highlights associated with this item </summary>
         public List<Item_Aggregation_Highlights> Highlights { get; private set; }
 
-        /// <summary>
-        ///   Value indicates if the highlights should be rotating through a number of 
-        ///   highlights, or be fixed on a single highlight
-        /// </summary>
+        /// <summary> Value indicates if the highlights should be rotating through a number of 
+        ///   highlights, or be fixed on a single highlight </summary>
         public bool Rotating_Highlights { get; set; }
 
-        /// <summary>
-        ///   Key to the thematic heading under which this aggregation should appear on the main home page
-        /// </summary>
+        /// <summary> Key to the thematic heading under which this aggregation should appear on the main home page </summary>
         public int Thematic_Heading_ID { get; set; }
 
-        /// <summary>
-        ///   Email address to receive notifications when items load under this aggregation
-        /// </summary>
+        /// <summary> Email address to receive notifications when items load under this aggregation </summary>
         public string Load_Email { get; set; }
 
-        /// <summary>
-        ///   Directory where all design information for this object is found
-        /// </summary>
-        /// <remarks>
-        ///   This always returns the string 'aggregations/[Code]/' with the code for this item aggregation
-        /// </remarks>
+        /// <summary> Directory where all design information for this object is found </summary>
+        /// <remarks> This always returns the string 'aggregations/[Code]/' with the code for this item aggregation </remarks>
         public string ObjDirectory
         {
             get { return "aggregations/" + Code + "/"; }
         }
 
-        /// <summary>
-        ///   Metadata aggregation code used to search in the corresponding greenstone collection(s)
-        /// </summary>
-        /// <remarks>
-        ///   If this item aggregation corresponds directly to a greenstone collect, this field will be unnecessary, and therefore blank
-        /// </remarks>
+        /// <summary> Metadata aggregation code used to search in the corresponding greenstone collection(s) </summary>
+        /// <remarks> If this item aggregation corresponds directly to a greenstone collect, this field will be unnecessary, and therefore blank </remarks>
         public string Metadata_Code { get; set; }
 
-        /// <summary>
-        ///   Full name of this item aggregation
-        /// </summary>
+        /// <summary> Full name of this item aggregation </summary>
         public string Name { get; set; }
 
-        /// <summary>
-        ///   Short name of this item aggregation
-        /// </summary>
-        /// <remarks>
-        ///   This is an alternate name used for breadcrumbs, etc..
-        /// </remarks>
+        /// <summary> Short name of this item aggregation </summary>
+        /// <remarks> This is an alternate name used for breadcrumbs, etc.. </remarks>
         public string ShortName { get; set; }
 
-        /// <summary>
-        ///   Description of this item aggregation
-        /// </summary>
-        /// <remarks>
-        ///   This field is displayed on the main home pages if this is part of a thematic collection
-        /// </remarks>
+        /// <summary> Description of this item aggregation (in the default language ) </summary>
+        /// <remarks> This field is displayed on the main home pages if this is part of a thematic collection </remarks>
         public string Description { get; set; }
 
-        /// <summary>
-        ///   Flag indicating this item aggregation is active
-        /// </summary>
+        /// <summary> Flag indicating this item aggregation is active </summary>
         public bool Is_Active { get; set; }
 
-        /// <summary>
-        ///   Flag indicating this item aggregation is hidden from most displays
-        /// </summary>
-        /// <remarks>
-        ///   If this item aggregation is active, public users can still be directed to this item aggreagtion, but it will
-        ///   not appear in the lists of subaggregations anywhere.
-        /// </remarks>
+        /// <summary> Flag indicating this item aggregation is hidden from most displays </summary>
+        /// <remarks> If this item aggregation is active, public users can still be directed to this item aggreagtion, but it will
+        ///   not appear in the lists of subaggregations anywhere. </remarks>
         public bool Hidden { get; set; }
 
-        /// <summary>
-        ///   Display options string for this item aggregation
-        /// </summary>
-        /// <remarks>
-        ///   This defines which views and browses are available for this item aggregation
-        /// </remarks>
+        /// <summary> Display options string for this item aggregation </summary>
+        /// <remarks> This defines which views and browses are available for this item aggregation </remarks>
         public string Display_Options { get; set; }
 
-        /// <summary>
-        ///   Flag that tells what type of map searching to allow for this item aggregation
-        /// </summary>
+        /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
         public ushort Map_Search { get; set; }
 
-        /// <summary>
-        ///   Flag that tells what type of map display to show for this item aggregation
-        /// </summary>
+        /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
         public ushort Map_Display { get; set; }
 
-        /// <summary>
-        ///   Flag indicates whether this item aggregation should be made available via OAI-PMH
-        /// </summary>
+        /// <summary> Flag indicates whether this item aggregation should be made available via OAI-PMH </summary>
         public bool OAI_Flag { get; set; }
 
-        /// <summary>
-        ///   Additional metadata for this item aggregation to be included when providing the list of OAI-PMH sets
-        /// </summary>
+        /// <summary> Additional metadata for this item aggregation to be included when providing the list of OAI-PMH sets </summary>
         public string OAI_Metadata { get; set; }
 
-        /// <summary>
-        ///   Contact email for any correspondance regarding this item aggregation
-        /// </summary>
+        /// <summary> Contact email for any correspondance regarding this item aggregation </summary>
         public string Contact_Email { get; set; }
 
-        /// <summary>
-        ///   Default interface to be used for this item aggregation
-        /// </summary>
-        /// <remarks>
-        ///   This is primarily used for institutional aggregations, but can be utilized anywhere
-        /// </remarks>
+        /// <summary> Default interface to be used for this item aggregation </summary>
+        /// <remarks> This is primarily used for institutional aggregations, but can be utilized anywhere </remarks>
         public string Default_Skin { get; set; }
+
+		/// <summary> Aggregation-level CSS file, if one exists </summary>
+		public string CSS_File { get; set; }
+
+		/// <summary> Custom home page source file, if one exists </summary>
+		/// <remarks> This overrides many of the other parts of the item aggregation if in affect </remarks>
+		public string Custom_Home_Page_Source_File { get; set; }
 
         /// <summary> External link associated with this item aggregation  </summary>
         /// <remarks> This shows up in the citation view when an item is linked to this item aggregation </remarks>
         public string External_Link { get; set;  }
 
-        /// <summary>
-        ///   Flag indicates whether items linked to this item can be described by logged in users 
-        /// </summary>
+        /// <summary> Flag indicates whether items linked to this item can be described by logged in users  </summary>
         public short Items_Can_Be_Described { get; set; }
 
-        /// <summary>
-        ///   Gets the number of browses and info pages attached to this item aggregation
-        /// </summary>
+        /// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
         public int Browse_Info_Count
         {
-            get { return browseInfoHash.Count; }
+            get { return childPagesHash.Count; }
         }
 
-        /// <summary>
-        ///   Flag indicates if this item aggregation has at least one BROWSE BY page to display
-        /// </summary>
+        /// <summary> Flag indicates if this item aggregation has at least one BROWSE BY page to display </summary>
         public bool Has_Browse_By_Pages
         {
             get
             {
-                return
-                    browseInfoHash.Values.Any(
-                        ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By);
+                return childPagesHash.Values.Any( ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY);
             }
         }
 
-        /// <summary>
-        ///   Read-only list of all the info objects attached to this item aggregation
-        /// </summary>
-        /// <remarks>
-        ///   These are returned in alphabetical order of the SUBMODE CODE portion of each info
-        /// </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Info_Pages
+        /// <summary> Read-only list of all the info objects attached to this item aggregation </summary>
+        /// <remarks> These are returned in alphabetical order of the SUBMODE CODE portion of each info </remarks>
+        public ReadOnlyCollection<Item_Aggregation_Child_Page> Info_Pages
         {
             get
             {
-                SortedList<string, Item_Aggregation_Browse_Info> otherInfos =
-                    new SortedList<string, Item_Aggregation_Browse_Info>();
-                foreach (Item_Aggregation_Browse_Info thisInfo in browseInfoHash.Values.Where(ThisInfo => ThisInfo.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Info))
+                SortedList<string, Item_Aggregation_Child_Page> otherInfos =
+                    new SortedList<string, Item_Aggregation_Child_Page>();
+                foreach (Item_Aggregation_Child_Page thisInfo in childPagesHash.Values.Where(ThisInfo => ThisInfo.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.NONE))
                 {
                     otherInfos[thisInfo.Code] = thisInfo;
                 }
-                return new ReadOnlyCollection<Item_Aggregation_Browse_Info>(otherInfos.Values);
+                return new ReadOnlyCollection<Item_Aggregation_Child_Page>(otherInfos.Values);
             }
         }
 
-        /// <summary>
-        ///   Read-only list of collection views and searches for this item aggregation
-        /// </summary>
+        /// <summary> Read-only list of collection views and searches for this item aggregation </summary>
         public ReadOnlyCollection<CollectionViewsAndSearchesEnum> Views_And_Searches
         {
             get { return new ReadOnlyCollection<CollectionViewsAndSearchesEnum>(viewsAndSearches); }
@@ -608,7 +527,7 @@ namespace SobekCM.Library.Aggregations
                     returnValue.Add(Search_Type_Enum.Map);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.FullText_Search))
                     returnValue.Add(Search_Type_Enum.Full_Text);
-                if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.dLOC_FullText_Search))
+                if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.DLOC_FullText_Search))
                     returnValue.Add(Search_Type_Enum.dLOC_Full_Text);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Advanced_Search))
                     returnValue.Add(Search_Type_Enum.Advanced);
@@ -619,91 +538,72 @@ namespace SobekCM.Library.Aggregations
             }
         }
 
-        /// <summary>
-        ///   Flag indicates if this aggregation has had any changes over the last two weeks
-        /// </summary>
-        /// <remarks>
-        ///   This, in part, controls whether the NEW ITEMS tab will appear for this item aggregation
-        /// </remarks>
+        /// <summary> Flag indicates if this aggregation has had any changes over the last two weeks </summary>
+        /// <remarks> This, in part, controls whether the NEW ITEMS tab will appear for this item aggregation </remarks>
         public bool Show_New_Item_Browse { get; set; }
 
-        /// <summary>
-        ///   Flag indicates if new items have recently been added to this collection which requires additional collection-level work
-        /// </summary>
-        /// <remarks>
-        ///   This flag is used by the builder to determine if the static collection level pages should be recreated and if the search index for this aggregation should be rebuilt.
-        /// </remarks>
+        /// <summary> Flag indicates if new items have recently been added to this collection which requires additional collection-level work </summary>
+        /// <remarks> This flag is used by the builder to determine if the static collection level pages should be recreated and if the search index for this aggregation should be rebuilt. </remarks>
         public bool Has_New_Items { get; set; }
 
-        /// <summary>
-        ///   Gets the number of child item aggregations present
-        /// </summary>
-        /// <remarks>
-        ///   This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
-        ///   there are no children, the Children property creates a readonly collection to pass back out.
-        /// </remarks>
+        /// <summary> Gets the number of child item aggregations present </summary>
+        /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
+        ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
         public int Children_Count
         {
             get
             {
-                if (children == null)
-                    return -1;
+                if (children == null) return -1;
                 return children.Count(ThisChild => (ThisChild.Active) && (!ThisChild.Hidden));
             }
         }
 
-        /// <summary>
-        ///   Gets the read-only collection of children item aggregation objects
-        /// </summary>
-        /// <remarks>
-        ///   You should check the count of children first using the <see cref = "Children_Count" /> before using this property.
-        ///   Even if there are no children, this property creates a readonly collection to pass back out.
-        /// </remarks>
+        /// <summary> Gets the read-only collection of children item aggregation objects </summary>
+        /// <remarks> You should check the count of children first using the <see cref = "Children_Count" /> before using this property.
+        ///   Even if there are no children, this property creates a readonly collection to pass back out. </remarks>
         public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> Children
         {
             get
             {
-                if (children == null)
-                    return
-                        new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(new List<Item_Aggregation_Related_Aggregations>());
-
-                return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(children);
+				return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(children ?? new List<Item_Aggregation_Related_Aggregations>());
             }
         }
 
-        /// <summary>
-        ///   Gets the number of parent item aggregations present
-        /// </summary>
-        /// <remarks>
-        ///   This should be used rather than the Count property of the <see cref = "Parents" /> property.  Even if 
-        ///   there are no parents, the Parent property creates a readonly collection to pass back out.
-        /// </remarks>
+		/// <summary> Removes a child from this collection, by aggregation code </summary>
+		/// <param name="AggregationCode"> Code of the child to remove </param>
+		public void Remove_Child(string AggregationCode)
+		{
+			if (children == null) return;
+
+			// Get list of matches
+			List<Item_Aggregation_Related_Aggregations> removes = children.Where(ThisChild => ThisChild.Code == AggregationCode).ToList();
+
+			// Remove all matches
+			foreach (Item_Aggregation_Related_Aggregations toRemove in removes)
+			{
+				children.Remove(toRemove);
+			}
+		}
+
+        /// <summary> Gets the number of parent item aggregations present </summary>
+        /// <remarks> This should be used rather than the Count property of the <see cref = "Parents" /> property.  Even if 
+        ///   there are no parents, the Parent property creates a readonly collection to pass back out. </remarks>
         public int Parent_Count
         {
             get
             {
-                if (parents == null)
-                    return 0;
-                return parents.Count;
+	            return parents == null ? 0 : parents.Count;
             }
         }
 
-        /// <summary>
-        ///   Gets the read-only collection of parent item aggregation objects
-        /// </summary>
-        /// <remarks>
-        ///   You should check the count of parents first using the <see cref = "Parent_Count" /> before using this property.
-        ///   Even if there are no parents, this property creates a readonly collection to pass back out.
-        /// </remarks>
+        /// <summary> Gets the read-only collection of parent item aggregation objects </summary>
+        /// <remarks> You should check the count of parents first using the <see cref = "Parent_Count" /> before using this property.
+        ///   Even if there are no parents, this property creates a readonly collection to pass back out. </remarks>
         public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> Parents
         {
             get
             {
-                if (parents == null)
-                    return
-                        new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(new List<Item_Aggregation_Related_Aggregations>());
-
-                return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(parents);
+				return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>( parents ?? new List<Item_Aggregation_Related_Aggregations>());
             }
         }
 
@@ -730,29 +630,20 @@ namespace SobekCM.Library.Aggregations
             }
         }
 
-        /// <summary>
-        ///   Clears all the facets in this item aggregation
-        /// </summary>
+        /// <summary> Clears all the facets in this item aggregation </summary>
         internal void Clear_Facets()
         {
             Facets.Clear();
         }
 
-        /// <summary>
-        ///   Adds a single facet type, by primary key, to this item aggregation's browse and search result pages
-        /// </summary>
+        /// <summary> Adds a single facet type, by primary key, to this item aggregation's browse and search result pages </summary>
         /// <param name = "New_Facet_ID"> Primary key for the metadata type to include as a facet </param>
-        /// <remarks>
-        ///   This should be changed in the future to accept an ENUM, rather than the database primary key
-        /// </remarks>
         internal void Add_Facet(short New_Facet_ID)
         {
             Facets.Add(New_Facet_ID);
         }
 
-        /// <summary>
-        ///   Add a web skin which this aggregation can appear under
-        /// </summary>
+        /// <summary> Add a web skin which this aggregation can appear under </summary>
         /// <param name = "Web_Skin"> Web skin this can appear under </param>
         internal void Add_Web_Skin(string Web_Skin)
         {
@@ -761,77 +652,81 @@ namespace SobekCM.Library.Aggregations
                 Default_Skin = Web_Skin;
         }
 
-        /// <summary>
-        ///   Read-only list of all the browse objects to appear on the home page attached to this item aggregation
-        /// </summary>
+		/// <summary> Collection of all child pages </summary>
+	    public ReadOnlyCollection<Item_Aggregation_Child_Page> Child_Pages
+	    {
+		    get
+		    {
+			    return new ReadOnlyCollection<Item_Aggregation_Child_Page>(childPages);
+		    }
+	    }
+
+		/// <summary> Get a child page by code </summary>
+		/// <param name="ChildCode"> Code for this child page </param>
+		/// <returns> Either the matching page, or NULL </returns>
+		public Item_Aggregation_Child_Page Child_Page_By_Code(string ChildCode)
+		{
+			return childPagesHash.ContainsKey(ChildCode.ToUpper()) ? childPagesHash[ChildCode.ToUpper()] : null;
+		}
+
+	    /// <summary> Add a child page to this item aggregatiion </summary>
+		/// <param name="ChildPage"> New child page to add </param>
+		public void Add_Child_Page(Item_Aggregation_Child_Page ChildPage)
+		{
+			childPages.Add(ChildPage);
+			childPagesHash[ChildPage.Code.ToUpper()] = ChildPage;
+		}
+
+		/// <summary> Add a new browse or info object to this hierarchical object </summary>
+		/// <param name = "Browse_Type">Flag indicates if this is a BROWSE or INFO object</param>
+		/// <param name = "Browse_Code">SubMode indicator for this object</param>
+		/// <param name = "StaticHtmlSource">Any static HTML source to be used for display</param>
+		/// <param name = "Text">Text to display for this browse</param>
+		/// <returns>The built data object</returns>
+		public Item_Aggregation_Child_Page Add_Child_Page(Item_Aggregation_Child_Page.Visibility_Type Browse_Type, string Browse_Code, string StaticHtmlSource, string Text)
+		{
+			// Create the new Browse_Info object
+			Item_Aggregation_Child_Page childPage = new Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Page.Source_Type.Database, Browse_Code, StaticHtmlSource, Text);
+
+			// Add this to the Hash table
+			childPages.Add(childPage);
+			childPagesHash[Browse_Code.ToUpper()] = childPage;
+
+			return childPage;
+		}
+
+        /// <summary> Read-only list of all the browse objects to appear on the home page attached to this item aggregation </summary>
         /// <param name = "Current_Language"> Current language used to sort the browses by the label </param>
-        /// <remarks>
-        ///   These are returned in alphabetical order of the LABEL portion of each browse, according to the provided language
-        /// </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_Home_Pages(Web_Language_Enum Current_Language)
+        /// <remarks> These are returned in alphabetical order of the LABEL portion of each browse, according to the provided language </remarks>
+        public ReadOnlyCollection<Item_Aggregation_Child_Page> Browse_Home_Pages(Web_Language_Enum Current_Language)
         {
-            SortedList<string, Item_Aggregation_Browse_Info> otherBrowses =
-                new SortedList<string, Item_Aggregation_Browse_Info>();
-            foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home))
+            SortedList<string, Item_Aggregation_Child_Page> otherBrowses =
+                new SortedList<string, Item_Aggregation_Child_Page>();
+            foreach (Item_Aggregation_Child_Page thisBrowse in childPagesHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU))
             {
                 otherBrowses[thisBrowse.Get_Label(Current_Language)] = thisBrowse;
             }
-            return new ReadOnlyCollection<Item_Aggregation_Browse_Info>(otherBrowses.Values);
+            return new ReadOnlyCollection<Item_Aggregation_Child_Page>(otherBrowses.Values);
         }
 
-        /// <summary>
-        ///   Read-only list of all the browse objects to appear under the BROWSE BY attached to this item aggregation
-        /// </summary>
+        /// <summary> Read-only list of all the browse objects to appear under the BROWSE BY attached to this item aggregation </summary>
         /// <param name = "Current_Language"> Current language used to sort the browses by the label </param>
-        /// <remarks>
-        ///   These are returned in alphabetical order of the CODE portion of each browse, according to the provided language
-        /// </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Browse_Info> Browse_By_Pages(Web_Language_Enum Current_Language)
+        /// <remarks> These are returned in alphabetical order of the CODE portion of each browse, according to the provided language </remarks>
+        public ReadOnlyCollection<Item_Aggregation_Child_Page> Browse_By_Pages(Web_Language_Enum Current_Language)
         {
-            SortedList<string, Item_Aggregation_Browse_Info> otherBrowses =new SortedList<string, Item_Aggregation_Browse_Info>();
-            foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By))
+            SortedList<string, Item_Aggregation_Child_Page> otherBrowses =new SortedList<string, Item_Aggregation_Child_Page>();
+            foreach (Item_Aggregation_Child_Page thisBrowse in childPagesHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY))
             {
                 otherBrowses[thisBrowse.Code] = thisBrowse;
             }
-            return new ReadOnlyCollection<Item_Aggregation_Browse_Info>(otherBrowses.Values);
+            return new ReadOnlyCollection<Item_Aggregation_Child_Page>(otherBrowses.Values);
         }
 
         #endregion
 
         #region Internal methods used to build this object
 
-        /// <summary>
-        ///   Add a new browse or info object to this hierarchical object
-        /// </summary>
-        /// <param name = "Browse_Type">Flag indicates if this is a BROWSE or INFO object</param>
-        /// <param name = "Browse_Code">SubMode indicator for this object</param>
-        /// <param name = "StaticHtmlSource">Any static HTML source to be used for display</param>
-        /// <param name = "Text">Text to display for this browse</param>
-        /// <returns>The built data object</returns>
-        internal Item_Aggregation_Browse_Info Add_Browse_Info(Item_Aggregation_Browse_Info.Browse_Info_Type Browse_Type, string Browse_Code, string StaticHtmlSource, string Text)
-        {
-            // Create the new Browse_Info object
-            Item_Aggregation_Browse_Info newBrowse = new Item_Aggregation_Browse_Info(Browse_Type, Item_Aggregation_Browse_Info.Source_Type.Database, Browse_Code, StaticHtmlSource, Text);
-
-            // Add this to the Hash table
-            browseInfoHash[Browse_Code] = newBrowse;
-
-            return newBrowse;
-        }
-
-        /// <summary>
-        ///   Add a new browse or info object to this hierarchical object
-        /// </summary>
-        /// <param name = "NewBrowse">Completely assembled browse or info object</param>
-        internal void Add_Browse_Info(Item_Aggregation_Browse_Info NewBrowse)
-        {
-            // Add this to the Hash table
-            browseInfoHash[NewBrowse.Code] = NewBrowse;
-        }
-
-        /// <summary>
-        ///   Method adds another aggregation as a child of this
-        /// </summary>
+        /// <summary> Method adds another aggregation as a child of this </summary>
         /// <param name = "Child_Aggregation">New child aggregation</param>
         internal void Add_Child_Aggregation(Item_Aggregation_Related_Aggregations Child_Aggregation)
         {
@@ -850,9 +745,7 @@ namespace SobekCM.Library.Aggregations
             }
         }
 
-        /// <summary>
-        ///   Method adds another aggregation as a parent to this
-        /// </summary>
+        /// <summary> Method adds another aggregation as a parent to this </summary>
         /// <param name = "Parent_Aggregation">New parent aggregation</param>
         internal void Add_Parent_Aggregation(Item_Aggregation_Related_Aggregations Parent_Aggregation)
         {
@@ -871,9 +764,7 @@ namespace SobekCM.Library.Aggregations
             }
         }
 
-        /// <summary>
-        ///   Add the home page source file information, by language
-        /// </summary>
+        /// <summary> Add the home page source file information, by language </summary>
         /// <param name = "Home_Page_File"> Home page text source file </param>
         /// <param name = "Language"> Language code </param>
         internal void Add_Home_Page_File(string Home_Page_File, Web_Language_Enum Language)
@@ -890,9 +781,7 @@ namespace SobekCM.Library.Aggregations
             }
         }
 
-        /// <summary>
-        ///   Add the main banner image for this aggregation, by language
-        /// </summary>
+        /// <summary> Add the main banner image for this aggregation, by language </summary>
         /// <param name = "Banner_Image"> Main banner image source file for this aggregation </param>
         /// <param name = "Language"> Language code </param>
         internal void Add_Banner_Image(string Banner_Image, Web_Language_Enum Language)
@@ -914,18 +803,22 @@ namespace SobekCM.Library.Aggregations
         /// </summary>
         /// <param name = "Banner_Image"> special front banner image source file for this aggregation </param>
         /// <param name = "Language"> Language code </param>
-        internal void Add_Front_Banner_Image(string Banner_Image, Web_Language_Enum Language)
+        /// <returns> Build front banner image information object </returns>
+		internal Item_Aggregation_Front_Banner Add_Front_Banner_Image(string Banner_Image, Web_Language_Enum Language)
         {
+			Item_Aggregation_Front_Banner banner = new Item_Aggregation_Front_Banner(Banner_Image);
+
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                frontBannerImageByLanguage[SobekCM_Library_Settings.Default_UI_Language] = Banner_Image;
+				frontBannerImageByLanguage[SobekCM_Library_Settings.Default_UI_Language] = banner;
             }
             else
             {
                 // Save this under the normalized language code
-                frontBannerImageByLanguage[Language] = Banner_Image;
+				frontBannerImageByLanguage[Language] = banner;
             }
+	        return banner;
         }
 
         #endregion
@@ -939,22 +832,7 @@ namespace SobekCM.Library.Aggregations
             bannerImagesByLanguage.Clear();
         }
 
-        /// <summary>
-        ///   Width of the special front banner image used for aggregations that show the highlighted
-        ///   item and the search box in the main banner at the top on the front page
-        /// </summary>
-        public ushort Front_Banner_Width { get; set; }
 
-        /// <summary>
-        ///   Height of the special front banner image used for aggregations that show the highlighted
-        ///   item and the search box in the main banner at the top on the front page
-        /// </summary>
-        public ushort Front_Banner_Height { get; set; }
-
-        /// <summary>
-        ///   Flag indicates if the special front banner image is on the left or the right side
-        /// </summary>
-        public bool Front_Banner_Left_Side { get; set; }
 
         /// <summary> Get the standard banner dictionary, by language </summary>
         public Dictionary<Web_Language_Enum, string> Banner_Dictionary
@@ -1001,7 +879,7 @@ namespace SobekCM.Library.Aggregations
         }
 
         /// <summary> Get the front banner dictionary, by language </summary>
-        public Dictionary<Web_Language_Enum, string> Front_Banner_Dictionary
+		public Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> Front_Banner_Dictionary
         {
             get
             {
@@ -1009,17 +887,15 @@ namespace SobekCM.Library.Aggregations
             }
         }
 
-        /// <summary>
-        ///   Gets the special front banner image for this aggregation's home page, by language
-        /// </summary>
+        /// <summary> Gets the special front banner image for this aggregation's home page, by language </summary>
         /// <param name = "Language"> Language code </param>
         /// <returns> Either the language-specific special front banner image, or else the default front banner image</returns>
         /// <remarks>
-        ///   If NO special front banner images were included in the aggregation XML, then this could be the empty string. <br /><br />
+        ///   If NO special front banner images were included in the aggregation XML, then this could be NULL. <br /><br />
         ///   This is a special front banner image used for aggregations that show the highlighted
         ///   item and the search box in the main banner at the top on the front page
         /// </remarks>
-        public string Front_Banner_Image(Web_Language_Enum Language)
+		public Item_Aggregation_Front_Banner Front_Banner_Image(Web_Language_Enum Language)
         {
             // Does this language exist in the banner image lookup dictionary?
             if (frontBannerImageByLanguage.ContainsKey(Language))
@@ -1034,7 +910,7 @@ namespace SobekCM.Library.Aggregations
             }
 
             // Just return the first, assuming one exists
-            return frontBannerImageByLanguage.Count > 0 ? frontBannerImageByLanguage.ElementAt(0).Value : String.Empty;
+            return frontBannerImageByLanguage.Count > 0 ? frontBannerImageByLanguage.ElementAt(0).Value : null;
         }
 
         #endregion
@@ -1049,6 +925,13 @@ namespace SobekCM.Library.Aggregations
                 return homeFilesByLanguage;
             }
         }
+
+		/// <summary> Removes a single home page from the collection of home pages </summary>
+		/// <param name="Language"> Language of the home page to remove </param>
+		public void Delete_Home_Page(Web_Language_Enum Language)
+		{
+			homeFilesByLanguage.Remove(Language);
+		}
 
         /// <summary>
         ///   Gets the home page source file for this aggregation, by language
@@ -1151,37 +1034,48 @@ namespace SobekCM.Library.Aggregations
         #region Methods to support BROWSE and INFO objects
 
         /// <summary> Remove an existing browse or info object from this item aggregation </summary>
-        /// <param name="Browse_Page"></param>
-        public void Remove_Browse_Info_Page( Item_Aggregation_Browse_Info Browse_Page )
+        /// <param name="Browse_Page"> Child page information to remove </param>
+        public void Remove_Child_Page( Item_Aggregation_Child_Page Browse_Page )
         {
-            if (browseInfoHash.ContainsKey(Browse_Page.Code))
-                browseInfoHash.Remove(Browse_Page.Code);
+	        if (childPagesHash.ContainsKey(Browse_Page.Code.ToUpper()))
+	        {
+		        childPagesHash.Remove(Browse_Page.Code.ToUpper());
+	        }
+	        childPages.Remove(Browse_Page);
         }
 
-        /// <summary>
-        ///   Gets the browse or info object from this hierarchy
-        /// </summary>
+		/// <summary> Remove an existing browse or info object from this item aggregation </summary>
+		/// <param name="Browse_Page_Code"> Child page information to remove </param>
+		public void Remove_Child_Page(string Browse_Page_Code)
+		{
+			if (childPagesHash.ContainsKey(Browse_Page_Code.ToUpper()))
+			{
+				Item_Aggregation_Child_Page childPage = childPagesHash[Browse_Page_Code.ToUpper()];
+
+				childPagesHash.Remove(Browse_Page_Code.ToUpper());
+
+				childPages.Remove(childPage);
+			}
+		}
+
+        /// <summary> Gets the browse or info object from this hierarchy </summary>
         /// <param name = "SubMode">Submode for the browse being requested</param>
         /// <returns>All the information about how to retrieve the browse data</returns>
-        public Item_Aggregation_Browse_Info Get_Browse_Info_Object(string SubMode)
+        public Item_Aggregation_Child_Page Get_Browse_Info_Object(string SubMode)
         {
-            return browseInfoHash.ContainsKey(SubMode) ? browseInfoHash[SubMode] : null;
+            return childPagesHash.ContainsKey(SubMode.ToUpper()) ? childPagesHash[SubMode.ToUpper()] : null;
         }
 
-        /// <summary>
-        ///   Checks to see if a particular browse code exists in the list of browses or infos for this item aggregation
-        /// </summary>
+        /// <summary> Checks to see if a particular browse code exists in the list of browses or infos for this item aggregation </summary>
         /// <param name = "Browse_Code"> Code for the browse or info to check for existence </param>
         /// <returns> TRUE if this browse exists, otherwise FALSE </returns>
         public bool Contains_Browse_Info(string Browse_Code)
         {
-            return browseInfoHash.ContainsKey(Browse_Code);
+            return childPagesHash.ContainsKey(Browse_Code.ToUpper());
         }
 
-	    /// <summary>
-	    ///   Method returns the table of results for the browse indicated
-	    /// </summary>
-	    /// <param name = "BrowseInfoObject">Object with all the information about the browse</param>
+	    /// <summary> Method returns the table of results for the browse indicated </summary>
+	    /// <param name = "ChildPageObject">Object with all the information about the browse</param>
 	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
 	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
 	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
@@ -1189,7 +1083,7 @@ namespace SobekCM.Library.Aggregations
 	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
 	    /// <returns> Resutls for the browse or info in table form </returns>
-	    public Results.Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation_Browse_Info BrowseInfoObject,
+	    public Results.Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation_Child_Page ChildPageObject,
                                                                       int Page, int Sort, int Results_Per_Page, bool Potentially_Include_Facets, bool Need_Browse_Statistics,
                                                                       Custom_Tracer Tracer)
         {
@@ -1204,17 +1098,17 @@ namespace SobekCM.Library.Aggregations
                 facetsList = null;
 
             // Pull data from the database if necessary
-            if ((BrowseInfoObject.Code == "all") || (BrowseInfoObject.Code == "new"))
+            if ((ChildPageObject.Code == "all") || (ChildPageObject.Code == "new"))
             {
                 // Get this browse from the database
                 if ((Aggregation_ID < 0) || (Code.ToUpper() == "ALL"))
                 {
-                    if (BrowseInfoObject.Code == "new")
+                    if (ChildPageObject.Code == "new")
                         return Database.SobekCM_Database.Get_All_Browse_Paged(true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
                     return Database.SobekCM_Database.Get_All_Browse_Paged(false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
                 }
                 
-                if (BrowseInfoObject.Code == "new")
+                if (ChildPageObject.Code == "new")
                 {
                     return Database.SobekCM_Database.Get_Item_Aggregation_Browse_Paged(Code, true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
                 }
@@ -1229,9 +1123,7 @@ namespace SobekCM.Library.Aggregations
 
         #region Method to write the Aggregation XML Configuration File
 
-        /// <summary>
-        ///   Write the XML configuration file for this item aggregation
-        /// </summary>
+        /// <summary> Write the XML configuration file for this item aggregation </summary>
         /// <param name = "Directory"> Directory within which to write this XML configuration file </param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         public bool Write_Configuration_File(string Directory)
@@ -1262,7 +1154,6 @@ namespace SobekCM.Library.Aggregations
                 writer.WriteLine("<!--          5) 'directives' which act as server-side includes for an aggregation      -->");
                 writer.WriteLine("<!--          6) highlight information to be displayed in banner or home text           -->");
                 writer.WriteLine("<!--          7) browses, with title and source by language                             -->");
-                writer.WriteLine("<!--          8) infos, with title and source by language                               -->");
                 writer.WriteLine();
                 writer.WriteLine("<hi:hierarchyInfo xmlns:hi=\"http://digital.uflib.ufl.edu/metadata/hierarchyInfo/\" ");
                 writer.WriteLine("				  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
@@ -1293,8 +1184,25 @@ namespace SobekCM.Library.Aggregations
                 {
                     writer.WriteLine("    <hi:webskins></hi:webskins>");
                 }
-
                 writer.WriteLine();
+
+				// Add the aggregation-level CSS file
+				if (CSS_File.Length > 0 )
+				{
+					writer.WriteLine("    <!-- Aggregation-level CSS file  -->");
+					writer.WriteLine("    <hi:css>" + CSS_File + "</hi:css>");
+					writer.WriteLine();
+				}
+
+				// Add the custom home page source file
+				if (Custom_Home_Page_Source_File.Length > 0)
+				{
+					writer.WriteLine("    <!-- Custom home page source file  -->");
+					writer.WriteLine("    <hi:customhome>" + Custom_Home_Page_Source_File + "</hi:customhome>");
+					writer.WriteLine();
+				}
+				
+
                 writer.WriteLine("    <!-- Facets here indicate which metadata elements should appear as facets    -->");
                 writer.WriteLine("    <!-- on the left when viewing browse or search results within this           -->");
                 writer.WriteLine("    <!-- aggregation.  These are indicated by the primary key for the metadata   -->");
@@ -1340,9 +1248,26 @@ namespace SobekCM.Library.Aggregations
                 {
                     writer.WriteLine("    <hi:source lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
                 }
-                foreach (KeyValuePair<Web_Language_Enum, string> homePair in frontBannerImageByLanguage)
-                {
-                    writer.WriteLine("    <hi:source type=\"HIGHLIGHT\" lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
+				foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> homePair in frontBannerImageByLanguage)
+				{
+					writer.Write("    <hi:source type=\"HIGHLIGHT\" lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\"");
+					writer.Write(" height=\"" + homePair.Value.Height + "\" width=\"" + homePair.Value.Width + "\"");
+					switch (homePair.Value.Banner_Type)
+					{
+						case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL:
+							writer.Write(" side=\"FULL\"");
+							break;
+
+						case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT:
+							writer.Write(" side=\"LEFT\"");
+							break;
+
+						case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT:
+							writer.Write(" side=\"RIGHT\"");
+							break;
+					}
+
+					writer.WriteLine(">" +homePair.Value.Image_File + "</hi:source>");
                 }
                 writer.WriteLine("</hi:banner>");
                 writer.WriteLine();
@@ -1461,11 +1386,7 @@ namespace SobekCM.Library.Aggregations
                     if (frontBannerImageByLanguage.Count > 0)
                     {
                         writer.Write("  <hi:highlights ");
-                        writer.Write(Rotating_Highlights ? "type=\"ROTATING\" " : "type=\"STANDARD\" ");
-                        writer.Write("bannerHeight=\"" + Front_Banner_Height + "\" bannerWidth=\"" + Front_Banner_Width +
-                                     "\"");
-                        writer.Write(Front_Banner_Left_Side ? " bannerSide=\"LEFT\"" : " bannerSide=\"RIGHT\"");
-                        writer.WriteLine(">");
+                        writer.WriteLine(Rotating_Highlights ? "type=\"ROTATING\">" : "type=\"STANDARD\">");
                     }
                     else
                     {
@@ -1481,63 +1402,17 @@ namespace SobekCM.Library.Aggregations
                     writer.WriteLine();
                 }
 
-                // Add the BROWSE and INFO pages
-                if (browseInfoHash.Count > 0)
-                {
-                    // Categorize the browses/infos into the three main types
-                    List<Item_Aggregation_Browse_Info> browseBys = new List<Item_Aggregation_Browse_Info>();
-                    List<Item_Aggregation_Browse_Info> infos = new List<Item_Aggregation_Browse_Info>();
-                    List<Item_Aggregation_Browse_Info> browses = new List<Item_Aggregation_Browse_Info>();
-                    foreach (Item_Aggregation_Browse_Info thisBrowse in browseInfoHash.Values.Where(ThisBrowse => (String.Compare(ThisBrowse.Code, "all", StringComparison.OrdinalIgnoreCase) != 0) && (String.Compare(ThisBrowse.Code, "new", StringComparison.OrdinalIgnoreCase) != 0)))
-                    {
-                        switch (thisBrowse.Browse_Type)
-                        {
-                            case Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_By:
-                                browseBys.Add(thisBrowse);
-                                break;
+                // Add all the child pages
+	            if (childPagesHash.Count > 0)
+	            {
+		            foreach (Item_Aggregation_Child_Page browseObject in childPages)
+		            {
+			            browseObject.Write_In_Configuration_XML_File(writer, Default_BrowseBy);
+		            }
+		            writer.WriteLine();
+	            }
 
-                            case Item_Aggregation_Browse_Info.Browse_Info_Type.Browse_Home:
-                                browses.Add(thisBrowse);
-                                break;
-
-                            case Item_Aggregation_Browse_Info.Browse_Info_Type.Info:
-                                infos.Add(thisBrowse);
-                                break;
-                        }
-                    }
-
-                    // Add the browse-by's first
-                    if (browseBys.Count > 0)
-                    {
-                        foreach (Item_Aggregation_Browse_Info browseObject in browseBys)
-                        {
-                            browseObject.Write_In_Configuration_XML_File(writer, Default_BrowseBy);
-                        }
-                        writer.WriteLine();
-                    }
-
-                    // Add the standard browses next
-                    if (browses.Count > 0)
-                    {
-                        foreach (Item_Aggregation_Browse_Info browseObject in browses)
-                        {
-                            browseObject.Write_In_Configuration_XML_File(writer, Default_BrowseBy);
-                        }
-                        writer.WriteLine();
-                    }
-
-                    // Add the info pages last
-                    if (infos.Count > 0)
-                    {
-                        foreach (Item_Aggregation_Browse_Info browseObject in infos)
-                        {
-                            browseObject.Write_In_Configuration_XML_File(writer, Default_BrowseBy);
-                        }
-                        writer.WriteLine();
-                    }
-                }
-
-                // Close the main tag
+	            // Close the main tag
                 writer.WriteLine("</hi:hierarchyInfo>");
 
                 // Flush and close the writer
@@ -1556,14 +1431,15 @@ namespace SobekCM.Library.Aggregations
 
         #region Method to save this item aggregation to the database
 
-        /// <summary> Saves the information about this item aggregation to the database </summary>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns>TRUE if successful, otherwise FALSE </returns>
-        public bool Save_To_Database( Custom_Tracer Tracer )
+	    /// <summary> Saves the information about this item aggregation to the database </summary>
+	    /// <param name="Username"> Name of the user performing this save, for the item aggregation milestones</param>
+	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns>TRUE if successful, otherwise FALSE </returns>
+	    public bool Save_To_Database( string Username, Custom_Tracer Tracer )
         {
             return Database.SobekCM_Database.Save_Item_Aggregation(Aggregation_ID, Code, Name, ShortName,
                 Description, Thematic_Heading_ID, Aggregation_Type, Is_Active, Hidden, Display_Options, Map_Search, Map_Display, OAI_Flag,
-                OAI_Metadata, Contact_Email,  String.Empty, External_Link, -1, Tracer );
+                OAI_Metadata, Contact_Email,  String.Empty, External_Link, -1, Username, Tracer );
         }
 
         #endregion
