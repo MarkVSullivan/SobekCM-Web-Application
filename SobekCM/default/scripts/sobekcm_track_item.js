@@ -15,3 +15,12 @@ function rbEntryTypeChanged(value) {
         document.getElementById("tblrow_Manual2").style.display = 'table-row';
     }
 }
+
+//Save function: set the hidden field(s) accordingly
+function BarcodeStringTextbox_Changed(barcode_string) {
+  //  alert(barcode_string);
+    document.getElementById('Track_Item_behaviors_request').value ="decode_barcode";
+    document.getElementById('Track_Item_hidden_value').value = barcode_string;
+    document.itemNavForm.submit();
+    return false;
+}
