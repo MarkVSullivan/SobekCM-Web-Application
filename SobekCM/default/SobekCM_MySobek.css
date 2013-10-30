@@ -88,7 +88,8 @@ input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 .sbkTi_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
 .sbkTi_HomeText p { padding-left: 42px; }
 .sbkTi_tblSubHeader{color:Gray; font-weight: bold; font-size: 1.0em;}
-
+.sbkTi_eventTableSpan{}
+.sbkTi_tblRow_ItemInfoText{color:Gray; font-weight: bold; font-size: 0.85em;}
 
 
 
