@@ -927,8 +927,9 @@ function MakeSortable1()
         }, placeholder: "ui-state-highlight"
     });
     
-    $('#allThumbnailsOuterDiv input').bind('click.sortable mousedown.sortable',function(ev){
+    $('#allThumbnailsOuterDiv input').bind('click.sortable mousedown.sortable', function(ev) {
         ev.target.focus();
+    });
 							 
     $("#allThumbnailsOuterDiv").disableSelection();
 	if(makeSortable==3)
