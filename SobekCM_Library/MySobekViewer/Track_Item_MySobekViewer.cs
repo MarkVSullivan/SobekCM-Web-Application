@@ -31,6 +31,7 @@ namespace SobekCM.Library.MySobekViewer
         private int stage=1;
         private string hidden_request ;
         private string hidden_value;
+        private string hidden_entry_type;
         private string title;
         private DataTable tracking_users;
 
@@ -90,7 +91,7 @@ namespace SobekCM.Library.MySobekViewer
             //See if there were any hidden requests
             hidden_request = HttpContext.Current.Request.Form["Track_Item_behaviors_request"] ?? String.Empty;
             hidden_value = HttpContext.Current.Request.Form["Track_Item_hidden_value"] ?? String.Empty;
-
+   //         hidden_entry_type = HttpContext.Current.Request.Form[""]
             switch (hidden_request.ToLower())
             {
                 case "decode_barcode":
@@ -226,6 +227,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/jquery-ui.css\" />");
         }
 
 
@@ -243,6 +245,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
             builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_behaviors_request\" name=\"Track_Item_behaviors_request\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_hidden_value\" name=\"Track_Item_hidden_value\"value=\"\"/>");
+            builder.AppendLine("<input type=\"hidden\" id=\"TI_entry_type\" name=\"TI_entry_type\" value=\"\"/>");
 
             //Start the Entry Type Table
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Entry Type</h2></span>");
@@ -362,6 +365,8 @@ namespace SobekCM.Library.MySobekViewer
             //Close the main div
             builder.AppendLine("</div>");
 
+
+            builder.AppendLine(" <script type=\"text/javascript\">$(document).ready(function() {$(function() {$( \"#txtVID\" ).datepicker();});});</script>");
        
             LiteralControl control1 = new LiteralControl(builder.ToString());
           
