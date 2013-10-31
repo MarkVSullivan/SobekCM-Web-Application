@@ -1639,11 +1639,15 @@ function save(id) {
                 if (globalVar.savingOverlayIndex.length) {
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
-                        de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
-                        createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
-                        if (globalVar.toServerSuccess == true) {
-                            displayMessage(L_Saved);
-                        }
+                        try {
+                            de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                            createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                            if (globalVar.toServerSuccess == true) {
+                                displayMessage(L_Saved);
+                            }
+                        } catch(e) {
+                            //no overlay at this point to save
+                        } 
                     }
                     //reset first save
                     //globalVar.firstSaveOverlay = false;
@@ -3253,8 +3257,8 @@ function displayIncomingPolygons() {
         case "main":
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
+            //alert(globalVar.incomingPolygonPageId[i] + ", " + globalVar.incomingPolygonPath[i] + ", " + globalVar.incomingPolygonSourceURL[i] + ", " + globalVar.incomingPolygonRotation[i]);
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
-            
             globalVar.currentlyEditing = "no";
             //set the overlay to the map
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]].setMap(map);
@@ -3599,7 +3603,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
                 document.getElementById("overlay" + ghostIndex).style.zIndex = globalVar.currentTopZIndex;        //bring overlay to front
                 globalVar.ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: globalVar.currentTopZIndex });             //bring ghost to front
                 //set rotation if the overlay was previously saved
-                if (globalVar.incomingPolygonRotation[ghostIndex-1] != globalVar.savingOverlayRotation[ghostIndex-1]) {
+                if (globalVar.preservedRotation != globalVar.savingOverlayRotation[ghostIndex - 1]) {
                     globalVar.preservedRotation = globalVar.savingOverlayRotation[ghostIndex-1];
                 }
                 //for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
@@ -3620,6 +3624,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
             //delete previous overlay values
             globalVar.overlaysOnMap[ghostIndex] = null;
             //redraw the overlay within the new bounds
+            de(globalVar.preservedRotation);
             globalVar.overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, globalVar.ghostOverlayRectangle[ghostIndex].getBounds(), globalVar.incomingPolygonSourceURL[(ghostIndex-1)], map, globalVar.preservedRotation);
             //set the overlay with new bounds to the map
             globalVar.overlaysOnMap[ghostIndex].setMap(map);
@@ -3749,14 +3754,20 @@ CustomOverlay.prototype.draw = function () {
     div.style.top = ne.y + 'px';
     div.style.width = (ne.x - sw.x) + 'px';
     div.style.height = (sw.y - ne.y) + 'px';
-
-    //for a preserved rotation
-    if (globalVar.preservedRotation != 0) {
-        globalVar.workingOverlayIndex = this.index_;
-        keepRotate(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex-1]);
-        //keepRotate(globalVar.preservedRotation);
+    
+    //for a rotation
+    //hold woi to later put it back in (fixes keepRotate error)
+    var temp = globalVar.workingOverlayIndex;
+    //set woi to incoming (fixes keepRotate error)
+    globalVar.workingOverlayIndex = this.index_;
+    //check to see if saving rotaiotn and then incoming (this allows all overlays to have a rotation but places priority to the saving overlay rotation)
+    if(globalVar.savingOverlayRotation[this.index_-1]!=undefined){
+        keepRotate(globalVar.savingOverlayRotation[this.index_-1]);
+    } else {
+        keepRotate(globalVar.incomingPolygonRotation[(this.index_ - 1)]);
     }
-
+    //reset woi to temp just in case we had something different/useful
+    globalVar.workingOverlayIndex = temp;
 };
 
 //Not currently used
@@ -4434,17 +4445,17 @@ function overlayEditMe(id) {
             globalVar.currentlyEditing = "no";
             //set preserved rotation to the rotation of the current overlay
             //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
-            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1];
+            globalVar.workingOverlayIndex = id;
+            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //globalVar.preservedRotation = 0;
         }
         //if editing is not being done, make it so
         if (globalVar.currentlyEditing == "no" || globalVar.workingOverlayIndex == null) {
             //enable editing marker
             globalVar.currentlyEditing = "yes";
-            globalVar.workingOverlayIndex = id;
             de("editing overlay " + globalVar.workingOverlayIndex);
             //set preserved rotation value
-            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
+            //globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //set visual rotation knob value
             //$('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
             //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
@@ -4462,7 +4473,7 @@ function overlayEditMe(id) {
             //} catch (e) {
             //    de("rotation error catch: " + e);
             //}
-            
+
             if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] != null) {
                 globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
                 //set visual rotation knob value
@@ -4805,11 +4816,18 @@ function keepRotate(degreeIn) {
     globalVar.currentlyEditing = "yes"; //used to signify we are editing this overlay
     $(function () {
         $("#overlay" + globalVar.workingOverlayIndex).rotate(degreeIn);
-        if (degreeIn > 180) {
-            $('.knob').val(((degreeIn - 360) * (1))).trigger('change'); //used to correct for visual effect of knob error
+        
+        if (degreeIn < 0) {
+            $('.knob').val(((180 + degreeIn) + 180)).trigger('change');
         } else {
             $('.knob').val(degreeIn).trigger('change');
         }
+
+        //if (degreeIn > 180) {
+        //    $('.knob').val(((degreeIn - 360) * (1))).trigger('change'); //used to correct for visual effect of knob error
+        //} else {
+        //    $('.knob').val(degreeIn).trigger('change');
+        //}
     });
 }
 
