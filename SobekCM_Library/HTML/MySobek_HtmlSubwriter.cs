@@ -278,11 +278,7 @@ namespace SobekCM.Library.HTML
 
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-
-			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Logon) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item))
-			{
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-			}
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
 			// If we are currently uploading files, add those specific upload styles 
 			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
@@ -356,11 +352,9 @@ namespace SobekCM.Library.HTML
 
                     if ((currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (currentMode.My_Sobek_SubMode != "submitted items"))
                     {
-                        Output.WriteLine("<div class=\"SobekSearchPanel\">");
                         if (mySobekViewer != null)
                             Output.WriteLine("  <h1>" + mySobekViewer.Web_Title + "</h1>");
                         else if (user != null) Output.WriteLine("  <h1>Welcome back, " + user.Nickname + "</h1>");
-                        Output.WriteLine("</div>");
                         Output.WriteLine();
                     }
                 }
@@ -417,11 +411,9 @@ namespace SobekCM.Library.HTML
 
                     if ((currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (currentMode.My_Sobek_SubMode != "submitted items"))
                     {
-                        header_writer.WriteLine("<div class=\"SobekSearchPanel\">");
                         if (mySobekViewer != null)
                             header_writer.WriteLine("  <h1>" + mySobekViewer.Web_Title + "</h1>");
                         else if (user != null) header_writer.WriteLine("  <h1>Welcome back, " + user.Nickname + "</h1>");
-                        header_writer.WriteLine("</div>");
                         header_writer.WriteLine();
                     }
                 }

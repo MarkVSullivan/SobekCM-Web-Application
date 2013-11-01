@@ -179,9 +179,10 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<!-- Portals_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+			Output.WriteLine();
 
             // Add the hidden field
-            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<!-- Hidden fields are used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_portal_action\" name=\"admin_portal_action\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_portal_tosave\" name=\"admin_portal_tosave\" value=\"\" />");
             Output.WriteLine();

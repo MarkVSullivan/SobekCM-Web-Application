@@ -193,6 +193,15 @@ namespace SobekCM.Library.Aggregations
 			return string.Empty;
 		}
 
+		/// <summary> Removes a language from this child page's dictionaries of 
+		/// labels/titles and source files </summary>
+		/// <param name="Language_To_Remove"></param>
+		public void Remove_Language(Web_Language_Enum Language_To_Remove)
+		{
+			Source_Dictionary.Remove(Language_To_Remove);
+			Label_Dictionary.Remove(Language_To_Remove);
+		}
+
 		internal void Write_In_Configuration_XML_File( System.IO.StreamWriter Writer, string Default_BrowseBy )
 		{
 			switch (Browse_Type)

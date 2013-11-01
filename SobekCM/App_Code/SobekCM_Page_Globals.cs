@@ -168,7 +168,7 @@ public class SobekCM_Page_Globals
             (currentMode.Mode == Display_Mode_Enum.Item_Display) ||
             (currentMode.Mode == Display_Mode_Enum.Item_Print) ||
             (currentMode.Mode == Display_Mode_Enum.Results) ||
-            ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ) || ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map ))) ||
+			((currentMode.Mode == Display_Mode_Enum.Aggregation) && ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map))) ||
             (currentMode.Mode == Display_Mode_Enum.Public_Folder) ||
             ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))))
         {
@@ -284,7 +284,7 @@ public class SobekCM_Page_Globals
             }
 
             // Run the browse/info work if it is of those modes
-            if ((currentMode.Mode == Display_Mode_Enum.Aggregation ) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
+            if ((currentMode.Mode == Display_Mode_Enum.Aggregation ) && (( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ) || ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit )))
             {
                 Browse_Info_Block();
             }
@@ -784,7 +784,7 @@ public class SobekCM_Page_Globals
             currentMode.Internal_User = currentUser.Is_Internal_User;
 
             // Check if this is an administrative task that the current user does not have access to
-            if ((!currentUser.Is_System_Admin) && ( !currentUser.Is_Portal_Admin ) && ( currentMode.Mode == Display_Mode_Enum.Administrative ))
+            if ((!currentUser.Is_System_Admin) && ( !currentUser.Is_Portal_Admin ) && ( currentMode.Mode == Display_Mode_Enum.Administrative ) && ( currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single ))
             {
                 currentMode.Mode = Display_Mode_Enum.My_Sobek;
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

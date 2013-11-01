@@ -1609,8 +1609,21 @@ namespace SobekCM.Library.Navigation
 								default:
 									return this_base_url + pre_mode_string + infoBrowseMode + urlOptions1;
 							}
+
+						case Aggregation_Type_Enum.Child_Page_Edit:
+							if ((!String.IsNullOrEmpty(adjusted_aggregation)) && (adjusted_aggregation != defaultAggregation))
+							{
+								return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/edit" + urlOptions1;
+							}
+							// See if you need to include 'info' here
+							string pre_mode_string2 = "info/";
+							if ((infoBrowseMode == "all") || (infoBrowseMode == "new"))
+								pre_mode_string2 = String.Empty;
+							return this_base_url + pre_mode_string2 + infoBrowseMode + "/edit" + urlOptions1;
 					}
 					break;
+
+
 			}
 
 			return this_base_url + "unknown";

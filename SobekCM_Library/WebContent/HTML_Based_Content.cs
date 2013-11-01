@@ -1,7 +1,10 @@
 ﻿#region Using directives
 
 using System;
+using System.IO;
+using System.Web;
 using SobekCM.Library.Aggregations;
+using SobekCM.Library.Configuration;
 
 #endregion
 
@@ -207,5 +210,53 @@ namespace SobekCM.Library.WebContent
         }
 
         #endregion
+
+		/// <summary> Saves all this data to a file </summary>
+		/// <param name="File"> Name (and path) of the file to save </param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		public bool Save_To_File(string File)
+		{
+			try
+			{
+				StreamWriter writer = new StreamWriter(File, false);
+				writer.WriteLine("<html>");
+				writer.WriteLine("  <head>");
+				if (!String.IsNullOrEmpty(title))
+					writer.WriteLine("    <title>" + HttpUtility.HtmlEncode(title) + "</title>");
+				if (!String.IsNullOrEmpty(author))
+					writer.WriteLine("    <meta name=\"author\" content=\"" + HttpUtility.HtmlEncode(author) + "\" />");
+				if (!String.IsNullOrEmpty(date))
+					writer.WriteLine("    <meta name=\"date\" content=\"" + date + "\" />");
+				if (!String.IsNullOrEmpty(keywords))
+					writer.WriteLine("    <meta name=\"keywords\" content=\"" + HttpUtility.HtmlEncode(keywords) + "\" />");
+				if (!String.IsNullOrEmpty(description))
+					writer.WriteLine("    <meta name=\"description\" content=\"" + HttpUtility.HtmlEncode(description) + "\" />");
+				if (!String.IsNullOrEmpty(banner))
+					writer.WriteLine("    <meta name=\"banner\" content=\"" + HttpUtility.HtmlEncode(banner) + "\" />");
+				if (!String.IsNullOrEmpty(thumbnail))
+					writer.WriteLine("    <meta name=\"thumbnail\" content=\"" + HttpUtility.HtmlEncode(thumbnail) + "\" />");
+				if (!String.IsNullOrEmpty(code))
+					writer.WriteLine("    <meta name=\"code\" content=\"" + HttpUtility.HtmlEncode(code) + "\" />");
+				if (!String.IsNullOrEmpty(sitemap))
+					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + HttpUtility.HtmlEncode(sitemap) + "\" />");
+				if (!String.IsNullOrEmpty(webskin))
+					writer.WriteLine("    <meta name=\"code\" content=\"" + HttpUtility.HtmlEncode(webskin) + "\" />");
+				writer.WriteLine("  </head>");
+				writer.WriteLine("  <body>");
+				writer.WriteLine(staticText);
+				writer.WriteLine("  </body>");
+				writer.WriteLine("</html>");
+				writer.WriteLine();
+				writer.Flush();
+				writer.Close();
+
+
+				return true;
+			}
+			catch (Exception ee)
+			{
+				return false;
+			}
+		}
     }
 }

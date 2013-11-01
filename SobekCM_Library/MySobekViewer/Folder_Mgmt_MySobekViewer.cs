@@ -61,34 +61,34 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Paged_Results"> Single page of results for the current folder, within the entire set </param>
         /// <param name="Code_Manager"> Code manager object maintains mapping between SobekCM codes and greenstone codes (used by result_dataset_html_subwriter)</param>
         /// <param name="Item_List"> Object for pulling additional information about each item during display </param>
-        /// <param name="currentCollection"> Current item aggregation [UNUSED?] </param>
-        /// <param name="htmlSkin"> HTML interface, which determines the header, footer, stylesheet, and other design elements for the rendered HTML</param>
+        /// <param name="CurrentCollection"> Current item aggregation [UNUSED?] </param>
+        /// <param name="HTMLSkin"> HTML interface, which determines the header, footer, stylesheet, and other design elements for the rendered HTML</param>
         /// <param name="Translator"> Translation / language support object for writing the user interface is multiple languages</param>
-        /// <param name="currentMode"> Mode / navigation information for the current request</param>
+		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public Folder_Mgmt_MySobekViewer(User_Object User,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
             Aggregation_Code_Manager Code_Manager,
             Item_Lookup_Object Item_List,
-            Item_Aggregation currentCollection, 
-            SobekCM_Skin_Object htmlSkin,
+            Item_Aggregation CurrentCollection, 
+            SobekCM_Skin_Object HTMLSkin,
             Language_Support_Info Translator, 
-            SobekCM_Navigation_Object currentMode,
+            SobekCM_Navigation_Object CurrentMode,
             Custom_Tracer Tracer)
             : base(User)
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Constructor", String.Empty);
 
-
+	        currentMode = CurrentMode;
             user = User;
             pagedResults = Paged_Results;
             resultsStatistics = Results_Statistics;
             codeManager = Code_Manager;
             itemList = Item_List;
-            this.htmlSkin = htmlSkin;
+            htmlSkin = HTMLSkin;
             base.Translator = Translator;
-            this.currentCollection = currentCollection;
+            currentCollection = CurrentCollection;
 
             properFolderName = String.Empty;
             int current_folder_id = -1;
@@ -191,7 +191,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (bookshelf_items.IndexOf("|") > 0)
                         {
                             string[] split_multi_items = bookshelf_items.Split("|".ToCharArray());
-                            foreach (string[] split in split_multi_items.Select(thisItem => thisItem.Split("_".ToCharArray())).Where(split => split.Length == 2))
+                            foreach (string[] split in split_multi_items.Select(ThisItem => ThisItem.Split("_".ToCharArray())).Where(Split => Split.Length == 2))
                             {
                                 SobekCM_Database.Delete_Item_From_User_Folder(user.UserID, properFolderName, split[0], split[1], Tracer);
                                 if (item_action == "MOVE")
@@ -365,16 +365,15 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_mysobek.js\" ></script>");
+			Output.WriteLine();
 
-            // Add the hidden field
+            // Add the hidden fields
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_items\" name=\"bookshelf_items\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_params\" name=\"bookshelf_params\" value=\"\" />");
-
-            int actual_cols = 50;
-            if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
-                actual_cols = 45;
+			Output.WriteLine();
 
             if (currentMode.My_Sobek_SubMode.Length > 0)
             {
@@ -383,32 +382,38 @@ namespace SobekCM.Library.MySobekViewer
                 if (user != null)
                 {
                     Output.WriteLine("<!-- Email form -->");
-                    Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\">");
-                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">S<span class=\"smaller\">END THIS</span> I<span class=\"smaller\">TEM TO A</span> F<span class=\"smaller\">RIEND</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-                    Output.WriteLine("  <br />");
+					Output.WriteLine("<div class=\"sbkFmsv_EmailPopup sbkMySobek_PopupForm\" id=\"form_email\" style=\"display:none;\">");
+					Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr style=\"height:20px;\"><td style=\"text-align:left;\">SEND THIS ITEM TO A FRIEND</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+					
+
                     Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("    <table class=\"popup_table\">");
+					Output.WriteLine("    <table class=\"sbkMySobek_PopupTable\">");
 
 
                     // Add email address line
-                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"email_address\">To:</label></td>");
-                    Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + user.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+	                Output.WriteLine("      <tr>");
+					Output.WriteLine("        <td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
+					Output.WriteLine("        <td><input class=\"sbkFmsv_EmailInput sbkMySobek_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + user.Email + "\" /></td>");
+					Output.WriteLine("      </tr>");
 
                     // Add comments area
-                    Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
-                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea\" onfocus=\"javascript:textbox_enter('email_comments','email_textarea_focused')\" onblur=\"javascript:textbox_leave('email_comments','email_textarea')\"></textarea></td></tr>");
+	                Output.WriteLine("      <tr style=\"vertical-align:top\">");
+					Output.WriteLine("        <td><label for=\"email_comments\">Comments:</label></td>");
+					Output.WriteLine("        <td><textarea rows=\"6\" class=\"sbkFmsv_EmailTextArea sbkMySobek_Focusable\" name=\"email_comments\" id=\"email_comments\"></textarea></td>");
+					Output.WriteLine("      </tr>");
 
                     // Add format area
-                    Output.Write("      <tr align=\"left\" valign=\"top\"><td>Format:</td>");
-                    Output.Write("<td><input type=\"radio\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
-                    Output.WriteLine("<input type=\"radio\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label></td></tr>");
-
+	                Output.WriteLine("      <tr>");
+					Output.WriteLine("        <td>Format:</td>");
+	                Output.WriteLine("        <td>");
+					Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
+					Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label>");
+					Output.WriteLine("        </td>");
+					Output.WriteLine("      </tr>");
 
                     Output.WriteLine("    </table>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("  </fieldset>");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\"><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></div><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
                 }
@@ -475,7 +480,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Add comments area
                     Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
-                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
+                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"70\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
 
                     Output.WriteLine("    </table>");
                     Output.WriteLine("    <br />");
@@ -689,9 +694,9 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     
                     if (properFolderName != "Submitted Items")
-						literal.Text = "<br /><br /><div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
+						literal.Text = "<br /><br /><h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
                     else
-						literal.Text = "<div class=\"SobekSearchPanel\"><h1>" + folder_name + "</h1></div><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
+						literal.Text = "<h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
                     MainPlaceHolder.Controls.Add(literal);
 
                 }
@@ -739,7 +744,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 // Add the folder management piece here
                 StringBuilder bookshelfManageBuilder = new StringBuilder();
-                bookshelfManageBuilder.AppendLine("<br /><br />\n<div class=\"SobekSearchPanel\"><h1>Manage My Bookshelves</h1></div>\n<div class=\"SobekHomeText\" >");
+                bookshelfManageBuilder.AppendLine("<br /><br />\n<h1>Manage My Bookshelves</h1>\n<div class=\"SobekHomeText\" >");
                 bookshelfManageBuilder.AppendLine("  <blockquote>");
                 bookshelfManageBuilder.AppendLine("  <table width=\"630px\">");
                 bookshelfManageBuilder.AppendLine("    <tr valign=\"middle\">");
@@ -823,15 +828,15 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        private void add_children_nodes(TreeNode parentNode, User_Folder thisFolder, string selected_folder, string redirect_url, List<TreeNode> selectedNodes )
+        private void add_children_nodes(TreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<TreeNode> SelectedNodes )
         {
-            foreach (User_Folder childFolders in thisFolder.Children)
+            foreach (User_Folder childFolders in ThisFolder.Children)
             {
                 TreeNode folderNode = new TreeNode
-                                          { Text ="&nbsp; <a href=\"" +redirect_url.Replace("XXXXXXXXXXXXXXXXXX",childFolders.Folder_Name_Encoded) + "\">" +childFolders.Folder_Name + "</a>" };
-                if (childFolders.Folder_Name == selected_folder)
+                                          { Text ="&nbsp; <a href=\"" +RedirectURL.Replace("XXXXXXXXXXXXXXXXXX",childFolders.Folder_Name_Encoded) + "\">" +childFolders.Folder_Name + "</a>" };
+                if (childFolders.Folder_Name == SelectedFolder)
                 {
-                    selectedNodes.Add(folderNode);
+                    SelectedNodes.Add(folderNode);
                     if (childFolders.isPublic)
                     {
                         folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder_public.jpg";
@@ -856,12 +861,12 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder.jpg";
                     }
-                    folderNode.Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>";
+                    folderNode.Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>";
                 }
-                parentNode.ChildNodes.Add(folderNode);
+                ParentNode.ChildNodes.Add(folderNode);
 
                 // Add all the children nodes as well
-                add_children_nodes(folderNode, childFolders, properFolderName, redirect_url, selectedNodes);
+                add_children_nodes(folderNode, childFolders, properFolderName, RedirectURL, SelectedNodes);
             }
         }
     }

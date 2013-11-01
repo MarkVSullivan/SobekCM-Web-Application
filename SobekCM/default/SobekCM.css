@@ -951,6 +951,13 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
        text-decoration: none; }
 
 
+/** Classes used throughout the system for the popup forms **/
+.sbk_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px;  }
+.sbk_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 16px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
+.sbk_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
+.sbk_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
+.sbk_PopupButtonsDiv { width: 100%;text-align: center; }
+
 .print_popup_div { position:absolute; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; text-align: left; -moz-border-radius: 7px; width:500px; } 
 .popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px;  -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
@@ -1370,10 +1377,29 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .upFileNormal_IE { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-right: 10px; }
 
 
-
-#sbkAghsw_HomeTextEdit { width: 100%;height: 500px; }
+/** Aggregation Html SubWriter */
+#sbkAghsw_HomeTextEdit { width: 100%;height: 400px; }
 #sbkAghsw_Home { padding: 3px 3px 28px 3px; }
 #sbkAghsw_EditableHome { padding: 3px 3px 28px 3px; }
 #sbkAghsw_EditableHome:hover {padding: 0 0 25px 0; border: 3px solid #cccccc; background-color: #eeeeee; }
 #sbkAghsw_EditableHomeLink { float: right; vertical-align:text-top;padding-right: 15px;display: none; }
 #sbkAghsw_HomeEditButtons { float: right;padding: 10px 10px 0 0; }
+
+
+/** Static_Browse_Info_AggregationViewer **/
+#sbkSbia_ChildTextEdit { width: 100%; height: 400px; }
+#sbkSbia_MainText { WIDTH: 749px; TEXT-ALIGN: left; font-size: small;margin-left: auto;margin-right: auto; padding: 3px 3px 28px 3px; }
+#sbkSbia_MainText A:link {	color: Blue; }
+#sbkSbia_MainText A:hover { color: Blue; text-decoration:underline; }
+#sbkSbia_MainText A:visited { 	color: Purple; }
+#sbkSbia_MainTextEditable { WIDTH: 749px; TEXT-ALIGN: left; font-size: small;margin-left: auto;margin-right: auto;  padding: 3px 3px 28px 3px; }
+#sbkSbia_MainTextEditable A:link {	color: Blue; }
+#sbkSbia_MainTextEditable A:hover { color: Blue; text-decoration:underline; }
+#sbkSbia_MainTextEditable A:visited { 	color: Purple; }
+#sbkSbia_MainTextEditable:hover {padding: 0 0 25px 0; border: 3px solid #cccccc; background-color: #eeeeee; }
+#sbkSbia_EditableTextLink { float: right; vertical-align:text-top;padding-right: 15px;display: none; }
+#sbkSbia_EditableTextLink A:link {	color: Blue; }
+#sbkSbia_EditableTextLink A:hover {	color: Blue; text-decoration:underline; }
+#sbkSbia_EditableTextLink A:visited {	color: Blue; }
+#sbkSbia_TextEditButtons { float: right;padding: 10px 10px 0 0; }
+

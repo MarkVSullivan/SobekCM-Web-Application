@@ -1429,6 +1429,10 @@ namespace SobekCM.Library.Navigation
 									Navigator.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
 									aggr_handled_args++;
 									break;
+								case "edit":
+									Navigator.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
+									aggr_handled_args++;
+									break;
 							}
 						}
 
