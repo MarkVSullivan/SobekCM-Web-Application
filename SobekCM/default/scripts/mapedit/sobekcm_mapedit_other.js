@@ -14,14 +14,15 @@ $(function () {
         });
         //accordian settings
         $("#mapedit_container_toolboxTabs").accordion({
-            //animate: false, //turn off all animations (this got rid of search icon problem) //if ever set, check WORKAROUND in openToolboxTabs(id)
+            animate: true, //turn off all animations (this got rid of search icon problem) //if ever set, check WORKAROUND in openToolboxTabs(id)
             active: 0, //which tab is active
             icons: false, //default icons?
+            //collapsible: true, //does not work
             heightStyle: "content" //set hieght to?
         });
         //tooltips (the tooltip text is the title of the element defined in localization js)
         $("#content_toolbarGrabber").tooltip({ track: true });
-        //$("#content_toolbar_button_reset").tooltip({ track: true });
+        $("#content_toolbar_button_reset").tooltip({ track: true });
         $("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
         $("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
         $("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
@@ -42,6 +43,7 @@ $(function () {
         $("#content_toolbar_button_manageItem").tooltip({ track: true });
         $("#content_toolbar_button_manageOverlay").tooltip({ track: true });
         $("#content_toolbar_button_managePOI").tooltip({ track: true });
+        $("#content_toolbar_button_manageSearch").tooltip({ track: true });
         $("#content_toolbox_button_reset").tooltip({ track: true });
         $("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
         $("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
@@ -62,9 +64,9 @@ $(function () {
         $("#content_toolbox_button_manageItem").tooltip({ track: true });
         $("#content_toolbox_button_manageOverlay").tooltip({ track: true });
         $("#content_toolbox_button_managePOI").tooltip({ track: true });
-        $("#content_toolbox_button_placeItem").tooltip({ track: true });
-        $("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        $("#content_toolbox_button_placePOI").tooltip({ track: true });
+        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
         $("#content_toolbox_button_poiMarker").tooltip({ track: true });
         $("#content_toolbox_button_poiCircle").tooltip({ track: true });
         $("#content_toolbox_button_poirectangle").tooltip({ track: true });
@@ -77,17 +79,17 @@ $(function () {
         $("#transparency").tooltip({ track: true });
         $("#content_toolbox_rgItem").tooltip({ track: true });
         $("#content_toolbox_posItem").tooltip({ track: true });
-        $("#content_toolbox_button_placeItem").tooltip({ track: true });
+        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
         $("#descItem").tooltip({ track: true });
         $("#content_toolbox_button_saveItem").tooltip({ track: true });
-        $("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
         $("#content_toolbox_button_saveOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
         $("#descPOI").tooltip({ track: true });
         $("#content_toolbox_button_savePOI").tooltip({ track: true });
         $("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
         $("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_overlayEdit").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
         $("#content_toolbox_button_overlayToggle").tooltip({ track: true });
         $("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
         $("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
@@ -102,10 +104,19 @@ $(function () {
         $("#content_toolbox_searchButton").tooltip({ track: true });
         $("#searchResults_container").tooltip({ track: true });
         //$(".selector").tooltip({ content: "Awesome title!" });
-    } catch(err) {
+    } catch (err) {
         alert(L51 + ": " + err);
     }
 });
 
 //#endregion
 
+
+//start whole mess here (doesnt work yet because of inline calls)
+function initAll() {
+    initDeclarations();
+    initLocalization();
+    initListeners();
+}
+
+//initAll(); //TEMP ENABLE WHEN READY
