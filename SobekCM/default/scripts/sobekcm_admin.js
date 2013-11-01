@@ -851,6 +851,37 @@ function edit_aggr_delete_child_page(Code) {
 	return false;
 }
 
+function save_new_child_page_version() {
+	// Set the hidden value this data
+	var hiddenfield = document.getElementById('admin_aggr_action');
+	hiddenfield.value = 'add_version';
+	document.itemNavForm.submit();
+	return false;
+}
+
+function aggr_edit_delete_child_version(Language, Code) {
+	var input_box = confirm("Do you really want to delete the " + Language + " version?");
+	if (input_box == true) {
+		// Set the hidden value this data
+		var hiddenfield = document.getElementById('admin_aggr_action');
+		hiddenfield.value = 'delete_' + Code;
+
+		document.itemNavForm.submit();
+	}
+
+	return false;
+}
+
+function admin_aggr_child_page_visibility_change() {
+	var hiddenfield = document.getElementById('admin_aggr_visibility');
+	var hiddenrow = document.getElementById('admin_aggr_parent_row');
+	if (hiddenfield.value == 'browse') {
+		hiddenrow.style.display = 'table-row';
+	} else {
+		hiddenrow.style.display = 'none';
+	}
+}
+
 // Trim the input string from the search box
 function trimString (str) 
 {

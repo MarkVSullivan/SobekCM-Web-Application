@@ -184,9 +184,11 @@ namespace SobekCM.Library.HTML
 				// Make a backup from today, if none made yet
 				if (File.Exists(file))
 				{
-					string new_file = file.ToLower().Replace(".txt", "").Replace(".html", "").Replace(".htm", "") + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString() + ".bak";
-					if ( !File.Exists(new_file))
-						File.Move(file, new_file);
+					DateTime lastWrite = (new FileInfo(file)).LastWriteTime;
+					string new_file = file.ToLower().Replace(".txt", "").Replace(".html", "").Replace(".htm", "") + lastWrite.Year + lastWrite.Month.ToString().PadLeft(2, '0') + lastWrite.Day.ToString() .PadLeft(2, '0')+ ".bak";
+					if (File.Exists(new_file))
+						File.Delete(new_file);
+					File.Move(file, new_file);
 				}
 
 				// Write to the file now
@@ -200,9 +202,6 @@ namespace SobekCM.Library.HTML
 
 				// Clear this aggreation from the cache
 				Cached_Data_Manager.Remove_Item_Aggregation(Hierarchy_Object.Code, Tracer);
-
-				// Force the next page to refresh
-				HttpContext.Current.Session["REFRESH"] = true;
 
 				// Forward along
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -270,12 +269,16 @@ namespace SobekCM.Library.HTML
 					case Aggregation_Type_Enum.Browse_Info:
 						if (resultsStatistics == null)
 						{
-							collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject);
+							collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject, Hierarchy_Object, currentMode, Current_User);
 						}
 						else
 						{
 							collectionViewer = new DataSet_Browse_Info_AggregationViewer(thisBrowseObject, resultsStatistics, pagedResults, codeManager, itemList, currentUser);
 						}
+						break;
+
+					case Aggregation_Type_Enum.Child_Page_Edit:
+						collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject, Hierarchy_Object, currentMode, Current_User);
 						break;
 
 					case Aggregation_Type_Enum.Browse_By:
@@ -394,6 +397,18 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("    $(document).ready(function () { $(\"#sbkAghsw_HomeTextEdit\").cleditor({height:400}); });");
 		        Output.WriteLine("  </script>");
 	        }
+
+			// If this is to edit the home page, add the html editor
+			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
+			{
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\">");
+				Output.WriteLine("    $(document).ready(function () { $(\"#sbkSbia_ChildTextEdit\").cleditor({height:400}); });");
+				Output.WriteLine("  </script>");
+			}
         }
 
 
@@ -424,6 +439,13 @@ namespace SobekCM.Library.HTML
 					            return "{0} - " + Hierarchy_Object.Name;
 				            }
 				            break;
+
+						case Aggregation_Type_Enum.Child_Page_Edit:
+							if (Hierarchy_Object != null)
+							{
+								return "{0} - Edit " + Hierarchy_Object.Name;
+							}
+							break;
 
 						case Aggregation_Type_Enum.Browse_By:
 						case Aggregation_Type_Enum.Browse_Map:
@@ -921,7 +943,7 @@ namespace SobekCM.Library.HTML
             Search_Type_Enum thisSearch = currentMode.Search_Type;
             Home_Type_Enum thisHomeType = currentMode.Home_Type;
             string browse_code = currentMode.Info_Browse_Mode;
-            if (( thisMode == Display_Mode_Enum.Aggregation ) && ( thisAggrType == Aggregation_Type_Enum.Browse_Info ))
+            if (( thisMode == Display_Mode_Enum.Aggregation ) && (( thisAggrType == Aggregation_Type_Enum.Browse_Info ) || (thisAggrType == Aggregation_Type_Enum.Child_Page_Edit)))
             {
                 browse_code = currentMode.Info_Browse_Mode;
             }
@@ -2340,10 +2362,6 @@ namespace SobekCM.Library.HTML
         #endregion
 
         #endregion
-
-
-
-
 
         /// <summary> Writes final HTML after all the forms </summary>
         /// <param name="Output">Stream to directly write to</param>

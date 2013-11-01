@@ -64,6 +64,7 @@ public partial class SobekMain : System.Web.UI.Page
                     (pageGlobals.currentMode.Mode != Display_Mode_Enum.Internal) &&
                     (pageGlobals.currentMode.Mode != Display_Mode_Enum.Public_Folder) &&
                     ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || ( pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Home_Edit )) &&
+					((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Child_Page_Edit)) &&
 					((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || ( pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Home ) || (pageGlobals.currentMode.Home_Type != Home_Type_Enum.Personalized)) &&
                     (pageGlobals.currentMode.Result_Display_Type != Result_Display_Type_Enum.Export) &&
                     ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || ((pageGlobals.currentMode.ViewerCode.Length > 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))

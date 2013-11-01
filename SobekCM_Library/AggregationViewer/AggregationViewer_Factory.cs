@@ -72,6 +72,8 @@ namespace SobekCM.Library.AggregationViewer
             switch (SearchType)
             {
                 case Search_Type_Enum.Advanced:
+					if ( Current_Aggregation.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange))
+						return new Advanced_Search_YearRange_AggregationViewer(Current_Aggregation, Current_Mode);
                     return new Advanced_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
                 case Search_Type_Enum.Basic:

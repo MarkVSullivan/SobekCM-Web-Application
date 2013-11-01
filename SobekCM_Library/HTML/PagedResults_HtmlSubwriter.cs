@@ -710,14 +710,14 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("  </span>");
 				if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
 				{
-					Output.WriteLine("  <h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>");
+					Output.WriteLine("  <h1 class=\"noborders\">&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>");
 					Output.WriteLine("  <span class=\"publicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>");
 
 					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
 				}
 				else
 				{
-					Output.WriteLine("  <h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>");
+					Output.WriteLine("  <h1 class=\"noborders\">" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>");
 					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Hierarchy_Object.Name; 
 				}                   
 			}

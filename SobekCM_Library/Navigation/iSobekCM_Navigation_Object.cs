@@ -432,6 +432,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary> View all the coordinates linked to this item aggregation on a map </summary>
 		Browse_Map,
 
+		/// <summary>Ability to edit the static html aggregation child pages</summary>
+		Child_Page_Edit,
+
 		/// <summary>Display the home page for an aggregation (and default search option)</summary>
 		Home,
 

@@ -1,4 +1,6 @@
-﻿#region Using directives
+﻿// HTML5 10/30/2013
+
+#region Using directives
 
 using System;
 using System.IO;
@@ -61,15 +63,12 @@ namespace SobekCM.Library.MySobekViewer
             string my_sobek = "my" + sobek_text;
 
 
-            Output.WriteLine("<div class=\"SobekHomeText\" >");
-            Output.WriteLine("<blockquote>Welcome to " + my_sobek + ".  This feature allows you to add items to your bookshelves, organize your bookshelves, and email your bookshelves to friends.</blockquote>");
-            Output.WriteLine("<table width=\"700\"><tr><td width=\"200px\">&nbsp;</td>");
-            Output.WriteLine("<td><div style=\"font-size:larger\">");
-            Output.WriteLine("<br />");
-            Output.WriteLine("What would you like to do today?");
-            Output.WriteLine("<blockquote>");
-
-            Output.WriteLine("<table>");
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
+            Output.WriteLine("  <p>Welcome to " + my_sobek + ".  This feature allows you to add items to your bookshelves, organize your bookshelves, and email your bookshelves to friends.</p>");
+			Output.WriteLine();
+            Output.WriteLine("  <div id=\"sbkHmv_WhatWouldDiv\">What would you like to do today?</div>");
+			Output.WriteLine();
+            Output.WriteLine("  <table id=\"sbkHmv_Table\">");
 
             // If a user can submit, add a link to start a new item
             if (user.Can_Submit)
@@ -78,11 +77,11 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "new_item.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Start a new item</a></td></tr>");
+                    Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "new_item.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\" >Start a new item</a></td></tr>");
                 }
                 else
                 {
-                    Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><img src=\"" + currentMode.Default_Images_URL + "new_item.gif\" /></td><td><span style=\"color:gray\"><i>Online submittals are temporarily disabled</i></span></td></tr>");
+					Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + currentMode.Default_Images_URL + "new_item.gif\" /></td><td><span style=\"color:gray\"><i>Online submittals are temporarily disabled</i></span></td></tr>");
                 }
             }
 
@@ -92,7 +91,7 @@ namespace SobekCM.Library.MySobekViewer
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                 currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
                 currentMode.My_Sobek_SubMode = "Submitted Items";
-                Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "submitted_items.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View all my submitted items</a></td></tr>");
+				Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "submitted_items.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View all my submitted items</a></td></tr>");
 
             }
             else
@@ -102,7 +101,7 @@ namespace SobekCM.Library.MySobekViewer
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                     currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
                     currentMode.My_Sobek_SubMode = "Submitted Items";
-                    Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><img src=\"" + currentMode.Default_Images_URL + "submitted_items.gif\" /></td><td><span style=\"color:Gray\">View all my submitted items</span></td></tr>");
+					Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + currentMode.Default_Images_URL + "submitted_items.gif\" /></td><td><span style=\"color:Gray\">View all my submitted items</span></td></tr>");
                 }
             }
 
@@ -112,7 +111,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Add link to folder management
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.User_Usage_Stats;
                 currentMode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("<tr valign=\"middle\" height=\"40px\" ><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "usage.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View usage for my items</a></td></tr>");
+				Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "usage.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View usage for my items</a></td></tr>");
             }
 
             // If the user has submitted some descriptive tags, or has the kind of rights that let them
@@ -122,18 +121,18 @@ namespace SobekCM.Library.MySobekViewer
                 // Add link to folder management
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.User_Tags;
                 currentMode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("<tr valign=\"middle\" height=\"40px\" ><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "chat.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View my descriptive tags</a></td></tr>");
+				Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "chat.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View my descriptive tags</a></td></tr>");
             }
 
             // Add link to folder management
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             currentMode.My_Sobek_SubMode = String.Empty;
             currentMode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-            Output.WriteLine("<tr valign=\"middle\" height=\"40px\" ><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "bookshelf.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View and organize my bookshelves</a></td></tr>");
+			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "bookshelf.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View and organize my bookshelves</a></td></tr>");
 
             // Add a link to view all saved searches
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
-            Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "saved_searches.gif\"border=\"0px\"  /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View my saved searches</a></td></tr>");
+			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "saved_searches.gif\"border=\"0px\"  /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">View my saved searches</a></td></tr>");
 
             //// Add a link to the test collecton if the user is linked to it directly
             //currentMode.Mode = SobekCM.Library.Navigation.Display_Mode_Enum.Aggregation_Home;
@@ -144,37 +143,33 @@ namespace SobekCM.Library.MySobekViewer
 
             // Add a link to edit your preferences
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-            Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "settings.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Edit my account preferences</a></td></tr>");
+			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "settings.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Edit my account preferences</a></td></tr>");
 
             // If a return URL was provided, add a link to return there
             if ((currentMode.Return_URL.Length > 0) && ( currentMode.Return_URL.IndexOf("my") < 0 ))
             {
-                Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\">&nbsp;</td><td><a href=\"" + currentMode.Base_URL + currentMode.Return_URL + "\">Return to " + sobek_text + "</a></td></tr>");
+				Output.WriteLine("    <tr><td style=\"width:35px\">&nbsp;</td><td><a href=\"" + currentMode.Base_URL + currentMode.Return_URL + "\">Return to " + sobek_text + "</a></td></tr>");
             }
             
             // Add a log out link
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-            Output.WriteLine("<tr valign=\"middle\" height=\"40px\"><td width=\"35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "exit.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Log Out</a></td></tr>");
-            Output.WriteLine("</table>");
-
+			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "exit.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Log Out</a></td></tr>");
+            Output.WriteLine("  </table>");
+			Output.WriteLine();
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 
-            Output.WriteLine("</blockquote>");
-            Output.WriteLine("</div>");
-            Output.WriteLine("</td></tr></table>");
             currentMode.Mode = Display_Mode_Enum.Contact;
-            Output.WriteLine("<br />Comments or recommendations?  Please <a href=\"" + currentMode.Redirect_URL() + "\">contact us</a>.");
+	        Output.WriteLine("  <p>Comments or recommendations?  Please <a href=\"" + currentMode.Redirect_URL() + "\">contact us</a>.</p>");
             if (!user.Can_Submit)
             {
-                Output.WriteLine("If you would like to contribute materials through the online system, please <a href=\"" + currentMode.Redirect_URL() + "\">contact us</a> as well.<br /><br />");
+				Output.WriteLine("  <p>If you would like to contribute materials through the online system, please <a href=\"" + currentMode.Redirect_URL() + "\">contact us</a> as well.</p>");
             }
-            else
-            {
-                Output.WriteLine("<br /><br />");
-            }
+
+			Output.WriteLine("  <br />");
 
             currentMode.Mode = Display_Mode_Enum.My_Sobek;
             Output.WriteLine("</div>");
+			Output.WriteLine();
         }
     }
 }
