@@ -141,6 +141,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             Coordinate_Point newPoint = new Coordinate_Point(temp1Lat, temp1Long, CurrentItem.METS_Header.ObjectID, "main");
                             //add the new point 
                             resourceGeoInfo.Add_Point(newPoint);
+
                             break;
                         case "overlay":
                             //parse the array id of the page
@@ -423,7 +424,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //skip to the apply
                 }
             }
-
+            
             //create inprocessing directory
             string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
             string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
@@ -1409,3 +1410,5 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
     }
 }
+
+

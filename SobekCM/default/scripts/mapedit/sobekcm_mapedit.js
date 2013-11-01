@@ -35,6 +35,7 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            pageLoadTime: null,                         //holds time page was loaded
             toServerSuccess: false,                     //holds a marker indicating if toserver was sucessfull
             tempYo: false,                              //holds tempyo for fixing ff info window issue
             buttonActive_searchResultToggle: false,     //holds is button active markers
@@ -1949,6 +1950,9 @@ function setupInterface(collection) {
 
 //on page load functions (mainly google map event listeners)
 function initialize() {
+
+    //get and set the page load time
+    globalVar.pageLoadTime = new Date().getTime();
 
     //as map is loading, fit to screen
     resizeView();
@@ -5239,6 +5243,13 @@ function resizeView() {
 
     //set the width of the sf menu pane0 container
     document.getElementById("mapedit_container_pane_0").style.width = widthPX + "px";
+
+    //if first time loaded (fixes issue where sfmenu was not loaded thus not calc'd in page height)
+    if (globalVar.pageLoadTime < (new Date().getTime())) {
+        headerPX = $("#mapedit_container").offset().top;
+    } else {
+        headerPX = $("#mapedit_container").offset().top + 28; //inside css
+    } 
 
     //load all toolbar buttons into an array
     //todo make dynamic
