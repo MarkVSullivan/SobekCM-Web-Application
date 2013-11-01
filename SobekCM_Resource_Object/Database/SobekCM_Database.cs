@@ -12,6 +12,7 @@ using Microsoft.ApplicationBlocks.Data;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 namespace SobekCM.Resource_Object.Database
 {
@@ -706,7 +707,32 @@ namespace SobekCM.Resource_Object.Database
                 }
             }
 
-			// Return the item id
+            //for each page
+            List<abstract_TreeNode> pages = ThisPackage.Divisions.Physical_Tree.Pages_PreOrder;
+            for (int i = 0; i < pages.Count; i++)
+            {
+                //GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                //string error_message;
+                //Save_Item_Metadata(geoInfo);
+                //Save_Item(geoInfo);
+                //Save_Item_Information(geoInfo);
+                //Save_Item_Metadata_Information(geoInfo);
+                //geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+
+                //Step through all the metadata modules and allow the modules to save to the database
+                if (pages[i].Metadata_Modules_Count > 0)
+                {
+                    foreach (iMetadata_Module thisModule in pages[i].All_Metadata_Modules)
+                    {
+                        GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                        string error_message;
+                        geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                        //thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                    }
+                }
+            }
+
+		    // Return the item id
             return ThisPackage.Web.ItemID;
 		}
 
