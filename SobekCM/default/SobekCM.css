@@ -1402,4 +1402,14 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 #sbkSbia_EditableTextLink A:hover {	color: Blue; text-decoration:underline; }
 #sbkSbia_EditableTextLink A:visited {	color: Blue; }
 #sbkSbia_TextEditButtons { float: right;padding: 10px 10px 0 0; }
+#sbkSbia_HeaderInfoDiv { text-align: left; }
+#sbkSbia_HeaderTable { width: 650px; }
+.sbkSbia_HeaderTableLabel { font-weight: bold;width: 145px; }
+#sbkSbia_HeaderInfoDivShowLink { color: Gray; }
+#sbkSbia_HeaderInfoDivShowLink:hover { color: Blue; }
+input.sbkSbia_HeaderInput {width: 400px; color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; margin-top:3px }
+.sbkSbia_HelpButton { border: 0; padding-left:5px; margin-top:3px; cursor:pointer; }
 
+/** Class used for all administrative boxes which take focus */
+.sbk_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }

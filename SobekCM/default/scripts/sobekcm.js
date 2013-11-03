@@ -645,3 +645,12 @@ function show_trace_route() {
 	link.style.visibility = 'hidden';
 	return false;
 }
+
+function show_header_info() {
+	var traceroutediv = document.getElementById("sbkSbia_HeaderInfoDiv");
+	traceroutediv.style.display = 'inline';
+
+	var link = document.getElementById("sbkSbia_HeaderInfoDivShowLink");
+	link.style.visibility = 'hidden';
+	return false;
+}

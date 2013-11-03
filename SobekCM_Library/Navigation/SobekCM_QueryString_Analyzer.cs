@@ -848,19 +848,10 @@ namespace SobekCM.Library.Navigation
 								Navigator.Home_Type = Home_Type_Enum.Personalized;
 								break;
 
+
 							case "all":
-								//if ( navigator.Default_Aggregation == "all" )
-								//    aggregation_querystring_analyze(navigator, QueryString, "all", url_relative_list.GetRange(1, url_relative_list.Count - 1));
-								//else
-									aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
-								break;
-
 							case "new":
-								//if (navigator.Default_Aggregation != "all")
-									aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
-								break;
-
-
+							case "edit":
 							case "map":
 							case "advanced":
 							case "text":
