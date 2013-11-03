@@ -55,7 +55,7 @@ opacity: 0.75;*/
 #mapedit_container_pane_0
 {
     display: none;
-    min-height: 28px;
+    height: 28px;
     background-color: #7d90d5; /*from SobekCM_ItemMenus.css > .sf-menu*/
 }
 
