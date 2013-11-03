@@ -241,6 +241,10 @@ namespace SobekCM.Library.WebContent
 					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + HttpUtility.HtmlEncode(sitemap) + "\" />");
 				if (!String.IsNullOrEmpty(webskin))
 					writer.WriteLine("    <meta name=\"code\" content=\"" + HttpUtility.HtmlEncode(webskin) + "\" />");
+
+				if ( !String.IsNullOrEmpty(extraHeadInfo))
+					writer.WriteLine(extraHeadInfo);
+
 				writer.WriteLine("  </head>");
 				writer.WriteLine("  <body>");
 				writer.WriteLine(staticText);
