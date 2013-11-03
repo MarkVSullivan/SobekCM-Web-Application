@@ -72,7 +72,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             // Save each and every coordinate point
             foreach (Coordinate_Point thisPoint in Points)
             {
-                Save_Item_Footprint(ItemID, thisPoint.Latitude, thisPoint.Longitude, -1.0, -1.0, -1.0, -1.0, DB_ConnectionString, out Error_Message);
+                //create kml string (just a sample)
+                string Point_KML_String = "<kml:point><coordinates>" + thisPoint.Latitude + "," + thisPoint.Longitude + "</coordinates></kml:point>";
+
+                Save_Item_Footprint(ItemID, thisPoint.Latitude, thisPoint.Longitude, -1.0, -1.0, -1.0, -1.0, Point_KML_String, DB_ConnectionString, out Error_Message);
             }
 
             // Add each polygon (bounding box only)
@@ -141,7 +144,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     // Ensure the values aren't all still -1.0
                     if ((rect_latitude_a != -1.0) && (rect_longitude_a != -1.0))
                     {
-                        Save_Item_Footprint(ItemID, -1.0, -1.0, rect_latitude_a, rect_longitude_a, rect_latitude_b, rect_longitude_b, DB_ConnectionString, out Error_Message );
+                        //create kml string (just a sample)
+                        string rect_KML_String = "<kml:polygon><coordinates>" + rect_latitude_a + "," + rect_longitude_a + " " +rect_latitude_b + "," + rect_longitude_b + "</coordinates></kml:polgon>";
+
+                        Save_Item_Footprint(ItemID, -1.0, -1.0, rect_latitude_a, rect_longitude_a, rect_latitude_b, rect_longitude_b, rect_KML_String, DB_ConnectionString, out Error_Message );
                     }
                 }
                 catch
@@ -172,7 +178,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <param name="Rect_Longitude_B"> Longitude of the second point of a rectangular footprint </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Save_Item_Footprint(int ItemID, double Point_Latitude, double Point_Longitude, double Rect_Latitude_A,
-            double Rect_Longitude_A, double Rect_Latitude_B, double Rect_Longitude_B, string DB_ConnectionString, out string Error_Message )
+            double Rect_Longitude_A, double Rect_Latitude_B, double Rect_Longitude_B, string Segment_KML, string DB_ConnectionString, out string Error_Message )
         {
             Error_Message = String.Empty;
 
@@ -220,6 +226,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     cmd.Parameters.AddWithValue("@Rect_Longitude_B", DBNull.Value);
                 else
                     cmd.Parameters.AddWithValue("@Rect_Longitude_B", Rect_Longitude_B);
+                if (Segment_KML=="")
+                    cmd.Parameters.AddWithValue("@Segment_KML", DBNull.Value);
+                else
+                    cmd.Parameters.AddWithValue("@Segment_KML", Segment_KML);
 
                 // Execute the non-query SQL stored procedure
                 try
