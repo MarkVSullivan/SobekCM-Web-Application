@@ -109,9 +109,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //hold save type handle
             string saveTypeHandle = null;
-            //check to see if save poi clear has already been fired...
-            bool firedOnce = true; 
-            //go through each item to save
+            //go through each item to save and check for ovelrays and item only not pois (ORDER does matter because these will be saved to db before pois are saved)
             for (int i = 0; i < allSaves.Length; i++)
             {
                 //get the length of save message
@@ -128,6 +126,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //handle save based on type
                     switch (saveType)
                     {
+                        #region item
                         case "item":
                             //prep incoming lat/long
                             string[] temp1 = ar[2].Split(',');
@@ -141,8 +140,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             Coordinate_Point newPoint = new Coordinate_Point(temp1Lat, temp1Long, CurrentItem.METS_Header.ObjectID, "main");
                             //add the new point 
                             resourceGeoInfo.Add_Point(newPoint);
-
+                            //save to db
+                            Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
                             break;
+                        #endregion
+                        #region overlay
                         case "overlay":
                             //parse the array id of the page
                             int arrayId = (Convert.ToInt32(ar[2]) - 1); //is this always true (minus one of the human page id)?
@@ -198,139 +200,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 pageGeo.Clear_NonPOIs();
                                 //add polygon to pagegeo
                                 pageGeo.Add_Polygon(pagePolygon);
-
-                                ////grab all polygons (wont there always be one -IE we do not support pois for pages yet)?
-                                //foreach (Coordinate_Polygon pagePolygon in pageGeo.Polygons)
-                                //{
-                                //    //determine if not a poi
-                                //    if (pagePolygon.FeatureType != "poi")
-                                //    {
-                                //        //prep incoming bounds
-                                //        string[] temp2 = ar[4].Split(',');
-                                //        pagePolygon.Clear_Edge_Points();
-                                //        pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                                //        pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                                //        pagePolygon.Recalculate_Bounding_Box();
-                                //        //add the rotation
-                                //        pagePolygon.Rotation = Convert.ToDouble(ar[6]);
-                                //        //add the featureType (explicitly add to make sure it is there)
-                                //        pagePolygon.FeatureType = "main";
-                                //        //add the label
-                                //        pagePolygon.Label = ar[3];
-                                //        //add the polygon type
-                                //        pagePolygon.PolygonType = "rectangle";
-                                //        //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
-                                //        pageGeo.Clear_NonPOIs();
-                                //        //add polygon to pagegeo
-                                //        pageGeo.Add_Polygon(pagePolygon);
-                                //    }
-                                //}
                             }
                             //add the pagegeo obj
                             pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
-
-                            //bool handled = false;
-                            //if (pages.Count == 1)
-                            //{
-                            //    // get the geocoordinate object
-                            //    GeoSpatial_Information singlePageGeo = pages[0].Get_Metadata_Module( GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                            //    if (singlePageGeo == null)
-                            //    {
-                            //        singlePageGeo = new GeoSpatial_Information();
-                            //        //save the new page's label
-                            //        pages[0].Label = ar[3];
-                            //        pages[0].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, singlePageGeo);
-                            //    }
-                            //    foreach (Coordinate_Polygon itemPolygon in singlePageGeo.Polygons )
-                            //    {
-                            //        //is there a match?
-                            //        if (itemPolygon.FeatureType != "poi" )
-                            //        {
-                            //            //prep incoming bounds
-                            //            string[] temp2 = ar[4].Split(',');
-                            //            itemPolygon.Clear_Edge_Points();
-                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                            //            itemPolygon.Recalculate_Bounding_Box();
-                            //            //add the rotation
-                            //            itemPolygon.Rotation = Convert.ToDouble(ar[6]);
-                            //            //add the featureType (explicitly add to make sure it is there)
-                            //            itemPolygon.FeatureType = "main";
-                            //            handled = true;
-                            //            break;
-                            //        }
-                            //    }
-                            //    if (!handled)
-                            //    {
-                            //        //create new polygon
-                            //        Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
-                            //        //add the bounds
-                            //        string[] temp2 = ar[4].Split(',');
-                            //        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                            //        itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                            //        itemPolygon.Recalculate_Bounding_Box();
-                            //        //add the label
-                            //        itemPolygon.Label = ar[3] != "undefined" ? ar[3] : CurrentItem.Bib_Title;
-                            //        //add the rotation
-                            //        itemPolygon.Rotation = Convert.ToDouble(ar[6]);
-                            //        //add the feature type 
-                            //        itemPolygon.FeatureType = "main";
-                            //        singlePageGeo.Add_Polygon(itemPolygon);
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    // Look for the matching page
-                            //    if (pageLookup.ContainsKey(ar[3]))
-                            //    {
-                            //        Page_TreeNode thisPage = pageLookup[ar[3]];
-                            //        GeoSpatial_Information singlePageGeo = thisPage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                            //        if (singlePageGeo == null)
-                            //        {
-                            //            singlePageGeo = new GeoSpatial_Information();
-                            //            thisPage.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, singlePageGeo);
-                            //        }
-
-                            //        foreach (Coordinate_Polygon itemPolygon in singlePageGeo.Polygons)
-                            //        {
-                            //            //is there a match?
-                            //            if (itemPolygon.FeatureType != "poi")
-                            //            {
-                            //                //prep incoming bounds
-                            //                string[] temp2 = ar[4].Split(',');
-                            //                itemPolygon.Clear_Edge_Points();
-                            //                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                            //                itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                            //                itemPolygon.Recalculate_Bounding_Box();
-                            //                //add the rotation
-                            //                itemPolygon.Rotation = Convert.ToDouble(ar[6]);
-                            //                //add the featureType (explicitly add to make sure it is there)
-                            //                itemPolygon.FeatureType = "main";
-                            //                handled = true;
-                            //                break;
-                            //            }
-                            //        }
-                            //        if (!handled)
-                            //        {
-                            //            //create new polygon
-                            //            Coordinate_Polygon itemPolygon = new Coordinate_Polygon();
-                            //            //add the bounds
-                            //            string[] temp2 = ar[4].Split(',');
-                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                            //            itemPolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                            //            itemPolygon.Recalculate_Bounding_Box();
-                            //            //add the label
-                            //            itemPolygon.Label = ar[3] != "undefined" ? ar[3] : CurrentItem.Bib_Title;
-                            //            //add the rotation
-                            //            itemPolygon.Rotation = Convert.ToDouble(ar[6]);
-                            //            //add the feature type 
-                            //            itemPolygon.FeatureType = "main";
-                            //            singlePageGeo.Add_Polygon(itemPolygon);
-                            //        }
-                            //    }
-                            //}
+                            //save to db
+                            Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
                             break;
+                        #endregion
+                    }
+                }
+                else
+                {
+                    //skip to the apply
+                }
+            }
 
+            //check to see if save poi clear has already been fired...
+            bool firedOnce = true; 
+            //go through each item to save and check for pois only
+            for (int i = 0; i < allSaves.Length; i++)
+            {
+                //get the length of save message
+                int index2 = allSaves[i].LastIndexOf("|");
+                //split into save elements
+                string[] ar = allSaves[i].Substring(0, index2).Split('|');
+                //determine the save type handle (position 0 in array)
+                saveTypeHandle = ar[0];
+                //determine the save type (position 1 in array)
+                string saveType = ar[1];
+                //based on saveType, parse into objects
+                if (saveTypeHandle == "save")
+                {
+                    //handle save based on type
+                    switch (saveType)
+                    {
+                        #region poi
                         case "poi":
                             //fixes bug
                             if (firedOnce)
@@ -417,6 +321,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     break;
                             }
                             break;
+                        #endregion
                     }
                 }
                 else
@@ -424,7 +329,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //skip to the apply
                 }
             }
-            
+
+            #region prep saving dir
             //create inprocessing directory
             string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
             string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
@@ -440,42 +346,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
             string backup_mets = backupDirectory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + ".mets.xml.BAK";
             string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
-            
-            //determine what to do from here
-            switch (saveTypeHandle)
-            {
-                case "save":
-                    //save the item to the temporary location
-                    CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
-                    //move temp mets to prod
-                    File.Copy(metsInProcessFile, current_mets, true);
-                    //delete in process mets file 
-                    File.Delete(metsInProcessFile);
-                    //create a backup mets file
-                    File.Copy(current_mets, backup_mets, true);
-                    //save to db
-                    Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
-                    break;
-                case "apply":
-                    //in theory, this should only be called after the 'save' thus we do not need to save only apply (IE send to live)
-                    ////move temp mets to prod
-                    //File.Copy(metsInProcessFile, current_mets, true);
-                    ////delete in process mets file 
-                    //File.Delete(metsInProcessFile); 
-                    ////create a backup mets file
-                    //File.Copy(current_mets, backup_mets, true);
-                    ////save to db
-                    //Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
-                    break;
-                case "reset":
-                    //currently not used
-                    //reset temp mets
-                    //if (File.Exists(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml"))
-                    //{
-                    //    File.Delete(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
-                    //}
-                    break;
-            }
+            #endregion
+
+            #region Save mets and db
+            //save the item to the temporary location
+            CurrentItem.Save_METS(userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml");
+            //move temp mets to prod
+            File.Copy(metsInProcessFile, current_mets, true);
+            //delete in process mets file 
+            File.Delete(metsInProcessFile);
+            //create a backup mets file
+            File.Copy(current_mets, backup_mets, true);
+            #endregion
         }
 
         /// <summary> Gets the number of pages for this viewer </summary>
@@ -772,39 +654,38 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     mapeditBuilder.AppendLine("      displayIncomingLines();");
                     mapeditBuilder.AppendLine(" ");
                 }
-
-                int pageCount = 0;
-                foreach (var page in pages)
-                {
-
-                    pageCount++;
-                }
                 #endregion
 
                 // Add all the polygons to page
                 #region
+                int pageCount = 0;
+                foreach (var page in pages)
+                {
+                    pageCount++;
+                }
                 //iterate how many we have added
                 int totalAddedOverlays = 0;
+                //iterate how many page polys we have added
+                int totalPagePolysAdded = -1; //keep at -1
                 //go through and add the existing polygons
                 if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
                 {
-                    //go through each polygone
                     int it = 0;
+
+                    #region Add overlays first! this fixes index issues within (thus index is always id minus 1)
                     foreach (Coordinate_Polygon itemPolygon in allPolygons)
                     {
-                        //add the featureType
-                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + it + "] = \"" +
-                                                  itemPolygon.FeatureType + "\";");
-                        //add the polygonType
-                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + it + "] = \"" +
-                                                  itemPolygon.PolygonType + "\";");
-                        //add the label
-                        mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + it + "] = \"" +
-                                                  itemPolygon.Label + "\";");
-                        //determine if an overlay or a polygon
-                        //add "main" attributes
                         if (itemPolygon.FeatureType != "poi")
                         {
+                            //add the featureType
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + it + "] = \"" + itemPolygon.FeatureType + "\";");
+                            //add the polygonType
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + it + "] = \"" + itemPolygon.PolygonType + "\";");
+                            //add the label
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
+
+                            //iterate pagePolys
+                            totalPagePolysAdded++;
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
                             string bounds1 = "new google.maps.LatLng";
@@ -813,26 +694,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //determine how to handle bounds (2 edgepoints vs 4)
                             foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
                             {
-                                //if ((localit % 2) > 0)
-                                //{
-                                //    bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
-                                //}
-                                //else
-                                //{
-                                //    bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
-                                //}
                                 if (itemPolygon.Edge_Points_Count == 2)
                                 {
                                     if (localit == 0)
-                                    {
-                                        bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," +
-                                                   Convert.ToString(thisPoint.Longitude) + ")";
-                                    }
+                                        bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
                                     if (localit == 1)
-                                    {
-                                        bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," +
-                                                   Convert.ToString(thisPoint.Longitude) + ")";
-                                    }
+                                        bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
                                     localit++;
                                 }
                                 else
@@ -840,20 +707,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     if (itemPolygon.Edge_Points_Count == 4)
                                     {
                                         if (localit == 0)
-                                        {
-                                            bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," +
-                                                       Convert.ToString(thisPoint.Longitude) + ")";
-                                        }
+                                            bounds1 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
                                         if (localit == 2)
-                                        {
-                                            bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," +
-                                                       Convert.ToString(thisPoint.Longitude) + ")";
-                                        }
+                                            bounds2 += "(" + Convert.ToString(thisPoint.Latitude) + "," + Convert.ToString(thisPoint.Longitude) + ")";
                                         localit++;
-                                    }
-                                    else
-                                    {
-                                        //hold
                                     }
                                 }
                             }
@@ -861,86 +718,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             bounds += bounds2 + ", " + bounds1;
                             bounds += ")";
                             //add the bounds
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPath[" + it + "] = " + bounds +
-                                                      ";"); //changed from bounds
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPath[" + it + "] = " + bounds + ";"); //changed from bounds
                             //add image url
                             try
                             {
                                 //your way
-                                List<SobekCM_File_Info> first_page_files = CurrentItem.Web.Pages_By_Sequence[it].Files;
-
+                                List<SobekCM_File_Info> first_page_files = CurrentItem.Web.Pages_By_Sequence[totalPagePolysAdded].Files;
                                 string first_page_jpeg = String.Empty;
                                 foreach (SobekCM_File_Info thisFile in first_page_files)
                                 {
-                                    if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
-                                        (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
-                                    {
-                                        first_page_jpeg = thisFile.System_Name;
-                                        break;
-                                    }
-                                }
-                                string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" +
-                                                                 first_page_jpeg + "\"";
-                                ////polygonURL[it] = first_page_complete_url;
-                                //polygonURL.Add(first_page_complete_url);
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + it + "] = " +
-                                                          first_page_complete_url + ";");
-                            }
-                            catch (Exception)
-                            {
-                                //my way
-                                string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + it + "] = \"" +
-                                                          current_image_file + "\"; ");
-                                //throw;
-                            }
-                            //add rotation
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + it + "] = " +
-                                                      itemPolygon.Rotation + ";");
-                            //add page sequence
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + it + "] = " +
-                                                      itemPolygon.Page_Sequence + ";");
-                            //iterate how many overlays we have gone through already
-                            totalAddedOverlays++;
-                        }
-                        else
-                        {
-                            //add the polygon path
-                            mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + it + "] = [ ");
-                            foreach (var point in allPolygons[it].Edge_Points)
-                            {
-                                mapeditBuilder.Append("new google.maps.LatLng(" + point.Latitude + "," + point.Longitude +
-                                                      "), ");
-                            }
-                            mapeditBuilder.AppendLine("];");
-                        }
-                        //iterate
-                        it++;
-                    }
-                    //now add the page info so we can convert to overlays in the app
-                    foreach (var page in pages)
-                    {
-                        if (totalAddedOverlays < pages.Count)
-                        {
-                            //add featuretype
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedOverlays + "] = \"hidden\";");
-                            //add polygontype
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedOverlays + "] = \"hidden\";");
-                            //add label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedOverlays + "] = \"" + page.Label + "\";");
-                            //add page sequence
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedOverlays + "] = " + (totalAddedOverlays + 1) + ";");
-                            //add image url
-                            try
-                            {
-                                //your way
-                                List<SobekCM_File_Info> first_page_files = CurrentItem.Web.Pages_By_Sequence[totalAddedOverlays].Files;
-
-                                string first_page_jpeg = String.Empty;
-                                foreach (SobekCM_File_Info thisFile in first_page_files)
-                                {
-                                    if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
-                                        (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                                    if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) && (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
                                     {
                                         first_page_jpeg = thisFile.System_Name;
                                         break;
@@ -949,25 +736,104 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                                 ////polygonURL[it] = first_page_complete_url;
                                 //polygonURL.Add(first_page_complete_url);
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedOverlays + "] = " + first_page_complete_url + ";");
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + it + "] = " + first_page_complete_url + ";");
                             }
                             catch (Exception)
                             {
-                                //my way
-                                string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedOverlays + "] = \"" + current_image_file + "\"; ");
-                                //throw;
+                                //there is no image
                             }
+
+                            //add rotation
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + it + "] = " + itemPolygon.Rotation + ";");
+                            //add page sequence
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + it + "] = " + itemPolygon.Page_Sequence + ";");
+                            //iterate how many overlays we have gone through already
                             totalAddedOverlays++;
+
+                            //iterate
+                            it++;
+
                         }
                     }
+                    #endregion
+
+                    #region Add pois (order of adding is important
+                    foreach (Coordinate_Polygon itemPolygon in allPolygons)
+                    {
+                        if (itemPolygon.FeatureType == "poi")
+                        {
+                            //add the featureType
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + it + "] = \"" + itemPolygon.FeatureType + "\";");
+                            //add the polygonType
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + it + "] = \"" + itemPolygon.PolygonType + "\";");
+                            //add the label
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + it + "] = \"" + itemPolygon.Label + "\";");
+
+                            //add the polygon path
+                            mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + it + "] = [ ");
+                            foreach (var point in allPolygons[it].Edge_Points)
+                            {
+                                mapeditBuilder.Append("new google.maps.LatLng(" + point.Latitude + "," + point.Longitude + "), ");
+                            }
+                            mapeditBuilder.AppendLine("];");
+
+                            //iterate
+                            it++;
+                        }
+                    }
+                    #endregion
+
+                    #region Add the page info so we can convert to overlays in the app
+                    //foreach (var page in pages)
+                    //{
+                    //    if (totalAddedOverlays < pages.Count)
+                    //    {
+                    //        //add featuretype
+                    //        mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedOverlays + "] = \"hidden\";");
+                    //        //add polygontype
+                    //        mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedOverlays + "] = \"hidden\";");
+                    //        //add label
+                    //        mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedOverlays + "] = \"" + page.Label + "\";");
+                    //        //add page sequence
+                    //        mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedOverlays + "] = " + (totalAddedOverlays + 1) + ";");
+                    //        //add image url
+                    //        try
+                    //        {
+                    //            //your way
+                    //            List<SobekCM_File_Info> first_page_files = CurrentItem.Web.Pages_By_Sequence[totalAddedOverlays].Files;
+
+                    //            string first_page_jpeg = String.Empty;
+                    //            foreach (SobekCM_File_Info thisFile in first_page_files)
+                    //            {
+                    //                if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) && (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                    //                {
+                    //                    first_page_jpeg = thisFile.System_Name;
+                    //                    break;
+                    //                }
+                    //            }
+                    //            string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                    //            ////polygonURL[it] = first_page_complete_url;
+                    //            //polygonURL.Add(first_page_complete_url);
+                    //            mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedOverlays + "] = " + first_page_complete_url + ";");
+                    //        }
+                    //        catch (Exception)
+                    //        {
+                    //            //my way
+                    //            string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
+                    //            mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedOverlays + "] = \"" + current_image_file + "\"; ");
+                    //            //throw;
+                    //        }
+                    //        totalAddedOverlays++;
+                    //    }
+                    //}
+                    #endregion
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPolygons(); ");
                     mapeditBuilder.AppendLine(" ");
                 }
                 else
                 {
-                    //now add the page info so we can convert to overlays in the app
+                    #region Add the page info so we can convert to overlays in the app
                     foreach (var page in pages)
                     {
                         if (totalAddedOverlays < pages.Count)
@@ -1011,6 +877,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             totalAddedOverlays++;
                         }
                     }
+                    #endregion
                     mapeditBuilder.AppendLine(" ");
                     mapeditBuilder.AppendLine("      displayIncomingPolygons(); ");
                     mapeditBuilder.AppendLine(" ");
@@ -1045,6 +912,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine(" <div id=\"mapedit_container_message\"> ");
                 mapeditBuilder.AppendLine("     <div id=\"content_message\"></div> ");
                 mapeditBuilder.AppendLine(" </div> ");
+                mapeditBuilder.AppendLine("  ");
                 mapeditBuilder.AppendLine(" <div id=\"mapedit_container_pane_0\"> ");
                 mapeditBuilder.AppendLine("     <ul class=\"sf-menu\"> ");
                 mapeditBuilder.AppendLine("         <li> ");
@@ -1125,8 +993,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                     <a id=\"content_menubar_manageOverlay\"></a> ");
                 mapeditBuilder.AppendLine("                     <ul> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayGetUserLocation\"></a></li> ");
-                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayEdit\"></a></li> ");
-                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayPlace\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <!--<li><a id=\"content_menubar_overlayEdit\"></a></li>--> ");
+                mapeditBuilder.AppendLine("                         <!--<li><a id=\"content_menubar_overlayPlace\"></a></li>--> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_overlayToggle\"></a></li> ");
                 mapeditBuilder.AppendLine("                         <li> ");
                 mapeditBuilder.AppendLine("                             <a id=\"content_menubar_header3Sub3Sub1\"></a> ");
@@ -1151,7 +1019,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                     <a id=\"content_menubar_managePOI\"></a> ");
                 mapeditBuilder.AppendLine("                     <ul> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiGetUserLocation\"></a></li> ");
-                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiPlace\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <!--<li><a id=\"content_menubar_poiPlace\"></a></li>--> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_poiToggle\"></a></li> ");
                 mapeditBuilder.AppendLine("                         <li> ");
                 mapeditBuilder.AppendLine("                             <a id=\"content_menubar_header3Sub4Sub1\"></a> ");
@@ -1177,50 +1045,51 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("         </li> ");
                 mapeditBuilder.AppendLine("     </ul>     ");
                 mapeditBuilder.AppendLine(" </div> ");
-                mapeditBuilder.AppendLine(" <div id=\"mapedit_container\"> ");
-                mapeditBuilder.AppendLine("      ");
-                mapeditBuilder.AppendLine("     <div id=\"mapedit_container_pane_1\"> ");
-                mapeditBuilder.AppendLine("         <div id=\"mapedit_container_toolbar\">        ");
-                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_reset\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_toggleMapControls\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_toggleToolbox\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("             </div> ");
-                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerRoadmap\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerTerrain\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerSatellite\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerHybrid\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerCustom\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_layerReset\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("             </div> ");
-                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panUp\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panLeft\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panReset\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panRight\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_panDown\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("             </div> ");
-                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomIn\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomReset\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_zoomOut\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("             </div> ");
-                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageItem\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageOverlay\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_managePOI\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_button_manageSearch\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("             </div> ");
-                mapeditBuilder.AppendLine("             <div class=\"toolbar_grouping\"> ");
-                mapeditBuilder.AppendLine("                 <div class=\"mapedit_container_search\"> ");
-                mapeditBuilder.AppendLine("                     <input id=\"content_toolbar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
-                mapeditBuilder.AppendLine("                     <div id=\"content_toolbar_searchButton\" class=\"searchActionHandle\"></div> ");
-                mapeditBuilder.AppendLine("                 </div> ");
+                mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine(" <div id=\"mapedit_container_pane_1\"> ");
+                mapeditBuilder.AppendLine("     <div id=\"mapedit_container_toolbar\">        ");
+                mapeditBuilder.AppendLine("         <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_reset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_toggleMapControls\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_toggleToolbox\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("         </div> ");
+                mapeditBuilder.AppendLine("         <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_layerRoadmap\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_layerTerrain\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_layerSatellite\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_layerHybrid\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_layerCustom\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_layerReset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("         </div> ");
+                mapeditBuilder.AppendLine("         <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_panUp\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_panLeft\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_panReset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_panRight\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_panDown\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("         </div> ");
+                mapeditBuilder.AppendLine("         <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_zoomIn\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_zoomReset\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_zoomOut\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("         </div> ");
+                mapeditBuilder.AppendLine("         <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_manageItem\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_manageOverlay\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_managePOI\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("             <div id=\"content_toolbar_button_manageSearch\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("         </div> ");
+                mapeditBuilder.AppendLine("         <div class=\"toolbar_grouping\"> ");
+                mapeditBuilder.AppendLine("             <div class=\"mapedit_container_search\"> ");
+                mapeditBuilder.AppendLine("                 <input id=\"content_toolbar_searchField\" class=\"search\" type=\"text\" placeholder=\"\" onClick=\"this.select();\" /> ");
+                mapeditBuilder.AppendLine("                 <div id=\"content_toolbar_searchButton\" class=\"searchActionHandle\"></div> ");
                 mapeditBuilder.AppendLine("             </div> ");
                 mapeditBuilder.AppendLine("         </div> ");
                 mapeditBuilder.AppendLine("     </div> ");
+                mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine("  ");
+                mapeditBuilder.AppendLine(" <div id=\"mapedit_container\"> ");
+                mapeditBuilder.AppendLine("      ");
                 mapeditBuilder.AppendLine("     <div id=\"mapedit_container_toolbarGrabber\"> ");
                 mapeditBuilder.AppendLine("         <div id=\"content_toolbarGrabber\"></div> ");
                 mapeditBuilder.AppendLine("     </div>     ");
@@ -1322,8 +1191,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab4_header\" class=\"tab-title\"></div> ");
                 mapeditBuilder.AppendLine("                 <div id=\"overlayACL\" class=\"tab\"> ");
                 mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayEdit\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayPlace\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <!--<div id=\"content_toolbox_button_overlayEdit\" class=\"button\"></div>--> ");
+                mapeditBuilder.AppendLine("                         <!--<div id=\"content_toolbox_button_overlayPlace\" class=\"button\"></div>--> ");
                 mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayGetUserLocation\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayToggle\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("  ");
@@ -1357,7 +1226,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                 <div id=\"content_toolbox_tab5_header\" class=\"tab-title\"></div> ");
                 mapeditBuilder.AppendLine("                 <div class=\"tab\"> ");
                 mapeditBuilder.AppendLine("                     <div class=\"toolbox_tab-content\"> ");
-                mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_placePOI\" class=\"button\"></div> ");
+                mapeditBuilder.AppendLine("                         <!--<div id=\"content_toolbox_button_placePOI\" class=\"button\"></div>--> ");
                 mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiGetUserLocation\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_poiToggle\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
@@ -1410,5 +1279,3 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
     }
 }
-
-
