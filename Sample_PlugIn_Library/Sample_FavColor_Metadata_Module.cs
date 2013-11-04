@@ -13,6 +13,7 @@ namespace Sample_PlugIn_Library
         public Sample_FavColor_Metadata_Module()
         {
             otherFavoriteColors = new List<string>();
+            bool no_error = true;
         }
 
         public string Absolute_Favorite_Color { get; set; }
