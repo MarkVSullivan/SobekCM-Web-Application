@@ -4428,13 +4428,11 @@ function createSavedPOI(handle) {
 //sends save dataPackages to the server via json
 function toServer(dataPackage) {
     jQuery('form').each(function() {
-
         var payload = JSON.stringify({ sendData: dataPackage });
         var hiddenfield = document.getElementById('payload');
         hiddenfield.value = payload;
         var hiddenfield2 = document.getElementById('action');
         hiddenfield2.value = 'save';
-
         //reset success marker
         globalVar.toServerSuccess = false;
         $.ajax({
@@ -4444,7 +4442,8 @@ function toServer(dataPackage) {
             data: jQuery(this).serialize(),
             success: function(result) {
                 //de("server result:" + result);
-                displayMessage(L_Saved);
+                de("Sallback from server - success");
+                //displayMessage(L_Saved);
                 globalVar.toServerSuccess = true;
                 globalVar.csoi = 0; //reset
             }
@@ -5523,8 +5522,8 @@ $(function () {
 
         //draggable content settings
         $("#mapedit_container_toolbox").draggable({
-            handle: "#mapedit_container_toolboxMinibar"//, //div used as handle
-            //containment: "#mapedit_container" //bind to map container 
+            handle: "#mapedit_container_toolboxMinibar" //div used as handle
+            //containment: "#mapedit_container" //bind to map container (for this to work must define starting position and assign once mapedit container is set properly loaded)
         });
         //accordian settings
         $("#mapedit_container_toolboxTabs").accordion({

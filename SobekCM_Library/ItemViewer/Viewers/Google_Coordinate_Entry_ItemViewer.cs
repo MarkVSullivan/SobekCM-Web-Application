@@ -31,7 +31,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Line> allLines;
         List<Coordinate_Circle> allCircles;
         
-        //init viewer instance
+        /// <summary> init viewer instance </summary>
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
             CurrentUser = Current_User;
@@ -66,7 +66,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //File.Copy(current_mets, backup_mets_name);
         }
 
-        //parse and save incoming message 
+        /// <summary> parse and save incoming message  </summary>
         public static void SaveContent(String sendData)
         {
             //get rid of excess string 
