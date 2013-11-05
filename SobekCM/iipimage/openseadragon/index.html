@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+	<title>Open SeaDragon</title>
+	<script src="openseadragon.min.js"></script>
+
+       
+        <style type="text/css">
+            #container
+            {
+                width: 800px;
+                height: 600px;
+                background-color: black;
+                border: 1px solid black;
+                color: white;   /* for error messages, etc. */
+            }
+        </style>
+
+    </head>
+
+    <body>
+        <div id="container"></div>
+
+<script type="text/javascript">
+    viewer = OpenSeadragon({
+        id:            "container",
+	prefixUrl : "/iipimage/openseadragon/images/",
+        showNavigator:  true
+    });
+
+    viewer.open("/iipimage/iipsrv.fcgi?DeepZoom=/IIPimage/images/test.jp2.dzi");
+</script>
+    </body>
+</html>	
