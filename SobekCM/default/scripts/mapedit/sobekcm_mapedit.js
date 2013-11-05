@@ -1698,8 +1698,8 @@ function save(id) {
                         displayMessage(L_Saved);
                     }
                     //explicitly turn off the drawing manager 
-                    google.map.drawingManager.setDrawingMode(null);
-                    google.map.drawingManager.setMap(null);
+                    drawingManager.setDrawingMode(null);
+                    drawingManager.setMap(null);
                     //reset first save
                     //globalVar.firstSavePOI = false;
                     //change save button to apply button
@@ -1782,9 +1782,12 @@ function clear(id) {
             if (globalVar.poiObj.length > 0) {
                 displayMessage(localize.L53);
                 for (var i = 0; i < globalVar.poiObj.length; i++) {
+                    if (globalVar.poiType[i] != "deleted") {
+                        globalVar.poiType[i] = "deleted";
+                    }
                     if (globalVar.poiObj[i] != null) {
                         globalVar.poiObj[i].setMap(null);
-                        globalVar.poiObj[i] = null;
+                        //globalVar.poiObj[i] = null;
                     }
                     if (globalVar.poiDesc[i] != null) {
                         globalVar.poiDesc[i] = null;
@@ -1799,9 +1802,15 @@ function clear(id) {
                     var strg = "#poi" + i; //create <li> poi string
                     $(strg).remove(); //remove <li>
                 }
-                globalVar.poiObj = [];
                 globalVar.poi_i = -1;
-
+                //send to server to delete all the pois
+                globalVar.RIBMode = true;
+                createSavedPOI("save");
+                globalVar.RIBMode = false;
+                //reset poi arrays
+                globalVar.poiObj = [];
+                globalVar.poiDesc = [];
+                globalVar.poiKML = [];
                 displayMessage(L11);
             } else {
                 displayMessage(L_NotCleared);
@@ -3244,12 +3253,13 @@ function displayIncomingPolygons() {
             //hidden do nothing
             break;
         case "":
-            //globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
+            globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
             globalVar.currentlyEditing = "no";
             //set the overlay to the map
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]].setMap(map);
+            //keepRotate(globalVar.incomingPolygonRotation[i]);
             //set hotspot on top of overlay
             setGhostOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i]);
             de("I created ghost: " + globalVar.incomingPolygonPageId[i]);
@@ -3261,7 +3271,6 @@ function displayIncomingPolygons() {
         case "main":
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
-            //alert(globalVar.incomingPolygonPageId[i] + ", " + globalVar.incomingPolygonPath[i] + ", " + globalVar.incomingPolygonSourceURL[i] + ", " + globalVar.incomingPolygonRotation[i]);
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
             globalVar.currentlyEditing = "no";
             //set the overlay to the map
@@ -3601,6 +3610,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
                 globalVar.toolboxDisplayed = true;                                                                //mark that the toolbox is open
                 $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
                 globalVar.currentlyEditing = "yes";                                                               //enable editing marker
+                //alert("prev woi:" + globalVar.workingOverlayIndex + " new " + ghostIndex);
                 globalVar.workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being e
                 globalVar.ghostOverlayRectangle[ghostIndex].setOptions(globalVar.editable);                                 //show ghost
                 globalVar.currentTopZIndex++;                                                                     //iterate top z index
@@ -3758,7 +3768,7 @@ CustomOverlay.prototype.draw = function () {
     div.style.top = ne.y + 'px';
     div.style.width = (ne.x - sw.x) + 'px';
     div.style.height = (sw.y - ne.y) + 'px';
-    
+
     //for a rotation
     //hold woi to later put it back in (fixes keepRotate error)
     var temp = globalVar.workingOverlayIndex;
@@ -4312,15 +4322,30 @@ function displayMessage(message) {
         //assign the message
         document.getElementById(currentDivId).innerHTML = message;
 
-        //show message
-        document.getElementById(currentDivId).style.display = "block"; //display element
-
-        //fade message out
-        setTimeout(function () {
-            $("#" + currentDivId).fadeOut("slow", function () {
-                $("#" + currentDivId).remove();
-            });
-        }, 3000); //after 3 sec
+        //determine if duplicate message
+        var duplicateMessage = false;
+        try {
+            if (document.getElementById("message" + (globalVar.messageCount - 1)).innerHTML == message) {
+                duplicateMessage = true;
+            }
+        } catch (e) {
+            //
+        }
+        
+        if (duplicateMessage) {
+            de("Same message to display as previous, not displaying");
+        } else {
+            //de("Unique message to display");
+            //show message
+            document.getElementById(currentDivId).style.display = "block"; //display element
+            //fade message out
+            setTimeout(function () {
+                $("#" + currentDivId).fadeOut("slow", function () {
+                    $("#" + currentDivId).remove();
+                });
+            }, 3000); //after 3 sec
+        }
+        
     }
 }
 
@@ -4382,16 +4407,19 @@ function createSavedPOI(handle) {
                 //nothing to do here, just a placeholder
                 break;
         }
-        //filter out the deleted pois
-        if (globalVar.poiType[i] != "deleted") {
-            //compile data message
-            var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
-            dataPackage += data + "~";
-        }
+        ////filter out the deleted pois
+        //if (globalVar.poiType[i] != "deleted") {
+        //    //compile data message
+        //    var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
+        //    dataPackage += data + "~";
+        //}
+        //compile data message
+        var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
+        dataPackage += data + "~";
     }
     de("saving overlay set: " + dataPackage); //temp  
-    //add another filter to catch if datapackage is null
-    if (dataPackage != null) {
+    //add another filter to catch if datapackage is empty
+    if (dataPackage != "") {
         toServer(dataPackage); //send to server to save    
     }
 
