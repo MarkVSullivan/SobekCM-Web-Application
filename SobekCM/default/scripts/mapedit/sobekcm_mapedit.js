@@ -4486,6 +4486,10 @@ function overlayEditMe(id) {
             //enable editing marker
             globalVar.currentlyEditing = "yes";
             de("editing overlay " + globalVar.workingOverlayIndex);
+            //get and set the preserved transparency value
+            globalVar.preservedOpacity = document.getElementById("overlay" + globalVar.workingOverlayIndex).style.opacity;
+            $("#overlayTransparencySlider").slider("value", globalVar.preservedOpacity);
+
             //set preserved rotation value
             //globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //set visual rotation knob value
@@ -4602,9 +4606,11 @@ function overlayDeleteMe(id) {
 //open the infoWindow of a poi
 function poiEditMe(id) {
     globalVar.poiObj[id].setMap(map);
+    //explicitly declar position of infowindow (fixes issue of first poi desc posit on load)
+    infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
     infoWindow[id].setMap(map);
     label[id].setMap(map);
-    //document.getElementById("overlayListItem" + id).style.backgroundColor = "red"; //not implemented yet
+    //document.getElementById("overlayListItem" + id).style.bgcolor = "red"; //not implemented yet
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }
 
@@ -4619,6 +4625,8 @@ function poiHideMe(id) {
 //show poi on map
 function poiShowMe(id) {
     globalVar.poiObj[id].setMap(map);
+    //explicitly declar position of infowindow (fixes issue of first poi desc posit on load)
+    infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
     infoWindow[id].setMap(map);
     label[id].setMap(map);
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";

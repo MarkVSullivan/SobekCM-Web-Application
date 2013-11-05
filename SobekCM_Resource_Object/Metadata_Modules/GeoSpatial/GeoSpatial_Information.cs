@@ -73,7 +73,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             foreach (Coordinate_Point thisPoint in Points)
             {
                 //create kml string (just a sample)
-                string Point_KML_String = "<kml:point><coordinates>" + thisPoint.Latitude + "," + thisPoint.Longitude + "</coordinates></kml:point>";
+                string Point_KML_String = "<Placemark><name>" + thisPoint.Label + "</name><point><coordinates>" + thisPoint.Latitude + "," + thisPoint.Longitude + "</coordinates></point></Placemark>";
 
                 Save_Item_Footprint(ItemID, thisPoint.Latitude, thisPoint.Longitude, -1.0, -1.0, -1.0, -1.0, Point_KML_String, DB_ConnectionString, out Error_Message);
             }
@@ -144,9 +144,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     // Ensure the values aren't all still -1.0
                     if ((rect_latitude_a != -1.0) && (rect_longitude_a != -1.0))
                     {
-                        //create kml string (just a sample)
-                        string rect_KML_String = "<kml:polygon><coordinates>" + rect_latitude_a + "," + rect_longitude_a + " " +rect_latitude_b + "," + rect_longitude_b + "</coordinates></kml:polgon>";
-
+                        //for just the polygon (notice long/lat sequence)
+                        string rect_KML_String = "<Placemark><name>" + polygon.Label + "</name><Polygon><outerBoundaryIs><LinearRing><coordinates>" + rect_longitude_a + "," + rect_latitude_a + " " + rect_longitude_b + "," + rect_latitude_b + "</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>";
+                        //for an overlay kml (not finished, requires url and perhaps folder support
+                        //string rect_KML_String = "<GroundOverlay><name>" + polygon.Label + "</name><icon>url</icon><LatLonBox>" + rect_latitude_a + "," + rect_longitude_a + " " + rect_latitude_b + "," + rect_longitude_b + "</LatLonBox></GroundOverlay>";
                         Save_Item_Footprint(ItemID, -1.0, -1.0, rect_latitude_a, rect_longitude_a, rect_latitude_b, rect_longitude_b, rect_KML_String, DB_ConnectionString, out Error_Message );
                     }
                 }
