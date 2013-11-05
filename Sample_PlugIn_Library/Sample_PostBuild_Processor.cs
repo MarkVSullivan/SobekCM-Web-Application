@@ -9,7 +9,7 @@ namespace Sample_PlugIn_Library
     {
         public void PostProcess(SobekCM.Resource_Object.SobekCM_Item Built_Object, string Directory)
         {
-            throw new NotImplementedException();
+            throw new ExecutionEngineException();
         }
     }
 }
