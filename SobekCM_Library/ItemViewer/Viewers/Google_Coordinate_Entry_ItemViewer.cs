@@ -577,9 +577,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         mapeditBuilder.AppendLine("      globalVar.incomingPointFeatureType[" + point + "] = \"" + allPoints[point].FeatureType + "\";");
                         //add the label
                         if (!String.IsNullOrEmpty(allPoints[point].Label))
-                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + allPoints[point].Label + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + Convert_String_To_XML_Safe(allPoints[point].Label) + "\"; ");
                         else
-                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + CurrentItem.Bib_Title + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
                         //add the center point
                         mapeditBuilder.AppendLine("      globalVar.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
                         //add the image url (if not a poi)
@@ -613,9 +613,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         mapeditBuilder.AppendLine("      globalVar.incomingCircleFeatureType[" + circle + "] = \"" + allCircles[circle].FeatureType + "\";");
                         //add the label
                         if (!String.IsNullOrEmpty(allCircles[circle].Label))
-                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + allCircles[circle].Label + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + Convert_String_To_XML_Safe(allCircles[circle].Label) + "\"; ");
                         else
-                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + CurrentItem.Bib_Title + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
                         //add the center point
                         mapeditBuilder.AppendLine("      globalVar.incomingCircleCenter[" + circle + "] = new google.maps.LatLng(" + allCircles[circle].Latitude + "," + allCircles[circle].Longitude + "); ");
                         //add the radius
@@ -638,9 +638,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         mapeditBuilder.AppendLine("      globalVar.incomingLineFeatureType[" + line + "] = \"" + allLines[line].FeatureType + "\";");
                         //add the label
                         if (!String.IsNullOrEmpty(allLines[line].Label))
-                            mapeditBuilder.AppendLine("      globalVar.incomingLineLabel[" + line + "] = \"" + allLines[line].Label + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingLineLabel[" + line + "] = \"" + Convert_String_To_XML_Safe(allLines[line].Label) + "\"; ");
                         else
-                            mapeditBuilder.AppendLine("      globalVar.incomingLineLabel[" + line + "] = \"" + CurrentItem.Bib_Title + "\"; ");
+                            mapeditBuilder.AppendLine("      globalVar.incomingLineLabel[" + line + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
                         //add the Line path
                         mapeditBuilder.Append("      globalVar.incomingLinePath[" + line + "] = [ ");
                         int linePointCurrentCount = 0;
@@ -680,7 +680,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add the polygonType
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             //add the label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.Label + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
                             string bounds1 = "new google.maps.LatLng";
@@ -758,7 +758,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add the polygonType
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             //add the label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.Label + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             //add the polygon path
                             mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = [ ");
                             int edgePointCurrentCount = 0;
@@ -794,7 +794,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add polygontype
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + page.Label + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
                             //add image url
