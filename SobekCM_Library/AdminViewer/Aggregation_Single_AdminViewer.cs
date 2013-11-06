@@ -22,6 +22,7 @@ using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Users;
+using SobekCM.Library.WebContent;
 using SobekCM.Tools;
 using darrenjohnstone.net.FileUpload;
 
@@ -318,7 +319,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
 
 			// Add the buttons (unless this is a sub-page like editing the CSS file)
-			if (page != 9)
+			if (page < 9)
 			{
 				string last_mode = currentMode.My_Sobek_SubMode;
 				currentMode.My_Sobek_SubMode = String.Empty;
@@ -328,6 +329,12 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
 				currentMode.My_Sobek_SubMode = last_mode;
+			}
+			else if (page == 10)
+			{
+				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
+				Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>"); 
+				Output.WriteLine("  </div>");
 			}
 
 
@@ -1468,6 +1475,8 @@ namespace SobekCM.Library.AdminViewer
 							Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(language);
 							string new_file_name = "text_" + language.ToLower() + ".html";
 							string new_file = aggregationDirectory + "\\html\\home\\" + new_file_name;
+							if (!Directory.Exists(aggregationDirectory + "\\html\\home"))
+								Directory.CreateDirectory(aggregationDirectory + "\\html\\home");
 							bool created_exists = false;
 							if (copyFrom.Length > 0)
 							{
@@ -1741,12 +1750,24 @@ namespace SobekCM.Library.AdminViewer
 
 				if (!newLanguages.Contains(thisHomeSource.Key))
 				{
-					currentMode.Language = thisHomeSource.Key;
-					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+					if (canDelete)
+					{
+						currentMode.Language = thisHomeSource.Key;
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)  + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
 
-					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)  + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+					}
+					else
+					{
+						currentMode.Language = thisHomeSource.Key;
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+
+						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+					}
 				}
 				else
 				{
@@ -1756,7 +1777,7 @@ namespace SobekCM.Library.AdminViewer
 
 				if (canDelete)
 				{
-					Output.Write("| <a  href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this home page\" >delete</a> ");
+					Output.Write("| <a  href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
 				}
 
 				Output.WriteLine(" )</td>");
@@ -2266,23 +2287,12 @@ namespace SobekCM.Library.AdminViewer
 						string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(SobekCM_Library_Settings.Default_UI_Language) + ".html";
 						if (!File.Exists(html_source_file))
 						{
-							StreamWriter writer = new StreamWriter(html_source_file, false);
-							writer.WriteLine("<html>");
-							writer.WriteLine("  <head>");
-							writer.WriteLine("    <title>" + HttpUtility.HtmlEncode(childPageLabel) + "</title>");
-							writer.WriteLine("    <meta name=\"author\" content=\"" + HttpUtility.HtmlEncode(user.Full_Name) + "\" />" );
-							writer.WriteLine("    <meta name=\"date\" content=\"" + DateTime.Now.ToLongDateString() + "\" />");
-							writer.WriteLine("  </head>");
-							writer.WriteLine("  <body>");
-							writer.WriteLine("    <br /><br />");
-							writer.WriteLine("    This is a new browse page.<br /><br />");
-							writer.WriteLine("    " + childPageLabel + "<br /><br />");
-							writer.WriteLine("    The code for this browse is: " + childPageCode );
-							writer.WriteLine("  </body>");
-							writer.WriteLine("</html>");
-							writer.WriteLine();
-							writer.Flush();
-							writer.Close();
+							HTML_Based_Content htmlContent = new HTML_Based_Content();
+							htmlContent.Static_Text = "<br /><br />This is a new browse page.<br /><br />" + childPageLabel + "<br /><br />The code for this browse is: " + childPageCode;
+							htmlContent.Author = user.Full_Name;
+							htmlContent.Date = DateTime.Now.ToLongDateString();
+							htmlContent.Title = childPageLabel;
+							htmlContent.Save_To_File(html_source_file);
 						}
 						newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(SobekCM_Library_Settings.Default_UI_Language) + ".html", SobekCM_Library_Settings.Default_UI_Language);
 
@@ -2349,7 +2359,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("        <tr>");
 				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader1\">ACTION</th>");
 				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader2\">CODE</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader3\">LABEL</th>");
+				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader3\">TITLE</th>");
 				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader4\">VISIBILITY</th>");
 				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader5\">PARENT</th>");
 				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader6\">LANGUAGE(S)</th>");
@@ -2437,7 +2447,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add the default language label
 			Output.WriteLine("        <tr>");
-			Output.WriteLine("          <td><label for=\"admin_aggr_label\">Label (default):</label></td>");
+			Output.WriteLine("          <td><label for=\"admin_aggr_label\">Title (default):</label></td>");
 			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_label\" id=\"admin_aggr_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
 			Output.WriteLine("          <td style=\"width:30px\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + LABEL_HELP + "');\"  title=\"" + LABEL_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
@@ -2445,7 +2455,7 @@ namespace SobekCM.Library.AdminViewer
 			// Add the visibility line
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <td><label for=\"admin_aggr_visibility\">Visibility:</label></td>");
-			Output.Write    ("          <td><select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\">");
+			Output.Write("          <td><select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\" onchange=\"admin_aggr_child_page_visibility_change();\">");
 			Output.Write    ("<option value=\"\"></option>");
 
 			if (( !String.IsNullOrEmpty(childPageVisibility)) && ( childPageVisibility == "browse"))
@@ -2468,7 +2478,11 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        </tr>");
 
 			// Add line for parent code
-			Output.WriteLine("        <tr id=\"sbkSaav_NewChildParentRow\">");
+			if ((!String.IsNullOrEmpty(childPageVisibility)) && (childPageVisibility == "browse"))
+				Output.WriteLine("        <tr id=\"admin_aggr_parent_row\" style=\"display:table-row\">");
+			else
+				Output.WriteLine("        <tr id=\"admin_aggr_parent_row\" style=\"display:none\">");
+
 			Output.WriteLine("          <td><label for=\"admin_aggr_parent\">Parent:</label></td>");
 			Output.Write("          <td><select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
 			Output.Write("<option value=\"\">(none - top level)</option>");
@@ -2502,106 +2516,6 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("</table>");
 			Output.WriteLine("<br />");
-		}
-
-
-		private void Browse_Writer_Helper(TextWriter Output, int BrowseCounter, Item_Aggregation_Child_Page ThisBrowse, int Max_Labels, int Max_Sources)
-		{
-			string directory = (SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory).ToLower().Replace("/", "\\");
-
-			// Add the code line
-			Output.WriteLine("<tr><td width=\"120px\"> &nbsp; &nbsp; <label for=\"admin_aggr_browse_code_" + BrowseCounter + "\">Code:</label></td><td><input class=\"admin_aggr_small_input\" name=\"admin_aggr_browse_code_" + BrowseCounter + "\" id=\"admin_aggr_browse_code_" + BrowseCounter + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(ThisBrowse.Code) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_browse_code_" + BrowseCounter + "', 'admin_aggr_small_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_browse_code_" + BrowseCounter + "', 'admin_aggr_small_input')\" /></td></tr>");
-
-			// Add the type line
-			Output.Write("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_link_" + BrowseCounter + "\">Type:</label></td><td><select class=\"admin_aggr_select\" name=\"admin_aggr_browse_type_" + BrowseCounter + "\" id=\"admin_aggr_browse_type_" + BrowseCounter + "\">");
-			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU ? "<option value=\"browse\" selected=\"selected\">Browse</option>" : "<option value=\"browse\">Browse</option>");
-
-			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY ? "<option value=\"browseby\" selected=\"selected\">Browse By</option>" : "<option value=\"browseby\">Browse By</option>");
-
-			Output.Write(ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.NONE ? "<option value=\"info\" selected=\"selected\">Info</option>" : "<option value=\"info\">Info</option>");
-
-			Output.WriteLine("</td></tr>");
-
-			// Add lines for the label
-			Output.Write(Max_Labels == 1 ? "<tr><td> &nbsp; &nbsp; Label:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; Label:</td><td>");
-			for (int j = 0; j < Max_Labels; j++)
-			{
-				Web_Language_Enum language = SobekCM_Library_Settings.Default_UI_Language;
-				string text = String.Empty;
-				if (j < ThisBrowse.Label_Dictionary.Count)
-				{
-					language = ThisBrowse.Label_Dictionary.Keys.ElementAt(j);
-					text = ThisBrowse.Label_Dictionary[language];
-				}
-
-				// Start the select box
-				string id = "admin_aggr_label_lang_" + BrowseCounter + "_" + (j + 1).ToString();
-				string id2 = "admin_aggr_label_" + BrowseCounter + "_" + (j + 1).ToString();
-				Output.Write("<select class=\"admin_aggr_select2\" name=\"" + id + "\" id=\"" + id + "\">");
-
-				// Add each language in the combo box
-				foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
-				{
-					if (language == Web_Language_Enum_Converter.Code_To_Enum(possible_language))
-					{
-						Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-					}
-					else
-					{
-						Output.Write("<option value=\"" + possible_language + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-					}
-				}
-				Output.WriteLine("</select> &nbsp; &nbsp; ");
-
-				// Add the text to the text box
-				Output.Write("<input class=\"admin_aggr_medium_input\" name=\"" + id2 + "\" id=\"" + id2 + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(text) + "\" onfocus=\"javascript:textbox_enter('" + id2 + "', 'admin_aggr_medium_input_focused')\" onblur=\"javascript:textbox_leave('" + id2 + "', 'admin_aggr_medium_input')\" /><br />");
-			}
-			Output.WriteLine("</td></tr>");
-
-			// Add sources by language
-			Output.Write(Max_Sources == 1 ? "<tr><td> &nbsp; &nbsp; HTML Source:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; HTML Source:</td><td>");
-			for (int j = 0; j < Max_Sources; j++)
-			{
-				Web_Language_Enum language = SobekCM_Library_Settings.Default_UI_Language;
-				string text = String.Empty;
-				if (j < ThisBrowse.Source_Dictionary.Count)
-				{
-					language = ThisBrowse.Source_Dictionary.Keys.ElementAt(j);
-					text = ThisBrowse.Source_Dictionary[language];
-				}
-
-				// Start the select box
-				string id = "admin_aggr_source_lang_" + BrowseCounter + "_" + (j + 1).ToString();
-				string id2 = "admin_aggr_source_" + BrowseCounter + "_" + (j + 1).ToString();
-				Output.Write("<hr /><select class=\"admin_aggr_select2\" name=\"" + id + "\" id=\"" + id + "\">");
-
-				// Add each language in the combo box
-				foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
-				{
-					if (language == Web_Language_Enum_Converter.Code_To_Enum(possible_language))
-					{
-						Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-					}
-					else
-					{
-						Output.Write("<option value=\"" + possible_language + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-					}
-				}
-				Output.WriteLine("</select> <br /> ");
-
-				// Add the text to the text box
-				if ((text.ToLower().IndexOf("http://") < 0) && (text.IndexOf("<%BASEURL%>") < 0))
-				{
-
-					text = text.ToLower().Replace("/", "\\").Replace(directory, "");
-				}
-				Output.Write("<input class=\"admin_aggr_large_input\" name=\"" + id2 + "\" id=\"" + id2 + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(text) + "\" onfocus=\"javascript:textbox_enter('" + id2 + "', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('" + id2 + "', 'admin_aggr_large_input')\" /><br />");
-			}
-			Output.WriteLine("</td></tr>");
-
-			// Add a delete option
-			Output.WriteLine("<tr><td colspan=\"2\" align=\"right\"><a href=\"\">DELETE THIS PAGE</a></td></tr>");
-
 		}
 
 		#endregion
@@ -3057,7 +2971,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Aggregation-level Custom Stylesheet (CSS)</td></tr>");
 			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can edit the contents of the aggregation-level custom stylesheet (css) file here.  Click SAVE when complete to return to the main aggregation administration screen.</p><p>NOTE: You may need to refresh your browser for your changes to take affect.</p></td></tr>");
 
-			// Add the web skin code
+			// Add the css edit textarea code
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
 			Output.WriteLine("    <td style=\"width:40px;\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
@@ -3068,7 +2982,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  </tr>");
 
 
-			// Add the css line
+			// Add the button line
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" style=\"height:60px\">");
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td style=\"text-align:right; padding-right: 100px\">");
@@ -3088,13 +3002,65 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Save_Child_Page_Postback(NameValueCollection Form)
 		{
+			string code = currentMode.My_Sobek_SubMode.Substring(2);
+			Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
 
+			// Check for action flag
+			string action = Form["admin_aggr_action"];
+			if (action == "add_version")
+			{
+				try
+				{
+					string language = Form["admin_aggr_new_version_lang"];
+					string title = Form["admin_aggr_new_version_label"];
+					string copyFrom = Form["admin_aggr_new_version_copy"];
+
+					string file = "html\\browse\\" + childPage.Code + "_" + language + ".html";
+					string fileDir = aggregationDirectory + "\\" + file;
+					Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+
+					// Create the source file FIRST
+					string copyFromFull = aggregationDirectory + "\\" + copyFrom;
+					if ((copyFrom.Length > 0) && (File.Exists(copyFromFull)))
+					{
+						File.Copy(copyFromFull, fileDir, true );
+					}
+					else if ( !File.Exists(fileDir))
+					{
+						HTML_Based_Content htmlContent = new HTML_Based_Content();
+						htmlContent.Static_Text = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code;
+						htmlContent.Author = user.Full_Name;
+						htmlContent.Date = DateTime.Now.ToLongDateString();
+						htmlContent.Title = title;
+						htmlContent.Save_To_File(fileDir);
+					}
+
+					// Add to this child page
+					childPage.Add_Label(title, languageEnum);
+					childPage.Add_Static_HTML_Source(file, languageEnum);
+
+				}
+				catch
+				{
+					actionMessage = "Error adding new version to this child page";
+				}
+
+			}
+			else if ((action.IndexOf("delete_") == 0) && ( action.Length > 7 ))
+			{
+				string delete_code = action.Substring(7);
+				childPage.Remove_Language(Web_Language_Enum_Converter.Code_To_Enum(delete_code));
+
+			}
 		}
 
 		private void Add_Child_Page(TextWriter Output)
 		{
 			const string VISIBILITY_HELP = "Existing child page visibility help placeholder";
 			const string PARENT_HELP = "Existing child page parent help place holder";
+			const string NEW_VERSION_LANGUAGE_HELP = "New version language help place holder";
+			const string NEW_VERSION_TITLE_HELP = "New version title help place holder";
+			const string NEW_VERSION_COPY_HELP = "New version copy help place holder";
 
 			string code = currentMode.My_Sobek_SubMode.Substring(2);
 			Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
@@ -3108,10 +3074,10 @@ namespace SobekCM.Library.AdminViewer
 			// Add the visibility line
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:145px\">Visibility:</td>");
+			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:145px\"><label for=\"admin_aggr_visibility\">Visibility:</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write    ("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\">");
+			Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\" onchange=\"admin_aggr_child_page_visibility_change();\">");
 
 			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
 				Output.Write("<option value=\"browse\" selected=\"selected\">Main Menu</option>");
@@ -3128,55 +3094,60 @@ namespace SobekCM.Library.AdminViewer
 			else
 				Output.Write("<option value=\"none\">None</option>");
 
-			Output.WriteLine("</select>"); 
+			Output.WriteLine("</select>");
 			Output.WriteLine("        </td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
 
+
+			// Put OTHER children in alphabetical order
+			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
+			foreach (Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
+			{
+				if (childPage2.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+				{
+					sortedChildren.Add(childPage2.Code, childPage2);
+				}
+			}
+
+			// Add line for parent code
 			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
 			{
-				// Put OTHER children in alphabetical order
-				SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
-				foreach (Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
-				{
-					if (childPage2.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
-					{
-						sortedChildren.Add(childPage2.Code, childPage2);
-					}
-				}
-
-				// Add line for parent code
-				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-				Output.WriteLine("    <td>&nbsp;</td>");
-				Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Parent:</td>");
-				Output.WriteLine("    <td>");
-				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-				Output.Write    ("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
-				Output.Write("<option value=\"\">(none - top level)</option>");
-				foreach (Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
-				{
-					// Don't show itself in the possible parent list
-					if (String.Compare(childPage.Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
-						continue;
-
-					// Only show main menu stuff
-					if (childPage2.Browse_Type != Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
-						continue;
-
-					if (String.Compare(childPage.Parent_Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
-						Output.Write("<option value=\"" + childPage2.Code + "\" selected=\"selected\">" + childPage.Code + "</option>");
-					else
-						Output.Write("<option value=\"" + childPage2.Code + "\">" + childPage.Code + "</option>");
-
-				}
-				Output.WriteLine("</select>");
-				Output.WriteLine("        </td>");
-				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td></tr></table>");
-				Output.WriteLine("     </td>");
-				Output.WriteLine("  </tr>");
+				Output.WriteLine("  <tr id=\"admin_aggr_parent_row\" class=\"sbkSaav_SingleRow\" style=\"display:table-row;\">");
 			}
+			else
+			{
+				Output.WriteLine("  <tr id=\"admin_aggr_parent_row\" class=\"sbkSaav_SingleRow\" style=\"display:none;\">");
+			}
+			Output.WriteLine("    <td>&nbsp;</td>");
+			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_parent\">Parent:</label></td>");
+			Output.WriteLine("    <td>");
+			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+			Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
+			Output.Write("<option value=\"\">(none - top level)</option>");
+			foreach (Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
+			{
+				// Don't show itself in the possible parent list
+				if (String.Compare(childPage.Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
+					continue;
+
+				// Only show main menu stuff
+				if (childPage2.Browse_Type != Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+					continue;
+
+				if (String.Compare(childPage.Parent_Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
+					Output.Write("<option value=\"" + childPage2.Code + "\" selected=\"selected\">" + childPage.Code + "</option>");
+				else
+					Output.Write("<option value=\"" + childPage2.Code + "\">" + childPage.Code + "</option>");
+
+			}
+			Output.WriteLine("</select>");
+			Output.WriteLine("        </td>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("     </td>");
+			Output.WriteLine("  </tr>");
 
 			// Add all the existing child page version information
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -3191,15 +3162,15 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_SingleChildTable sbkSaav_Table\">");
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader1\">LANGUAGE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader2\">LABEL</th>");
+			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader2\">TITLE</th>");
 			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader3\">SOURCE FILE</th>");
 			Output.WriteLine("          <th class=\"sbkSaav_SingleChildHeader4\">ACTIONS</th>");
 			Output.WriteLine("        </tr>");
 
-			// Get the list of all recently added home page languages
+			// Get the list of all recently added child page version languages
 			List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 
-			// Add all the home page information
+			// Add all the version information for this child page 
 			Web_Language_Enum currLanguage = currentMode.Language;
 			currentMode.Mode = Display_Mode_Enum.Aggregation;
 			currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
@@ -3227,7 +3198,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 
 				string label = childPage.Get_Label(thisHomeSource.Key);
-				Output.WriteLine("          <td>" + HttpUtility.HtmlEncode(label) + "</td>");
+				Output.WriteLine("          <td>" + label + "</td>");
 
 				string file = currentMode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\", "/");
 				string[] file_splitter = file.Split("\\/".ToCharArray());
@@ -3239,9 +3210,17 @@ namespace SobekCM.Library.AdminViewer
 				if (!newLanguages.Contains(thisHomeSource.Key))
 				{
 					currentMode.Language = thisHomeSource.Key;
-					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
 
-					Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+					if (canDelete)
+					{
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+					}
+					else
+					{
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+						Output.Write("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+					}
 				}
 				else
 				{
@@ -3251,7 +3230,7 @@ namespace SobekCM.Library.AdminViewer
 
 				if (canDelete)
 				{
-					Output.Write("| <a  href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this version\" >delete</a> ");
+					Output.Write("| <a  href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "', '" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " version\" >delete</a> ");
 				}
 
 				Output.WriteLine(" )</td>");
@@ -3263,8 +3242,62 @@ namespace SobekCM.Library.AdminViewer
 			currentMode.Language = currLanguage;
 			currentMode.Mode = Display_Mode_Enum.Administrative;
 
+			// Write the add new home page information
+			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+			Output.WriteLine("    <td>&nbsp;</td>");
+			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Version:</td>");
+			Output.WriteLine("    <td>");
+			Output.WriteLine("      <div class=\"sbkSaav_NewVersionButton\"><button title=\"Save new version of this child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page_version();\">ADD</button></div>");
 
+			Output.WriteLine("      <table class=\"sbkSaav_NewVersionTable\">");
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td style=\"width:160px\"><label for=\"admin_aggr_new_version_lang\">Language:</label></td>");
+			Output.WriteLine("          <td style=\"width:160px\">");
+			Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_version_lang\" name=\"admin_aggr_new_version_lang\">");
 
+			// Add each language in the combo box
+			foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+			{
+				if (!existing_languages.Contains(possible_language))
+					Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+			}
+			Output.WriteLine();
+			Output.WriteLine("          </td>");
+			Output.WriteLine("          <td style=\"width:145px\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_VERSION_LANGUAGE_HELP + "');\"  title=\"" + NEW_VERSION_LANGUAGE_HELP + "\" /></td>");
+			Output.WriteLine("          <td></td>");
+			Output.WriteLine("        </tr>");
+
+			Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td><label for=\"admin_aggr_new_version_label\">Title:</label></td>");
+			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_new_version_label\" id=\"admin_aggr_new_version_label\" type=\"text\" value=\"\" /></td>");
+			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_VERSION_TITLE_HELP + "');\"  title=\"" + NEW_VERSION_TITLE_HELP + "\" /></td>");
+			Output.WriteLine("        </tr>");
+
+			Output.WriteLine("        <tr>");
+
+			Output.WriteLine("          <td><label for=\"admin_aggr_new_version_copy\">Copy from existing:</label></td>");
+			Output.WriteLine("          <td>");
+			Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_version_copy\" name=\"admin_aggr_new_version_copy\">");
+			Output.Write("<option value=\"\" selected=\"selected\"></option>");
+			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
+			{
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				{
+					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language)) + "</option>");
+				}
+				else
+				{
+					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+				}
+			}
+
+			Output.WriteLine("</select>");
+			Output.WriteLine("          </td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_VERSION_COPY_HELP + "');\"  title=\"" + NEW_VERSION_COPY_HELP + "\" /></td>");
+			Output.WriteLine("        </tr>");
+			Output.WriteLine("      </table>");
+			Output.WriteLine("    </td>");
+			Output.WriteLine("  </tr>");
 
 			Output.WriteLine("</table>");
 		}
@@ -3295,6 +3328,10 @@ namespace SobekCM.Library.AdminViewer
 		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
+
+			// Ensure the directory exists
+			if (!File.Exists(UploadDirectory))
+				Directory.CreateDirectory(UploadDirectory);
 
 			StringBuilder filesBuilder = new StringBuilder(2000);
 

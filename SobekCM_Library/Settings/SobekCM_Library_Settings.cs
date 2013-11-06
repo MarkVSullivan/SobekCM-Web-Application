@@ -291,7 +291,7 @@ namespace SobekCM.Library.Settings
 				Get_Integer_Value(settingsDictionary, "JPEG Width", ref jpegWidth, ref error, -1);
 				Get_String_Value(settingsDictionary, "JPEG2000 Server", ref jpeg2000ServerUrl, ref error);
 				Get_String_Value(settingsDictionary, "JPEG2000 Server Type", ref jpeg2000ServerType, ref error);
-				Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
+				//Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
 				Get_String_Value(settingsDictionary, "Log Files Directory", ref logFilesDirectory, ref error);
 				Get_String_Value(settingsDictionary, "Log Files URL", ref logFilesUrl, ref error);
 				Get_String_Value(settingsDictionary, "Main Builder Input Folder", ref mainBuilderInputFolder, String.Empty);

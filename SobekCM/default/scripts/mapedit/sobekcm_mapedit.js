@@ -35,6 +35,8 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            listItemHighlightColor: "#FFFFC2",           //holds the default highlight color 
+            pageLoadTime: null,                         //holds time page was loaded
             toServerSuccess: false,                     //holds a marker indicating if toserver was sucessfull
             tempYo: false,                              //holds tempyo for fixing ff info window issue
             buttonActive_searchResultToggle: false,     //holds is button active markers
@@ -1639,11 +1641,15 @@ function save(id) {
                 if (globalVar.savingOverlayIndex.length) {
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
-                        de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
-                        createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
-                        if (globalVar.toServerSuccess == true) {
-                            displayMessage(L_Saved);
-                        }
+                        try {
+                            de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                            createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
+                            if (globalVar.toServerSuccess == true) {
+                                displayMessage(L_Saved);
+                            }
+                        } catch(e) {
+                            //no overlay at this point to save
+                        } 
                     }
                     //reset first save
                     //globalVar.firstSaveOverlay = false;
@@ -1693,8 +1699,8 @@ function save(id) {
                         displayMessage(L_Saved);
                     }
                     //explicitly turn off the drawing manager 
-                    google.map.drawingManager.setDrawingMode(null);
-                    google.map.drawingManager.setMap(null);
+                    drawingManager.setDrawingMode(null);
+                    drawingManager.setMap(null);
                     //reset first save
                     //globalVar.firstSavePOI = false;
                     //change save button to apply button
@@ -1777,9 +1783,12 @@ function clear(id) {
             if (globalVar.poiObj.length > 0) {
                 displayMessage(localize.L53);
                 for (var i = 0; i < globalVar.poiObj.length; i++) {
+                    if (globalVar.poiType[i] != "deleted") {
+                        globalVar.poiType[i] = "deleted";
+                    }
                     if (globalVar.poiObj[i] != null) {
                         globalVar.poiObj[i].setMap(null);
-                        globalVar.poiObj[i] = null;
+                        //globalVar.poiObj[i] = null;
                     }
                     if (globalVar.poiDesc[i] != null) {
                         globalVar.poiDesc[i] = null;
@@ -1794,9 +1803,15 @@ function clear(id) {
                     var strg = "#poi" + i; //create <li> poi string
                     $(strg).remove(); //remove <li>
                 }
-                globalVar.poiObj = [];
                 globalVar.poi_i = -1;
-
+                //send to server to delete all the pois
+                globalVar.RIBMode = true;
+                createSavedPOI("save");
+                globalVar.RIBMode = false;
+                //reset poi arrays
+                globalVar.poiObj = [];
+                globalVar.poiDesc = [];
+                globalVar.poiKML = [];
                 displayMessage(L11);
             } else {
                 displayMessage(L_NotCleared);
@@ -1945,6 +1960,9 @@ function setupInterface(collection) {
 
 //on page load functions (mainly google map event listeners)
 function initialize() {
+
+    //get and set the page load time (this is used for the resizer)
+    globalVar.pageLoadTime = new Date().getTime();
 
     //as map is loading, fit to screen
     resizeView();
@@ -3236,12 +3254,13 @@ function displayIncomingPolygons() {
             //hidden do nothing
             break;
         case "":
-            //globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
+            globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
             globalVar.currentlyEditing = "no";
             //set the overlay to the map
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]].setMap(map);
+            //keepRotate(globalVar.incomingPolygonRotation[i]);
             //set hotspot on top of overlay
             setGhostOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i]);
             de("I created ghost: " + globalVar.incomingPolygonPageId[i]);
@@ -3254,7 +3273,6 @@ function displayIncomingPolygons() {
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
-            
             globalVar.currentlyEditing = "no";
             //set the overlay to the map
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]].setMap(map);
@@ -3593,13 +3611,14 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
                 globalVar.toolboxDisplayed = true;                                                                //mark that the toolbox is open
                 $("#toolboxTabs").accordion({ active: 3 });                                             //open edit overlay tab in toolbox
                 globalVar.currentlyEditing = "yes";                                                               //enable editing marker
+                //alert("prev woi:" + globalVar.workingOverlayIndex + " new " + ghostIndex);
                 globalVar.workingOverlayIndex = ghostIndex;                                                       //set this overay as the one being e
                 globalVar.ghostOverlayRectangle[ghostIndex].setOptions(globalVar.editable);                                 //show ghost
                 globalVar.currentTopZIndex++;                                                                     //iterate top z index
                 document.getElementById("overlay" + ghostIndex).style.zIndex = globalVar.currentTopZIndex;        //bring overlay to front
                 globalVar.ghostOverlayRectangle[ghostIndex].setOptions({ zIndex: globalVar.currentTopZIndex });             //bring ghost to front
                 //set rotation if the overlay was previously saved
-                if (globalVar.incomingPolygonRotation[ghostIndex-1] != globalVar.savingOverlayRotation[ghostIndex-1]) {
+                if (globalVar.preservedRotation != globalVar.savingOverlayRotation[ghostIndex - 1]) {
                     globalVar.preservedRotation = globalVar.savingOverlayRotation[ghostIndex-1];
                 }
                 //for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
@@ -3620,6 +3639,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
             //delete previous overlay values
             globalVar.overlaysOnMap[ghostIndex] = null;
             //redraw the overlay within the new bounds
+            de(globalVar.preservedRotation);
             globalVar.overlaysOnMap[ghostIndex] = new CustomOverlay(ghostIndex, globalVar.ghostOverlayRectangle[ghostIndex].getBounds(), globalVar.incomingPolygonSourceURL[(ghostIndex-1)], map, globalVar.preservedRotation);
             //set the overlay with new bounds to the map
             globalVar.overlaysOnMap[ghostIndex].setMap(map);
@@ -3750,13 +3770,19 @@ CustomOverlay.prototype.draw = function () {
     div.style.width = (ne.x - sw.x) + 'px';
     div.style.height = (sw.y - ne.y) + 'px';
 
-    //for a preserved rotation
-    if (globalVar.preservedRotation != 0) {
-        globalVar.workingOverlayIndex = this.index_;
-        keepRotate(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex-1]);
-        //keepRotate(globalVar.preservedRotation);
+    //for a rotation
+    //hold woi to later put it back in (fixes keepRotate error)
+    var temp = globalVar.workingOverlayIndex;
+    //set woi to incoming (fixes keepRotate error)
+    globalVar.workingOverlayIndex = this.index_;
+    //check to see if saving rotaiotn and then incoming (this allows all overlays to have a rotation but places priority to the saving overlay rotation)
+    if(globalVar.savingOverlayRotation[this.index_-1]!=undefined){
+        keepRotate(globalVar.savingOverlayRotation[this.index_-1]);
+    } else {
+        keepRotate(globalVar.incomingPolygonRotation[(this.index_ - 1)]);
     }
-
+    //reset woi to temp just in case we had something different/useful
+    globalVar.workingOverlayIndex = temp;
 };
 
 //Not currently used
@@ -3948,34 +3974,6 @@ function initOptions() {
     de("[WARN]: #mapedit_container_pane_0 background color must be set manually if changed from default.");
     document.getElementById("mapedit_container_pane_0").style.display = "block";
 
-    //var mainCount = 0;
-    ////determine ACL placer type
-    //if (globalVar.incomingPointCenter.length > 0) {
-    //    //determine if any points are "main"
-    //    for (var i = 0; i < globalVar.incomingPointCenter.length; i++) {
-    //        if (globalVar.incomingPointFeatureType[i] == "main" || globalVar.incomingPointFeatureType[i] == "") {
-    //            mainCount++;
-    //            //globalVar.incomingACL = "item";
-    //            actionsACL("full", "item");
-    //        }
-    //    }
-    //} else {
-    //    if (globalVar.incomingPolygonBounds.length > 0) {
-    //        for (var j = 0; j < globalVar.incomingPolygonBounds.length; j++) {
-    //            if (globalVar.incomingPolygonFeatureType[j] == "main" || globalVar.incomingPolygonFeatureType[j] == "") {
-    //                mainCount++;
-    //                //globalVar.incomingACL = "overlay";
-    //                actionsACL("full", "overlay");
-    //            }
-    //        }
-    //    } else {
-    //        //(if no geo detected, open item first [from there you can convert to overlay] this is just a command decision)
-    //        actionsACL("full", "item"); 
-    //        //actionsACL("full", "overlay");
-    //        //actionsACL("full", "poi"); //not yet implemented
-    //    }
-    //}
-
     switch (globalVar.incomingACL) {
         case "item":
             actionsACL("full", "item");
@@ -4014,6 +4012,10 @@ function initOptions() {
             //do nothing
         }
     };
+    
+    //clear search boxes
+    document.getElementById("content_toolbar_searchField").value = null;
+    document.getElementById("content_toolbox_searchField").value = null;
 
     //closes loading blanket
     document.getElementById("mapedit_blanket_loading").style.display = "none";
@@ -4106,11 +4108,15 @@ function buttonActive(id) {
         case "action":
             de("aa: " + globalVar.actionActive + "<br>" + "paa: " + globalVar.prevActionActive);
             if (globalVar.actionActive == "Other") {
-                if (globalVar.prevActionActive != null) {
-                    document.getElementById("content_menubar_manage" + globalVar.prevActionActive).className = document.getElementById("content_menubar_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
-                    document.getElementById("content_toolbar_button_manage" + globalVar.prevActionActive).className = document.getElementById("content_toolbar_button_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
-                    document.getElementById("content_toolbox_button_manage" + globalVar.prevActionActive).className = document.getElementById("content_toolbox_button_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
-                }
+                try {
+                    if (globalVar.prevActionActive != null) {
+                        document.getElementById("content_menubar_manage" + globalVar.prevActionActive).className = document.getElementById("content_menubar_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
+                        document.getElementById("content_toolbar_button_manage" + globalVar.prevActionActive).className = document.getElementById("content_toolbar_button_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                        document.getElementById("content_toolbox_button_manage" + globalVar.prevActionActive).className = document.getElementById("content_toolbox_button_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive(?!\S)/g, '');
+                    }
+                } catch(e) {
+                    de("[error]: \""+e+"\" (Could not find classname)");
+                } 
             } else {
                 if (globalVar.prevActionActive != null) {
                     document.getElementById("content_menubar_manage" + globalVar.prevActionActive).className = document.getElementById("content_menubar_manage" + globalVar.prevActionActive).className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
@@ -4297,15 +4303,30 @@ function displayMessage(message) {
         //assign the message
         document.getElementById(currentDivId).innerHTML = message;
 
-        //show message
-        document.getElementById(currentDivId).style.display = "block"; //display element
-
-        //fade message out
-        setTimeout(function () {
-            $("#" + currentDivId).fadeOut("slow", function () {
-                $("#" + currentDivId).remove();
-            });
-        }, 3000); //after 3 sec
+        //determine if duplicate message
+        var duplicateMessage = false;
+        try {
+            if (document.getElementById("message" + (globalVar.messageCount - 1)).innerHTML == message) {
+                duplicateMessage = true;
+            }
+        } catch (e) {
+            //
+        }
+        
+        if (duplicateMessage) {
+            de("Same message to display as previous, not displaying");
+        } else {
+            //de("Unique message to display");
+            //show message
+            document.getElementById(currentDivId).style.display = "block"; //display element
+            //fade message out
+            setTimeout(function () {
+                $("#" + currentDivId).fadeOut("slow", function () {
+                    $("#" + currentDivId).remove();
+                });
+            }, 3000); //after 3 sec
+        }
+        
     }
 }
 
@@ -4367,16 +4388,19 @@ function createSavedPOI(handle) {
                 //nothing to do here, just a placeholder
                 break;
         }
-        //filter out the deleted pois
-        if (globalVar.poiType[i] != "deleted") {
-            //compile data message
-            var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
-            dataPackage += data + "~";
-        }
+        ////filter out the deleted pois
+        //if (globalVar.poiType[i] != "deleted") {
+        //    //compile data message
+        //    var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
+        //    dataPackage += data + "~";
+        //}
+        //compile data message
+        var data = handle + "|" + "poi|" + globalVar.poiType[i] + "|" + globalVar.poiDesc[i] + "|" + globalVar.poiKML[i] + "|";
+        dataPackage += data + "~";
     }
     de("saving overlay set: " + dataPackage); //temp  
-    //add another filter to catch if datapackage is null
-    if (dataPackage != null) {
+    //add another filter to catch if datapackage is empty
+    if (dataPackage != "") {
         toServer(dataPackage); //send to server to save    
     }
 
@@ -4385,13 +4409,11 @@ function createSavedPOI(handle) {
 //sends save dataPackages to the server via json
 function toServer(dataPackage) {
     jQuery('form').each(function() {
-
         var payload = JSON.stringify({ sendData: dataPackage });
         var hiddenfield = document.getElementById('payload');
         hiddenfield.value = payload;
         var hiddenfield2 = document.getElementById('action');
         hiddenfield2.value = 'save';
-
         //reset success marker
         globalVar.toServerSuccess = false;
         $.ajax({
@@ -4401,7 +4423,8 @@ function toServer(dataPackage) {
             data: jQuery(this).serialize(),
             success: function(result) {
                 //de("server result:" + result);
-                displayMessage(L_Saved);
+                de("Sallback from server - success");
+                //displayMessage(L_Saved);
                 globalVar.toServerSuccess = true;
                 globalVar.csoi = 0; //reset
             }
@@ -4434,79 +4457,91 @@ function overlayEditMe(id) {
             globalVar.currentlyEditing = "no";
             //set preserved rotation to the rotation of the current overlay
             //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
-            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex-1];
+            globalVar.workingOverlayIndex = id;
+            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //globalVar.preservedRotation = 0;
         }
         //if editing is not being done, make it so
         if (globalVar.currentlyEditing == "no" || globalVar.workingOverlayIndex == null) {
-            //enable editing marker
-            globalVar.currentlyEditing = "yes";
-            globalVar.workingOverlayIndex = id;
-            de("editing overlay " + globalVar.workingOverlayIndex);
-            //set preserved rotation value
-            globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
-            //set visual rotation knob value
-            //$('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
-            //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
-            //de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
-            
-            //try {
-            //    if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] < 0) {
-            //        $('.knob').val(((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
-            //        de("setting knob to: " + ((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180));
-            //    } else {
-            //        $('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
-            //        //alert("setting knob to: globalVar.savingOverlayRotation[" + globalVar.workingOverlayIndex + "] (" + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex] + ")");
-            //        de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
-            //    }
-            //} catch (e) {
-            //    de("rotation error catch: " + e);
-            //}
-            
-            if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] != null) {
-                globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
-                //set visual rotation knob value
-                try {
-                    if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] < 0) {
-                        $('.knob').val((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180).trigger('change');
-                        //$('.knob').val(((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
-                        //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex - 1)] + ")");
-                        de("setting knob to: " + ((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180));
-                    } else {
-                        $('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
-                        //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex - 1)] + ")");
-                        de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
-                    }
-                } catch (e) {
-                    de("rotation error catch: " + e);
-                }
-            } else {
-                if (globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1] != null) {
-                    globalVar.preservedRotation = globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1];
-                }
-                //set visual rotation knob value
-                try {
-                    if (globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1] < 0) {
-                        //$('.knob').val(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
-                        $('.knob').val(((180 + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
-                        //alert("setting knob to: globalVar.incomingPolygonRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.incomingPolygonRotation[(globalVar.workingOverlayIndex - 1)] + ")");
-                        de("setting knob to: " + ((180 + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]) + 180));
-                    } else {
-                        $('.knob').val(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
-                        //alert("setting knob to: globalVar.incomingPolygonRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.incomingPolygonRotation[(globalVar.workingOverlayIndex - 1)] + ")");
-                        de("setting knob to: " + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]);
-                    }
-                } catch (e) {
-                    de("rotation error catch: " + e);
+            globalVar.overlaysOnMap[id].setMap(map);
+            globalVar.ghostOverlayRectangle[id].setMap(map);
+            document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
+            //go through each overlay on the map
+            for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
+                de("hit: " + id + " index: " + i + " length: " + globalVar.overlaysOnMap.length);
+                //if there is a match in overlays
+                if (i == id) {
+                    //set highlight color
+                    document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
+                } else {
+                    //reset highlight
+                    document.getElementById("overlayListItem" + i).style.background = null;
                 }
             }
-            
+            //enable editing marker
+            globalVar.currentlyEditing = "yes";
+            de("editing overlay " + (globalVar.workingOverlayIndex - 1));
+            //get and set the preserved transparency value
+            try {
+                globalVar.preservedOpacity = document.getElementById("overlay" + (globalVar.workingOverlayIndex - 1)).style.opacity;
+            } catch(e) {
+                globalVar.preservedOpacity = "0.35";
+            } 
+            $("#overlayTransparencySlider").slider("value", globalVar.preservedOpacity);
+            //set rotation value
+            try {
+                if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] != null) {
+                    globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
+                    //set visual rotation knob value
+                    try {
+                        if (globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1] < 0) {
+                            $('.knob').val((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180).trigger('change');
+                            //$('.knob').val(((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
+                            //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                            de("setting knob to: " + ((180 + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]) + 180));
+                        } else {
+                            $('.knob').val(globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+                            //alert("setting knob to: globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                            de("setting knob to: " + globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1]);
+                        }
+                    } catch (e) {
+                        de("rotation error catch: " + e);
+                    }
+                } else {
+                    if (globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1] != null) {
+                        globalVar.preservedRotation = globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1];
+                    }
+                    //set visual rotation knob value
+                    try {
+                        if (globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1] < 0) {
+                            //$('.knob').val(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+                            $('.knob').val(((180 + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]) + 180)).trigger('change');
+                            //alert("setting knob to: globalVar.incomingPolygonRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.incomingPolygonRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                            de("setting knob to: " + ((180 + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]) + 180));
+                        } else {
+                            $('.knob').val(globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]).trigger('change');
+                            //alert("setting knob to: globalVar.incomingPolygonRotation[" + (globalVar.workingOverlayIndex - 1) + "] (" + globalVar.incomingPolygonRotation[(globalVar.workingOverlayIndex - 1)] + ")");
+                            de("setting knob to: " + globalVar.incomingPolygonRotation[globalVar.workingOverlayIndex - 1]);
+                        }
+                    } catch (e) {
+                        de("rotation error catch: " + e);
+                    }
+                }
+            } catch(e) {
+                //could not add rotation data
+                de("[error]: Could not add rotation data");
+            } 
             //show ghost
             globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setOptions(globalVar.editable);
             //iterate top z index
             globalVar.currentTopZIndex++;
             //bring overlay to front
-            document.getElementById("overlay" + globalVar.workingOverlayIndex).style.zIndex = globalVar.currentTopZIndex;
+            try {
+                document.getElementById("overlay" + (globalVar.workingOverlayIndex - 1)).style.zIndex = globalVar.currentTopZIndex;
+            } catch(e) {
+                //could not set overlay
+                de("[error]: Could not set overlay zindex");
+            } 
             //bring ghost to front
             globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setOptions({ zIndex: globalVar.currentTopZIndex });
             //recenter on the overlay
@@ -4514,7 +4549,8 @@ function overlayEditMe(id) {
         }
         //indicate to user we are editing a polygon
         displayMessage(L34 + " " + globalVar.incomingPolygonLabel[(id-1)]);
-    } catch(e) {
+    } catch (e) {
+        de("[error]: " + e);
         //create the overlay
         createOverlayFromPage(id);
     }
@@ -4525,6 +4561,7 @@ function overlayHideMe(id) {
     try {
         globalVar.overlaysOnMap[id].setMap(null);
         globalVar.ghostOverlayRectangle[id].setMap(null);
+        //document.getElementById("overlayListItem" + id).style.background = null;
         document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "add.png\" onclick=\"overlayShowMe(" + id + ");\" />";
         displayMessage(L31 + " " + globalVar.incomingPolygonLabel[id]);
     } catch(e) {
@@ -4532,10 +4569,11 @@ function overlayHideMe(id) {
     } 
 }
 
-//show poi on map
+//show overlay on map
 function overlayShowMe(id) {
     globalVar.overlaysOnMap[id].setMap(map);
     globalVar.ghostOverlayRectangle[id].setMap(map);
+    //document.getElementById("overlayListItem" + id).style.background = globalVar.listItemHighlightColor;
     document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
     displayMessage(L32 + " " + globalVar.incomingPolygonLabel[id]);
 }
@@ -4559,9 +4597,11 @@ function overlayDeleteMe(id) {
 //open the infoWindow of a poi
 function poiEditMe(id) {
     globalVar.poiObj[id].setMap(map);
+    //explicitly declar position of infowindow (fixes issue of first poi desc posit on load)
+    //infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
     infoWindow[id].setMap(map);
     label[id].setMap(map);
-    //document.getElementById("overlayListItem" + id).style.backgroundColor = "red"; //not implemented yet
+    //document.getElementById("poi" + id).style.background = globalVar.listItemHighlightColor;
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }
 
@@ -4570,14 +4610,18 @@ function poiHideMe(id) {
     globalVar.poiObj[id].setMap(null);
     infoWindow[id].setMap(null);
     label[id].setMap(null);
+    //document.getElementById("poi" + id).style.background = null;
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "add.png\" onclick=\"poiShowMe(" + id + ");\" />";
 }
 
 //show poi on map
 function poiShowMe(id) {
     globalVar.poiObj[id].setMap(map);
+    //explicitly declar position of infowindow (fixes issue of first poi desc posit on load)
+    infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
     infoWindow[id].setMap(map);
     label[id].setMap(map);
+    //document.getElementById("poi" + id).style.background = globalVar.listItemHighlightColor;
     document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + id + ");\" />";
 }
 
@@ -4805,11 +4849,18 @@ function keepRotate(degreeIn) {
     globalVar.currentlyEditing = "yes"; //used to signify we are editing this overlay
     $(function () {
         $("#overlay" + globalVar.workingOverlayIndex).rotate(degreeIn);
-        if (degreeIn > 180) {
-            $('.knob').val(((degreeIn - 360) * (1))).trigger('change'); //used to correct for visual effect of knob error
+        
+        if (degreeIn < 0) {
+            $('.knob').val(((180 + degreeIn) + 180)).trigger('change');
         } else {
             $('.knob').val(degreeIn).trigger('change');
         }
+
+        //if (degreeIn > 180) {
+        //    $('.knob').val(((degreeIn - 360) * (1))).trigger('change'); //used to correct for visual effect of knob error
+        //} else {
+        //    $('.knob').val(degreeIn).trigger('change');
+        //}
     });
 }
 
@@ -5201,7 +5252,7 @@ function writeHTML(type, param1, param2, param3) {
             break;
         case "overlayListItem":
             de("Creating html String");
-            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> </div></div>"; //<a href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a>
             break;
         case "searchResultListItem":
             de("Creating search html String");
@@ -5221,6 +5272,13 @@ function resizeView() {
 
     //set the width of the sf menu pane0 container
     document.getElementById("mapedit_container_pane_0").style.width = widthPX + "px";
+
+    //if first time loaded (fixes issue where sfmenu was not loaded thus not calc'd in page height)
+    if (globalVar.pageLoadTime < (new Date().getTime())) {
+        headerPX = $("#mapedit_container").offset().top;
+    } else {
+        headerPX = $("#mapedit_container").offset().top + 28; //inside css
+    } 
 
     //load all toolbar buttons into an array
     //todo make dynamic
@@ -5458,8 +5516,8 @@ $(function () {
 
         //draggable content settings
         $("#mapedit_container_toolbox").draggable({
-            handle: "#mapedit_container_toolboxMinibar"//, //div used as handle
-            //containment: "#mapedit_container" //bind to map container 
+            handle: "#mapedit_container_toolboxMinibar" //div used as handle
+            //containment: "#mapedit_container" //bind to map container (for this to work must define starting position and assign once mapedit container is set properly loaded)
         });
         //accordian settings
         $("#mapedit_container_toolboxTabs").accordion({

@@ -114,7 +114,7 @@ input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 .sbkSaav_TallRow { vertical-align: top; text-align: left; }
 .sbkSaav_ButtonRow { height: 80px;vertical-align: middle;text-align: left; }
 .sbkSaav_small_input  { width: 120px;  }
-.sbkSaav_medium_input  { width: 300px; padding-bottom: 4px; }
+.sbkSaav_medium_input  { width: 300px;  }
 .sbkSaav_large_input  { width: 466px; padding-bottom: 4px; }
 .sbkSaav_large_textbox { width: 466px; padding-bottom: 4px; }
 select.sbkSaav_select { width: 155px;margin-bottom: 14px; }
@@ -167,16 +167,15 @@ textarea.sbkSaav_SubInput { width: 466px; margin-top:2px;margin-bottom: 4px; FON
 input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; }
 .sbkSaav_ChildInnerTable { padding: 4px 0 0 0; width: 635px;}
 .sbkSaav_ChildInnerTable tr { height: 25px; }
+.sbkSaav_ChildPageClose { float: right;padding-right: 100px; }
 .sbkSaav_SingleChildTable { margin-top: 8px;margin-left: 50px;width: 750px; }
 .sbkSaav_SingleChildHeader1 { width: 110px; padding-left: 5px;}
 .sbkSaav_SingleChildHeader3 { width: 140px; }
 .sbkSaav_SingleChildHeader4 { width: 140px; }
+.sbkSaav_NewVersionButton { float: right;padding-right: 180px;padding-top: 60px;}
+.sbkSaav_NewVersionTable  { padding: 4px 0 0 0; }
+.sbkSaav_NewVersionTable tr { height: 25px;}
 
-
-
-.admin_aggr_label2 { padding-top: 8px;}
-.admin_aggr_new_div { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.admin_aggr_popup_div { position:absolute; background-color:#eeeeee; width:675px; height:260px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
 
 
 
@@ -309,7 +308,6 @@ select.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6p
 
 input.admin_user_checkbox { margin-top: 10px; margin-left: 43px; }
 select.admin_user_select { color:Blue; width: 120px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-
 
 
 

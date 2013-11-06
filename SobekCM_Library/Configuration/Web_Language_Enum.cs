@@ -140,8 +140,8 @@ namespace SobekCM.Library.Configuration
         /// <summary> Greek web language ( el )</summary>
         Greek,
 
-        /// <summary> Gujurati web language ( gu )</summary>
-        Gujurati,
+		/// <summary> Gujarati web language ( gu )</summary>
+		Gujarati,
 
         /// <summary> Haitian web language ( ht )</summary>
         Haitian,
@@ -340,8 +340,8 @@ namespace SobekCM.Library.Configuration
         /// <summary> Tatar web language ( tt )</summary>
         Tatar,
 
-        /// <summary> Teluga web language ( te )</summary>
-        Teluga,
+        /// <summary> Telugu web language ( te )</summary>
+        Telugu,
 
         /// <summary> Thai web language ( th )</summary>
         Thai,
@@ -403,7 +403,7 @@ namespace SobekCM.Library.Configuration
         {
             get
             {
-                return new[] { "Afrikaans", "Albanian", "Arabic", "Aragonese", "Armenian", "Assamese", "Asturian", "Azerbaijani", "Basque", "Bulgarian", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chinese", "Chuvash", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Faeroese", "Farsi", "Fijian", "Finnish", "French", "Frisian", "Friulian", "Gaelic", "Galacian", "Georgian", "German", "Greek", "Gujurati", "Haitian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Kannada", "Kashmiri", "Kazakh", "Khmer", "Kirghiz", "Klingon", "Korean", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "FYRO Macedonian", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Navajo", "Ndonga", "Nepali", "Norwegian", "Norwegian (Bokmal)", "Norwegian (Nynorsk)", "Occitan", "Oriya", "Oromo", "Papiamento", "Papiamentu", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Rhaeto-Romanic", "Romanian", "Russian", "Sami (Lappish)", "Sango", "Sanskrit", "Sardinian", "Scots Gaelic", "Sindhi", "Singhalese", "Serbian", "Slovak", "Slovenian", "Somani", "Sorbian", "Spanish", "Sutu", "Swahili", "Swedish", "Tamil", "Tatar", "Teluga", "Thai", "Tigre", "Tsonga", "Tswana", "Turkish", "Turkmen", "Ukrainian", "Upper Sorbian", "Urdu", "Venda", "Vietnamese", "Volapuk", "Walloon", "Welsh", "Xhosa", "Yiddish", "Zulu" };
+				return new[] { "Afrikaans", "Albanian", "Arabic", "Aragonese", "Armenian", "Assamese", "Asturian", "Azerbaijani", "Basque", "Bulgarian", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chinese", "Chuvash", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Faeroese", "Farsi", "Fijian", "Finnish", "French", "Frisian", "Friulian", "Gaelic", "Galacian", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Kannada", "Kashmiri", "Kazakh", "Khmer", "Kirghiz", "Klingon", "Korean", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "FYRO Macedonian", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Navajo", "Ndonga", "Nepali", "Norwegian", "Norwegian (Bokmal)", "Norwegian (Nynorsk)", "Occitan", "Oriya", "Oromo", "Papiamento", "Papiamentu", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Rhaeto-Romanic", "Romanian", "Russian", "Sami (Lappish)", "Sango", "Sanskrit", "Sardinian", "Scots Gaelic", "Sindhi", "Singhalese", "Serbian", "Slovak", "Slovenian", "Somani", "Sorbian", "Spanish", "Sutu", "Swahili", "Swedish", "Tamil", "Tatar", "Telugu", "Thai", "Tigre", "Tsonga", "Tswana", "Turkish", "Turkmen", "Ukrainian", "Upper Sorbian", "Urdu", "Venda", "Vietnamese", "Volapuk", "Walloon", "Welsh", "Xhosa", "Yiddish", "Zulu" };
             }
         }
 
@@ -538,7 +538,7 @@ namespace SobekCM.Library.Configuration
 	                return Web_Language_Enum.Greek;
 
                 case "gu":
-	                return Web_Language_Enum.Gujurati;
+					return Web_Language_Enum.Gujarati;
 
                 case "ht":
 	                return Web_Language_Enum.Haitian;
@@ -731,7 +731,7 @@ namespace SobekCM.Library.Configuration
 	                return Web_Language_Enum.Tatar;
 
                 case "te":
-	                return Web_Language_Enum.Teluga;
+	                return Web_Language_Enum.Telugu;
 
                 case "th":
 	                return Web_Language_Enum.Thai;
@@ -925,7 +925,7 @@ namespace SobekCM.Library.Configuration
                 case "greek":
                     return "el";
 
-                case "gujurati":
+				case "gujarati":
                     return "gu";
 
                 case "haitian":
@@ -1123,7 +1123,7 @@ namespace SobekCM.Library.Configuration
                 case "tatar":
                     return "tt";
 
-                case "teluga":
+                case "telugu":
                     return "te";
 
                 case "thai":
@@ -1312,8 +1312,8 @@ namespace SobekCM.Library.Configuration
                 case Web_Language_Enum.Greek:
                     return "Greek";
 
-                case Web_Language_Enum.Gujurati:
-                    return "Gujurati";
+				case Web_Language_Enum.Gujarati:
+					return "Gujarati";
 
                 case Web_Language_Enum.Haitian:
                     return "Haitian";
@@ -1510,8 +1510,8 @@ namespace SobekCM.Library.Configuration
                 case Web_Language_Enum.Tatar:
                     return "Tatar";
 
-                case Web_Language_Enum.Teluga:
-                    return "Teluga";
+                case Web_Language_Enum.Telugu:
+                    return "Telugu";
 
                 case Web_Language_Enum.Thai:
                     return "Thai";
@@ -1697,7 +1697,7 @@ namespace SobekCM.Library.Configuration
                 case Web_Language_Enum.Greek:
                     return "el";
 
-                case Web_Language_Enum.Gujurati:
+				case Web_Language_Enum.Gujarati:
                     return "gu";
 
                 case Web_Language_Enum.Haitian:
@@ -1895,7 +1895,7 @@ namespace SobekCM.Library.Configuration
                 case Web_Language_Enum.Tatar:
                     return "tt";
 
-                case Web_Language_Enum.Teluga:
+                case Web_Language_Enum.Telugu:
                     return "te";
 
                 case Web_Language_Enum.Thai:

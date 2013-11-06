@@ -21,7 +21,7 @@
 .sbkMySobek_HomeText a:link { color:#000080; }
 .sbkMySobek_HomeText A:hover { color:Blue; text-decoration:underline; }
 .sbkMySobek_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
-.sbkMySobek_HomeText p { padding-left: 42px; }
+.sbkMySobek_HomeText p { padding-left: 42px;padding-right: 20px; }
 
 .sbkMySobek_ActionLink { color:Gray; }
 .sbkMySobek_ActionLink a:link { color:Gray; }
@@ -49,7 +49,8 @@ input.sbkMySobek_checkbox { padding-top: 3px;border: 0; }
 .sbkMySobek_RoundButton_LeftImg { vertical-align: top; padding-right: 3px; padding-top: 2px; } 
 
 /** Styles used for the forms (both pop-up and in-line) throughout the mySobek pages **/
-.sbkMySobek_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 6px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
+.sbkMySobek_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px;  }
+.sbkMySobek_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 16px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
 .sbkMySobek_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
 .sbkMySobek_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
 
@@ -60,7 +61,7 @@ input.sbkMySobek_checkbox { padding-top: 3px;border: 0; }
 
 /** Page title */
 h1 { margin-left: auto; margin-right: auto; width: 710px; background-color: #eee; color: #999; font-size: 1.35em; text-align: left; height: 25px; font-weight:normal; padding: 12px 0 12px 40px; border: solid 1px #ccc; margin-top: 0; font-weight: bold; }
-
+.noborders { margin: 0;border: 0;width: 500px;padding: 0; }
 
 
 /** Delete_Item_MySobekViewer **/
@@ -68,6 +69,18 @@ h1 { margin-left: auto; margin-right: auto; width: 710px; background-color: #eee
 .sbkDimv_input { width: 220px; }
 .sbkDimv_SuccessMsg { color:Blue; font-size:1.3em; width:100%; text-align:center; font-weight:bold; }
 .sbkDimv_ErrorMsg { color:Red; font-size:1.3em; width:100%; text-align:center; font-weight:bold; }
+
+
+/** Folder_Mgmt_MySobekViewer **/
+.sbkFmsv_EmailPopup { width:480px; } 
+.sbkFmsv_EmailInput { width: 318px; margin-right: 15px; margin-top: 6px; }
+textarea.sbkFmsv_EmailTextArea  { width: 318px; margin-top: 6px; }
+
+
+/** Home_Item_MySobekViewer **/
+#sbkHmv_WhatWouldDiv {padding: 10px 0 20px 220px; font-size: larger;}
+#sbkHmv_Table { padding-left: 260px;padding-bottom: 20px; font-size: larger; }
+#sbkHmv_Table tr {vertical-align: middle;height: 40px; }
 
 
 /** Logon_MySobekViwer **/
