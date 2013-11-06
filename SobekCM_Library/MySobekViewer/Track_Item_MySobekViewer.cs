@@ -108,7 +108,7 @@ namespace SobekCM.Library.MySobekViewer
 
                             //Extract the item ID & checksum from the barcode string
                             encodedItemID = barcodeString.Substring(0, len);
-                            checksum = barcodeString.Substring(len+1, (barcodeString.Length-len-1));
+                            checksum = barcodeString.Substring(len + 1, (barcodeString.Length - len - 1));
 
                             bool isValidChecksum = Is_Valid_Checksum(encodedItemID, val.Value, checksum);
                             if (!isValidChecksum)
@@ -122,10 +122,40 @@ namespace SobekCM.Library.MySobekViewer
                                 Get_Bib_VID_from_ItemID(itemID);
                             }
 
-            //TODO: On submit, form validation
                         }
                     }
                     break;
+
+                case "read_manual_entry":
+                    //Get the related hidden values for the selected manual entry fields
+                    string hidden_bibID = HttpContext.Current.Request.Form["hidden_BibID"] ?? String.Empty;
+                    string hidden_VID =  HttpContext.Current.Request.Form["hidden_VID"] ?? String.Empty;
+                    string hidden_event_num = HttpContext.Current.Request.Form["hidden_event_num"] ?? String.Empty;
+                    if (String.IsNullOrEmpty(hidden_bibID) || String.IsNullOrEmpty(hidden_VID) || String.IsNullOrEmpty(hidden_event_num))
+                    {
+                        error_message = "You must enter a BibID and VID!";
+                    }
+                    else
+                    {
+                        Int32.TryParse(hidden_event_num, out stage);
+                        BibID = hidden_bibID;
+                        VID = hidden_VID;
+                        try
+                        {
+                            itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(BibID, VID);
+                            Get_Bib_VID_from_ItemID(itemID);
+                        }
+                        catch (Exception ee)
+                        {
+                            error_message = "Invalid BibID or VID!";
+                        }
+
+
+                    }
+                    break;
+
+
+                //TODO: On submit, form validation
             }
             
 
@@ -178,7 +208,7 @@ namespace SobekCM.Library.MySobekViewer
             itemID = Int_from_Base26(encoded_ItemID);
             //TODO: Get the Bib, VID, Tracking info forthis itemID
 //            BibID = Resource_Object.Database.SobekCM_Database.
-            BibID = itemID.ToString();
+ //           BibID = itemID.ToString();
 
             return result;
         }
@@ -236,6 +266,9 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Track_Item_MySobekViewer.Add_Controls", "");
          //   base.Add_Controls(MainPlaceHolder, Tracer);
 
+            string barcode_row_style = String.Empty;
+            string manual_row_style = String.Empty;
+
             StringBuilder builder = new StringBuilder(2000);
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
@@ -246,12 +279,25 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_behaviors_request\" name=\"Track_Item_behaviors_request\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_hidden_value\" name=\"Track_Item_hidden_value\"value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"TI_entry_type\" name=\"TI_entry_type\" value=\"\"/>");
+            builder.AppendLine("<input type=\"hidden\" id=\"hidden_BibID\" name=\"hidden_BibID\" value=\"\"/>");
+            builder.AppendLine("<input type=\"hidden\" id=\"hidden_VID\" name=\"hidden_VID\" value=\"\" />");
+            builder.AppendLine("<input type=\"hidden\" id=\"hidden_event_num\" name=\"hidden_event_num\" value=\"\" />");
 
             //Start the Entry Type Table
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Entry Type</h2></span>");
             builder.AppendLine("<table class=\"sbkTi_table\">");
-            builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
-            builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
+            if (hidden_request == "read_manual_entry")
+            {
+                builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
+                builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 checked onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
+                barcode_row_style = "style=\"display:none\";";
+            }
+            else
+            {
+                builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
+                builder.AppendLine("<tr><td><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
+                manual_row_style = "style=\"display:none\";";
+            }
             builder.AppendLine("</table>");
 
 
@@ -261,20 +307,28 @@ namespace SobekCM.Library.MySobekViewer
             //Start the Item info table
             string bibid = (String.IsNullOrEmpty(BibID))? String.Empty:BibID;
             string vid = (String.IsNullOrEmpty(VID)) ? String.Empty : VID;
+
             
       
             builder.AppendLine("<table class=\"sbkTi_table\">");
-            builder.AppendLine("<tr id=\"tblrow_Barcode\"><td>Scan barcode here:</td>");
+            builder.AppendLine("<tr id=\"tblrow_Barcode\" "+barcode_row_style+"><td>Scan barcode here:</td>");
             builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td></tr>");
-            builder.AppendLine("<tr id=\"tblrow_Manual1\" style=\"display:none\"><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\">"+bibid+"</input></td>");
-            builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\"/>"+vid+"</td>");
+            builder.AppendLine("<tr id=\"tblrow_Manual1\" "+manual_row_style+"><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\""+bibid+"\" /></td>");
+            builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\""+vid+"\" /></td>");
             builder.AppendLine("</tr>");
-            builder.AppendLine("<tr id=\"tblrow_Manual2\" style=\"display:none\">");
+            builder.AppendLine("<tr id=\"tblrow_Manual2\" "+manual_row_style+">");
             builder.AppendLine("<td>Event:</td><td><select id=\"ddlManualEvent\" name=\"ddlManualEvent\">");
-            builder.AppendLine("                                       <option value=\"1\" selected>Scanning</option>");
-            builder.AppendLine("                                        <option value=\"2\">Processing</option></select>");
+            builder.AppendLine("                                       <option value=\"1\" selected>Start Scanning</option>");
+            builder.AppendLine("                                        <option value=\"2\">End Scanning</option>");
+            builder.AppendLine("                                        <option value=\"3\">Start Processing</option>");
+            builder.AppendLine("                                        <option value=\"4\">End Processing</option></select>");
             builder.AppendLine("</td>");
-            builder.AppendLine("<td>Title:</td><td><input type=\"text\" id=\"txtTitle\" disabled/></input></td>");
+            builder.AppendLine("<td>Title:</td><td><input type=\"text\" id=\"txtTitle\" disabled value=\""+title+"\" /></td>");
+
+            builder.AppendLine("<td><div id=\"divAddButton\" style=\"float:right;\">");
+            builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry(); return false;\">ADD</button>");
+            builder.AppendLine("</div></td>");
+
 
             builder.AppendLine("</tr>");
             //End this table
@@ -285,6 +339,10 @@ namespace SobekCM.Library.MySobekViewer
             {
                 string selected_text_scanning = String.Empty;
                 string selected_text_processing = String.Empty;
+                string currentTime = DateTime.Now.ToString("hh:mm");
+                string startTime = String.Empty;
+                string endTime = String.Empty;
+
 
                 //TODO: Display any open workflows for this item
 
@@ -292,19 +350,31 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (stage == 1 || stage == 2)
                 {
-                    selected_text_scanning = "\"selected\"";
+                    selected_text_scanning = " selected";
+                    if (stage == 1)
+                        startTime = currentTime;
+                    else
+                    {
+                        endTime = currentTime;
+                    }
                 }
                 else if (stage == 3 || stage == 4)
                 {
-                    selected_text_processing = "\"selected\"";
+                    selected_text_processing = " selected";
+                    if (stage == 3)
+                        startTime = currentTime;
+                    else
+                    {
+                        endTime = currentTime;
+                    }
                  }
                 //Start the Tracking Info section
                 builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
-                builder.AppendLine("<table>");
-                builder.AppendLine("<tr class=\"sbkTi_tblRow_ItemInfoText\">");
-                builder.AppendLine("<td>BibID: &nbsp;&nbsp;</td><td>" + bibid + "</td>");
-                builder.AppendLine("<td>VID: &nbsp;&nbsp;</td><td>" + vid + "</td>");
-                builder.AppendLine("<td>Title: &nbsp;&nbsp;</td><td>" + title + "</td>");
+                builder.AppendLine("<table class=\"sbkTi_tblItemDetails\">");
+                builder.AppendLine("<tr >");
+                builder.AppendLine("<td><span class=\"sbkTi_tblRow_ItemInfoLabel\">BibID: </span></td><td><span class=\"sbkTi_tblRow_ItemInfoText\">" + bibid + "</span></td>");
+                builder.AppendLine("<td><span class=\"sbkTi_tblRow_ItemInfoLabel\">VID: </span></td><td><span class=\"sbkTi_tblRow_ItemInfoText\">" + vid + "</span></td>");
+                builder.AppendLine("<td><span class=\"sbkTi_tblRow_ItemInfoLabel\">Title: </span></td><td><span class=\"sbkTi_tblRow_ItemInfoText\">" + title + "</span></td>");
                 builder.AppendLine("</tr>");
                 builder.AppendLine("</table>");
 
@@ -345,9 +415,9 @@ namespace SobekCM.Library.MySobekViewer
                 //Add the Start and End Times
                 builder.AppendLine("<tr>");
                 builder.AppendLine("<td>Start Time:</td>");
-                builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\"/></td>");
+                builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \""+startTime+"\"/></td>");
                 builder.AppendLine("<td>End Time:</td>");
-                builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\"/></td>");
+                builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" value = \""+endTime+"\"/></td>");
 
                 //End this table
                 builder.AppendLine("</table>");
@@ -365,9 +435,7 @@ namespace SobekCM.Library.MySobekViewer
             //Close the main div
             builder.AppendLine("</div>");
 
-
-            builder.AppendLine(" <script type=\"text/javascript\">$(document).ready(function() {$(function() {$( \"#txtVID\" ).datepicker();});});</script>");
-       
+            
             LiteralControl control1 = new LiteralControl(builder.ToString());
           
             MainPlaceHolder.Controls.Add(control1);

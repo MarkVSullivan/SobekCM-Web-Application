@@ -18,9 +18,21 @@ function rbEntryTypeChanged(value) {
 
 //Save function: set the hidden field(s) accordingly
 function BarcodeStringTextbox_Changed(barcode_string) {
-  //  alert(barcode_string);
+    //  alert(barcode_string);
+//    document.getElementById('TI_entry_type').value = "barcode";
     document.getElementById('Track_Item_behaviors_request').value ="decode_barcode";
     document.getElementById('Track_Item_hidden_value').value = barcode_string;
+    document.itemNavForm.submit();
+    return false;
+}
+
+function Add_new_entry() {
+  //  document.getElementById('TI_entry_type').value = "manual";
+    document.getElementById('Track_Item_behaviors_request').value = "read_manual_entry";
+    document.getElementById('hidden_BibID').value = document.getElementById('txtBibID').value;
+    document.getElementById('hidden_VID').value = document.getElementById('txtVID').value;
+    document.getElementById('hidden_event_num').value = document.getElementById('ddlManualEvent').value;
+    alert('Add button clicked');
     document.itemNavForm.submit();
     return false;
 }
