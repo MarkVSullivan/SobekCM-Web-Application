@@ -96,7 +96,7 @@ namespace SobekCM.Library.HTML
 			}
 
             NameValueCollection form = HttpContext.Current.Request.Form;
-            if (form["item_action"] != null)
+            if (( currentMode.Aggregation_Type  == Aggregation_Type_Enum.Child_Page_Edit ) && ( form["item_action"] != null))
             {
                 string action = form["item_action"].ToLower().Trim();
 
@@ -184,9 +184,11 @@ namespace SobekCM.Library.HTML
 				// Make a backup from today, if none made yet
 				if (File.Exists(file))
 				{
-					string new_file = file.ToLower().Replace(".txt", "").Replace(".html", "").Replace(".htm", "") + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString() + ".bak";
-					if ( !File.Exists(new_file))
-						File.Move(file, new_file);
+					DateTime lastWrite = (new FileInfo(file)).LastWriteTime;
+					string new_file = file.ToLower().Replace(".txt", "").Replace(".html", "").Replace(".htm", "") + lastWrite.Year + lastWrite.Month.ToString().PadLeft(2, '0') + lastWrite.Day.ToString() .PadLeft(2, '0')+ ".bak";
+					if (File.Exists(new_file))
+						File.Delete(new_file);
+					File.Move(file, new_file);
 				}
 
 				// Write to the file now
@@ -201,8 +203,11 @@ namespace SobekCM.Library.HTML
 				// Clear this aggreation from the cache
 				Cached_Data_Manager.Remove_Item_Aggregation(Hierarchy_Object.Code, Tracer);
 
-				// Force the next page to refresh
-				HttpContext.Current.Session["REFRESH"] = true;
+				// If this is all, save the new text as well.
+				if (String.Compare("all", Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					HttpContext.Current.Application["SobekCM_Home"] = form["sbkAghsw_HomeTextEdit"];
+				}
 
 				// Forward along
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -270,12 +275,16 @@ namespace SobekCM.Library.HTML
 					case Aggregation_Type_Enum.Browse_Info:
 						if (resultsStatistics == null)
 						{
-							collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject);
+							collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject, Hierarchy_Object, currentMode, Current_User);
 						}
 						else
 						{
 							collectionViewer = new DataSet_Browse_Info_AggregationViewer(thisBrowseObject, resultsStatistics, pagedResults, codeManager, itemList, currentUser);
 						}
+						break;
+
+					case Aggregation_Type_Enum.Child_Page_Edit:
+						collectionViewer = new Static_Browse_Info_AggregationViewer(thisBrowseObject, thisStaticBrowseObject, Hierarchy_Object, currentMode, Current_User);
 						break;
 
 					case Aggregation_Type_Enum.Browse_By:
@@ -377,6 +386,32 @@ namespace SobekCM.Library.HTML
                     break;
             }
 
+			// If this was to display the static page, include that info in the header as well
+			if (thisStaticBrowseObject != null)
+			{
+				if (thisStaticBrowseObject.Description.Length > 0)
+				{
+					Output.WriteLine("  <meta name=\"description\" content=\"" + thisStaticBrowseObject.Description.Replace("\"","'") + "\" />");
+				}
+				if (thisStaticBrowseObject.Keywords.Length > 0)
+				{
+					Output.WriteLine("  <meta name=\"keywords\" content=\"" + thisStaticBrowseObject.Keywords.Replace("\"", "'") + "\" />");
+				}
+				if (thisStaticBrowseObject.Author.Length > 0)
+				{
+					Output.WriteLine("  <meta name=\"author\" content=\"" + thisStaticBrowseObject.Author.Replace("\"", "'") + "\" />");
+				}
+				if (thisStaticBrowseObject.Date.Length > 0)
+				{
+					Output.WriteLine("  <meta name=\"date\" content=\"" + thisStaticBrowseObject.Date.Replace("\"", "'") + "\" />");
+				}
+
+				if (thisStaticBrowseObject.Extra_Head_Info.Length > 0)
+				{
+					Output.WriteLine("  " + thisStaticBrowseObject.Extra_Head_Info.Trim());
+				}
+			}
+
             // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
             if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
             {
@@ -394,6 +429,18 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("    $(document).ready(function () { $(\"#sbkAghsw_HomeTextEdit\").cleditor({height:400}); });");
 		        Output.WriteLine("  </script>");
 	        }
+
+			// If this is to edit the home page, add the html editor
+			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
+			{
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\">");
+				Output.WriteLine("    $(document).ready(function () { $(\"#sbkSbia_ChildTextEdit\").cleditor({height:400}); });");
+				Output.WriteLine("  </script>");
+			}
         }
 
 
@@ -419,11 +466,26 @@ namespace SobekCM.Library.HTML
 				            return "{0} Home";
 
 			            case Aggregation_Type_Enum.Browse_Info:
-				            if (Hierarchy_Object != null)
-				            {
-					            return "{0} - " + Hierarchy_Object.Name;
-				            }
+							if (thisStaticBrowseObject != null)
+							{
+								if (thisStaticBrowseObject.Title.Length > 0)
+									return "{0} - " + thisStaticBrowseObject.Title + " - " + Hierarchy_Object.Name;
+								return "{0} - " + currentMode.Info_Browse_Mode + " - " + Hierarchy_Object.Name;
+							}
+							
+							if (Hierarchy_Object != null)
+							{
+								return "{0} - " + Hierarchy_Object.Name;
+							}
+
 				            break;
+
+						case Aggregation_Type_Enum.Child_Page_Edit:
+							if (Hierarchy_Object != null)
+							{
+								return "{0} - Edit " + Hierarchy_Object.Name;
+							}
+							break;
 
 						case Aggregation_Type_Enum.Browse_By:
 						case Aggregation_Type_Enum.Browse_Map:
@@ -921,7 +983,7 @@ namespace SobekCM.Library.HTML
             Search_Type_Enum thisSearch = currentMode.Search_Type;
             Home_Type_Enum thisHomeType = currentMode.Home_Type;
             string browse_code = currentMode.Info_Browse_Mode;
-            if (( thisMode == Display_Mode_Enum.Aggregation ) && ( thisAggrType == Aggregation_Type_Enum.Browse_Info ))
+            if (( thisMode == Display_Mode_Enum.Aggregation ) && (( thisAggrType == Aggregation_Type_Enum.Browse_Info ) || (thisAggrType == Aggregation_Type_Enum.Child_Page_Edit)))
             {
                 browse_code = currentMode.Info_Browse_Mode;
             }
@@ -1311,7 +1373,7 @@ namespace SobekCM.Library.HTML
 					Output.WriteLine(" <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 					Output.WriteLine("</div>");
 					Output.WriteLine("</form>");
-					Output.WriteLine("<br /><br />");
+					Output.WriteLine("<br /><br /><br />");
 					Output.WriteLine();
 
 	            }
@@ -1494,13 +1556,19 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                Output.WriteLine();
-                Output.WriteLine("<div class=\"SobekText\">");
-                Output.WriteLine("<br />");
-
                 if ((currentMode.Home_Type != Home_Type_Enum.Personalized) && (currentMode.Home_Type != Home_Type_Enum.Partners_List) && (currentMode.Home_Type != Home_Type_Enum.Partners_Thumbnails))
                 {
-                    // This is the main home page, so call one of the special functions to draw the home
+					// SHould this person be able to edit this page?
+	                bool isAdmin = (currentUser != null) && ((currentUser.Is_System_Admin) || (currentUser.Is_Portal_Admin));
+					if ((isAdmin) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Portal_Admins_Can_Edit_Home_Page")))
+					{
+						if (SobekCM_Library_Settings.Additional_Settings["Portal_Admins_Can_Edit_Home_Page"].ToUpper().Trim() == "FALSE")
+						{
+							isAdmin = currentUser.Is_System_Admin;
+						}
+					}
+
+					// This is the main home page, so call one of the special functions to draw the home
                     // page types ( i.e., icon view, brief view, or tree view )
                     string sobekcm_home_page_text;
                     object sobekcm_home_page_obj = HttpContext.Current.Application["SobekCM_Home"];
@@ -1520,32 +1588,91 @@ namespace SobekCM.Library.HTML
                         sobekcm_home_page_text = (string)sobekcm_home_page_obj;
                     }
 
+					Output.WriteLine("<br />");
+					Output.WriteLine();
+					Output.WriteLine("<div class=\"SobekText\">");
 
-                    int index = sobekcm_home_page_text.IndexOf("<%END%>");
+	                if ((isAdmin) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+	                {
+		                string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+		                Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
+		                Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
+		                Output.WriteLine(sobekcm_home_page_text);
+		                Output.WriteLine("  </textarea>");
+		                Output.WriteLine();
 
-                    string tabstart = "<img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">";
-                    string tabend = "</span><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
-                    string select_tabstart = "<img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">";
-                    string select_tabend = "</span><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
+		                Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
+		                currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+		                Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+		                Output.WriteLine(" <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+		                Output.WriteLine("</div>");
+		                Output.WriteLine("</form>");
+						Output.WriteLine("<br /><br /><br />");
+		                Output.WriteLine();
 
-                    // Determine the different counts as strings
-                    string page_count = Int_To_Comma_String(Hierarchy_Object.Page_Count);
-                    string item_count = Int_To_Comma_String(Hierarchy_Object.Item_Count);
-                    string title_count = Int_To_Comma_String(Hierarchy_Object.Title_Count);
+	                }
+	                else
+	                {
 
-                    string url_options = currentMode.URL_Options();
-                    string urlOptions1 = String.Empty;
-                    string urlOptions2 = String.Empty;
-                    if (url_options.Length > 0)
-                    {
-                        urlOptions1 = "?" + url_options;
-                        urlOptions2 = "&" + url_options;
-                    }
 
-                    Output.WriteLine(index > 0 ? sobekcm_home_page_text.Substring(0, index).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>",currentMode.Base_Skin).Replace("<%WEBSKIN%>", currentMode.Base_Skin).Replace("<%TABSTART%>",tabstart).Replace("<%TABEND%>",tabend).Replace("<%SELECTED_TABSTART%>", select_tabstart).Replace("<%SELECTED_TABEND%>", select_tabend).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count)
-                        : sobekcm_home_page_text.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>",currentMode.Base_Skin).Replace("<%WEBSKIN%>",currentMode.Base_Skin).Replace("<%TABSTART%>", tabstart).Replace("<%TABEND%>", tabend).Replace("<%SELECTED_TABSTART%>", select_tabstart).Replace("<%SELECTED_TABEND%>", select_tabend).Replace("<%PAGES%>",page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count));
+
+
+
+
+		                int index = sobekcm_home_page_text.IndexOf("<%END%>");
+
+		                string tabstart = "<img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">";
+		                string tabend = "</span><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
+		                string select_tabstart = "<img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">";
+		                string select_tabend = "</span><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
+
+		                // Determine the different counts as strings
+		                string page_count = Int_To_Comma_String(Hierarchy_Object.Page_Count);
+		                string item_count = Int_To_Comma_String(Hierarchy_Object.Item_Count);
+		                string title_count = Int_To_Comma_String(Hierarchy_Object.Title_Count);
+
+		                string url_options = currentMode.URL_Options();
+		                string urlOptions1 = String.Empty;
+		                string urlOptions2 = String.Empty;
+		                if (url_options.Length > 0)
+		                {
+			                urlOptions1 = "?" + url_options;
+			                urlOptions2 = "&" + url_options;
+		                }
+
+						string adjusted_home = index > 0 ? sobekcm_home_page_text.Substring(0, index).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", currentMode.Base_Skin).Replace("<%WEBSKIN%>", currentMode.Base_Skin).Replace("<%TABSTART%>", tabstart).Replace("<%TABEND%>", tabend).Replace("<%SELECTED_TABSTART%>", select_tabstart).Replace("<%SELECTED_TABEND%>", select_tabend).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count)
+			                                 : sobekcm_home_page_text.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", currentMode.Base_Skin).Replace("<%WEBSKIN%>", currentMode.Base_Skin).Replace("<%TABSTART%>", tabstart).Replace("<%TABEND%>", tabend).Replace("<%SELECTED_TABSTART%>", select_tabstart).Replace("<%SELECTED_TABEND%>", select_tabend).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+
+
+						// Output the adjusted home html
+						if (isAdmin)
+						{
+							Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
+							Output.WriteLine(adjusted_home);
+							currentMode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+							Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this home text\"><img src=\"" + currentMode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
+							currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+							Output.WriteLine("</div>");
+							Output.WriteLine();
+
+							Output.WriteLine("<script>");
+							Output.WriteLine("  $(\"#sbkAghsw_EditableHome\").mouseover(function() { $(\"#sbkAghsw_EditableHomeLink\").css(\"display\",\"inline-block\"); });");
+							Output.WriteLine("  $(\"#sbkAghsw_EditableHome\").mouseout(function() { $(\"#sbkAghsw_EditableHomeLink\").css(\"display\",\"none\"); });");
+							Output.WriteLine("</script>");
+							Output.WriteLine();
+						}
+						else
+						{
+							Output.WriteLine("<div id=\"sbkAghsw_Home\">");
+							Output.WriteLine(adjusted_home);
+							Output.WriteLine("</div>");
+						}
+
+
+		                Output.WriteLine("</div>");
+	                }
                 }
-                Output.WriteLine("</div>");
+ 
 
                 if ((currentMode.Home_Type == Home_Type_Enum.Partners_List) || (currentMode.Home_Type == Home_Type_Enum.Partners_Thumbnails))
                 {
@@ -1572,7 +1699,7 @@ namespace SobekCM.Library.HTML
                         string listText = "LIST VIEW";
                         string descriptionText = "BRIEF VIEW";
                         string treeText = "TREE VIEW";
-                        const string thumbnailText = "THUMBNAIL VIEW";
+                        const string THUMBNAIL_TEXT = "THUMBNAIL VIEW";
 
                         if (currentMode.Language == Web_Language_Enum.Spanish)
                         {
@@ -1637,12 +1764,12 @@ namespace SobekCM.Library.HTML
 
                             if (startHomeType == Home_Type_Enum.Partners_Thumbnails)
                             {
-                                Output.Write("  " + Selected_Tab_Start + thumbnailText + Selected_Tab_End  + Environment.NewLine );
+                                Output.Write("  " + Selected_Tab_Start + THUMBNAIL_TEXT + Selected_Tab_End  + Environment.NewLine );
                             }
                             else
                             {
                                 currentMode.Home_Type = Home_Type_Enum.Partners_Thumbnails;
-                                Output.Write("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + thumbnailText + Unselected_Tab_End + "</a>" + Environment.NewLine );
+                                Output.Write("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + THUMBNAIL_TEXT + Unselected_Tab_End + "</a>" + Environment.NewLine );
                             }
                         }
                         currentMode.Home_Type = startHomeType;
@@ -2340,10 +2467,6 @@ namespace SobekCM.Library.HTML
         #endregion
 
         #endregion
-
-
-
-
 
         /// <summary> Writes final HTML after all the forms </summary>
         /// <param name="Output">Stream to directly write to</param>

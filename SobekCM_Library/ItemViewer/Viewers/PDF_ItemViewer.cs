@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 
 #endregion
@@ -80,9 +78,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Tracer.Add_Trace("PDF_ItemViewer.Write_Main_Viewer_Section", "");
 			}
 
-			// Build the value
-			StringBuilder builder = new StringBuilder(1500);
-
 			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
 
@@ -111,10 +106,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			if (CurrentMode.Text_Search.Length > 0)
 			{
-				displayFileName = displayFileName + "#search=&quot;" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "&quot;";
+				displayFileName = displayFileName + "#search=\"" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "\"";
 			}
 
-            Output.WriteLine("                  <embed id=\"sbkPdf_Container\" src=\"" + displayFileName + "\" href=\"" + FileName + "\"></embed>");
+            Output.WriteLine("                  <embed id=\"sbkPdf_Container\" src='" + displayFileName + "' href='" + FileName + "'></embed>");
             
 			// Finish the table
             Output.WriteLine("\t\t</td>");
@@ -135,7 +130,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Gets the collection of special behaviors which this item viewer
         /// requests from the main HTML subwriter. </summary>
-        public override List<HTML.HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
         {
             get
             {

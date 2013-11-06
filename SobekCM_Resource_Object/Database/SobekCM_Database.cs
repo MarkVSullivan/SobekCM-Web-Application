@@ -12,6 +12,7 @@ using Microsoft.ApplicationBlocks.Data;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 namespace SobekCM.Resource_Object.Database
 {
@@ -706,11 +707,34 @@ namespace SobekCM.Resource_Object.Database
                 }
             }
 
-			// Return the item id
+            //for each page
+            List<abstract_TreeNode> pages = ThisPackage.Divisions.Physical_Tree.Pages_PreOrder;
+            for (int i = 0; i < pages.Count; i++)
+            {
+                //GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                //string error_message;
+                //Save_Item_Metadata(geoInfo);
+                //Save_Item(geoInfo);
+                //Save_Item_Information(geoInfo);
+                //Save_Item_Metadata_Information(geoInfo);
+                //geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+
+                //Step through all the metadata modules and allow the modules to save to the database
+                if (pages[i].Metadata_Modules_Count > 0)
+                {
+                    foreach (iMetadata_Module thisModule in pages[i].All_Metadata_Modules)
+                    {
+                        GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                        string error_message;
+                        geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                        //thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                    }
+                }
+            }
+
+		    // Return the item id
             return ThisPackage.Web.ItemID;
 		}
-
-
 
 		private static void Save_Streets_and_Features_To_Item(SobekCM_Item ThisPackage, int ItemID)
 		{
@@ -1136,8 +1160,7 @@ namespace SobekCM.Resource_Object.Database
 			}
 		}
 
-		private static bool Save_Region_Item_Link( int ItemID, string GeoAuthCode, string Name, string Type, string P_Code, string P_Name, string P_Type, string P2_Code, string P2_Name, string P2_Type, 
-			string P3_Code, string P3_Name, string P3_Type, string P4_Code, string P4_Name, string P4_Type, string P5_Code, string P5_Name, string P5_Type )
+		private static bool Save_Region_Item_Link( int ItemID, string GeoAuthCode, string Name, string Type, string P_Code, string P_Name, string P_Type, string P2_Code, string P2_Name, string P2_Type, string P3_Code, string P3_Name, string P3_Type, string P4_Code, string P4_Name, string P4_Type, string P5_Code, string P5_Name, string P5_Type )
 		{
 			try
 			{

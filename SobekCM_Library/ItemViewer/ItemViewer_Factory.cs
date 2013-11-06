@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -80,19 +81,20 @@ namespace SobekCM.Library.ItemViewer
 					return jpegTextViewer;
 
                 case View_Enum.JPEG2000:
-					//if (((Current_Object.BibID == "UF00074227") && (Current_Object.VID == "00004")) || (Current_Object.BibID == "UF00080481"))
-					//{
-					//	abstractItemViewer newJp2Viewer = new JPEG2000_ItemViewer();
-					//	newJp2Viewer.FileName = viewObject.FileName;
-					//	return newJp2Viewer;
-					//}
-					//else
-					//{
+					if ( SobekCM_Library_Settings.JP2ServerType == "Built-In IIPImage")
+					{
+						abstractItemViewer newJp2Viewer = new JPEG2000_ItemViewer();
+						newJp2Viewer.FileName = viewObject.FileName;
+						return newJp2Viewer;
+					}
+					else if ( SobekCM_Library_Settings.JP2ServerType == "Aware")
+					{
                         abstractItemViewer jpeg2000Viewer = new Aware_JP2_ItemViewer(Resource_Type, viewObject.Attributes, Current_Mode);
                         jpeg2000Viewer.FileName = viewObject.FileName;
                         return jpeg2000Viewer;
-                    //}
-                    //break;
+                    }
+		            return null;
+                    break;
 
 				case View_Enum.PAGE_TURNER:
 						return new GnuBooks_PageTurner_ItemViewer();

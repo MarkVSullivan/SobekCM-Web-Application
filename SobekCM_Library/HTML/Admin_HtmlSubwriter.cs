@@ -111,7 +111,7 @@ namespace SobekCM.Library.HTML
                 Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 
             // If the user is not an admin, and admin was selected, reroute this
-            if ((!Current_User.Is_System_Admin) && (!Current_User.Is_Portal_Admin))
+			if ((!Current_User.Is_System_Admin) && (!Current_User.Is_Portal_Admin) && (Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
             {
                 Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

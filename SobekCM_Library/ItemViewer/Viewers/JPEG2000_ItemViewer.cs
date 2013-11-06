@@ -6,6 +6,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -58,7 +59,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("      navigatorId:  \"sbkJp2_Navigator\"");
             Output.WriteLine("   });");
             Output.WriteLine();
-            Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=//fcla-sobekfs/ufdc/resources/" + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
+            Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + SobekCM_Library_Settings.Image_Server_Network.Replace("\\","/") + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
             Output.WriteLine("</script>");
             Output.WriteLine("</td>");
         }
