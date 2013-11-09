@@ -344,7 +344,7 @@ namespace SobekCM.Library.HTML
                 if ( mySobekViewer.Standard_Navigation_Type != MySobek_Included_Navigation_Enum.NONE )
                 {
                     // Add the user-specific main menu
-                    UserSpecific_MainMenu_Writer.Add_Main_Menu(Output, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
@@ -403,7 +403,7 @@ namespace SobekCM.Library.HTML
                 if (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management)
                 {
                     // Add the user-specific main menu
-                    UserSpecific_MainMenu_Writer.Add_Main_Menu(header_writer, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(header_writer, currentMode, user);
 
                     // Start the page container
                     header_writer.WriteLine("<div id=\"pagecontainer\">");

@@ -705,7 +705,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, Translator, itemList, user, currentMode, Tracer)
                                       {
-                                          Hierarchy_Object = currentCollection,
+                                          Current_Aggregation = currentCollection,
                                           Skin = htmlSkin,
                                           Mode = currentMode,
                                           Browse_Title = properFolderName,

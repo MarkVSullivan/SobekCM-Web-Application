@@ -316,7 +316,7 @@ namespace SobekCM.Library.HTML
                     Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, currentCollection);
 
                     // Add the user-specific main menu
-                    UserSpecific_MainMenu_Writer.Add_Main_Menu(Output, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");

@@ -1216,17 +1216,21 @@ namespace SobekCM.Library.AdminViewer
 
 			// Look for the default browse by
 			short default_browseby_id = 0;
+			itemAggregation.Default_BrowseBy = String.Empty;
 			if (Form["admin_aggr_default_browseby"] != null)
 			{
 				string default_browseby = Form["admin_aggr_default_browseby"];
 				if (Int16.TryParse(default_browseby, out default_browseby_id))
 				{
-					Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(default_browseby_id);
-					if (field != null)
+					if (default_browseby_id > 0)
 					{
-						Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
-						itemAggregation.Add_Child_Page(newBrowse);
-						itemAggregation.Default_BrowseBy = field.Display_Term;
+						Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(default_browseby_id);
+						if (field != null)
+						{
+							Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
+							itemAggregation.Add_Child_Page(newBrowse);
+							itemAggregation.Default_BrowseBy = field.Display_Term;
+						}
 					}
 				}
 				else
@@ -1252,7 +1256,6 @@ namespace SobekCM.Library.AdminViewer
 					}
 				}
 			}
-
 
 			itemAggregation.OAI_Flag = Form["admin_aggr_oai_flag"] != null;
 

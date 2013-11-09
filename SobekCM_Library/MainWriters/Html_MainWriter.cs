@@ -329,7 +329,7 @@ namespace SobekCM.Library.MainWriters
             {
                 subwriter.Mode = currentMode;
                 subwriter.Skin = htmlSkin;
-                subwriter.Hierarchy_Object = hierarchyObject;
+                subwriter.Current_Aggregation = hierarchyObject;
             }
         }
 
@@ -645,7 +645,7 @@ namespace SobekCM.Library.MainWriters
             }
 
 			// Finally add the aggregation-level CSS if it exists
-			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
+			if (((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Search) || (currentMode.Mode == Display_Mode_Enum.Results)) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
 			{
 				Output.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			}
@@ -1243,17 +1243,17 @@ namespace SobekCM.Library.MainWriters
                         if  (hierarchyObject.Code != "all")
                         {                            
                             if (banner_image.Length > 0)
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                             }
                             else
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
+								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
                             }
                         }
                     }

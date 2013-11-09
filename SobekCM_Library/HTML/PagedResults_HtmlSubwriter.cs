@@ -296,21 +296,21 @@ namespace SobekCM.Library.HTML
 					string user_view = "default";
 					if (HttpContext.Current.Session["User_Default_View"] != null)
 						user_view = HttpContext.Current.Session["User_Default_View"].ToString();
-					currentMode.Result_Display_Type = Hierarchy_Object.Default_Result_View;
+					currentMode.Result_Display_Type = Current_Aggregation.Default_Result_View;
 					switch (user_view)
 					{
 						case "brief":
-							if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+							if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
 								currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
 							break;
 
 						case "thumb":
-							if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+							if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
 								currentMode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
 							break;
 
 						case "table":
-							if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+							if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
 								currentMode.Result_Display_Type = Result_Display_Type_Enum.Table;
 							break;
 
@@ -372,7 +372,7 @@ namespace SobekCM.Library.HTML
 			resultWriter.CurrentMode = currentMode;
 			resultWriter.Results_Statistics = resultsStatistics;
 			resultWriter.Paged_Results = pagedResults;
-			resultWriter.HierarchyObject = Hierarchy_Object;
+			resultWriter.HierarchyObject = Current_Aggregation;
 			resultWriter.Translator = translations;
 			
 			// Populate the sort list and sort the result set
@@ -718,7 +718,7 @@ namespace SobekCM.Library.HTML
 				else
 				{
 					Output.WriteLine("  <h1 class=\"noborders\">" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>");
-					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Hierarchy_Object.Name; 
+					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name; 
 				}                   
 			}
 			else
@@ -778,7 +778,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine();
 
 			// Now add the tabs for the view type
-			if (( Include_Bookshelf_View ) || (Hierarchy_Object.Result_Views.Count > 1))
+			if (( Include_Bookshelf_View ) || (Current_Aggregation.Result_Views.Count > 1))
 			{
 				Output.WriteLine("<div class=\"ResultViewSelectRow\">");
 				Result_Display_Type_Enum resultView = currentMode.Result_Display_Type;
@@ -795,7 +795,7 @@ namespace SobekCM.Library.HTML
 					}
 				}
 
-				if ((currentMode.Coordinates.Length > 0) || (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+				if ((currentMode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
 				{
 					if (resultView == Result_Display_Type_Enum.Map)
 					{
@@ -808,7 +808,7 @@ namespace SobekCM.Library.HTML
 					}
 				}
 
-				if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+				if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
 				{
 					if (resultView == Result_Display_Type_Enum.Brief)
 					{
@@ -821,7 +821,7 @@ namespace SobekCM.Library.HTML
 					}
 				}
 
-				if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+				if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
 				{
 					if (resultView == Result_Display_Type_Enum.Table)
 					{
@@ -834,7 +834,7 @@ namespace SobekCM.Library.HTML
 					}
 				}
 
-				if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+				if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
 				{
 					if (resultView == Result_Display_Type_Enum.Thumbnails)
 					{
@@ -1045,7 +1045,7 @@ namespace SobekCM.Library.HTML
 			switch (currentMode.Language)
 			{
 				case Web_Language_Enum.French:
-					Output.Write("Votre recherche de <i>" + Hierarchy_Object.Name + "</i> en ");
+					Output.Write("Votre recherche de <i>" + Current_Aggregation.Name + "</i> en ");
 					and_language = "et ";
 					or_language = "ou ";
 					and_not_language = "non ";
@@ -1060,7 +1060,7 @@ namespace SobekCM.Library.HTML
 					break;
 
 				case Web_Language_Enum.Spanish:
-					Output.Write("Su búsqueda de <i>" + Hierarchy_Object.Name + "</i> en ");
+					Output.Write("Su búsqueda de <i>" + Current_Aggregation.Name + "</i> en ");
 					and_language = "y ";
 					or_language = "o ";
 					and_not_language = "no ";
@@ -1076,9 +1076,9 @@ namespace SobekCM.Library.HTML
 
 				default:
 					if (currentMode.Search_Type == Search_Type_Enum.Map)
-						Output.Write("Your geographic search of <i>" + Hierarchy_Object.Name + "</i> ");
+						Output.Write("Your geographic search of <i>" + Current_Aggregation.Name + "</i> ");
 					else
-						Output.Write("Your search of <i>" + Hierarchy_Object.Name + "</i> for ");
+						Output.Write("Your search of <i>" + Current_Aggregation.Name + "</i> for ");
 					break;
 			}
 

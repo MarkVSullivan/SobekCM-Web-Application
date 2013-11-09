@@ -59,7 +59,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Add the banner
-            Add_Banner(Output, "sbkShs_BannerDiv", currentMode, htmlSkin, Hierarchy_Object);
+            Add_Banner(Output, "sbkShs_BannerDiv", currentMode, htmlSkin, Current_Aggregation);
 
             #region Code to add the statistics menu
 
