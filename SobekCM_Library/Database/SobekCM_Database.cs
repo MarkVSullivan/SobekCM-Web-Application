@@ -2854,6 +2854,8 @@ namespace SobekCM.Library.Database
 		/// <param name="ChildInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
 		private static void add_children(Item_Aggregation AggrInfo, DataTable ChildInfo)
 		{
+			string childTypes = String.Empty;
+
 			// Build a dictionary of nodes while building this tree
 			Dictionary<string, Item_Aggregation_Related_Aggregations> nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
 			
@@ -2888,9 +2890,21 @@ namespace SobekCM.Library.Database
 					if (hierarchyLevel == -1)
 					{
 						AggrInfo.Add_Child_Aggregation(childObject);
+
+						// If this is active and not hidden, check the type and save to list
+						if ((!childObject.Hidden) && (childObject.Active))
+						{
+							if (childTypes.Length == 0)
+								childTypes = childObject.Type + "s";
+							else if (childTypes != childObject.Type )
+								childTypes = "SubCollections";
+						}
 					}
 				}
 			}
+
+			// Save the type for the child collections
+			AggrInfo.Child_Types = childTypes;
 		}
 
 		/// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>

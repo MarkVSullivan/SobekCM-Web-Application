@@ -97,7 +97,7 @@ namespace SobekCM.Library.HTML
             Internal_Type_Enum type = currentMode.Internal_Type;
 
             // Add the banner
-            Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, Hierarchy_Object);
+            Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, Current_Aggregation);
 
             if (!isAuthorized)
             {
@@ -119,7 +119,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 // Add the user-specific main menu
-                UserSpecific_MainMenu_Writer.Add_Main_Menu(Output, currentMode, user);
+                MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
 
                 // Start the page container
                 Output.WriteLine("<div id=\"pagecontainer\">");

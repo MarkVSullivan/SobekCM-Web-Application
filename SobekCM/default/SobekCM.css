@@ -17,9 +17,9 @@
 
 article,aside,details,figcaption,figure, footer,header,hgroup,menu,nav,section {  display:block; }
 
-#sbkHmw_BannerDiv { background-color: White;width: 100%;text-align: center;}
-#sbkAhs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
-#sbkShs_BannerDiv { background-color: #777777;width: 100%;text-align: center;}
+#sbkHmw_BannerDiv { background-color: #777777;width: 100%;text-align: center; display: block; }
+#sbkAhs_BannerDiv { background-color: #777777;width: 100%;text-align: center; display: block; }
+#sbkShs_BannerDiv { background-color: #777777;width: 100%;text-align: center; display: block; }
 
 .texthighlight { background:yellow; font-weight:bold; }
 
@@ -216,7 +216,9 @@ h1 {
 
 }
 
-.sbkRhav_RotatingBanner { width: 754px; text-align: center;vertical-align: top; }
+/** Rotating Highlights Search Aggregation Viewer **/
+#sbkRhav_BannerBack { width: 100%;text-align: center;}
+.sbkRhav_RotatingBanner { width: 754px; text-align: center;vertical-align: top;margin-left: auto;margin-right: auto;}
 .sbkRhav_RotatingBanner tr { vertical-align: top; }
 .sbkRhav_RotatingBannerLeft { text-align: left; }
 .sbkRhav_RotatingBannerLeftSearch { padding-top: 145px; padding-left: 240px; }
@@ -436,7 +438,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 #mainBanner  
 {
-    border: 0px; margin-top: 0px; text-align: center;
+    border: 0;padding: 0; margin-top: 0;margin-left: auto;margin-right: auto; text-align: center;display: block;
 }
 
 .ViewsBrowsesRow

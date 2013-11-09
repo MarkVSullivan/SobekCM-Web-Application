@@ -90,7 +90,7 @@ namespace SobekCM.Library.HTML
             translations = Translator;
             showToc = ShowToc;
             showZoomable = Show_Zoomable;
-            Hierarchy_Object = Current_Collection;
+            Current_Aggregation = Current_Collection;
             itemCheckedOutByOtherUser = false;
             userCanEditItem = false;
             searchResultsCount = 0;

@@ -112,7 +112,7 @@ namespace SobekCM.Library.HTML
         protected SobekCM_Skin_Object htmlSkin;
 
         /// <summary> Current item aggregation object  </summary>
-        public Item_Aggregation Hierarchy_Object { get; set; }
+        public Item_Aggregation Current_Aggregation { get; set; }
 
         /// <summary> HTML Web skin which controls the overall appearance of this digital library </summary>
         /// <remarks> This also sets all of the protected tab html strings </remarks>

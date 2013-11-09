@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web.UI.WebControls;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
+	/// <summary> The JPEG2000 viewer allows a zoomable page image to be served through the IIPImage server </summary>
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <see cref="iItemViewer" /> interface. </remarks>
     public class JPEG2000_ItemViewer : abstractItemViewer
     {
 
@@ -40,7 +40,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-
+		/// <summary> Stream to which to write the HTML for this subwriter  </summary>
+		/// <param name="Output"> Response stream for the item viewer to write directly to </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(System.IO.TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)

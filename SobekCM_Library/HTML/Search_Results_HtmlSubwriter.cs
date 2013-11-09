@@ -8,6 +8,7 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
 
 #endregion
@@ -62,7 +63,7 @@ namespace SobekCM.Library.HTML
                 Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
                 writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
-                                  {Hierarchy_Object = Hierarchy_Object, Skin = htmlSkin, Mode = currentMode};
+                                  {Current_Aggregation = Current_Aggregation, Skin = htmlSkin, Mode = currentMode};
             }
 
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Add controls");
@@ -100,32 +101,121 @@ namespace SobekCM.Library.HTML
             }
             else
             {
+				Output.WriteLine("<!-- Add the results menu -->");
+				Output.WriteLine("<div id=\"sf-menubar\">");
+				Output.WriteLine("<ul class=\"sf-menu\" id=\"sbkSrm_Menu\">");
+
+
                 string refine_search = "MODIFY YOUR SEARCH";
                 string new_search = "NEW SEARCH";
                 string home_text = "HOME";
+
+				// Get ready to draw the tabs
+				string home = "Home";
+				string collection_home = translations.Get_Translation(Current_Aggregation.ShortName, Mode.Language) + " Home";
+				string sobek_home_text = Mode.SobekCM_Instance_Abbreviation + " Home";
+				string myCollections = "MY COLLECTIONS";
+				const string list_view_text = "List View";
+				const string brief_view_text = "Brief View";
+				const string tree_view_text = "Tree View";
+				const string partners_text = "Browse Partners";
 
                 if (currentMode.Language == Web_Language_Enum.French)
                 {
                     refine_search = "MODIFIER LA RECHERCHE";
                     new_search = "RELANCEZ LA RECHERCHE";
                     home_text = "PAGE D'ACCUEIL";
+					sobek_home_text = "PAGE D'ACCUEIL";
                 }
 
                 if (currentMode.Language == Web_Language_Enum.Spanish)
                 {
+					home = "INICIO";
+					collection_home = "INICIO " + translations.Get_Translation(Current_Aggregation.ShortName, Mode.Language);
+					sobek_home_text = "INICIO " + Mode.SobekCM_Instance_Abbreviation.ToUpper();
+					myCollections = "MIS COLECCIONES";
                     refine_search = "REDUZCA SU BÚSQUEDA";
                     new_search = "BÚSQUEDA NUEVA";
                     home_text = "INICIO";
                 }
 
-                // Add the reference to the script for sorting
-                Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
+				string fields = currentMode.Search_Fields;
+				string search_string = currentMode.Search_String;
+				Search_Type_Enum currentSearchType = currentMode.Search_Type;
+				Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
+				currentMode.Mode = Display_Mode_Enum.Search;
 
-                string fields = currentMode.Search_Fields;
-                string search_string = currentMode.Search_String;
-                Search_Type_Enum currentSearchType = currentMode.Search_Type;
-	            Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
-                currentMode.Mode = Display_Mode_Enum.Search;
+				// Add the 'SOBEK HOME' first menu option and suboptions
+				Mode.Mode = Display_Mode_Enum.Aggregation;
+				Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+				Mode.Home_Type = Home_Type_Enum.List;
+
+
+				// Add the HOME tab
+				if (Current_Aggregation.Code == "all")
+				{
+					// Add the 'SOBEK HOME' first menu option and suboptions
+					Mode.Mode = Display_Mode_Enum.Aggregation;
+					Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+					Mode.Home_Type = Home_Type_Enum.List;
+					Output.WriteLine("\t\t<li id=\"sbkAgm_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkAgm_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkAgm_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+					Output.WriteLine("\t\t\t<li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
+					Mode.Home_Type = Home_Type_Enum.Descriptions;
+					Output.WriteLine("\t\t\t<li id=\"sbkAgm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
+					if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+					{
+						Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+						Output.WriteLine("\t\t\t<li id=\"sbkAgm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
+					}
+					if ((currentUser != null) && (currentUser.LoggedOn))
+					{
+						Mode.Home_Type = Home_Type_Enum.Personalized;
+						Output.WriteLine("\t\t\t<li id=\"sbkAgm_HomePersonalized\"><a href=\"" + Mode.Redirect_URL() + "\">" + myCollections + "</a></li>");
+					}
+					if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
+					{
+						Mode.Home_Type = Home_Type_Enum.Partners_List;
+						Output.WriteLine("\t\t\t<li id=\"sbkAgm_HomePartners\"><a href=\"" + Mode.Redirect_URL() + "\">" + partners_text + "</a></li>");
+					}
+					Output.WriteLine("\t\t</ul></li>");
+				}
+				else
+				{
+
+					// Add the 'SOBEK HOME' first menu option and suboptions
+					Mode.Mode = Display_Mode_Enum.Aggregation;
+					Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+					Mode.Home_Type = Home_Type_Enum.List;
+					Output.WriteLine("\t\t<li id=\"sbkAgm_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkAgm_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkAgm_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+					Output.WriteLine("\t\t\t<li id=\"sbkAgm_AggrHome\"><a href=\"" + Mode.Redirect_URL() + "\">" + collection_home + "</a></li>");
+
+					Mode.Aggregation = String.Empty;
+					Output.WriteLine("\t\t\t<li id=\"sbkAgm_InstanceHome\"><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_InstanceHomeSubMenu\">");
+					Output.WriteLine("\t\t\t\t<li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
+					Mode.Home_Type = Home_Type_Enum.Descriptions;
+					Output.WriteLine("\t\t\t\t<li id=\"sbkAgm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
+					if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+					{
+						Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+						Output.WriteLine("\t\t\t\t<li id=\"sbkAgm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
+					}
+					if ((currentUser != null) && (currentUser.LoggedOn))
+					{
+						Mode.Home_Type = Home_Type_Enum.Personalized;
+						Output.WriteLine("\t\t\t\t<li id=\"sbkAgm_HomePersonalized\"><a href=\"" + Mode.Redirect_URL() + "\">" + myCollections + "</a></li>");
+					}
+					if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
+					{
+						Mode.Home_Type = Home_Type_Enum.Partners_List;
+						Output.WriteLine("\t\t\t\t<li id=\"sbkAgm_HomePartners\"><a href=\"" + Mode.Redirect_URL() + "\">" + partners_text + "</a></li>");
+					}
+					Output.WriteLine("\t\t\t</ul></li>");
+					Output.WriteLine("\t\t</ul></li>");
+
+					Mode.Aggregation = Current_Aggregation.Code;
+				}
+
+				// Get the refine URL
                 string refine_redirect_url;
                 if ((currentMode.Search_Type == Search_Type_Enum.Basic) || (currentMode.Search_Type == Search_Type_Enum.Newspaper)|| (currentMode.Search_Type == Search_Type_Enum.Advanced))
                 {
@@ -146,14 +236,9 @@ namespace SobekCM.Library.HTML
                 if (currentMode.Search_Type == Search_Type_Enum.Map)
                     currentMode.Search_String = String.Empty;
 
-	            currentMode.Mode = Display_Mode_Enum.Aggregation;
-				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + home_text + Unselected_Tab_End + "</a>");
                 currentMode.Mode = Display_Mode_Enum.Search;
 
-
-
-                Output.WriteLine("  <a href=\"" + refine_redirect_url + "\">" + Unselected_Tab_Start + refine_search + Unselected_Tab_End + "</a>");
+                Output.WriteLine("\t\t<li><a href=\"" + refine_redirect_url + "\">" + refine_search + "</a></li>");
 
 
                 currentMode.Search_String = String.Empty;
@@ -163,20 +248,42 @@ namespace SobekCM.Library.HTML
                     currentMode.Mode = Display_Mode_Enum.Aggregation;
 					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     currentMode.Aggregation = "";
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + new_search + Unselected_Tab_End + "</a>");
+                    Output.WriteLine("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + new_search + "</a></li>");
                     currentMode.Aggregation = ".all";
                 }
                 else
                 {
                     currentMode.Mode = Display_Mode_Enum.Aggregation;
 					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                    Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + new_search + Unselected_Tab_End + "</a>");
+                    Output.WriteLine("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + new_search + "</a></li>");
                 }
+
+				Output.WriteLine("\t</ul></div>");
+				Output.WriteLine();
+
+				// Add the scripts needed
+				Output.WriteLine("<!-- Add references to the superfish and hoverintent libraries for the main user menu -->");
+				Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
+				Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
+				Output.WriteLine();
+
+				Output.WriteLine("<!-- Initialize the main user menu -->");
+				Output.WriteLine("<script>");
+				Output.WriteLine();
+				Output.WriteLine("jQuery(document).ready(function () {");
+				Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
+				Output.WriteLine("  });");
+				Output.WriteLine();
+				Output.WriteLine("</script>");
+				Output.WriteLine();
+
+				Output.WriteLine("<br /><br />");
+
                 currentMode.Mode = Display_Mode_Enum.Results;
                 currentMode.Search_String = search_string;
                 currentMode.Search_Fields = fields;
-                Output.WriteLine("</div>");
-                Output.WriteLine();
+
+
             }
            
             if ( resultsStatistics != null )
@@ -185,7 +292,7 @@ namespace SobekCM.Library.HTML
                 {
                     Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
                     writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
-                                      {Hierarchy_Object = Hierarchy_Object, Skin = htmlSkin, Mode = currentMode};
+                                      {Current_Aggregation = Current_Aggregation, Skin = htmlSkin, Mode = currentMode};
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }
@@ -216,9 +323,9 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                if (Hierarchy_Object != null)
+                if (Current_Aggregation != null)
                 {
-                    return "{0} Search Results - " + Hierarchy_Object.Name;
+                    return "{0} Search Results - " + Current_Aggregation.Name;
                 }
                 else
                 {
@@ -234,6 +341,8 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
         }
     }
 }
