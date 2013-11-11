@@ -194,6 +194,10 @@ namespace SobekCM.Library.HTML
 					string previous_page = "Previous Page";
 					string next_page = "Next Page";
 					string last_page = "Last Page";
+					string first_page_text = "First";
+					string previous_page_text = "Previous";
+					string next_page_text = "Next";
+					string last_page_text = "Last";
 
 					if (currentMode.Language == Web_Language_Enum.Spanish)
 					{
@@ -201,6 +205,10 @@ namespace SobekCM.Library.HTML
 						previous_page = "Página Anterior";
 						next_page = "Página Siguiente";
 						last_page = "Última Página";
+						first_page_text = "Primero";
+						previous_page_text = "Anterior";
+						next_page_text = "Proximo";
+						last_page_text = "Último";
 					}
 
 					if (currentMode.Language == Web_Language_Enum.French)
@@ -209,6 +217,10 @@ namespace SobekCM.Library.HTML
 						previous_page = "Page Précédente";
 						next_page = "Page Suivante";
 						last_page = "Dernière Page";
+						first_page_text = "Première";
+						previous_page_text = "Précédente";
+						next_page_text = "Suivante";
+						last_page_text = "Derniere";
 					}
 
 					// Make sure the result writer has been created
@@ -232,41 +244,40 @@ namespace SobekCM.Library.HTML
 
 					if (RESULTS_PER_PAGE < resultWriter.Total_Results)
 					{
-						string language_suffix = currentMode.Language_Code;
-						if (language_suffix.Length > 0)
-							language_suffix = "_" + language_suffix;
-
-						buttons_builder.Append("  <span class=\"leftButtons\">" + Environment.NewLine );
+						
 						// Should the previous and first buttons be enabled?
 						if (current_page > 1)
 						{
+							buttons_builder.AppendLine("  <span class=\"sbkPrsw_LeftButtons\">");
 							currentMode.Page = 1;
-							buttons_builder.Append("    <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/first_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + first_page + "\" /></a>&nbsp;" + Environment.NewLine );
+							buttons_builder.AppendLine("    <button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
 							currentMode.Page = (ushort)(current_page - 1);
-							buttons_builder.Append("    <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/previous_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + previous_page + "\" /></a>" + Environment.NewLine );
+							buttons_builder.AppendLine("    <button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+							buttons_builder.AppendLine("  </span>");
 						}
 						else
 						{
-							buttons_builder.Append("    <img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" alt=\"\" />" + Environment.NewLine );
+							buttons_builder.AppendLine("  <span class=\"sbkPrsw_LeftButtons\" style=\"width:120px\">&nbsp;</span>");
 						}
-						buttons_builder.Append("  </span>" + Environment.NewLine );
-						buttons_builder.Append("  <span class=\"rightButtons\">" + Environment.NewLine );
 
 						// Should the next and last buttons be enabled?
 						if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
 						{
+							buttons_builder.AppendLine("  <span class=\"sbkPrsw_RightButtons\">");
 							currentMode.Page = (ushort)(current_page + 1);
-							buttons_builder.Append("    <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/next_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + next_page + "\" /></a>&nbsp;" + Environment.NewLine );
+							buttons_builder.AppendLine("    <button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
 							currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
 							if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
 								currentMode.Page = (ushort)(currentMode.Page + 1);
-							buttons_builder.Append("    <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/last_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + last_page + "\" /></a>" + Environment.NewLine );
+
+							buttons_builder.AppendLine("    <button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+							buttons_builder.AppendLine("  </span>");
 						}
 						else
 						{
-							buttons_builder.Append("    <img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" alt=\"\" />" + Environment.NewLine );
+							buttons_builder.AppendLine("  <span class=\"sbkPrsw_RightButtons\" style=\"width:120px\">&nbsp;</span>");
 						}
-						buttons_builder.Append("  </span>" + Environment.NewLine );
+						
 						currentMode.Page = current_page;
 					}
 
@@ -495,14 +506,12 @@ namespace SobekCM.Library.HTML
 			if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (currentMode.Result_Display_Type != Result_Display_Type_Enum.Export) && (currentMode.Result_Display_Type != Result_Display_Type_Enum.Map))
 			{
 				// Start this table, write the facets, and start the next TD section for the results
-				Literal startFacetTable = new Literal
-											  { Text = string.Format("<table>" + Environment.NewLine + "<tr valign=\"top\">" + Environment.NewLine + "<td width=\"240px\" valign=\"top\" height=\"100%\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine , Add_Facet_Information(Tracer)) };
+				Literal startFacetTable = new Literal { Text = string.Format("<table style=\"margin-left:auto;margin-right:auto;\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)) };
 				MainPlaceHolder.Controls.Add(startFacetTable);
 			}
 			else
 			{
-				Literal startFacetTable = new Literal
-											  { Text =  "<table width=\"100%\">" + Environment.NewLine + "<tr valign=\"top\">" + Environment.NewLine + "<td align=\"center\">" + Environment.NewLine  };
+				Literal startFacetTable = new Literal { Text = "<table style=\"width:100%;\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td style=\"text-align:center\">" + Environment.NewLine };
 				MainPlaceHolder.Controls.Add(startFacetTable);
 			}
 
@@ -520,8 +529,7 @@ namespace SobekCM.Library.HTML
 				return;
 			}
 
-			Literal startingLiteral = new Literal
-										  { Text = currentMode.Result_Display_Type == Result_Display_Type_Enum.Map ? "</div>" + Environment.NewLine + "<div class=\"SobekResultsPanel\" align=\"center\">" + Environment.NewLine  : "<div class=\"SobekResultsPanel\" align=\"center\">" + Environment.NewLine  };
+			Literal startingLiteral = new Literal { Text = currentMode.Result_Display_Type == Result_Display_Type_Enum.Map ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine };
 			MainPlaceHolder.Controls.Add(startingLiteral);
 
 			resultWriter.Add_HTML(MainPlaceHolder, Tracer );
@@ -544,10 +552,12 @@ namespace SobekCM.Library.HTML
 
 			if ( resultsStatistics.Total_Items > 0 )
 			{
-				Output.WriteLine("<div class=\"SobekResultsNavBar\">");
+				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
 				Output.Write(buttons);
 				Output.WriteLine("  " + Showing_Text);
-				Output.WriteLine("</div>" + Environment.NewLine + "<br />" + Environment.NewLine );
+				Output.WriteLine("</div>");
+				Output.WriteLine("<br />");
+				Output.WriteLine();
 			}
 		}
 
@@ -610,11 +620,10 @@ namespace SobekCM.Library.HTML
 			// If no results, display different information here
 			if ((currentMode.Mode == Display_Mode_Enum.Results) && ( resultsStatistics.Total_Items == 0))
 			{
-				Output.WriteLine("<div class=\"SobekResultsDescPanel\">");
-				Output.WriteLine("  <br /><br />");
+				Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
 				Show_Search_Info(Output);
 				Output.WriteLine("</div>");
-				Output.WriteLine("<div class=\"SobekResultsNavBarImbed\">&nbsp;</div>");
+				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">&nbsp;</div>");
 				return true;
 			}
 
@@ -657,15 +666,15 @@ namespace SobekCM.Library.HTML
 			switch (currentMode.Mode)
 			{
 				case Display_Mode_Enum.Public_Folder:
-					Output.WriteLine("<div class=\"SobekFolderDescPanel\">");
+					Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_FolderDescPanel\">");
 					break;
 
 				case Display_Mode_Enum.Aggregation:  // browse info only
-					Output.WriteLine("<div class=\"SobekBrowseDescPanel\">");
+					Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_BrowseDescPanel\">");
 					break;
 
 				default:
-					Output.WriteLine("<div class=\"SobekResultsDescPanel\">");
+					Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_ResultsDescPanel\">");
 					break;
 			}
 
@@ -674,7 +683,7 @@ namespace SobekCM.Library.HTML
 			string url = currentMode.Redirect_URL();
 			currentMode.Sort = current_order;
 
-			Output.WriteLine("  <span class=\"SobekResultsSort\">");
+			Output.WriteLine("  <span class=\"sbkPrsw_ResultsSort\">");
 			Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif'\" onclick=\"window.print(); return false;\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"print_button\" id=\"print_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif\" title=\"Print this " + currentName + "\" alt=\"PRINT\" /></a>");
 
 			if (currentUser != null)
@@ -703,37 +712,36 @@ namespace SobekCM.Library.HTML
 				{
 					Output.WriteLine("    <br />");
 					Output.WriteLine("    " + sort_by + ": &nbsp;");
-					Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_results('" + url.Replace("&","&amp;") + "')\" id=\"sorter_input\">");
+					Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
 					Output.WriteLine(sortOptions);
 					Output.WriteLine("    </select>");
 				}
 				Output.WriteLine("  </span>");
 				if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
 				{
-					Output.WriteLine("  <h1 class=\"noborders\">&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>");
-					Output.WriteLine("  <span class=\"publicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>");
+					Output.WriteLine("  <h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>");
+					Output.WriteLine("  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>");
 
 					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
 				}
 				else
 				{
-					Output.WriteLine("  <h1 class=\"noborders\">" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>");
+					Output.WriteLine("  <h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>");
 					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name; 
 				}                   
 			}
 			else
 			{
-
 				if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek))
 				{
 					Output.WriteLine("    <br />");
 					Output.WriteLine("    " + sort_by + ": &nbsp;");
-					Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_results('" + url.Replace("&","&amp;") + "')\" id=\"sorter_input\">");
+					Output.WriteLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
 					Output.WriteLine(sortOptions);
 					Output.WriteLine("    </select>");
 				}
 				Output.WriteLine("  </span>");
-				Output.WriteLine(sortOptions.Length == 0 ? "  <div class=\"ResultsExplanation_NoSort\">" : "  <div class=\"ResultsExplanation\">");
+				Output.WriteLine(sortOptions.Length == 0 ? "  <div class=\"sbkPrsw_ResultsExplanation_NoSort\">" : "  <div class=\"sbkPrsw_ResultsExplanation\">");
 				Output.Write("    ");
 				StringBuilder searchInfoBuilder = new StringBuilder();
 				StringWriter writer = new StringWriter(searchInfoBuilder);
@@ -741,7 +749,7 @@ namespace SobekCM.Library.HTML
 				Output.Write(searchInfoBuilder.ToString());
 				summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>","");
 				Output.WriteLine("  </div>");
-				Output.WriteLine("  <br />");
+				Output.WriteLine("<br />");
 			}
 			Output.WriteLine("</div>");
 			Output.WriteLine();
@@ -754,14 +762,14 @@ namespace SobekCM.Library.HTML
 
 			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
 			{
-				Output.WriteLine("<div class=\"SobekResultsNavBarImbed\">");
-				Output.WriteLine("<br />");
+				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBarImbed\">");
+				Output.WriteLine("  <br />");
 				Output.WriteLine("  " + resultsStatistics.Total_Items + "");
 				Output.WriteLine("</div>");
 			}
 			else
 			{
-				Output.WriteLine("<div class=\"SobekResultsNavBarImbed\">");
+				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBarImbed\">");
 				Output.WriteLine("  <br />");
 				Output.Write(Buttons);
 				Showing_Text = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
@@ -780,18 +788,21 @@ namespace SobekCM.Library.HTML
 			// Now add the tabs for the view type
 			if (( Include_Bookshelf_View ) || (Current_Aggregation.Result_Views.Count > 1))
 			{
-				Output.WriteLine("<div class=\"ResultViewSelectRow\">");
+
+				Output.WriteLine("<div id=\"sbkPrsw_ViewTypeSelectRow\">");
+				Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
+
 				Result_Display_Type_Enum resultView = currentMode.Result_Display_Type;
 				if (Include_Bookshelf_View)
 				{
 					if (resultView == Result_Display_Type_Enum.Bookshelf)
 					{
-						Output.WriteLine("  " + Down_Selected_Tab_Start + bookshelf_view + Down_Selected_Tab_End);
+						Output.WriteLine("  <li class=\"current\">" + bookshelf_view + "</li>");
 					}
 					else
 					{
 						currentMode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-						Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL().Replace("&","&amp;") + "\">" + Down_Tab_Start + bookshelf_view + Down_Tab_End + "</a>");
+						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&","&amp;") + "\">" + bookshelf_view + "</a></li>");
 					}
 				}
 
@@ -799,12 +810,12 @@ namespace SobekCM.Library.HTML
 				{
 					if (resultView == Result_Display_Type_Enum.Map)
 					{
-						Output.WriteLine("  " + Down_Selected_Tab_Start + map_view + Down_Selected_Tab_End);
+						Output.WriteLine("  <li class=\"current\">" + map_view + "</li>");
 					}
 					else
 					{
 						currentMode.Result_Display_Type = Result_Display_Type_Enum.Map;
-						Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + Down_Tab_Start + map_view + Down_Tab_End + "</a>");
+						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + map_view + "</a></li>");
 					}
 				}
 
@@ -812,12 +823,12 @@ namespace SobekCM.Library.HTML
 				{
 					if (resultView == Result_Display_Type_Enum.Brief)
 					{
-						Output.WriteLine("  " + Down_Selected_Tab_Start + brief_view + Down_Selected_Tab_End);
+						Output.WriteLine("  <li class=\"current\">" + brief_view + "</li>");
 					}
 					else
 					{
 						currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-						Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + Down_Tab_Start + brief_view + Down_Tab_End + "</a>");
+						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + brief_view + "</a></li>");
 					}
 				}
 
@@ -825,12 +836,12 @@ namespace SobekCM.Library.HTML
 				{
 					if (resultView == Result_Display_Type_Enum.Table)
 					{
-						Output.WriteLine("  " + Down_Selected_Tab_Start + table_view + Down_Selected_Tab_End);
+						Output.WriteLine("  <li class=\"current\">" + table_view + "</li>");
 					}
 					else
 					{
 						currentMode.Result_Display_Type = Result_Display_Type_Enum.Table;
-						Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + Down_Tab_Start + table_view + Down_Tab_End + "</a>");
+						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + table_view + "</a></li>");
 					}
 				}
 
@@ -838,12 +849,12 @@ namespace SobekCM.Library.HTML
 				{
 					if (resultView == Result_Display_Type_Enum.Thumbnails)
 					{
-						Output.WriteLine("  " + Down_Selected_Tab_Start + thumbnail_view + Down_Selected_Tab_End);
+						Output.WriteLine("  <li class=\"current\">" + thumbnail_view + "</li>");
 					}
 					else
 					{
 						currentMode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-						Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + Down_Tab_Start + thumbnail_view + Down_Tab_End + "</a>");
+						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + thumbnail_view + "</a></li>");
 					}
 				}
 
@@ -880,6 +891,7 @@ namespace SobekCM.Library.HTML
 
 				currentMode.Page = current_page;
 				currentMode.Result_Display_Type = resultView;
+				Output.WriteLine("  </ul>");
 				Output.WriteLine("</div>");
 				Output.WriteLine();
 			}
@@ -902,8 +914,7 @@ namespace SobekCM.Library.HTML
 			// Add the scripts needed
 			if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
 			{
-				Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
-				Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+				Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 				Output.WriteLine();
 			}
 
@@ -1329,9 +1340,9 @@ namespace SobekCM.Library.HTML
 			builder.AppendLine("  //]]>");
 			builder.AppendLine("</script>");
 			builder.AppendLine();
-		   
-			builder.AppendLine("<div class=\"SobekFacetColumn\">");
-			builder.AppendLine("<div class=\"SobekFacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", currentMode.Language ) + ":</div>");
+
+			builder.AppendLine("<div class=\"sbkPrsw_FacetColumn\">");
+			builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", currentMode.Language) + ":</div>");
 
 
 			// Add the aggregation information first
@@ -1379,7 +1390,7 @@ namespace SobekCM.Library.HTML
 
 				builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" /></a></span>");
 				builder.AppendLine("<b> &nbsp;" + title + "</b><br />");
-				builder.AppendLine("<div class=\"SobekFacetBox\">");
+				builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
 				if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
 				{
 					SortedList<string, string> order_facets = new SortedList<string, string>();
@@ -1409,13 +1420,13 @@ namespace SobekCM.Library.HTML
 				}
 				if (facet_count > MINIMIZED_FACET_COUNT)
 				{
-					builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
+					builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
 				}
 				else
 				{
 					if (facet_count < resultsStatistics.Aggregation_Facets.Count)
 					{
-						builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
+						builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
 					}
 				}
 				builder.AppendLine("</div>");
@@ -1506,33 +1517,33 @@ namespace SobekCM.Library.HTML
 		}
 
 
-		private void Add_Single_Facet(StringBuilder builder, string title, string search_code, string show_less, string show_more, int facet_index, string sort_by_frequency, string sort_alphabetically, List<Search_Facet> collection)
+		private void Add_Single_Facet(StringBuilder Builder, string Title, string SearchCode, string ShowLess, string ShowMore, int FacetIndex, string SortByFrequency, string SortAlphabetically, List<Search_Facet> Collection)
 		{
 			int facet_count = 0;
 			int total_facets_to_show = MINIMIZED_FACET_COUNT;
 			char other_sort_type = '2';
 			char other_show_type = '1';
-			if ((facetInformation[facet_index - 1] == '1') || ( facetInformation[facet_index - 1 ] == '3' ))
+			if ((facetInformation[FacetIndex - 1] == '1') || ( facetInformation[FacetIndex - 1 ] == '3' ))
 			{
 				total_facets_to_show = MAXIMIZED_FACET_COUNT;
 			}
 
 			string resort_image = "2_to_1.gif";
-			string sort_instructions = sort_by_frequency;
-			switch ( facetInformation[facet_index - 1])
+			string sort_instructions = SortByFrequency;
+			switch ( facetInformation[FacetIndex - 1])
 			{
 				case '0':
 					other_sort_type = '2';
 					other_show_type = '1';
 					resort_image = "a_to_z.gif";
-					sort_instructions = sort_alphabetically;
+					sort_instructions = SortAlphabetically;
 					break;
 
 				case '1':
 					other_sort_type = '3';
 					other_show_type = '0';
 					resort_image = "a_to_z.gif";
-					sort_instructions = sort_alphabetically;
+					sort_instructions = SortAlphabetically;
 					break;
 
 				case '2':
@@ -1546,42 +1557,42 @@ namespace SobekCM.Library.HTML
 					break;
 			}
 
-			builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + (facet_index - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></span>");
-			builder.AppendLine("<b> &nbsp;" + title + "</b><br />");
-			builder.AppendLine("<div class=\"SobekFacetBox\">");
-			if ((facetInformation[facet_index - 1] == '2') || (facetInformation[facet_index - 1] == '3'))
+			Builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></span>");
+			Builder.AppendLine("<b> &nbsp;" + Title + "</b><br />");
+			Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
+			if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
 			{
 				SortedList<string, string> order_facets = new SortedList<string, string>();
-				while ((facet_count < total_facets_to_show) && (facet_count < collection.Count))
+				while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
 				{
-					order_facets[collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + search_code + "','" + HttpUtility.HtmlEncode(collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + collection[facet_count].Frequency + " ) <br />";
+					order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
 					facet_count++;
 				}
 				foreach (string html in order_facets.Values)
 				{
-					builder.AppendLine(html);
+					Builder.AppendLine(html);
 				}
 			}
 			else
 			{
-				while ((facet_count < total_facets_to_show) && (facet_count < collection.Count))
+				while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
 				{
-					builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + search_code + "','" + HttpUtility.HtmlEncode(collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + collection[facet_count].Facet.Replace("&", "&amp;" ) + "</a> ( " + collection[facet_count].Frequency + " ) <br />");
+					Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;" ) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
 					facet_count++;
 				}
 			}
 			if (facet_count > MINIMIZED_FACET_COUNT)
 			{
-				builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + (facet_index - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
+				Builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + ShowLess + " &nbsp; &nbsp;</a></div>");
 			}
 			else
 			{
-				if (facet_count < collection.Count)
+				if (facet_count < Collection.Count)
 				{
-					builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + ( facet_index - 1 ) + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
+					Builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + ( FacetIndex - 1 ) + ",'" + other_show_type + "');\">" + ShowMore + " &gt;&gt; &nbsp;</a></div>");
 				}
 			}
-			builder.AppendLine("</div>");
+			Builder.AppendLine("</div>");
 		}
 		#endregion
 	}

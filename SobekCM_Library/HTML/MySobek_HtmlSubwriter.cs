@@ -277,7 +277,6 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
 			// If we are currently uploading files, add those specific upload styles 

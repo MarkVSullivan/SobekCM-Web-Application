@@ -7,10 +7,7 @@
   <!-- <% Repository_Title(); %> -->
 
 <%Write_Within_HTML_Head();%>
-	
-  <!--[if lt IE 9]>
-    <script src="default/scripts/html5shiv/html5shiv.js"></script>
-  <![endif]-->
+
 </head>
 <body <%Write_Body_Attributes();%>>
 

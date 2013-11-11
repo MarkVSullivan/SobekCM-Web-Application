@@ -60,16 +60,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             browse_url = currentMode.Redirect_URL();
 
 
-            //if (( !currentMode.Show_Selection_Panel) || ( hierarchyObject.Codes.Length == 0 ))
-            //{
+
             scriptActionName = "dloc_search_sobekcm('" + arg1 + "', '" + browse_url + "');";
-            scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
-            //}
-            //else
-            //{
-            //    script_action_name = "Javascript:dloc_select_search_sobekcm('" + currentMode.Redirect_URL() + "', '" + sub_code + "')";
-            //    script_include_name = "<script src=\"" + currentMode.Base_URL + "default/scripts/dloc_select_search_sobekcm.js\" type=\"text/javascript\"></script>";
-            //}
+
             currentMode.Mode = displayMode;
 	        currentMode.Aggregation_Type = aggrType;
             currentMode.Search_Type = searchType;

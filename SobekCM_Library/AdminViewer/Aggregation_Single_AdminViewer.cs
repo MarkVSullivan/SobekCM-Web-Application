@@ -313,7 +313,6 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
-			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 			Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
@@ -554,9 +553,12 @@ namespace SobekCM.Library.AdminViewer
 			if (Form["admin_aggr_email"] != null) itemAggregation.Contact_Email = Form["admin_aggr_email"];
 			itemAggregation.Is_Active = Form["admin_aggr_isactive"] != null;
 			itemAggregation.Hidden = Form["admin_aggr_ishidden"] == null;
-			if (Form["admin_aggr_heading"] != null)
-				itemAggregation.Thematic_Heading_ID = Convert.ToInt32(Form["admin_aggr_heading"]);
-		
+			if ((user.Is_System_Admin) || (user.Is_Portal_Admin))
+			{
+				if (Form["admin_aggr_heading"] != null)
+					itemAggregation.Thematic_Heading_ID = Convert.ToInt32(Form["admin_aggr_heading"]);
+			}
+
 		}
 
 		private void Add_Page_1( TextWriter Output )
@@ -697,30 +699,34 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
-			// Add the thematic heading line
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_heading\">Thematic Heading:</label></td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.WriteLine("          <select class=\"sbkSaav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
-			Output.WriteLine(itemAggregation.Thematic_Heading_ID < 0 ? "            <option value=\"-1\" selected=\"selected\" ></option>" : "            <option value=\"-1\"></option>");
-			foreach (Thematic_Heading thisHeading in thematicHeadings)
+
+			if ((user.Is_System_Admin) || (user.Is_Portal_Admin))
 			{
-				if (itemAggregation.Thematic_Heading_ID == thisHeading.ThematicHeadingID)
+				// Add the thematic heading line
+				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+				Output.WriteLine("    <td>&nbsp;</td>");
+				Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_heading\">Thematic Heading:</label></td>");
+				Output.WriteLine("    <td>");
+				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+				Output.WriteLine("          <select class=\"sbkSaav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
+				Output.WriteLine(itemAggregation.Thematic_Heading_ID < 0 ? "            <option value=\"-1\" selected=\"selected\" ></option>" : "            <option value=\"-1\"></option>");
+				foreach (Thematic_Heading thisHeading in thematicHeadings)
 				{
-					Output.WriteLine("            <option value=\"" + thisHeading.ThematicHeadingID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+					if (itemAggregation.Thematic_Heading_ID == thisHeading.ThematicHeadingID)
+					{
+						Output.WriteLine("            <option value=\"" + thisHeading.ThematicHeadingID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+					}
+					else
+					{
+						Output.WriteLine("            <option value=\"" + thisHeading.ThematicHeadingID + "\">" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+					}
 				}
-				else
-				{
-					Output.WriteLine("            <option value=\"" + thisHeading.ThematicHeadingID + "\">" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
-				}
+				Output.WriteLine("          </select>");
+				Output.WriteLine("        </td>");
+				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + THEMATIC_HELP + "');\"  title=\"" + THEMATIC_HELP + "\" /></td></tr></table>");
+				Output.WriteLine("     </td>");
+				Output.WriteLine("  </tr>");
 			}
-			Output.WriteLine("          </select>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + THEMATIC_HELP + "');\"  title=\"" + THEMATIC_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
 
 			Output.WriteLine("</table>");
 			Output.WriteLine("<br />");
@@ -739,14 +745,15 @@ namespace SobekCM.Library.AdminViewer
 			StringBuilder displayOptionsBldr = new StringBuilder();
 			if (Form["admin_aggr_basicsearch"] != null) displayOptionsBldr.Append("B");
 			if (Form["admin_aggr_basicsearch_years"] != null) displayOptionsBldr.Append("Y");
-			if (Form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
-			if (Form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
+			if (Form["admin_aggr_dloctextsearch"] != null) displayOptionsBldr.Append("C");
 			if (Form["admin_aggr_textsearch"] != null) displayOptionsBldr.Append("F");
 			if (Form["admin_aggr_newspsearch"] != null) displayOptionsBldr.Append("N");
-			if (Form["admin_aggr_dloctextsearch"] != null) displayOptionsBldr.Append("C");
-			if (Form["admin_aggr_allitems"] != null) displayOptionsBldr.Append("I");
+			if (Form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
+			if (Form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
 			if (Form["admin_aggr_mapsearch"] != null) displayOptionsBldr.Append("M");
 			if (Form["admin_aggr_mapbrowse"] != null) displayOptionsBldr.Append("G");
+			if (Form["admin_aggr_allitems"] != null) displayOptionsBldr.Append("I");
+
 			itemAggregation.Display_Options = displayOptionsBldr.ToString();
 		}
 

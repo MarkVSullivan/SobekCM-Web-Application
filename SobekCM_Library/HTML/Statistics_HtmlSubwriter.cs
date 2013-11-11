@@ -111,7 +111,7 @@ namespace SobekCM.Library.HTML
             Mode.Mode = Display_Mode_Enum.Aggregation;
 			Mode.Aggregation_Type = Aggregation_Type_Enum.Home; 
             Mode.Home_Type = Home_Type_Enum.List;
-            Output.WriteLine("\t\t<li id=\"sbkShs_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkShs_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkShs_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkShs_HomeSubMenu\">");
+            Output.WriteLine("\t\t<li id=\"sbkShs_Home\" class=\"sbkMenu_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkShs_HomeSubMenu\">");
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
             Mode.Home_Type = Home_Type_Enum.Descriptions;
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
@@ -188,12 +188,6 @@ namespace SobekCM.Library.HTML
 
 
             Output.WriteLine("\t</ul></div>");
-            Output.WriteLine();
-
-            // Add the scripts needed
-            Output.WriteLine("<!-- Add references to the superfish and hoverintent libraries for the main user menu -->");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
             Output.WriteLine();
 
             Output.WriteLine("<!-- Initialize the main user menu -->");
@@ -3110,7 +3104,6 @@ namespace SobekCM.Library.HTML
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Stats.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.js\" ></script>");

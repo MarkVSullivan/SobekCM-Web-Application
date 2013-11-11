@@ -1527,8 +1527,6 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
-
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
         }
 
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors

@@ -19,6 +19,7 @@ namespace SobekCM.Library.Settings
 	public class SobekCM_Library_Settings
 	{
 
+
 		/// <summary> Name for the backup files folder within each digital resource </summary>
 		public const string Backup_Files_Folder_Name = "sobek_files";
 

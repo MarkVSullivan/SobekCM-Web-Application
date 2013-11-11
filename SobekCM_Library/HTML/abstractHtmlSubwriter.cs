@@ -183,9 +183,9 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
         public virtual void Write_Internal_Header_HTML( TextWriter Output, User_Object Current_User )
         {
-            Output.WriteLine("  <table cellspacing=\"0\" cellpadding=\"2\" id=\"internalheader\">");
+			Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td align=\"left\">");
+            Output.WriteLine("      <td style=\"text-align:left;\">");
             Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button_aggr hide_intheader_button_aggr\" onclick=\"return hide_internal_header();\"></button>");
             Output.WriteLine("      </td>");
             Write_Internal_Header_Search_Box(Output);
