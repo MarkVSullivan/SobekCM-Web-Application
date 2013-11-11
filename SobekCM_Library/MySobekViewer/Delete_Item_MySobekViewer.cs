@@ -239,7 +239,6 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the hidden field
                 Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
                 Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
-                Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_mysobek.js\" type=\"text/javascript\"></script>");
 				Output.WriteLine();
 
 				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");

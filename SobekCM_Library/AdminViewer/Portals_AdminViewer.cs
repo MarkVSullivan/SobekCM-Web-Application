@@ -177,8 +177,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Portals_AdminViewer.Write_ItemNavForm_Closing", "Adds the portal information to the main form");
 
 			Output.WriteLine("<!-- Portals_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 			Output.WriteLine();
 
             // Add the hidden field

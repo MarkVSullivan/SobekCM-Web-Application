@@ -1279,15 +1279,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        Output.WriteLine("\t\t<!-- QUALITY CONTROL VIEWER TOP NAV ROW -->");
 
 	        //Include the js files
-	        Output.WriteLine("<script language=\"JavaScript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_related_items.js\"></script>");
-	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
 	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_qc.js\"></script>");
 	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
-	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\"></script>");
-	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/superfish/superfish.js\"></script>");
-	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
-            
+           
 
 	        add_main_menu(Output);
 
@@ -1306,7 +1302,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	        Output.WriteLine(" <script>");
 	        Output.WriteLine("jQuery(document).ready(function () {");
-	        Output.WriteLine("jQuery('ul.qc-menu').superfish();");
+	        Output.WriteLine("jQuery('ul.sf-menu').superfish();");
 	        Output.WriteLine("});");
 	        Output.WriteLine("</script>");
 
@@ -1457,7 +1453,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
             Output.WriteLine("</select></div>");
-            Output.WriteLine("<ul class=\"qc-menu\">");
+            Output.WriteLine("<ul class=\"sf-menu\" id=\"sbkQc_Menu\">");
 
             //builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");
             //builder.AppendLine("\t<li>Volume Error<ul>");

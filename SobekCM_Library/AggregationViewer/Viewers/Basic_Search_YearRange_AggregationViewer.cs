@@ -63,7 +63,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             browse_url = currentMode.Redirect_URL();
 
             scriptActionName = "basic_search_years_sobekcm('" + arg1 + "', '" + browse_url + "');";
-            scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
 
             currentMode.Mode = displayMode;
 			currentMode.Aggregation_Type = aggrType;

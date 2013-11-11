@@ -630,7 +630,7 @@ namespace SobekCM.Library.HTML
 
             string currentViewerCode = currentMode.ViewerCode;
 
-            Output.WriteLine("  <table id=\"sbkIsw_Internalheader\">");
+            Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
             Output.WriteLine("    <tr style=\"height:30px;\">");
             Output.WriteLine("      <td style=\"text-align:left\">");
             Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"sbkIsw_intheader_button hide_intheader_button2\" onclick=\"return hide_internal_header();\"></button>");
@@ -753,7 +753,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Add the HELP icon next
-                Output.WriteLine("<span class=\"intheader_help\"><a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + currentMode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
+				Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + currentMode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
 
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
@@ -996,6 +996,12 @@ namespace SobekCM.Library.HTML
 	                {
 	                    // Is this a newspaper?
 	                    bool newspaper = currentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+						// Does a custom setting override the default behavior to add a date?
+						if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+			                newspaper = false;
+
+						// Add the date if it should be added
 	                    if ((newspaper) && ((currentItem.Bib_Info.Origin_Info.Date_Created.Length > 0) || (currentItem.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
 	                    {
 	                        string date = currentItem.Bib_Info.Origin_Info.Date_Created;
@@ -1160,7 +1166,7 @@ namespace SobekCM.Library.HTML
 			    }
 
 
-			    Output.WriteLine("\t<ul class=\"sf-menu\">");
+			    Output.WriteLine("\t<ul class=\"sf-menu\" id=\"sbkIhs_Menu\">");
 
 
 			    // Save the current view type
@@ -1168,6 +1174,44 @@ namespace SobekCM.Library.HTML
 			    ushort subpage = currentMode.SubPage;
 			    string viewerCode = currentMode.ViewerCode;
 			    currentMode.SubPage = 0;
+
+				// Add any PRE-MENU instance options
+				string first_pre_menu_option = String.Empty;
+				string second_pre_menu_option = String.Empty;
+				string third_pre_menu_option = String.Empty;
+				if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Static First Menu Item"))
+					first_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Item Viewer.Static First Menu Item"];
+				if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Static Second Menu Item"))
+					second_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Item Viewer.Static Second Menu Item"];
+				if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Static Third Menu Item"))
+					third_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Item Viewer.Static Third Menu Item"];
+				if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0) || ( third_pre_menu_option.Length > 0 ))
+				{
+					if (first_pre_menu_option.Length > 0)
+					{
+						string[] first_splitter = first_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
+						if (first_splitter.Length > 0)
+						{
+							Output.WriteLine("\t\t<li><a href=\"" + first_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(first_splitter[0]) + "\">" + System.Web.HttpUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
+						}
+					}
+					if (second_pre_menu_option.Length > 0)
+					{
+						string[] second_splitter = second_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
+						if (second_splitter.Length > 0)
+						{
+							Output.WriteLine("\t\t<li><a href=\"" + second_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(second_splitter[0]) + "\">" + System.Web.HttpUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
+						}
+					}
+					if (third_pre_menu_option.Length > 0)
+					{
+						string[] third_splitter = third_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
+						if (third_splitter.Length > 0)
+						{
+							Output.WriteLine("\t\t<li><a href=\"" + third_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(third_splitter[0]) + "\">" + System.Web.HttpUtility.HtmlEncode(third_splitter[0]) + "</a></li>");
+						}
+					}
+				}
 
 			    // Add the item level views
 			    foreach (View_Object thisView in currentItem.Behaviors.Views)
@@ -1988,14 +2032,6 @@ namespace SobekCM.Library.HTML
 		        Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
 		        Output.WriteLine();
 	        }
-
-	        // Add the scripts needed
-            Output.WriteLine("<!-- Add references to the sobekcm javascript files and libraries needed for the user menu -->");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_item.js\" ></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/hoverIntent.js\" ></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/superfish/superfish.js\" ></script>");
-            Output.WriteLine();
         }
 
         /// <summary> Spot to write any final HTML to the response stream  </summary>
@@ -2126,7 +2162,6 @@ namespace SobekCM.Library.HTML
 
             // Write the main SobekCM item style sheet to use 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_ItemMenus.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // Add any viewer specific tags that need to reside within the HTML head
             if (PageViewer != null)
