@@ -1429,7 +1429,7 @@ function place(id) {
                     //        }
                     //    }
                     //}
-                    displayMessage(L26);
+                    //displayMessage(L26);
                     //document.getElementById("content_menubar_overlayEdit").className = document.getElementById("content_menubar_overlayEdit").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
                     //document.getElementById("content_toolbox_button_overlayEdit").className = document.getElementById("content_toolbox_button_overlayEdit").className.replace(/(?:^|\s)isActive(?!\S)/g, '');
                     //document.getElementById("content_menubar_overlayPlace").className = document.getElementById("content_menubar_overlayPlace").className.replace(/(?:^|\s)isActive2(?!\S)/g, '');
@@ -1444,7 +1444,7 @@ function place(id) {
                     //        }
                     //    }
                     //}
-                    displayMessage(L27);
+                    //displayMessage(L27);
                     //document.getElementById("content_menubar_overlayEdit").className += " isActive2";
                     //document.getElementById("content_toolbox_button_overlayEdit").className += " isActive";
                     //document.getElementById("content_menubar_overlayPlace").className += " isActive2";
@@ -3915,7 +3915,7 @@ copyrightNode.style.margin = '0 2px 2px 0';
 copyrightNode.style.whiteSpace = 'nowrap';
 copyrightNode.index = 0;
 copyrightNode.style.backgroundColor = '#FFFFFF';
-copyrightNode.style.opacity = 0.75;
+copyrightNode.style.opacity = 0.71;
 copyrightNode.innerHTML = L1; //localization copyright
 
 //define cursor lat long tool custom control
@@ -3929,7 +3929,7 @@ cursorLatLongTool.style.margin = '0 2px 2px 0';
 cursorLatLongTool.style.whiteSpace = 'nowrap';
 cursorLatLongTool.index = 0;
 cursorLatLongTool.style.backgroundColor = '#FFFFFF';
-cursorLatLongTool.style.opacity = 0.75;
+cursorLatLongTool.style.opacity = 0.71;
 cursorLatLongTool.innerHTML = L2; //localization cursor lat/long tool
 
 //buffer zone top left (used to push map controls down)
@@ -5269,7 +5269,7 @@ function resizeView() {
     var totalPX = document.documentElement.clientHeight;
     var headerPX = $("#mapedit_container").offset().top;
     var widthPX = document.documentElement.clientWidth;
-
+    
     //set the width of the sf menu pane0 container
     document.getElementById("mapedit_container_pane_0").style.width = widthPX + "px";
 
@@ -5278,7 +5278,7 @@ function resizeView() {
         headerPX = $("#mapedit_container").offset().top;
     } else {
         headerPX = $("#mapedit_container").offset().top + 28; //inside css
-    } 
+    }
 
     //load all toolbar buttons into an array
     //todo make dynamic
@@ -5360,6 +5360,9 @@ function resizeView() {
     var pane2PX = bodyPX * .90;
     //document.getElementById("mapedit_container_pane_2").style.height = pane2PX + "px";
 
+    //assign position of message box
+    //document.getElementById("mapedit_container_message").style["top"] = totalPX - bodyPX + "px";
+
     //calculate percentage of height
     var percentOfHeight = Math.round((bodyPX / totalPX) * 100);
     //document.getElementById("mapedit_container").style.height = percentOfHeight + "%";
@@ -5382,14 +5385,16 @@ function clearCacheSaveOverlay() {
         de("reseting cache save overlay index");
         globalVar.csoi = 0;
         globalVar.userMayLoseData = false;
+        de("reseting working index");
+        globalVar.workingOverlayIndex = null;
+        de("reseting preserved rotation");
+        globalVar.preservedRotation = 0;
+        //globalVar.preservedOpacity = globalVar.defaultOpacity;
         de("cache reset");
     } else {
         de("nothing in cache");
     }
-    de("reseting working index");
-    globalVar.workingOverlayIndex = null;
-    de("reseting preserved rotation");
-    globalVar.preservedRotation = 0;
+    
 }
 
 //keypress shortcuts/actions
