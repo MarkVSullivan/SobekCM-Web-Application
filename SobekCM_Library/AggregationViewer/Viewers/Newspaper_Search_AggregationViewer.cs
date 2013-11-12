@@ -72,12 +72,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 scriptActionName = "newspaper_select_search_sobekcm('" + arg1 + "', '" + subCode + "', '" + browse_url + "');";
                 arg2 = subCode;
-                scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
             }
             else
             {
                 scriptActionName = "newspaper_search_sobekcm('" + arg1 + "');";
-                scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
             }
         }
 

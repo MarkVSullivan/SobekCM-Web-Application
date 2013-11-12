@@ -316,7 +316,7 @@ namespace SobekCM.Library.HTML
                     Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, currentCollection);
 
                     // Add the user-specific main menu
-                    UserSpecific_MainMenu_Writer.Add_Main_Menu(Output, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
@@ -393,7 +393,6 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
             Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
             // If editing projects, add the mySobek stylesheet as well
             if ((currentMode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (currentMode.My_Sobek_SubMode.Length > 0))

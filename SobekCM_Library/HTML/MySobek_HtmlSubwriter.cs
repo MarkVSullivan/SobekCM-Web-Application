@@ -277,7 +277,6 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_UserMenu.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 
 			// If we are currently uploading files, add those specific upload styles 
@@ -344,7 +343,7 @@ namespace SobekCM.Library.HTML
                 if ( mySobekViewer.Standard_Navigation_Type != MySobek_Included_Navigation_Enum.NONE )
                 {
                     // Add the user-specific main menu
-                    UserSpecific_MainMenu_Writer.Add_Main_Menu(Output, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
@@ -403,7 +402,7 @@ namespace SobekCM.Library.HTML
                 if (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management)
                 {
                     // Add the user-specific main menu
-                    UserSpecific_MainMenu_Writer.Add_Main_Menu(header_writer, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(header_writer, currentMode, user);
 
                     // Start the page container
                     header_writer.WriteLine("<div id=\"pagecontainer\">");

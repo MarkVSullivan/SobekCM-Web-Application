@@ -65,7 +65,7 @@ namespace SobekCM.Library.HTML
 
                     writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
                                       {
-                                          Hierarchy_Object = Hierarchy_Object,
+                                          Current_Aggregation = Current_Aggregation,
                                           Skin = htmlSkin,
                                           Mode = currentMode,
                                           Browse_Title = publicFolder.FolderName,
@@ -133,7 +133,7 @@ namespace SobekCM.Library.HTML
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
                     writeResult = new PagedResults_HtmlSubwriter(null, null, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
                                       {
-                                          Hierarchy_Object = Hierarchy_Object,
+                                          Current_Aggregation = Current_Aggregation,
                                           Skin = htmlSkin,
                                           Mode = currentMode,
                                           Browse_Title = publicFolder.FolderName,

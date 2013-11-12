@@ -186,7 +186,7 @@
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
     <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
-    <Compile Include="HTML\UserSpecific_MainMenu_Writer.cs" />
+    <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
     <Compile Include="ItemViewer\Fragments\AddRemove_Fragment_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

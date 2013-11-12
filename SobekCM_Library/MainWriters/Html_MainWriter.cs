@@ -131,7 +131,6 @@ namespace SobekCM.Library.MainWriters
             // Set some defaults
 
 		    // Handle basic events which may be fired by the internal header
-
             if (HttpContext.Current.Request.Form["internal_header_action"] != null)
             {
                 // Pull the action value
@@ -329,7 +328,7 @@ namespace SobekCM.Library.MainWriters
             {
                 subwriter.Mode = currentMode;
                 subwriter.Skin = htmlSkin;
-                subwriter.Hierarchy_Object = hierarchyObject;
+                subwriter.Current_Aggregation = hierarchyObject;
             }
         }
 
@@ -622,21 +621,33 @@ namespace SobekCM.Library.MainWriters
             {
 #if DEBUG
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
 #else
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
 #endif
-            }
+			}
 
+			// Special code for the menus, if this is not IE
+			if (HttpContext.Current.Request.Browser.Browser.ToUpper() != "IE")
+			{
+				Output.WriteLine("  <style type=\"text/css\">");
+				Output.WriteLine("    #sf-menubar { padding-bottom: 1px; }");
+				Output.WriteLine("    #sbkAgm_Home a { height: 21px; }");
+				Output.WriteLine("    .sbkMenu_Home a { padding: 4px 30px 2px 12px !important; }");
+				Output.WriteLine("    #selected-sf-menu-item-link,.selected-sf-menu-item-link { height: 27px;}");
+				Output.WriteLine("  </style>");
+			}
+			else
+			{
+				Output.WriteLine("  <!--[if lt IE 9]>");
+				Output.WriteLine("    <script src=\"" + currentMode.Base_URL + "default/scripts/html5shiv/html5shiv.js\"></script>");
+				Output.WriteLine("  <![endif]-->");
+			}
 
             // Add the special code for the html subwriter
             if (subwriter != null)
                 subwriter.Write_Within_HTML_Head(Output, Tracer);
-
-            // Special CSS when printing an item from the selection menu
-            if (currentMode.Mode == Display_Mode_Enum.Item_Print)
-            {
-                return;
-            }
 
             // Include the interface's style sheet if it has one
             if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
@@ -645,7 +656,7 @@ namespace SobekCM.Library.MainWriters
             }
 
 			// Finally add the aggregation-level CSS if it exists
-			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
+			if (((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Search) || (currentMode.Mode == Display_Mode_Enum.Results)) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
 			{
 				Output.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			}
@@ -729,9 +740,6 @@ namespace SobekCM.Library.MainWriters
 
             // If the subwriter is null, this is an ERROR, but do nothing for now
             if (subwriter == null) return;
-
-            // Always add the link to the main, small SobekCM.js
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm.js\" type=\"text/javascript\"></script>");
 
             // Start with the basic html at the beginning of the page
             if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
@@ -1243,17 +1251,17 @@ namespace SobekCM.Library.MainWriters
                         if  (hierarchyObject.Code != "all")
                         {                            
                             if (banner_image.Length > 0)
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                             }
                             else
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
+								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
                             }
                         }
                     }

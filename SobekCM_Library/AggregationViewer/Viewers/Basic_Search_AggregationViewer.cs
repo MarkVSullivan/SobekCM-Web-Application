@@ -64,13 +64,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((!currentMode.Show_Selection_Panel) || (Current_Aggregation.Children_Count == 0))
             {
                 scriptActionName = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "');";
-                scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
             } 
             else
             {
                 scriptActionName = "basic_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "')";
                 arg2 = SUB_CODE;
-                scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
             }
             currentMode.Mode = displayMode;
             currentMode.Search_Type = searchType;
