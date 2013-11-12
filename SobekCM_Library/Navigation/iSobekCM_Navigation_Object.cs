@@ -177,33 +177,37 @@ namespace SobekCM.Library.Navigation
 		/// and the item aggregation default is utilized </summary>
 		Default = 0,
 
+		/// <summary> This is not really a result display, so no type should
+		/// be included </summary>
+		NONE,
+
 		/// <summary> Displays the results in the bookshelf view, which allows the user to remove the item
 		/// from the bookshelf, move the item, or edit the user notes </summary>
-		Bookshelf = 1,
+		Bookshelf,
 
 		/// <summary> Display the results in a brief metadata format (with thumbnails) </summary>
-		Brief =2,
+		Brief,
 
 		/// <summary> Allows results to be exported as CSV or excel files </summary>
-		Export = 3,
+		Export,
 
 		/// <summary> Display the full citation of a single result</summary>
-		Full_Citation = 4,
+		Full_Citation,
 
 		/// <summary> Display the main image of a single result</summary>
-		Full_Image = 5,
+		Full_Image,
 
 		/// <summary> Display the results according to their main coordinate information</summary>
-		Map = 6,
+		Map,
 
 		/// <summary> Static text-type browse/info mode </summary>
-		Static_Text = 7,
+		Static_Text,
 
 		/// <summary> Display the results in a simple table format </summary>
-		Table = 8,
+		Table,
 
 		/// <summary> Display the results in a thumbnail format</summary>
-		Thumbnails = 9
+		Thumbnails
 	};
 
 	/// <summary> Type of administrative information requested for display </summary>

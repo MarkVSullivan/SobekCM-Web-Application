@@ -476,9 +476,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<!-- Settings_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
-			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_tabs.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");

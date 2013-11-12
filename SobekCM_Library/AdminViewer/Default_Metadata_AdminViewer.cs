@@ -193,8 +193,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<!-- Default_Metadata_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			// Add the scripts needed
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
 			// Add the hidden field
 			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save -->");

@@ -204,7 +204,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                     }
 
-                    Output.WriteLine("<b> &nbsp;Public Browses</b><br />");
+					if ( internal_browses.Count > 0 )
+	                    Output.WriteLine("<b> &nbsp;Public Browses</b><br />");
+					else
+						Output.WriteLine("<b> &nbsp;Browses</b><br />");
+
                     Output.WriteLine("<div class=\"SobekFacetBox\">");
                     foreach (Item_Aggregation_Child_Page thisBrowse in sortedBrowses.Values)
                     {

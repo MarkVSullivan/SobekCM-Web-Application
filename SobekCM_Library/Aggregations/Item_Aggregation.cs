@@ -197,6 +197,7 @@ namespace SobekCM.Library.Aggregations
             Thematic_Heading_ID = -1;
 	        CSS_File = String.Empty;
 	        Custom_Home_Page_Source_File = String.Empty;
+	        Child_Types = "SubCollections";
 
             // Add the default result views
             Result_Views = new List<Result_Display_Type_Enum>
@@ -260,6 +261,7 @@ namespace SobekCM.Library.Aggregations
             Thematic_Heading_ID = -1;
 			CSS_File = String.Empty;
 	        Custom_Home_Page_Source_File = String.Empty;
+			Child_Types = "SubCollections";
 
             // Add the searches and views
             viewsAndSearches = new List<CollectionViewsAndSearchesEnum>();
@@ -474,6 +476,9 @@ namespace SobekCM.Library.Aggregations
         /// <summary> Flag indicates whether items linked to this item can be described by logged in users  </summary>
         public short Items_Can_Be_Described { get; set; }
 
+		/// <summary> The common type of all child collections, or the default </summary>
+		public string Child_Types { get; set; }
+
         /// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
         public int Browse_Info_Count
         {
@@ -672,9 +677,16 @@ namespace SobekCM.Library.Aggregations
 	    /// <summary> Add a child page to this item aggregatiion </summary>
 		/// <param name="ChildPage"> New child page to add </param>
 		public void Add_Child_Page(Item_Aggregation_Child_Page ChildPage)
-		{
+	    {
+		    string upper_code = ChildPage.Code.ToUpper();
+			if (childPagesHash.ContainsKey(upper_code))
+			{
+				childPagesHash.Remove(upper_code);
+				childPages.RemoveAll(CurrentPage => CurrentPage.Code.ToUpper() == upper_code);
+			}
+
 			childPages.Add(ChildPage);
-			childPagesHash[ChildPage.Code.ToUpper()] = ChildPage;
+			childPagesHash[upper_code] = ChildPage;
 		}
 
 		/// <summary> Add a new browse or info object to this hierarchical object </summary>
@@ -700,8 +712,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks> These are returned in alphabetical order of the LABEL portion of each browse, according to the provided language </remarks>
         public ReadOnlyCollection<Item_Aggregation_Child_Page> Browse_Home_Pages(Web_Language_Enum Current_Language)
         {
-            SortedList<string, Item_Aggregation_Child_Page> otherBrowses =
-                new SortedList<string, Item_Aggregation_Child_Page>();
+            SortedList<string, Item_Aggregation_Child_Page> otherBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
             foreach (Item_Aggregation_Child_Page thisBrowse in childPagesHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU))
             {
                 otherBrowses[thisBrowse.Get_Label(Current_Language)] = thisBrowse;
@@ -714,7 +725,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks> These are returned in alphabetical order of the CODE portion of each browse, according to the provided language </remarks>
         public ReadOnlyCollection<Item_Aggregation_Child_Page> Browse_By_Pages(Web_Language_Enum Current_Language)
         {
-            SortedList<string, Item_Aggregation_Child_Page> otherBrowses =new SortedList<string, Item_Aggregation_Child_Page>();
+            SortedList<string, Item_Aggregation_Child_Page> otherBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
             foreach (Item_Aggregation_Child_Page thisBrowse in childPagesHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY))
             {
                 otherBrowses[thisBrowse.Code] = thisBrowse;

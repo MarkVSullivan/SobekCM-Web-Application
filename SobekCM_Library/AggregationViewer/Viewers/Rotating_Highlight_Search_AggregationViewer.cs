@@ -69,14 +69,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((!currentMode.Show_Selection_Panel) || (Current_Aggregation.Children_Count == 0))
             {
                 scriptActionName = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "')";
-                scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
-            }
+             }
             else
             {
                 scriptActionName = "basic_select_search_sobekcm('" + arg1 + "', '" + subCode + "')";
                 arg2 = subCode;
-                scriptIncludeName = "<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_search.js\" type=\"text/javascript\"></script>";
-            }
+             }
             currentMode.Mode = displayMode;
 	        currentMode.Aggregation_Type = aggrType;
             currentMode.Search_Type = searchType;
@@ -138,43 +136,44 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("     *********************************************** -->");
             }
 
-            Output.WriteLine("<table cellpadding=\"0px\" cellspacing=\"0px\" class=\"sbkRhav_RotatingBanner\">");
-            Output.WriteLine("  <tr>");
+			Output.WriteLine("<div id=\"sbkRhav_BannerBack\">");
+            Output.WriteLine("  <table cellpadding=\"0px\" cellspacing=\"0px\" class=\"sbkRhav_RotatingBanner\">");
+            Output.WriteLine("    <tr>");
 
 
 
 			if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
 			{
 				string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
-				Output.Write("    <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
+				Output.Write("      <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
-				Output.WriteLine("      <div class=\"sbkRhav_RotatingBannerLeftSearch\">");
-                Output.WriteLine("        <table>");
-                Output.WriteLine("          <tr>");
-				Output.WriteLine("            <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
-                Output.WriteLine("               <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
-                Output.WriteLine("            </td>");
-                Output.WriteLine("          </tr>");
-                Output.WriteLine("          <tr style=\"vertical-align:bottom\">");
-                Output.WriteLine("            <td>");
-                Output.Write("              <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
+				Output.WriteLine("        <div class=\"sbkRhav_RotatingBannerLeftSearch\">");
+                Output.WriteLine("          <table>");
+                Output.WriteLine("            <tr>");
+				Output.WriteLine("              <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
+                Output.WriteLine("                 <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("            </tr>");
+                Output.WriteLine("            <tr style=\"vertical-align:bottom\">");
+                Output.WriteLine("              <td>");
+                Output.Write("                <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
                 if (currentMode.Browser_Type.IndexOf("IE") >= 0)
                     Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
                 else
                     Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
 
-                Output.WriteLine("            </td>");
-                Output.WriteLine("            <td>");
-                Output.WriteLine("              <a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a>");
-                Output.WriteLine("            </td>");
-                Output.WriteLine("          </tr>");
-                Output.WriteLine("        </table>");
-                Output.WriteLine("      </div>");
-                Output.WriteLine("    </td>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("              <td>");
+                Output.WriteLine("                <a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("            </tr>");
+                Output.WriteLine("          </table>");
+                Output.WriteLine("        </div>");
+                Output.WriteLine("      </td>");
             }
 
-            Output.WriteLine("    <td>");
+            Output.WriteLine("      <td>");
             string base_design_location = currentMode.Base_URL + "design/aggregations/" + currentMode.Aggregation + "/";
             if (currentMode.Aggregation.Length == 0)
                 base_design_location = currentMode.Base_URL + "design/aggregations/all/";
@@ -184,7 +183,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 int width = 754 - frontBannerInfo.Width;
 
-                Output.WriteLine("      <div id=\"slider1\" class=\"sliderwrapper\" style=\"width:" + width + "px\">");
+                Output.WriteLine("        <div id=\"slider1\" class=\"sliderwrapper\" style=\"width:" + width + "px\">");
 
                 // Copy over just the eight highlights we should use 
                 List<Item_Aggregation_Highlights> highlights_to_use = new List<Item_Aggregation_Highlights>();
@@ -201,30 +200,30 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 foreach (Item_Aggregation_Highlights highlight in highlights_to_use)
                 {
-                    Output.WriteLine("        <div class=\"contentdiv\" style=\"width:" + width + "px\">");
+                    Output.WriteLine("          <div class=\"contentdiv\" style=\"width:" + width + "px\">");
                     string highlight_text = HttpUtility.HtmlEncode(highlight.Get_Tooltip(currentMode.Language));
                     if (highlight.Link.Length > 0)
                     {
-                        Output.WriteLine("          <a href=\"" + highlight.Link + "\" title=\"" + highlight_text + "\" >");
+                        Output.WriteLine("            <a href=\"" + highlight.Link + "\" title=\"" + highlight_text + "\" >");
                     }
                     if (highlight.Image.IndexOf("http:") >= 0)
-                        Output.WriteLine("            <img src=\"" + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
+                        Output.WriteLine("              <img src=\"" + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
                     else
-                        Output.WriteLine("            <img src=\"" + base_design_location + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
+                        Output.WriteLine("              <img src=\"" + base_design_location + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
                     if (highlight.Link.Length > 0)
                     {
-                        Output.WriteLine("          </a>");
+                        Output.WriteLine("            </a>");
                     }
-                    Output.WriteLine("        </div>");
+                    Output.WriteLine("          </div>");
                 }
-                Output.WriteLine("      </div>");
+                Output.WriteLine("        </div>");
                 int pagination_width = 735 - frontBannerInfo.Width;
-                Output.WriteLine("      <div id=\"paginate-slider1\" class=\"pagination\" style=\"width:" + pagination_width + "px\" >  </div>");
+                Output.WriteLine("        <div id=\"paginate-slider1\" class=\"pagination\" style=\"width:" + pagination_width + "px\" >  </div>");
 
 
 
-                Output.WriteLine("      <script type=\"text/javascript\">");
-                Output.WriteLine("          featuredcontentslider.init({");
+                Output.WriteLine("        <script type=\"text/javascript\">");
+                Output.WriteLine("            featuredcontentslider.init({");
                 Output.WriteLine("              id: \"slider1\",  //id of main slider DIV");
                 Output.WriteLine("              contentsource: [\"inline\", \"\"],  //Valid values: [\"inline\", \"\"] or [\"ajax\", \"path_to_file\"]");
                 Output.WriteLine("              toc: \"#increment\",  //Valid values: \"#increment\", \"markup\", [\"label1\", \"label2\", etc]");
@@ -236,60 +235,61 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("                  //previndex holds index of last slide viewed b4 current (1=1st slide, 2nd=2nd etc)");
                 Output.WriteLine("                  //curindex holds index of currently shown slide (1=1st slide, 2nd=2nd etc)");
                 Output.WriteLine("              }");
-                Output.WriteLine("          })");
-                Output.WriteLine("      </script>");
+                Output.WriteLine("            })");
+                Output.WriteLine("        </script>");
             }
             else
             {
                 if (currentCollection.Highlights.Count > 0)
                 {
-                    Output.WriteLine("          <a href=\"" + currentCollection.Highlights[0].Link + "\" title=\"" + HttpUtility.HtmlEncode(currentCollection.Highlights[0].Get_Text(currentMode.Language)) + "\" >");
+                    Output.WriteLine("            <a href=\"" + currentCollection.Highlights[0].Link + "\" title=\"" + HttpUtility.HtmlEncode(currentCollection.Highlights[0].Get_Text(currentMode.Language)) + "\" >");
                     if (currentCollection.Highlights[0].Image.IndexOf("http:") >= 0)
-                        Output.WriteLine("            <img src=\"" + currentCollection.Highlights[0].Image + "\" />");
+                        Output.WriteLine("              <img src=\"" + currentCollection.Highlights[0].Image + "\" />");
                     else
-                        Output.WriteLine("            <img src=\"" + base_design_location + currentCollection.Highlights[0].Image + "\" />");
-                    Output.WriteLine("          </a>");
+                        Output.WriteLine("              <img src=\"" + base_design_location + currentCollection.Highlights[0].Image + "\" />");
+                    Output.WriteLine("            </a>");
                 }
             }
 
 
-            Output.WriteLine("    </td>");
+            Output.WriteLine("      </td>");
 
 
             if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT)
             {
 				string banner_image = currentMode.Base_URL + "design/" + currentCollection.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/"); 
-				Output.WriteLine("    <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
+				Output.WriteLine("      <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
-				Output.WriteLine("      <div class=\"sbkRhav_RotatingBannerRightSearch\">");
-                Output.WriteLine("        <table>");
-                Output.WriteLine("          <tr>");
-                Output.WriteLine("            <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
-                Output.WriteLine("               <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
-                Output.WriteLine("            </td>");
-                Output.WriteLine("          </tr>");
-                Output.WriteLine("          <tr style=\"vertial-align:bottom\">");
-                Output.WriteLine("            <td>");
-                Output.Write("              <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
+				Output.WriteLine("        <div class=\"sbkRhav_RotatingBannerRightSearch\">");
+                Output.WriteLine("          <table>");
+                Output.WriteLine("            <tr>");
+                Output.WriteLine("              <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
+                Output.WriteLine("                 <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("            </tr>");
+                Output.WriteLine("            <tr style=\"vertial-align:bottom\">");
+                Output.WriteLine("              <td>");
+                Output.Write("                <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
                 if (currentMode.Browser_Type.IndexOf("IE") >= 0)
                     Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "');\" />");
                 else
                     Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "');\" />");
 
-                Output.WriteLine("            </td>");
-                Output.WriteLine("            <td>");
-                Output.WriteLine("              <a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a>");
-                Output.WriteLine("            </td>");
-                Output.WriteLine("          </tr>");
-                Output.WriteLine("        </table>");
-                Output.WriteLine("      </div>");
-                Output.WriteLine("    </td>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("              <td>");
+                Output.WriteLine("                <a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("            </tr>");
+                Output.WriteLine("          </table>");
+                Output.WriteLine("        </div>");
+                Output.WriteLine("      </td>");
             }
 
 
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+			Output.WriteLine("</div>");
 
             //if ((currentUser != null) && (currentUser.Is_System_Admin))
             //{

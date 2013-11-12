@@ -36,7 +36,7 @@ namespace SobekCM.Library.HTML
             lastMode = Last_Mode;
             userHistoryRequestInfo = UserHistoryRequestInfo;
             currentMode = Current_Mode;
-            this.Hierarchy_Object = Hierarchy_Object;
+            this.Current_Aggregation = Hierarchy_Object;
 
             // If this is a post back, send email
             if (HttpContext.Current.Request.Form["item_action"] == null) return;
@@ -70,7 +70,7 @@ namespace SobekCM.Library.HTML
 
                     try
                     {
-                        MailMessage myMail = new MailMessage(message_from, base.Hierarchy_Object.Contact_Email.Replace(";", ","))
+                        MailMessage myMail = new MailMessage(message_from, base.Current_Aggregation.Contact_Email.Replace(";", ","))
                                                  {
                                                      Subject =subject + "  [" + currentMode.SobekCM_Instance_Abbreviation +" Submission]",
                                                      Body = email_body
@@ -83,7 +83,7 @@ namespace SobekCM.Library.HTML
                         string sender = message_from;
                         if (name.Length > 0)
                             sender = name + " ( " + message_from + " )";
-                        SobekCM_Database.Log_Sent_Email(sender, base.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1);
+                        SobekCM_Database.Log_Sent_Email(sender, base.Current_Aggregation.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1);
 
                         // Send back to the home for this collection, sub, or group
                         Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
@@ -92,7 +92,7 @@ namespace SobekCM.Library.HTML
                     }
                     catch
                     {
-                        bool email_error = SobekCM_Database.Send_Database_Email(base.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1, -1 );
+                        bool email_error = SobekCM_Database.Send_Database_Email(base.Current_Aggregation.Contact_Email.Replace(";", ","), subject + "  [" + currentMode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1, -1 );
 
                         // Send back to the home for this collection, sub, or group
                         if (email_error)

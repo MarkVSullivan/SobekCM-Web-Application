@@ -234,7 +234,6 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			// Add the stylesheet(s)and javascript  needed
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_form.js\" ></script>");
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" ></script>");
 			Output.WriteLine();
 

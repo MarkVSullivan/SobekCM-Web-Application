@@ -35,7 +35,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Site_Map"> Optional site map object used to render a navigational tree-view on left side of page</param>
         public Web_Content_HtmlSubwriter(Item_Aggregation Hierarchy_Object, SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, HTML_Based_Content Static_Web_Content, SobekCM_SiteMap Site_Map)
         {
-            base.Hierarchy_Object = Hierarchy_Object;
+            base.Current_Aggregation = Hierarchy_Object;
             currentMode = Current_Mode;
             Skin = HTML_Skin;
 
@@ -353,9 +353,9 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (Hierarchy_Object != null)
+                        if (Current_Aggregation != null)
                         {
-                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + currentMode.Base_URL + Hierarchy_Object.Banner_Image(currentMode.Language, htmlSkin) + "\" alt=\"MISSING BANNER\" /><br />");
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + currentMode.Base_URL + Current_Aggregation.Banner_Image(currentMode.Language, htmlSkin) + "\" alt=\"MISSING BANNER\" /><br />");
                         }
                     }
                 }

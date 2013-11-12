@@ -24,9 +24,6 @@ textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f
 /******************************************************************************/
 
 /** internal header ( Item_HtmlSubwriter ) */
-#sbkIsw_Internalheader { font-family: Arial, Helvetica, sans-serif;	margin: 0; padding: 0; width: 100%; FONT-SIZE: small; text-align:left; background-color: #C0C0C0; color:#555555;border-collapse: collapse;border: none;}	
-#sbkIsw_Internalheader h2 { color: White; font-size: 1.5em; font-weight: bold; padding: 0; margin: 0; }
-#sbkIsw_Internalheader h2 a { color: White; }
 .sbkIsw_intheader_button { height: 39px; padding: 0; vertical-align: middle; border: none; width: 119px;  cursor: pointer; margin-left: 5px; }
 .hide_intheader_button2 { width: 81px; height: 25px; background: url("images/hide_internal_header2.png") no-repeat; }
 .hide_intheader_button2:hover { background-position: 0 -25px; }

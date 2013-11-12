@@ -127,7 +127,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                               {
                                   Skin = htmlSkin,
                                   Mode = currentMode,
-                                  Hierarchy_Object = currentCollection,
+                                  Current_Aggregation = currentCollection,
                                   Browse_Title = browseObject.Get_Label(currentMode.Language)
                               };
             writeResult.Add_Controls(placeHolder, Tracer);
