@@ -32,7 +32,7 @@ function Add_new_entry() {
     document.getElementById('hidden_BibID').value = document.getElementById('txtBibID').value;
     document.getElementById('hidden_VID').value = document.getElementById('txtVID').value;
     document.getElementById('hidden_event_num').value = document.getElementById('ddlManualEvent').value;
-    alert('Add button clicked');
+  //  alert('Add button clicked');
     document.itemNavForm.submit();
     return false;
 }

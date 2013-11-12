@@ -27,13 +27,15 @@ namespace SobekCM.Library.MySobekViewer
         private string BibID;
         private string VID;
         private string error_message = String.Empty;
-        private SobekCM_Item item;
         private int stage=1;
         private string hidden_request ;
         private string hidden_value;
-        private string hidden_entry_type;
         private string title;
+       
         private DataTable tracking_users;
+        private DataTable workflow_entries_from_DB;
+        private Dictionary<string, DataRow> current_entries;
+
 
 
         /// <summary> Constructor for a new instance of the Track_Item_MySobekViewer class </summary>
@@ -70,6 +72,7 @@ namespace SobekCM.Library.MySobekViewer
 
             //Get the list of users who are possible Scanning/Processing technicians from the DB
             tracking_users = Database.SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
+            
             foreach (DataRow row in tracking_users.Rows)
             {
                 string username = row["UserName"].ToString();
@@ -154,10 +157,15 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     break;
 
+                default:
+                    break;
+               }
 
-                //TODO: On submit, form validation
-            }
-            
+            //TODO: Complete form validation
+
+            //if there is a BibID, VID available, get the open workflows for this item from the database
+ //           if (!String.IsNullOrEmpty(itemID.ToString()))
+     //           workflow_entries_from_DB = Database.SobekCM_Database.Tracking_Get_Open_Workflows(itemID);
 
           }
 
@@ -170,6 +178,8 @@ namespace SobekCM.Library.MySobekViewer
             BibID = temp["BibID"].ToString();
             VID = temp["VID"].ToString();
             title = temp["Title"].ToString();
+            if (String.IsNullOrEmpty(BibID) || String.IsNullOrEmpty(VID))
+                error_message = "No matching item found for this ItemID!";
 
         }
 
@@ -206,10 +216,8 @@ namespace SobekCM.Library.MySobekViewer
         {
             bool result = true;
             itemID = Int_from_Base26(encoded_ItemID);
-            //TODO: Get the Bib, VID, Tracking info forthis itemID
-//            BibID = Resource_Object.Database.SobekCM_Database.
- //           BibID = itemID.ToString();
-
+            if (String.IsNullOrEmpty(itemID.ToString()))
+                result = false;
             return result;
         }
 
@@ -283,6 +291,33 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_VID\" name=\"hidden_VID\" value=\"\" />");
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_event_num\" name=\"hidden_event_num\" value=\"\" />");
 
+            //Start the User, Equipment info table
+            builder.AppendLine("<table class=\"sbkTi_table\">");
+            builder.AppendLine("<tr>");
+            builder.AppendLine("          <td>Scanned/Processed by:</td>");
+            builder.AppendLine("          <td><select id=\"ddlUserStart\" name=\"ddlUserStart\">");
+
+            //Add the list of users to the dropdown list
+            foreach (KeyValuePair<string, string> thisUser in user_list)
+            {
+                if (thisUser.Key == user.UserName)
+                    builder.AppendLine("<option value=\"" + thisUser.Key + "\" selected>" + thisUser.Value + "</option>");
+                else
+                {
+                    builder.AppendLine("<option value=\"" + thisUser.Key + "\">" + thisUser.Value + "</option>");
+                }
+            }
+            builder.AppendLine("</td>");
+            builder.AppendLine("           <td>Equipment used:</td>");
+            builder.AppendLine("           <td><select name=\"ddlEquipmentStart\" id=\"ddlEquipmentStart\">");
+            //Add the list of scanners to the dropdown list
+            foreach (string thisScanner in scanners_list)
+                builder.AppendLine("<option value=\"\">" + thisScanner + "</option>");
+            builder.AppendLine("</select></td>");
+            builder.AppendLine("</tr>");
+            builder.AppendLine("</table>");
+
+
             //Start the Entry Type Table
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Entry Type</h2></span>");
             builder.AppendLine("<table class=\"sbkTi_table\">");
@@ -323,9 +358,9 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("                                        <option value=\"3\">Start Processing</option>");
             builder.AppendLine("                                        <option value=\"4\">End Processing</option></select>");
             builder.AppendLine("</td>");
-            builder.AppendLine("<td>Title:</td><td><input type=\"text\" id=\"txtTitle\" disabled value=\""+title+"\" /></td>");
-
-            builder.AppendLine("<td><div id=\"divAddButton\" style=\"float:right;\">");
+     //       builder.AppendLine("<td>Title:</td><td><input type=\"text\" id=\"txtTitle\" disabled value=\""+title+"\" /></td>");
+            builder.AppendLine("<td>");
+            builder.AppendLine("<div id=\"divAddButton\" style=\"float:right;\">");
             builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry(); return false;\">ADD</button>");
             builder.AppendLine("</div></td>");
 
@@ -381,7 +416,7 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("<span class=\"sbkTi_eventTableSpan\">");
                 //Start the table for the current tracking event
                 builder.AppendLine("<table class=\"sbkTi_table\">");
-                builder.AppendLine("<tr><td>Event:</td>");
+                builder.AppendLine("<tr><td>Workflow:</td>");
                 builder.AppendLine("         <td><select id=\"ddlEvent\" name=\"ddlEvent\"> disabled");
                 builder.AppendLine("                  <option value=\"1\" "+selected_text_scanning+">Scanning</option>");
                 builder.AppendLine("                  <option value=\"2\""+selected_text_processing+">Processing</option></select>");
@@ -390,28 +425,7 @@ namespace SobekCM.Library.MySobekViewer
                 string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
                 builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + currentDate + "\" /> </td>");
                 builder.AppendLine("</tr>");
-                builder.AppendLine("<tr>");
-                builder.AppendLine("          <td>Scanned/Processed by:</td>");
-                builder.AppendLine("          <td><select id=\"ddlUserStart\" name=\"ddlUserStart\">");
-
-                //Add the list of users to the dropdown list
-                foreach (KeyValuePair<string, string> thisUser in user_list)
-                {
-                    if (thisUser.Key == user.UserName)
-                        builder.AppendLine("<option value=\"" + thisUser.Key + "\" selected>" + thisUser.Value + "</option>");
-                    else
-                    {
-                        builder.AppendLine("<option value=\"" + thisUser.Key + "\">" + thisUser.Value + "</option>");
-                    }
-                }
-                builder.AppendLine("</td>");
-                builder.AppendLine("           <td>Equipment used:</td>");
-                builder.AppendLine("           <td><select name=\"ddlEquipmentStart\" id=\"ddlEquipmentStart\">");
-                //Add the list of scanners to the dropdown list
-                foreach (string thisScanner in scanners_list)
-                    builder.AppendLine("<option value=\"\">" + thisScanner + "</option>");
-                builder.AppendLine("</select></td>");
-                builder.AppendLine("</tr>");
+                
                 //Add the Start and End Times
                 builder.AppendLine("<tr>");
                 builder.AppendLine("<td>Start Time:</td>");
@@ -424,6 +438,8 @@ namespace SobekCM.Library.MySobekViewer
 
                 builder.AppendLine("</span>");
             }
+
+
 
 
             //Add the Save and Done buttons
