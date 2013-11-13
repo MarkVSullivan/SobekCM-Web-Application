@@ -173,31 +173,31 @@ opacity: 0.75;*/
 #mapedit_container_toolboxMinibar
 {
     height: 15px;
+    padding-right: 10px;
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+    padding-top: 4px;
+    margin-top: -2px;
     text-align: right;
-    /*background-color: #ededed;*/
+    background-color: #ededed;
     border-radius: 25px;
-    padding-right: 5px;
-    padding-left: 5px;
     cursor: pointer;
-    margin-top: 3px;
-    margin-bottom: 3px;
 }
 
 #mapedit_container_toolbox
 {
     display: none;
     /*max-height:560px;*/
-    width: 245px;
+    width: 250px;
     float: left;
     position: absolute;
     z-index: 1;
-    padding-bottom: 6px;
-    /*padding: 3px;*/
-    /*margin-left: 15px;
-    margin-top: 200px;*/
+    padding: 10px;
+    margin-left: 15px;
+    margin-top: 200px;
     -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
     box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
-    border-radius: 10px;
+    border-radius: 15px;
 }
 
 #mapedit_container_toolboxTabs
@@ -210,15 +210,13 @@ opacity: 0.75;*/
     height: 100%;
     width: 240px;
     text-align: center;
-    padding: 5px 0 5px 0;
-    /*margin-left: -20px;
-    margin-right: -10px;*/
+    margin-left: -20px;
+    margin-right: -10px;
 }
 
 .tab-title
 {
     font-size: 13px;
-    border-radius: 0;
 }
 
 .tab
@@ -231,12 +229,12 @@ opacity: 0.75;*/
 .lineBreak
 {
     clear: both;
-    height: 5px;
+    height: 20px;
 }
 
 #mapedit_container_grid
 {
-    padding-bottom: 5px;
+    width: 100%;
 }
 
     #mapedit_container_grid .x
@@ -260,8 +258,7 @@ opacity: 0.75;*/
 
 #mapedit_container_toolbox_tab1
 {
-    margin-left: 12px;
-    margin-bottom: -5px;
+    margin-left: 10px;
 }
 
 #mapedit_container_toolbox_overlayTools
