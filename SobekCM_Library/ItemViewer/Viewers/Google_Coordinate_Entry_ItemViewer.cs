@@ -1094,6 +1094,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                                 <div id=\"content_toolbox_button_zoomOut\" class=\"x button\"></div> ");
                 mapeditBuilder.AppendLine("                              ");
                 mapeditBuilder.AppendLine("                             </div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
                 mapeditBuilder.AppendLine("                         </div> ");
                 mapeditBuilder.AppendLine("                     </div> ");
                 mapeditBuilder.AppendLine("                 </div> ");
@@ -1143,7 +1144,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                         <!--<div id=\"content_toolbox_button_overlayPlace\" class=\"button\"></div>--> ");
                 mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayGetUserLocation\" class=\"button\"></div> ");
                 mapeditBuilder.AppendLine("                         <div id=\"content_toolbox_button_overlayToggle\" class=\"button\"></div> ");
-                mapeditBuilder.AppendLine("  ");
                 mapeditBuilder.AppendLine("                         <div class=\"lineBreak\"></div> ");
                 mapeditBuilder.AppendLine("                         <div id=\"mapedit_container_toolbox_overlayTools\"> ");
                 mapeditBuilder.AppendLine("                             <div id=\"rotation\"> ");
@@ -1200,6 +1200,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("     </div> ");
                 mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine(" <div id=\"debugs\"></div> ");
+
 
                 #endregion
 
