@@ -202,6 +202,7 @@ var L_Polygon = "Polygon";
 var L_Line = "Line";
 var L_Saved = "Saved";
 var L_Applied = "Applied";
+var L_Completed = "Completed";
 var L_NotSaved = "Nothing To Save";
 var L_NotCleared = "Nothing to Reset";
 var L_Save = "Save";
@@ -276,7 +277,7 @@ function initLocalization() {
             //vars
             L52: "Reseting Overlays",
             L53: "Reseting POIs",
-            L54: "",
+            L54: "This will delete the geographic coordinate data for this overlay, are you sure?",
             L55: "",
             L56: "Nothing to Hide",
             L57: "Nothing to Delete",
@@ -1652,7 +1653,7 @@ function save(id) {
                         } 
                     }
                     //reset first save
-                    //globalVar.firstSaveOverlay = false;
+                    globalVar.firstSaveOverlay = false;
                     //change save button to apply button
                     //document.getElementById("content_toolbox_button_saveOverlay").value = L36;
                     //change save title to apply
@@ -1759,17 +1760,17 @@ function clear(id) {
 
         case "overlay":
             if ((globalVar.workingOverlayIndex != null) || (globalVar.overlayCount != globalVar.overlaysOnMap.length)) {
-                //delete all incoming overlays
                 displayMessage(localize.L52);
+                //reset edit mode
+                place("overlay");
+                //delete all incoming overlays
                 clearIncomingOverlays();
                 //show all the incoming overlays
                 displayIncomingPolygons();
-                //redraw list items of overlays
-                initOverlayList();
                 //clear the save cache
                 clearCacheSaveOverlay();
-                //reset edit mode
-                place("overlay");
+                //redraw list items of overlays
+                initOverlayList();
                 //say we are finished
                 displayMessage(L10);
             } else {
@@ -4424,6 +4425,7 @@ function toServer(dataPackage) {
             success: function(result) {
                 //de("server result:" + result);
                 de("Sallback from server - success");
+                displayMessage(L_Completed);
                 //displayMessage(L_Saved);
                 globalVar.toServerSuccess = true;
                 globalVar.csoi = 0; //reset
@@ -4580,12 +4582,13 @@ function overlayShowMe(id) {
 
 //delete poi from map and list
 function overlayDeleteMe(id) {
+    confirm(localize.L54);
     try {
         globalVar.overlaysOnMap[id].setMap(null);
         globalVar.overlaysOnMap[id] = null;
         globalVar.ghostOverlayRectangle[id].setMap(null);
         globalVar.ghostOverlayRectangle[id] = null;
-        var strg = "#overlayListItem" + id; //create <li> poi string
+        var strg = "#overlayListItem" + id; //create <li> overlay string
         $(strg).remove(); //remove <li>
         globalVar.overlayCount--;
         displayMessage(id + " " + L33);
@@ -5123,28 +5126,10 @@ function initOverlayList() {
         for (var i = 0; i < globalVar.incomingPolygonLabel.length; i++) {
             if (globalVar.incomingPolygonFeatureType[i] != "poi") {
                 de("Adding Overlay List Item");
-                //if (globalVar.incomingPolygonLabel[i] == "") {
-                //    globalVar.incomingPolygonLabel[i] = "Overlay" + (i + 1);
-                //}
-                //de("label: " + globalVar.incomingPolygonLabel[i] + " at " + i);
                 document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonLabel[i], "");
             }
         }
     }
-
-    //if (globalVar.incomingPolygonPath.length > 0) {
-    //    de("There are " + globalVar.incomingPolygonLabel.length + " Incoming Polygons");
-    //    for (var i = 0; i < globalVar.incomingPolygonPath.length; i++) {
-    //        if (globalVar.incomingPolygonFeatureType[i] != "poi") {
-    //            de("Adding Overlay List Item");
-    //            //if (globalVar.incomingPolygonLabel[i] == "") {
-    //            //    globalVar.incomingPolygonLabel[i] = "Overlay" + (i + 1);
-    //            //}
-    //            //de("label: " + globalVar.incomingPolygonLabel[i] + " at " + i);
-    //            document.getElementById("overlayList").innerHTML += writeHTML("overlayListItem", globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonLabel[i], "");
-    //        }
-    //    }
-    //}
 }
 
 //used to set acess control levels for the actions
@@ -5252,7 +5237,7 @@ function writeHTML(type, param1, param2, param3) {
             break;
         case "overlayListItem":
             de("Creating html String");
-            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> </div></div>"; //<a href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a>
+            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a> </div></div>";
             break;
         case "searchResultListItem":
             de("Creating search html String");
@@ -5494,13 +5479,17 @@ var debugStringBase = "<strong>Debug Panel:</strong> <a onclick=\"debugClear()\"
 var debugString; //holds debug messages
 var debugs = 0; //used for keycode debugging
 function de(message) {
-    //create debug string
-    var currentdate = new Date();
-    var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
-    var newDebugString = "[" + time + "] " + message + "<br><hr>";
-    newDebugString += debugString;
-    document.getElementById("debugs").innerHTML = debugStringBase + newDebugString;
-    debugString = newDebugString;
+    //determine if debugger is on
+    var debuggerOn = true;
+    if (debuggerOn) {
+        //create debug string
+        var currentdate = new Date();
+        var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
+        var newDebugString = "[" + time + "] " + message + "<br><hr>";
+        newDebugString += debugString;
+        document.getElementById("debugs").innerHTML = debugStringBase + newDebugString;
+        debugString = newDebugString;
+    }
 }
 function debugClear() {
     debugString = ""; //clear debug string
