@@ -16,6 +16,8 @@
 **                                                                 
 **************************************************************************/    
 
+#sbkShw_ViewSelectRow { text-align: center;}
+
 #sbkShw_TitleDiv { position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 1px solid; padding: 0; FONT-SIZE: small; WIDTH: 750px; BACKGROUND-COLOR: #eee; white-space:nowrap; text-align:left; }
 #sbkShw_TitleDiv h1 { FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; height: 22px; margin-left: 25px; padding-top:6px; }
 

@@ -1089,7 +1089,7 @@ namespace SobekCM.Library.HTML
 
 			    // Add the item views
 			    Output.WriteLine("<!-- Add the different view and social options -->");
-			    Output.WriteLine("<nav id=\"sf-menubar\">");
+				Output.WriteLine("<nav class=\"sbkMenu_Bar\">");
 
 
 			    // Add the sharing buttons if this is not restricted by IP address or checked out

@@ -31,7 +31,7 @@ namespace SobekCM.Library.HTML
 		public static void Add_Aggregation_Main_Menu(TextWriter Output, SobekCM_Navigation_Object Mode, User_Object User, Item_Aggregation Current_Aggregation, Language_Support_Info Translations, Aggregation_Code_Manager Code_Manager )
 		{
 			Output.WriteLine("<!-- Add the main aggregation menu -->");
-			Output.WriteLine("<div id=\"sf-menubar\">");
+			Output.WriteLine("<div id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\">");
 			Output.WriteLine("<ul class=\"sf-menu\" id=\"sbkAgm_Menu\">");
 
 			// Get ready to draw the tabs
@@ -126,6 +126,10 @@ namespace SobekCM.Library.HTML
 				}
 			}
 
+			bool isOnHome = (((Mode.Mode == Display_Mode_Enum.Aggregation) && (Mode.Aggregation_Type == Aggregation_Type_Enum.Home)) ||
+				 ((Mode.Mode == Display_Mode_Enum.Search) &&
+				  (Aggregation_Nav_Bar_HTML_Factory.Do_Search_Types_Match(homeView, Mode.Search_Type))));
+
 			// Add the HOME tab
 			if ((Current_Aggregation.Code == "all") || ( Current_Aggregation.Code == Mode.Default_Aggregation))
 			{
@@ -136,11 +140,25 @@ namespace SobekCM.Library.HTML
 
 				if (Current_Aggregation.Code == "all")
 				{
+					// What is considered HOME changes here at the top level
+					if ((thisHomeType == Home_Type_Enum.Partners_List) || (thisHomeType == Home_Type_Enum.Partners_Thumbnails) || (thisHomeType == Home_Type_Enum.Personalized))
+						isOnHome = false;
+
 					// If some instance-wide pre-menu items existed, don't use the home image
-					if ( pre_menu_options_exist )
-						Output.WriteLine("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_HomeSubMenu\">");
+					if (pre_menu_options_exist)
+					{
+						if (isOnHome)
+							Output.WriteLine("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_HomeSubMenu\">");
+						else
+							Output.WriteLine("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_HomeSubMenu\">");
+					}
 					else
-						Output.WriteLine("\t\t<li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+					{
+						if ( isOnHome )
+							Output.WriteLine("\t\t<li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+						else
+							Output.WriteLine("\t\t<li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+					}
 
 					Output.WriteLine("\t\t\t<li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
 					Mode.Home_Type = Home_Type_Enum.Descriptions;
@@ -159,10 +177,6 @@ namespace SobekCM.Library.HTML
 			}
 			else
 			{
-				bool isOnHome = (((Mode.Mode == Display_Mode_Enum.Aggregation) && (Mode.Aggregation_Type == Aggregation_Type_Enum.Home)) ||
-				                 ((Mode.Mode == Display_Mode_Enum.Search) &&
-				                  (Aggregation_Nav_Bar_HTML_Factory.Do_Search_Types_Match(homeView, Mode.Search_Type))));
-
 
 				// Add the 'SOBEK HOME' first menu option and suboptions
 				Mode.Mode = Display_Mode_Enum.Aggregation;
@@ -518,7 +532,7 @@ namespace SobekCM.Library.HTML
         {
             // Add the item views
             Output.WriteLine("<!-- Add the main user-specific menu -->");
-            Output.WriteLine("<div id=\"sf-menubar\">");
+			Output.WriteLine("<div id=\"sbkUsm_MenuBar\" class=\"sbkMenu_Bar\">");
             Output.WriteLine("<ul class=\"sf-menu\">");
 
             // Save the current view information type
@@ -782,17 +796,11 @@ namespace SobekCM.Library.HTML
 	        Output.WriteLine("\t</ul></div>");
             Output.WriteLine();
 
-            // Add the scripts needed
-            Output.WriteLine("<!-- Add references to the superfish and hoverintent libraries for the main user menu -->");
-            Output.WriteLine();
-
             Output.WriteLine("<!-- Initialize the main user menu -->");
             Output.WriteLine("<script>");
-            Output.WriteLine();
-            Output.WriteLine("jQuery(document).ready(function () {");
+            Output.WriteLine("  jQuery(document).ready(function () {");
             Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
             Output.WriteLine("  });");
-            Output.WriteLine();
             Output.WriteLine("</script>");
             Output.WriteLine();
 

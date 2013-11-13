@@ -101,7 +101,7 @@ namespace SobekCM.Library.HTML
             else
             {
 				Output.WriteLine("<!-- Add the results menu -->");
-				Output.WriteLine("<div id=\"sf-menubar\">");
+				Output.WriteLine("<div id=\"sbkSrm_MenuBar\" class=\"sbkMenu_Bar\">");
 				Output.WriteLine("<ul class=\"sf-menu\" id=\"sbkSrm_Menu\">");
 
 
