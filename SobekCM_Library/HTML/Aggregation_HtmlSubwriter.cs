@@ -1544,6 +1544,8 @@ namespace SobekCM.Library.HTML
             TreeNode rootNode = new TreeNode("Collection Hierarchy") {SelectAction = TreeNodeSelectAction.None};
             TreeView1.Nodes.Add(rootNode);
 
+	        string currentSkin = currentMode.Skin;
+
             // Step through each node under this
             SortedList<string, TreeNode> sorted_node_list = new SortedList<string, TreeNode>();
             foreach (Item_Aggregation_Related_Aggregations childAggr in Current_Aggregation.Children)
@@ -1598,6 +1600,8 @@ namespace SobekCM.Library.HTML
                 TreeView1.CollapseAll();
                 rootNode.Expand();
             }
+
+	        currentMode.Skin = currentSkin;
         }
 
         private void add_children_to_tree(Item_Aggregation_Related_Aggregations Aggr, TreeNode Node)
