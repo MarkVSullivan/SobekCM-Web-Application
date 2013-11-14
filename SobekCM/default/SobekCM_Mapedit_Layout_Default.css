@@ -187,7 +187,7 @@ opacity: 0.75;*/
 {
     display: none;
     /*max-height:560px;*/
-    width: 245px;
+    width: 240px;
     float: left;
     position: absolute;
     z-index: 1;
@@ -260,7 +260,7 @@ opacity: 0.75;*/
 
 #mapedit_container_toolbox_tab1
 {
-    margin-left: 12px;
+    margin-left: 10px;
     margin-bottom: -5px;
 }
 

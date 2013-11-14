@@ -211,7 +211,43 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
-                    //skip to the apply
+                    if (saveTypeHandle == "delete2")
+                    {
+                        switch (saveType)
+                        {
+                            #region overlay
+                            case "overlay":
+                                //parse the array id of the page
+                                int arrayId = (Convert.ToInt32(ar[2]) - 1); //is this always true (minus one of the human page id)?
+                                //get the geocoordinate object for that pageId
+                                GeoSpatial_Information pageGeo = pages[arrayId].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+
+                                Coordinate_Polygon pagePolygon = pageGeo.Polygons[0];
+                                //reset edgepoints
+                                pagePolygon.Clear_Edge_Points();
+                                //reset rotation
+                                pagePolygon.Rotation = 0;
+                                //add the featureType (explicitly add to make sure it is there)
+                                pagePolygon.FeatureType = "main";
+                                //add the polygon type
+                                pagePolygon.PolygonType = "rectangle";
+                                //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
+                                pageGeo.Clear_NonPOIs();
+                                //add polygon to pagegeo
+                                pageGeo.Add_Polygon(pagePolygon);
+
+                                ////if there isnt any already there
+                                //if (pageGeo != null)
+                                //    pageGeo.Remove_Polygon(pageGeo.Polygons[0]);
+
+                                //add the pagegeo obj
+                                pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
+                                //save to db
+                                Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                                break;
+                            #endregion
+                        }
+                    }
                 }
             }
 

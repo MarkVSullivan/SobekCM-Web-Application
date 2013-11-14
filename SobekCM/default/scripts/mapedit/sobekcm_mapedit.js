@@ -203,6 +203,7 @@ var L_Line = "Line";
 var L_Saved = "Saved";
 var L_Applied = "Applied";
 var L_Completed = "Completed";
+var L_Working = "Working...";
 var L_NotSaved = "Nothing To Save";
 var L_NotCleared = "Nothing to Reset";
 var L_Save = "Save";
@@ -278,7 +279,7 @@ function initLocalization() {
             L52: "Reseting Overlays",
             L53: "Reseting POIs",
             L54: "This will delete the geographic coordinate data for this overlay, are you sure?",
-            L55: "",
+            L55: "Coordinate Data Removed For",
             L56: "Nothing to Hide",
             L57: "Nothing to Delete",
             L58: "Canceling...",
@@ -4441,6 +4442,7 @@ function toServer(dataPackage) {
         hiddenfield2.value = 'save';
         //reset success marker
         globalVar.toServerSuccess = false;
+        displayMessage(L_Working);
         $.ajax({
             type: "POST",
             async: true,
@@ -4608,6 +4610,7 @@ function overlayShowMe(id) {
 function overlayDeleteMe(id) {
     confirm(localize.L54);
     try {
+        createSavedOverlay("delete", id, "", "", "", "");
         globalVar.overlaysOnMap[id].setMap(null);
         globalVar.overlaysOnMap[id] = null;
         globalVar.ghostOverlayRectangle[id].setMap(null);
@@ -4615,7 +4618,8 @@ function overlayDeleteMe(id) {
         //var strg = "#overlayListItem" + id; //create <li> overlay string
         //$(strg).remove(); //remove <li>
         globalVar.overlayCount--;
-        displayMessage(id + " " + L33);
+        //displayMessage(id + " " + L33);
+        displayMessage(localize.L55 + " " + id);
     } catch(e) {
         displayMessage(localize.L57); //nothing to delete
     } 
