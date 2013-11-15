@@ -203,6 +203,7 @@ var L_Line = "Line";
 var L_Saved = "Saved";
 var L_Applied = "Applied";
 var L_Completed = "Completed";
+var L_Working = "Working...";
 var L_NotSaved = "Nothing To Save";
 var L_NotCleared = "Nothing to Reset";
 var L_Save = "Save";
@@ -278,9 +279,22 @@ function initLocalization() {
             L52: "Reseting Overlays",
             L53: "Reseting POIs",
             L54: "This will delete the geographic coordinate data for this overlay, are you sure?",
-            L55: "",
+            L55: "Coordinate Data Removed For",
             L56: "Nothing to Hide",
             L57: "Nothing to Delete",
+            L58: "Canceling...",
+            L59: "Saving...",
+            L60: "Edit This Overlay",
+            L61: "Toggle On Map",
+            L62: "Delete Search Result",
+            L63: "Delete POI",
+            L64: "Delete Coordinate Data For Overlay",
+            L65: "Save This Description",
+            L66: "Edit This POI",
+            L67: "",
+            L68: "",
+            L69: "",
+            L70: "",
             //tooltips
             byTooltips: function () {
                 //#region localization by listeners
@@ -496,16 +510,24 @@ function initListeners() {
         document.getElementById("content_menubar_save").addEventListener("click", function () {
             //save("all");
             //attempt to save all three
+            displayMessage(localize.L59);
+            globalVar.RIBMode = true;
             save("item");
             save("overlay");
             save("poi");
+            globalVar.RIBMode = false;
+            window.location.assign(document.URL.replace("/mapedit", ""));
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
             //clear("all");
             //attempt to cancel all three
-            clear("item");
-            clear("overlay");
-            clear("poi");
+            displayMessage(localize.L58);
+            //globalVar.RIBMode = true;
+            //clear("item");
+            //clear("overlay");
+            //clear("poi");
+            //globalVar.RIBMode = false;
+            window.location.assign(document.URL.replace("/mapedit", ""));
         }, false);
         document.getElementById("content_menubar_reset").addEventListener("click", function () {
             resetAll();
@@ -1043,6 +1065,7 @@ function toggleVis(id) {
                 //$("#mapedit_container_toolbox").effect("slide", 500);
                 globalVar.toolboxDisplayed = false;
             } else {
+                $("#mapedit_container_toolbox").animate({ 'top': '75px', 'left': '100px' });
                 document.getElementById("mapedit_container_toolbox").style.display = "block";
                 document.getElementById("mapedit_container_toolboxTabs").style.display = "block";
                 document.getElementById("mapedit_container_toolbox").style.height = "auto";
@@ -1054,10 +1077,12 @@ function toggleVis(id) {
         case "toolbar":
             if (globalVar.toolbarDisplayed == true) {
                 $("#mapedit_container_pane_1").hide();
+                //$("#mapedit_container_pane_1").animate({ 'top': '-46px' });
                 document.getElementById("mapedit_container_toolbarGrabber").style.marginTop = "0";
                 globalVar.toolbarDisplayed = false;
             } else {
                 $("#mapedit_container_pane_1").show();
+                //$("#mapedit_container_pane_1").animate({ 'top': '46px' });
                 document.getElementById("mapedit_container_toolbarGrabber").style.marginTop = "48px";
                 globalVar.toolbarDisplayed = true;
             }
@@ -1077,7 +1102,7 @@ function toggleVis(id) {
 
         case "toolboxMin":
             $("#mapedit_container_toolboxTabs").hide();
-            document.getElementById("mapedit_container_toolbox").style.height = "17px";
+            document.getElementById("mapedit_container_toolbox").style.height = "15px";
             break;
 
         case "toolboxMax":
@@ -4417,6 +4442,7 @@ function toServer(dataPackage) {
         hiddenfield2.value = 'save';
         //reset success marker
         globalVar.toServerSuccess = false;
+        displayMessage(L_Working);
         $.ajax({
             type: "POST",
             async: true,
@@ -4584,14 +4610,16 @@ function overlayShowMe(id) {
 function overlayDeleteMe(id) {
     confirm(localize.L54);
     try {
+        createSavedOverlay("delete", id, "", "", "", "");
         globalVar.overlaysOnMap[id].setMap(null);
         globalVar.overlaysOnMap[id] = null;
         globalVar.ghostOverlayRectangle[id].setMap(null);
         globalVar.ghostOverlayRectangle[id] = null;
-        var strg = "#overlayListItem" + id; //create <li> overlay string
-        $(strg).remove(); //remove <li>
+        //var strg = "#overlayListItem" + id; //create <li> overlay string
+        //$(strg).remove(); //remove <li>
         globalVar.overlayCount--;
-        displayMessage(id + " " + L33);
+        //displayMessage(id + " " + L33);
+        displayMessage(localize.L55 + " " + id);
     } catch(e) {
         displayMessage(localize.L57); //nothing to delete
     } 
@@ -5220,28 +5248,28 @@ function writeHTML(type, param1, param2, param3) {
             //    globalVar.poiDesc[param1] = globalVar.incomingPointLabel[param1];
             //}
             globalVar.poiDesc[param1] = "New" + param3 + param2;
-            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + globalVar.poiDesc[param1] + " \">" + globalVar.poiDesc[param1] + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + globalVar.poiDesc[param1] + " \">" + globalVar.poiDesc[param1] + " <div class=\"poiActionButton\"><a title=\"" + localize.L66 + "\" href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a title=\"" + localize.L61 + "\" id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a title=\"" + localize.L63 + "\" href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
             break;
         case "poiListItemIncoming":
             de("Creating html String");
             globalVar.poiDesc[param1] = param3;
-            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + param3 + " \">" + param3 + " <div class=\"poiActionButton\"><a href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            htmlString = "<div id=\"poi" + param1 + "\" class=\"poiListItem\" title=\"" + param3 + " \">" + param3 + " <div class=\"poiActionButton\"><a title=\"" + localize.L66 + "\" href=\"#\" onclick=\"poiEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a title=\"" + localize.L61 + "\" id=\"poiToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"poiHideMe(" + param1 + ");\" /></a> <a title=\"" + localize.L63 + "\" href=\"#\" onclick=\"poiDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
             break;
         case "poiDesc":
             de("Creating html String");
-            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div title=\"" + localize.L65 + "\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
             break;
         case "poiDescIncoming":
             de("Creating html String");
-            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\">" + param2 + "</textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\">" + param2 + "</textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\" title=\"" + localize.L65 + "\">Save</div> </div>";
             break;
         case "overlayListItem":
             de("Creating html String");
-            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a> </div></div>";
+            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a title=\"" + localize.L60 + "\" href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\" title=\"" + localize.L61 + "\" ><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a title=\"" + localize.L64 + "\" href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a> </div></div>";
             break;
         case "searchResultListItem":
             de("Creating search html String");
-            htmlString = "<div id=\"searchResultListItem" + param1 + "\" class=\"searchResultListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"searchResultActionButton\"><a id=\"searchResultToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"searchResultHideMe(" + param1 + ");\" /></a> <a href=\"#\" onclick=\"searchResultDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
+            htmlString = "<div id=\"searchResultListItem" + param1 + "\" class=\"searchResultListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"searchResultActionButton\"><a title=\"" + localize.L61 + "\" id=\"searchResultToggle" + param1 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"searchResultHideMe(" + param1 + ");\" /></a> <a title=\"" + localize.L62 + "\" href=\"#\" onclick=\"searchResultDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a></div></div>";
             break;
     }
     return htmlString;
@@ -5604,6 +5632,8 @@ $(function () {
         $("#content_toolbox_searchField").tooltip({ track: true });
         $("#content_toolbox_searchButton").tooltip({ track: true });
         $("#searchResults_container").tooltip({ track: true });
+        $("#overlayList_container").tooltip({ track: true });
+        $("#poiList_container").tooltip({ track: true });
         //$(".selector").tooltip({ content: "Awesome title!" });
     } catch (err) {
         alert(L51 + ": " + err);
