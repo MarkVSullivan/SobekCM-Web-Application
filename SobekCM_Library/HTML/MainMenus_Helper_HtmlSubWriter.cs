@@ -60,6 +60,7 @@ namespace SobekCM.Library.HTML
 				browseBy = "BÚSQUEDA POR";
 				partners = "AFILIADOS";
 				myCollections = "MIS COLECCIONES";
+				viewItems = "VER ARTÍCULOS";
 			}
 
 			if (Mode.Language == Web_Language_Enum.French)
@@ -69,7 +70,7 @@ namespace SobekCM.Library.HTML
 				allItems = "TOUS LES ARTICLES";
 				newItems = "NOUVEAUX ARTICLES";
 				browseBy = "PARCOURIR PAR";
-
+				viewItems = "VOIR ARTICLES";
 			}
 
 			// Save the current mode and browse

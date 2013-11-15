@@ -27,34 +27,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //page content
             Output.WriteLine("<td>");
 
-            //used to force doctype html5 and css3
-            //Output.WriteLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
-
-            //standard css
-            Output.WriteLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/>");
-            Output.WriteLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/>");
-
-            //custom css
-            Output.WriteLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper_Theme_Default.css\"/>");
-            Output.WriteLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper_Layout_Default.css\"/>");
-            Output.WriteLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapper_Other.css\"/>");
-
-
-           Output.WriteLine(" <div id=\"container\" style=\"background:yellow;\"> ");
-      //      Output.WriteLine("     <div id=\"container_pane_1\"> ");
-
-      //      Output.WriteLine("     </div> ");
-      //      Output.WriteLine("  ");
-      //      Output.WriteLine("     <div id=\"container_toolbarGrabber\"> ");
-      //      Output.WriteLine("         <div id=\"content_toolbarGrabber\"></div> ");
-      //      Output.WriteLine("     </div>     ");
-      //      Output.WriteLine("  ");
-      //      Output.WriteLine("     <div id=\"container_pane_2\"> ");
-      //      Output.WriteLine("          ");
-      ////      Output.WriteLine("         <div id=\"googleMap\"></div> ");
-      //      Output.WriteLine("     </div> ");
-            Output.WriteLine(" </div> ");
-            
+            Output.WriteLine("TEST");
 
             //end of custom content
             Output.WriteLine("</td>");
