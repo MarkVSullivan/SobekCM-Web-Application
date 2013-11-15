@@ -130,8 +130,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapBuilder.AppendLine("  //<![CDATA[");
             mapBuilder.AppendLine("  function load() {");
             mapBuilder.AppendLine(googleItemSearch
-                                      ? "    load_search_map(6, 19.5, 3, \"map1\");"
-                                      : "    load_map(6, 19.5, 3, \"map1\");");
+									  ? "    load_search_map(6, 19.5, 3, \"sbkGmiv_MapDiv\");"
+									  : "    load_map(6, 19.5, 3, \"sbkGmiv_MapDiv\");");
 
             // Keep track of any matching tiles
             matchingTilesList = new List<string>();
@@ -335,7 +335,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the map key
                 if (!googleItemSearch)
                 {
-                    mapBuilder.AppendLine("    add_key(" + search_type + ", " + areas_shown.ToString().ToLower() + ", " + points_shown.ToString().ToLower() + ", '" + areas_name + "');");
+                    mapBuilder.AppendLine("    add_key('" + search_type + "', " + areas_shown.ToString().ToLower() + ", " + points_shown.ToString().ToLower() + ", '" + areas_name + "');");
                 }
 
                 // Zoom appropriately
@@ -395,7 +395,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         const string FIND_BUTTON_TEXT = "Find Address";
                         string script_action_name = "map_item_search_sobekcm('" + redirect_stem + "');";
 
-                        Output.WriteLine("    <td align=\"left\" >");
+                        Output.WriteLine("    <td style=\"text-align:left\">");
                         Output.WriteLine("      <ol>");
                         Output.WriteLine(
                             "        <li>Use the <i>Select Area</i> button below to draw a search box on the map or enter an address and press <i>Find Address</i>.</li>");
@@ -467,12 +467,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial)
                                 modify_item_search = "Modify search within flight";
 
-                            Output.WriteLine("          <td align=\"left\">");
-                            Output.WriteLine("            <table width=\"700px\" >");
+                            Output.WriteLine("          <td style=\"vertical-align: left\">");
+							Output.WriteLine("            <table id=\"sbkGmiv_ResultsTable\">");
+							
                             Output.WriteLine("              <tr>");
-                            Output.WriteLine("                <td width=\"50px\">&nbsp;</td>");
+							Output.WriteLine("                <td style=\"width:50px\">&nbsp;</td>");
                             Output.WriteLine(
-                                "                <td colspan=\"4\">The following results match your geographic search and also appear on the navigation bar to the left:</td>");
+								"                <td colspan=\"4\">The following results match your geographic search:</td>"); //  and also appear on the navigation bar to the left
                             Output.WriteLine("              </tr>");
 
                             int column = 0;
@@ -493,8 +494,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     Output.WriteLine("              <tr>");
                                     if (first_row)
                                     {
-                                        Output.WriteLine("                <td width=\"50px\">&nbsp;</td>");
-                                        Output.WriteLine("                <td width=\"50px\">&nbsp;</td>");
+                                        Output.WriteLine("                <td style=\"width:50px\">&nbsp;</td>");
+										Output.WriteLine("                <td style=\"width:50px\">&nbsp;</td>");
                                         first_row = false;
                                     }
                                     else
@@ -504,7 +505,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 }
 
                                 // Add the information for this tile
-                                Output.WriteLine("                <td  width=\"80px\">" +
+								Output.WriteLine("                <td style=\"width:80px\">" +
                                                   thisResult.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>",
                                                                                                          urlOptions1).
                                                       Replace("<%&URLOPTS%>", urlOptions2) + "</td>");
@@ -523,14 +524,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 while (column < 3)
                                 {
-                                    Output.WriteLine("                <td  width=\"80px\">&nbsp;</td>");
+									Output.WriteLine("                <td style=\"width:80px\">&nbsp;</td>");
                                     column++;
                                 }
                                 Output.WriteLine("              </tr>");
                             }
 
                             // Add a horizontal line here
-                            Output.WriteLine("              <tr><td></td><td bgcolor=\"#cccccc\" colspan=\"4\"></td></tr>");
+                            Output.WriteLine("              <tr><td></td><td style=\"background-color:#cccccc\" colspan=\"4\"></td></tr>");
 
                             // Also, add the navigation links 
                             Output.WriteLine("              <tr>");
@@ -595,8 +596,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
-            Output.WriteLine("        <tr>" + Environment.NewLine + "          <td class=\"SobekCitationDisplay\">");
-            Output.WriteLine("            <div id=\"map1\" style=\"width: 800px; height: 700px\"></div>");
+	        Output.WriteLine("        <tr>");
+			Output.WriteLine("          <td class=\"SobekCitationDisplay\">");
+            Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
             Output.WriteLine("          </td>");
             Output.WriteLine("        <!-- END GOOGLE MAP VIEWER OUTPUT -->");
         }

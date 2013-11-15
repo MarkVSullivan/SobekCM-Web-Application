@@ -171,6 +171,14 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkEmv_MainArea { text-align: center; background-color: #333333; }
 #sbkEmv_MainArea iframe { display: block;text-align: center; margin: 0 auto;}
 
+/** GOOGLE_MAP_ITEMVIEWER **/
+#sbkGmiv_ResultsTable { width: 700px; }
+#sbkGmiv_ResultsTable a:link { color: cornflowerblue; }
+#sbkGmiv_ResultsTable a:visited { color: cornflowerblue; }
+#sbkGmiv_ResultsTable a:hover { color: cornflowerblue; }
+#sbkGmiv_MapDiv { width: 800px;height: 700px;color: Black; }
+
+
 /** FLASH_ITEMVIEWER */
 #sbkFiv_ViewerTitle { padding: 5px 0 5px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
 #sbkFiv_MainArea { text-align: center; background-color: #333333; }

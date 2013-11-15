@@ -1789,7 +1789,7 @@ function itemwriter_load() {
 	}
 
 	// If the viewport is less than 800 wide, make the nav bar tighter
-	if (viewport_width < 890) {
+	if (viewport_width < 950) {
 		$('#printbuttonspan').hide();
 		$('#addbuttonspan').hide();
 		$('#sendbuttonspan').hide();
@@ -1805,7 +1805,7 @@ function itemwriter_load() {
 		// Hide the left column if the size is small enough
 		if (document.URL.indexOf('thumbs') < 0) {
 			var column_width = $('#sbkIsw_Leftnavbar').width();
-			if ((viewport_width < 30 + column_width + main_view_width) && (main_view_width < 800)) {
+			if (viewport_width < 30 + column_width + main_view_width) {
 
 				$('#sbkIsw_Leftnavbar').hide();
 				$('#sbkIsw_ShowTocRow').hide();

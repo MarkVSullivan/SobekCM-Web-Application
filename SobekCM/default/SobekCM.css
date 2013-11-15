@@ -651,6 +651,10 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 .sbkPrsw_FacetBox a { color: #008; }
 .sbkPrsw_ShowHideFacets { text-align:right;font-size:0.90em;width:100%;margin-right:5px;padding-right: 5px;}
 
+
+  .briefResultsTitle { font-size: 1.2em; font-weight: bold; }
+  .briefResultsTitle a:link { color: #0021a6;}
+
 .SobekResultsSort { text-align:right;float:right;padding:2px 2px 2px 2px;}
 
 .SobekResultsDescPanel2 {

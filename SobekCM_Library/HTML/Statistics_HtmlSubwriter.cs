@@ -133,7 +133,14 @@ namespace SobekCM.Library.HTML
             // Add the ITEMCOUNT
             Mode.Mode = Display_Mode_Enum.Statistics;
             Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
-            Output.WriteLine("\t\t<li id=\"sbkShs_ItemCount\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + item_count_text + "</a><ul id=\"sbkShs_ItemCountSubMenu\">");
+			if ((currentStatsType == Statistics_Type_Enum.Item_Count_Standard_View) || (currentStatsType == Statistics_Type_Enum.Item_Count_Growth_View) || (currentStatsType == Statistics_Type_Enum.Item_Count_Arbitrary_View))
+			{
+				Output.WriteLine("\t\t<li id=\"sbkShs_ItemCount\" class=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + item_count_text + "</a><ul id=\"sbkShs_ItemCountSubMenu\">");
+			}
+			else
+			{
+				Output.WriteLine("\t\t<li id=\"sbkShs_ItemCount\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + item_count_text + "</a><ul id=\"sbkShs_ItemCountSubMenu\">");
+			}
             Output.WriteLine("\t\t\t<li id=\"sbkShs_ItemCountStandard\"><a href=\"" + Mode.Redirect_URL() + "\">" + standard_view_text + "</a></li>");
 
             Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Growth_View;
@@ -148,7 +155,16 @@ namespace SobekCM.Library.HTML
 
             // Add the USAGE STATS
             Mode.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
-            Output.WriteLine("\t\t<li id=\"sbkShs_Usage\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + usage_stats_text + "</a><ul id=\"sbkShs_UsageSubMenu\">");
+			if ((currentStatsType == Statistics_Type_Enum.Usage_Overall) || (currentStatsType == Statistics_Type_Enum.Usage_By_Date_Text) || (currentStatsType == Statistics_Type_Enum.Usage_Collection_History) ||
+			    (currentStatsType == Statistics_Type_Enum.Usage_Collections_By_Date) || (currentStatsType == Statistics_Type_Enum.Usage_Item_Views_By_Date) || (currentStatsType == Statistics_Type_Enum.Usage_Items_By_Collection) ||
+			    (currentStatsType == Statistics_Type_Enum.Usage_Titles_By_Collection))
+			{
+				Output.WriteLine("\t\t<li id=\"sbkShs_Usage\" class=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + usage_stats_text + "</a><ul id=\"sbkShs_UsageSubMenu\">");
+			}
+			else
+			{
+				Output.WriteLine("\t\t<li id=\"sbkShs_Usage\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + usage_stats_text + "</a><ul id=\"sbkShs_UsageSubMenu\">");
+			}
             Output.WriteLine("\t\t\t<li id=\"sbkShs_UsageOverall\"><a href=\"" + Mode.Redirect_URL() + "\">" + overall_text + "</a></li>");
 
             // Robots do not get the next four options
@@ -178,7 +194,14 @@ namespace SobekCM.Library.HTML
             if (!currentMode.Is_Robot)
             {
                 currentMode.Statistics_Type = Statistics_Type_Enum.Recent_Searches;
-                Output.WriteLine("\t\t<li id=\"sbkShs_RecentSearches\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + recent_searches_text + "</a></li>");
+				if (currentStatsType == Statistics_Type_Enum.Recent_Searches)
+				{
+					Output.WriteLine("\t\t<li id=\"sbkShs_RecentSearches\" class=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + recent_searches_text + "</a></li>");
+				}
+				else
+				{
+					Output.WriteLine("\t\t<li id=\"sbkShs_RecentSearches\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkUsm_NoPadding\">" + recent_searches_text + "</a></li>");
+				}
             }
 
 

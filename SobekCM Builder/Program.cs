@@ -1,14 +1,18 @@
+#region Using directives
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Text;
+using System.Windows.Forms;
+using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
-using SobekCM.Library;
-using SobekCM.Library.Database;
+using SobekCM.Resource_Object.Configuration;
+using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+
+#endregion
 
 namespace SobekCM.Builder
 {
@@ -18,15 +22,14 @@ namespace SobekCM.Builder
         static void Main(string[] args)
         {
             // Try to read the metadata configuration file
-            string app_start_config = System.Windows.Forms.Application.StartupPath + "\\config";
+            string app_start_config = Application.StartupPath + "\\config";
             if ((Directory.Exists(app_start_config)) && (File.Exists(app_start_config + "\\sobekCM_metadata.config")))
             {
-                Resource_Object.Configuration.Metadata_Configuration.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
+                Metadata_Configuration.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
             }
 
 
-            string collectionName = String.Empty;
-            bool complete_static_rebuild = false;
+	        bool complete_static_rebuild = false;
             bool marc_rebuild = false;
             bool run_preloader = true;
             bool run_background = false;
@@ -36,26 +39,22 @@ namespace SobekCM.Builder
             string invalid_arg = String.Empty;
             bool refresh_oai = false;
             bool verbose = false;
-            bool arg_handled;
 
-    		// Get values from the arguments
+	        // Get values from the arguments
             foreach (string thisArgs in args)
             {
-                arg_handled = false;
+                bool arg_handled = false;
 
                 // Check for the config flag
                 if (thisArgs == "--config")
                 {
                     if (File.Exists(app_start_config + "\\SobekCM_Builder_Configuration.exe"))
                     {
-                        System.Diagnostics.Process.Start(app_start_config + "\\SobekCM_Builder_Configuration.exe");
+                        Process.Start(app_start_config + "\\SobekCM_Builder_Configuration.exe");
                         return;
                     }
-                    else
-                    {
-                        Console.WriteLine("ERROR: Unable to find configuration executable file!!");
-                    }
-                    return;
+	                Console.WriteLine("ERROR: Unable to find configuration executable file!!");
+	                return;
                 }
 
                 // Check for versioning option
@@ -173,7 +172,7 @@ namespace SobekCM.Builder
             }
 
             // Now, veryify the configuration file exists
-            string config_file = System.Windows.Forms.Application.StartupPath + "\\config\\sobekcm.config";
+            string config_file = Application.StartupPath + "\\config\\sobekcm.config";
             if (!File.Exists(config_file))
             {
                 Console.WriteLine("The configuration file is missing!!\n");
@@ -182,12 +181,11 @@ namespace SobekCM.Builder
                 if ((result == "Y") || (result == "YES"))
                 {
                     // Does the config app exist?
-                    if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"))
+                    if (File.Exists(Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"))
                     {
                         // Run the config app
-                        System.Diagnostics.Process configProcess = new System.Diagnostics.Process();
-                        configProcess.StartInfo.FileName = System.Windows.Forms.Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe";
-                        configProcess.Start();
+                        Process configProcess = new Process {StartInfo = {FileName = Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"}};
+	                    configProcess.Start();
                         configProcess.WaitForExit();
 
                         // If still no config file, just abort
@@ -220,12 +218,11 @@ namespace SobekCM.Builder
                 if ((result == "Y") || (result == "YES"))
                 {
                     // Does the config app exist?
-                    if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"))
+                    if (File.Exists(Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"))
                     {
                         // Run the config app
-                        System.Diagnostics.Process configProcess = new System.Diagnostics.Process();
-                        configProcess.StartInfo.FileName = System.Windows.Forms.Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe";
-                        configProcess.Start();
+                        Process configProcess = new Process {StartInfo = {FileName = Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"}};
+	                    configProcess.Start();
                         configProcess.WaitForExit();
 
                         // If still no config file, just abort
@@ -249,22 +246,22 @@ namespace SobekCM.Builder
             }
 
             // Assign the connection string and test the connection
-            SobekCM.Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-            if (!SobekCM.Library.Database.SobekCM_Database.Test_Connection())
+            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+            if (!SobekCM_Database.Test_Connection())
             {
                 Console.WriteLine("Unable to connect to the database using provided connection string:");
                 Console.WriteLine();
-                Console.WriteLine(SobekCM.Library.Database.SobekCM_Database.Connection_String);
+                Console.WriteLine(SobekCM_Database.Connection_String);
                 Console.WriteLine();
                 Console.WriteLine("Run this application with an argument of '--config' to launch the configuration tool.");
                 return;
             }
 
             // Load all the settings
-            SobekCM_Library_Settings.Refresh(SobekCM.Library.Database.SobekCM_Database.Get_Settings_Complete(null));
+            SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(null));
 
             // Verify connectivity and rights on the logs subfolder
-            string logfile_dir = System.Windows.Forms.Application.StartupPath + "\\logs";
+            string logfile_dir = Application.StartupPath + "\\logs";
             if (!Directory.Exists(logfile_dir))
             {
                 try
@@ -314,16 +311,16 @@ namespace SobekCM.Builder
 
                     try
                     {
-                        SobekCM.Resource_Object.SobekCM_Item thisItem = SobekCM.Resource_Object.SobekCM_Item.Read_METS(mets);
+                        SobekCM_Item thisItem = SobekCM_Item.Read_METS(mets);
                         if (thisItem != null)
                         {
                             // Get the OAI-PMH dublin core information
                             StringBuilder oaiDataBuilder = new StringBuilder(1000);
                             StringWriter writer = new StringWriter(oaiDataBuilder);
-                            Resource_Object.METS_Sec_ReaderWriters.DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisItem.Bib_Info);
+                            DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisItem.Bib_Info);
                             // Also add the URL as identifier
                             oaiDataBuilder.AppendLine("<dc:identifier>" + SobekCM_Library_Settings.System_Base_URL + bibid + "</dc:identifier>");
-                            SobekCM.Resource_Object.Database.SobekCM_Database.Save_Item_Group_OAI(groupid, oaiDataBuilder.ToString(), "oai_dc", true);
+                            Resource_Object.Database.SobekCM_Database.Save_Item_Group_OAI(groupid, oaiDataBuilder.ToString(), "oai_dc", true);
                             writer.Flush();
                             writer.Close();
 
