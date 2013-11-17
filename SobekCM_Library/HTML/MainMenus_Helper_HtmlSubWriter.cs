@@ -284,11 +284,11 @@ namespace SobekCM.Library.HTML
 						}
 						else
 						{
-							Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Facet_Name(thisBrowse.Code);
+							Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Display_Name(thisBrowse.Code);
 							if (facetField != null)
 							{
 								Mode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
-								Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL().Replace("&", "&amp") + "\">" + facetField.Facet_Term + "</a></li>");
+								Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL().Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a></li>");
 							}
 						}
 					}

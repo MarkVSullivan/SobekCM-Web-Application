@@ -112,11 +112,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         }
 
         /// <summary> Add controls to the placeholder below the search box </summary>
-        /// <param name="placeHolder"> Placeholder into which to place controls to be rendered</param>
+        /// <param name="MainPlaceHolder"> Placeholder into which to place controls to be rendered</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the results from the dataset into the space below the search box.<br /><br />
         /// This creates and uses a <see cref="PagedResults_HtmlSubwriter"/> to write the results. </remarks>
-        public override void Add_Secondary_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public override void Add_Secondary_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -130,16 +130,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                                   Current_Aggregation = currentCollection,
                                   Browse_Title = browseObject.Get_Label(currentMode.Language)
                               };
-            writeResult.Add_Controls(placeHolder, Tracer);
+            writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
 
             if ( resultsStatistics.Total_Items > 0)
             {
                 Literal literal = new Literal
                                       {
-                                          Text ="<div class=\"SobekResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons +"" + Environment.NewLine + "  " + writeResult.Showing_Text  + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
+										  Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + "" + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
                                       };
-                placeHolder.Controls.Add(literal);
+                MainPlaceHolder.Controls.Add(literal);
             }
         }
 

@@ -20,13 +20,13 @@
         /// <summary> Code used within the web application for searches against this field (particularly in the URLs) </summary>
         public readonly string Web_Code;
 
-        /// <summary> Constructor for a new instance of the Metadata_Search_Field class </summary>
-        /// <param name="ID">Primary identifier for this metadata search field</param>
-        /// <param name="Facet_Term">Term used for this metadata field when displaying facets</param>
-        /// <param name="Display_Term">Term used for displaying this metadata field in searches and results</param>
-        /// <param name="Web_Code">Code used within the web application for searches against this field (particularly in the URLs)</param>
-        /// <param name="Solr_Field">Field name for this search field in the Solr search indexes</param>
-        public Metadata_Search_Field(short ID, string Facet_Term, string Display_Term, string Web_Code, string Solr_Field)
+	    /// <summary> Constructor for a new instance of the Metadata_Search_Field class </summary>
+	    /// <param name="ID">Primary identifier for this metadata search field</param>
+	    /// <param name="Facet_Term">Term used for this metadata field when displaying facets</param>
+	    /// <param name="Display_Term">Term used for displaying this metadata field in searches and results</param>
+	    /// <param name="Web_Code">Code used within the web application for searches against this field (particularly in the URLs)</param>
+	    /// <param name="Solr_Field">Field name for this search field in the Solr search indexes</param>
+	    public Metadata_Search_Field(short ID, string Facet_Term, string Display_Term, string Web_Code, string Solr_Field )
         {
             this.ID = ID;
             this.Facet_Term = Facet_Term;

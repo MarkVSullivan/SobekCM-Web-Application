@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -37,7 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Newspaper_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
         {
             // Determine the sub text to use
-            const string subCode = "s=";
+            const string SUB_CODE = "s=";
 
             // Save the search term
             if (currentMode.Search_String.Length > 0)
@@ -70,8 +69,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if ((Current_Aggregation.Children_Count > 0) && (currentMode.Show_Selection_Panel))
             {
-                scriptActionName = "newspaper_select_search_sobekcm('" + arg1 + "', '" + subCode + "', '" + browse_url + "');";
-                arg2 = subCode;
+                scriptActionName = "newspaper_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "', '" + browse_url + "');";
+                arg2 = SUB_CODE;
             }
             else
             {
@@ -120,24 +119,22 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 in_language = "en";
             }
 
-            Output.WriteLine("  <table width=\"100%\" id=\"MetadataSearchPanel\" >");
-            Output.WriteLine("    <tr align=\"right\">");
-            Output.WriteLine("      <td align=\"right\" width=\"18%\"><b><label for=\"Textbox1\">" + search_language + "</label></b></td>");
-            Output.WriteLine("      <td width=\"3%\">&nbsp;</td>");
-            Output.Write("      <td width=\"46%\"><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"NewspaperSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('Textbox1', 'NewspaperSearchBox_focused');\" onblur=\"textbox_leave('Textbox1', 'NewspaperSearchBox');\" ");
-            Output.Write(currentMode.Browser_Type.IndexOf("IE") >= 0 ? " onkeydown=\"fnTrapKD(event, 'newspaper', '" + arg1 + "', '" + arg2 +"','" + browse_url + "');\"" : "  onkeydown=\"return fnTrapKD(event, 'newspaper', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
-            Output.WriteLine(" /></td>");
-            Output.WriteLine("      <td width=\"5%\" align=\"center\">" + in_language + "</td>");
-            Output.WriteLine("      <td width=\"8%\">");
-            Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" style=\"width:128px;\" >");
+			Output.WriteLine("  <table id=\"sbkNsav_SearchPanel\" >");
+            Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td style=\"text-align:right;width:18%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"Textbox1\">" + search_language + "</label></td>");
+            Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
+			Output.WriteLine("      <td style=\"width:46%;\"><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkNsav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"fnTrapKD(event, 'newspaper', '" + arg1 + "', '" + arg2 +"','" + browse_url + "');\" /></td>");
+            Output.WriteLine("      <td style=\"width:5%;text-align:center;\">" + in_language + "</td>");
+            Output.WriteLine("      <td style=\"width:8%;\">");
+			Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" class=\"sbkNsav_DropDownList\" >");
             Output.WriteLine("          <option value=\"ZZ\" selected=\"selected\">Full Citation</option>");
             Output.WriteLine("          <option value=\"TX\">Full Text</option>");
             Output.WriteLine("          <option value=\"TI\">Newspaper Title</option>");
             Output.WriteLine("          <option value=\"PP\">Location</option>");
             Output.WriteLine("        </select>");
             Output.WriteLine("      </td>");
-            Output.WriteLine("      <td align=\"left\"> &nbsp; <a onmousedown=\"" + scriptActionName + "\"><img name=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_language + "\" /></a></td>");
-            Output.WriteLine("      <td align=\"left\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");     
+			Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");     
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
 

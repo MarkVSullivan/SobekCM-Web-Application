@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Web;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
@@ -308,6 +310,30 @@ namespace SobekCM.Library.Application_State
                     SobekCM_Database.Populate_MIME_List(Mime_Types, Tracer);
                 }
             }
+
+			// Check the IE hack CSS is loaded
+			if ((HttpContext.Current.Application["NonIE_Hack_CSS"] == null) || (Reload_All))
+			{
+				string css_file = HttpContext.Current.Server.MapPath("default/SobekCM_NonIE.css");
+				if (File.Exists(css_file))
+				{
+					try
+					{
+						StreamReader reader = new StreamReader(css_file);
+						HttpContext.Current.Application["NonIE_Hack_CSS"] = reader.ReadToEnd().Trim();
+						reader.Close();
+					}
+					catch (Exception)
+					{
+						HttpContext.Current.Application["NonIE_Hack_CSS"] = "/* ERROR READING FILE: default/SobekCM_NonIE.css */";
+						throw;
+					}
+				}
+				else
+				{
+					HttpContext.Current.Application["NonIE_Hack_CSS"] = String.Empty;
+				}
+			}
 
 		}
 	}

@@ -65,8 +65,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Add the HTML and controls to the section below the search box </summary>
-        /// <param name="placeHolder">Place holder to add html and controls to</param>
+        /// <param name="MainPlaceHolder">Place holder to add html and controls to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        void Add_Secondary_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer);
+        void Add_Secondary_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
     }
 }
