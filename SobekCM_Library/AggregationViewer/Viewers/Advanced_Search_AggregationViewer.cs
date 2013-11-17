@@ -50,7 +50,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             currentMode.SubAggregation = searchCollections;
             currentMode.Mode = lastMode;
 	        currentMode.Aggregation_Type = aggrType;
-			scriptActionName = "Javascript:advanced_search_sobekcm('" + redirectStem + "')";
+			scriptActionName = "advanced_search_sobekcm('" + redirectStem + "')";
 
         }
 
@@ -184,16 +184,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				}
 			}
 
-			Output.WriteLine("  <table width=\"100%\" id=\"AdvancedSearchPanel\" >");
-			Output.WriteLine("    <tr valign=\"bottom\">");
-			Output.WriteLine("      <td width=\"28%\" align=\"right\"><label for=\"Textbox1\">" + searchLanguage + "</label></td>");
-			Output.WriteLine("      <td width=\"3%\">&nbsp;</td>");
-			Output.WriteLine("      <td width=\"58%\">");
-			Output.WriteLine("        <input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"SobekAdvSearchBox\" value=\"" + text1 + "\" onfocus=\"javascript:textbox_enter('Textbox1', 'SobekAdvSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox1', 'SobekAdvSearchBox')\"/>");
+			Output.WriteLine("  <table id=\"sbkAsav_SearchPanel\" >");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td style=\"width:28%;text-align:right;\"><label for=\"Textbox1\">" + searchLanguage + "</label></td>");
+			Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
+			Output.WriteLine("      <td style=\"width:58%;\">");
+			Output.WriteLine("        <input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text1 + "\" />");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"3%\" align=\"center\">" + inLanguage + "</td>");
-			Output.WriteLine("      <td width=\"8%\">");
-			Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" style=\"width:128px;\" >");
+			Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+			Output.WriteLine("      <td style=\"width:8%;\">");
+			Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\" >");
 
 			add_drop_down_options(Output, dropDownValue1);
 
@@ -201,83 +201,83 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
-			Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
-			Output.WriteLine("      <td colspan=\"2\" align=\"right\">");
-			Output.WriteLine("        <select name=\"andOrNotBox1\" id=\"andOrNotBox1\" style=\"width:75px;\" >");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td colspan=\"2\" style=\"text-align:right;\">");
+			Output.WriteLine("        <select name=\"andOrNotBox1\" id=\"andOrNotBox1\" class=\"sbkAsav_AndOrNotBox\">");
 			add_and_or_not_options(Output, andOrValue1);
 			Output.WriteLine("        </select>");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"58%\">");
-			Output.WriteLine("        <input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"SobekAdvSearchBox\" value=\"" + text2 + "\" onfocus=\"javascript:textbox_enter('Textbox2', 'SobekAdvSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox2', 'SobekAdvSearchBox')\"/>");
+			Output.WriteLine("      <td style=\"width:58%;\">");
+			Output.WriteLine("        <input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text2 + "\" />");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"3%\" align=\"center\">" + inLanguage + "</td>");
-			Output.WriteLine("      <td width=\"8%\">");
-			Output.WriteLine("        <select name=\"Dropdownlist2\" id=\"Dropdownlist2\" style=\"width:128px;\" >");
+			Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+			Output.WriteLine("      <td style=\"width:8%;\">");
+			Output.WriteLine("        <select name=\"Dropdownlist2\" id=\"Dropdownlist2\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\" >");
 			add_drop_down_options(Output, dropDownValue2);
 			Output.WriteLine("        </select>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
-			Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
-			Output.WriteLine("      <td colspan=\"2\" align=\"right\">");
-			Output.WriteLine("        <select name=\"andOrNotBox2\" id=\"andOrNotBox2\" style=\"width:75px;\" >");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td colspan=\"2\" style=\"text-align:right;\">");
+			Output.WriteLine("        <select name=\"andOrNotBox2\" id=\"andOrNotBox2\" class=\"sbkAsav_AndOrNotBox\">");
 			add_and_or_not_options(Output, andOrValue2);
 			Output.WriteLine("        </select>");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"58%\">");
-			Output.WriteLine("        <input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"SobekAdvSearchBox\" value=\"" + text3 + "\" onfocus=\"javascript:textbox_enter('Textbox3', 'SobekAdvSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox3', 'SobekAdvSearchBox')\"/>");
+			Output.WriteLine("      <td style=\"width:58%;\">");
+			Output.WriteLine("        <input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text3 + "\" />");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"3%\" align=\"center\">" + inLanguage + "</td>");
-			Output.WriteLine("      <td width=\"8%\">");
-			Output.WriteLine("        <select name=\"Dropdownlist3\" id=\"Dropdownlist3\" style=\"width:128px;\">");
+			Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+			Output.WriteLine("      <td style=\"width:8%;\">");
+			Output.WriteLine("        <select name=\"Dropdownlist3\" id=\"Dropdownlist3\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\">");
 			add_drop_down_options(Output, dropDownValue3);
 			Output.WriteLine("        </select>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
-			Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
-			Output.WriteLine("      <td colspan=\"2\" align=\"right\">");
-			Output.WriteLine("        <select name=\"andOrNotBox3\" id=\"andOrNotBox3\" style=\"width:75px;\" >");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td colspan=\"2\" style=\"text-align:right;\">");
+			Output.WriteLine("        <select name=\"andOrNotBox3\" id=\"andOrNotBox3\" class=\"sbkAsav_AndOrNotBox\">");
 			add_and_or_not_options(Output, andOrValue3);
 			Output.WriteLine("        </select>");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"58%\">");
-			Output.WriteLine("        <input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"SobekAdvSearchBox\" value=\"" + text4 + "\"  onfocus=\"javascript:textbox_enter('Textbox4', 'SobekAdvSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox4', 'SobekAdvSearchBox')\"/>");
+			Output.WriteLine("      <td style=\"width:58%;\">");
+			Output.WriteLine("        <input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text4 + "\" />");
 			Output.WriteLine("      </td>");
-			Output.WriteLine("      <td width=\"3%\" align=\"center\">" + inLanguage + "</td>");
-			Output.WriteLine("      <td width=\"8%\">");
-			Output.WriteLine("        <select name=\"Dropdownlist4\" id=\"Dropdownlist4\" style=\"width:128px;\">");
+			Output.WriteLine("      <td style\"width:3%;text-align:center;\">" + inLanguage + "</td>");
+			Output.WriteLine("      <td style=\"width:8%;\">");
+			Output.WriteLine("        <select name=\"Dropdownlist4\" id=\"Dropdownlist4\" class=\"sbkAsav_DropDownList\" style=\"width:128px;\">");
 			add_drop_down_options(Output, dropDownValue4);
 			Output.WriteLine("        </select>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
-			Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
-			Output.WriteLine("      <td colspan=\"5\" align=\"right\">");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td colspan=\"5\" style=\"text-align:right;\">");
 			Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
 
 			if (currentCollection.Children_Count > 0)
 			{
-				Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
+				Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
 			}
 			else
 			{
-				Output.WriteLine("        <a onmousedown=\"" + scriptActionName + "\"><input type=\"button\" name=\"searchButton\" value=\"" + searchButtonText + "\" id=\"searchButton\" class=\"SobekSearchButton\" /></a>");
+				Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
 			}
 
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
-			Output.WriteLine("    <tr valign=\"bottom\" style=\"height: 30px;\">");
-			Output.WriteLine("      <td colspan=\"2\" align=\"right\" valign=\"middle\"><span style=\"color:#888; font-size:1.1em\"><b>" + searchOptions + "</b></span></td>");
-			Output.WriteLine("      <td valign=\"middle\" align=\"left\"> &nbsp; &nbsp; <a href=\"" + currentMode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/help_button.jpg\" border=\"0px\" alt=\"HELP\" /></a></td>");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td colspan=\"2\" class=\"sbkAsav_SearchOptions\">" + searchOptions + "</span></td>");
+			Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\"> &nbsp; &nbsp; <a href=\"" + currentMode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
 			Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("    <tr>");
 			Output.WriteLine("      <td colspan=\"5\">");
 			Output.WriteLine("        <table>");
-			Output.WriteLine("           <tr align=\"left\" valign=\"top\">");
-			Output.WriteLine("             <td width=\"120px\">&nbsp;</td>");
+			Output.WriteLine("           <tr style=\"text-align:left;vertical-align:top;\">");
+			Output.WriteLine("             <td style=\"width:120px;\">&nbsp;</td>");
 			Output.WriteLine("             <td>" + precision + ": &nbsp; </td>");
 			Output.WriteLine("             <td>");
 			Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionContains\" value=\"contains\" /> <label for=\"precisionContains\">" + contains_exactly + "</label> <br />");

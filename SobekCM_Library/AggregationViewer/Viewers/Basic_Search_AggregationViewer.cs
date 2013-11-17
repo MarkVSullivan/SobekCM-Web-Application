@@ -116,29 +116,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 search_collection = "Recherche dans la collection";
             }
 
-            Output.WriteLine("  <table width=\"100%\" id=\"BasicSearchPanel\" >");
-            Output.WriteLine("    <tr align=\"right\">");
-            Output.WriteLine("      <td align=\"right\" width=\"23%\"><b><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></b></td>");
-            Output.WriteLine("      <td width=\"3%\">&nbsp;</td>");
-            Output.Write("      <td align=\"left\" width=\"60%\"><input name=\"u_search\" type=\"text\" class=\"SobekHomeSearchBox\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeSearchBox', 'SobekHomeSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeSearchBox', 'SobekHomeSearchBox');\" ");
-
-
-            if (currentMode.Browser_Type.IndexOf("IE") >= 0)
-                Output.Write(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
-            else
-                Output.Write(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
-
-            Output.WriteLine(" /></td>");
-
-            Output.WriteLine("      <td align=\"left\" width=\"10%\"><a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a></td>");
-            Output.WriteLine("      <td align=\"left\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
+            Output.WriteLine("  <table id=\"sbkBsav_SearchPanel\" >");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
+            Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
+			Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
+            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("    </tr>");
 
             if (( currentUser != null ) && (currentUser.Is_System_Admin))
             {
-                Output.WriteLine("    <tr align=\"right\">");
+                Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td align=\"left\" colspan=\"4\">");
+                Output.WriteLine("      <td colspan=\"4\">");
                 Output.WriteLine("          &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");

@@ -61,7 +61,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             scriptBuilder.AppendLine("    // Create the map and set some values");
             scriptBuilder.AppendLine("    var latlng = new google.maps.LatLng(" + center_latitude + ", " + center_longitude + ");"); 
             scriptBuilder.AppendLine("    var myOptions = { zoom: 7, center: latlng, mapTypeId: google.maps.MapTypeId.TERRAIN, streetViewControl: false  };");
-            scriptBuilder.AppendLine("    map = new google.maps.Map(document.getElementById(\"map1\"), myOptions);");
+			scriptBuilder.AppendLine("    map = new google.maps.Map(document.getElementById('sbkMbav_MapDiv'), myOptions);");
             scriptBuilder.AppendLine("    map.enableKeyDragZoom();");
 
             if (( coordinates != null ) && ( coordinates.Rows.Count > 0 ))
@@ -171,13 +171,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
-        private void add_single_point(string Latitude, string Longitude, SobekCM_Navigation_Object Current_Mode, List<DataRow> datarows_in_this_point, StringBuilder scriptBuilder)
+        private void add_single_point(string Latitude, string Longitude, SobekCM_Navigation_Object Current_Mode, List<DataRow> DatarowsInThisPoint, StringBuilder ScriptBuilder)
         {
             // Build the info window
             StringBuilder contentBuilder = new StringBuilder(2000);
-            contentBuilder.Append(datarows_in_this_point.Count <= 2 ? "<div class=\"mapbrowse_info_div_small\">" : "<div class=\"mapbrowse_info_div\">");
-            contentBuilder.Append("<table><tr valign=\"top\">");
-            foreach (DataRow thisRow in datarows_in_this_point)
+			contentBuilder.Append(DatarowsInThisPoint.Count <= 2 ? "<div class=\"sbkMbav_InfoDivSmall\">" : "<div class=\"sbkMbav_InfoDiv\">");
+            contentBuilder.Append("<table><tr style=\"vertical-align:top;\">");
+            foreach (DataRow thisRow in DatarowsInThisPoint)
             {
                 string thisBibId = thisRow[2].ToString();
                 string groupTitle = thisRow[3].ToString();
@@ -195,9 +195,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     thumb = currentMode.Default_Images_URL + "NoThumb.jpg";
                 }
 
-                contentBuilder.Append("<td><table width=\"150px\" class=\"mapbrowsethumb\" >");
-                contentBuilder.Append("<tr><td><a href=\"" + link + "\" border=\"0\" target=\"" + thisBibId + "\"><img src=\"" + thumb + "\" /></a></td></tr>");
-                contentBuilder.Append("<tr><td align=\"center\" width=\"150px\"><span class=\"SobekThumbnailText\">" + groupTitle.Replace("'", ""));
+				contentBuilder.Append("<td><table class=\"sbkMbav_Thumb\" >");
+                contentBuilder.Append("<tr><td><a href=\"" + link + "\" target=\"" + thisBibId + "\"><img src=\"" + thumb + "\" /></a></td></tr>");
+				contentBuilder.Append("<tr><td><span class=\"sbkMbav_ThumbText\">" + groupTitle.Replace("'", ""));
                 if (itemCount > 1)
                 {
                     if (type.ToUpper() == "NEWSPAPER")
@@ -211,14 +211,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             contentBuilder.Append("</tr></table>");
             contentBuilder.Append("</div>");
 
-            if (datarows_in_this_point.Count < 2)
+            if (DatarowsInThisPoint.Count < 2)
                 contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about this title</a></center><br/>");
             else
-                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about these " + datarows_in_this_point.Count + " titles</a></center><br/>");
+                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about these " + DatarowsInThisPoint.Count + " titles</a></center><br/>");
 
 
-            scriptBuilder.AppendLine("    add_point( " + Latitude + ", " + Longitude + ", '" + contentBuilder + "' );");
+            ScriptBuilder.AppendLine("    add_point( " + Latitude + ", " + Longitude + ", '" + contentBuilder + "' );");
         }
+
 
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
@@ -231,17 +232,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Map_Browse_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-            Output.WriteLine("<div class=\"mapbrowsepanel\">");
-            Output.WriteLine("  <table width=\"100%\" id=\"MapBrowsePanel\" >");
-            Output.WriteLine("  <tr align=\"top\">");
-            Output.WriteLine("    <td>");
-            Output.WriteLine("      <blockquote>Select a point below to view the items from or about that location.<br />Press the SHIFT button, and then drag a box on the map to zoom in.</blockquote>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("  <tr valign=\"top\">");
-            Output.WriteLine("    <td>");
-            Output.WriteLine("      <div id=\"map1\" style=\"width: 943px; height: 700px\">");
-            Output.WriteLine("    </td>");
+			Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
+			Output.WriteLine("  <table id=\"sbkMbav_MainTable\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>");
+            Output.WriteLine("        <blockquote>Select a point below to view the items from or about that location.<br />Press the SHIFT button, and then drag a box on the map to zoom in.</blockquote>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>");
+			Output.WriteLine("        <div id=\"sbkMbav_MapDiv\"></div>");
+            Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
             Output.WriteLine("</div>");
@@ -259,25 +260,24 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Map_Browse_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
             }
 
-            Output.WriteLine("<div id=\"SobekQuickTips\">");
+            Output.WriteLine("<div id=\"sbk_QuickTips\">");
             Output.WriteLine("  <h1>Frequently Asked Questions</h1>");
             Output.WriteLine("  <ul>");
-            Output.WriteLine("    <li><strong>What are the points on the map?</strong>");
-            Output.WriteLine("      <p class=\"tagline\"> The points on the map correspond to material in this collection.  In general, the dot represents the source of the material.  For newspapers, the dot is the place of publication or the audience served by the newspaper title.  For photographs, this usually corresponds to the location the photograph was taken, which is usually the same as the subject matter.");
-            Output.WriteLine("      </p>");
+            Output.WriteLine("    <li>What are the points on the map?");
+            Output.WriteLine("      <p class=\"tagline\"> The points on the map correspond to material in this collection.  In general, the dot represents the source of the material.  For newspapers, the dot is the place of publication or the audience served by the newspaper title.  For photographs, this usually corresponds to the location the photograph was taken, which is usually the same as the subject matter.</p>");
             Output.WriteLine("    </li>");
-            Output.WriteLine("    <li><strong>How can I tell which titles are linked to each point?</strong>");
+            Output.WriteLine("    <li>How can I tell which titles are linked to each point?");
             Output.WriteLine("      <p class=\"tagline\"> An informational window will appear when you select any of the points on the map.  This window includes thumbnails and links to each item.  For more information about all the titles, you can select the link at the bottom of the window.</p>");
             Output.WriteLine("    </li>");
-            Output.WriteLine("    <li><strong>Can I search from this map?</strong>");
+            Output.WriteLine("    <li>Can I search from this map?");
             Output.WriteLine("      <p class=\"tagline\"> To perform a search, use the MAP SEARCH function found under its own tab.</p>");
             Output.WriteLine("    </li>");
-            Output.WriteLine("    <li><strong>Some points do not appear to be over any particular building or location?</strong>");
+            Output.WriteLine("    <li>Some points do not appear to be over any particular building or location?");
             Output.WriteLine("      <p class=\"tagline\"> Many times the center point of a city is used but many times a specific landmark may be tagged.  If the point does not appear to be over any landmark, it is probably just the town center.</p>");
             Output.WriteLine("    </li>");
             Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
-            Output.WriteLine("  <br />");
+            Output.WriteLine("<br />");
             Output.WriteLine();
         }
     }

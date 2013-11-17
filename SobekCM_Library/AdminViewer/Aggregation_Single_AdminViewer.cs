@@ -1191,16 +1191,19 @@ namespace SobekCM.Library.AdminViewer
 			// Add each metadata field to the select boxes
 			foreach (Metadata_Search_Field metadataField in SobekCM_Library_Settings.Metadata_Search_Fields )
 			{
-				// Anywhere as -1 is in the list, so leave that out
-				if ((metadataField.ID > 0) && (metadataField.Display_Term != "Undefined"))
+				if (metadataField.Web_Code.Length > 0)
 				{
-					if (metadataField.ID == FacetID)
+					// Anywhere as -1 is in the list, so leave that out
+					if ((metadataField.ID > 0) && (metadataField.Display_Term != "Undefined"))
 					{
-						Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
-					}
-					else
-					{
-						Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+						if (metadataField.ID == FacetID)
+						{
+							Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+						}
+						else
+						{
+							Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+						}
 					}
 				}
 			}
@@ -1431,16 +1434,19 @@ namespace SobekCM.Library.AdminViewer
 			// Add each metadata field to the select boxes
 			foreach (Metadata_Search_Field metadataField in SobekCM_Library_Settings.Metadata_Search_Fields)
 			{
-				// Anywhere as -1 is in the list, so leave that out
-				if ((metadataField.ID > 0) && (metadataField.Display_Term != "Undefined"))
+				if (metadataField.Web_Code.Length > 0)
 				{
-					if (String.Equals(metadataField.Display_Term, Value, StringComparison.OrdinalIgnoreCase))
+					// Anywhere as -1 is in the list, so leave that out
+					if ((metadataField.ID > 0) && (metadataField.Display_Term != "Undefined"))
 					{
-						Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
-					}
-					else
-					{
-						Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+						if (String.Equals(metadataField.Display_Term, Value, StringComparison.OrdinalIgnoreCase))
+						{
+							Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+						}
+						else
+						{
+							Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+						}
 					}
 				}
 			}
@@ -2706,9 +2712,6 @@ namespace SobekCM.Library.AdminViewer
 				// Try to save the new item aggregation
 				if (SobekCM_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, -1, correct_type, is_active, is_hidden, String.Empty, itemAggregation.Aggregation_ID, user.Full_Name, null))
 				{
-					itemAggregation = SobekCM_Database.Get_Item_Aggregation(itemAggregation.Code, true, false, null);
-					HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
-
 					// Ensure a folder exists for this, otherwise create one
 					try
 					{

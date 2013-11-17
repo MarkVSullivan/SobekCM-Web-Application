@@ -631,7 +631,13 @@ namespace SobekCM.Library.MainWriters
 			// Special code for the menus, if this is not IE
 			if (HttpContext.Current.Request.Browser.Browser.ToUpper() != "IE")
 			{
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_NonIE.css\" rel=\"stylesheet\" type=\"text/css\" />");
+				string non_ie_hack = HttpContext.Current.Application["NonIE_Hack_CSS"] as string;
+				if (!String.IsNullOrEmpty(non_ie_hack))
+				{
+					Output.WriteLine("  <style type=\"text/css\">");
+					Output.WriteLine("    " + non_ie_hack);
+					Output.WriteLine("  </style>");
+				}
 			}
 			else
 			{
