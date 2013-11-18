@@ -98,6 +98,7 @@ namespace SobekCM.Library.Settings
 		private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByCode;
 		private static readonly Dictionary<short, Metadata_Search_Field> metadataFieldsByID;
 		private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByFacetName;
+		private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByDisplayName;
 		private static readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByName;
 
 		private static string mangoUnionSearchBaseUrl;
@@ -149,6 +150,7 @@ namespace SobekCM.Library.Settings
 				metadataFieldsByCode = new Dictionary<string, Metadata_Search_Field>();
 				metadataFieldsByID = new Dictionary<short, Metadata_Search_Field>();
 				metadataFieldsByFacetName = new Dictionary<string, Metadata_Search_Field>();
+				metadataFieldsByDisplayName = new Dictionary<string, Metadata_Search_Field>();
 				metadataFieldsByName = new Dictionary<string, Metadata_Search_Field>();
 				incomingFolders = new List<Builder_Source_Folder>();
 				searchStopWords = new List<string>();
@@ -605,6 +607,7 @@ namespace SobekCM.Library.Settings
 				metadataFieldsByCode.Clear();
 				metadataFieldsByID.Clear();
 				metadataFieldsByName.Clear();
+				metadataFieldsByDisplayName.Clear();
 
 				// Add ANYWHERE
 				Metadata_Search_Field anywhere = new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "all");
@@ -640,7 +643,7 @@ namespace SobekCM.Library.Settings
 
 					// Retrieve each individual value
 					short id = Convert.ToInt16(thisRow[idColumn]);
-					string code = thisRow[codeColumn].ToString();
+					string code = thisRow[codeColumn].ToString().Trim();
 					string display = thisRow[displayColumn].ToString();
 					string facet = thisRow[facetColumn].ToString();
 					string solr = thisRow[solrColumn].ToString();
@@ -651,13 +654,18 @@ namespace SobekCM.Library.Settings
 
 					// Add this to the collections
 					metadataFields.Add(newField);
-					metadataFieldsByCode[code] = newField;
 					metadataFieldsByID[id] = newField;
-					metadataFieldsByName[name.ToLower().Replace("_", " ")] = newField;
 
-					if (facet.Length > 0)
+					if (code.Length > 0)
 					{
-						metadataFieldsByFacetName[facet.Replace("_", " ").ToLower()] = newField;
+						metadataFieldsByCode[code] = newField;
+						metadataFieldsByName[name.ToLower().Replace("_", " ")] = newField;
+						metadataFieldsByDisplayName[display.ToLower().Replace("_", " ")] = newField;
+
+						if (facet.Length > 0)
+						{
+							metadataFieldsByFacetName[facet.Replace("_", " ").ToLower()] = newField;
+						}
 					}
 				}
 			}
@@ -682,6 +690,17 @@ namespace SobekCM.Library.Settings
 			lock (thisLock)
 			{
 				return metadataFieldsByName.ContainsKey(Metadata_Name.Replace("_", " ").ToLower()) ? metadataFieldsByName[Metadata_Name.Replace("_", " ").ToLower()] : null;
+			}
+		}
+
+		/// <summary> Gets a single metadata search field, by the display name </summary>
+		/// <param name="Metadata_Name"> Name for this field and name of the column in the database </param>
+		/// <returns> Metadata search field, or else NULL </returns>
+		public static Metadata_Search_Field Metadata_Search_Field_By_Display_Name(string Display_Name)
+		{
+			lock (thisLock)
+			{
+				return metadataFieldsByDisplayName.ContainsKey(Display_Name.Replace("_", " ").ToLower()) ? metadataFieldsByDisplayName[Display_Name.Replace("_", " ").ToLower()] : null;
 			}
 		}
 

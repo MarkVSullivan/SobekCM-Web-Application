@@ -15,7 +15,6 @@
 **                                                                 
 **************************************************************************/
 
-
 /** Styles used for text areas throughout the admin pages **/
 .sbkAdm_HomeText { text-align: justify; padding-bottom: 5px; }
 .sbkAdm_HomeText a:link { color:#000080; }
@@ -31,10 +30,6 @@
 
 #sbkAdm_ActionMessage { width: 100%;text-align: center;margin-left: auto;margin-right: auto;font-weight: bold;}
 
-/** Styles used for controls throughout the admin pages **/
-input { color:Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
-textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
 
 
 .sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 4px 10px; cursor: pointer; letter-spacing: 0.5px; }

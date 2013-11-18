@@ -715,7 +715,9 @@
 {
     float: left;
     height: 15px;
-    font: 12px 'Arial Black', Gadget, sans-serif;
+    font: 11px 'Arial Black', Gadget, sans-serif;
+    margin-left: 3px;
+    margin-top: -1px;
 }
 
 #content_minibar_button_minimize
@@ -723,8 +725,9 @@
     float: right;
     background-image: url("images/mapedit/toolbox-minimize2.png");
     background-repeat: no-repeat;
-    height: 19px;
-    width: 19px;
+    height: 15px;
+    width: 15px;
+    margin-left: 3px;
 }
 
 #content_minibar_button_maximize
@@ -732,8 +735,9 @@
     float: right;
     background-image: url("images/mapedit/toolbox-maximize2.png");
     background-repeat: no-repeat;
-    height: 19px;
-    width: 19px;
+    height: 15px;
+    width: 15px;
+    margin-left: 3px;
 }
 
 #content_minibar_button_close
@@ -741,8 +745,9 @@
     float: right;
     background-image: url("images/mapedit/toolbox-close2.png");
     background-repeat: no-repeat;
-    height: 19px;
-    width: 19px;
+    height: 15px;
+    width: 15px;
+    margin-left: 3px;
 }
 
 #content_minibar_button_minimize:hover

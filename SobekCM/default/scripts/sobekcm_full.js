@@ -1701,13 +1701,32 @@ function describe_item_form_close() {
 
 
 
-function toggle_share_form2(linkname) {
+function toggle_share_form2(title, share_url, design_url) {
+	var linkname = 'share_button';
+	
 	// Toggle the share form
-	blanket_size('share_form', linkname, 90);
+	blanket_size('share_form', 90);
 
 	// Position this form differently, since it is buried in the middle of the form
 	var popUpDiv = document.getElementById('share_form');
-	popUpDiv.style.left = '539px';
+	popUpDiv.style.left = $("#" + linkname).position().left - 100 + "px";
+	popUpDiv.style.top = $("#" + linkname).offset().top + "px";
+	
+
+	if (popUpDiv.innerHTML.length < 10) {
+		popUpDiv.innerHTML = "<a href=\"http://www.facebook.com/share.php?t=" + title + "&amp;u=" + share_url + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src=\'" + design_url + "default/images/facebook_share_h.gif\'\" onmouseout=\"facebook_share.src=\'" + design_url + "default/images/facebook_share.gif\'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + design_url + "default/images/facebook_share.gif\" alt=\"FACEBOOK\" /></a>\n" +
+			"<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + design_url + "default/images/yahoobuzz_share_h.gif'\" onmouseout=\"yahoobuzz_share.src='" + design_url + "default/images/yahoobuzz_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + design_url + "default/images/yahoobuzz_share.gif\" alt=\"YAHOO BUZZ\" /></a>\n" +
+			"<br />" +
+			"<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + design_url + "default/images/twitter_share_h.gif'\" onmouseout=\"twitter_share.src='" + design_url + "default/images/twitter_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + design_url + "default/images/twitter_share.gif\" alt=\"TWITTER\" /></a>" +
+			"<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + design_url + "default/images/google_share_h.gif'\" onmouseout=\"google_share.src='" + design_url + "default/images/google_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + design_url + "default/images/google_share.gif\" alt=\"GOOGLE SHARE\" /></a>" +
+			"<br />" +
+			"<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + design_url + "default/images/stumbleupon_share_h.gif'\" onmouseout=\"stumbleupon_share.src='" + design_url + "default/images/stumbleupon_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + design_url + "default/images/stumbleupon_share.gif\" alt=\"STUMBLEUPON\" /></a>" +
+			"<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + design_url + "default/images/yahoo_share_h.gif'\" onmouseout=\"yahoo_share.src='" + design_url + "default/images/yahoo_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + design_url + "default/images/yahoo_share.gif\" alt=\"YAHOO SHARE\" /></a>" +
+			"<br />" +
+			"<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + design_url + "default/images/digg_share_h.gif'\" onmouseout=\"digg_share.src='" + design_url + "default/images/digg_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + design_url + "default/images/digg_share.gif\" alt=\"DIGG\" /></a>" +
+			"<a onmouseover=\"favorites_share.src='" + design_url + "default/images/favorites_share_h.gif'\" onmouseout=\"favorites_share.src='" + design_url + "default/images/favorites_share.gif'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + design_url + "default/images/favorites_share.gif\" alt=\"MY FAVORITES\" /></a>" +
+			"<br />";
+	}
 
 	toggle('share_form');
 
@@ -1789,7 +1808,7 @@ function itemwriter_load() {
 	}
 
 	// If the viewport is less than 800 wide, make the nav bar tighter
-	if (viewport_width < 890) {
+	if (viewport_width < 950) {
 		$('#printbuttonspan').hide();
 		$('#addbuttonspan').hide();
 		$('#sendbuttonspan').hide();
@@ -1805,7 +1824,7 @@ function itemwriter_load() {
 		// Hide the left column if the size is small enough
 		if (document.URL.indexOf('thumbs') < 0) {
 			var column_width = $('#sbkIsw_Leftnavbar').width();
-			if ((viewport_width < 30 + column_width + main_view_width) && (main_view_width < 800)) {
+			if (viewport_width < 30 + column_width + main_view_width) {
 
 				$('#sbkIsw_Leftnavbar').hide();
 				$('#sbkIsw_ShowTocRow').hide();

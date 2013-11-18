@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -364,6 +365,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
+
             // Add the text here
             mySobekViewer.Write_HTML(Output, Tracer);
 
@@ -418,7 +420,36 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    // Start the page container
+	                if (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Logon)
+	                {
+		                // Add the item views
+						header_writer.WriteLine("<!-- Add the main user-specific menu -->");
+						header_writer.WriteLine("<div id=\"sbkUsm_MenuBar\" class=\"sbkMenu_Bar\">");
+						header_writer.WriteLine("<ul class=\"sf-menu\">");
+
+		                // Get ready to draw the tabs
+		                string sobek_home_text = Mode.SobekCM_Instance_Abbreviation + " Home";
+
+		                // Add the 'SOBEK HOME' first menu option and suboptions
+		                Mode.Mode = Display_Mode_Enum.Aggregation;
+		                Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+		                Mode.Home_Type = Home_Type_Enum.List;
+						header_writer.WriteLine("\t\t<li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
+						header_writer.WriteLine("\t</ul></div>");
+
+						header_writer.WriteLine("<!-- Initialize the main user menu -->");
+						header_writer.WriteLine("<script>");
+						header_writer.WriteLine("  jQuery(document).ready(function () {");
+						header_writer.WriteLine("     jQuery('ul.sf-menu').superfish();");
+						header_writer.WriteLine("  });");
+						header_writer.WriteLine("</script>");
+						header_writer.WriteLine();
+
+		                // Restore the current view information type
+		                currentMode.Mode = Display_Mode_Enum.My_Sobek;
+	                }
+
+	                // Start the page container
                     header_writer.WriteLine("<div id=\"pagecontainer\">");
                 }
 

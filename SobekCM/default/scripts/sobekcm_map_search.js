@@ -15,29 +15,6 @@ function show_map_instructions() {
 	return false;
 }
 
-function enter_address_box(what) {
-	///<summary> Function is called when user enters the textbox to change the background color </summary>
-	if (what.value == what.defaultValue) {
-		what.value = '';
-	}
-	what.className = 'MapAddressBox_focused';
-}
-
-function leave_address_box(what)
-{
-	if(what.value == '') 
-	{
-		what.className='MapAddressBox_initial';
-		what.value = what.defaultValue;
-	}
-	else
-	{
-		what.className='MapAddressBox';
-	}
-
-	address_box_changed(what);
-}
-
 function address_keydown(event, what) {
 	var return_caught = false;
 	if (document.all) {
@@ -169,18 +146,12 @@ function load_search_map(latitude, longitude, zoom, mapdiv ) {
 		// Return the address to the initial value
 		var addressBox = document.getElementById("AddressTextBox");
 		if (addressBox != null) {
-			addressBox.className = 'MapAddressBox_initial';
-			addressBox.value = addressBox.defaultValue;
+			addressBox.value = '';
 		}
 
 		// Disable the search button 
 		var searchButton = document.getElementById("searchButton");
 		searchButton.disabled = true;
-
-		var addressBox = document.getElementById("AddressTextBox");
-		if (addressBox != null) {
-			addressBox.value = addressBox.defaultValue;
-		}
 
 		// Disable the find address button
 		var searchButton = document.getElementById("findButton");

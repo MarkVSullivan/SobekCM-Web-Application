@@ -144,10 +144,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         }
 
         /// <summary> Add the HTML and controls to the section below the search box </summary>
-        /// <param name="placeHolder">Place holder to add html and controls to</param>
+        /// <param name="MainPlaceHolder">Place holder to add html and controls to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        public virtual void Add_Secondary_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        public virtual void Add_Secondary_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -175,10 +175,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             switch ( currentMode.Language )
             {
                 case Web_Language_Enum.French:
-                    Output.WriteLine("<div id=\"SobekQuickTips\">");
+					Output.WriteLine("<div id=\"sbk_QuickTips\">");
                     Output.WriteLine("  <h1>Conseils rapides</h1>");
                     Output.WriteLine("  <ul>");
-                    Output.WriteLine("    <li><strong>La Recherche Booléenne</strong>");
+                    Output.WriteLine("    <li>La Recherche Booléenne");
                     Output.WriteLine("      <p class=\"tagline\"> Utilisez <b>+</b> ou <i><b>et</b></i> des termes et de trouver des documents avec <b>tous</b> les termes.<br />");
                     Output.WriteLine("      Utilisez <b>-</b> ou <i><b>ou</b></i> entre les termes ou pour rechercher des enregistrements avec <b>l'un</b> des termes.<br />");
                     Output.WriteLine("      Utilisez <b>!</b> ou <i><b>et not</b></i> entre les termes à exclure des enregistrements avec des termes.<br />");
@@ -186,29 +186,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("      EXEMPLE: naturelle et non histoire");
                     Output.WriteLine("      </p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Recherche d'une Expression</strong>");
+                    Output.WriteLine("    <li>Recherche d'une Expression");
                     Output.WriteLine("      <p class=\"tagline\"> Placer des guillemets autour d'une phrase recherchera la phrase exacte.<br />");
                     Output.WriteLine("      EXEMPLE: &laquo;histoire naturelle&raquo;</p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Capitalisation</strong>");
+                    Output.WriteLine("    <li>Capitalisation");
                     Output.WriteLine("      <p class=\"tagline\"> Les recherches ne sont pas la capitalisation sensible.<br />");
                     Output.WriteLine("      EXEMPLE: La recherche de <i>NATUREL</i> rendra les mêmes résultats que la recherche de naturel <i>naturel</i></p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Les Signes Diacritiques</strong>");
+                    Output.WriteLine("    <li>Les Signes Diacritiques");
                     Output.WriteLine("      <p class=\"tagline\"> Pour rechercher des mots avec des signes diacritiques, le caractère doit être entré dans la zone de recherche.<br />");
                     Output.WriteLine("      EXEMPLE: La recherche de <i>Précédent</i> est différente de <i>Precedent</i></p>");
                     Output.WriteLine("    </li>");
                     Output.WriteLine("  </ul>");
                     Output.WriteLine("</div>");
-                    Output.WriteLine("  <br />");
+                    Output.WriteLine("<br />");
                     Output.WriteLine();
                     break;
 
                 case Web_Language_Enum.Spanish:
-                    Output.WriteLine("<div id=\"SobekQuickTips\">");
+					Output.WriteLine("<div id=\"sbk_QuickTips\">");
                     Output.WriteLine("  <h1>Consejos Rápidos:</h1>");
                     Output.WriteLine("  <ul>");
-                    Output.WriteLine("    <li><strong>Búsqueda Binaria</strong>");
+                    Output.WriteLine("    <li>Búsqueda Binaria");
                     Output.WriteLine("      <p class=\"tagline\"> Utilice <b>+</b> o <i><b>y</b></i>entre los términos para encontrar registros con <b>todos</b> los términos.<br />");
                     Output.WriteLine("      Utilice <b>-</b> o <i><b>o</b></i> entre los términos para encontrar registros con <b>cualquiera</b> de los términos.<br />");
                     Output.WriteLine("      Utilice <b>!</b> o <i><b>y no</b></i>  entre los términos para excluir registros con los términos.<br />");
@@ -216,15 +216,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("      EJEMPLO: natural y no historia ");
                     Output.WriteLine("      </p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Búsqueda de Frases</strong>");
+                    Output.WriteLine("    <li>Búsqueda de Frases");
                     Output.WriteLine("      <p class=\"tagline\"> Colocar comillas a una frase buscará la frase exacta.<br />");
                     Output.WriteLine("      EJEMPLO: &quot;historio natural&quot;</p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Uso de Mayúsculas</strong>");
+                    Output.WriteLine("    <li>Uso de Mayúsculas");
                     Output.WriteLine("      <p class=\"tagline\"> Las búsquedas no distinguen las mayúsculas de las minúsculas.<br />");
                     Output.WriteLine("      EJEMPLO: Buscar <i>NATURAL</i> dará el mismo resultado que buscar <i>natural</i></p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Tilde Diacrítica</strong>");
+                    Output.WriteLine("    <li>Tilde Diacrítica");
                     Output.WriteLine("      <p class=\"tagline\"> Para buscar palabras con tilde diacrítica, el símbolo debe ser puesto en el cuadro de búsqueda.<br />");
                     Output.WriteLine("      EJEMPLO: Buscar <i>Précédent</i> es una búsqueda diferente a <i>Precedent</i></p>");
                     Output.WriteLine("    </li>");
@@ -235,10 +235,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
 
                 default:
-                    Output.WriteLine("<div id=\"SobekQuickTips\">");
+					Output.WriteLine("<div id=\"sbk_QuickTips\">");
                     Output.WriteLine("  <h1>Quick Tips</h1>");
                     Output.WriteLine("  <ul>");
-                    Output.WriteLine("    <li><strong>Boolean Searching</strong>");
+                    Output.WriteLine("    <li>Boolean Searching");
                     Output.WriteLine("      <p class=\"tagline\"> Use <b>+</b> or <i><b>and</b></i> between terms to find records with <b>all</b> the terms.<br />");
                     Output.WriteLine("      Use <b>-</b> or <i><b>or</b></i> between terms to find records with <b>any</b> of the terms.<br />");
                     Output.WriteLine("      Use <b>!</b> or <i><b>and not</b></i> between terms to exclude records with terms.<br />");
@@ -246,15 +246,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("      EXAMPLE: natural and not history");
                     Output.WriteLine("      </p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Phrase Searching</strong>");
+                    Output.WriteLine("    <li>Phrase Searching");
                     Output.WriteLine("      <p class=\"tagline\"> Placing quotes around a phrase will search for the exact phrase.<br />");
                     Output.WriteLine("      EXAMPLE: &quot;natural history&quot;</p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Capitalization</strong>");
+                    Output.WriteLine("    <li>Capitalization");
                     Output.WriteLine("      <p class=\"tagline\"> Searches are not capitalization sensitive.<br />");
                     Output.WriteLine("      EXAMPLE: Searching for <i>NATURAL</i> will return the same results as searching for <i>natural</i></p>");
                     Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li><strong>Diacritics</strong>");
+                    Output.WriteLine("    <li>Diacritics");
                     Output.WriteLine("      <p class=\"tagline\"> To search for words with diacritics, the character must be entered into the search box.<br />");
                     Output.WriteLine("      EXAMPLE: Searching <i>Précédent</i> is a different search than <i>Precedent</i></p>");
                     Output.WriteLine("    </li>");
