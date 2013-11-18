@@ -8726,7 +8726,7 @@ namespace SobekCM.Library.Database
         /// <summary> Gets the related workflows for an item by ItemID </summary>
         /// <param name="itemID"></param>
         /// <returns>DataTable of previously saved workflows for this item</returns>
-        public static DataTable Tracking_Get_Open_Workflows(int itemID)
+        public static DataTable Tracking_Get_Open_Workflows(int itemID, int eventNum)
         {
             // Create the connection
             SqlConnection connect = new SqlConnection(connectionString);
@@ -8737,7 +8737,8 @@ namespace SobekCM.Library.Database
                 SqlCommand cmd = new SqlCommand("dbo.Get_Last_Open_Workflow_By_ItemID", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@itemID", itemID);
-
+                cmd.Parameters.AddWithValue("@EventNumber", eventNum);
+             
                 //Open the connection
                 connect.Open();
 
