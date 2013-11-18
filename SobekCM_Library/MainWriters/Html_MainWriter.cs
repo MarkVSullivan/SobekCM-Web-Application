@@ -614,7 +614,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
 
             // Always add jQuery library (changed as of 7/8/2013)
             if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
@@ -631,12 +631,13 @@ namespace SobekCM.Library.MainWriters
 			// Special code for the menus, if this is not IE
 			if (HttpContext.Current.Request.Browser.Browser.ToUpper() != "IE")
 			{
-				Output.WriteLine("  <style type=\"text/css\">");
-				Output.WriteLine("    #sf-menubar { padding-bottom: 1px; }");
-				Output.WriteLine("    #sbkAgm_Home a { height: 21px; }");
-				Output.WriteLine("    .sbkMenu_Home a { padding: 4px 30px 2px 12px !important; }");
-				Output.WriteLine("    #selected-sf-menu-item-link,.selected-sf-menu-item-link { height: 27px;}");
-				Output.WriteLine("  </style>");
+				string non_ie_hack = HttpContext.Current.Application["NonIE_Hack_CSS"] as string;
+				if (!String.IsNullOrEmpty(non_ie_hack))
+				{
+					Output.WriteLine("  <style type=\"text/css\">");
+					Output.WriteLine("    " + non_ie_hack);
+					Output.WriteLine("  </style>");
+				}
 			}
 			else
 			{
@@ -652,13 +653,13 @@ namespace SobekCM.Library.MainWriters
             // Include the interface's style sheet if it has one
             if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
             {
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + htmlSkin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + htmlSkin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
 			// Finally add the aggregation-level CSS if it exists
 			if (((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Search) || (currentMode.Mode == Display_Mode_Enum.Results)) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
 			{
-				Output.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+				Output.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 
             // Add a printer friendly CSS

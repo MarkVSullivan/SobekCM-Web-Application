@@ -49,6 +49,21 @@ namespace SobekCM.URL_Rewriter
             if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || ( appRelative.IndexOf(".html") > 0 ) || ( appRelative.IndexOf(".htm") > 0 ))
                 return;
 
+			// Special code for the favicon.ico
+			if (appRelative.IndexOf("favicon.ico") >= 0)
+			{
+				string favicon_ico_file = HttpContext.Current.Server.MapPath(appRelative);
+				if (System.IO.File.Exists(favicon_ico_file))
+					return;
+				else
+				{
+					// is there a URL specific one?
+					string new_fav_path = "~/design/favicons/" + HttpContext.Current.Request.Url.Host + "/favicon.ico";
+					HttpContext.Current.RewritePath(new_fav_path);
+					return;
+				}
+			}
+
             // Special code for calls to the data ASPX file
             if (appRelative.IndexOf("sobekcm_data.aspx") >= 0) 
             {

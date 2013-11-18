@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Text;
 using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -235,7 +234,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string search_button_text = "Search";
             string find_button_text = "Find Address";
             string address_text = "Address";
-            const string locateText = "Locate";
+            const string LOCATE_TEXT = "Locate";
 
             if (currentMode.Language == Web_Language_Enum.Spanish)
             {
@@ -253,7 +252,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 width = 550;
             }
 
-            Output.WriteLine("  <table width=\"100%\" id=\"MapSearchPanel\" >");
+            Output.WriteLine("  <table id=\"sbkMsav_SearchPanel\" >");
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td colspan=\"2\">");
             switch( currentMode.Language )
@@ -262,20 +261,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 case Web_Language_Enum.Spanish:
                     if (currentCollection.Map_Search >= 100)
                     {
-                        Output.WriteLine("          <table cellspacing=\"2px\">");
+                        Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-                        Output.WriteLine("                <td><input type=\"button\" name=\"searchButton\" value=\"" + search_button_text + "\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\" /></td></tr>");
+						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
                     {
-                        Output.WriteLine("        <div class=\"map_instructions_link\" id=\"MapInstructionsLink\" style=\"display:block\" >");
+						Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
                         Output.WriteLine("          <a href=\"\" onclick=\"return show_map_instructions();\">Haga click aquí para ver las instrucciones para la interfase de esta búsqueda.</a>");
                         Output.WriteLine("        </div>");
-                        Output.WriteLine("        <div class=\"map_instructions\" id=\"MapInstructions\" style=\"display:none\" >");
-                        Output.WriteLine("          <table cellspacing=\"3px\">");
+						Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
+                        Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td colspan=\"2\">1. Utilice uno de los siguientes métodos para definir su búsqueda geográfica:</td></tr>");
-                        Output.WriteLine("            <tr><td width=\"50px\">&nbsp;</td><td>a. Escriba una dirección y haga click en el botón <i>Localizar</a> para localizarla, <i>o</i></td></tr>");
+                        Output.WriteLine("            <tr><td style=\"width:50px;\">&nbsp;</td><td>a. Escriba una dirección y haga click en el botón <i>Localizar</a> para localizarla, <i>o</i></td></tr>");
                         Output.WriteLine("            <tr><td>&nbsp;</td><td>b. Haga click sobre el botón <i>Presione para Selecionar Area</i> para seleccionar dos esquinas opuestas, <i>o</i></td></tr>");
                         Output.WriteLine("            <tr><td>&nbsp;</td><td>c. Haga click sobre el botón <i>Presione para Seleccionar un Punto</i> para seleccionar un punto individual</td></tr>");
                         Output.WriteLine("            <tr><td colspan=\"2\">2. Presione el botón <i>Buscar</i> para ver los resultados. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</td></tr>");
@@ -287,20 +286,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 default:
                     if (currentCollection.Map_Search >= 100)
                     {
-                        Output.WriteLine("          <table cellspacing=\"2px\">");
+                        Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-                        Output.WriteLine("                <td><input type=\"button\" name=\"searchButton\" value=\"" + search_button_text + "\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\" /></td></tr>");
+						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
                     {
-                        Output.WriteLine("        <div class=\"map_instructions_link\" id=\"MapInstructionsLink\" style=\"display:block\" >");
+						Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
                         Output.WriteLine("          <a href=\"\" onclick=\"return show_map_instructions();\">Click here to view instructions for this search interface</a>");
                         Output.WriteLine("        </div>");
-                        Output.WriteLine("        <div class=\"map_instructions\" id=\"MapInstructions\" style=\"display:none\" >");
-                        Output.WriteLine("          <table cellspacing=\"3px\">");
+						Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
+                        Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td colspan=\"2\">1. Use one of the methods below to define your geographic search:</td></tr>");
-                        Output.WriteLine("            <tr><td width=\"50px\">&nbsp;</td><td>a. Enter an address and press <i>Find Address</i> to locate, <i>or</i></td></tr>");
+                        Output.WriteLine("            <tr><td style=\"width:50px;\">&nbsp;</td><td>a. Enter an address and press <i>Find Address</i> to locate, <i>or</i></td></tr>");
                         Output.WriteLine("            <tr><td>&nbsp;</td><td>b. Press the <i>Select Area</i> button and click to select two opposite corners, <i>or</i></td></tr>");
                         Output.WriteLine("            <tr><td>&nbsp;</td><td>c. Press the <i>Select Point</i> button and click to select a single point</td></tr>");
                         Output.WriteLine("            <tr><td colspan=\"2\">2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</td></tr>");
@@ -310,42 +309,33 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
             }
 
-
-            //Output.WriteLine("&nbsp; &nbsp; &nbsp; 1) Use one of the methods below to define your geographic search:<br />");
-            //Output.WriteLine("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a) Enter an address and press <i>Find Address</i><br />");
-            //Output.WriteLine("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; b) Press the <i>Select Area</i> button and click to select two opposite corners<br />");
-            //Output.WriteLine("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; c) Press the <i>Select Point</i> button and click to select a single point<br />");
-            //Output.WriteLine("&nbsp; &nbsp; &nbsp; 2) Press the <i>Search</i> button to see results<br />");
-
             if (currentCollection.Map_Search < 100)
             {
-                Output.WriteLine("        <div class=\"map_address_div\">");
+                Output.WriteLine("        <div id=\"sbkMsav_AddressDiv\">");
                 Output.WriteLine("          <label for=\"AddressTextBox\">" + address_text + ":</label> &nbsp; ");
-                Output.Write("          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"MapAddressBox_initial\" value=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onfocus=\"enter_address_box(this);\" onblur=\"leave_address_box(this);\" ");
-                Output.Write(currentMode.Browser_Type.IndexOf("IE") >= 0 ? " onkeydown=\"address_keydown(event, this);\" " : " onkeydown=\"return address_keydown(event, this);\" ");
-                Output.WriteLine(" onchange=\"address_box_changed(this);\" /> &nbsp; ");
-                Output.WriteLine("          <input type=\"button\" name=\"findButton\" value=\"" + find_button_text + "\" id=\"findButton\" class=\"SobekSearchButton\" onclick=\"map_address_geocode();\" /> &nbsp; ");
-                Output.WriteLine("          <input type=\"button\" name=\"searchButton\" value=\"" + search_button_text + "\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\" />");
+				Output.WriteLine("          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"sbkMsav_AddressBox sbk_Focusable\" value=\"\" placeholder=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" data-placeholder-text=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onleave=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" onkeydown=\"address_keydown(event, this);\" /> &nbsp; ");
+				Output.WriteLine("          <button name=\"findButton\" id=\"findButton\" class=\"sbk_SearchButton\" onclick=\"map_address_geocode();return false;\" >" + find_button_text + "</button> &nbsp; ");
+				Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
                 Output.WriteLine("        </div>");
             }
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
-            Output.WriteLine("  <tr valign=\"top\">");
+            Output.WriteLine("  <tr style=\"vertical-align:top\">");
             Output.WriteLine("    <td>");
             if (!show_coordinates)
             {
-                Output.WriteLine("      <div id=\"coordinate_tab_button\" class=\"ShowCoordinateTab\">");
+	            Output.WriteLine("      <div id=\"sbkMsav_ShowCoordinateTab\">");
                 currentMode.Info_Browse_Mode = "1";
-                Output.WriteLine("        <a href=\"" + currentMode.Redirect_URL() + "\" ><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cLG.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">SHOW COORDINATES</span><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cRG.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + currentMode.Redirect_URL() + "\">SHOW COORDINATES</a></span>");
                 currentMode.Info_Browse_Mode = "0";
                 Output.WriteLine("      </div>");
             }
             else
             {
-                Output.WriteLine("      <div id=\"coordinate_tab_button\" class=\"HideCoordinateTab\">");
+				Output.WriteLine("      <div id=\"sbkMsav_HideCoordinateTab\">");
                 currentMode.Info_Browse_Mode = "0";
-                Output.WriteLine("        <a href=\"" + currentMode.Redirect_URL() + "\" ><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cLG.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">HIDE COORDINATES</span><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/tabs/cRG.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+				Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + currentMode.Redirect_URL() + "\">HIDE COORDINATES</a></span>");
                 currentMode.Info_Browse_Mode = "1";
                 Output.WriteLine("      </div>");
             }
@@ -356,13 +346,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("        <table>");
             Output.WriteLine("          <tr><td colspan=\"2\"><br /><br /><br /><b>Search Coordinates</b><br /><br /></td></tr>");
             Output.WriteLine("          <tr><td colspan=\"2\">Point 1</td></tr>");
-            Output.WriteLine("          <tr><td><label for=\"Textbox1\">Latitude:</label> </td><td><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"MapSearchBox\" value=\"" + text1 + "\" onfocus=\"javascript:textbox_enter('Textbox1', 'MapSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox1', 'MapSearchBox')\"/></td></tr>");
-            Output.WriteLine("          <tr><td><label for=\"Textbox2\">Longitude:</label> </td><td><input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"MapSearchBox\" value=\"" + text2 + "\" onfocus=\"javascript:textbox_enter('Textbox2', 'MapSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox2', 'MapSearchBox')\"/><br /><br /></td></tr>");
+			Output.WriteLine("          <tr><td><label for=\"Textbox1\">Latitude:</label> </td><td><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text1 + "\" /></td></tr>");
+			Output.WriteLine("          <tr><td><label for=\"Textbox2\">Longitude:</label> </td><td><input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text2 + "\" /><br /><br /></td></tr>");
             Output.WriteLine("          <tr><td colspan=\"2\"><br />Point 2</td></tr>");
-            Output.WriteLine("          <tr><td><label for=\"Textbox3\">Latitude:</label> </td><td><input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"MapSearchBox\" value=\"" + text3 + "\" onfocus=\"javascript:textbox_enter('Textbox3', 'MapSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox3', 'MapSearchBox')\"/></td></tr>");
-            Output.WriteLine("          <tr><td><label for=\"Textbox4\">Longitude:</label> </td><td><input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"MapSearchBox\" value=\"" + text4 + "\" onfocus=\"javascript:textbox_enter('Textbox4', 'MapSearchBox_focused')\" onblur=\"javascript:textbox_leave('Textbox4', 'MapSearchBox')\"/></td></tr>");
+			Output.WriteLine("          <tr><td><label for=\"Textbox3\">Latitude:</label> </td><td><input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text3 + "\" /></td></tr>");
+			Output.WriteLine("          <tr><td><label for=\"Textbox4\">Longitude:</label> </td><td><input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text4 + "\" ></td></tr>");
             Output.WriteLine("          <tr><td colspan=\"2\" align=\"right\"><br /></td></tr>");
-            Output.WriteLine("          <tr><td colspan=\"2\" align=\"right\"><input type=\"button\" name=\"locateButton\" value=\"" + locateText + "\" id=\"locateButton\" class=\"SobekSearchButton\" onclick=\"locate_by_coordinates();\" /></td></tr>");
+			Output.WriteLine("          <tr><td colspan=\"2\" align=\"right\"><button name=\"locateButton\" id=\"locateButton\" class=\"sbk_SearchButton\" onclick=\"locate_by_coordinates();\">" + LOCATE_TEXT + "</button></td></tr>");
             Output.WriteLine("         </table>");
             Output.WriteLine("       </div>");
             Output.WriteLine("      </td>");
@@ -385,7 +375,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Write the quick tips
             Output.WriteLine("<a name=\"FAQ\" ></a>");
-            Output.WriteLine("<div id=\"SobekQuickTips\">");
+			Output.WriteLine("<div id=\"sbk_QuickTips\">");
 
             // See if the FAQ is present for this collection
             string language_code = currentMode.Language_Code;
@@ -451,7 +441,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Output.WriteLine("  <h1>Map Search FAQ</h1>");
                 Output.WriteLine("  <ul>");
-                Output.WriteLine("    <li><strong>How do I search?</strong>");
+                Output.WriteLine("    <li>How do I search?");
                 if (currentCollection.Map_Search < 100)
                 {
                     Output.WriteLine("      <p class=\"tagline\">To perform a search, you first need to define your area or point of interest and then perform the search.  There are several ways to define your area of interest.  You can either enter an address to search or you can draw either a region or point on the map.  Once you have defined your search, click the <i>Search</i> button to discover any matches to that location.</p>");
@@ -465,33 +455,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
                 Output.WriteLine("    </li>");
 
-                Output.WriteLine("    <li><strong>I am having difficulty selecting an area</strong>");
+                Output.WriteLine("    <li>I am having difficulty selecting an area");
                 Output.WriteLine("      <p class=\"tagline\">Selecting a rectangular area to search is simple once you understand the technique.  First, select the <i>Press to Select Area</i> button on the map.  Then, move to the top left corner of the region you wish to search and click and release the left mouse button.  As you move the mouse now you will notice a rectangle is being drawn which represents your region.  When you click and release the mouse again, you define the lower right corner of the region to search.  Do not press the mouse button and drag the mouse, as this will drag the map around, and will not define a region to select.  Once your region is correctly identified, press the <i>Search</i> button to view matching results.</p>");
                 Output.WriteLine("    </li>");
 
                 if (currentCollection.Map_Search < 100)
                 {
-                    Output.WriteLine("    <li><strong>I am having difficulty searching by address</strong>");
+                    Output.WriteLine("    <li>I am having difficulty searching by address");
                     Output.WriteLine("      <p class=\"tagline\">Be sure to enter the complete address, including state and country.  You can also try to use the name of a major landmark, but using an address often works better.  Once you enter the address or major landmark name, press the <i>Find Address</i> button.  Look at the map and verify that the location found on the map matches your desired search.  Then, press the <i>Search</i> button to view matching results.</p>");
                     Output.WriteLine("    </li>");
                 }
                 else
                 {
-                    Output.WriteLine("    <li><strong>Why can't I search by address or by a point?</strong>");
-                    Output.WriteLine("      <p class=\"tagline\">This collection is composed primarily of points, so area searching is much more effective than point searching.");
-                    Output.WriteLine("      </p>");
+                    Output.WriteLine("    <li>Why can't I search by address or by a point?");
+                    Output.WriteLine("      <p class=\"tagline\">This collection is composed primarily of points, so area searching is much more effective than point searching.</p>");
                     Output.WriteLine("    </li>");
 
                 }
 
-
-
-                Output.WriteLine("    <li><strong>What is being searched?</strong>");
-                Output.WriteLine("      <p class=\"tagline\">The data searched depends upon the material type.  For newspapers, the place of publication is searched.  For maps, the geographic coverage is searched.  And for photographs, the location the photograph was taken is searched.");
-                Output.WriteLine("      </p>");
+                Output.WriteLine("    <li>What is being searched?");
+                Output.WriteLine("      <p class=\"tagline\">The data searched depends upon the material type.  For newspapers, the place of publication is searched.  For maps, the geographic coverage is searched.  And for photographs, the location the photograph was taken is searched.</p>");
                 Output.WriteLine("    </li>");
 
-                Output.WriteLine("    <li><strong>Why so few hits?</strong>");
+                Output.WriteLine("    <li>Why so few hits?");
                 Output.WriteLine("      <p class=\"tagline\"> This interface is in beta testing, as we add more coordinate information to our database to search.  Check back often to see our progress!</p>");
                 Output.WriteLine("    </li>");
 
@@ -499,7 +485,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             Output.WriteLine("</div>");
-            Output.WriteLine("  <br />");
+            Output.WriteLine("<br />");
             Output.WriteLine();
         }
     }

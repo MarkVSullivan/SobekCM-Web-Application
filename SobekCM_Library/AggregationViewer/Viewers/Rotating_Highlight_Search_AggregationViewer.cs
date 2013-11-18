@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -40,7 +39,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Rotating_Highlight_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
         {
             // Determine the sub text to use
-            const string subCode = "s=";
+            const string SUB_CODE = "s=";
             Sharing_Buttons_HTML = String.Empty;
 
             // Save the search term
@@ -72,8 +71,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
              }
             else
             {
-                scriptActionName = "basic_select_search_sobekcm('" + arg1 + "', '" + subCode + "')";
-                arg2 = subCode;
+                scriptActionName = "basic_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "')";
+                arg2 = SUB_CODE;
              }
             currentMode.Mode = displayMode;
 	        currentMode.Aggregation_Type = aggrType;
@@ -137,7 +136,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			Output.WriteLine("<div id=\"sbkRhav_BannerBack\">");
-            Output.WriteLine("  <table cellpadding=\"0px\" cellspacing=\"0px\" class=\"sbkRhav_RotatingBanner\">");
+            Output.WriteLine("  <table class=\"sbkRhav_RotatingBanner\">");
             Output.WriteLine("    <tr>");
 
 
@@ -156,17 +155,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("            <tr style=\"vertical-align:bottom\">");
-                Output.WriteLine("              <td>");
-                Output.Write("                <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
-                if (currentMode.Browser_Type.IndexOf("IE") >= 0)
-                    Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
-                else
-                    Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
-
-                Output.WriteLine("              </td>");
-                Output.WriteLine("              <td>");
-                Output.WriteLine("                <a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a>");
-                Output.WriteLine("              </td>");
+                Output.WriteLine("              <td><input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
+                Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");
                 Output.WriteLine("        </div>");
@@ -268,18 +258,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("                 <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
-                Output.WriteLine("            <tr style=\"vertial-align:bottom\">");
-                Output.WriteLine("              <td>");
-                Output.Write("                <input name=\"u_search\" type=\"text\" class=\"SobekHomeBannerSearchBox\" id=\"SobekHomeBannerSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeBannerSearchBox', 'SobekHomeBannerSearchBox');\"");
-                if (currentMode.Browser_Type.IndexOf("IE") >= 0)
-                    Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "');\" />");
-                else
-                    Output.WriteLine(" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "');\" />");
-
-                Output.WriteLine("              </td>");
-                Output.WriteLine("              <td>");
-                Output.WriteLine("                <a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a>");
-                Output.WriteLine("              </td>");
+                Output.WriteLine("            <tr style=\"vertical-align:bottom\">");
+                Output.WriteLine("              <td><input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
+				Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");
                 Output.WriteLine("        </div>");

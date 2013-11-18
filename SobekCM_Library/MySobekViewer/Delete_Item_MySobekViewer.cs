@@ -36,7 +36,7 @@ namespace SobekCM.Library.MySobekViewer
     /// </ul></remarks>
     public class Delete_Item_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly int errorCode;
+        private int errorCode;
 
 
         /// <summary> Constructor for a new instance of the Delete_Item_MySobekViewer class </summary>
@@ -47,7 +47,6 @@ namespace SobekCM.Library.MySobekViewer
         public Delete_Item_MySobekViewer(User_Object User,
             SobekCM_Navigation_Object Current_Mode, 
             Item_Lookup_Object All_Items_Lookup,
-            
             Custom_Tracer Tracer)
             : base(User)
         {
@@ -103,29 +102,7 @@ namespace SobekCM.Library.MySobekViewer
 					errorCode = 2;
 				}
 			}
-
-            // Get the current item details
-            string bib_location = String.Empty;
-            string vid_location = String.Empty;
-            if ( errorCode == -1 )
-            {
-                // Get item details
-                DataSet itemDetails = SobekCM_Database.Get_Item_Details(currentMode.BibID, currentMode.VID, Tracer);
-
-                // If the itemdetails was null, this item is somehow invalid item then
-                if ( itemDetails == null )
-                {
-                    Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error );
-                    errorCode = 2;
-                }
-                else
-                {
-                    // Get the location for this METS file from the returned value
-                    DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
-                    bib_location = SobekCM_Library_Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
-                    vid_location = bib_location + "\\" + currentMode.VID;
-                }
-            }           
+    
 
              // If this is a postback, handle any events first
             if ((currentMode.isPostBack) && ( errorCode < 0 ))
@@ -145,76 +122,104 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-                    errorCode = 0;
-
-                    // Perform the database delete
-                        Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
-                    bool database_result2 = SobekCM_Database.Delete_SobekCM_Item(currentMode.BibID, currentMode.VID, User.Is_System_Admin, String.Empty );
- 
-                    // Perform the SOLR delete
-                    Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");
-                    Solr.Solr_Controller.Delete_Resource_From_Index( SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
-
-                    if (!database_result2)
-                    {
-                        Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error performing delete in the database", Custom_Trace_Type_Enum.Error);
-                        errorCode = 3;
-                    }
-                    else
-                    {
-                        // Move the folder to deletes
-                        try
-                        {
-                            Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Move resource files to RECYCLE BIN folder");
-
-							// Make sure upper RECYCLE BIN folder exists, or create it
-							string delete_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN";
-                            if (!Directory.Exists(delete_folder))
-                                Directory.CreateDirectory(delete_folder);
-
-                            // Create the bib level folder next
-							string bib_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID;
-                            if (!Directory.Exists(bib_folder))
-                                Directory.CreateDirectory(bib_folder);
-
-                            // Ensure the VID folder does not exist
-							string vid_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID + "\\" + currentMode.VID;
-                            if (Directory.Exists(vid_folder))
-                                Directory.Move(vid_folder, vid_folder + "_OLD");
-
-                            // Move the VID folder over now
-                            Directory.Move(vid_location, vid_folder);
-
-                            // Check if this was the last VID under this BIB
-                            if (Directory.GetDirectories(bib_location).Length == 0)
-                            {
-                                // Move all files over to the bib folder then
-                                string[] bib_files = Directory.GetFiles(bib_location);
-                                foreach (string thisFile in bib_files)
-                                {
-                                    string fileName = (new FileInfo(thisFile)).Name;
-                                    string new_file = bib_folder + "\\" + fileName;
-                                    File.Move(thisFile, new_file);
-                                }
-                            }
-                        }
-                        catch (Exception ee)
-                        {
-							Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error moving the folder and files to the RECYCLE BIN folder", Custom_Trace_Type_Enum.Error);
-                            Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
-                            Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                            errorCode = 4;
-                        }
-
-                        // Remove from the item list
-                        All_Items_Lookup.Remove_Item(currentMode.BibID, currentMode.VID);
-
-                        // Also remove from the cache
-                        Cached_Data_Manager.Remove_Digital_Resource_Object(currentMode.BibID, currentMode.VID, Tracer);
-                    }
+					Delete_Item(User, All_Items_Lookup, Tracer);
                 }
             }
         }
+
+		private void Delete_Item(User_Object User, Item_Lookup_Object All_Items_Lookup, Custom_Tracer Tracer)
+		{
+			errorCode = 0;
+
+			// Get the current item details
+			string bib_location = String.Empty;
+			string vid_location = String.Empty;
+			if (errorCode == -1)
+			{
+				// Get item details
+				DataSet itemDetails = SobekCM_Database.Get_Item_Details(currentMode.BibID, currentMode.VID, Tracer);
+
+				// If the itemdetails was null, this item is somehow invalid item then
+				if (itemDetails == null)
+				{
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
+					errorCode = 2;
+				}
+				else
+				{
+					// Get the location for this METS file from the returned value
+					DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
+					bib_location = SobekCM_Library_Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
+					vid_location = bib_location + "\\" + currentMode.VID;
+				}
+			}     
+
+			// Perform the database delete
+			Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
+			bool database_result2 = SobekCM_Database.Delete_SobekCM_Item(currentMode.BibID, currentMode.VID, User.Is_System_Admin, String.Empty);
+
+			// Perform the SOLR delete
+			Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");
+			Solr.Solr_Controller.Delete_Resource_From_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
+
+			if (!database_result2)
+			{
+				Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error performing delete in the database", Custom_Trace_Type_Enum.Error);
+				errorCode = 3;
+			}
+			else
+			{
+				// Move the folder to deletes
+				try
+				{
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Move resource files to RECYCLE BIN folder");
+
+					// Make sure upper RECYCLE BIN folder exists, or create it
+					string delete_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN";
+					if (!Directory.Exists(delete_folder))
+						Directory.CreateDirectory(delete_folder);
+
+					// Create the bib level folder next
+					string bib_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID;
+					if (!Directory.Exists(bib_folder))
+						Directory.CreateDirectory(bib_folder);
+
+					// Ensure the VID folder does not exist
+					string vid_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID + "\\" + currentMode.VID;
+					if (Directory.Exists(vid_folder))
+						Directory.Move(vid_folder, vid_folder + "_OLD");
+
+					// Move the VID folder over now
+					Directory.Move(vid_location, vid_folder);
+
+					// Check if this was the last VID under this BIB
+					if (Directory.GetDirectories(bib_location).Length == 0)
+					{
+						// Move all files over to the bib folder then
+						string[] bib_files = Directory.GetFiles(bib_location);
+						foreach (string thisFile in bib_files)
+						{
+							string fileName = (new FileInfo(thisFile)).Name;
+							string new_file = bib_folder + "\\" + fileName;
+							File.Move(thisFile, new_file);
+						}
+					}
+				}
+				catch (Exception ee)
+				{
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Error moving the folder and files to the RECYCLE BIN folder", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+					errorCode = 4;
+				}
+
+				// Remove from the item list
+				All_Items_Lookup.Remove_Item(currentMode.BibID, currentMode.VID);
+
+				// Also remove from the cache
+				Cached_Data_Manager.Remove_Digital_Resource_Object(currentMode.BibID, currentMode.VID, Tracer);
+			}
+		}
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'Delete Item' </value>

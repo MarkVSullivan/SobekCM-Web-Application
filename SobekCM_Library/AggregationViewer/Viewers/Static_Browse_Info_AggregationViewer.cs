@@ -34,10 +34,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly Item_Aggregation_Child_Page browseObject;
         private readonly HTML_Based_Content staticWebContent;
 
-        /// <summary> Constructor for a new instance of the Static_Browse_Info_AggregationViewer class </summary>
-        /// <param name="Browse_Object"> Browse or information object to be displayed </param>
-        /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
-        public Static_Browse_Info_AggregationViewer(Item_Aggregation_Child_Page Browse_Object, HTML_Based_Content Static_Web_Content, Item_Aggregation Current_Collection, SobekCM_Navigation_Object Current_Mode, User_Object Current_User ):base(Current_Collection, Current_Mode )
+	    /// <summary> Constructor for a new instance of the Static_Browse_Info_AggregationViewer class </summary>
+	    /// <param name="Browse_Object"> Browse or information object to be displayed </param>
+	    /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
+	    /// <param name="Current_Collection"> Current collection being displayed</param>
+		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+	    /// <param name="Current_User"> Current user/session information </param>
+	    public Static_Browse_Info_AggregationViewer(Item_Aggregation_Child_Page Browse_Object, HTML_Based_Content Static_Web_Content, Item_Aggregation Current_Collection, SobekCM_Navigation_Object Current_Mode, User_Object Current_User ):base(Current_Collection, Current_Mode )
         {
             browseObject = Browse_Object;
             staticWebContent = Static_Web_Content;
@@ -48,7 +51,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 
 			NameValueCollection form = HttpContext.Current.Request.Form;
-			if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null))
+			if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( currentUser != null ))
 			{
 				string aggregation_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + currentCollection.Code + "\\";
 				string file = aggregation_folder + browseObject.Get_Static_HTML_Source(currentMode.Language);
@@ -102,8 +105,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				currentMode.Request_Completed = true;
 				HttpContext.Current.Response.Redirect(redirect_url, false);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
-
-				return;
 			}
         }
 

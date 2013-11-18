@@ -139,26 +139,14 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
-        {
+		{
             Tracer.Add_Trace("Logon_MySobekViewer.Add_Controls", String.Empty);
             StringBuilder literalBuilder = new StringBuilder();
 
             // Get ready to draw the tabs
-            string sobek_home = currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " HOME";
             string my_sobek = "my" + currentMode.SobekCM_Instance_Abbreviation;
 
-            literalBuilder.AppendLine("<div class=\"ViewsBrowsesRow\">");
-            literalBuilder.AppendLine("");
-
-            // Write the Sobek home tab
-			currentMode.Mode = Display_Mode_Enum.Aggregation;
-			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-            literalBuilder.AppendLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + sobek_home + Unselected_Tab_End + "</a>");
-            currentMode.Mode = Display_Mode_Enum.My_Sobek;
-            literalBuilder.AppendLine("");
-            literalBuilder.AppendLine("</div>");
-            literalBuilder.AppendLine();
-
+			literalBuilder.AppendLine("<br />");
 			literalBuilder.AppendLine("<h1>Logon to " + my_sobek + "</h1>");
 			literalBuilder.AppendLine();
 
@@ -221,7 +209,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 	    {
-		    // Do nothing
+			// DOes nothing current
 	    }
 
 	    /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>

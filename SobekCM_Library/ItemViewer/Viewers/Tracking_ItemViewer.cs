@@ -148,13 +148,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the HTML for the image
-            Output.WriteLine("        <!-- TRACKING ITEM VIEWER OUTPUT -->" );
+            Output.WriteLine("<!-- TRACKING ITEM VIEWER OUTPUT -->" );
 
             // Start the citation table
-            Output.WriteLine("          <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\"><b>Tracking Information</b></span></td>");
-            Output.WriteLine( "       </tr>");
-            Output.WriteLine("        <tr>");
-            Output.WriteLine("          <td class=\"sbkTrk_MainArea\">" );
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\"><b>Tracking Information</b></span></td>");
+            Output.WriteLine("</tr>");
+            Output.WriteLine("<tr>");
+            Output.WriteLine("  <td class=\"sbkTrk_MainArea\">" );
 
             // Set the text
             const string MILESTONES_VIEW = "MILESTONES";
@@ -165,28 +165,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the tabs for the different citation information
             string viewer_code = CurrentMode.ViewerCode;
-            Output.WriteLine("              <div class=\"sbkTrk_ViewSelectRow\">");
+            Output.WriteLine("    <div id=\"sbkTrk_ViewSelectRow\">");
+			Output.WriteLine("      <ul class=\"sbk_FauxDownwardTabsList\">");
 
             if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
                     if (citationType == Tracking_Type.Milestones)
                     {
-                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MILESTONES_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+						Output.WriteLine("        <li class=\"current\">" + MILESTONES_VIEW + "</li>");
                     }
                     else
                     {
-                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("milestones") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MILESTONES_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("milestones") + "\">" + MILESTONES_VIEW + "</a></li>");
                     }
 
                 if ((citationType == Tracking_Type.History) || ((CurrentItem.Tracking.hasHistoryInformation)))
                 {
                     if (citationType == Tracking_Type.History)
                     {
-                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + TRACKING_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+                        Output.WriteLine("        <li class=\"current\">" + TRACKING_VIEW + "</li>");
                     }
                     else
                     {
-                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("tracking") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + TRACKING_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("tracking") + "\">" + TRACKING_VIEW + "</a></li>");
                     }
                 }
 
@@ -194,11 +195,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Media)
                     {
-                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + MEDIA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+						Output.WriteLine("        <li class=\"current\">" + MEDIA_VIEW + "</li>");
                     }
                     else
                     {
-                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("media") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + MEDIA_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("media") + "\">" + MEDIA_VIEW + "</a></li>");
                     }
                 }
 
@@ -206,11 +207,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Archives)
                     {
-                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + ARCHIVE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+						Output.WriteLine("        <li class=\"current\">" + ARCHIVE_VIEW + "</li>");
                     }
                     else
                     {
-                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("archive") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + ARCHIVE_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("archive") + "\">" + ARCHIVE_VIEW + "</a></li>");
                     }
                 }
 
@@ -218,11 +219,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Directory_List)
                     {
-                        Output.WriteLine("                <img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\">" + DIRECTORY_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" alt=\"\" />");
+						Output.WriteLine("        <li class=\"current\">" + DIRECTORY_VIEW + "</li>");
                     }
                     else
                     {
-                        Output.WriteLine("                <a href=\"" + CurrentMode.Redirect_URL("directory") + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">" + DIRECTORY_VIEW + "</span><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" alt=\"\" /></a>");
+						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("directory") + "\">" + DIRECTORY_VIEW + "</a></li>");
                     }
                 }
             }
@@ -572,7 +573,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add each metadata file
                 List<string> files_handled = new List<string>();
-                foreach (string thisFile in sortedFiles.Keys.Where(thisFile => (thisFile.IndexOf(".METS.BAK") > 0) || (thisFile.IndexOf(".METS.XML") > 0) || (thisFile == "UFDC_METS.XML") || (thisFile == "DOC.XML") || (thisFile == "MARC.XML") || (thisFile == "CITATION_METS.XML") || (thisFile == CurrentItem.BibID.ToUpper() + "_" + CurrentItem.VID + ".HTML")))
+                foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "UFDC_METS.XML") || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == CurrentItem.BibID.ToUpper() + "_" + CurrentItem.VID + ".HTML")))
                 {
                     files_handled.Add(thisFile);
                     Add_File_HTML(sortedFiles[thisFile], builder, url, true);

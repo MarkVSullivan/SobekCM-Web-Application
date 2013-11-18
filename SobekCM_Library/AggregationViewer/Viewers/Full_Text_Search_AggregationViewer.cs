@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -37,7 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Full_Text_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
         {
             // Determine the sub text to use
-            const string subCode = "s=";
+            const string SUB_CODE = "s=";
 
             // Save the search term
             if (currentMode.Search_String.Length > 0)
@@ -68,8 +67,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                scriptActionName = "fulltext_select_search_sobekcm('" + arg1 + "', '" + subCode + "')";
-                arg2 = subCode;
+                scriptActionName = "fulltext_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "')";
+                arg2 = SUB_CODE;
             }
             currentMode.Mode = displayMode;
 	        currentMode.Aggregation_Type = aggrType;
@@ -126,26 +125,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 search_collection = "Recherche dans la collection";
             }
 
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <table width=\"100%\" id=\"FullTextSearchPanel\" >");
-            Output.WriteLine("    <tr align=\"right\">");
-            Output.WriteLine("      <td align=\"right\" width=\"28%\"><b><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></b></td>");
-            Output.WriteLine("      <td width=\"3%\">&nbsp;</td>");
-            Output.Write("      <td align=\"left\" width=\"60%\"><input name=\"u_search\" type=\"text\" class=\"SobekHomeSearchBox\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onfocus=\"textbox_enter('SobekHomeSearchBox', 'SobekHomeSearchBox_focused');\" onblur=\"textbox_leave('SobekHomeSearchBox', 'SobekHomeSearchBox');\" ");
-
-            if (currentMode.Browser_Type.IndexOf("IE") >= 0)
-                Output.Write(" onkeydown=\"fnTrapKD(event, 'text', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
-            else
-                Output.Write(" onkeydown=\"return fnTrapKD(event, 'text', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\"");
-
-            Output.WriteLine(" /></td>");
-
-            Output.WriteLine("      <td align=\"left\" width=\"10%\"><a onclick=\"" + scriptActionName + "\"><img name=\"jsbutton\" id=\"jsbutton\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/go_button.gif\" border=\"0\" alt=\"" + search_collection + "\" /></a></td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("    <tr valign=\"top\">");
-            Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
-            Output.WriteLine("      <td align=\"left\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
-            Output.WriteLine("    </tr>");
+			Output.WriteLine("  <table id=\"sbkFtsav_SearchPanel\" >");
+			Output.WriteLine("    <tr>");
+			Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
+			Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
+			Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'text', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
+			Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
+			Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
+			Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
 
             Output.WriteLine();

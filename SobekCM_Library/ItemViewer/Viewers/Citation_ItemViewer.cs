@@ -35,6 +35,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	/// <see cref="iItemViewer" /> interface. </remarks>
 	public class Citation_ItemViewer : abstractItemViewer
 	{
+		private Citation_Type citationType;
 	    private User_Object currentUser;
 	    private bool userCanEditItem;
 		private int width = 180;
@@ -48,6 +49,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			translator = Translator;
 			this.Code_Manager = Code_Manager;
 			userCanEditItem = User_Can_Edit_Item;
+			citationType = Citation_Type.Standard;
 		}
 
 		/// <summary> Constructor for a new instance of the Citation_ItemViewer class </summary>
@@ -147,7 +149,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			// Determine the citation type
-			Citation_Type citationType = Citation_Type.Standard;
+			citationType = Citation_Type.Standard;
 			switch (CurrentMode.ViewerCode)
 			{
 				case "marc":
@@ -187,6 +189,37 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
 			}
 
+			// Add the main wrapper division
+			if ( citationType != Citation_Type.Standard )
+				Output.WriteLine("<div id=\"sbkCiv_Citation\">");
+			else
+			{
+				// Determine the material type
+				string microdata_type = "CreativeWork";
+				switch (CurrentItem.Bib_Info.SobekCM_Type)
+				{
+					case TypeOfResource_SobekCM_Enum.Book:
+					case TypeOfResource_SobekCM_Enum.Serial:
+					case TypeOfResource_SobekCM_Enum.Newspaper:
+						microdata_type = "Book";
+						break;
+
+					case TypeOfResource_SobekCM_Enum.Map:
+						microdata_type = "Map";
+						break;
+
+					case TypeOfResource_SobekCM_Enum.Photograph:
+					case TypeOfResource_SobekCM_Enum.Aerial:
+						microdata_type = "Photograph";
+						break;
+				}
+
+				// Add the main wrapper division, with microdata information
+				Output.WriteLine("<div id=\"sbkCiv_Citation\" itemprop=\"about\" itemscope itemtype=\"http://schema.org/" + microdata_type + "\">");
+			}
+
+			Add_Citation_View_Tabs(Output);
+
 		    // Now, add the text
             Output.WriteLine();
 			switch (citationType)
@@ -225,6 +258,72 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.ViewerCode = viewer_code;
 		}
 
+		private void Add_Citation_View_Tabs(TextWriter Output)
+		{
+			// Set the text
+			const string STANDARD_VIEW = "STANDARD VIEW";
+			const string MARC_VIEW = "MARC VIEW";
+			const string METADATA_VIEW = "METADATA";
+			const string STATISTICS_VIEW = "USAGE STATISTICS";
+
+			// Get  the robot flag (if this is rendering for robots, the other citation views are not available)
+			bool isRobot = CurrentMode.Is_Robot;
+
+			// Add the tabs for the different citation information
+			string viewer_code = CurrentMode.ViewerCode;
+			Output.WriteLine("  <div id=\"sbkCiv_ViewSelectRow\">");
+			Output.WriteLine("    <ul class=\"sbk_FauxDownwardTabsList\">");
+
+
+			if (citationType == Citation_Type.Standard)
+			{
+				Output.WriteLine("      <li class=\"current\">" + STANDARD_VIEW + "</li>");
+			}
+			else
+			{
+				Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("citation") + "\">" + STANDARD_VIEW + "</a></li>");
+			}
+
+			if (citationType == Citation_Type.MARC)
+			{
+				Output.WriteLine("      <li class=\"current\">" + MARC_VIEW + "</li>");
+			}
+			else
+			{
+				if (!isRobot)
+					Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("marc") + "\">" + MARC_VIEW + "</a></li>");
+				else
+					Output.WriteLine("      <li>" + MARC_VIEW + "</li>");
+			}
+
+			// If this item is an external link item (i.e. has related URL, but no pages or downloads) skip the next parts
+			bool external_link_only = (CurrentItem.Bib_Info.Location.Other_URL.Length > 0) && (!CurrentItem.Divisions.Has_Files);
+
+			if ((CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL) && (!external_link_only) && (!isRobot))
+			{
+				if (citationType == Citation_Type.Metadata)
+				{
+					Output.WriteLine("      <li class=\"current\">" + METADATA_VIEW + "</li>");
+				}
+				else
+				{
+					Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("metadata") + "\">" + METADATA_VIEW + "</a></li>");
+				}
+
+				if (citationType == Citation_Type.Statistics)
+				{
+					Output.WriteLine("      <li class=\"current\">" + STATISTICS_VIEW + "</li>");
+				}
+				else
+				{
+					Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("usage") + "\">" + STATISTICS_VIEW + "</a></li>");
+				}
+			}
+
+			Output.WriteLine("    </ul>");
+			Output.WriteLine("  </div>");
+		}
+
 		#region Section returns the item level statistics
 
 		/// <summary> Returns the string which contains the item and title level statistics </summary>
@@ -254,11 +353,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			
 			StringBuilder builder = new StringBuilder(2000);
 
-			// Add the main wrapper division
-			builder.AppendLine("<div id=\"sbkCiv_Citation\">");
-
-
-			builder.AppendLine("<blockquote>This item was has been viewed <%HITS%> times within <%SESSIONS%> visits.  Below are the details for overall usage for this item within this library.<br /><br />For definitions of these terms, see the <a href=\"" + CurrentMode.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</blockquote>");
+			builder.AppendLine("  <p>This item was has been viewed <%HITS%> times within <%SESSIONS%> visits.  Below are the details for overall usage for this item within this library.<br /><br />For definitions of these terms, see the <a href=\"" + CurrentMode.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");
 
             builder.AppendLine("  <table class=\"sbkCiv_StatsTable\">");
 			builder.AppendLine("    <tr class=\"sbkCiv_StatsTableHeaderRow\">");
@@ -502,13 +597,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 		    StringBuilder builder = new StringBuilder(3000);
 
-			// Add the main wrapper division
-			builder.AppendLine("<div id=\"sbkCiv_Citation\">");
-
-			builder.AppendLine("<br />");
-            builder.AppendLine("<blockquote>");
-
-            builder.AppendLine("<blockquote>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</blockquote>");
+			builder.AppendLine("<blockquote>");
+            builder.AppendLine("<p>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</p>");
             builder.AppendLine("<br />");
 
             if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
@@ -579,8 +669,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             }
 
-            builder.AppendLine("</blockquote>");
-            builder.AppendLine("<br />");
+			builder.AppendLine("</blockquote><br />");
 			builder.AppendLine("</div>");
 
 			return builder.ToString();
@@ -620,9 +709,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		  
 			//// Build the value
 			StringBuilder builder = new StringBuilder();
-
-			// Add the main wrapper division
-			builder.AppendLine("<div id=\"sbkCiv_Citation\">");
 
 			// Add the edit item button, if the user can edit it
 			if ((userCanEditItem) && (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL))
@@ -723,29 +809,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			const string INDENT = "    ";
 
 			StringBuilder result = new StringBuilder();
-
-			// Determine the material type
-			string microdata_type = "CreativeWork";
-			switch (CurrentItem.Bib_Info.SobekCM_Type)
-			{
-				case TypeOfResource_SobekCM_Enum.Book:
-				case TypeOfResource_SobekCM_Enum.Serial:
-				case TypeOfResource_SobekCM_Enum.Newspaper:
-					microdata_type = "Book";
-					break;
-
-				case TypeOfResource_SobekCM_Enum.Map:
-					microdata_type = "Map";
-					break;
-
-				case TypeOfResource_SobekCM_Enum.Photograph:
-				case TypeOfResource_SobekCM_Enum.Aerial:
-					microdata_type = "Photograph";
-					break;
-			}
-
-			// Add the main wrapper division, with microdata information
-			result.AppendLine("<div id=\"sbkCiv_Citation\" itemprop=\"about\" itemscope itemtype=\"http://schema.org/" + microdata_type + "\">");
 
 			// Start this table
 			result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_LinkSection\" >");
