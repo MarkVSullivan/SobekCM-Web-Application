@@ -20,15 +20,6 @@ function rbEntryTypeChanged(value) {
     }
     else
     {
-        ////Disable all textboxes and dropdowns within the non-selected entry type(barcode)
-        //$("#tblrow_Barcode").find('input,select').attr('disabled', 'disabled');
-        //$("#tblrow_Manual1").find('input,select').attr('disabled', false);
-        //$("#tblrow_Manual2").find('input,select').attr('disabled', false);
-        
-        ////Also apply the appropriate CSS class to the table rows 
-        //document.getElementById("tblrow_Barcode").className = "sbkTi_tblRowDisabled";
-        //document.getElementById("tblrow_Manual1").className = "";
-        //document.getElementById("tblrow_Manual2").className = "";
         
         document.getElementById("tblrow_Barcode").style.display = 'none';
         document.getElementById("tblrow_Manual1").style.display = 'table-row';
@@ -68,17 +59,14 @@ function Add_new_entry_barcode()
 
 function DisableRow_SetCSSClass(elementID) {
     
-    //Enable all textboxes and dropdowns within the selected entry type row(manual)
-  //  $("#"+elementID).find('input,select').attr('disabled', 'disabled');
     document.getElementById(elementID).style.display = 'none';
   //  document.getElementById("tblrow_Manual1").style.display = 'none';
 
 }
 
 function DisableRow_RemoveCSSClass(elementID) {
-    
-    //Enable all textboxes and dropdowns within the selected entry type row(barcode)
- //   $("#" + elementID).find('input,select').attr('disabled', false);
+  
+
     document.getElementById(elementID).style.display = 'table-row';
 
 
@@ -104,4 +92,17 @@ function entry_span_mouseout(spanid) {
 
     //   showErrorIcon(spanid);
     return false;
+}
+
+//Function called when the equipment dropdownlist selected value is changed
+function ddlEquipment_Changed(ddlID) {
+    var ddl = document.getElementById(ddlID);
+    document.getElementById('hidden_equipment').value = ddl.options[ddl.selectedIndex].value;
+}
+
+//Function called when the user dropdownlist selected value is changed
+function ddlUser_Changed(ddlID) {
+    var ddl = document.getElementById(ddlID);
+    document.getElementById('hidden_selected_user').value = ddl.options[ddl.selectedIndex].value;
+  //  alert(ddl.options[ddl.selectedIndex].value);
 }
