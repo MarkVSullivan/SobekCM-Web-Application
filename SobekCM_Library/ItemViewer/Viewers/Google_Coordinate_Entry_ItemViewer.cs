@@ -451,7 +451,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
                         HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
                         HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
-                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI
                     };
             }
         }

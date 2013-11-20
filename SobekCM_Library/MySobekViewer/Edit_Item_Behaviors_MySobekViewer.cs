@@ -162,6 +162,8 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void  Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
+			const string BEHAVIORS = "BEHAVIORS";
+
             Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
@@ -183,42 +185,42 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-            Output.WriteLine("<a name=\"template\"> </a>");
-            Output.WriteLine("<br />");
-            Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
-            Output.WriteLine(Selected_Tab_Start + "BEHAVIORS" + Selected_Tab_End + " ");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<div class=\"SobekEditPanel\">");
-            Output.WriteLine("<!-- Add SAVE and CANCEL buttons to top of form -->");
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<table width=\"100%\">");
-            Output.WriteLine("  <tr>");
-            Output.WriteLine("    <td width=\"480px\">&nbsp;</td>");
-            Output.WriteLine("    <td align=\"right\">");
-            Output.WriteLine("      <a onmousedown=\"behaviors_cancel_form(); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a> &nbsp; &nbsp; ");
-            Output.WriteLine("      <a onmousedown=\"behaviors_save_form(); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("    <td width=\"20px\">&nbsp;</td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
+			Output.WriteLine("<a name=\"template\"> </a>");
+			Output.WriteLine("<br />");
+			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+			Output.WriteLine("  <div class=\"tabs\">");
+			Output.WriteLine("    <ul>");
+			Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + BEHAVIORS + "</li>");
+			Output.WriteLine("    </ul>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("  <div class=\"graytabscontent\">");
+			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
+
+			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
+			Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine();
+
+			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("      </div>");
+			Output.WriteLine();
 
 	        bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 	        template.Render_Template_HTML(Output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
 
-            // Add the second buttons at the bottom of the form
-            Output.WriteLine("<!-- Add SAVE and CANCEL buttons to bottom of form -->");
-            Output.WriteLine("<table width=\"100%\">");
-            Output.WriteLine("  <tr>");
-            Output.WriteLine("    <td width=\"480px\">&nbsp;</td>");
-            Output.WriteLine("    <td align=\"right\">");
-            Output.WriteLine("      <a onmousedown=\"behaviors_cancel_form(); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a> &nbsp; &nbsp; ");
-            Output.WriteLine("      <a onmousedown=\"behaviors_save_form(); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("    <td width=\"20px\">&nbsp;</td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<br />");
+			// Add the second buttons at the bottom of the form
+			Output.WriteLine();
+			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
+			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("      </div>");
+			Output.WriteLine("      <br />");
+			Output.WriteLine("    </div>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("<br />");
         }
 
         /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>

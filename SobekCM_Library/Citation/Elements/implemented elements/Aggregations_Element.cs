@@ -28,8 +28,8 @@ namespace SobekCM.Library.Citation.Elements
             Type = Element_Type.Aggregations;
             view_choices_string = String.Empty;
 
-            boxes_per_line = 4;
-            max_boxes = 8;
+            boxes_per_line = 3;
+            max_boxes = 9;
         }
 
         /// <summary> Sets the base url for the current request </summary>

@@ -2780,7 +2780,7 @@ function logonTrapKD(event) {
 (function ($) {
 	$.fn.acidTabs = function (options) {
 		var settings = {
-			'style': 'one'
+			'style': 'fulltabs'
 		};
 		options = $.extend(settings, options);
 		return this.each(function () {
