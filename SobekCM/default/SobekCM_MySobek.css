@@ -108,9 +108,12 @@ input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 .sbkTi_tblRow_ItemInfoLabel{color:Gray; font-weight: bold; font-size: 1.0em;}
 .sbkTi_tblRow_ItemInfoText{ font-size: 1.0em;}
 
+.sbkSaav_Table th{ text-align: center; padding-left: 5px;padding-right: 5px;}
+.sbkSaav_Table td{ text-align: center;padding-left: 5px;padding-right: 5px;}
 
-
-
+.sbkTi_TrackingEntrySpan { text-align:left; display:inline-block;padding: 10px; border: 0px; margin: 5px; }
+.sbkTi_TrackingEntrySpanMouseOver { background-color: #f5f5f5;border: 1px solid #a9a9a9; text-align:left; display:inline-block;padding: 10px; margin: 5px;}
+.sbkTi_TrackingEntrySpanMouseOut { text-align:left; display:inline-block;padding: 10px; border: 0px; margin: 5px;background-color: white;}
 
 /** Class used for all administrative boxes which take focus */
 .sbkMySobek_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
