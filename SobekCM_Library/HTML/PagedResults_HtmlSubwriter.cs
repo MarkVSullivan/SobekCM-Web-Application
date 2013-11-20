@@ -880,12 +880,12 @@ namespace SobekCM.Library.HTML
 					currentMode.Page = 1;
 					if (resultView == Result_Display_Type_Enum.Export)
 					{
-						Output.WriteLine("  " + Down_Selected_Tab_Start + EXPORT_VIEW + Down_Selected_Tab_End);
+						Output.WriteLine("  <li class=\"current\">" + EXPORT_VIEW + "</li>");
 					}
 					else
 					{
 						currentMode.Result_Display_Type = Result_Display_Type_Enum.Export;
-						Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + Down_Tab_Start + EXPORT_VIEW + Down_Tab_End + "</a>");
+						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + EXPORT_VIEW + "</a></li>");
 					}
 				}
 

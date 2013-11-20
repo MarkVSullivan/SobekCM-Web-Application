@@ -472,5 +472,17 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</div>");
             Output.WriteLine();
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (currentMode.My_Sobek_SubMode.IndexOf("0.2") == 0))
+					return "container-inner1000";
+
+				return base.Container_CssClass;
+			}
+		}
     }
 }

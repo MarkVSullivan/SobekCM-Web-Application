@@ -37,16 +37,18 @@ select { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9d
 textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small; }
 input.sbkMySobek_checkbox { padding-top: 3px;border: 0; }
 
-.sbkMySobek_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
+.sbkMySobek_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px;font-size: 13px; }
 .sbkMySobek_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 .sbkMySobek_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px;margin-left: 20px; }
 .sbkMySobek_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
-.sbkMySobek_BigButton {font-size: 1.1em; background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 4px 10px; cursor: pointer; letter-spacing: 0.5px; }
+.sbkMySobek_BigButton {font-size: 15px; background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
 .sbkMySobek_BigButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
-.sbkMySobek_RoundButton_RightImg { vertical-align: top; padding-left: 3px; padding-top: 2px; } 
-.sbkMySobek_RoundButton_LeftImg { vertical-align: top; padding-right: 3px; padding-top: 2px; } 
+.sbkMySobek_RoundButton_RightImg { vertical-align: top; padding-left: 3px; padding-top: 1px;} 
+.sbkMySobek_RoundButton_LeftImg { vertical-align: top; padding-right: 3px; padding-top: 1px; } 
+
+.sbkMySobek_RightButtons { float: right;padding-right:20px;}
 
 /** Styles used for the forms (both pop-up and in-line) throughout the mySobek pages **/
 .sbkMySobek_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px;  }
