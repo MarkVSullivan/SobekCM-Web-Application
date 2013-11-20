@@ -685,11 +685,6 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<input type=\"hidden\" id=\"aggregation\" name=\"aggregation\" value=\"\" />");
                     Output.WriteLine("<input type=\"hidden\" id=\"show_subaggrs\" name=\"show_subaggrs\" value=\"" + currentMode.Show_Selection_Panel.ToString() + "\" />");
 
-                    // Add the scripts needed
-					Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-                    Output.WriteLine();
-
-
                     #region Email form
 
                     if (currentUser != null)
@@ -968,7 +963,7 @@ namespace SobekCM.Library.HTML
             else
             {
 				// Calculate the title and url
-				string title = HttpUtility.HtmlEncode(Current_Aggregation.Name);
+				string title = HttpUtility.HtmlEncode(Current_Aggregation.Name.Replace("'",""));
 				string share_url = HttpContext.Current.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
 
 
@@ -2175,6 +2170,42 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<!-- Close the pagecontainer div -->");
             Output.WriteLine("</div>");
             Output.WriteLine();
+
+			// Add the scripts needed
+#if DEBUG
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
+#else
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
+#endif
+			Output.WriteLine();
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				switch (currentMode.Aggregation_Type)
+				{
+					case Aggregation_Type_Enum.Browse_By:
+						return "container-facets";
+
+					case Aggregation_Type_Enum.Browse_Map:
+						return "container-inner1000";
+
+					case Aggregation_Type_Enum.Private_Items:
+						return "container-inner1215";
+
+					case Aggregation_Type_Enum.Browse_Info:
+						if (pagedResults != null)
+						{
+							return "container-facets";
+						}
+						break;
+				}
+
+				return base.Container_CssClass;
+			}
+		}
     }
 }

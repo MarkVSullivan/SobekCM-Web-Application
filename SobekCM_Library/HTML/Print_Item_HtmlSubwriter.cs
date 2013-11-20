@@ -351,5 +351,12 @@ namespace SobekCM.Library.HTML
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum>() {HtmlSubwriter_Behaviors_Enum.Suppress_Footer}; }
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		/// <value> Always returns an empty string </value>
+		public override string Container_CssClass
+		{
+			get { return String.Empty; }
+		}
     }
 }

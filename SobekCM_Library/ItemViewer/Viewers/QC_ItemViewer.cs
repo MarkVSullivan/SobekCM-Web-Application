@@ -1279,7 +1279,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        Output.WriteLine("\t\t<!-- QUALITY CONTROL VIEWER TOP NAV ROW -->");
 
 	        //Include the js files
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
 	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
 	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_qc.js\"></script>");
 	        Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
@@ -2289,7 +2289,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
 						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination,
 						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
+						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI
 					};
 			}
 		}

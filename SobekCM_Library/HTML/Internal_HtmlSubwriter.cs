@@ -1224,66 +1224,69 @@ namespace SobekCM.Library.HTML
             post_processed = post_processed + " ( " + New_Items.Select("WorkFlowName = 'Post-Processed'").Length + " )";
 
 
-            Output.WriteLine("<div class=\"ShowSelectRow\">");
+			Output.WriteLine("<div id=\"sbkInternalHsw_ViewSelectDiv\">");
+			Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
+
             if (type == "all")
             {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + allTypes + Down_Selected_Tab_End);
+                Output.WriteLine("    <li class=\"current\">" + allTypes + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "all";
-                Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + allTypes + Down_Tab_End + "</a>");
+                Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + allTypes + "</a></li>");
             }
 
             if (type == "edit")
             {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + online_edits + Down_Selected_Tab_End);
+				Output.WriteLine("    <li class=\"current\">" + online_edits + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "edit";
-                Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + online_edits + Down_Tab_End + "</a>");
+				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + online_edits + "</a></li>");
             }
 
             if (type == "submit")
             {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + online_submits + Down_Selected_Tab_End);
+				Output.WriteLine("    <li class=\"current\">" + online_submits + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "submit";
-                Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + online_submits + Down_Tab_End + "</a>");
+				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + online_submits + "</a></li>");
             }
 
             if (type == "visibility")
             {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + visibility + Down_Selected_Tab_End);
+				Output.WriteLine("    <li class=\"current\">" + visibility + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "visibility";
-                Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + visibility + Down_Tab_End + "</a>");
+				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + visibility + "</a></li>");
             }
 
             if (type == "bulkloaded")
             {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + bulk_loaded + Down_Selected_Tab_End);
+				Output.WriteLine("    <li class=\"current\">" + bulk_loaded + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "bulkloaded";
-                Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + bulk_loaded + Down_Tab_End + "</a>");
+				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + bulk_loaded + "</a></li>");
             }
 
             if (type == "postprocessed")
             {
-                Output.WriteLine("  " + Down_Selected_Tab_Start + post_processed + Down_Selected_Tab_End);
+				Output.WriteLine("    <li class=\"current\">" + post_processed + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "postprocessed";
-                Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + post_processed + Down_Tab_End + "</a>");
+				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + post_processed + "</a></li>");
             }
+			Output.WriteLine("</ul>");
             Output.WriteLine("</div>");
             currentMode.Info_Browse_Mode = type;
 
@@ -1543,5 +1546,20 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</div>");
             Output.WriteLine();
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				if (currentMode.Internal_Type == Internal_Type_Enum.Wordmarks)
+					return "container-inner1000";
+
+				if (currentMode.Internal_Type == Internal_Type_Enum.Aggregations)
+					return "container-inner1215";
+
+				return base.Container_CssClass;
+			}
+		}
     }
 }

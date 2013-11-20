@@ -397,8 +397,8 @@ input.coordinate_point_second_input_focused  {  margin-top: 6px; color:#0000a8; 
 
 input.material_recd_first_input  {  margin-top: 6px; color:Blue;  width: 110px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
 input.material_recd_first_input_focused  {  margin-top: 6px; color:#0000a8;  width: 110px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.material_recd_second_input  {  margin-top: 6px; color:Blue;  width: 320px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.material_recd_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 320px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.material_recd_second_input  {  margin-top: 6px; color:Blue;  width: 300px;  border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.material_recd_second_input_focused  {  margin-top: 6px; color:#0000a8;  width: 300px;  background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
 
 select.complex_abstract_type { color:Blue; width: 165px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
@@ -424,8 +424,8 @@ select.fastsubject_select { color:Blue; width: 110px; margin-left: 10px;  margin
 select.fastsubject_select_focused { color:#0000a8; width: 110px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select.fastsubject_select_input { color:Gray; width: 110px; margin-left: 10px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
-input.disposition_advice_input  {  color:Blue;  width: 338px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-input.disposition_advice_input_focused  {  color:#0000a8;  width: 338px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.disposition_advice_input  {  color:Blue;  width: 318px; margin-top: 6px; margin-bottom: 1px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+input.disposition_advice_input_focused  {  color:#0000a8;  width: 318px; margin-top: 6px; margin-bottom: 1px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select.disposition_advice_select { color:Blue; width: 130px;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 select.disposition_advice_select_focused { color:#0000a8; width: 130px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 

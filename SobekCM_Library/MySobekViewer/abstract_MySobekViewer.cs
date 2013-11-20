@@ -38,42 +38,33 @@ namespace SobekCM.Library.MySobekViewer
     /// </ul></remarks>
     public abstract class abstract_MySobekViewer : iMySobek_Admin_Viewer
     {
-        private const string SELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cL_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\"> ";
-        private const string SELECTED_TAB_END_ORIG = " </span><img src=\"{0}design/skins/{1}/tabs/cR_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
-        private const string UNSELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> ";
-        private const string UNSELECTED_TAB_END_ORIG = " </span><img src=\"{0}design/skins/{1}/tabs/cR.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
-        private const string DOWN_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">";
-        private const string DOWN_TAB_END_ORIG = "</span><img src=\"{0}design/skins/{1}/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
-        private const string DOWN_SELECTED_TAB_START_ORIG = "<img src=\"{0}design/skins/{1}/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">";
-        private const string DOWN_SELECTED_TAB_END_ORIG = "</span><img src=\"{0}design/skins/{1}/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />";
-
         /// <summary> Empty list of behaviors, returned by default </summary>
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
         protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
-        /// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing SELECTED tab </summary>
-        protected string Down_Selected_Tab_End;
+		/// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing SELECTED tab </summary>
+		protected string Down_Selected_Tab_End;
 
-        /// <summary> Protected field contains the skin-specific code for the BEGINNING of a DOWNWARD-facing SELECTED tab </summary>
-        protected string Down_Selected_Tab_Start;
+		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a DOWNWARD-facing SELECTED tab </summary>
+		protected string Down_Selected_Tab_Start;
 
-        /// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing UNSELECTED tab </summary>
-        protected string Down_Tab_End;
+		/// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing UNSELECTED tab </summary>
+		protected string Down_Tab_End;
 
-        /// <summary> Protected field contains the skin-specific code for the BEGINNING of a DOWNWARD-facing UNSELECTED tab </summary>
-        protected string Down_Tab_Start;
+		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a DOWNWARD-facing UNSELECTED tab </summary>
+		protected string Down_Tab_Start;
 
-        /// <summary> Protected field contains the skin-specific code for the END of a UPWARD-facing SELECTED tab </summary>
-        protected string Selected_Tab_End;
+		/// <summary> Protected field contains the skin-specific code for the END of a UPWARD-facing SELECTED tab </summary>
+		protected string Selected_Tab_End;
 
-        /// <summary> Protected field contains the skin-specific code for the BEGINNING of a UPWARD-facing SELECTED tab </summary>
-        protected string Selected_Tab_Start;
+		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a UPWARD-facing SELECTED tab </summary>
+		protected string Selected_Tab_Start;
 
-        /// <summary> Protected field contains the skin-specific code for the END of a UPWARD-facing UNSELECTED tab </summary>
-        protected string Unselected_Tab_End;
+		/// <summary> Protected field contains the skin-specific code for the END of a UPWARD-facing UNSELECTED tab </summary>
+		protected string Unselected_Tab_End;
 
-        /// <summary> Protected field contains the skin-specific code for the BEGINNING of a UPWARD-facing UNSELECTED tab </summary>
-        protected string Unselected_Tab_Start;
+		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a UPWARD-facing UNSELECTED tab </summary>
+		protected string Unselected_Tab_Start;
 
         /// <summary> Protected field contains the mode / navigation information for the current request </summary>
         protected SobekCM_Navigation_Object currentMode;
@@ -98,14 +89,14 @@ namespace SobekCM.Library.MySobekViewer
             {
                 currentMode = value;
 
-                Selected_Tab_Start = String.Format(SELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Selected_Tab_End = String.Format(SELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Unselected_Tab_Start = String.Format(UNSELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Unselected_Tab_End = String.Format(UNSELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Down_Tab_Start = String.Format(DOWN_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Down_Tab_End = String.Format(DOWN_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Down_Selected_Tab_Start = String.Format(DOWN_SELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-                Down_Selected_Tab_End = String.Format(DOWN_SELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Selected_Tab_Start = String.Format(SELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Selected_Tab_End = String.Format(SELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Unselected_Tab_Start = String.Format(UNSELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Unselected_Tab_End = String.Format(UNSELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Down_Tab_Start = String.Format(DOWN_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Down_Tab_End = String.Format(DOWN_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Down_Selected_Tab_Start = String.Format(DOWN_SELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
+				//Down_Selected_Tab_End = String.Format(DOWN_SELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
 
             }
         }

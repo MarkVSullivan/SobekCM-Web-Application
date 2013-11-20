@@ -30,6 +30,8 @@ namespace SobekCM.Library.HTML
 
         Item_Subwriter_Requires_Left_Navigation_Bar,
 
+		Item_Subwriter_Full_JQuery_UI,
+
         MySobek_Subwriter_Mimic_Item_Subwriter
     }
 }

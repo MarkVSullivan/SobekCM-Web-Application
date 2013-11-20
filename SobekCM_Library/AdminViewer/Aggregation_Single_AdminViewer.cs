@@ -344,7 +344,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine();
 
 			// Start the outer tab containe
-			Output.WriteLine("  <div id=\"tabContainer\" class=\"one\">");
+			Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
 
 			// Add all the possible tabs (unless this is a sub-page like editing the CSS file)
 			if (page < 9)
