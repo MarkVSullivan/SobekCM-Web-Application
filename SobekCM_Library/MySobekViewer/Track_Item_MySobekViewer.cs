@@ -143,8 +143,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!String.IsNullOrEmpty(BibID) && !String.IsNullOrEmpty(VID))
             {
                 //Get the the form field values
-                start_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime"]).ToString("hh:mm tt");
-                end_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime"]).ToString("hh:mm tt");
+                start_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime"]).ToString("HH:mm");
+                end_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime"]).ToString("HH:mm");
                 this_workflow_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate"]);
             }
 
@@ -270,7 +270,7 @@ namespace SobekCM.Library.MySobekViewer
            
 
             //Add the date and time
-            string currentTime = DateTime.Now.ToString("hh:mm tt");
+            string currentTime = DateTime.Now.ToString("HH:mm");
 
 
             if (stage == 1 || stage == 3)
@@ -568,7 +568,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     selected_text_scanning = " selected";
                     if (stage == 1)
-                        startTime = DateTime.Now.ToString("hh:mm");
+                        startTime = DateTime.Now.ToString("HH:mm");
                     else
                     {
                         endTime = currentTime;
@@ -616,11 +616,12 @@ namespace SobekCM.Library.MySobekViewer
                 
                 builder.AppendLine("</span>");
 
-                builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td ></td></tr></table>");
-                
+              
                 //If there are any previously opened and unclosed workflows for this item
                 if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0)
                 {
+
+                    builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td ></td></tr></table>");
 
                     builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">"); 
                     builder.AppendLine("<table class=\"sbkTi_table\" >");
