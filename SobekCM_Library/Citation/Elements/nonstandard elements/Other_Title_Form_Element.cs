@@ -422,7 +422,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("          <td valign=\"bottom\" >");
             if (Repeatable)
             {
-                Output.WriteLine("            <img title=\"" + Translator.Get_Translation("Click to add a new other title", CurrentLanguage) + ".\" alt=\"+\" border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" onmousedown=\"new_title_link_clicked('" + Template_Page + "');\" />");
+                Output.WriteLine("            <img title=\"" + Translator.Get_Translation("Click to add a new other title", CurrentLanguage) + ".\" alt=\"+\" border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" onmousedown=\"new_title_link_clicked('" + Template_Page + "');return false;\" />");
             }
             Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");

@@ -2039,7 +2039,15 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer )
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Do nothing");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Add reference to draggable jquery ui");
+	        if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI))
+	        {
+#if DEBUG
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
+#else
+		        Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
+#endif
+	        }
         }
 
         #region Methods to create the treeview control for the table of contents
@@ -2175,5 +2183,12 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		/// <value> Always returns an empty string </value>
+		public override string Container_CssClass
+		{
+			get { return String.Empty; }
+		}
     }
 }

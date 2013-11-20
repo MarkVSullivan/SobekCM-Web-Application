@@ -3286,5 +3286,24 @@ namespace SobekCM.Library.HTML
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				switch (currentMode.Statistics_Type)
+				{
+					case Statistics_Type_Enum.Item_Count_Standard_View:
+					case Statistics_Type_Enum.Item_Count_Growth_View:
+					case Statistics_Type_Enum.Item_Count_Arbitrary_View:
+					case Statistics_Type_Enum.Usage_Collections_By_Date:
+					case Statistics_Type_Enum.Usage_Item_Views_By_Date:
+						return "container-innerfull";
+				}
+
+				return base.Container_CssClass;
+			}
+		}
     }
 }

@@ -429,5 +429,14 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  " + thisStaticBrowseObject.Extra_Head_Info.Trim());
             }
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				return siteMap != null ? String.Empty : base.Container_CssClass;
+			}
+		}
     }
 }

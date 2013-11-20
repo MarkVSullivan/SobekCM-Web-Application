@@ -392,5 +392,14 @@ namespace SobekCM.Library.HTML
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
         }
+
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				return pagedResults != null ? "container-facets" : base.Container_CssClass;
+			}
+		}
     }
 }

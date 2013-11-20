@@ -115,16 +115,34 @@ namespace SobekCM.Library.HTML
                 homeText = "INICIO";
             }
 
-            Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
+			// Add the item views
+			Output.WriteLine("<!-- Add the menu -->");
+			Output.WriteLine("<div id=\"sbkPfm_MenuBar\" class=\"sbkMenu_Bar\">");
+			Output.WriteLine("<ul class=\"sf-menu\">");
 
-            currentMode.Mode = Display_Mode_Enum.Aggregation;
-			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + Unselected_Tab_Start + homeText + Unselected_Tab_End + "</a>");
-            currentMode.Mode = Display_Mode_Enum.Public_Folder;
-            
-            Output.WriteLine("  " + Selected_Tab_Start + publicFolderText + Selected_Tab_End);
-            Output.WriteLine("</div>");
-            Output.WriteLine();
+			// Get ready to draw the tabs
+			string sobek_home_text = Mode.SobekCM_Instance_Abbreviation + " Home";
+
+			// Add the 'SOBEK HOME' first menu option and suboptions
+			Mode.Mode = Display_Mode_Enum.Aggregation;
+			Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+			Mode.Home_Type = Home_Type_Enum.List;
+			Output.WriteLine("\t\t<li class=\"sbkMenu_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
+
+			Mode.Mode = Display_Mode_Enum.Public_Folder;
+			Output.WriteLine("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\">" + publicFolderText + "</a></li>");
+			Output.WriteLine("\t</ul></div>");
+
+			Output.WriteLine("<!-- Initialize the main user menu -->");
+			Output.WriteLine("<script>");
+			Output.WriteLine("  jQuery(document).ready(function () {");
+			Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
+			Output.WriteLine("  });");
+			Output.WriteLine("</script>");
+			Output.WriteLine();
+
+			Output.WriteLine("<br />");
+			Output.WriteLine();
 
             if (( pagedResults != null ) && ( resultsStatistics != null ))
             {

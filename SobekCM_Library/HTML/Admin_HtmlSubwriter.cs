@@ -399,12 +399,6 @@ namespace SobekCM.Library.HTML
             {
                 Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
             }
-
-			// If editing settings or single aggregation, add the tab styling
-			if ((currentMode.Admin_Type == Admin_Type_Enum.Settings) || ( currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
-			{
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Tabs.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			}
         }
 
         /// <summary> Writes final HTML after all the forms </summary>
@@ -417,5 +411,24 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
         }
 
+		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+		public override string Container_CssClass
+		{
+			get
+			{
+				switch (currentMode.Admin_Type)
+				{
+					case Admin_Type_Enum.Wordmarks:
+						return "sbkWav_ContainerInner";
+
+					case Admin_Type_Enum.Settings:
+						return"sbkSeav_ContainerInner";
+
+					case Admin_Type_Enum.Aggregation_Single:
+						return "sbkSaav_ContainerInner";
+				}
+				return base.Container_CssClass;
+			}
+		}
     }
 }

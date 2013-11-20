@@ -461,6 +461,8 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
+	        const string NEWVOLUME = "NEW VOLUME";
+
             Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
@@ -484,54 +486,55 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("" + message + "<br />");
             }
 
-            Output.WriteLine("<a name=\"template\"> </a>");
-            Output.WriteLine("<div class=\"ViewsBrowsesRow\">");
-            Output.WriteLine(Selected_Tab_Start + "NEW VOLUME" + Selected_Tab_End + " ");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<div class=\"SobekEditPanel\">");
-            Output.WriteLine("<!-- Add SAVE and CANCEL buttons to top of form -->");
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<table width=\"100%\">");
-            Output.WriteLine("  <tr>");
-            Output.WriteLine("    <td width=\"20px\">&nbsp;</td>");
+			Output.WriteLine("<a name=\"template\"> </a>");
+			Output.WriteLine("<br />");
+			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+			Output.WriteLine("  <div class=\"tabs\">");
+			Output.WriteLine("    <ul>");
+			Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + NEWVOLUME + "</li>");
+			Output.WriteLine("    </ul>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("  <div class=\"graytabscontent\">");
+			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
-            // Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
-            Output.WriteLine("    <td width=\"300px\"> Import from existing volume: &nbsp; ");
-            Output.WriteLine("      <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
+            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
+            Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine();
 
-            DataColumn vidColumn = itemsInTitle.Item_Table.Columns["VID"];
-            bool first = true;
-            DataView sortedView = new DataView(itemsInTitle.Item_Table) {Sort = "VID DESC"};
-            foreach (DataRowView itemRowView in sortedView)
-            {
-                if (first)
-                {
-                    Output.WriteLine("        <option value=\"" + itemRowView.Row[vidColumn] + "\" selected=\"selected\">" + itemRowView.Row[vidColumn] + "</option>");
-                    first = false;
-                }
-                else
-                {
-                    Output.WriteLine("        <option value=\"" + itemRowView.Row[vidColumn] + "\">" + itemRowView.Row[vidColumn] + "</option>");
-                }
-            }
+			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+			Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_BigButton\">SAVE & ADD ANOTHER</button>");
+			Output.WriteLine("      </div>");
+			Output.WriteLine("      <br /><br />");
+			Output.WriteLine();
 
+			// Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
+			Output.WriteLine("      <div style=\"text-align:left;padding-left:30px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
+			Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
-            Output.WriteLine("      </select>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("    <td align=\"right\">");
-            Output.WriteLine("      <a onmousedown=\"addvolume_cancel_form(); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a> &nbsp; &nbsp; ");
-            Output.WriteLine("      <a onmousedown=\"addvolume_save_form(''); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a> &nbsp; &nbsp; ");
-            Output.WriteLine("      <a onmousedown=\"addvolume_save_form('_again'); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_add_another.gif\" alt=\"SAVE AND ADD ANOTHER\" /></a>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("    <td width=\"20px\">&nbsp;</td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
+			DataColumn vidColumn = itemsInTitle.Item_Table.Columns["VID"];
+			bool first = true;
+			DataView sortedView = new DataView(itemsInTitle.Item_Table) { Sort = "VID DESC" };
+			foreach (DataRowView itemRowView in sortedView)
+			{
+				if (first)
+				{
+					Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\" selected=\"selected\">" + itemRowView.Row[vidColumn] + "</option>");
+					first = false;
+				}
+				else
+				{
+					Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\">" + itemRowView.Row[vidColumn] + "</option>");
+				}
+			}
+			Output.WriteLine("        </select>");
+	        Output.WriteLine("      </div>");
+			Output.WriteLine();
 
-            bool isMozilla = false;
-            if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
-                isMozilla = true;
+	        bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 
-            // Create a new blank item for display purposes
+	        // Create a new blank item for display purposes
             SobekCM_Item displayItem = new SobekCM_Item {BibID = item.BibID};
             displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
             displayItem.Behaviors.Serial_Info.Clear();
@@ -564,40 +567,26 @@ namespace SobekCM.Library.MySobekViewer
             template.Render_Template_HTML(Output, displayItem, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1); 
 
             // Add the second buttons at the bottom of the form
-            Output.WriteLine("<!-- Add SAVE and CANCEL buttons to bottom of form -->");
-            Output.WriteLine("<table width=\"100%\">");
-            Output.WriteLine("  <tr>");
-            Output.WriteLine("    <td width=\"480px\">&nbsp;</td>");
-            Output.WriteLine("    <td align=\"right\">");
-            Output.WriteLine("      <a onmousedown=\"addvolume_cancel_form(); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a> &nbsp; &nbsp; ");
-            Output.WriteLine("      <a onmousedown=\"addvolume_save_form(''); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("    <td width=\"20px\">&nbsp;</td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
-            Output.WriteLine("<br />");
-            Output.WriteLine("<hr />");
-            Output.WriteLine("<table width=\"100%\" cellspacing=\"4px\" >");
-            Output.WriteLine("  <tr height=\"25px\">");
-            Output.WriteLine("    <td width=\"20px\">&nbsp;</td>");
-            Output.WriteLine("    <td colspan=\"2\">In addition, the following actions are available:</td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("  <tr height=\"30px\">");
-            Output.WriteLine("    <td>&nbsp;</td>");
-            Output.WriteLine("    <td width=\"80px\">&nbsp;</td>");
-            Output.WriteLine("    <td>");
-            Output.WriteLine("      <a onmousedown=\"addvolume_save_form('_edit'); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_edit.gif\" alt=\"SAVE AND EDIT ITEM\" /></a> &nbsp; &nbsp; ");
-            Output.WriteLine("      <a onmousedown=\"addvolume_save_form('_addfiles'); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_add_files.gif\" alt=\"SAVE AND ADD FILES\" /></a> &nbsp; &nbsp; ");
-//            Output.WriteLine("      <img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_add_files_disabled.gif\" alt=\"SAVE AND ADD FILES\" /> &nbsp; &nbsp; ");
+            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
+			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+			Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+			Output.WriteLine("      </div>");
+			Output.WriteLine();
 
-            Output.WriteLine("      <a onmousedown=\"addvolume_save_form('_again'); return false;\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_add_another.gif\" alt=\"SAVE AND ADD ANOTHER\" /></a>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
+			Output.WriteLine("      <br /><br />");
+			Output.WriteLine("      <hr />");
+			Output.WriteLine();
 
-            Output.WriteLine("<br />");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<br />");
+			Output.WriteLine("      <p>In addition, the following actions are available:</p>");
+			Output.WriteLine("      <button onclick=\"addvolume_save_form('_edit'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & EDIT ITEM</button> &nbsp; &nbsp; ");
+			Output.WriteLine("      <button onclick=\"addvolume_save_form('_addfiles'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD FILES</button> &nbsp; &nbsp; ");
+			Output.WriteLine("      <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD ANOTHER</button>");
+
+			Output.WriteLine("    </div>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("<br />");
         }
     }
 }

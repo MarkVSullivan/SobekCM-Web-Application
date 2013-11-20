@@ -30,7 +30,7 @@ namespace SobekCM.Library.Skins
         /// <remarks> This also corresponds to the location of the main interface files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
         public readonly string Skin_Code;
 
-        /// <summary> Constructor for a new instance of the SobekCM_Skin_Object class </summary>
+		/// <summary> Constructor for a new instance of the SobekCM_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
@@ -50,6 +50,8 @@ namespace SobekCM.Library.Skins
             Header_Item_HTML = String.Empty;
             Footer_Item_HTML = String.Empty;
             Language_Code = String.Empty;
+			Header_Has_Container_Directive = false;
+			Footer_Has_Container_Directive = false;
         }
 
         /// <summary> Constructor for a new instance of the SobekCM_Skin_Object class </summary>
@@ -73,6 +75,8 @@ namespace SobekCM.Library.Skins
             Header_Item_HTML = String.Empty;
             Footer_Item_HTML = String.Empty;
             Language_Code = String.Empty;
+	        Header_Has_Container_Directive = false;
+	        Footer_Has_Container_Directive = false;
         }
 
         /// <summary>  Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? ) </summary>
@@ -96,6 +100,16 @@ namespace SobekCM.Library.Skins
 
         /// <summary> HTML for the item-specific footer, to be included when rendering an HTML page from the item viewer  </summary>
         public string Footer_Item_HTML { get; set; }
+
+		/// <summary> Flag indicates if the main header has a %CONTAINER% directive indicating
+		/// where the container tag should be placed.  This is useful if either the whole header, or
+		/// a portion of the header, should extend past the main container. </summary>
+		public bool Header_Has_Container_Directive { get; set; }
+
+		/// <summary> Flag indicates if the main footer has a %CONTAINER% directive indicating
+		/// where the container tag should be placed.  This is useful if either the whole footer, or
+		/// a portion of the footer, should extend past the main container. </summary>
+		public bool Footer_Has_Container_Directive { get; set; }
 
         /// <summary> Method sets the header and footer to be used by this HTML skin </summary>
         /// <param name="Header_HTML"> HTML to use for the standard header </param>
@@ -164,6 +178,10 @@ namespace SobekCM.Library.Skins
                     Header_Item_HTML = "Error reading header item source ( " + Header_Item_Source + "): " + ee.Message;
                 }
             }
+            else
+            {
+	            Header_Item_HTML = Header_HTML.Replace("<%CONTAINER%>", "");
+            }
 
             if (Footer_Item_Source.Length > 0)
             {
@@ -178,6 +196,16 @@ namespace SobekCM.Library.Skins
                     Footer_Item_HTML = "Error reading footer item source ( " + Footer_Item_Source + "): " + ee.Message;
                 }
             }
+            else
+            {
+				Footer_Item_HTML = Footer_HTML.Replace("<%CONTAINER%>", "");
+            }
+
+			// Check here if the <%CONTAINER%> directive exists... useful to only 
+			// do this once
+	        Header_Has_Container_Directive = (Header_HTML.IndexOf("<%CONTAINER%>") >= 0);
+			Footer_Has_Container_Directive = (Footer_HTML.IndexOf("<%CONTAINER%>") >= 0);
+
         }
     }
 }
