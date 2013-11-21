@@ -62,6 +62,8 @@ namespace SobekCM.Library.MySobekViewer
             string sobek_text = currentMode.SobekCM_Instance_Abbreviation;
             string my_sobek = "my" + sobek_text;
 
+			Output.WriteLine("<h1>" + Web_Title + "</h1>");
+			Output.WriteLine();
 
 			Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
             Output.WriteLine("  <p>Welcome to " + my_sobek + ".  This feature allows you to add items to your bookshelves, organize your bookshelves, and email your bookshelves to friends.</p>");

@@ -617,6 +617,11 @@ select.addvolume_base_volume  {  color:Blue;  width: 80px; margin-right: 10px; m
 
 
 
+.sbkEimv_Citation {margin-left: 5px;padding-left: 5px; BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.9em; }
+.sbkEimv_Citation a:link { color: black; }
+.sbkEimv_Citation a:visited { color: black; }
+.sbkEimv_Citation p { padding-left: 40px; padding-right: 40px }
+
 #blanket_outer {
 	position: absolute;
 	margin: auto;

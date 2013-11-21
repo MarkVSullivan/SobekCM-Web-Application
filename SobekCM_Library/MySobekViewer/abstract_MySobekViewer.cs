@@ -1,6 +1,5 @@
 ﻿#region Using directives
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
@@ -15,14 +14,19 @@ using SobekCM.Library.Users;
 
 namespace SobekCM.Library.MySobekViewer
 {
+	/// <summary> Enumeration indicates which type of main menu navigation
+	/// to include </summary>
     public enum MySobek_Included_Navigation_Enum : byte
     {
         /// <summary> Suppress the standard mySobek navigational elements.  This viewer will
         /// utilize its own navigational elements at the top of the page </summary>
         NONE = 1,
 
-        /// <summary> Standard mySobek navigation tabs/type </summary>
-        Standard
+        /// <summary> Standard mySobek navigation menu </summary>
+        Standard,
+
+		/// <summary> Special navigation menu for the logon screen </summary>
+		LogOn
     }
 
     /// <summary> Abstract class which all mySobek viewer classes extend </summary>
@@ -42,30 +46,6 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
         protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
-		/// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing SELECTED tab </summary>
-		protected string Down_Selected_Tab_End;
-
-		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a DOWNWARD-facing SELECTED tab </summary>
-		protected string Down_Selected_Tab_Start;
-
-		/// <summary> Protected field contains the skin-specific code for the END of a DOWNWARD-facing UNSELECTED tab </summary>
-		protected string Down_Tab_End;
-
-		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a DOWNWARD-facing UNSELECTED tab </summary>
-		protected string Down_Tab_Start;
-
-		/// <summary> Protected field contains the skin-specific code for the END of a UPWARD-facing SELECTED tab </summary>
-		protected string Selected_Tab_End;
-
-		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a UPWARD-facing SELECTED tab </summary>
-		protected string Selected_Tab_Start;
-
-		/// <summary> Protected field contains the skin-specific code for the END of a UPWARD-facing UNSELECTED tab </summary>
-		protected string Unselected_Tab_End;
-
-		/// <summary> Protected field contains the skin-specific code for the BEGINNING of a UPWARD-facing UNSELECTED tab </summary>
-		protected string Unselected_Tab_Start;
-
         /// <summary> Protected field contains the mode / navigation information for the current request </summary>
         protected SobekCM_Navigation_Object currentMode;
 
@@ -79,8 +59,6 @@ namespace SobekCM.Library.MySobekViewer
             user = User;
         }
 
-
-
         /// <summary> Sets the mode / navigation information for the current request </summary>
         /// <remarks> This also sets all of the protected tab HTML fields, from the base interface in the navigation object </remarks>
         public SobekCM_Navigation_Object CurrentMode
@@ -88,16 +66,6 @@ namespace SobekCM.Library.MySobekViewer
             set
             {
                 currentMode = value;
-
-				//Selected_Tab_Start = String.Format(SELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Selected_Tab_End = String.Format(SELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Unselected_Tab_Start = String.Format(UNSELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Unselected_Tab_End = String.Format(UNSELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Down_Tab_Start = String.Format(DOWN_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Down_Tab_End = String.Format(DOWN_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Down_Selected_Tab_Start = String.Format(DOWN_SELECTED_TAB_START_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-				//Down_Selected_Tab_End = String.Format(DOWN_SELECTED_TAB_END_ORIG, currentMode.Base_URL, currentMode.Base_Skin);
-
             }
         }
 
