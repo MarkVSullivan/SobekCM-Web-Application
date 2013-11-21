@@ -4,10 +4,7 @@
 
 using System;
 using System.IO;
-using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -135,81 +132,64 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
-		{
-            Tracer.Add_Trace("Logon_MySobekViewer.Add_Controls", String.Empty);
-            StringBuilder literalBuilder = new StringBuilder();
-
-            // Get ready to draw the tabs
-            string my_sobek = "my" + currentMode.SobekCM_Instance_Abbreviation;
-
-			literalBuilder.AppendLine("<br />");
-			literalBuilder.AppendLine("<h1>Logon to " + my_sobek + "</h1>");
-			literalBuilder.AppendLine();
-
-			// If there was an error, show it
-			if (errorMessage.Length > 0)
-			{
-				literalBuilder.AppendLine("<div class=\"sbkLomv_ErrorMsg\">" + errorMessage + "</div>");
-			}
-
-            literalBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-			literalBuilder.AppendLine("<div class=\"sbkMySobek_HomeText\" >");
-            literalBuilder.AppendLine("  <br />");
-			literalBuilder.AppendLine("  <p>The feature you are trying to access requires a valid logon.<p>");
-			literalBuilder.AppendLine("  <p>Please choose the appropriate logon directly below.</p>");
-			literalBuilder.AppendLine("  <ul id=\"sbkLomv_OptionsList\">");
-
-            if (currentMode.SobekCM_Instance_Abbreviation == "dLOC")
-            {
-				literalBuilder.AppendLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
-
-                if ((SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0) && ( SobekCM_Library_Settings.Shibboleth_System_Name.Length > 0 ))
-                {
-					literalBuilder.AppendLine("    <li><span style=\"font-weight:bold\">If you have a valid " + SobekCM_Library_Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + SobekCM_Library_Settings.Shibboleth_System_URL + "\">Sign on with your " + SobekCM_Library_Settings.Shibboleth_System_Name + " here</a>.</li>");
-                }
-            }
-            else
-            {
-                if ((SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0) && (SobekCM_Library_Settings.Shibboleth_System_Name.Length > 0))
-                {
-					literalBuilder.AppendLine("    <li><span style=\"font-weight:bold\">If you have a valid " + SobekCM_Library_Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + SobekCM_Library_Settings.Shibboleth_System_URL + "\">Sign on with your " + SobekCM_Library_Settings.Shibboleth_System_Name + " here</a>.</li>");
-                }
-
-				literalBuilder.AppendLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + currentMode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + currentMode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");
-            }
-
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-			literalBuilder.Append("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + currentMode.Redirect_URL() + "\">Register now</a> or ");
-
-            currentMode.Mode = Display_Mode_Enum.Contact;
-            literalBuilder.AppendLine(" <a href=\"" + currentMode.Redirect_URL() + "\">Contact Us</a></li>");
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-            currentMode.Mode = Display_Mode_Enum.My_Sobek;
-
-            literalBuilder.AppendLine("  </ul>");
-
-
-            literalBuilder.AppendLine("</div>");
-
-
-			literalBuilder.AppendLine("</div>");
-            literalBuilder.AppendLine("<br />");
-            literalBuilder.AppendLine("<br />");
-
-            LiteralControl literal2 = new LiteralControl(literalBuilder.ToString());
-            MainPlaceHolder.Controls.Add(literal2);
-        }
-
 		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 	    {
-			// DOes nothing current
+			// Get ready to draw the tabs
+			string my_sobek = "my" + currentMode.SobekCM_Instance_Abbreviation;
+
+			Output.WriteLine("<br />");
+			Output.WriteLine("<h1>Logon to " + my_sobek + "</h1>");
+			Output.WriteLine();
+
+			// If there was an error, show it
+			if (errorMessage.Length > 0)
+			{
+				Output.WriteLine("<div class=\"sbkLomv_ErrorMsg\">" + errorMessage + "</div>");
+			}
+
+			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
+			Output.WriteLine("  <br />");
+			Output.WriteLine("  <p>The feature you are trying to access requires a valid logon.<p>");
+			Output.WriteLine("  <p>Please choose the appropriate logon directly below.</p>");
+			Output.WriteLine("  <ul id=\"sbkLomv_OptionsList\">");
+
+			if (currentMode.SobekCM_Instance_Abbreviation == "dLOC")
+			{
+				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
+
+				if ((SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0) && (SobekCM_Library_Settings.Shibboleth_System_Name.Length > 0))
+				{
+					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + SobekCM_Library_Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + SobekCM_Library_Settings.Shibboleth_System_URL + "\">Sign on with your " + SobekCM_Library_Settings.Shibboleth_System_Name + " here</a>.</li>");
+				}
+			}
+			else
+			{
+				if ((SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0) && (SobekCM_Library_Settings.Shibboleth_System_Name.Length > 0))
+				{
+					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + SobekCM_Library_Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + SobekCM_Library_Settings.Shibboleth_System_URL + "\">Sign on with your " + SobekCM_Library_Settings.Shibboleth_System_Name + " here</a>.</li>");
+				}
+
+				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + currentMode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + currentMode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");
+			}
+
+			currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+			Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + currentMode.Redirect_URL() + "\">Register now</a> or ");
+
+			currentMode.Mode = Display_Mode_Enum.Contact;
+			Output.WriteLine(" <a href=\"" + currentMode.Redirect_URL() + "\">Contact Us</a></li>");
+			currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+			currentMode.Mode = Display_Mode_Enum.My_Sobek;
+
+			Output.WriteLine("  </ul>");
+
+			Output.WriteLine("</div>");
+
+			Output.WriteLine("<br />");
+			Output.WriteLine("<br />");
 	    }
 
 	    /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>

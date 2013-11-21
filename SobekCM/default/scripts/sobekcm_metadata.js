@@ -1953,8 +1953,8 @@ function set_cc_rights( textarea_name, new_value )
     textarea.value = new_value;
     
     var rights_table = document.getElementById('cc_rights');
-    if ( rights_table != null )
-        toggle('cc_rights' )
+	if (rights_table != null)
+		toggle('cc_rights');
         
     return false;
 }
@@ -1989,8 +1989,8 @@ function link_focused( divname )
 function link_blurred( divname )
 {
     var linkspan = document.getElementById(divname);
-    if ( linkspan.className.indexOf('_focused') > 0 )
-        linkspan.className = linkspan.className.replace( '_focused', '')
+	if (linkspan.className.indexOf('_focused') > 0)
+		linkspan.className = linkspan.className.replace('_focused', '');
 }
 
 function new_creator_link_clicked( page )
@@ -1999,10 +1999,8 @@ function new_creator_link_clicked( page )
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'name';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
-    
-    // Return false to prevent a return trip to the server
+	// Perform post back
+    document.itemNavForm.submit();
     return false;
 }
 
@@ -2012,10 +2010,8 @@ function new_title_link_clicked( page )
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'title';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
-    
-    // Return false to prevent a return trip to the server
+	// Perform post back
+    document.itemNavForm.submit();
     return false;
 }
 
@@ -2025,10 +2021,8 @@ function new_subject_link_clicked( page )
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'subject';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
-    
-    // Return false to prevent a return trip to the server
+	// Perform post back
+    document.itemNavForm.submit();
     return false;
 }
 
@@ -2038,10 +2032,8 @@ function new_spatial_link_clicked( page )
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'spatial';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
-
-    // Return false to prevent a return trip to the server
+	// Perform post back
+    document.itemNavForm.submit();
     return false;
 }
 
@@ -2051,34 +2043,62 @@ function new_relateditem_link_clicked( page )
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'relateditem';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
-    
-    // Return false to prevent a return trip to the server
+	// Perform post back
+    document.itemNavForm.submit();
     return false;
 }
 
-function myufdc_cancel_form( page )
+function editmetadata_cancel_form()
 {
     // Set the hidden value based on the user request
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'cancel';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
+	// Perform post back
+    document.itemNavForm.submit();
+    return false;
 }
 
-function myufdc_save_form( page )
+function editmetadata_save_form()
 {
     // Set the hidden value based on the user request
     var hiddenfield = document.getElementById('new_element_requested');
     hiddenfield.value = 'save';
     
-    // Perform post back
-    __doPostBack('newpagebutton' + page, '' );
+	// Perform post back
+    document.itemNavForm.submit();
+    return false;
 }
 
+function editmetadata_newpage(Page) {
+	// Set the hidden value based on the user request
+	var hiddenfield = document.getElementById('new_element_requested');
+	hiddenfield.value = 'newpage' + Page;
 
+	// Perform post back
+	document.itemNavForm.submit();
+	return false;
+}
+
+function editmetadata_complicate() {
+	// Set the hidden value based on the user request
+	var hiddenfield = document.getElementById('new_element_requested');
+	hiddenfield.value = 'complicate';
+
+	// Perform post back
+	document.itemNavForm.submit();
+	return false;
+}
+
+function editmetadata_simplify() {
+	// Set the hidden value based on the user request
+	var hiddenfield = document.getElementById('new_element_requested');
+	hiddenfield.value = 'simplify';
+
+	// Perform post back
+	document.itemNavForm.submit();
+	return false;
+}
 
 
 // Trim the input string from the search box

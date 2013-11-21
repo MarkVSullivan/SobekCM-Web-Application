@@ -4,9 +4,7 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
-using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -77,87 +75,62 @@ namespace SobekCM.Library.MySobekViewer
             get { return "My Saved Searches"; }
         }
 
-        /// <summary> Property indicates if this mySobek Viewer can contain pop-up forms</summary>
-        /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
-        /// allowing for the blanket division and the popup forms near the top of the rendered HTML </remarks>
-        ///<value> This mySobek viewer always returns the value TRUE </value>
-        public override bool Contains_Popup_Forms
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML", String.Empty);
+			DataTable searchesTable = SobekCM_Database.Get_User_Searches(user.UserID, Tracer);
 
-            
-        }
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> The <see cref="PagedResults_HtmlSubwriter"/> class is instantiated and adds controls to the placeholder here </remarks>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Saved_Searches_MySobekViewer.Add_Controls", String.Empty);
-            DataTable searchesTable = SobekCM_Database.Get_User_Searches(user.UserID, Tracer);
+			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+			Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+			Output.WriteLine("<input type=\"hidden\" id=\"folder_id\" name=\"folder_id\" value=\"\" />");
 
-            StringBuilder saveSearchBuilder = new StringBuilder(1000);
+			Output.WriteLine("<h1>" + Web_Title + "</h1>");
+			Output.WriteLine();
 
-            saveSearchBuilder.AppendLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-            saveSearchBuilder.AppendLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
-            saveSearchBuilder.AppendLine("<input type=\"hidden\" id=\"folder_id\" name=\"folder_id\" value=\"\" />");
+			Output.WriteLine("<div class=\"SobekHomeText\" >");
+			if (searchesTable.Rows.Count > 0)
+			{
 
-            saveSearchBuilder.AppendLine("<div class=\"SobekHomeText\" >");
-            if (searchesTable.Rows.Count > 0)
-            {
-
-                saveSearchBuilder.AppendLine("  <blockquote>");
-                saveSearchBuilder.AppendLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-                saveSearchBuilder.AppendLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
-                saveSearchBuilder.AppendLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-                saveSearchBuilder.AppendLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
-                saveSearchBuilder.AppendLine("     </tr>");
-                saveSearchBuilder.AppendLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+				Output.WriteLine("  <blockquote>");
+				Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
+				Output.WriteLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
+				Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
+				Output.WriteLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
+				Output.WriteLine("     </tr>");
+				Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
 
 
-                // Write the data for each interface
-                foreach (DataRow thisRow in searchesTable.Rows)
-                {
-                    int usersearchid = Convert.ToInt32(thisRow["UserSearchID"]);
-                    string search_url = thisRow["SearchURL"].ToString();
-                    string search_desc = thisRow["UserNotes"].ToString();
+				// Write the data for each interface
+				foreach (DataRow thisRow in searchesTable.Rows)
+				{
+					int usersearchid = Convert.ToInt32(thisRow["UserSearchID"]);
+					string search_url = thisRow["SearchURL"].ToString();
+					string search_desc = thisRow["UserNotes"].ToString();
 
-                    // Build the action links
-                    saveSearchBuilder.AppendLine("    <tr align=\"left\" valign=\"center\" >");
-                    saveSearchBuilder.Append("      <td class=\"SobekFolderActionLink\" >( ");
-                    saveSearchBuilder.Append("<a title=\"Click to delete this saved search\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
-                    saveSearchBuilder.AppendLine("<a title=\"Click to view this search\" href=\"" + search_url + "\">view</a> )</td>");
-                    saveSearchBuilder.AppendLine("      <td><a href=\"" + search_url + "\">" + search_desc + "</a></td>");
-                    saveSearchBuilder.AppendLine("     </tr>");
-                    saveSearchBuilder.AppendLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                }
+					// Build the action links
+					Output.WriteLine("    <tr align=\"left\" valign=\"center\" >");
+					Output.Write("      <td class=\"SobekFolderActionLink\" >( ");
+					Output.Write("<a title=\"Click to delete this saved search\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
+					Output.WriteLine("<a title=\"Click to view this search\" href=\"" + search_url + "\">view</a> )</td>");
+					Output.WriteLine("      <td><a href=\"" + search_url + "\">" + search_desc + "</a></td>");
+					Output.WriteLine("     </tr>");
+					Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+				}
 
-                saveSearchBuilder.AppendLine("  </table>");
-                saveSearchBuilder.AppendLine("  </blockquote>");
+				Output.WriteLine("  </table>");
+				Output.WriteLine("  </blockquote>");
 
-            }
-            else
-            {
-                saveSearchBuilder.AppendLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
-            }
-            saveSearchBuilder.AppendLine("</div>");
-
-            // Add this as a literal
-            Literal mgmtLiteral = new Literal {Text = saveSearchBuilder.ToString()};
-            MainPlaceHolder.Controls.Add(mgmtLiteral);
+			}
+			else
+			{
+				Output.WriteLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
+			}
+			Output.WriteLine("</div>");
         }
     }
 }

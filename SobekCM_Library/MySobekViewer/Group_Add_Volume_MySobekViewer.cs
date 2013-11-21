@@ -510,7 +510,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 
 			// Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
-			Output.WriteLine("      <div style=\"text-align:left;padding-left:30px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
+			Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
 			Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
 			DataColumn vidColumn = itemsInTitle.Item_Table.Columns["VID"];
