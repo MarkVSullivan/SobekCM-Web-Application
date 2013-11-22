@@ -39,12 +39,11 @@ namespace SobekCM.Library.MySobekViewer
         private DateTime this_workflow_date;
 
         private DataTable tracking_users;
-//        private DataTable workflow_entries_from_DB;
-  //      private Dictionary<string, DataRow> current_entries;
         private DataTable open_workflows_from_DB;
-       
         private Dictionary<string,Tracking_Workflow> current_workflows;
         private User_Object current_selected_user;
+
+        private readonly int page;
 
         /// <summary> Constructor for a new instance of the Track_Item_MySobekViewer class </summary>
         /// <param name="User"> Authenticated user information </param>
@@ -71,7 +70,11 @@ namespace SobekCM.Library.MySobekViewer
             user_list = new Dictionary<string, User_Object>();
             scanners_list = new List<string>();
 
- 
+            //Determine the page
+            page = 1;
+            if (currentMode.My_Sobek_SubMode == "b")
+                page = 2;
+
             //Get the list of users who are possible Scanning/Processing technicians from the DB
             tracking_users = Database.SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
             
@@ -217,12 +220,9 @@ namespace SobekCM.Library.MySobekViewer
                     break;
                }
 
-            //If this is the start of a workflow, check if there is an already openend workflow for the same user, item
+            //Get the table of any previously opened workflows for this item
             if (!String.IsNullOrEmpty(itemID.ToString()) && itemID != 0)
             {
-                //If this is the start of a workflow
-   //             if (stage == 1 || stage == 3)
-  //              {
                     DataView temp_open_workflows_all_users = new DataView(Database.SobekCM_Database.Tracking_Get_Open_Workflows(itemID,stage));
                     //string rowFilter = "WorkPerformedBy=" + User.Email;
     //                temp_open_workflows_all_users.RowFilter = rowFilter;
@@ -238,11 +238,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (username_column == current_selected_user.Email)
                             open_workflows_from_DB.Rows.Add(newRow);
                     }
-                    
-     
-    //            }
 
-    //            int row_count = open_workflows_from_DB.Rows.Count;
  
             }
 
@@ -260,7 +256,7 @@ namespace SobekCM.Library.MySobekViewer
        /// </summary>
         private void Add_New_Workflow()
         {
-           //Fetch this dictionary from the session if present
+           //Fetch the workflow dictionary from the session if present
             current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
             
             //else create a new one
@@ -436,6 +432,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/jquery-ui.css\" />");
+ 
         }
 
 
@@ -451,7 +448,16 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" /> ");
+           
+            
+            
             builder.AppendLine("<div class=\"SobekHomeText\">");
+
+      //      builder.AppendLine("  <div class=\"sbkSaav_HomeText\">");
+            builder.AppendLine("    <br />");
+            builder.AppendLine("    <h1>Item Tracking</h1>");
+            builder.AppendLine("  </div>");
+            builder.AppendLine();
 
             //Add the hidden variables
             builder.AppendLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
@@ -584,9 +590,51 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("</table>");
 
 
+            // Start the outer tab container
+            builder.AppendLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
+
+            // Add all the possible tabs (unless this is a sub-page like editing the CSS file)
+            if (page < 3)
+            {
+                builder.AppendLine("    <div class=\"tabs\">");
+                builder.AppendLine("      <ul>");
+
+                const string DURATION = "Track with Duration";
+                const string SINGLE_POINT = "Track without duration";
+
+                //Draw all the page tabs for this form
+                if (page == 1)
+                {
+                    builder.AppendLine("    <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + DURATION + "</li>");
+                }
+                else
+                {
+                    builder.AppendLine("    <li id=\"tabHeader_1\" onclick=\"return new_item_tracking('a');\">" + DURATION + "</li>");
+                }
+
+                if (page == 2)
+                {
+                    builder.AppendLine("     <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + SINGLE_POINT + "</li>");
+                }
+                else
+                {
+                    builder.AppendLine("     <li id=\"tabHeader_2\" onclick=\"return new_item_tracking('b');\">" + SINGLE_POINT + "</li>");
+                }
+
+                builder.AppendLine("</ul>");
+                builder.AppendLine("</div>");
+            }
+
+            builder.AppendLine("    <div class=\"tabscontent\">");
+
             //If a new event has been scanned/entered, then display this table
             if (!String.IsNullOrEmpty(bibid) && !String.IsNullOrEmpty(vid))
             {
+                // Add the single tab.  When users click on a tab, it goes back to the server (here)
+                // to render the correct tab content
+                
+                builder.AppendLine("    	<div class=\"tabpage\" id=\"tabpage_1\">");
+
                 string selected_text_scanning = String.Empty;
                 string selected_text_processing = String.Empty;
                 string currentTime = DateTime.Now.ToString("");
@@ -650,21 +698,25 @@ namespace SobekCM.Library.MySobekViewer
 
               
                 //If there are any previously opened and unclosed workflows for this item
-                if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0 && (stage==1 || stage==3))
+                if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0 )
                 {
-
-                    builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td ></td></tr></table>");
-
-                    builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">"); 
-                    builder.AppendLine("<table class=\"sbkTi_table\" >");
-
-                    
+           
                     //builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>User</th><th>Equipment</th></tr>");
                     foreach (DataRow row in open_workflows_from_DB.Rows)
                     {
+                        //If this is a "close" workflow event, display all open unclosed workflows from before today
+                        if (stage == 2 || stage == 4)
+                        {
+                            if (Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                continue;
+                        }
+             //           builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td ></td></tr></table>");
+
+                        builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
+                        builder.AppendLine("<table class=\"sbkTi_table\" >");
 
                         builder.AppendLine("<tr><td colspan=\"4\">");
-                        builder.AppendLine("<span style=\"color:red;\">You already have an open workflow from " + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "! </span>");
+                        builder.AppendLine("<span style=\"color:red;\">You have an open workflow from " + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "! </span>");
 
                         builder.AppendLine("</td></tr>");
 
@@ -710,23 +762,16 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("</span></td></tr>");
 
                         //End this table
-                    //    builder.AppendLine("</table>");
-                
+                        builder.AppendLine("</table>");
+                        builder.AppendLine("</span>");
 
-
-                        //End the table
+                        
                     }
 
-    //                builder.AppendLine("<tr><td colspan=\"4\">&nbsp;</td></tr>");
-       //             builder.AppendLine("<tr style=\"background:#333333\"><td colspan=\"4\"></td></tr>");
-                    
-                    builder.AppendLine("</table>");
-                    builder.AppendLine("</span>");
-          //          builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td></td></tr></table>");
                 }
 
                 //Add the current History table
-                if (current_workflows != null)
+                if (current_workflows != null && current_workflows.Count>0)
                 {
                     builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Current Work History</h2></span>");
                     builder.AppendLine("<table id=\"sbkTi_tblCurrentTracking\" class=\"sbkSaav_Table\">");
@@ -757,10 +802,12 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("</table>");
                 }
 
-        //        builder.AppendLine("</span>");
+                builder.AppendLine("</div>");
             }
 
-          
+            builder.AppendLine("</div>");
+            //Close the outer tab container
+            builder.AppendLine("</div>");
 
             //Add the Save and Done buttons
             builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
@@ -770,7 +817,8 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<br/><br/>");
             //Close the main div
             builder.AppendLine("</div>");
-
+            
+  
             
             LiteralControl control1 = new LiteralControl(builder.ToString());
           
