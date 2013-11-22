@@ -592,8 +592,6 @@ namespace SobekCM.Library.MySobekViewer
                 string currentTime = DateTime.Now.ToString("");
 
 
-
-
                 //if (stage == 1 || stage == 2)
                 //{
                 //    selected_text_scanning = " selected";
