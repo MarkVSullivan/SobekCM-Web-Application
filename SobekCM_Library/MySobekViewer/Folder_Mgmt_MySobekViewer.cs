@@ -349,10 +349,11 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Write_HTML", String.Empty);
 
-            //if ((currentMode.My_Sobek_SubMode.Length > 0) && ( resultTable.Title_Count > 0 ))
-            //{
-            //    writeResult.Write_HTML(Output, Tracer);
-            //}
+			if (currentMode.My_Sobek_SubMode != "submitted items")
+			{
+				Output.WriteLine("  <h1>" + Web_Title + "</h1>");
+				Output.WriteLine();
+			}
         }
 
         /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
@@ -727,16 +728,16 @@ namespace SobekCM.Library.MySobekViewer
                     writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
                     // Close the div
-                    Literal final_literal = new Literal {Text = "<br /></div>\n"};
+                    Literal final_literal = new Literal {Text = "<br />\n"};
                     MainPlaceHolder.Controls.Add(final_literal);
                 }
 
-                //if (resultTable.Title_Count > 0)
-                //{
-                //    System.Web.UI.WebControls.Literal literal = new System.Web.UI.WebControls.Literal();
-                //    literal.Text = "<div class=\"SobekResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons  + Environment.NewLine + "  " + writeResult.Showing_Text  + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine ;
-                //    MainPlaceHolder.Controls.Add(literal);
-                //}
+				if (( pagedResults != null ) && ( pagedResults.Count > 0))
+				{
+					Literal literal = new Literal();
+					literal.Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine;
+					MainPlaceHolder.Controls.Add(literal);
+				}
             }
             else
             {
@@ -818,7 +819,6 @@ namespace SobekCM.Library.MySobekViewer
                 bookshelfManageBuilder.AppendLine("  </table>");
                 bookshelfManageBuilder.AppendLine("  </blockquote>");
                 bookshelfManageBuilder.AppendLine("</div>");
-				bookshelfManageBuilder.AppendLine("</div>");
 
                 // Add this as a literal
                 Literal mgmtLiteral = new Literal {Text = bookshelfManageBuilder.ToString()};

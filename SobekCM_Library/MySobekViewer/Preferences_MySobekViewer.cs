@@ -477,6 +477,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
             StringBuilder builder = new StringBuilder(1000);
+			builder.AppendLine("<h1>" + Web_Title + "</h1>");
+			builder.AppendLine();
             builder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
             builder.AppendLine("<div class=\"SobekHomeText\" >");
             builder.AppendLine("<blockquote>");

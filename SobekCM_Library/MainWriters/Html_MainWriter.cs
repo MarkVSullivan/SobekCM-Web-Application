@@ -448,28 +448,28 @@ namespace SobekCM.Library.MainWriters
                     {
                         MySobek_HtmlSubwriter mySobekWriter = (MySobek_HtmlSubwriter) subwriter;
 
-                        // If the my sobek writer contains pop up forms, add the header here first
-                        if (mySobekWriter.Contains_Popup_Forms)
-                        {
-                            StringBuilder header_builder = new StringBuilder();
-                            StringWriter header_writer = new StringWriter(header_builder);
-                            Display_Header(header_writer, Tracer);
-                            LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-                            Main_Place_Holder.Controls.Add(header_literal);
-                        }
+						//// If the my sobek writer contains pop up forms, add the header here first
+						//if (mySobekWriter.Contains_Popup_Forms)
+						//{
+						//	StringBuilder header_builder = new StringBuilder();
+						//	StringWriter header_writer = new StringWriter(header_builder);
+						//	Display_Header(header_writer, Tracer);
+						//	LiteralControl header_literal = new LiteralControl(header_builder.ToString());
+						//	Main_Place_Holder.Controls.Add(header_literal);
+						//}
 
                         // Add any necessary controls
                         mySobekWriter.Add_Controls(Main_Place_Holder, Tracer);
 
-                        // Finally, add the footer
-                        if (mySobekWriter.Contains_Popup_Forms)
-                        {
-                            StringBuilder footer_builder = new StringBuilder();
-                            StringWriter footer_writer = new StringWriter(footer_builder);
-                            Display_Footer(footer_writer, Tracer);
-                            LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
-                            Main_Place_Holder.Controls.Add(footer_literal);
-                        }
+						//// Finally, add the footer
+						//if (mySobekWriter.Contains_Popup_Forms)
+						//{
+						//	StringBuilder footer_builder = new StringBuilder();
+						//	StringWriter footer_writer = new StringWriter(footer_builder);
+						//	Display_Footer(footer_writer, Tracer);
+						//	LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
+						//	Main_Place_Holder.Controls.Add(footer_literal);
+						//}
                     }
                     break;
 
@@ -484,28 +484,28 @@ namespace SobekCM.Library.MainWriters
                         // Build the my sobek subwriter
                         Admin_HtmlSubwriter adminWriter = (Admin_HtmlSubwriter) subwriter;
 
-                        // If the my sobek writer contains pop up forms, add the header here first
-                        if (adminWriter.Contains_Popup_Forms)
-                        {
-                            StringBuilder header_builder = new StringBuilder();
-                            StringWriter header_writer = new StringWriter(header_builder);
-                            Display_Header(header_writer, Tracer);
-                            LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-                            Main_Place_Holder.Controls.Add(header_literal);
-                        }
+						// If the my sobek writer contains pop up forms, add the header here first
+						if (adminWriter.Contains_Popup_Forms)
+						{
+							StringBuilder header_builder = new StringBuilder();
+							StringWriter header_writer = new StringWriter(header_builder);
+							Display_Header(header_writer, Tracer);
+							LiteralControl header_literal = new LiteralControl(header_builder.ToString());
+							Main_Place_Holder.Controls.Add(header_literal);
+						}
 
                         // Add any necessary controls
                         adminWriter.Add_Controls(Main_Place_Holder, Tracer);
 
-                        // Finally, add the footer
-                        if (adminWriter.Contains_Popup_Forms)
-                        {
-                            StringBuilder footer_builder = new StringBuilder();
-                            StringWriter footer_writer = new StringWriter(footer_builder);
-                            Display_Footer(footer_writer, Tracer);
-                            LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
-                            Main_Place_Holder.Controls.Add(footer_literal);
-                        }
+						// Finally, add the footer
+						if (adminWriter.Contains_Popup_Forms)
+						{
+							StringBuilder footer_builder = new StringBuilder();
+							StringWriter footer_writer = new StringWriter(footer_builder);
+							Display_Footer(footer_writer, Tracer);
+							LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
+							Main_Place_Holder.Controls.Add(footer_literal);
+						}
                     }
 
                     break;
