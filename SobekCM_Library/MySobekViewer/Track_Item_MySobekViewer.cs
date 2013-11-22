@@ -18,7 +18,7 @@ namespace SobekCM.Library.MySobekViewer
 {
     class Track_Item_MySobekViewer : abstract_MySobekViewer
     {
-       private Dictionary<string, string> user_list;
+       private Dictionary<string, User_Object> user_list;
         private List<string> scanners_list;
         private  string barcodeString;
         private  int itemID;
@@ -32,7 +32,7 @@ namespace SobekCM.Library.MySobekViewer
         private string hidden_value;
         private string title;
         private string equipment;
-        private string selected_user;
+
         private string start_Time;
         private string end_Time;
         
@@ -40,17 +40,15 @@ namespace SobekCM.Library.MySobekViewer
 
         private DataTable tracking_users;
 //        private DataTable workflow_entries_from_DB;
-        private Dictionary<string, DataRow> current_entries;
+  //      private Dictionary<string, DataRow> current_entries;
         private DataTable open_workflows_from_DB;
        
         private Dictionary<string,Tracking_Workflow> current_workflows;
-
+        private User_Object current_selected_user;
 
         /// <summary> Constructor for a new instance of the Track_Item_MySobekViewer class </summary>
         /// <param name="User"> Authenticated user information </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Item"> Individual digital resource to be edited by the user </param>
-        /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public Track_Item_MySobekViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer) 
             :  base(User)
@@ -70,26 +68,25 @@ namespace SobekCM.Library.MySobekViewer
      
             //Initialize variables
             tracking_users = new DataTable();
-            user_list = new Dictionary<string, string>();
+            user_list = new Dictionary<string, User_Object>();
             scanners_list = new List<string>();
 
-            //Get the barcode (scanned by the user) from the form
-   //         barcodeString = HttpContext.Current.Request.Form["txtScannedString"] ?? String.Empty;
-        
-   
-
+ 
             //Get the list of users who are possible Scanning/Processing technicians from the DB
             tracking_users = Database.SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
             
             foreach (DataRow row in tracking_users.Rows)
             {
-                string username = row["UserName"].ToString();
-                string full_name = row["FirstName"].ToString() + " " + row["LastName"].ToString();
-                user_list.Add(username, full_name);
+                User_Object temp_user = new User_Object();
+                temp_user.UserName = row["UserName"].ToString();
+                temp_user.Given_Name = row["FirstName"].ToString();
+                temp_user.Family_Name = row["LastName"].ToString();
+                temp_user.Email = row["EmailAddress"].ToString();
+                user_list.Add(temp_user.UserName, temp_user);
             }
            
-            if(!user_list.ContainsKey(user.UserName))
-                user_list.Add(user.UserName, user.Full_Name);
+            if(!user_list.ContainsKey(User.UserName))
+                user_list.Add(User.UserName, User);
 
             //Get the list of scanning equipment
             DataTable scanners = new DataTable();
@@ -122,19 +119,22 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Also get the currently selected user
-            if (HttpContext.Current.Session["Selected_User"] != null && !String.IsNullOrEmpty(HttpContext.Current.Session["Selected_User"].ToString()))
-                selected_user = HttpContext.Current.Session["Selected_User"].ToString();
+            if (HttpContext.Current.Session["Selected_User"] != null)
+                current_selected_user = (User_Object)HttpContext.Current.Session["Selected_User"];
 
             else
             {
-                selected_user = User.UserName;
-                HttpContext.Current.Session["Selected_User"] = selected_user;
+                current_selected_user = User;
+                HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
             //Check the hidden value if equipment was previously changed
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_selected_user"]))
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_selected_username"]) )
             {
-                selected_user = HttpContext.Current.Request.Form["hidden_selected_user"];
-                HttpContext.Current.Session["Selected_User"] = selected_user;
+               current_selected_user = new User_Object();
+                string temp = HttpContext.Current.Request.Form["hidden_selected_username"];
+                current_selected_user = user_list[temp];
+
+                HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
 
 
@@ -167,10 +167,12 @@ namespace SobekCM.Library.MySobekViewer
                             encodedItemID = barcodeString.Substring(0, len);
                             checksum = barcodeString.Substring(len + 1, (barcodeString.Length - len - 1));
 
+                            //Verify that the checksum is valid
                             bool isValidChecksum = Is_Valid_Checksum(encodedItemID, val.Value, checksum);
                             if (!isValidChecksum)
                                 error_message = "Barcode error- checksum error";
 
+                            //Save the item information for this itemID
                             bool IsValidItem = Get_Item_Info_from_Barcode(encodedItemID);
                             if (!IsValidItem)
                                 error_message = "Barcode error - invalid ItemID referenced";
@@ -219,17 +221,28 @@ namespace SobekCM.Library.MySobekViewer
             if (!String.IsNullOrEmpty(itemID.ToString()) && itemID != 0)
             {
                 //If this is the start of a workflow
-                if (stage == 1 || stage == 3)
-                {
+   //             if (stage == 1 || stage == 3)
+  //              {
                     DataView temp_open_workflows_all_users = new DataView(Database.SobekCM_Database.Tracking_Get_Open_Workflows(itemID,stage));
-           //         temp_open_workflows_all_users.RowFilter = "WorkPerformedBy=" + User.Email;
-                   // open_workflows_from_DB = temp_open_workflows_all_users.("WorkPerformedBy=" + user.UserName).CopyToDataTable();
-      //            open_workflows_from_DB = new DataTable();
-                    open_workflows_from_DB = temp_open_workflows_all_users.ToTable();
+                    //string rowFilter = "WorkPerformedBy=" + User.Email;
+    //                temp_open_workflows_all_users.RowFilter = rowFilter;
 
-                }
+                    //Filter the open workflows associated with the currently selected user
+                    open_workflows_from_DB = temp_open_workflows_all_users.ToTable().Clone();
 
-                int row_count = open_workflows_from_DB.Rows.Count;
+                    foreach (DataRowView rowView in temp_open_workflows_all_users)
+                    {
+                        DataRow newRow = open_workflows_from_DB.NewRow();
+                        newRow.ItemArray = rowView.Row.ItemArray;
+                        string username_column = rowView["WorkPerformedBy"].ToString();
+                        if (username_column == current_selected_user.Email)
+                            open_workflows_from_DB.Rows.Add(newRow);
+                    }
+                    
+     
+    //            }
+
+    //            int row_count = open_workflows_from_DB.Rows.Count;
  
             }
 
@@ -238,12 +251,6 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Add_New_Workflow();
             }
-
-
-
-            //if there is a BibID, VID available, get the open workflows for this item from the database
- //           if (!String.IsNullOrEmpty(itemID.ToString()))
-     //           workflow_entries_from_DB = Database.SobekCM_Database.Tracking_Get_Open_Workflows(itemID);
 
           }
 
@@ -266,7 +273,7 @@ namespace SobekCM.Library.MySobekViewer
             this_workflow.BibID = BibID;
             this_workflow.VID = VID;
             this_workflow.Equipment = equipment;
-            this_workflow.Username = selected_user;
+            this_workflow.thisUser = current_selected_user;
            
 
             //Add the date and time
@@ -277,12 +284,36 @@ namespace SobekCM.Library.MySobekViewer
             {
                 start_Time = currentTime;
                 end_Time = null;
+                if (open_workflows_from_DB == null || open_workflows_from_DB.Rows.Count > 0)
+                    return;
             }
             else if (stage == 2 || stage == 4)
             {
                
                     start_Time = null;
                     end_Time = currentTime;
+                    if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0)
+                    {
+                        int count = 0;
+                        foreach (DataRow row in open_workflows_from_DB.Rows)
+                        {
+                            if (Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                            {
+                                count++;
+                                if (count > 1)
+                                {
+                                    error_message = "More than one unclosed workflow entries for today!";
+                                    return;
+                                }
+                                start_Time = Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+
               }
 
             this_workflow.StartTime = start_Time;
@@ -295,7 +326,7 @@ namespace SobekCM.Library.MySobekViewer
             this_workflow.Workflow_type = stage;
            int WorkflowID;
 
-            string key = itemID + stage + selected_user;
+            string key = itemID + stage + current_selected_user.Email;
             if (!current_workflows.ContainsKey(key))
             {
    //             WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(this_workflow.itemID, this_workflow.Date, this_workflow.)
@@ -349,8 +380,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="encodedItemID"></param>
-        /// <param name="checksum"></param>
+        /// <param name="encoded_ItemID"></param>
         /// <returns></returns>
         private bool Get_Item_Info_from_Barcode(string encoded_ItemID)
         {
@@ -432,7 +462,8 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_VID\" name=\"hidden_VID\" value=\"\" />");
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_event_num\" name=\"hidden_event_num\" value=\"\" />");
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_equipment\" name=\"hidden_equipment\" value=\"\"/>");
-            builder.AppendLine("<input type=\"hidden\" id=\"hidden_selected_user\" name=\"hidden_selected_user\" value=\"\"/>");
+            builder.AppendLine("<input type=\"hidden\" id=\"hidden_selected_username\" name=\"hidden_selected_username\" value=\"\"/>");
+  //          builder.AppendLine("<input type=\"hidden\" id=\"hidden_selected_userEmail\" name=\"hidden_selected_userEmail\" value=\"\"/>");
 
             //Start the User, Equipment info table
             builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>User and Equipment</h2></span>");
@@ -442,13 +473,13 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("          <td><select id=\"ddlUserStart\" name=\"ddlUserStart\" onchange=\"ddlUser_Changed(this.id);\">");
 
             //Add the list of users to the dropdown list
-            foreach (KeyValuePair<string, string> thisUser in user_list)
+            foreach (KeyValuePair<string, User_Object> thisUser in user_list)
             {
-                if (thisUser.Key == selected_user)
-                    builder.AppendLine("<option value=\"" + thisUser.Key + "\" selected>" + thisUser.Value + "</option>");
+                if (thisUser.Key == current_selected_user.UserName)
+                    builder.AppendLine("<option value=\"" + thisUser.Key + "\" selected>" + thisUser.Value.Full_Name + "</option>");
                 else
                 {
-                    builder.AppendLine("<option value=\"" + thisUser.Key + "\">" + thisUser.Value + "</option>");
+                    builder.AppendLine("<option value=\"" + thisUser.Key + "\">" + thisUser.Value.Full_Name + "</option>");
                 }
             }
             builder.AppendLine("</td>");
@@ -559,31 +590,30 @@ namespace SobekCM.Library.MySobekViewer
                 string selected_text_scanning = String.Empty;
                 string selected_text_processing = String.Empty;
                 string currentTime = DateTime.Now.ToString("");
-                string startTime = String.Empty;
-                string endTime = String.Empty;
 
 
 
-                if (stage == 1 || stage == 2)
-                {
-                    selected_text_scanning = " selected";
-                    if (stage == 1)
-                        startTime = DateTime.Now.ToString("HH:mm");
-                    else
-                    {
-                        endTime = currentTime;
-                    }
-                }
-                else if (stage == 3 || stage == 4)
-                {
-                    selected_text_processing = " selected";
-                    if (stage == 3)
-                        startTime = currentTime;
-                    else
-                    {
-                        endTime = currentTime;
-                    }
-                 }
+
+                //if (stage == 1 || stage == 2)
+                //{
+                //    selected_text_scanning = " selected";
+                //    if (stage == 1)
+                //        start_Time = DateTime.Now.ToString("HH:mm");
+                //    else
+                //    {
+                //        end_Time = currentTime;
+                //    }
+                //}
+                //else if (stage == 3 || stage == 4)
+                //{
+                //    selected_text_processing = " selected";
+                //    if (stage == 3)
+                //        start_Time = currentTime;
+                //    else
+                //    {
+                //        end_Time = currentTime;
+                //    }
+                // }
                 //Start the Tracking Info section
                 builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
                 builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
@@ -607,9 +637,13 @@ namespace SobekCM.Library.MySobekViewer
                 //Add the Start and End Times
                 builder.AppendLine("<tr>");
                 builder.AppendLine("<td>Start Time:</td>");
-                builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \""+startTime+"\"/></td>");
+                builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \""+start_Time+"\"/></td>");
                 builder.AppendLine("<td>End Time:</td>");
-                builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" value = \""+endTime+"\"/></td>");
+                builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" value = \""+end_Time+"\"/></td></tr>");
+                builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
+                builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow(); return false;\">SAVE</button>");
+                builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
+                builder.AppendLine("</span></td></tr>");
 
                 //End this table
                 builder.AppendLine("</table>");
@@ -618,7 +652,7 @@ namespace SobekCM.Library.MySobekViewer
 
               
                 //If there are any previously opened and unclosed workflows for this item
-                if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0)
+                if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0 && (stage==1 || stage==3))
                 {
 
                     builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td ></td></tr></table>");
@@ -630,19 +664,13 @@ namespace SobekCM.Library.MySobekViewer
                     //builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>User</th><th>Equipment</th></tr>");
                     foreach (DataRow row in open_workflows_from_DB.Rows)
                     {
-                        
-             //           builder.AppendLine("<tr><td colspan=\"4\">&nbsp;</td></tr>");
 
-                        //builder.AppendLine("<tr>");
-                        //builder.AppendLine("<td title=\"" + title + "\">" + BibID + ":" + VID + "</td>");
-                        //builder.AppendLine("<td>" + row["WorkFlowName"].ToString() + "</td>");
-                        //builder.AppendLine("<td>" + Convert.ToDateTime(row["DateStarted"]).ToShortDateString() + "</td>");
-                        //builder.AppendLine("<td>" + Convert.ToDateTime(row["DateStarted"]).ToShortDateString() + "</td>");
-                        //builder.AppendLine("<td>" + Convert.ToDateTime(row["DateStarted"]).ToShortDateString() + "</td>");
-                        
-                        //builder.AppendLine("<td>" + row["RelatedEquipment"].ToString() + "</td>");
-                        //builder.AppendLine("</tr>");
+                        builder.AppendLine("<tr><td colspan=\"4\">");
+                        builder.AppendLine("<span style=\"color:red;\">You already have an open workflow from " + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "! </span>");
 
+                        builder.AppendLine("</td></tr>");
+
+                        
                         //Start the table
                         builder.AppendLine("<tr >");
                         builder.AppendLine("<td>Item: </td><td>" + BibID + ":" + VID + "</td>");
@@ -650,13 +678,13 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
                         builder.AppendLine("</tr>");
 
-                        string this_workflow_num = row["WorkFlowName"].ToString();
-                        if (this_workflow_num == "1" || this_workflow_num == "2")
+                        string this_workflow = row["WorkFlowName"].ToString();
+                        if (this_workflow == "Scanning")
                         {
                             selected_text_scanning = "selected";
                             selected_text_processing = "";
                         }
-                        else
+                        else if (this_workflow == "Processing")
                         {
                             selected_text_scanning = "";
                             selected_text_processing = "selected";
@@ -674,9 +702,14 @@ namespace SobekCM.Library.MySobekViewer
                         //Add the Start and End Times
                         builder.AppendLine("<tr>");
                         builder.AppendLine("<td>Start Time:</td>");
-                        builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \"" + startTime + "\"/></td>");
+                        builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm") + "\"/></td>");
                         builder.AppendLine("<td>End Time:</td>");
-                        builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" value = \"" + endTime + "\"/><span style=\"color:red;\">!</span></td>");
+                        builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" class=\"sbkTi_ErrorBox\" value = \"" + end_Time + "\"/></td></tr>");
+
+                        builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
+                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow(); return false;\">SAVE</button>");
+                        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
+                        builder.AppendLine("</span></td></tr>");
 
                         //End this table
                     //    builder.AppendLine("</table>");
@@ -713,12 +746,12 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("<tr>");
                         builder.AppendLine("<td title=\"" + this_workflow.Title + "\">" + this_workflow.BibID + ":" + this_workflow.VID + "</td>");
                         builder.AppendLine("<td>" + workflow_text + "</td>");
-                        builder.AppendLine("<td>" + this_workflow.Date + "</td>");
-                        builder.AppendLine("<td>" + this_workflow.StartTime + "</td>");
-                        builder.AppendLine("<td>" + this_workflow.EndTime + "</td>");
+                        builder.AppendLine("<td>" + Convert.ToDateTime(this_workflow.Date).ToString("MM/dd/yyyy") + "</td>");
+                        builder.AppendLine("<td>" + (String.IsNullOrEmpty(this_workflow.StartTime)?"-":Convert.ToDateTime(this_workflow.StartTime).ToString("hh:mm tt")) + "</td>");
+                        builder.AppendLine("<td>" + (String.IsNullOrEmpty(this_workflow.EndTime) ? "-" : Convert.ToDateTime(this_workflow.EndTime).ToString("hh:mm tt")) + "</td>");
                         //     builder.AppendLine("<td>" + Convert.ToDateTime(row["DateStarted"]).ToShortTimeString() + "</td>");
                         //       builder.AppendLine("<td>" + Convert.ToDateTime(row["DateCompleted"]).ToShortTimeString() + "</td>");
-                        builder.AppendLine("<td>" + this_workflow.Username + "</td>");
+                        builder.AppendLine("<td>" + this_workflow.thisUser.UserName + "</td>");
                         builder.AppendLine("<td>" + this_workflow.Equipment + "</td>");
                         builder.AppendLine("</tr>");
                     }
@@ -748,6 +781,10 @@ namespace SobekCM.Library.MySobekViewer
 
      }
 
+
+
+
+//A tracking workflow object which holds all the details of the current workflow 
   protected class Tracking_Workflow
   {
       public int WorkflowID { get; set; }
@@ -758,7 +795,7 @@ namespace SobekCM.Library.MySobekViewer
 
       public string StartTime { get; set; }
 
-      public string Username { get; set; }
+      public User_Object thisUser { get; set; }
 
       public int itemID { get; set; }
 
