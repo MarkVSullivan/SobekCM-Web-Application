@@ -50,6 +50,9 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("User_Tags_MySobekViewer.Write_HTML", String.Empty);
 
+			Output.WriteLine("<h1>" + Web_Title + "</h1>");
+			Output.WriteLine();
+
             Output.WriteLine("<div class=\"SobekHomeText\">");
             string submode = currentMode.My_Sobek_SubMode;
 

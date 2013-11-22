@@ -6,13 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
-using SobekCM.Resource_Object.Testing;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Template;
@@ -48,10 +45,11 @@ namespace SobekCM.Library.MySobekViewer
         private readonly bool isProject;
         private readonly SobekCM_Item item;
         private readonly Item_Lookup_Object itemList;
-        private double page;
+        private readonly double page;
         private string popUpFormsHtml;
         private readonly Template template;
         private readonly SobekCM_Skin_Object webSkin;
+	    private readonly string delayed_popup;
 
         #region Constructor
 
@@ -82,6 +80,7 @@ namespace SobekCM.Library.MySobekViewer
             iconList = Icon_Table;
             webSkin = HTML_Skin;
             popUpFormsHtml = String.Empty;
+	        delayed_popup = String.Empty;
 
 
             // If the user cannot edit this item, go back
@@ -146,6 +145,106 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
             }
+
+			// Handle post backs
+	        if (Current_Mode.isPostBack)
+	        {
+		        // See if there was a hidden request
+		        string hidden_request = HttpContext.Current.Request.Form["new_element_requested"] ?? String.Empty;
+
+		        // If this was a cancel request do that
+		        if (hidden_request == "cancel")
+		        {
+			        if (isProject)
+			        {
+				        Cached_Data_Manager.Remove_Project(user.UserID, item.BibID, null);
+
+				        currentMode.Mode = Display_Mode_Enum.Administrative;
+				        currentMode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+				        currentMode.My_Sobek_SubMode = String.Empty;
+				        currentMode.Redirect();
+			        }
+			        else
+			        {
+				        Cached_Data_Manager.Remove_Digital_Resource_Object(user.UserID, item.BibID, item.VID, null);
+
+				        currentMode.Mode = Display_Mode_Enum.Item_Display;
+				        currentMode.Redirect();
+			        }
+			        return;
+		        }
+
+
+		        // Save these changes to bib
+		        template.Save_To_Bib(item, user, ((int) page));
+
+		        // See if the user asked for a new element of a complex form type
+		        delayed_popup = String.Empty;
+		        switch (hidden_request.Trim())
+		        {
+			        case "name":
+				        delayed_popup = "name";
+				        item.Bib_Info.Add_Named_Entity(String.Empty).Name_Type = Name_Info_Type_Enum.personal;
+				        break;
+
+			        case "title":
+				        delayed_popup = "title";
+				        item.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.alternative);
+				        break;
+
+			        case "subject":
+				        delayed_popup = "subject";
+				        item.Bib_Info.Add_Subject();
+				        break;
+
+			        case "spatial":
+				        delayed_popup = "spatial";
+				        item.Bib_Info.Add_Hierarchical_Geographic_Subject();
+				        break;
+
+			        case "relateditem":
+				        delayed_popup = "relateditem";
+				        item.Bib_Info.Add_Related_Item(new Related_Item_Info());
+				        break;
+
+			        case "save":
+				        Complete_Item_Save();
+				        break;
+
+					case "complicate":
+						item.Using_Complex_Template = true;
+				        HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
+						HttpContext.Current.ApplicationInstance.CompleteRequest();
+						currentMode.Request_Completed = true;
+				        return;
+
+					case "simplify":
+						item.Using_Complex_Template = false;
+				        HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
+						HttpContext.Current.ApplicationInstance.CompleteRequest();
+						currentMode.Request_Completed = true;
+				        return;
+		        }
+
+				// Was this for a new page?
+				if (hidden_request.IndexOf("newpage") == 0)
+				{
+					string page_requested = hidden_request.Replace("newpage", "");
+					if (page_requested != currentMode.My_Sobek_SubMode)
+					{
+						// forward to requested page
+						currentMode.My_Sobek_SubMode = page_requested;
+						if (currentMode.My_Sobek_SubMode == "0")
+							currentMode.My_Sobek_SubMode = "preview";
+						if (isProject)
+							currentMode.My_Sobek_SubMode = page_requested + item.BibID;
+
+						HttpContext.Current.Response.Redirect(currentMode.Redirect_URL() + "#template", false);
+						HttpContext.Current.ApplicationInstance.CompleteRequest();
+						currentMode.Request_Completed = true;
+					}
+				}
+	        }
         }
 
         #endregion
@@ -171,14 +270,146 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since the individual metadata elements are added as controls, not HTML </remarks>
-        public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Write_HTML", "Do nothing");
-        }
+		public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+		{
+			// DO nothing
+		}
+
+		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+		{
+			Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Add_Controls -->");
+			Output.WriteLine("<div class=\"SobekHomeText\">");
+			Output.WriteLine("  <br />");
+			if (!isProject)
+			{
+				Output.WriteLine("  <b>Edit this item</b>");
+				Output.WriteLine("    <ul>");
+				Output.WriteLine("      <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
+				Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+
+				if ((item.Using_Complex_Template) || (item.Contains_Complex_Content))
+				{
+					if (item.Contains_Complex_Content)
+					{
+						Output.WriteLine("      <li>You are using the full editing form because this item contains complex elements or was derived from MARC.</li>");
+					}
+					else
+					{
+						Output.Write("      <li>You are using the full editing form.  Click");
+						Output.Write("<a href=\"#\" onclick=\"editmetadata_simplify();return false;\">here to return to the simplified version</a>.");
+						Output.WriteLine("</li>");
+					}
+				}
+				else
+				{
+					Output.WriteLine("      <li>You are using the simplified editing form.  Click");
+					Output.Write("<a href=\"#\" onclick=\"editmetadata_complicate();return false;\">here to use the full form</a>.");
+					Output.WriteLine("</li>");
+				}
+
+				if (template.Code.ToUpper().IndexOf("MARC") > 0)
+				{
+					Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
+				}
+				Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
+			}
+			else
+			{
+				Output.WriteLine("  <b>Edit this project</b>");
+				Output.WriteLine("    <ul>");
+				Output.WriteLine("      <li>Enter the default data for this project below and press the SAVE button when all your edits are complete.</li>");
+				Output.WriteLine("      <li>Clicking on the blue plus signs ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+				Output.WriteLine("      <li>Click on the element names for detailed information inluding definitions, best practices, and technical information.</li>");
+				Output.WriteLine("      <li>You are using the full editing form because you are editing a project.</li>");
+			}
+
+			Output.WriteLine("     </ul>");
+			Output.WriteLine("</div>");
+			Output.WriteLine();
+
+			Output.WriteLine("<!-- Buttons to select each template page -->");
+			Output.WriteLine("<a name=\"template\"> </a>");
+			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+			Output.WriteLine("  <div class=\"tabs\">");
+			Output.WriteLine("    <ul>");
+
+
+			int page_iterator = 1;
+			string current_submode = currentMode.My_Sobek_SubMode;
+			if (current_submode.Length == 0)
+				current_submode = "1";
+			while (page_iterator <= template.InputPages.Count)
+			{
+				if (current_submode[0].ToString() == page_iterator.ToString())
+					Output.Write("      <li class=\"tabActiveHeader\">" + template.InputPages[page_iterator - 1].Title + "</li>");
+				else
+					Output.Write("      <li onclick=\"editmetadata_newpage('" + page_iterator + "');\">" + template.InputPages[page_iterator - 1].Title + "</li>");
+
+				page_iterator++;
+			}
+
+			bool preview = false;
+			if (!isProject)
+			{
+				if (page < 1)
+				{
+					preview = true;
+					Output.Write("      <li class=\"tabActiveHeader\">Preview</li>");
+				}
+				else
+					Output.Write("      <li onclick=\"editmetadata_newpage('0');\">Preview</li>");
+			}
+
+			currentMode.My_Sobek_SubMode = current_submode;
+
+			Output.WriteLine("    </ul>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("  <div class=\"graytabscontent\">");
+			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
+
+			// Add the first buttons
+			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
+			Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine();
+			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+			Output.WriteLine("        <button onclick=\"editmetadata_cancel_form();return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"editmetadata_save_form();return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("      </div>");
+			Output.WriteLine("      <br /><br />");
+			Output.WriteLine();
+
+
+			Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "Render template html");
+			if (!preview)
+			{
+				if (page >= 1)
+				{
+					bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+
+					popUpFormsHtml = template.Render_Template_HTML(Output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, ((int)page));
+				}
+			}
+			else
+			{
+				show_preview(Output, currentMode.My_Sobek_SubMode, Tracer);
+			}
+
+			// Add the second buttons at the bottom of the form
+			Output.WriteLine();
+			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
+			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("      </div>");
+			Output.WriteLine("      <br />");
+			Output.WriteLine("    </div>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("<br />");
+			Output.WriteLine();
+
+		}
+
 
         /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
@@ -202,15 +433,83 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine(popUpFormsHtml);
             }
+
+			// If there was a delayed popup requested, do that now
+			if (!String.IsNullOrEmpty(delayed_popup))
+			{
+				switch (delayed_popup)
+				{
+
+					case "relateditem":
+						int related_item_count = item.Bib_Info.RelatedItems_Count;
+						if (related_item_count > 0)
+						{
+							Output.WriteLine("<!-- Popup the delayed box -->");
+							Output.WriteLine("<script type=\"text/javascript\">popup_focus('form_related_item_" + related_item_count + "', 'form_related_item_term_" + related_item_count + "', 'form_relateditem_title_" + related_item_count + "', 575, 620 );</script>");
+							Output.WriteLine();
+						}
+						break;
+
+					case "subject":
+						int subject_index = 0;
+						if (item.Bib_Info.Subjects_Count > 0)
+						{
+							subject_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Standard);
+						}
+						if (subject_index > 0)
+						{
+							Output.WriteLine("<!-- Popup the delayed box -->");
+							Output.WriteLine("<script type=\"text/javascript\">popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 310, 600 );</script>");
+							Output.WriteLine();
+						}
+						break;
+
+					case "spatial":
+						int spatial_index = 0;
+						if (item.Bib_Info.Subjects_Count > 0)
+						{
+							spatial_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial);
+						}
+						if (spatial_index > 0)
+						{
+							Output.WriteLine("<!-- Popup the delayed box -->");
+							Output.WriteLine("<script type=\"text/javascript\">popup_focus('form_spatial_" + spatial_index + "', 'form_spatial_term_" + spatial_index + "', 'formspatialcontinent_" + spatial_index + "', 590, 550 );</script>");
+							Output.WriteLine();
+						}
+						break;
+
+					case "name":
+						int name_count = 0;
+						if ((item.Bib_Info.hasMainEntityName) && (item.Bib_Info.Main_Entity_Name.hasData))
+							name_count++;
+						name_count += item.Bib_Info.Names_Count;
+
+						if (name_count > 0)
+						{
+							Output.WriteLine("<!-- Popup the delayed box -->");
+							Output.WriteLine("<script type=\"text/javascript\">popup_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 475, 700 );</script>");
+							Output.WriteLine();
+						}
+						break;
+
+					case "title":
+						int title_count = item.Bib_Info.Other_Titles_Count;
+						if ((item.Bib_Info.hasSeriesTitle) && (item.Bib_Info.SeriesTitle.Title.Length > 0))
+							title_count++;
+						if (title_count > 0)
+						{
+							Output.WriteLine("<!-- Popup the delayed box -->");
+							Output.WriteLine("<script type=\"text/javascript\">popup_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675 );</script>");
+							Output.WriteLine();
+						}
+						break;
+				}
+			}
         }
 
         void complicateButton_Click(object Sender, EventArgs E)
         {
-            item.Using_Complex_Template = true;
 
-            HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
-            HttpContext.Current.ApplicationInstance.CompleteRequest();
-            currentMode.Request_Completed = true;
         }
 
         void simplifyButton_Click(object Sender, EventArgs E)
@@ -221,94 +520,6 @@ namespace SobekCM.Library.MySobekViewer
             HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
             HttpContext.Current.ApplicationInstance.CompleteRequest();
             currentMode.Request_Completed = true;
-        }
-
-        void linkButton_Click(object Sender, EventArgs E)
-        {
-            // See if there was a hidden request
-            string hidden_request = HttpContext.Current.Request.Form["new_element_requested"] ?? String.Empty;
-
-            // Find the requested page
-            int page_requested = Convert.ToInt16(((LinkButton)Sender).ID.Replace("newpagebutton", ""));
-
-            // If this was a cancel request do that
-            if (hidden_request == "cancel")
-            {
-                if (isProject)
-                {
-                    Cached_Data_Manager.Remove_Project(user.UserID, item.BibID, null);
-
-                    currentMode.Mode = Display_Mode_Enum.Administrative;
-                    currentMode.Admin_Type = Admin_Type_Enum.Default_Metadata;
-                    currentMode.My_Sobek_SubMode = String.Empty;
-                    currentMode.Redirect();
- }
-                else
-                {
-                    Cached_Data_Manager.Remove_Digital_Resource_Object(user.UserID, item.BibID, item.VID, null);
-
-                    currentMode.Mode = Display_Mode_Enum.Item_Display;
-                    currentMode.Redirect();
-                }
-            }
-            else
-            {
-                // Save these changes to bib
-                template.Save_To_Bib(item, user, ((int)page));
-
-                // See if the user asked for a new element of a complex form type
-                string delayed_popup = String.Empty;
-                switch (hidden_request.Trim())
-                {
-                    case "name":
-                        delayed_popup = "name";
-                        item.Bib_Info.Add_Named_Entity(String.Empty).Name_Type = Name_Info_Type_Enum.personal;
-                        break;
-
-                    case "title":
-                        delayed_popup = "title";
-                        item.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.alternative);
-                        break;
-
-                    case "subject":
-                        delayed_popup = "subject";
-                        item.Bib_Info.Add_Subject();
-                        break;
-
-                    case "spatial":
-                        delayed_popup = "spatial";
-                        item.Bib_Info.Add_Hierarchical_Geographic_Subject();
-                        break;
-
-                    case "relateditem":
-                        delayed_popup = "relateditem";
-                        item.Bib_Info.Add_Related_Item(new Related_Item_Info());
-                        break;
-
-                    case "save":
-                        Complete_Item_Save();
-                        break;
-                }
-
-                if (delayed_popup.Length > 0)
-                {
-                    HttpContext.Current.Session["delayed_popup"] = delayed_popup;
-                }
-
-                if (page_requested.ToString() != currentMode.My_Sobek_SubMode)
-                {
-                    // forward to requested page
-                    currentMode.My_Sobek_SubMode = page_requested.ToString();
-                    if (currentMode.My_Sobek_SubMode == "0")
-                        currentMode.My_Sobek_SubMode = "preview";
-                    if (isProject)
-                        currentMode.My_Sobek_SubMode = page_requested.ToString() + item.BibID;
-
-                    HttpContext.Current.Response.Redirect(currentMode.Redirect_URL() + "#template", false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
-                    currentMode.Request_Completed = true;
-                }
-            }
         }
 
         #region Method to complete a save to SobekCM
@@ -500,16 +711,16 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<center>");
             Output.WriteLine(Preview_Mode == "preview"
-                                 ? "<input TYPE=\"radio\" NAME=\"pickme\" onclick=\"preview1()\" checked=\"checked\" />Standard View &nbsp; &nbsp; "
-                                 : "<input TYPE=\"radio\" NAME=\"pickme\" onclick=\"preview1()\" />Standard View &nbsp; &nbsp; ");
+								 ? "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfPreview\" checked=\"checked\" /><label for=\"sbkTypeOfPreview\">Standard View</label> &nbsp; &nbsp; "
+								 : "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfPreview\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "preview") + "#template';\" /><label for=\"sbkTypeOfPreview\">Standard View</label> &nbsp; &nbsp; ");
 
             Output.WriteLine(Preview_Mode == "marc"
-                                 ? "<input TYPE=\"radio\" NAME=\"pickme\" onclick=\"preview2()\" checked=\"checked\" />MARC View &nbsp; &nbsp; "
-                                 : "<input TYPE=\"radio\" NAME=\"pickme\" onclick=\"preview2()\" />MARC View &nbsp; &nbsp; ");
+								 ? "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMarc\" checked=\"checked\" /><label for=\"sbkTypeOfMarc\">MARC View</label> &nbsp; &nbsp; "
+								 : "<input TYPE=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMarc\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "marc") + "#template';\" /><label for=\"sbkTypeOfMarc\">MARC View</label> &nbsp; &nbsp; ");
 
             Output.WriteLine(Preview_Mode == "mets"
-                                 ? "<input TYPE=\"radio\" NAME=\"pickme\" onclick=\"preview3()\" checked=\"checked\" />METS View"
-                                 : "<input TYPE=\"radio\" NAME=\"pickme\" onclick=\"preview3()\" />METS View");
+								 ? "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMets\" checked=\"checked\" /><label for=\"sbkTypeOfMets\">METS View</label>"
+								 : "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMets\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "mets") + "#template';\" /><label for=\"sbkTypeOfMets\">METS View</label>");
 
             Output.WriteLine("</center>");
             Output.WriteLine("<br />");
@@ -517,33 +728,32 @@ namespace SobekCM.Library.MySobekViewer
             switch (Preview_Mode)
             {
                 case "marc":
-                    Output.WriteLine("<div class=\"SobekCitation\">");
+					Output.WriteLine("<div class=\"sbkEimv_Citation\">");
                     Citation_ItemViewer marcViewer = new Citation_ItemViewer(Translator, codeManager, false)
                                                          {CurrentItem = item, CurrentMode = currentMode};
                     Output.WriteLine(marcViewer.MARC_String("735px", Tracer));
                     break;
 
                 case "mets":
-                    Output.WriteLine("<div class=\"SobekCitation_METS\" width=\"950px\" >");
-                    Output.WriteLine("<table width=\"950px\"><tr><td width=\"950px\">");
+					Output.WriteLine("<div class=\"sbkEimv_Citation\" >");
+                  //  Output.WriteLine("<table width=\"950px\"><tr><td width=\"950px\">");
                     StringBuilder mets_builder = new StringBuilder(2000);
                     StringWriter mets_output = new StringWriter(mets_builder);
 
-                    SobekCM_Item testItem = Test_Bib_Package.Create(String.Empty);
                     METS_File_ReaderWriter metsWriter = new METS_File_ReaderWriter();
 
                     string errorMessage;
-                    metsWriter.Write_Metadata(mets_output, testItem, null, out errorMessage);
+                    metsWriter.Write_Metadata(mets_output, item, null, out errorMessage);
                     string mets_string = mets_builder.ToString();
                     string header = mets_string.Substring(0, mets_string.IndexOf("<METS:mets"));
                     string remainder = mets_string.Substring(header.Length);
                     Output.WriteLine(header.Replace("<?", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&lt?").Replace("?>", "?&gt;&AAA;/span&ZZZ;").Replace("<!--", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&lt!--&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Gray;&QQQ;&ZZZ;").Replace("-->", "&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;--&gt;&AAA;/span&ZZZ;").Replace("\r", "<br />").Replace("&AAA;", "<").Replace("&ZZZ;", ">").Replace("&QQQ;", "\""));
                     Output.WriteLine(remainder.Replace("<?", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&lt?").Replace("?>", "?&gt;&AAA;/span&ZZZ;").Replace("<!--", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&lt!--&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Gray;&QQQ;&ZZZ;").Replace("-->", "&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;--&gt;&AAA;/span&ZZZ;").Replace("</", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&lt;/&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Maroon;&QQQ;&ZZZ;").Replace("<", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&lt;&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Maroon;&QQQ;&ZZZ;").Replace("=\"", "&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;=&quot;&AAA;/span&ZZZ;").Replace("\">", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&quot;&gt;&AAA;/span&ZZZ;").Replace("\"", "&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&quot;&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Maroon;&QQQ;&ZZZ;").Replace("/>", "&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;/&gt;&AAA;/span&ZZZ;").Replace(">", "&AAA;/span&ZZZ;&AAA;span style=&QQQ;color:Blue;&QQQ;&ZZZ;&gt;&AAA;/span&ZZZ;").Replace("\r", "<br />").Replace("&AAA;", "<").Replace("&ZZZ;", ">").Replace("&QQQ;", "\""));
-                    Output.WriteLine("</td></tr></table>");
+                 //   Output.WriteLine("</td></tr></table>");
                     break;
 
                 default:
-                    Output.WriteLine("<div class=\"SobekCitation\">");
+					Output.WriteLine("<div class=\"sbkEimv_Citation\">");
                     Citation_ItemViewer citationViewer = new Citation_ItemViewer(Translator, codeManager, false)
                                                              {CurrentItem = item, CurrentMode = currentMode};
                     Output.WriteLine(citationViewer.Standard_Citation_String(false, Tracer));
@@ -555,323 +765,16 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        #region Method to add the controls to web page
-
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "");
-
-            StringBuilder temp_builder = new StringBuilder(2000);
-            temp_builder.AppendLine("<!-- Edit_Item_Metadata_MySobekViewer.Add_Controls -->");
-            temp_builder.AppendLine("<div class=\"SobekHomeText\">");
-            temp_builder.AppendLine("  <br />");
-            if (!isProject)
-            {
-                temp_builder.AppendLine("  <b>Edit this item</b>");
-                temp_builder.AppendLine("    <ul>");
-                temp_builder.AppendLine("      <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
-                temp_builder.AppendLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-
-                if ((item.Using_Complex_Template) || (item.Contains_Complex_Content))
-                {
-                    if (item.Contains_Complex_Content)
-                    {
-                        temp_builder.AppendLine("      <li>You are using the full editing form because this item contains complex elements or was derived from MARC.</li>");
-                    }
-                    else
-                    {
-                        temp_builder.AppendLine("      <li>You are using the full editing form.  Click");
-                        MainPlaceHolder.Controls.Add(new LiteralControl(temp_builder.ToString()));
-                        temp_builder.Remove(0, temp_builder.Length);
-
-                        LinkButton simplifyButton = new LinkButton {Text = "here to return to the simplified version."};
-                        simplifyButton.Click += simplifyButton_Click;
-                        MainPlaceHolder.Controls.Add(simplifyButton);
-
-                        temp_builder.Append("      </li>");
-                    }
-                }
-                else
-                {
-                    temp_builder.AppendLine("      <li>You are using the simplified editing form.  Click");
-                    MainPlaceHolder.Controls.Add(new LiteralControl(temp_builder.ToString()));
-                    temp_builder.Remove(0, temp_builder.Length);
-
-                    LinkButton complicateButton = new LinkButton {Text = "here to use the full form."};
-                    complicateButton.Click += complicateButton_Click;
-                    MainPlaceHolder.Controls.Add(complicateButton);
-
-                    temp_builder.Append("      </li>");
-
-                }
-
-                if (template.Code.ToUpper().IndexOf("MARC") > 0)
-                {
-                    temp_builder.AppendLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
-                }
-                temp_builder.AppendLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
-            }
-            else
-            {
-                temp_builder.AppendLine("  <b>Edit this project</b>");
-                temp_builder.AppendLine("    <ul>");
-                temp_builder.AppendLine("      <li>Enter the default data for this project below and press the SAVE button when all your edits are complete.</li>");
-                temp_builder.AppendLine("      <li>Clicking on the blue plus signs ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-                temp_builder.AppendLine("      <li>Click on the element names for detailed information inluding definitions, best practices, and technical information.</li>");
-                temp_builder.AppendLine("      <li>You are using the full editing form because you are editing a project.</li>");
-            }
-
-            temp_builder.AppendLine("     </ul>");
-            temp_builder.AppendLine("</div>");
-            temp_builder.AppendLine();
-
-            string view_class = "ViewsBrowsesRow";
-            if (page == 0.2)
-            {
-                temp_builder.AppendLine("</div> <!-- Temporary stop page container so the METS preview can extend wider -->");
-                view_class = "ViewsBrowsesRow_Wide";
-            }
-
-            temp_builder.AppendLine("<!-- Buttons to select each template page -->");
-            LiteralControl viewBrowsesLiteral2 = new LiteralControl(temp_builder + "<a name=\"template\"> </a>\n<br />\n<div class=\"" + view_class + "\">\n  ");
-            MainPlaceHolder.Controls.Add(viewBrowsesLiteral2);
-
-            
-            int page_iterator = 1;
-            string current_submode = currentMode.My_Sobek_SubMode;
-            if (current_submode.Length == 0)
-                current_submode = "1";
-            while (page_iterator <= template.InputPages.Count)
-            {
-                if (current_submode[0].ToString() == page_iterator.ToString())
-                {
-                    currentMode.My_Sobek_SubMode = page_iterator.ToString();
-                    LinkButton linkButton = new LinkButton
-                                                { Text = Selected_Tab_Start + template.InputPages[page_iterator - 1].Title.ToUpper() + Selected_Tab_End + " ",
-                                                  ID = "newpagebutton" + page_iterator };
-                    linkButton.Click += linkButton_Click;
-                    MainPlaceHolder.Controls.Add(linkButton);
-                }
-                else
-                {
-                    currentMode.My_Sobek_SubMode = page_iterator.ToString();
-                    LinkButton linkButton = new LinkButton
-                                                { Text = Unselected_Tab_Start + template.InputPages[page_iterator - 1].Title.ToUpper() + Unselected_Tab_End + " ",
-                                                    ID = "newpagebutton" + page_iterator };
-                    linkButton.Click += linkButton_Click;
-                    MainPlaceHolder.Controls.Add(linkButton);
-                }
-
-                page_iterator++;
-            }
-
-            bool preview = false;
-            if (!isProject)
-            {
-                if (page < 1)
-                {
-                    preview = true;
-                    LiteralControl currentPageLiteral = new LiteralControl(Selected_Tab_Start + "PREVIEW" + Selected_Tab_End + " ");
-                    MainPlaceHolder.Controls.Add(currentPageLiteral);
-                }
-                else
-                {
-
-                    currentMode.My_Sobek_SubMode = "0";
-                    LinkButton linkButton = new LinkButton
-                                                { Text = Unselected_Tab_Start + "PREVIEW" + Unselected_Tab_End + " " };
-                    linkButton.Click += linkButton_Click;
-                    linkButton.ID = "newpagebutton0";
-                    MainPlaceHolder.Controls.Add(linkButton);
-                }
-            }
-
-            currentMode.My_Sobek_SubMode = current_submode;
-
-
-            LiteralControl first_literal = new LiteralControl("\n</div>\n\n<div class=\"SobekEditPanel\">\n\n");
-            if (page == 0.2)
-                first_literal.Text = "</div>\n\n<center>\n\n<div class=\"SobekEditPanel_Wide\">\n\n";
-            MainPlaceHolder.Controls.Add(first_literal);
-
-            // Add the first buttons
-            MainPlaceHolder.Controls.Add(new LiteralControl("<!-- Add SAVE and CANCEL buttons to top of form -->\n<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>\n<table width=\"100%\">\n  <tr>\n    <td width=\"480px\">&nbsp;</td>\n    <td align=\"right\">"));
-
-            double lastPage = page;
-            if (page < 1)
-                page = 1;
-
-            LiteralControl cancelButton = new LiteralControl("<a onmousedown=\"javascript:myufdc_cancel_form('" + ((int) page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>\n");
-            MainPlaceHolder.Controls.Add(cancelButton);
-
-            LiteralControl saveButton = new LiteralControl("<a onmousedown=\"javascript:myufdc_save_form('" + ((int)page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>\n");
-            MainPlaceHolder.Controls.Add(saveButton);
-
-            page = lastPage;
-
-
-            //System.Web.UI.WebControls.ImageButton cancelButton = new System.Web.UI.WebControls.ImageButton();
-            //cancelButton.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel_button_g.gif";
-            //cancelButton.AlternateText = "CANCEL";
-            //cancelButton.Click += new System.Web.UI.ImageClickEventHandler(cancelButton_Click);
-            //MainPlaceHolder.Controls.Add(cancelButton);
-            //MainPlaceHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
-            //System.Web.UI.WebControls.ImageButton saveButton = new System.Web.UI.WebControls.ImageButton();
-            //saveButton.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/save_button_g.gif";
-            //saveButton.AlternateText = "SAVE";
-            //saveButton.Click += new System.Web.UI.ImageClickEventHandler(saveButton_Click);
-            //MainPlaceHolder.Controls.Add(saveButton);
-            MainPlaceHolder.Controls.Add(new LiteralControl("</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n"));
-
-
-
-            StringBuilder builder = new StringBuilder(2000);
-            StringWriter output = new StringWriter(builder);
-
-            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "Render template html");
-            if (!preview)
-            {
-                if (page >= 1)
-                {
-	                bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
-
-	                popUpFormsHtml = template.Render_Template_HTML(output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, ((int)page));
-                }
-            }
-            else
-            {
-                show_preview(output, currentMode.My_Sobek_SubMode, Tracer);
-            }
-
-            // Add the second buttons at the bottom of the form
-            builder.Append("\n<!-- Add SAVE and CANCEL buttons to bottom of form -->\n<table width=\"100%\">\n  <tr>\n    <td width=\"480px\">&nbsp;</td>\n    <td align=\"right\">");
-
-
-            LiteralControl last_button_literal1 = new LiteralControl(builder.ToString());
-            MainPlaceHolder.Controls.Add(last_button_literal1);
-
-            lastPage = page;
-            if (page < 1)
-                page = 1;
-
-            LiteralControl cancelButton2 = new LiteralControl("<a onmousedown=\"javascript:myufdc_cancel_form('" + ((int)page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>\n");
-            MainPlaceHolder.Controls.Add(cancelButton2);
-
-            LiteralControl saveButton2 = new LiteralControl("<a onmousedown=\"javascript:myufdc_save_form('" + ((int)page) + "')\"><img style=\"cursor: pointer;\" border=\"0px\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" alt=\"SAVE\" /></a>\n");
-            MainPlaceHolder.Controls.Add(saveButton2);
-            page = lastPage;
-
-            //System.Web.UI.WebControls.ImageButton cancelButton2 = new System.Web.UI.WebControls.ImageButton();
-            //cancelButton2.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel_button_g.gif";
-            //cancelButton2.AlternateText = "CANCEL";
-            //cancelButton2.Click += new System.Web.UI.ImageClickEventHandler(cancelButton_Click);
-            //MainPlaceHolder.Controls.Add(cancelButton2);
-            //MainPlaceHolder.Controls.Add(new System.Web.UI.LiteralControl("  &nbsp; "));
-            //System.Web.UI.WebControls.ImageButton saveButton2 = new System.Web.UI.WebControls.ImageButton();
-            //saveButton2.ImageUrl = "design/skins/" + CurrentMode.Base_Skin + "/buttons/save_button_g.gif";
-            //saveButton2.AlternateText = "SAVE";
-            //saveButton2.Click += new System.Web.UI.ImageClickEventHandler(saveButton_Click);
-            //MainPlaceHolder.Controls.Add(saveButton2);
-
-            MainPlaceHolder.Controls.Add(page != 0.2
-                                         ? new LiteralControl( "</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n\n</div>\n<br />\n")
-                                         : new LiteralControl( "</td>\n    <td width=\"20px\">&nbsp;</td>\n  </tr>\n</table>\n\n</div>\n</center>\n<br />\n<div id=\"pagecontainer_resumed\">\n"));
-
-            // If there was a delayed popup requested, do that now
-            if (HttpContext.Current.Session["delayed_popup"] != null)
-            {
-                string popup = HttpContext.Current.Session["delayed_popup"].ToString().Trim();
-                HttpContext.Current.Session.Remove("delayed_popup");
-
-                switch (popup)
-                {
-
-                    case "relateditem":
-                        int related_item_count = item.Bib_Info.RelatedItems_Count;
-                        if (related_item_count > 0)
-                        {
-                            StringBuilder delayed_popup_builder = new StringBuilder();
-                            delayed_popup_builder.AppendLine();
-                            delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
-                            delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_related_item_" + related_item_count + "', 'form_related_item_term_" + related_item_count + "', 'form_relateditem_title_" + related_item_count + "', 575, 620 );</script>");
-                            delayed_popup_builder.AppendLine();
-                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
-                        }
-                        break;
-
-                    case "subject":
-                        int subject_index = 0;
-                        if (item.Bib_Info.Subjects_Count > 0)
-                        {
-                            subject_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Standard);
-                        }
-                        if (subject_index > 0)
-                        {
-                            StringBuilder delayed_popup_builder = new StringBuilder();
-                            delayed_popup_builder.AppendLine();
-                            delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
-                            delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_subject_" + subject_index + "', 'form_subject_term_" + subject_index + "', 'formsubjecttopic1_" + subject_index + "', 310, 600 );</script>");
-                            delayed_popup_builder.AppendLine();
-                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
-                        }
-                        break;
-
-                    case "spatial":
-                        int spatial_index = 0;
-                        if (item.Bib_Info.Subjects_Count > 0)
-                        {
-                            spatial_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial);
-                        }
-                        if (spatial_index > 0)
-                        {
-                            StringBuilder delayed_popup_builder = new StringBuilder();
-                            delayed_popup_builder.AppendLine();
-                            delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
-                            delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_spatial_" + spatial_index + "', 'form_spatial_term_" + spatial_index + "', 'formspatialcontinent_" + spatial_index + "', 590, 550 );</script>");
-                            delayed_popup_builder.AppendLine();
-                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
-                        }
-                        break;
-
-                    case "name":
-                        int name_count = 0;
-                        if (( item.Bib_Info.hasMainEntityName ) && ( item.Bib_Info.Main_Entity_Name.hasData))
-                            name_count++;
-                        name_count += item.Bib_Info.Names_Count;
-
-                        if (name_count > 0)
-                        {
-                            StringBuilder delayed_popup_builder = new StringBuilder();
-                            delayed_popup_builder.AppendLine();
-                            delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
-                            delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 475, 700 );</script>");
-                            delayed_popup_builder.AppendLine();
-                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
-                        }
-                        break;
-
-                    case "title":
-                        int title_count = item.Bib_Info.Other_Titles_Count;
-                        if (( item.Bib_Info.hasSeriesTitle ) && ( item.Bib_Info.SeriesTitle.Title.Length > 0))
-                            title_count++;
-                        if (title_count > 0)
-                        {
-                            StringBuilder delayed_popup_builder = new StringBuilder();
-                            delayed_popup_builder.AppendLine();
-                            delayed_popup_builder.AppendLine("<!-- Popup the delayed box -->");
-                            delayed_popup_builder.AppendLine("<script type=\"text/javascript\">popup_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675 );</script>");
-                            delayed_popup_builder.AppendLine();
-                            MainPlaceHolder.Controls.Add(new LiteralControl(delayed_popup_builder.ToString()));
-                        }
-                        break;
-                }
-            }
-        }
-
-        #endregion
+		/// <summary> Property indicates the standard navigation to be included at the top of the page by the
+		/// main MySobek html subwriter. </summary>
+		/// <value> This viewer always returns NONE </value>
+		public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
+		{
+			get
+			{
+				return MySobek_Included_Navigation_Enum.NONE;
+			}
+		}
     }
 }
   

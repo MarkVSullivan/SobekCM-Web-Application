@@ -1940,6 +1940,17 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         #endregion
+
+		/// <summary> Property indicates the standard navigation to be included at the top of the page by the
+		/// main MySobek html subwriter. </summary>
+		/// <value> This viewer always returns NONE, so no menu is added </value>
+		public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
+		{
+			get
+			{
+				return MySobek_Included_Navigation_Enum.NONE;
+			}
+		}
     }
 }
   

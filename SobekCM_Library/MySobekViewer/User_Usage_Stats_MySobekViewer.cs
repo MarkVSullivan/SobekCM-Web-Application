@@ -83,6 +83,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
             }
 
+			Output.WriteLine("<h1>" + Web_Title + "</h1>");
+			Output.WriteLine();
+
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
             Output.WriteLine("<p>Below is a list of items associated with your account including usage statistics.  Total views and visits represents the total amount of usage since the item was added to the library and the monthly views and visits is the usage in the selected month.  For more information about these terms, see the <a href=\"" + currentMode.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");
