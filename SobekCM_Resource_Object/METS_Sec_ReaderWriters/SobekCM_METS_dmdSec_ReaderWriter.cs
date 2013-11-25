@@ -1032,9 +1032,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema namespace info for the METS header</returns>
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
-            string sobekcm_ref = "sobekcm=\"http://digital.uflib.ufl.edu/metadata/sobekcm/\"";
-            string oral_ref = "oral=\"http://digital.uflib.ufl.edu/metadata/oral/\"";
-            string part_ref = "part=\"http://digital.uflib.ufl.edu/metadata/part/\"";
+            string sobekcm_ref = "sobekcm=\"http://sobekrepository.org/schemas/sobekcm/\"";
+			string oral_ref = "oral=\"http://sobekrepository.org/schemas/sobekcm_oral/\"";
+			string part_ref = "part=\"http://sobekrepository.org/schemas/sobekcm_part/\"";
 
             Performing_Arts_Info partInfo = METS_Item.Get_Metadata_Module("PerformingArts") as Performing_Arts_Info;
             Oral_Interview_Info oralInfo = METS_Item.Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
@@ -1063,9 +1063,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema location for the METS header</returns>
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
-            string sobekcm_ref = "    http://digital.uflib.ufl.edu/metadata/sobekcm/\r\n    http://digital.uflib.ufl.edu/metadata/sobekcm/sobekcm.xsd";
-            string oral_ref = "    http://digital.uflib.ufl.edu/metadata/oral/\r\n    http://digital.uflib.ufl.edu/metadata/oral/oral.xsd";
-            string part_ref = "    http://digital.uflib.ufl.edu/metadata/part/\r\n    http://digital.uflib.ufl.edu/metadata/part/part.xsd";
+			string sobekcm_ref = "    http://sobekrepository.org/schemas/sobekcm/\r\n    http://sobekrepository.org/schemas/sobekcm.xsd";
+			string oral_ref = "    http://sobekrepository.org/schemas/sobekcm_oral/\r\n    http://sobekrepository.org/schemas/sobekcm_oral.xsd";
+			string part_ref = "    http://sobekrepository.org/schemas/sobekcm_part/\r\n    http://sobekrepository.org/schemas/sobekcm_part.xsd";
 
             Performing_Arts_Info partInfo = METS_Item.Get_Metadata_Module("PerformingArts") as Performing_Arts_Info;
             Oral_Interview_Info oralInfo = METS_Item.Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
