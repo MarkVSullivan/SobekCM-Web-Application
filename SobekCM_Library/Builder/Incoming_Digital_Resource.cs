@@ -577,7 +577,14 @@ namespace SobekCM.Library.Builder
             string[] files = Directory.GetFiles(directory);
             foreach (string thisFile in files)
             {
-                File.Delete(thisFile);
+	            try
+	            {
+					File.Delete(thisFile);
+	            }
+	            catch 
+	            {
+
+	            }
             }
 
             string[] subdirs = Directory.GetDirectories(directory);

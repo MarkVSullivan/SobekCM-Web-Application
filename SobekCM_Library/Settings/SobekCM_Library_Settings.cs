@@ -141,6 +141,7 @@ namespace SobekCM.Library.Settings
 				uploadImageTypes = String.Empty;
 				kakaduJp2CreateCommand = String.Empty;
 				ocrCommandPrompt = String.Empty;
+				Builder_Override_Seconds_Between_Polls = -1;
 
 				// Define new empty collections
 				dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -205,10 +206,19 @@ namespace SobekCM.Library.Settings
 							{
 								if (xmlReader.Value.ToLower() == "postgresql")
 									newDb.Database_Type = SobekCM_Database_Type_Enum.PostgreSQL;
-
 							}
+							if (xmlReader.MoveToAttribute("active"))
+							{
+								if (xmlReader.Value == "false")
+									newDb.Is_Active = false;
+							}
+							if (xmlReader.MoveToAttribute("name"))
+								newDb.Name = xmlReader.Value.Trim();
+
 							xmlReader.Read();
 							newDb.Connection_String = xmlReader.Value;
+							if (newDb.Name.Length == 0)
+								newDb.Name = "Connection" + (databaseInfo.Count + 1);
 							databaseInfo.Add(newDb);
 							break;
 
@@ -231,6 +241,14 @@ namespace SobekCM.Library.Settings
 							xmlReader.Read();
 							imageMagickExecutable = xmlReader.Value;
 							break;
+
+						case "pause_between_polls":
+							xmlReader.Read();
+							int testValue;
+							if (Int32.TryParse(xmlReader.Value, out testValue))
+								Builder_Override_Seconds_Between_Polls = testValue;
+							break;
+
 					}
 				}
 			}
@@ -351,7 +369,7 @@ namespace SobekCM.Library.Settings
 				}
 
 
-				return !error;
+				return true;
 			}
 			catch
 			{
@@ -1102,9 +1120,10 @@ namespace SobekCM.Library.Settings
 			get { return new ReadOnlyCollection<Database_Instance_Configuration>(databaseInfo); }
 		}
 
-
-
-
+		/// <summary> Number of seconds between polls, from the configuration file (not the database) </summary>
+		/// <remarks> This is used if the SobekCM Builder is working between multiple instances.  If the SobekCM
+		/// Builder is only servicing a single instance, then the data can be pulled from the database. </remarks>
+		public static int Builder_Override_Seconds_Between_Polls { get; set; }
 
 		/// <summary> Base directory where the ASP.net application is running on the application server </summary>
 		public static string Base_Directory

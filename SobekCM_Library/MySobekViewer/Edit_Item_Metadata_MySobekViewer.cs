@@ -672,7 +672,14 @@ namespace SobekCM.Library.MySobekViewer
                 string[] all_files = Directory.GetFiles(user_bib_vid_process_directory);
                 foreach (string thisFile in all_files)
                 {
-                    File.Delete(thisFile);
+	                try
+	                {
+		                File.Delete(thisFile);
+	                }
+	                catch 
+	                {
+		                
+	                }
                 }
 
                 // Clear the user-specific and global cache of this item 

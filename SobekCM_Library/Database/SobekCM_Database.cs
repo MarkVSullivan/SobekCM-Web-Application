@@ -293,7 +293,7 @@ namespace SobekCM.Library.Database
 		/// <param name="EndDate"> End of the date range</param>
 		/// <returns> Datatable of all the build errors encountered </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Build_Error_Logs' stored procedure </remarks>
-		public static DataTable Get_Build_Error_Logs(Custom_Tracer Tracer, DateTime StartDate, DateTime EndDate )
+		public static DataTable Builder_Get_Error_Logs(Custom_Tracer Tracer, DateTime StartDate, DateTime EndDate )
 		{
 			if (Tracer != null)
 			{
@@ -327,7 +327,7 @@ namespace SobekCM.Library.Database
 		/// <param name="ErrorDescription"> Description of the error encountered </param>
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'SobekCM_Add_Item_Error_Log' stored procedure </remarks>
-		public static bool Add_Item_Error_Log(string BibID, string VID, string METS_Type, string ErrorDescription)
+		public static bool Builder_Add_Item_Error_Log(string BibID, string VID, string METS_Type, string ErrorDescription)
 		{
 
 			try
@@ -356,9 +356,8 @@ namespace SobekCM.Library.Database
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> No error is deleted, but this does set a flag on the error indicating it was cleared so it will no longer appear in the list<br /><br />
 		/// This calls the 'SobekCM_Clear_Item_Error_Log' stored procedure </remarks>
-		public static bool Clear_Item_Error_Log(string BibID, string VID, string ClearedBy)
+		public static bool Builder_Clear_Item_Error_Log(string BibID, string VID, string ClearedBy)
 		{
-
 			try
 			{
 				// build the parameter list
@@ -375,6 +374,64 @@ namespace SobekCM.Library.Database
 			{
 				lastException = ee;
 				return false;
+			}
+		}
+
+		/// <summary> Expire older builder logs which can be removed from the system </summary>
+		/// <param name="Retain_For_Days"> Number of days of logs which should be retained </param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'SobekCM_Builder_Expire_Log_Entries' stored procedure </remarks>
+		public static bool Builder_Expire_Log_Entries(int Retain_For_Days)
+		{
+			try
+			{
+				// build the parameter list
+				SqlParameter[] paramList = new SqlParameter[1];
+				paramList[0] = new SqlParameter("@Retain_For_Days", Retain_For_Days);
+
+				//Execute this non-query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Expire_Log_Entries", paramList);
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
+		}
+
+		/// <summary> Add a new log entry for the builder </summary>
+		/// <param name="RelatedBuilderLogID"> Primary key for a related log id, if this adds detail to an already logged entry </param>
+		/// <param name="BibID_VID"> BibID / VID, if this is related to an item error (either existing item, or not) </param>
+		/// <param name="LogType"> Type of the log entry ( i.e., Error, Complete, etc.. )</param>
+		/// <param name="LogMessage"> Actual log entry message </param>
+		/// <returns> The primary key for this new log entry, in case detail logs need to be added </returns>
+		/// <remarks> This calls the 'SobekCM_Builder_Add_Log' stored procedure </remarks>
+		public static int Builder_Add_Log_Entry(int RelatedBuilderLogID, string BibID_VID, string LogType, string LogMessage )
+		{
+			try
+			{
+				// build the parameter list
+				SqlParameter[] paramList = new SqlParameter[5];
+				if ( RelatedBuilderLogID < 0 )
+					paramList[0] = new SqlParameter("@RelatedBuilderLogID", DBNull.Value);
+				else
+					paramList[0] = new SqlParameter("@RelatedBuilderLogID", RelatedBuilderLogID);
+
+				paramList[1] = new SqlParameter("@BibID_VID", BibID_VID);
+				paramList[2] = new SqlParameter("@LogType", LogType);
+				paramList[3] = new SqlParameter("@LogMessage", LogMessage);
+				paramList[4] = new SqlParameter("@BuilderLogID", -1);
+				paramList[4].Direction = ParameterDirection.InputOutput;
+
+				//Execute this non-query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Add_Log", paramList);
+				return Convert.ToInt32(paramList[4].Value);
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return -1;
 			}
 		}
 

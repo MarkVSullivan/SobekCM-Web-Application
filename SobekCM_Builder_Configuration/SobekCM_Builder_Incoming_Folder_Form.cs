@@ -35,8 +35,16 @@ namespace SobekCM.Configuration
                 allowDeletesCheckBox.Checked = Convert.ToBoolean(thisRow["Allow_Deletes"]);
             if (thisRow["Allow_Folders_No_Metadata"] != DBNull.Value)
                 allowFilesOnlyCheckBox.Checked = Convert.ToBoolean(thisRow["Allow_Folders_No_Metadata"]);
-            if (thisRow["Contains_Institutional_Folders"] != DBNull.Value)
-                institutionalCheckBox.Checked = Convert.ToBoolean(thisRow["Contains_Institutional_Folders"]);
+	        if (thisRow["BibID_Roots_Restrictions"].ToString().Trim().Length > 0)
+	        {
+		        bibidRestrictedCheckBox.Checked = true;
+		        restrictionsTextBox.Show();
+		        restrictionsTextBox.Text = thisRow["BibID_Roots_Restrictions"].ToString().Trim();
+	        }
+	        else
+	        {
+		        restrictionsTextBox.Hide();
+	        }
         }
 
         private void cancelButton_Button_Pressed(object sender, EventArgs e)
@@ -97,7 +105,12 @@ namespace SobekCM.Configuration
             bool archive_all = archiveAllCheckBox.Checked;
             bool allow_deletes = allowDeletesCheckBox.Checked;
             bool allow_folders = allowFilesOnlyCheckBox.Checked;
-            bool institutional = institutionalCheckBox.Checked;
+
+	        string bib_restrictions = String.Empty;
+			if ((bibidRestrictedCheckBox.Checked) && ( restrictionsTextBox.Text.Trim().Length > 0 ))
+			{
+				bib_restrictions = restrictionsTextBox.Text.Trim();
+			}
 
             // Ensure the folders end in the correct slash
             if (network[network.Length - 1] != '\\')
@@ -113,7 +126,7 @@ namespace SobekCM.Configuration
                 folderid = Convert.ToInt32(thisRow["IncomingFolderId"]);
 
             // Save this value
-            if (!Database.SobekCM_Database.Edit_Builder_Incoming_Folder(folderid, foldername, network, error, processing, checksum, archive_tiff, archive_all, allow_deletes, allow_folders, institutional))
+			if (!Database.SobekCM_Database.Edit_Builder_Incoming_Folder(folderid, foldername, network, error, processing, checksum, archive_tiff, archive_all, allow_deletes, allow_folders, true, bib_restrictions))
             {
                 MessageBox.Show("Error while saving edits.     ", "Error Encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -170,7 +183,7 @@ namespace SobekCM.Configuration
 
         private void institutionalHelpPictureBox_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Flag indicates that there are individual institutional folders under the main network inbound location.\n\nThis is particularly useful for a FTP location used by a number of partners.", "Institutional Subfolders Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Flag indicates that incoming packages are restricted by the BibID root.  Packages that begin with a different root are rejected.  Multiple roots are added with a 'pipe' between them, such as 'UF01|CA|SMI'.", "BibID Restriction Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void networkBrowsePictureBox_Click(object sender, EventArgs e)
@@ -206,5 +219,12 @@ namespace SobekCM.Configuration
             }
         }
 
+		private void bibidRestrictedCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			if (bibidRestrictedCheckBox.Checked)
+				restrictionsTextBox.Show();
+			else
+				restrictionsTextBox.Hide();
+		}
     }
 }

@@ -1,20 +1,28 @@
+#region Using directives
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using SobekCM.Library;
+using SobekCM.Library.Aggregations;
+using SobekCM.Library.Application_State;
+using SobekCM.Library.Builder;
+using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
+using SobekCM.Library.Solr;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools.Logs;
-using SobekCM.Resource_Object;
-using SobekCM.Library;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Database;
-using SobekCM.Library.Builder;
 
+#endregion
 
 namespace SobekCM.Builder
 {
@@ -35,6 +43,7 @@ namespace SobekCM.Builder
 
         private readonly string ghostscript_executable;
         private readonly string imagemagick_executable;
+	    private readonly string instanceName;
 	    private string finalmessage;
 
         /// <summary> List of possible page image extensions </summary>
@@ -43,16 +52,15 @@ namespace SobekCM.Builder
         /// <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
         /// <param name="Logger"> Log file object for logging progress </param>
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
-        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose )
+        /// <param name="InstanceName"> Name of this instance, likely from the Builder config </param>
+        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, string InstanceName )
         {
             // Save the log file and verbose flag
             logger = Logger;
             verbose = Verbose;
+	        instanceName = InstanceName;
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose);
-
-            // Assign the database connection string
-            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
 
             // Create the METS validation objects
             thisMetsValidator = new SobekCM_METS_Validator( String.Empty );
@@ -64,6 +72,13 @@ namespace SobekCM.Builder
             // Create new list of collections to build
             aggregations_to_refresh = new List<string>();
             items_by_aggregation = new Dictionary<string, List<string>>();
+
+			// get all the info
+	        Refresh_Settings_And_Item_List();
+
+			// Ensure there is SOME instance name
+	        if (instanceName.Length == 0)
+		        instanceName = SobekCM_Library_Settings.System_Name;
 
             // Create the new statics page builder
             staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location);
@@ -188,12 +203,9 @@ namespace SobekCM.Builder
             // If there were no packages to process further stop here
             if ((incoming_packages.Count == 0) && (deletes.Count == 0))
             {
-                Add_Complete_To_Log("No New Packages - Process Complete");
+                Add_Complete_To_Log("No New Packages - Process Complete", "NoWork");
                 if (finalmessage.Length == 0)
                     finalmessage = "No New Packages - Process Complete";
-
-                // Publish the log file
-                File.Copy(logger.FileName, SobekCM_Library_Settings.Log_Files_Directory + "\\" + (new FileInfo(logger.FileName)).Name, true);
 
                 return;
             }
@@ -213,30 +225,19 @@ namespace SobekCM.Builder
             // Add the complete entry for the log
             if (!CheckForAbort())
             {
-                Add_Complete_To_Log("Process Complete");
+                Add_Complete_To_Log("Process Complete", "Complete");
                 if (finalmessage.Length == 0)
                     finalmessage = "Process completed successfully";
             }
             else
             {
                 finalmessage = "Aborted per database request";
-                Add_Complete_To_Log("Process Aborted Cleanly");
+                Add_Complete_To_Log("Process Aborted Cleanly", "Complete");
             }
 
             // Set some things to NULL
             itemTable = null;
             incomingFileInstructions = null;
-
-            // Publish the log file
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Copying log to web directory", verbose);
-            try
-            {
-                File.Copy(logger.FileName, SobekCM_Library_Settings.Log_Files_Directory + "\\" + (new FileInfo(logger.FileName)).Name, true);
-            }
-            catch (Exception)
-            {
-                finalmessage = "Error copying the log to " + SobekCM_Library_Settings.Log_Files_Directory + "\\" + (new FileInfo(logger.FileName)).Name;
-            }
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Done", verbose );
         }
@@ -283,14 +284,7 @@ namespace SobekCM.Builder
 		    string mets_file = String.Empty;
 		    try
 		    {
-			    if (mets_files.Length == 0)
-			    {
-				    mets_file = Directory.GetFiles(Resource.Resource_Folder, "*mets*")[0];
-			    }
-			    else
-			    {
-				    mets_file = mets_files[0];
-			    }
+			    mets_file = mets_files.Length == 0 ? Directory.GetFiles(Resource.Resource_Folder, "*mets*")[0] : mets_files[0];
 		    }
 		    catch (Exception)
 		    {
@@ -430,11 +424,11 @@ namespace SobekCM.Builder
             {
                 if (thisError.Trim().Length > 0)
                 {
-                    SobekCM_Database.Add_Item_Error_Log(BIBID, VID, METSType, thisError.Trim());
+                    SobekCM_Database.Builder_Add_Item_Error_Log(BIBID, VID, METSType, thisError.Trim());
                     error_count++;
                     if (error_count == 5)
                     {
-                        SobekCM_Database.Add_Item_Error_Log(BIBID, VID, METSType, "(more errors");
+                        SobekCM_Database.Builder_Add_Item_Error_Log(BIBID, VID, METSType, "(more errors");
                         break;
                     }
                 }
@@ -474,7 +468,7 @@ namespace SobekCM.Builder
 
         #region Refresh any settings and item lists 
 
-        private bool Refresh_Settings_And_Item_List()
+        public bool Refresh_Settings_And_Item_List()
         {
             // Do some preparation work
             items_by_aggregation.Clear();
@@ -505,7 +499,7 @@ namespace SobekCM.Builder
             DataTable additionalWorkRequired = SobekCM_Database.Items_Needing_Aditional_Work;
             if ((additionalWorkRequired != null) && (additionalWorkRequired.Rows.Count > 0))
             {
-                Add_NonError_To_Log("\tProcessing recently loaded items needing additional work");
+                Add_NonError_To_Log("\tProcessing recently loaded items needing additional work", "Standard");
 
                 // Create the incoming digital folder object which will be used for all these
                 Builder_Source_Folder sourceFolder = new Builder_Source_Folder();
@@ -541,7 +535,7 @@ namespace SobekCM.Builder
 
         private void Complete_Single_Recent_Load_Requiring_Additional_Work(string Resource_Folder, Incoming_Digital_Resource AdditionalWorkResource)
         {
-            Add_NonError_To_Log("\t\tProcessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'");
+            Add_NonError_To_Log("\t\tProcessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard");
 
             try
             {
@@ -557,7 +551,7 @@ namespace SobekCM.Builder
                     foreach (string thisFile in files)
                     {
                         FileInfo thisFileInfo = new FileInfo(thisFile);
-                        if (System.Text.RegularExpressions.Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PreArchive_Files_To_Delete, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Success)
+                        if (Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                         {
                             File.Delete(thisFile);
                         }
@@ -575,7 +569,7 @@ namespace SobekCM.Builder
                     foreach (string thisFile in files)
                     {
                         FileInfo thisFileInfo = new FileInfo(thisFile);
-                        if (System.Text.RegularExpressions.Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PostArchive_Files_To_Delete, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Success)
+                        if (Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                         {
                             File.Delete(thisFile);
                         }
@@ -586,7 +580,7 @@ namespace SobekCM.Builder
                 if ((!AdditionalWorkResource.Load_METS()) || ( AdditionalWorkResource.BibID.Length == 0 ))
                 {
                     Add_Error_To_Log("Error reading METS file from " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID);
-                    SobekCM_Database.Add_Item_Error_Log(AdditionalWorkResource.BibID, AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, "Error reading METS file");
+                    SobekCM_Database.Builder_Add_Item_Error_Log(AdditionalWorkResource.BibID, AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, "Error reading METS file");
 	                return;
                 }
 
@@ -594,7 +588,7 @@ namespace SobekCM.Builder
                 SobekCM_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
 
                 // Perform any final file updates
-                Resource_File_Updates(AdditionalWorkResource, new_image_files, false );
+                Resource_File_Updates(AdditionalWorkResource, new_image_files );
 
                 // Save all the metadata files again for any possible changes which may have occurred
                 Save_All_Updated_Metadata_Files(AdditionalWorkResource);
@@ -615,7 +609,7 @@ namespace SobekCM.Builder
                 {
                     try
                     {
-                        Library.Solr.Solr_Controller.Update_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, AdditionalWorkResource.Metadata, true);
+                        Solr_Controller.Update_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, AdditionalWorkResource.Metadata, true);
                     }
                     catch (Exception ee)
                     {
@@ -684,16 +678,16 @@ namespace SobekCM.Builder
                 if ((fdaProcessor.Error_Count > 0) || (fdaProcessor.Success_Count > 0))
                 {
 	                // Clear any previous report
-                    SobekCM_Database.Clear_Item_Error_Log("FDA REPORT", "", "SobekCM Builder");
+					SobekCM_Database.Builder_Clear_Item_Error_Log("FDA REPORT", "", "SobekCM Builder");
 
                     if (fdaProcessor.Error_Count > 0)
                     {
                         Add_Error_To_Log("Processed " + fdaProcessor.Success_Count + " FDA reports with " + fdaProcessor.Error_Count + " errors");
-                        SobekCM_Database.Add_Item_Error_Log("FDA Report", "", "N/A", fdaProcessor.Error_Count + " errors encountered");
+                        SobekCM_Database.Builder_Add_Item_Error_Log("FDA Report", "", "N/A", fdaProcessor.Error_Count + " errors encountered");
                     }
                     else
                     {
-                        Add_NonError_To_Log("Processed " + fdaProcessor.Success_Count + " FDA reports");
+                        Add_NonError_To_Log("Processed " + fdaProcessor.Success_Count + " FDA reports", "Standard");
                     }
                 }
             }
@@ -708,7 +702,7 @@ namespace SobekCM.Builder
             // What if there are no folder?
             if (SobekCM_Library_Settings.Incoming_Folders.Count == 0)
             {
-                Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database!" );
+                Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard" );
                 finalmessage = "There are no incoming folders set in the database!";
             }
 
@@ -784,6 +778,37 @@ namespace SobekCM.Builder
                             // Validate the categorize the package
                             Add_NonError_To_Log("\t\tChecking '" + resource.Folder_Name + "'", verbose );
 
+							// If this folder is limited on what BibID roots it accepts, check that now
+							if (ftpFolder.BibID_Roots_Restrictions.Length > 0)
+							{
+								string[] starts = ftpFolder.BibID_Roots_Restrictions.Split("|,;".ToCharArray());
+								bool okay = false;
+								foreach (string thisStart in starts)
+								{
+									if (resource.Folder_Name.IndexOf(thisStart, StringComparison.OrdinalIgnoreCase) == 0)
+									{
+										okay = true;
+										break;
+									}
+								}
+
+								// If not okay.. it is a failure
+								if (!okay)
+								{
+									Add_Error_To_Log("Package " + resource.Folder_Name + " has invalid BibID for " + ftpFolder.Folder_Name + " incoming folder");
+									SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, "INCOMING", "Package BibID is restricted from this incoming folder");
+
+									// Move this resource
+									if (!resource.Move(ftpFolder.Failures_Folder))
+									{
+										Add_Error_To_Log("Unable to move folder " + resource.Folder_Name);
+										SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
+									}
+
+									continue;
+								}
+							}
+
                             // If there is no METS file, use special code to check this
                             if (Directory.GetFiles(resource.Resource_Folder, "*.mets*").Length == 0)
                             {
@@ -809,24 +834,24 @@ namespace SobekCM.Builder
                                     }
                                     else
                                     {
-                                        SobekCM_Database.Add_Item_Error_Log(bibid, vid, "MISSING", "METS-less folder is not a valid BibID/VID combination");
+                                        SobekCM_Database.Builder_Add_Item_Error_Log(bibid, vid, "MISSING", "METS-less folder is not a valid BibID/VID combination");
                                         // Move this resource
                                         if (!resource.Move(ftpFolder.Failures_Folder))
                                         {
                                             Add_Error_To_Log("Unable to move folder " + resource.Folder_Name);
-                                            SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
+                                            SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    SobekCM_Database.Add_Item_Error_Log(bibid, vid, "MISSING", "METS-less folder is not allowed");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(bibid, vid, "MISSING", "METS-less folder is not allowed");
 
                                     // Move this resource
                                     if (!resource.Move(ftpFolder.Failures_Folder))
                                     {
                                         Add_Error_To_Log("Unable to move folder " + resource.Folder_Name);
-                                        SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
+                                        SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
                                     }
                                 }
                             }
@@ -845,7 +870,7 @@ namespace SobekCM.Builder
                                     if (!resource.Move(ftpFolder.Failures_Folder))
                                     {
                                         Add_Error_To_Log("Unable to move folder " + resource.Folder_Name);
-                                        SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
+                                        SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
                                     }
                                 }
                                 else
@@ -865,13 +890,13 @@ namespace SobekCM.Builder
                                             }
                                             else
                                             {
-                                                SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, "METADATA UPDATE", "Metadata update is not allowed");
+                                                SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, "METADATA UPDATE", "Metadata update is not allowed");
 
                                                 // Move this resource
                                                 if (!resource.Move(ftpFolder.Failures_Folder))
                                                 {
                                                     Add_Error_To_Log("Unable to move folder " + resource.Folder_Name);
-                                                    SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
+                                                    SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
                                                 }
                                             }
                                             break;
@@ -883,13 +908,13 @@ namespace SobekCM.Builder
                                             }
                                             else
                                             {
-                                                SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Delete is not allowed");
+                                                SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Delete is not allowed");
 
                                                 // Move this resource
                                                 if (!resource.Move(ftpFolder.Failures_Folder))
                                                 {
                                                     Add_Error_To_Log("Unable to move folder " + resource.Folder_Name);
-                                                    SobekCM_Database.Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
+                                                    SobekCM_Database.Builder_Add_Item_Error_Log(resource.BibID, resource.VID, resource.METS_Type_String, "Unable to move folder during load");
                                                 }
                                             }
                                             break;
@@ -924,7 +949,7 @@ namespace SobekCM.Builder
             try
             {
                 // Step through each package and handle all the files and metadata
-                Add_NonError_To_Log("\tProcessing incoming packages");
+                Add_NonError_To_Log("\tProcessing incoming packages", "Standard");
                 IncomingPackages.Sort();
                 foreach (Incoming_Digital_Resource resourcePackage in IncomingPackages)
                 {
@@ -941,7 +966,7 @@ namespace SobekCM.Builder
             }
             catch (Exception ee)
             {
-                StreamWriter errorWriter = new StreamWriter(System.Windows.Forms.Application.StartupPath + "\\Logs\\error.log", true);
+                StreamWriter errorWriter = new StreamWriter(Application.StartupPath + "\\Logs\\error.log", true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();
@@ -954,10 +979,10 @@ namespace SobekCM.Builder
         private void Process_Single_Incoming_Package(Incoming_Digital_Resource ResourcePackage)
         {
 
-            Add_NonError_To_Log("\t\tProcessing '" + ResourcePackage.Folder_Name + "'");
+            Add_NonError_To_Log("\t\tProcessing '" + ResourcePackage.Folder_Name + "'", "Standard");
 
             // Clear any existing error linked to this item
-            SobekCM_Database.Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
+			SobekCM_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
 
             try
             {
@@ -976,7 +1001,7 @@ namespace SobekCM.Builder
                     foreach (string thisFile in files)
                     {
                         FileInfo thisFileInfo = new FileInfo(thisFile);
-                        if (System.Text.RegularExpressions.Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PreArchive_Files_To_Delete, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Success)
+                        if (Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                         {
                             File.Delete(thisFile);
                         }
@@ -994,7 +1019,7 @@ namespace SobekCM.Builder
                     foreach (string thisFile in files)
                     {
                         FileInfo thisFileInfo = new FileInfo(thisFile);
-                        if (System.Text.RegularExpressions.Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PostArchive_Files_To_Delete, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Success)
+                        if (Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                         {
                             File.Delete(thisFile);
                         }
@@ -1008,7 +1033,7 @@ namespace SobekCM.Builder
                 if (!Move_All_Files_To_Image_Server(ResourcePackage, new_image_files))
                 {
                     Add_Error_To_Log("Error moving some files to the image server for " + ResourcePackage.BibID + ":" + ResourcePackage.VID);
-                    SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error encountered moving some files to image server");
+                    SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error encountered moving some files to image server");
                 }
 
                 // Before we save this or anything, let's see if this is truly a new resource
@@ -1019,7 +1044,7 @@ namespace SobekCM.Builder
                 if (!ResourcePackage.Load_METS())
                 {
                     Add_Error_To_Log("Error reading METS file from " + ResourcePackage.BibID + ":" + ResourcePackage.VID);
-                    SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error reading METS file");
+                    SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error reading METS file");
 	                return;
                 }
 
@@ -1070,7 +1095,7 @@ namespace SobekCM.Builder
                 }
 
                 // Perform any final file updates
-                Resource_File_Updates(ResourcePackage, new_image_files, truly_new_bib);
+                Resource_File_Updates(ResourcePackage, new_image_files);
 
                 // Save all the metadata files again for any possible changes which may have occurred
                 Save_All_Updated_Metadata_Files(ResourcePackage);
@@ -1084,7 +1109,7 @@ namespace SobekCM.Builder
                 if (!ResourcePackage.Save_to_Database(itemTable, truly_new_bib))
                 {
                     Add_Error_To_Log("Error saving data to SobekCM database.  The database may not reflect the most recent data in the METS.");
-                    SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error saving to SobekCM database");
+                    SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error saving to SobekCM database");
                 }
 
                 // Save this to the Solr/Lucene database
@@ -1092,14 +1117,14 @@ namespace SobekCM.Builder
                 {
                     try
                     {
-                        Library.Solr.Solr_Controller.Update_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, ResourcePackage.Metadata, true);
+                        Solr_Controller.Update_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, ResourcePackage.Metadata, true);
                     }
                     catch (Exception ee)
                     {
                         Add_Error_To_Log("Error saving data to the Solr/Lucene index.  The index may not reflect the most recent data in the METS.");
 	                    Add_Error_To_Log("Solr Error: " + ee.Message);
  
-                        SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error saving to Solr/Lucene index");
+                        SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Error saving to Solr/Lucene index");
                     }
                 }
 
@@ -1108,7 +1133,7 @@ namespace SobekCM.Builder
                 if ((static_file.Length == 0) || (!File.Exists(static_file)))
                 {
                     Add_Error_To_Log("Warning: error encountered creating static page for this resource");
-                    SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Warning: error creating static page");
+                    SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Warning: error creating static page");
                 }
                 else
                 {
@@ -1142,14 +1167,14 @@ namespace SobekCM.Builder
             }
             catch (Exception ee)
             {
-                StreamWriter errorWriter = new StreamWriter(System.Windows.Forms.Application.StartupPath + "\\Logs\\error.log", true);
+                StreamWriter errorWriter = new StreamWriter(Application.StartupPath + "\\Logs\\error.log", true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();
                 errorWriter.Close();
 
                 Add_Error_To_Log("Unable to complete new/replacement for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ee);
-                SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Unable to complete load");
+                SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Unable to complete load");
             }
         }
 
@@ -1183,19 +1208,19 @@ namespace SobekCM.Builder
                             switch (conversion_error)
                             {
                                 case 1:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: Can't open input file");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: Can't open input file");
                                     break;
 
                                 case 2:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: Can't create output file");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: Can't create output file");
                                     break;
 
                                 case 3:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: Converting failed");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: Converting failed");
                                     break;
 
                                 case 4:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: MS Office not installed");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting PPT to PDF: MS Office not installed");
                                     break;
                             }
                         }
@@ -1217,19 +1242,19 @@ namespace SobekCM.Builder
                             switch (conversion_error)
                             {
                                 case 1:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: Can't open input file");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: Can't open input file");
                                     break;
 
                                 case 2:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: Can't create output file");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: Can't create output file");
                                     break;
 
                                 case 3:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: Converting failed");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: Converting failed");
                                     break;
 
                                 case 4:
-                                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: MS Office not installed");
+                                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Error converting Word DOC to PDF: MS Office not installed");
                                     break;
                             }
                         }
@@ -1237,14 +1262,14 @@ namespace SobekCM.Builder
                 }
                 catch (Exception ee)
                 {
-                    StreamWriter errorWriter = new StreamWriter(System.Windows.Forms.Application.StartupPath + "\\Logs\\error.log", true);
+                    StreamWriter errorWriter = new StreamWriter(Application.StartupPath + "\\Logs\\error.log", true);
                     errorWriter.WriteLine("Message: " + ee.Message);
                     errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                     errorWriter.Flush();
                     errorWriter.Close();
 
-                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Unknown error converting office files to PDF");
-                    SobekCM_Database.Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, ee.Message);
+                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, "Unknown error converting office files to PDF");
+                    SobekCM_Database.Builder_Add_Item_Error_Log(Resource.BibID, Resource.VID, Resource.METS_Type_String, ee.Message);
                 }
             }
 
@@ -1330,13 +1355,13 @@ namespace SobekCM.Builder
                         try
                         {
                             string command = String.Format( SobekCM_Library_Settings.OCR_Command_Prompt, thisTiffFile, text_file );
-                            System.Diagnostics.Process ocrProcess = new System.Diagnostics.Process {StartInfo = {FileName = command}};
+                            Process ocrProcess = new Process {StartInfo = {FileName = command}};
 	                        ocrProcess.Start();
                             ocrProcess.WaitForExit();
                         }
                         catch
                         {
-                            SobekCM_Database.Add_Item_Error_Log(bibID, vid, String.Empty, "Error launching OCR on (" + thisTiffFileInfo.Name + ")");
+                            SobekCM_Database.Builder_Add_Item_Error_Log(bibID, vid, String.Empty, "Error launching OCR on (" + thisTiffFileInfo.Name + ")");
                         }
                     }
                 }
@@ -1379,7 +1404,7 @@ namespace SobekCM.Builder
                 {
                     SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.Privacy_Email_Address, "Possible Social Security Number Located", "A string which appeared to be a possible social security number was found while bulk loading or post-processing an item.\n\nThe SSN was found in package " + bibID + ":" + vid + " in file '" + ssn_text_file_name + "'.\n\nThe text which may be a SSN is '" + ssn_match + "'.\n\nPlease review this item and remove any private information which should not be on the web server.", false, false, -1, -1);
                 }
-                SobekCM_Database.Add_Item_Error_Log(bibID, vid, String.Empty, "Possible SSN Located (" + ssn_text_file_name + ")");
+                SobekCM_Database.Builder_Add_Item_Error_Log(bibID, vid, String.Empty, "Possible SSN Located (" + ssn_text_file_name + ")");
             }
 
             // Are there images that need to be processed here?
@@ -1393,7 +1418,7 @@ namespace SobekCM.Builder
                 if ((jpeg_files.Length > 0) || (tiff_files.Length > 0))
                 {
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, System.Windows.Forms.Application.StartupPath + "\\Kakadu", true, true, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height, false, SobekCM_Library_Settings.Thumbnail_Width, SobekCM_Library_Settings.Thumbnail_Height);
+                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, Application.StartupPath + "\\Kakadu", true, true, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height, false, SobekCM_Library_Settings.Thumbnail_Width, SobekCM_Library_Settings.Thumbnail_Height);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
@@ -1528,7 +1553,7 @@ namespace SobekCM.Builder
                     catch (Exception ee)
                     {
                         Add_Error_To_Log("Copy to archive failed for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ee);
-                        SobekCM_Database.Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Unable to complete copy to archive");
+                        SobekCM_Database.Builder_Add_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, ResourcePackage.METS_Type_String, "Unable to complete copy to archive");
 
                     }
                 }
@@ -1588,14 +1613,14 @@ namespace SobekCM.Builder
 
                 return true;
             }
-            catch (Exception ee)
+            catch ( Exception ee )
             {
                 return false;
             }
         }
 
 
-        private void Resource_File_Updates(Incoming_Digital_Resource ResourcePackage, List<string> NewImageFiles, bool New_Pacakge )
+        private void Resource_File_Updates(Incoming_Digital_Resource ResourcePackage, IEnumerable<string> NewImageFiles  )
         {
             // Update the JPEG2000 and JPEG attributes now
             ResourcePackage.Load_File_Attributes(String.Empty, ResourcePackage.Resource_Folder);
@@ -1606,7 +1631,7 @@ namespace SobekCM.Builder
             {
                 FileInfo thisFileInfo = new FileInfo(thisFile );
 
-                if ((!System.Text.RegularExpressions.Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
+                if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, ResourcePackage.BibID + "_" + ResourcePackage.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                 {
 					// Some last checks here
 	                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("doc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
@@ -1642,10 +1667,7 @@ namespace SobekCM.Builder
             if ((jpeg2000_added) || (jpeg_added))
             {
 	            ResourcePackage.Metadata.Behaviors.Add_View(View_Enum.JPEG);
-                int view1;
-                int view2 = -1;
-                int view3 = -1;
-                if (jpeg_added)
+	            if (jpeg_added)
                 {
 					ResourcePackage.Metadata.Behaviors.Add_View(View_Enum.JPEG);
 					ResourcePackage.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
@@ -1676,15 +1698,15 @@ namespace SobekCM.Builder
                     {
                         if ( ResourcePackage.Metadata.Divisions.Page_Count == 0 )
                         {
-                            List<Resource_Object.Divisions.SobekCM_File_Info> downloads = ResourcePackage.Metadata.Divisions.Download_Other_Files;
-                            foreach (Resource_Object.Divisions.SobekCM_File_Info thisDownloadFile in downloads)
+                            List<SobekCM_File_Info> downloads = ResourcePackage.Metadata.Divisions.Download_Other_Files;
+                            foreach (SobekCM_File_Info thisDownloadFile in downloads)
                             {
                                 string mimetype = thisDownloadFile.MIME_Type( thisDownloadFile.File_Extension ).ToUpper();
                                 if ((mimetype.IndexOf("AUDIO") >= 0) || (mimetype.IndexOf("VIDEO") >= 0))
                                 {
-                                    if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\images\\multimedia.jpg"))
+                                    if (File.Exists(Application.StartupPath + "\\images\\multimedia.jpg"))
                                     {
-                                        File.Copy(System.Windows.Forms.Application.StartupPath + "\\images\\multimedia.jpg", ResourcePackage.Resource_Folder + "\\multimediathm.jpg", true);
+                                        File.Copy(Application.StartupPath + "\\images\\multimedia.jpg", ResourcePackage.Resource_Folder + "\\multimediathm.jpg", true);
                                         ResourcePackage.Metadata.Behaviors.Main_Thumbnail = "multimediathm.jpg";
                                     }
                                     break;
@@ -1773,7 +1795,7 @@ namespace SobekCM.Builder
 
         void imageProcessor_New_Task_String(string NewMessage)
         {
-            Add_NonError_To_Log(NewMessage);
+            Add_NonError_To_Log(NewMessage, "ImageProcessing");
         }
 
         void imageProcessor_Error_Encountered(string NewMessage)
@@ -1790,7 +1812,7 @@ namespace SobekCM.Builder
             if (Deletes.Count == 0)
                 return;
 
-            Add_NonError_To_Log("\tProcessing delete packages");
+            Add_NonError_To_Log("\tProcessing delete packages", "Standard");
             Deletes.Sort();
             foreach (Incoming_Digital_Resource deleteResource in Deletes)
             {
@@ -1801,9 +1823,9 @@ namespace SobekCM.Builder
                     return;
                 }
 
-                Add_NonError_To_Log("\t\tProcessing '" + deleteResource.Folder_Name + "'");
+                Add_NonError_To_Log("\t\tProcessing '" + deleteResource.Folder_Name + "'", "Standard");
 
-                SobekCM_Database.Clear_Item_Error_Log(deleteResource.BibID, deleteResource.VID, "SobekCM Builder");
+				SobekCM_Database.Builder_Clear_Item_Error_Log(deleteResource.BibID, deleteResource.VID, "SobekCM Builder");
 
                 if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
                 {
@@ -1842,7 +1864,7 @@ namespace SobekCM.Builder
                     catch (Exception ee)
                     {
                         Add_Error_To_Log("Unable to move resource ( " + deleteResource.BibID + ":" + deleteResource.VID + " ) to deletes", ee);
-                        SobekCM_Database.Add_Item_Error_Log(deleteResource.BibID, deleteResource.VID, deleteResource.METS_Type_String, "Unable to move resource to deletes");
+                        SobekCM_Database.Builder_Add_Item_Error_Log(deleteResource.BibID, deleteResource.VID, deleteResource.METS_Type_String, "Unable to move resource to deletes");
                     }
 
                     // Delete the static page
@@ -1859,14 +1881,14 @@ namespace SobekCM.Builder
                     {
                         try
                         {
-                            Library.Solr.Solr_Controller.Delete_Resource_From_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
+                            Solr_Controller.Delete_Resource_From_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
                         }
                         catch (Exception ee)
                         {
                             Add_Error_To_Log("Error deleting item from the Solr/Lucene index.  The index may not reflect this delete.");
 							Add_Error_To_Log("Solr Error: " + ee.Message);
  
-                            SobekCM_Database.Add_Item_Error_Log(deleteResource.BibID, deleteResource.VID, "DELETE", "Error deleting from Solr/Lucene index");
+                            SobekCM_Database.Builder_Add_Item_Error_Log(deleteResource.BibID, deleteResource.VID, "DELETE", "Error deleting from Solr/Lucene index");
                         }
                     }
                     
@@ -1896,7 +1918,7 @@ namespace SobekCM.Builder
             // Any affected aggregation should be refreshed as well
             if (aggregations_to_refresh.Count > 0)
             {
-                Add_NonError_To_Log("\tPerforming some aggregation update functions");
+                Add_NonError_To_Log("\tPerforming some aggregation update functions", "AggregationUpdates");
 
                 // Step through each aggregation with new items
 	            foreach (string thisAggrCode in aggregations_to_refresh)
@@ -1910,13 +1932,13 @@ namespace SobekCM.Builder
                             display_code = 'i' + display_code.Substring(1);
 
                         // Get this item aggregations
-                        Library.Aggregations.Item_Aggregation aggregationObj = SobekCM_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
+                        Item_Aggregation aggregationObj = SobekCM_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
 
                         // Get the list of items for this aggregation
                         DataSet aggregation_items = SobekCM_Database.Simple_Item_List(thisAggrCode, null);
 
                         // Create the XML list for this aggregation
-                        Add_NonError_To_Log("\t\tBuilding XML item list for " + display_code);
+						Add_NonError_To_Log("\t\tBuilding XML item list for " + display_code, "AggregationUpdates");
                         try
                         {
                             string aggregation_list_file = SobekCM_Library_Settings.Static_Pages_Location + "\\" + thisAggrCode.ToLower() + ".xml";
@@ -1929,7 +1951,7 @@ namespace SobekCM.Builder
                             Add_Error_To_Log("\t\tError in building XML list for " + display_code + " on " + SobekCM_Library_Settings.Static_Pages_Location, ee);
                         }
 
-                        Add_NonError_To_Log("\t\tBuilding RSS feed for " + display_code);
+						Add_NonError_To_Log("\t\tBuilding RSS feed for " + display_code, "AggregationUpdates");
                         try
                         {
                             staticBuilder.Create_RSS_Feed(thisAggrCode.ToLower(), SobekCM_Library_Settings.Local_Log_Directory, aggregationObj.Name, aggregation_items);
@@ -1960,7 +1982,7 @@ namespace SobekCM.Builder
         {
             // Update the RSS Feeds and Item Lists for ALL 
             // Build the simple XML result for this build
-            Add_NonError_To_Log("\t\tBuilding XML list for all digital resources");
+			Add_NonError_To_Log("\t\tBuilding XML list for all digital resources", "AggregationUpdates");
             try
             {
                 DataSet simple_list = SobekCM_Database.Simple_Item_List(String.Empty, null);
@@ -1987,7 +2009,7 @@ namespace SobekCM.Builder
             // Create the RSS feed for all ufdc items
             try
             {
-                Add_NonError_To_Log("\t\tBuilding RSS feed for all digital resources");
+				Add_NonError_To_Log("\t\tBuilding RSS feed for all digital resources", "AggregationUpdates");
                 DataSet complete_list = SobekCM_Database.Simple_Item_List(String.Empty, null);
 
                 staticBuilder.Create_RSS_Feed("all", SobekCM_Library_Settings.Local_Log_Directory, "All Items", complete_list);
@@ -2103,34 +2125,45 @@ namespace SobekCM.Builder
 
         #region Log-supporting methods
 
-        private void Add_NonError_To_Log(string LogStatement)
+		private void Add_NonError_To_Log(string LogStatement, string DbLogType)
         {
-            Console.WriteLine(LogStatement);
-            logger.AddNonError(LogStatement.Replace("\t", "....."));
+			Console.WriteLine(instanceName + " - " + LogStatement);
+			logger.AddNonError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+			SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, DbLogType, LogStatement.Replace("\t", ""));
+
         }
 
         private void Add_NonError_To_Log(string LogStatement, bool IsVerbose )
         {
             if (IsVerbose)
             {
-                Console.WriteLine(LogStatement);
-                logger.AddNonError(LogStatement.Replace("\t", ".....")); 
+                Console.WriteLine( instanceName + " - " + LogStatement);
+				logger.AddNonError( instanceName + " - " + LogStatement.Replace("\t", "....."));
+				SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Verbose", LogStatement.Replace("\t", ""));
             }
         }
 
         private void Add_Error_To_Log(string LogStatement)
         {
-            Console.WriteLine(LogStatement);
-            logger.AddError(LogStatement.Replace("\t", "....."));
+			Console.WriteLine(instanceName + " - " + LogStatement);
+			logger.AddError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+	        SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Error", LogStatement.Replace("\t", ""));
         }
 
         private void Add_Error_To_Log(string LogStatement, Exception Ee)
         {
-            Console.WriteLine(LogStatement);
-            logger.AddError(LogStatement.Replace("\t", "....."));
+			Console.WriteLine(instanceName + " - " + LogStatement);
+			logger.AddError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+			int mainErrorId = SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Error", LogStatement.Replace("\t", ""));
+	        string[] split = Ee.ToString().Split("\n".ToCharArray());
+			foreach (string thisSplit in split)
+			{
+				SobekCM_Database.Builder_Add_Log_Entry(mainErrorId, String.Empty, "Error", thisSplit.Trim());
+			}
+
 
             // Save the exception to an exception file
-            StreamWriter exception_writer = new StreamWriter(SobekCM_Library_Settings.Log_Files_Directory + "\\exceptions_log.txt", true);
+            StreamWriter exception_writer = new StreamWriter(SobekCM_Library_Settings.Local_Log_Directory + "\\exceptions_log.txt", true);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine("----------------------------------------------------------");
@@ -2141,13 +2174,14 @@ namespace SobekCM.Builder
             exception_writer.Close();
         }
 
-        private void Add_Complete_To_Log(string LogStatement)
+        private void Add_Complete_To_Log(string LogStatement, string DbLogType )
         {
-            Console.WriteLine(LogStatement);
-            logger.AddComplete(LogStatement.Replace("\t", "....."));
+			Console.WriteLine(instanceName + " - " + LogStatement);
+			logger.AddComplete(instanceName + " - " + LogStatement.Replace("\t", "....."));
+			SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, DbLogType, LogStatement.Replace("\t", ""));
         }
 
-        private void Save_Validation_Errors_To_Log(string ValidationErrors)
+        private void Save_Validation_Errors_To_Log(string ValidationErrors )
         {
             string[] split_validation_errors = ValidationErrors.Split(new char[] { '\n' });
             int error_count = 0;
@@ -2155,11 +2189,11 @@ namespace SobekCM.Builder
             {
                 if (thisError.Trim().Length > 0)
                 {
-                    Add_Error_To_Log("\t\t\t" + thisError);
+					Add_Error_To_Log(instanceName + " - " + "\t\t\t" + thisError);
                     error_count++;
                     if (error_count == 5)
                     {
-                        Add_Error_To_Log("\t\t\t(more errors)");
+						Add_Error_To_Log(instanceName + " - " + "\t\t\t(more errors)");
                         break;
                     }
                 }
@@ -2181,7 +2215,7 @@ namespace SobekCM.Builder
             }
         }
 
-        private void Add_Aggregation_To_Refresh_List(ReadOnlyCollection<string> Codes)
+        private void Add_Aggregation_To_Refresh_List(IEnumerable<string> Codes)
         {
             foreach (string collectionCode in Codes)
             {

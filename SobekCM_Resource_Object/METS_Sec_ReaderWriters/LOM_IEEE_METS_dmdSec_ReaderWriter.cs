@@ -47,7 +47,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema namespace info for the METS header</returns>
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
-            return new string[] { "lom=\"http://digital.uflib.ufl.edu/metadata/sobekcm_lom\"" };
+            return new string[] { "lom=\"http://sobekrepository.org/schemas/sobekcm_lom\"" };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
