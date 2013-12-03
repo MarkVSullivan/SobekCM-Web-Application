@@ -41,40 +41,40 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         private Nullable<DateTime> embargoEnd;
         private string versionStatement;
 
+		/// <summary> Constructur for a new instance of the RightsMD_Info class </summary>
         public RightsMD_Info()
         {
             accessCode = AccessCode_Enum.NOT_SPECIFIED;
         }
 
+		/// <summary> Flag indicates if this metadata module contains data </summary>
         public bool hasData
         {
-            get
-            {
-                if ((!String.IsNullOrEmpty(versionStatement)) || (!String.IsNullOrEmpty(copyrightStatement)) || (embargoEnd.HasValue) || (accessCode != AccessCode_Enum.NOT_SPECIFIED))
-                    return true;
-                else
-                    return false;
-            }
+            get { return ((!String.IsNullOrEmpty(versionStatement)) || (!String.IsNullOrEmpty(copyrightStatement)) || (embargoEnd.HasValue) || (accessCode != AccessCode_Enum.NOT_SPECIFIED)); }
         }
 
+		/// <summary> Version statement from the rightsMD metadata module </summary>
         public string Version_Statement
         {
             get { return versionStatement ?? String.Empty; }
             set { versionStatement = value; }
         }
 
+		/// <summary> Separate copyright statement from the rightsMD metadata module </summary>
         public string Copyright_Statement
         {
             get { return copyrightStatement ?? String.Empty; }
             set { copyrightStatement = value; }
         }
 
+		/// <summary> Type of access to grant to this item  </summary>
         public AccessCode_Enum Access_Code
         {
             get { return accessCode; }
             set { accessCode = value; }
         }
 
+		/// <summary> Type of access to grant this item, as a string </summary>
         public string Access_Code_String
         {
             get
@@ -93,11 +93,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             }
         }
 
+		/// <summary> Flag indicates if this item has an end embargo date </summary>
         public bool Has_Embargo_End
         {
             get { return embargoEnd.HasValue; }
         }
 
+		/// <summary> Date of the embargo end, or 1/1/1900 if no embargo </summary>
         public DateTime Embargo_End
         {
             get { return embargoEnd.HasValue ? embargoEnd.Value : new DateTime(1900, 1, 1); }
@@ -134,7 +136,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             Error_Message = String.Empty;
 
             // Get the UMI flag from the organizational notes
-            string UMI = String.Empty; //BibObject.Tracking.UMI_Flag
+            string umi = String.Empty; //BibObject.Tracking.UMI_Flag
             if ( BibObject.METS_Header.Creator_Org_Notes_Count > 0 ) 
             {
                 foreach (string thisNote in BibObject.METS_Header.Creator_Org_Notes)
@@ -142,7 +144,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     int umi_index = thisNote.ToUpper().IndexOf("UMI=");
                     if ((umi_index >= 0) && (umi_index + 4 < thisNote.Length))
                     {
-                        UMI = thisNote.Substring(umi_index + 4).Trim();
+                        umi = thisNote.Substring(umi_index + 4).Trim();
                         break;
                     }
                 }
@@ -159,10 +161,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     param_list[2] = new SqlParameter("@EmbargoEnd", Embargo_End);
                 else
                     param_list[2] = new SqlParameter("@EmbargoEnd", DBNull.Value);
-                param_list[3] = new SqlParameter("@UMI", UMI);
+                param_list[3] = new SqlParameter("@UMI", umi);
 
                 // Execute this query stored procedure
-                SqlHelper.ExecuteNonQuery(DB_ConnectionString, CommandType.StoredProcedure, "PalmmRightsMD_Save_Access_Embargo_UMI", param_list);
+				SqlHelper.ExecuteNonQuery(DB_ConnectionString, CommandType.StoredProcedure, "SobekCM_RightsMD_Save_Access_Embargo_UMI", param_list);
 
                 return true;
             }
@@ -172,8 +174,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 Error_Message = "Error encountered in RightsMD_Info.Save_Additional_Info_To_Database: " + ee.Message;
                 return false;
             }
-
-            return true;
         }
 
         /// <summary> Chance for this metadata module to load any additional data from the 

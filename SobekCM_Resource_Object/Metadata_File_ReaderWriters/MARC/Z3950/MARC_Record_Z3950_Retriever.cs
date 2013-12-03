@@ -125,8 +125,6 @@ namespace SobekCM.Resource_Object.MARC
                 //Trace.WriteLine("Could not convert item " + Primary_Identifier   + " to MARCXML.");
                 //Trace.WriteLine("Error details: " + error.Message);
             }
-
-            return null;
         }
 
 
@@ -220,8 +218,6 @@ namespace SobekCM.Resource_Object.MARC
                 //Trace.WriteLine("Could not convert item " + Primary_Identifier   + " to MARCXML.");
                 //Trace.WriteLine("Error details: " + error.Message);
             }
-
-            return null;
         }
     }
 }
