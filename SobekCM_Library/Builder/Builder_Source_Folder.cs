@@ -31,7 +31,11 @@ namespace SobekCM.Library.Builder
             Allow_Deletes = Convert.ToBoolean(Source_Data_Row["Allow_Deletes"]);
             Allow_Folders_No_Metadata = Convert.ToBoolean(Source_Data_Row["Allow_Folders_No_Metadata"]);
             Allow_Metadata_Updates = Convert.ToBoolean(Source_Data_Row["Allow_Metadata_Updates"]);
-            Contains_Institutional_Folders = Convert.ToBoolean(Source_Data_Row["Contains_Institutional_Folders"]);
+			BibID_Roots_Restrictions = Source_Data_Row["BibID_Roots_Restrictions"].ToString();
+	        if (Source_Data_Row["Can_Move_To_Content_Folder"] == DBNull.Value)
+		        Can_Move_To_Content_Folder = null;
+	        else
+				Can_Move_To_Content_Folder = Convert.ToBoolean(Source_Data_Row["Can_Move_To_Content_Folder"]);
         }
 
         /// <summary> Constructor for a new instance of the Builder_Source_Folder class </summary>
@@ -47,7 +51,8 @@ namespace SobekCM.Library.Builder
             Allow_Deletes = false;
             Allow_Folders_No_Metadata = false;
             Allow_Metadata_Updates = false;
-            Contains_Institutional_Folders = false;
+	        Can_Move_To_Content_Folder = true;
+	        BibID_Roots_Restrictions = String.Empty;
         }
 
         /// <summary> Human readable label for this folder </summary>
@@ -81,9 +86,13 @@ namespace SobekCM.Library.Builder
         /// <summary> Flag indicates if this folder accepts METADATA UPDATE files, or if these should be rejected </summary>
         public bool Allow_Metadata_Updates { get; private set; }
 
-        /// <summary> Flag indicates if this folder contains institutional subfolders, which would require that the
-        /// incoming packages include the folder name in the source or holding </summary>
-        public bool Contains_Institutional_Folders { get; private set; }
+        /// <summary> If there are any BibID root restrictions related to this incoming folder, they are 
+        /// listed here, with 'pipes' between them.  i.e., 'UF|UCF|CA001' </summary>
+		public string BibID_Roots_Restrictions { get; private set; }
+
+		/// <summary> Flag indicates if content can be moved, or must be copied, from this incoming
+		/// folder to the content folder.  Essentially, set to TRUE if on the same system </summary>
+		public Nullable<bool> Can_Move_To_Content_Folder { get; set; }
 
         /// <summary> Gets flag indicating there are packages in the inbound folder </summary>
         public bool Items_Exist_In_Inbound
@@ -113,7 +122,7 @@ namespace SobekCM.Library.Builder
                 IEnumerable<string> terminalDirectories = Get_Terminal_SubDirectories(Processing_Folder);
 
                 // Create a digital resource object for each directory
-                return terminalDirectories.Select(thisDirectory => new Incoming_Digital_Resource(thisDirectory, this)).ToList();
+                return terminalDirectories.Select(ThisDirectory => new Incoming_Digital_Resource(ThisDirectory, this)).ToList();
             }
         }
 
@@ -123,12 +132,12 @@ namespace SobekCM.Library.Builder
         /// because the directory structure for the package is pretty flexible, it can be for instance UF00000001_VID00001 or 
         /// UF00000001/VID00001, or JUV/UFSpecial/UF00000001/VID00001 etc. 
         /// the searching criterial is that there are only files in the directory but not sub directories </summary>
-        /// <param name="initialDir"></param>
+        /// <param name="InitialDir"></param>
         /// <returns></returns>
-        private IEnumerable<string> Get_Terminal_SubDirectories(string initialDir)
+        private IEnumerable<string> Get_Terminal_SubDirectories(string InitialDir)
         {
             List<string> returnVal = new List<string>();
-            foreach (string thisDir in Directory.GetDirectories(initialDir))
+            foreach (string thisDir in Directory.GetDirectories(InitialDir))
             {
                 Collect_Terminal_Dirs(returnVal, thisDir);
             }
@@ -205,6 +214,20 @@ namespace SobekCM.Library.Builder
                 }
             }
 
+			// Make sure the failures directory exists
+			if (!Directory.Exists(Failures_Folder))
+			{
+				try
+				{
+					Directory.CreateDirectory(Failures_Folder);
+				}
+				catch
+				{
+					Message = "Unable to create the non-existent failures folder " + Failures_Folder;
+					return false;
+				}
+			}
+
             // If there are loose METS here, move them into flat folders of the same name
             try
             {
@@ -232,14 +255,14 @@ namespace SobekCM.Library.Builder
             IEnumerable<string> terminalDirectories = Get_Terminal_SubDirectories(inboundFolder);
 
             // Create a digital resource object for each directory
-            List<Incoming_Digital_Resource> inboundResources = terminalDirectories.Select(thisDirectory => new Incoming_Digital_Resource(thisDirectory, this)).ToList();
+            List<Incoming_Digital_Resource> inboundResources = terminalDirectories.Select(ThisDirectory => new Incoming_Digital_Resource(ThisDirectory, this)).ToList();
 
             // Step through each resource which came in
             bool returnVal = true;
             foreach (Incoming_Digital_Resource resource in inboundResources)
             {
                 // Is this resource a candidate to move for continued processing?
-                long resource_age = resource.Age_in_Ticks;
+                long resource_age = resource.AgeInTicks;
                 if ((resource_age > SobekCM_Library_Settings.Complete_Package_Required_Aging) || ((resource_age > SobekCM_Library_Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))

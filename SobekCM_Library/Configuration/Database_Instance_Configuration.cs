@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SobekCM.Library.Database;
 
 namespace SobekCM.Library.Configuration
@@ -14,6 +11,9 @@ namespace SobekCM.Library.Configuration
 		public Database_Instance_Configuration()
 		{
 			Database_Type = SobekCM_Database_Type_Enum.MSSQL;
+			Is_Active = true;
+			Can_Abort = true;
+			Name = String.Empty;
 		}
 
 		/// <summary> Database connection string includes all the information to connect to a single instance </summary>
@@ -21,6 +21,22 @@ namespace SobekCM.Library.Configuration
 
 		/// <summary> Database type </summary>
         public SobekCM_Database_Type_Enum Database_Type { get; set;  }
+
+		/// <summary> Flag indicates if this database instance is active for the builder </summary>
+		/// <remarks> The configuration file for the builder may have multiple database settings to allow a single
+		/// SobekCM builder to support multiple SobekCM instances.  </remarks>
+		public bool Is_Active { get; set; }
+
+		/// <summary> Flag indicates if this database instance can force an abort
+		/// of the SobekCM system, or a NO BUILDING REQUESTED. </summary>
+		/// <remarks> Any system can pause itself, but only certain ones may request
+		/// a full abort through the web interface </remarks>
+		public bool Can_Abort { get; set;  }
+
+		/// <summary> Name for this database instance </summary>
+		/// <remarks> This is only used by the SobekCM builder to be able to report the instance
+		/// name, in the event that the database referenced is inaccessible. </remarks>
+		public string Name { get; set;  }
 
         /// <summary> Database type (as a string) </summary>
         public string Database_Type_String

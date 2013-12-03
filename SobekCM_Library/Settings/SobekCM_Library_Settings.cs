@@ -18,16 +18,21 @@ namespace SobekCM.Library.Settings
 	/// <summary> Class provides static context to constant settings based on the basic information about this instance of the application and server information </summary>
 	public class SobekCM_Library_Settings
 	{
+		/// <summary> List of possible page image extensions </summary>
+		public static List<string> PAGE_IMAGE_EXTENSIONS 
+		{
+			get { return new List<string>(new string[] {"JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG"}); }
+		}
 
 
 		/// <summary> Name for the backup files folder within each digital resource </summary>
-		public const string Backup_Files_Folder_Name = "sobek_files";
+		public const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
 		/// <summary> Current version number associated with this SobekCM digital repository web application </summary>
 		public const string CURRENT_WEB_VERSION = "3.20 BETA";
 
 		/// <summary> Current version number associated with this SobekCM builder application </summary>
-		public const string CURRENT_BUILDER_VERSION = "3.30 BETA";
+		public const string CURRENT_BUILDER_VERSION = "4.0.0 ALPHA";
 
 		/// <summary> Number of ticks that a complete package must age before being processed </summary>
 		/// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -141,6 +146,8 @@ namespace SobekCM.Library.Settings
 				uploadImageTypes = String.Empty;
 				kakaduJp2CreateCommand = String.Empty;
 				ocrCommandPrompt = String.Empty;
+				Builder_Override_Seconds_Between_Polls = -1;
+				Builder_Logs_Publish_Directory = String.Empty;
 
 				// Define new empty collections
 				dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -205,10 +212,24 @@ namespace SobekCM.Library.Settings
 							{
 								if (xmlReader.Value.ToLower() == "postgresql")
 									newDb.Database_Type = SobekCM_Database_Type_Enum.PostgreSQL;
-
 							}
+							if (xmlReader.MoveToAttribute("active"))
+							{
+								if (xmlReader.Value.ToLower() == "false")
+									newDb.Is_Active = false;
+							}
+							if (xmlReader.MoveToAttribute("canAbort"))
+							{
+								if (xmlReader.Value.ToLower() == "false")
+									newDb.Can_Abort = false;
+							}
+							if (xmlReader.MoveToAttribute("name"))
+								newDb.Name = xmlReader.Value.Trim();
+
 							xmlReader.Read();
 							newDb.Connection_String = xmlReader.Value;
+							if (newDb.Name.Length == 0)
+								newDb.Name = "Connection" + (databaseInfo.Count + 1);
 							databaseInfo.Add(newDb);
 							break;
 
@@ -231,6 +252,19 @@ namespace SobekCM.Library.Settings
 							xmlReader.Read();
 							imageMagickExecutable = xmlReader.Value;
 							break;
+
+						case "pause_between_polls":
+							xmlReader.Read();
+							int testValue;
+							if (Int32.TryParse(xmlReader.Value, out testValue))
+								Builder_Override_Seconds_Between_Polls = testValue;
+							break;
+
+						case "publish_logs_directory":
+							xmlReader.Read();
+							Builder_Logs_Publish_Directory = xmlReader.Value;
+							break;
+
 					}
 				}
 			}
@@ -238,6 +272,7 @@ namespace SobekCM.Library.Settings
 			xmlReader.Close();
 			reader.Close();
 		}
+
 
 		#region Methods to load data from the dataset
 
@@ -351,7 +386,7 @@ namespace SobekCM.Library.Settings
 				}
 
 
-				return !error;
+				return true;
 			}
 			catch
 			{
@@ -1102,9 +1137,10 @@ namespace SobekCM.Library.Settings
 			get { return new ReadOnlyCollection<Database_Instance_Configuration>(databaseInfo); }
 		}
 
-
-
-
+		/// <summary> Number of seconds between polls, from the configuration file (not the database) </summary>
+		/// <remarks> This is used if the SobekCM Builder is working between multiple instances.  If the SobekCM
+		/// Builder is only servicing a single instance, then the data can be pulled from the database. </remarks>
+		public static int Builder_Override_Seconds_Between_Polls { get; set; }
 
 		/// <summary> Base directory where the ASP.net application is running on the application server </summary>
 		public static string Base_Directory
@@ -1205,6 +1241,10 @@ namespace SobekCM.Library.Settings
 			get { return additionalGlobalSettings; }
 		}
 
+
+		/// <summary> Directory where the builder should publish log to, before sleeping between
+		/// actions </summary>
+		public static string Builder_Logs_Publish_Directory { get; private set; }
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 

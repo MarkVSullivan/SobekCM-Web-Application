@@ -1013,7 +1013,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        if (File.Exists(metsInProcessFile))
 	        {
 	            string resource_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
-                string backup_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
+                string backup_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
 
 	            // Ensure the backup directory exists
 	            if (!Directory.Exists(backup_directory))

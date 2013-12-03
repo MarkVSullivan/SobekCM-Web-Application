@@ -257,7 +257,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 		/// <returns> Formatted schema namespace info for the METS header</returns>
 		public virtual string[] Schema_Namespace(SobekCM_Item METS_Item)
 		{
-			return new string[] { "etd=\"http://digital.uflib.ufl.edu/metadata/sobekcm_etd/\"" };
+			return new string[] { "etd=\"http://sobekrepository.org/schemas/sobekcm_etd/\"" };
 		}
 
 		/// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -265,7 +265,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 		/// <returns> Formatted schema location for the METS header</returns>
 		public virtual string[] Schema_Location(SobekCM_Item METS_Item)
 		{
-			return new string[] { "    http://digital.uflib.ufl.edu/metadata/sobekcm_etd/\r\n    http://digital.uflib.ufl.edu/metadata/sobekcm_etd/sobekcm_etd.xsd" };
+			return new string[] { "    http://sobekrepository.org/schemas/sobekcm_etd/\r\n    http://sobekrepository.org/schemas/sobekcm_etd.xsd" };
 		}
 
 		#endregion

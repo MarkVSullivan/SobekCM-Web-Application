@@ -369,7 +369,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             #region prep saving dir
             //create inprocessing directory
             string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
-            string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
+            string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
 
             //ensure the user's process directory exists
             if (!Directory.Exists(userInProcessDirectory))

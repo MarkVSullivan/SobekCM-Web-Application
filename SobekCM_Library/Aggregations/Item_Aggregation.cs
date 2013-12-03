@@ -1166,11 +1166,11 @@ namespace SobekCM.Library.Aggregations
                 writer.WriteLine("<!--          6) highlight information to be displayed in banner or home text           -->");
                 writer.WriteLine("<!--          7) browses, with title and source by language                             -->");
                 writer.WriteLine();
-                writer.WriteLine("<hi:hierarchyInfo xmlns:hi=\"http://digital.uflib.ufl.edu/metadata/hierarchyInfo/\" ");
+				writer.WriteLine("<hi:aggregationInfo xmlns:hi=\"http://sobekrepository.org/schemas/sobekcm_aggregation/\" ");
                 writer.WriteLine("				  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
                 writer.WriteLine("				  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-                writer.WriteLine("				  xsi:schemaLocation=\"http://digital.uflib.ufl.edu/metadata/hierarchyInfo/ ");
-                writer.WriteLine("									 http://digital.uflib.ufl.edu/metadata/hierarchyInfo/hierarchyInfo.xsd\" >");
+				writer.WriteLine("				  xsi:schemaLocation=\"http://sobekrepository.org/schemas/sobekcm_aggregation/ ");
+				writer.WriteLine("									 http://sobekrepository.org/schemas/sobekcm_aggregation.xsd\" >");
                 writer.WriteLine();
 
                 // Write the settings portion
@@ -1424,7 +1424,7 @@ namespace SobekCM.Library.Aggregations
 	            }
 
 	            // Close the main tag
-                writer.WriteLine("</hi:hierarchyInfo>");
+				writer.WriteLine("</hi:aggregationInfo>");
 
                 // Flush and close the writer
                 writer.Flush();

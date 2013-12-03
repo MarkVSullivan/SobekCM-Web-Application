@@ -1423,5 +1423,5 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 .fulltabs a { color: white; }
 
 .SobekEditPanel {
-    position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 1px solid; padding: 10px 5px 5px 5px; FONT-SIZE: small; WIDTH: 740px;  white-space:nowrap; text-align:left;
+    position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 2px solid; padding: 10px 5px 5px 5px; FONT-SIZE: small; WIDTH: 790px;  white-space:nowrap; text-align:left;background-color: #eeeeee;
 }
