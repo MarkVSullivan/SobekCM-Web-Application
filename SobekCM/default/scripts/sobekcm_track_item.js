@@ -1,4 +1,17 @@
-﻿
+﻿//Global variables
+var page = 1;
+
+
+
+//Set the global page value: this indicates the current tab selected
+function setCurrentTab(thisPage) {
+   
+    page = thisPage;
+    alert(page);
+}
+
+
+//Tab 1 - With Duration
 //Hide/Unhide the item info fields based on the entry type selected - Barcode/Manual
 function rbEntryTypeChanged(value) {
     if (value == 0) {
@@ -6,16 +19,7 @@ function rbEntryTypeChanged(value) {
         document.getElementById("tblrow_Barcode").style.display = 'table-row';
         document.getElementById("tblrow_Manual1").style.display = 'none';
         document.getElementById("tblrow_Manual2").style.display = 'none';
-        
-        ////Disable all textboxes and dropdowns within the non-selected entry type(manual)
-        //$("#tblrow_Barcode").find('input,select').attr('disabled', false);
-        //$("#tblrow_Manual1").find('input,select').attr('disabled', 'disabled');
-        //$("#tblrow_Manual2").find('input,select').attr('disabled', 'disabled');
-        
-        ////Also apply the appropriate CSS class to the table rows 
-        //document.getElementById("tblrow_Barcode").className = "";
-        //document.getElementById("tblrow_Manual1").className = "sbkTi_tblRowDisabled";
-        //document.getElementById("tblrow_Manual2").className = "sbkTi_tblRowDisabled";
+      
 
     }
     else
@@ -26,6 +30,28 @@ function rbEntryTypeChanged(value) {
         document.getElementById("tblrow_Manual2").style.display = 'table-row';
     }
 }
+
+
+//Tab2 - Without Duration tracking
+//Hide/Unhide the item info fields based on the entry type selected - Barcode/Manual
+function rbEntryType2Changed(value) {
+    alert(' rbEntryType2Changed called');
+    if (value == 0) {
+
+        document.getElementById("tblrow2_Barcode").style.display = 'table-row';
+        document.getElementById("tblrow2_Manual1").style.display = 'none';
+        document.getElementById("tblrow2_Manual2").style.display = 'none';
+
+
+    }
+    else {
+
+        document.getElementById("tblrow2_Barcode").style.display = 'none';
+        document.getElementById("tblrow2_Manual1").style.display = 'table-row';
+        document.getElementById("tblrow2_Manual2").style.display = 'table-row';
+    }
+}
+
 
 //Save function: set the hidden field(s) accordingly
 function BarcodeStringTextbox_Changed(barcode_string) {
@@ -106,3 +132,76 @@ function ddlUser_Changed(ddlID) {
     document.getElementById('hidden_selected_user').value = ddl.options[ddl.selectedIndex].value;
   //  alert(ddl.options[ddl.selectedIndex].value);
 }
+
+function save_item_tracking(page) {
+    
+    var hiddenfield = document.getElementById('tracking_new_page');
+    hiddenfield.value = page;
+ //   document.itemNavForm.submit();
+    return false;
+}
+
+
+
+(function ($) {
+    $.fn.acidTabs = function (options) {
+        var settings = {
+            'style': 'fulltabs'
+        };
+        options = $.extend(settings, options);
+        return this.each(function () {
+            var o = options;
+            container = this;
+            container.setAttribute("class", o.style);
+
+            //store which tab we are on
+            //        var navitem = container.querySelector("li");
+            //     var ident = navitem.id.split("_")[1];
+        
+              var  navitem = document.getElementById('tabHeader_'+page);
+               var ident = page;
+            
+
+            navitem.parentNode.setAttribute("data-current", ident);
+            
+ 
+            //set current tab with class of activetabheader
+            navitem.setAttribute("class", "tabActiveHeader");
+
+            //hide the tab contents we don't need
+            var pages = container.querySelectorAll(".tabpage");
+            for (var i = 0; i < pages.length; i++) {
+                if (i == (page - 1))
+                    continue;
+                pages[i].style.display = "none";
+            }
+
+            //this adds click event to tabs
+            var tabs = container.querySelectorAll("li");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].onclick = displayPage;
+              
+            }
+        });
+
+  
+
+        // on click of one of tabs
+        function displayPage() {
+            var current = this.parentNode.getAttribute("data-current");
+            //remove class of activetabheader and hide old contents
+            document.getElementById("tabHeader_" + current).removeAttribute("class");
+            document.getElementById("tabpage_" + current).style.display = "none";
+
+            var ident = this.id.split("_")[1];
+            //add class of activetabheader to new active tab and show contents
+            this.setAttribute("class", "tabActiveHeader");
+            document.getElementById("tabpage_" + ident).style.display = "block";
+            this.parentNode.setAttribute("data-current", ident);
+            
+            //Set the hidden value to indicate the tab selected
+             save_item_tracking(ident);
+
+        }
+    };
+})(jQuery);

@@ -573,6 +573,8 @@ namespace SobekCM.Library.Navigation
 
                                         case "itemtracking":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Item_Tracking;
+                                            //if(url_relative_list.Count>3 && is_String_Number(url_relative_list[3]))
+                                            //    Navigator.My_Sobek_SubMode = url_relative_list[3];
                                             break;
 
 										case "searches":
