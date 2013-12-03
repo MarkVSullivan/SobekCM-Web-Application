@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Settings;
@@ -34,82 +33,76 @@ namespace SobekCM.Library
         private readonly SobekCM_Assistant assistant;
         private Aggregation_Code_Manager codeManager;
         private readonly SobekCM_Navigation_Object currentMode;
-        private readonly SobekCM_Skin_Object dlocInterface;
 
         private int errors;
         private readonly Dictionary<string, Wordmark_Icon> iconList;
-        private readonly Item_Lookup_Object itemList;
 
-        /// <summary> MarcXML writer object </summary>
-        private readonly MarcXML_File_ReaderWriter marcWriter;
 
         private readonly string primaryWebServerUrl;
         private readonly string staticSobekcmDataLocation;
+		private readonly string staticSobekcmLocation;
         private readonly Custom_Tracer tracer;
         private readonly Language_Support_Info translations;
-        private readonly SobekCM_Skin_Object ufdcInterface;
 
-        /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>
-        /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
-        /// <param name="Static_Data_Location"> Network location for the data directory </param>
-        /// <param name="All_Items_Lookup"> Allows individual items to be retrieved by various methods as <see cref="Application_State.Single_Item"/> objects.</param>
-        /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location,
+	    private readonly SobekCM_Skin_Collection skinsCollection;
+	    private readonly string defaultSkin;
+
+
+	    /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>
+	    /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
+	    /// <param name="Static_Data_Location"> Network location for the data directory </param>
+	    /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
+	    /// <param name="HTML_Skin_Collection"> HTML Web skin which controls the overall appearance of this digital library </param>
+	    /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
+	    /// <param name="Default_Skin"> Default skin code </param>
+	    public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location,
             Language_Support_Info Translator,
             Aggregation_Code_Manager Code_Manager,
-            Item_Lookup_Object All_Items_Lookup,
             Dictionary<string, Wordmark_Icon> Icon_Table,
-            SobekCM_Skin_Object HTML_Skin)
+			SobekCM_Skin_Collection HTML_Skin_Collection,
+			string Default_Skin)
         {
             primaryWebServerUrl = Primary_Web_Server_URL;
             staticSobekcmDataLocation = Static_Data_Location;
+		    staticSobekcmLocation = String.Empty;
 
             tracer = new Custom_Tracer();
             assistant = new SobekCM_Assistant();
 
-           // marcWriter = new MARC_Writer();
-
-
-            // Save all the objects needed by the UFDC Library
+            // Save all the objects needed by the SobekCM Library
             iconList = Icon_Table;
             translations = Translator;
             codeManager = Code_Manager;
-            itemList = All_Items_Lookup;
-            ufdcInterface = HTML_Skin;
-            dlocInterface = HTML_Skin;
+	        skinsCollection = HTML_Skin_Collection;
+		    defaultSkin = Default_Skin;
 
             // Create the mode object
             currentMode = new SobekCM_Navigation_Object
                               {
                                   ViewerCode = "citation",
-                                  Skin = "UFDC",
+                                  Skin = String.Empty,
                                   Mode = Display_Mode_Enum.Item_Display,
                                   Language = Web_Language_Enum.English,
                                   Base_URL = primaryWebServerUrl
                               };
         }
 
-        /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>
-        /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
-        /// <param name="Static_Data_Location"> Network location for the data directory </param>
-        /// <remarks> This constructor pulls all the needed information from the database</remarks>
-        public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location )
+	    /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>
+	    /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
+	    /// <param name="Static_Data_Location"> Network location for the data directory </param>
+	    /// <param name="Base_Network_Location"> Location where the web application files site for this </param>
+	    /// <remarks> This constructor pulls all the needed information from the database</remarks>
+	    public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location, string Base_Network_Location )
         {
             primaryWebServerUrl = Primary_Web_Server_URL;
             staticSobekcmDataLocation = Static_Data_Location;
+	        staticSobekcmLocation = Base_Network_Location;
 
             tracer = new Custom_Tracer();
             assistant = new SobekCM_Assistant();
 
-           // marcWriter = new MARC_Writer();
-
-            // Get the list of all items
-	        SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-
-            // Build all the objects needed by the UFDC Library
+            // Build all the objects needed by the SobekCM Library
             iconList = new Dictionary<string, Wordmark_Icon>();
             SobekCM_Database.Populate_Icon_List(iconList, tracer);
 
@@ -119,10 +112,12 @@ namespace SobekCM.Library
             codeManager = new Aggregation_Code_Manager();
             SobekCM_Database.Populate_Code_Manager(codeManager, tracer);
 
-            // Get the item list and build the hashtable 
-       //     DataSet tempSet = SobekCM.Library.Database.SobekCM_Database.Get_Item_List(false, tracer);
-            itemList = new Item_Lookup_Object();
-            SobekCM_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
+			Portal_List urlPortals = new Portal_List();
+			SobekCM_Database.Populate_URL_Portals(urlPortals, tracer);
+	        defaultSkin = urlPortals.Default_Portal.Default_Web_Skin;
+
+			skinsCollection = new SobekCM_Skin_Collection();
+			SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinsCollection, null);
 
             // Set some constant settings
             // SobekCM.Library.SobekCM_Library_Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
@@ -132,47 +127,32 @@ namespace SobekCM.Library
             currentMode = new SobekCM_Navigation_Object
                               {
                                   ViewerCode = "FC",
-                                  Skin = "UFDC",
+								  Skin = defaultSkin,
                                   Mode = Display_Mode_Enum.Item_Display,
                                   Language = Web_Language_Enum.English,
                                   Base_URL = primaryWebServerUrl
                               };
 
-            // Create the ufdc interface object
-            ufdcInterface = new SobekCM_Skin_Object("ufdc", String.Empty, currentMode.Base_Design_URL + "skins/ufdc/ufdc.css")
-                                {
-                                    Header_Item_HTML =GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/header_item.html").Replace("<%BREADCRUMBS%>","<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>","<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/footer_item.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
-                                    Header_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/header.html").Replace("<%BREADCRUMBS%>", "<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>","<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/UFDC/html/footer.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
-                                    Language_Code = "",
-                                    Override_Banner = false
-                                };
 
-            // Create the dLOC_English interface
-            dlocInterface = new SobekCM_Skin_Object("dloc", String.Empty, currentMode.Base_Design_URL + "skins/dloc/dloc.css", "<img id=\"mainBanner\" src=\"" + currentMode.Base_URL + "design/skins/dloc/banner.jpg\" alt=\"MISSING BANNER\" />")
-                                {
-                                    Header_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/header_item.html").Replace("<%BREADCRUMBS%>", "<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>", "<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_Item_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/footer_item.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
-                                    Header_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/header.html").Replace("<%BREADCRUMBS%>", "<a href=\"" + primaryWebServerUrl + "\">UFDC Home</a>").Replace("<%MYSOBEK%>", "<a href=\"" + primaryWebServerUrl + "my\">myUFDC Home</a>"),
-                                    Footer_HTML = GetHtmlPage(primaryWebServerUrl + "/design/skins/dloc/html/footer.html").Replace("<%VERSION%>", SobekCM_Library_Settings.CURRENT_WEB_VERSION).Replace("src=\"" + currentMode.Base_URL + "design/", "src=\"" + primaryWebServerUrl + "/design/"),
-                                    Language_Code = "",
-                                    Override_Banner = false
-                                };
+			// Ensure all the folders exist
+		    if (!Directory.Exists(staticSobekcmDataLocation))
+			    Directory.CreateDirectory(staticSobekcmDataLocation);
+		    if (!Directory.Exists(staticSobekcmDataLocation + "\\rss"))
+			    Directory.CreateDirectory(staticSobekcmDataLocation + "\\rss");
 
             // Disable the cached data manager
             Cached_Data_Manager.Disabled = true;
         }
 
-        /// <summary> Gets the list of all items used during this creation process </summary>
-        /// <remarks> Access to this list allows new items to be added to the list </remarks>
-        public Item_Lookup_Object Item_List
-        {
-            get
-            {
-                return itemList;
-            }
-        }
+		///// <summary> Gets the list of all items used during this creation process </summary>
+		///// <remarks> Access to this list allows new items to be added to the list </remarks>
+		//public Item_Lookup_Object Item_List
+		//{
+		//	get
+		//	{
+		//		return itemList;
+		//	}
+		//}
 
         /// <summary> Builds all of the site map files which point to the static HTML pages </summary>
         /// <returns> Number of site maps created ( Only 30,000 links are included in each site map ) </returns>
@@ -239,21 +219,27 @@ namespace SobekCM.Library
         }
 
         /// <summary> Rebuilds all MarcXML files </summary>
-        /// <param name="resource_directory"> Directory under which all the resources within this SobekCM library exist </param>
+        /// <param name="ResourceDirectory"> Directory under which all the resources within this SobekCM library exist </param>
         /// <returns> The number of encountered errors </returns>
-        public int Rebuild_All_MARC_Files( string resource_directory )
+        public int Rebuild_All_MARC_Files( string ResourceDirectory )
         {
             // Set the item for the current mode
             errors = 0;
             int successes = 0;
 
             DataSet item_list_table = SobekCM_Database.Get_Item_List(false, null);
+
+			// Get the item list and build the hashtable 
+			Item_Lookup_Object itemList = new Item_Lookup_Object();
+			SobekCM_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
+
+
             foreach (DataRow thisRow in item_list_table.Tables[0].Rows)
             {
                 string bibid = thisRow["BibID"].ToString();
                 string vid = thisRow["VID"].ToString();
 
-                if (!Create_MarcXML_File(bibid, vid, resource_directory))
+                if (!Create_MarcXML_File(bibid, vid, ResourceDirectory, itemList))
                 {
                     errors++;
                 }
@@ -269,19 +255,37 @@ namespace SobekCM.Library
         }
 
         /// <summary> Rebuilds all static pages, including the RSS feeds and site maps </summary>
-        /// <param name="logger"> Log file to record progress </param>
-        /// <param name="build_all_citation_pages"> Flag indicates to build the individual static HTML pages for each digital resource </param>
-        /// <param name="rss_feed_location"> Location where the RSS feeds should be updated to </param>
+        /// <param name="Logger"> Log file to record progress </param>
+        /// <param name="BuildAllCitationPages"> Flag indicates to build the individual static HTML pages for each digital resource </param>
+        /// <param name="RssFeedLocation"> Location where the RSS feeds should be updated to </param>
         /// <returns> The number of encountered errors </returns>
-        public int Rebuild_All_Static_Pages(LogFileXHTML logger, bool build_all_citation_pages, string rss_feed_location)
+        public int Rebuild_All_Static_Pages(LogFileXHTML Logger, bool BuildAllCitationPages, string RssFeedLocation, string InstanceName, long PrimaryLogId )
         {
-            logger.AddNonError("Rebuilding all static pages");
+	        if (InstanceName.Length > 0)
+		        InstanceName = InstanceName + " - ";
+
+	        if (PrimaryLogId < 0)
+	        {
+		        Logger.AddNonError(InstanceName + "Rebuilding all static pages");
+		        PrimaryLogId = SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
+	        }
+
+	        // Set the correct base directory
+			if (staticSobekcmLocation.Length > 0)
+				SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
 
             // Set the item for the current mode
-            errors = 0;
-            if (build_all_citation_pages)
+	        errors = 0;
+            if (BuildAllCitationPages)
             {
+				SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Rebuilding all item-level citation static pages", String.Empty);
+
                 DataSet item_list_table = SobekCM_Database.Get_Item_List(false, null);
+
+				// Get the item list and build the hashtable 
+				Item_Lookup_Object itemList = new Item_Lookup_Object();
+				SobekCM_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
+
                 foreach (DataRow thisRow in item_list_table.Tables[0].Rows)
                 {
                     //if (errors > 10000)
@@ -293,10 +297,24 @@ namespace SobekCM.Library
                     //}
                     string bibid = thisRow["BibID"].ToString();
                     string vid = thisRow["VID"].ToString();
+	                string itemDirectory = SobekCM_Library_Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+	                string staticDirectory = itemDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
 
-                    if (Create_Item_Citation_HTML(bibid, vid, thisRow["File_Location"] + "\\" + bibid + "_" + vid + ".html", String.Empty))
+					if (!Directory.Exists(staticDirectory))
+						Directory.CreateDirectory(staticDirectory);
+
+
+	                string static_file = staticDirectory + "\\" + bibid + "_" + vid + ".html";
+
+                    if (Create_Item_Citation_HTML(bibid, vid, static_file, itemDirectory, itemList))
                     {
-                        //successes.WriteLine(bibid + "\t" + vid);
+						// Also copy to the static page location server
+	                    string web_server_directory = SobekCM_Library_Settings.Static_Pages_Location + bibid.Substring(0, 2) +"\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+	                    if (!Directory.Exists(web_server_directory))
+		                    Directory.CreateDirectory(web_server_directory);
+
+						string web_server_file_version = web_server_directory + "\\" + bibid + "_" + vid + ".html";
+						File.Copy(static_file, web_server_file_version, true);
 
                     }
                     else
@@ -305,12 +323,24 @@ namespace SobekCM.Library
                         //failures.WriteLine(bibid + "\t" + vid);
                     }
                 }
+
+				SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Done rebuilding all item-level citation static pages", String.Empty);
             }
+
 
 
             // Set the mode away from the display item mode
             currentMode.Mode = Display_Mode_Enum.Aggregation;
 			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+	        currentMode.Skin = defaultSkin;
+
+
+			// Get the default web skin
+			SobekCM_Skin_Object defaultSkinObject = skinsCollection[defaultSkin];
+			if (defaultSkinObject == null)
+			{
+				defaultSkinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
+			}
 
             // Get the list of all collections
             DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);
@@ -340,47 +370,49 @@ namespace SobekCM.Library
                 {
                     // Build the static links pages
                     string code = thisCollectionView.Row["Code"].ToString().ToLower();
-                    if ((!processed_codes.Contains(code)) && ( code != "all" ))
-                    {
-                        processed_codes.Add(code);
+	                if ((!processed_codes.Contains(code)) && (code != "all"))
+	                {
+		                processed_codes.Add(code);
 
-                        // Add this to the sitemap
-                        sitemap_writer.WriteLine("\t<url>");
-                        sitemap_writer.WriteLine("\t\t<loc>" + primaryWebServerUrl + code + "</loc>");
-                        sitemap_writer.WriteLine("\t</url>");
+		                // Add this to the sitemap
+		                sitemap_writer.WriteLine("\t<url>");
+		                sitemap_writer.WriteLine("\t\t<loc>" + primaryWebServerUrl + code + "</loc>");
+		                sitemap_writer.WriteLine("\t</url>");
 
-                        logger.AddNonError(".....Building static links page... " + code);
-                        Console.WriteLine(@"Building static links page... {0}", code);
+		                Logger.AddNonError(InstanceName + ".....Building static links page for " + code);
+		                Console.WriteLine(InstanceName + @"Building static links page for {0}", code);
+						SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building static links page for " + code, String.Empty);
 
-                        //Get the list of items for this collection
-                        items = SobekCM_Database.Simple_Item_List(code, tracer);
+		                //Get the list of items for this collection
+		                items = SobekCM_Database.Simple_Item_List(code, tracer);
 
-                        // Continue if there were items
-                        if ((items != null) && (items.Tables[0].Rows.Count > 0))
-                        {
-                            // Build the static browse pages
-                            if (Build_All_Browse(code, items))
-                            {
-                                static_browse_links.Append("<td width=\"150px\"><a href=\"" + code + "_list.html\">" + code + "</a></td>" + Environment.NewLine );
-                                col++;
-                            }
+		                // Get the item aggregation object
+		                Item_Aggregation aggregation = Item_Aggregation_Builder.Get_Item_Aggregation(code.ToLower(), "en", null, true, false, null);
 
-                            if (col > 5)
-                            {
-                                static_browse_links.Append("</tr>" + Environment.NewLine + "<tr>");
-                                col = 1;
-                            }
+		                // Build the static browse pages
+		                if (Build_All_Browse(aggregation, items))
+		                {
+			                static_browse_links.Append("<td><a href=\"" + code + "_all.html\">" + code + "</a></td>" + Environment.NewLine);
+			                col++;
+		                }
 
-                            // Build the RSS feeds
-                            logger.AddNonError(".....Building RSS feed... " + code);
-                            Console.WriteLine(@"Building RSS feed... {0}", code);
-                            if (Create_RSS_Feed(code, staticSobekcmDataLocation + "rss\\", thisCollectionView.Row["Name"].ToString(), items))
-                            {
-                                recent_rss_link_builder.Append("<img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_short_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine );
-                                all_rss_link_builder.Append("<img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine );
-                            }
-                        }
-                    }
+		                if (col > 5)
+		                {
+			                static_browse_links.Append("</tr>" + Environment.NewLine + "<tr>");
+			                col = 1;
+		                }
+
+		                // Build the RSS feeds
+		                Logger.AddNonError(InstanceName + ".....Building RSS feeds for " + code);
+						Console.WriteLine(InstanceName + @"Building RSS feeds for {0}", code);
+						SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building RSS feeds for " + code, String.Empty);
+
+		                if (Create_RSS_Feed(code, staticSobekcmDataLocation + "rss\\", thisCollectionView.Row["Name"].ToString(), items))
+		                {
+			                recent_rss_link_builder.Append("<img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_short_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
+			                all_rss_link_builder.Append("<img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
+		                }
+	                }
                 }
             }
 
@@ -390,48 +422,54 @@ namespace SobekCM.Library
             sitemap_writer.Close();
 
             items = SobekCM_Database.Simple_Item_List(String.Empty, tracer);
-            logger.AddNonError(".....Building static links page... ALL ITEMS");
-            Console.WriteLine(@"Building static links page... ALL ITEMS");
-            Build_All_Browse(String.Empty, items);
+            Logger.AddNonError(InstanceName + ".....Building static links page for ALL ITEMS");
+            Console.WriteLine(InstanceName + @"Building static links page for ALL ITEMS");
+			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building static links page for ALL ITEMS", String.Empty);
 
-            Console.WriteLine(@"Building RSS feed... ALL ITEMS");
-            logger.AddNonError(".....Building RSS feed... ALL ITEMS");
-            Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All UFDC Items", items);
+			Item_Aggregation allAggregation = Item_Aggregation_Builder.Get_Item_Aggregation("all", "en", null, true, false, null);
+
+            Build_All_Browse(allAggregation, items);
+
+            Console.WriteLine(InstanceName + @"Building RSS feeds ALL ITEMS");
+            Logger.AddNonError(InstanceName + ".....Building RSS feeds for ALL ITEMS");
+			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building RSS feeds for ALL ITEMS", String.Empty);
+
+            Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All " + SobekCM_Library_Settings.System_Abbreviation + " Items", items);
 
             // Build the site maps
-            logger.AddNonError(".....Building site maps");
-            Console.WriteLine(@"Building site maps");
+            Logger.AddNonError(InstanceName + ".....Building site maps");
+            Console.WriteLine(InstanceName + @"Building site maps");
+			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building site maps", String.Empty);
+
             int sitemaps = Build_Site_Maps();
 
             // Output the main browse and rss links pages
-            logger.AddNonError("....Building main browse html page");
-            Console.WriteLine(@"Building main browse html page");
+            Logger.AddNonError(InstanceName + "....Building main sitemaps and links page");
+            Console.WriteLine(InstanceName + @"Building main sitemaps and links page");
+			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building main sitemaps and links page", String.Empty);
+
             StreamWriter allListWriter = new StreamWriter(staticSobekcmDataLocation + "index.html", false);
             allListWriter.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
             allListWriter.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" >");
             allListWriter.WriteLine("<head>");
-            allListWriter.WriteLine("  <title>UFDC Site Map Links</title>");
+            allListWriter.WriteLine("  <title>" + SobekCM_Library_Settings.System_Name + " Site Map Links</title>");
             allListWriter.WriteLine();
-            allListWriter.WriteLine("  <!-- Static HTML generated by application written by Mark Sullivan -->");
             allListWriter.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
             allListWriter.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            allListWriter.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-            allListWriter.WriteLine("    @import url( http://ufdc.ufl.edu/design/skins/ufdc/ufdc.css );");
-            allListWriter.WriteLine("  </style>");
+			if (defaultSkinObject.CSS_Style.Length > 0)
+			{
+				allListWriter.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			}
+
             allListWriter.WriteLine("</head>");
             allListWriter.WriteLine("<body>");
 
             allListWriter.WriteLine("<div id=\"container-inner\">");
 
+			string banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"All Collections\" href=\"" + primaryWebServerUrl + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"\" /></a></div>";
+			Display_Header(allListWriter, defaultSkinObject, banner);
 
-            Display_Header(allListWriter, ufdcInterface);
-
-            allListWriter.WriteLine("<div id=\"pagecontainer\">");
-
-
-            allListWriter.WriteLine("<center><a href=\"" + primaryWebServerUrl + "\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"MISSING BANNER\" /></a></center>");
-
-            allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in UFDC. <br />");
+            allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in " + SobekCM_Library_Settings.System_Abbreviation + ". <br />");
             allListWriter.WriteLine("Click <a href=\"" + primaryWebServerUrl + "\">HERE</a> to return to main library. <br />");
             allListWriter.WriteLine("<br />");
             allListWriter.WriteLine("<br />");
@@ -452,7 +490,7 @@ namespace SobekCM.Library
                 allListWriter.WriteLine("NO SITE MAPS GENERATED!");
             }
 
-            Display_Footer(allListWriter, ufdcInterface);
+			Display_Footer(allListWriter, defaultSkinObject);
             allListWriter.WriteLine("</div>");
             allListWriter.WriteLine("</body>");
             allListWriter.WriteLine("</html>");
@@ -462,37 +500,42 @@ namespace SobekCM.Library
             // Create the list of all the RSS feeds
             try
             {
-                logger.AddNonError(".....Building main rss feed page");
-                Console.WriteLine(@"Building main rss feed page");
+                Logger.AddNonError(InstanceName + ".....Building main rss feed page");
+				Console.WriteLine(InstanceName + @"Building main rss feed page");
+				SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building main rss feed page", String.Empty);
+
                 StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + "rss\\index.htm", false);
-                writer.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-                writer.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" >");
+                writer.WriteLine("<!DOCTYPE html>");
+                writer.WriteLine("<html>");
                 writer.WriteLine("<head>");
-                writer.WriteLine("  <title>RSS Feeds for UFDC</title>");
+				writer.WriteLine("  <title>RSS Feeds for " + SobekCM_Library_Settings.System_Abbreviation + "</title>");
                 writer.WriteLine();
-                writer.WriteLine("  <!-- Static HTML generated by application written by Mark Sullivan -->");
                 writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
                 writer.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-                writer.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-                writer.WriteLine("    @import url( http://ufdc.ufl.edu/design/skins/ufdc/ufdc.css );");
-                writer.WriteLine("  </style>");
+				if (defaultSkinObject.CSS_Style.Length > 0)
+				{
+					writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				}
                 writer.WriteLine("</head>");
                 writer.WriteLine("<body>");
 
                 writer.WriteLine("<div id=\"container-inner\">");
-                Display_Header(writer, ufdcInterface);
-                writer.WriteLine("<div id=\"pagecontainer\">");
 
-                writer.WriteLine("<center><a href=\"" + primaryWebServerUrl + "\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"MISSING BANNER\" /></a></center>");
+				string banner2 = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"All Collections\" href=\"" + primaryWebServerUrl + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"\" /></a></div>";
+				Display_Header(writer, defaultSkinObject, banner2);
+
+                writer.WriteLine("<div id=\"pagecontainer\">");
 
 
                 writer.WriteLine("<div class=\"ViewsBrowsesRow\">");
-                writer.WriteLine("  <a href=\"" + primaryWebServerUrl + "\"><img src=\"" + primaryWebServerUrl + "design/skins/ufdc/tabs/cL.gif\" border=\"0\" alt=\"\" /><span class=\"tab\"> UFDC HOME </span><img src=\"" + primaryWebServerUrl + "design/skins/ufdc/tabs/cR.gif\" border=\"0\" alt=\"\" /></a>");
-                writer.WriteLine("  <img src=\"" + primaryWebServerUrl + "design/skins/ufdc/tabs/cL_s.gif\" border=\"0\" alt=\"\" /><span class=\"tab_s\"> RSS FEEDS </span><img src=\"" + primaryWebServerUrl + "design/skins/ufdc/tabs/cR_s.gif\" border=\"0\" alt=\"\" />");
+				writer.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
+				writer.WriteLine("    <li><a href=\"" + primaryWebServerUrl + "\">" + SobekCM_Library_Settings.System_Abbreviation + " HOME</a></li>");
+				writer.WriteLine("    <li class=\"current\">RSS FEEDS</li>");
+				writer.WriteLine("  </ul>");
                 writer.WriteLine("</div>");
                 writer.WriteLine();
                 writer.WriteLine("<div class=\"SobekSearchPanel\">");
-                writer.WriteLine("  <h1>RSS Feeds for the University of Florida Digital Collections</h1>");
+                writer.WriteLine("  <h1>RSS Feeds for the " + SobekCM_Library_Settings.System_Name + "</h1>");
                 writer.WriteLine("</div>");
                 writer.WriteLine();
 
@@ -501,13 +544,12 @@ namespace SobekCM.Library
                 writer.WriteLine("  <tr>");
                 writer.WriteLine("    <td>");
                 writer.WriteLine("      <br />");
-                writer.WriteLine("      This page provides links to RSS feeds for items within UFDC.  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
+				writer.WriteLine("      This page provides links to RSS feeds for items within " + SobekCM_Library_Settings.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
                 writer.WriteLine("      <br />");
                 writer.WriteLine("      In addition, the following three RSS feeds are provided:");
                 writer.WriteLine("      <blockquote>");
-                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in UFDC</a><br />");
-                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in UFDC (last 100)</a><br />");
-                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/ufdc_news_rss.xml\">Recent UFDC news and documentation changes</a><br />");
+                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + SobekCM_Library_Settings.System_Abbreviation + "</a><br />");
+				writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + SobekCM_Library_Settings.System_Abbreviation + " (last 100)</a><br />");
                 writer.WriteLine("      </blockquote>");
                 writer.WriteLine("      RSS feeds	are a way to keep up-to-date on new materials that are added to the Digital Collections. RSS feeds are written in XML    and require a news reader to access.<br />");
                 writer.WriteLine("      <br />");
@@ -566,105 +608,141 @@ namespace SobekCM.Library
                 writer.WriteLine("<br />");
 
 
-
-                Display_Footer(writer, ufdcInterface);
-                writer.WriteLine("</div>");
+				writer.WriteLine("</div>");
+				writer.WriteLine("</div>");
+				Display_Footer(writer, defaultSkinObject);
+				writer.WriteLine("</div>");
                 writer.WriteLine("</body>");
                 writer.WriteLine("</html>");
 
                 writer.Flush();
                 writer.Close();
             }
-            catch
+            catch ( Exception ee )
             {
-                logger.AddError("ERROR BUILDING RSS INDEX.HTM FILE");
+                Logger.AddError("ERROR BUILDING RSS INDEX.HTM FILE");
                 Console.WriteLine(@"Error building RSS index.htm file");
+				SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Error", "Error building the main RSS feed page", String.Empty);
+
             }
 
             return errors;
 
         }
 
-        /// <summary> Build the browse XML file that includes links to all items in a particular collection </summary>
-        /// <param name="Collection_Code"> Aggregation code for the collection to use </param>
-        /// <param name="allItems"> List of all items linked to that aggregation/collection </param>
+        /// <summary> Build the browse all static HTML file that includes links to all items in a particular collection </summary>
+		/// <param name="Aggregation"> Aggregation object for which to build the browse ALL static html page </param>
+        /// <param name="AllItems"> List of all items linked to that aggregation/collection </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Build_All_Browse(string Collection_Code, DataSet allItems)
+		public bool Build_All_Browse(Item_Aggregation Aggregation, DataSet AllItems)
         {
-            if (allItems == null)
+            if (AllItems == null)
                 return false;
 
-            if (Collection_Code.Length == 0)
-                Collection_Code = "all";
+			// Set the default web skin
+			currentMode.Skin = defaultSkin;
+	        currentMode.Aggregation = Aggregation.Code;
+			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+	        currentMode.Is_Robot = true;
+
+			if (staticSobekcmLocation.Length > 0)
+				SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
 
             // Pull the item aggregation object
-            Item_Aggregation aggregation = Item_Aggregation_Builder.Get_Item_Aggregation( Collection_Code.ToLower(), "en", null, true, false, null );
+	        if (Aggregation.Web_Skins.Count > 0)
+		        currentMode.Skin = Aggregation.Web_Skins[0];
 
-            // Get the skin to use
-            SobekCM_Skin_Object skin = ufdcInterface;
-            if ( aggregation.Default_Skin.ToLower() == "dloc" )
-                skin = dlocInterface;
+			// Get the skin object
+			SobekCM_Skin_Object skinObject = skinsCollection[currentMode.Skin];
+			if (skinObject == null)
+			{
+				skinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
+				skinsCollection.Add(skinObject);
+			}
 
-            StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + Collection_Code + "_all.html", false);
+			StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + Aggregation.Code.ToLower() + "_all.html", false);
+			writer.WriteLine("<!DOCTYPE html>");
+			writer.WriteLine("<html>");
+			writer.WriteLine("<head>");
+	        writer.WriteLine("  <title>" + SobekCM_Library_Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");			writer.WriteLine();			writer.WriteLine("  <!-- " + SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository -->");
+			writer.WriteLine();
+			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+	        writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+			if (skinObject.CSS_Style.Length > 0)
+			{
+				writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			}
+			if (Aggregation.CSS_File.Length > 0)
+			{
+				writer.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + skinObject.Skin_Code + "/" + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			}			writer.WriteLine("</head>");
+			writer.WriteLine("<body>");
 
             writer.WriteLine("<div id=\"container-inner\">");
-            Display_Header(writer, skin);
 
-            writer.WriteLine("<div id=\"pagecontainer\">");
-            writer.WriteLine("<center><a href=\"" + primaryWebServerUrl + Collection_Code + "\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/" + Collection_Code + "/images/banners/coll.jpg\" alt=\"MISSING BANNER\" /></a></center>");
+			string banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + Aggregation.Name + "\" href=\"" + primaryWebServerUrl + Aggregation.Code.ToLower() + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/" + Aggregation.Code + "/images/banners/coll.jpg\" alt=\"\" /></a></div>";
+			Display_Header(writer, skinObject, banner);
 
 
-            writer.WriteLine("<div class=\"ViewsBrowsesRow\">");
-            writer.WriteLine("  <a href=\"" + primaryWebServerUrl + Collection_Code + "\"><img src=\"" + primaryWebServerUrl + "/design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> HOME </span><img src=\"" + primaryWebServerUrl + "/design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cR.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
-            writer.WriteLine("  <img src=\"" + primaryWebServerUrl + "/design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cL_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\"> ALL ITEMS </span><img src=\"" + primaryWebServerUrl + "/design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cR_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />");
-            writer.WriteLine("</div>");
- 
-            writer.WriteLine("<div class=\"SobekBrowseDescPanel\">");
+			MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(writer, currentMode, null, Aggregation, translations, codeManager );
+
+
+			writer.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_BrowseDescPanel\">");
             writer.WriteLine("  <h1>All Items</h1>");
             writer.WriteLine("</div>");
- 
-            writer.WriteLine("<div class=\"SobekResultsNavBarImbed\">");
-            writer.WriteLine("  <br />");
-            writer.WriteLine("  " + allItems.Tables[0].Rows.Count + " of " + allItems.Tables[0].Rows.Count + " matching titles");
-            writer.WriteLine("</div>");
- 
-            writer.WriteLine("<div class=\"ResultViewSelectRow\">");
-            writer.WriteLine("  <img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">BRIEF VIEW</span><img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />");
-            writer.WriteLine("  <img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">TABLE VIEW</span><img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />");
-            writer.WriteLine("  <img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">THUMBNAIL VIEW</span><img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />");
-            writer.WriteLine("  <img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">FULL VIEW</span><img src=\"" + primaryWebServerUrl + "design/skins/" + ufdcInterface.Base_Skin_Code + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />");
-            writer.WriteLine("</div>");
 
-            writer.WriteLine("<table width=\"100%\">");
-            writer.WriteLine("<tr valign=\"top\">");
-            writer.WriteLine("<td align=\"center\">");
-            writer.WriteLine("<div class=\"SobekResultsPanel\" align=\"center\">");
+			writer.WriteLine("<div class=\"sbkPrsw_ResultsNavBarImbed\">");
+            writer.WriteLine("  <br />");
+            writer.WriteLine("  " + AllItems.Tables[0].Rows.Count + " of " + AllItems.Tables[0].Rows.Count + " matching titles");
+            writer.WriteLine("</div>");
+			writer.WriteLine();
+ 
+            writer.WriteLine("<div id=\"sbkPrsw_ViewTypeSelectRow\">");
+			writer.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
+			writer.WriteLine("    <li>BRIEF VIEW</li>");
+			writer.WriteLine("    <li class=\"current\">TABLE VIEW</li>");
+			writer.WriteLine("    <li>THUMBNAIL VIEW</li>");
+			writer.WriteLine("  </ul>");
+			writer.WriteLine("</div>");
+			writer.WriteLine();
+
+			writer.WriteLine("<div class=\"sbkPrsw_ResultsPanel\">");
 
 
             writer.WriteLine("<br />");
             writer.WriteLine("<br />");
 
             // Add links for each item
-            foreach (DataRow thisRow in allItems.Tables[0].Rows)
-            {
-                // Determine the folder 
-                string bibid = thisRow["BibID"].ToString();
-                string vid = thisRow["VID"].ToString();
+	        if (AllItems.Tables[0].Rows.Count > 0)
+	        {
+		        foreach (DataRow thisRow in AllItems.Tables[0].Rows)
+		        {
+			        // Determine the folder 
+			        string bibid = thisRow["BibID"].ToString();
+			        string vid = thisRow["VID"].ToString();
 
-                writer.WriteLine("<a href=\"" + primaryWebServerUrl + bibid + "/" + vid + "\">" + thisRow["Title"] + "</a><br />");
-            }
+			        writer.WriteLine("<a href=\"" + primaryWebServerUrl + bibid + "/" + vid + "\">" + thisRow["Title"] + "</a><br />");
+		        }
+	        }
+	        else
+	        {
+		        writer.WriteLine("<h1>NO ITEMS IN AGGREGATION</h1>");
+	        }
 
-            writer.WriteLine("<br />");
+	        writer.WriteLine("<br />");
             writer.WriteLine("<br />");
 
             writer.WriteLine("</div>");
-            writer.WriteLine("</td>");
-            writer.WriteLine("</tr>");
-            writer.WriteLine("</table>");
 
-            Display_Footer(writer, skin);
+			Display_Footer(writer, skinObject);
 
             writer.WriteLine("</div>");
+
+			writer.WriteLine("</body>");
+			writer.WriteLine("</html>");
+
             writer.Flush();
             writer.Close();
 
@@ -676,10 +754,6 @@ namespace SobekCM.Library
         {
             try
             {
-                // Get the item list and build the hashtable 
-                itemList.Clear();
-                SobekCM_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
-
                 // Build the code manager
                 codeManager = new Aggregation_Code_Manager();
                 SobekCM_Database.Populate_Code_Manager(codeManager, tracer);
@@ -699,44 +773,36 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Create_Item_Citation_HTML(SobekCM_Item Current_Item, string Static_FileName, string Text_File_Directory )
         {
-            //try
-            //{
-            // Clear the current tracer
-            tracer.Clear();
 
             // Set the item for the current mode
             currentMode.BibID = Current_Item.BibID;
             currentMode.VID = Current_Item.VID;
             currentMode.ViewerCode = "citation";
-            currentMode.Skin = "UFDC";
+            currentMode.Skin = defaultSkin;
             currentMode.Mode = Display_Mode_Enum.Item_Display;
             currentMode.Language = Web_Language_Enum.English;
             currentMode.Internal_User = false;
             currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
             // Get the current page
-            Page_TreeNode currentPage = SobekCM_Item_Factory.Get_Current_Page(Current_Item, currentMode.Page, tracer);
+            Page_TreeNode currentPage = SobekCM_Item_Factory.Get_Current_Page(Current_Item, currentMode.Page, null);
 
             // Finish writing this
             Finish_writing_html(Current_Item, currentPage, Static_FileName, Text_File_Directory);
 
             SobekCM_Library_Settings.Base_SobekCM_Location_Relative = String.Empty;
             return true;
-            //}
-            //catch
-            //{
-            //    SobekCM.Library.SobekCM_Library_Settings.Base_SobekCM_Location_Relative = String.Empty;
-            //    return false;
-            //}
+
         }
 
-        /// <summary> Creates the static MarcXML file for a digital resource </summary>
-        /// <param name="bibid"> Bibliographic identifier ( BibID )</param>
-        /// <param name="vid"> Volume identifier ( VID ) </param>
-        /// <param name="directory"> Directory where the resultant MarcXML file should be written </param>
-        /// <returns>  This will read the currently live METS file and build the digital object with additional
-        /// information from the database before writing the MarcXML file </returns>
-        public bool Create_MarcXML_File(string bibid, string vid, string directory )
+	    /// <summary> Creates the static MarcXML file for a digital resource </summary>
+	    /// <param name="BIBID"> Bibliographic identifier ( BibID )</param>
+	    /// <param name="VID"> Volume identifier ( VID ) </param>
+	    /// <param name="DestinationDirectory"> Directory where the resultant MarcXML file should be written </param>
+	    /// <param name="Item_List"> Item lookup object </param>
+	    /// <returns>  This will read the currently live METS file and build the digital object with additional
+	    /// information from the database before writing the MarcXML file </returns>
+	    public bool Create_MarcXML_File(string BIBID, string VID, string DestinationDirectory, Item_Lookup_Object Item_List )
         {
             // Clear the current tracer
             tracer.Clear();
@@ -745,8 +811,8 @@ namespace SobekCM.Library
             {
 
                 // Set the item for the current mode
-                currentMode.BibID = bibid;
-                currentMode.VID = vid;
+                currentMode.BibID = BIBID;
+                currentMode.VID = VID;
                 currentMode.ViewerCode = "citation";
                 currentMode.Skin = "UFDC";
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
@@ -758,24 +824,22 @@ namespace SobekCM.Library
                 SobekCM_Item currentItem;
                 Page_TreeNode currentPage;
                 SobekCM_Items_In_Title itemsInTitle;
-                assistant.Get_Item(String.Empty, currentMode, itemList, SobekCM_Library_Settings.Image_URL, iconList, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+				assistant.Get_Item(String.Empty, currentMode, Item_List, SobekCM_Library_Settings.Image_URL, iconList, tracer, null, out currentItem, out currentPage, out itemsInTitle);
                 currentMode.Aggregation = String.Empty;
                 if (currentItem == null)
                     return false;
 
                 if (currentItem.Behaviors.Aggregation_Count > 0)
                     currentMode.Aggregation = currentItem.Behaviors.Aggregations[0].Code;
-                if (currentMode.Aggregation == "EPC")
-                    currentMode.Aggregation = "FLCITY";
 
-                string marcFile = directory + currentItem.Web.File_Root + "\\" + currentItem.VID + "\\marc.xml";
 
-                List<string> collectionnames = new List<string>();
+                string marcFile = DestinationDirectory + currentItem.Web.File_Root + "\\" + currentItem.VID + "\\marc.xml";
+
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
-                string Error_Message;
+                string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
                 options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
-                return marcWriter.Write_Metadata(marcFile, currentItem, options, out Error_Message);
+                return marcWriter.Write_Metadata(marcFile, currentItem, options, out errorMessage);
             }
             catch
             {
@@ -783,24 +847,24 @@ namespace SobekCM.Library
             }
         }
 
-        /// <summary> Create the static HTML citation page for a single digital resource </summary>
-        /// <param name="bibid"> Bibliographic identifier for the digital resource </param>
-        /// <param name="vid"> Volume idenfitier for the digital resource </param>
-        /// <param name="Static_FileName"> Name of the resulting html file </param>
-        /// <param name="Text_File_Directory"> Directory where any text files may exist for this resource </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> THis is generally called by the UFDC Builder windows application/scheduled task</remarks>
-        public bool Create_Item_Citation_HTML(string bibid, string vid, string Static_FileName, string Text_File_Directory)
+	    /// <summary> Create the static HTML citation page for a single digital resource </summary>
+	    /// <param name="BIBID"> Bibliographic identifier for the digital resource </param>
+	    /// <param name="VID"> Volume idenfitier for the digital resource </param>
+	    /// <param name="Static_FileName"> Name of the resulting html file </param>
+	    /// <param name="Text_File_Directory"> Directory where any text files may exist for this resource </param>
+	    /// <param name="Item_List"> Item lookup object </param>
+	    /// <returns> TRUE if successful, otherwise FALSE </returns>
+	    /// <remarks> THis is generally called by the SobekCM Builder windows application/scheduled task</remarks>
+	    public bool Create_Item_Citation_HTML(string BIBID, string VID, string Static_FileName, string Text_File_Directory, Item_Lookup_Object Item_List )
         {
-
             // Clear the current tracer
             tracer.Clear();
 
             // Set the item for the current mode
-            currentMode.BibID = bibid;
-            currentMode.VID = vid;
+            currentMode.BibID = BIBID;
+            currentMode.VID = VID;
             currentMode.ViewerCode = "citation";
-            currentMode.Skin = "UFDC";
+			currentMode.Skin = defaultSkin;
             currentMode.Mode = Display_Mode_Enum.Item_Display;
             currentMode.Language = Web_Language_Enum.English;
             currentMode.Internal_User = false;
@@ -810,11 +874,9 @@ namespace SobekCM.Library
             SobekCM_Item currentItem;
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
-            assistant.Get_Item(String.Empty, currentMode, itemList, SobekCM_Library_Settings.Image_URL, iconList, tracer, null, out currentItem, out currentPage, out itemsInTitle );
+			assistant.Get_Item(String.Empty, currentMode, Item_List, SobekCM_Library_Settings.Image_URL, iconList, tracer, null, out currentItem, out currentPage, out itemsInTitle);
             if (currentItem.Behaviors.Aggregation_Count > 0)
                 currentMode.Aggregation = currentItem.Behaviors.Aggregations[0].Code;
-            if (currentMode.Aggregation == "EPC")
-                currentMode.Aggregation = "FLCITY";
 
             // Get the current page
             currentPage = SobekCM_Item_Factory.Get_Current_Page(currentItem, currentMode.Page, tracer);
@@ -825,24 +887,31 @@ namespace SobekCM.Library
             return true;
         }
 
-        private void Finish_writing_html(SobekCM_Item currentItem, Page_TreeNode currentPage, string filename, string text_file_location )
+        private void Finish_writing_html(SobekCM_Item CurrentItem, Page_TreeNode CurrentPage, string Filename, string TextFileLocation )
         {
-            string bibid = currentItem.BibID;
-            currentItem.Behaviors.Text_Searchable = false;
+            string bibid = CurrentItem.BibID;
+            CurrentItem.Behaviors.Text_Searchable = false;
+			if (staticSobekcmLocation.Length > 0)
+		        SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
+
+			// Get the skin
+	        if ((CurrentItem.Behaviors.Web_Skin_Count > 0) && ( !CurrentItem.Behaviors.Web_Skins.Contains( defaultSkin.ToUpper())))
+		        currentMode.Skin = CurrentItem.Behaviors.Web_Skins[0];
+
+			// Get the skin object
+			SobekCM_Skin_Object skinObject = skinsCollection[currentMode.Skin];
+			if (skinObject == null)
+			{
+				skinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
+				skinsCollection.Add(skinObject);
+			}
 
             // Create the HTML writer
-            Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(currentItem, currentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer)
-                                                 {Mode = currentMode, Skin = ufdcInterface};
+            Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(CurrentItem, CurrentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer) { Mode = currentMode, Skin = skinObject };
             SobekCM_Library_Settings.Base_SobekCM_Location_Relative = currentMode.Base_URL;
             if ((SobekCM_Library_Settings.Base_SobekCM_Location_Relative.Length == 0) || (SobekCM_Library_Settings.Base_SobekCM_Location_Relative.Contains("localhost")))
             {
                 SobekCM_Library_Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
-                if (bibid.IndexOf("CA") == 0)
-                {
-                    currentMode.Skin = "dloc";
-                    itemWriter.Skin = dlocInterface;
-                    SobekCM_Library_Settings.Base_SobekCM_Location_Relative = "http://www.dloc.com/";
-                }
                 currentMode.Base_URL = SobekCM_Library_Settings.Base_SobekCM_Location_Relative;
             }
 
@@ -850,39 +919,74 @@ namespace SobekCM.Library
             currentMode.Is_Robot = true;
 
             // Create the TextWriter
-            StreamWriter writer = new StreamWriter(filename, false, Encoding.UTF8);
+            StreamWriter writer = new StreamWriter(Filename, false, Encoding.UTF8);
+
+			writer.WriteLine("<!DOCTYPE html>");
+			writer.WriteLine("<html>");
+			writer.WriteLine("<head>");
+			writer.WriteLine("  <title>" + CurrentItem.Bib_Info.Main_Title + "</title>");
+			writer.WriteLine();
+			writer.WriteLine("  <!-- " + SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository -->");
+			writer.WriteLine();
+			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+
+			writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+			if (skinObject.CSS_Style.Length > 0)
+			{
+				writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			}
+
+			string image_src = currentMode.Base_URL + "/" + CurrentItem.Web.AssocFilePath + "/" + CurrentItem.Behaviors.Main_Thumbnail;
+			writer.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
+
+
+
+
+			writer.WriteLine("</head>");
+			writer.WriteLine("<body>");
+
 
             // Add the header
-            Display_Header(writer, itemWriter.Skin);
+            Display_Header(writer, itemWriter.Skin, String.Empty);
 
             // Begin to write the item view
             itemWriter.Write_HTML(writer, tracer);
 
-            // Write the table of contents as static HTML, rather than the TreeView web control
-            if ((currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
-            {
-                writer.WriteLine("        <ul class=\"SobekNavBarMenu\">" + Environment.NewLine + "          <li class=\"SobekNavBarHeader\"> TABLE OF CONTENTS </li>" + Environment.NewLine + "        </ul>" + Environment.NewLine  +
-                                 "        <div class=\"HideTocRow\">" + Environment.NewLine + "          <img src=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + "design/skins/" + itemWriter.Skin.Skin_Code + "/tabs/cLG.gif\" border=\"0\" alt=\"\" /><img src=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + "design/skins/" + itemWriter.Skin.Skin_Code + "/tabs/AU.gif\" border=\"0\" alt=\"\" /><span class=\"tab\">HIDE</span><img src=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + "design/skins/" + itemWriter.Skin.Skin_Code + "/tabs/cRG.gif\" border=\"0\" alt=\"\" />" + Environment.NewLine + "        </div>");
-                writer.WriteLine("<div class=\"SobekTocTreeView\">");
+	        if ((CurrentItem.Behaviors.Wordmark_Count > 0) || ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1)))
+	        {
+				writer.WriteLine("<nav id=\"sbkIsw_Leftnavbar\" style=\"padding-top:3px\">");
 
-                // load the table of contents in the tree
-                TreeView treeView1 = new TreeView();
-                itemWriter.Create_TreeView_From_Divisions(treeView1);
+		        // Write the table of contents as static HTML, rather than the TreeView web control
+		        if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
+		        {
+					writer.WriteLine("  <div class=\"sbkIsw_ShowTocRow\">");
+					writer.WriteLine("    <div class=\"sbkIsw_UpToc\">HIDE TABLE OF CONTENTS</div>");
+					writer.WriteLine("  </div>");
 
-                // Step through all the parent nodes
-                writer.WriteLine("<table cellspacing=\"4px\" >");
-                foreach (TreeNode thisNode in treeView1.Nodes)
-                {
-                    writer.WriteLine("  <tr><td width=\"9px\">&nbsp;</td><td>" + thisNode.Text.Replace("ufdcSelectedTocTreeViewItem", "ufdcTocTreeViewItem") + "</td></tr>");
-                }
-                writer.WriteLine("</table>");
-                writer.WriteLine("</div>");
-            }
+					writer.WriteLine("<div class=\"sbkIsw_TocTreeView\">");
+
+			        // load the table of contents in the tree
+			        TreeView treeView1 = new TreeView();
+			        itemWriter.Create_TreeView_From_Divisions(treeView1);
+
+			        // Step through all the parent nodes
+			        writer.WriteLine("  <table cellspacing=\"4px\">");
+			        foreach (TreeNode thisNode in treeView1.Nodes)
+			        {
+						writer.WriteLine("    <tr><td width=\"9px\">&nbsp;</td><td>" + thisNode.Text.Replace("sbkIsw_SelectedTocTreeViewItem", "sbkIsw_TocTreeViewItem") + "</td></tr>");
+			        }
+			        writer.WriteLine("  </table>");
+			        writer.WriteLine("</div>");
+		        }
+
+	        }
 
 
-            itemWriter.Write_Additional_HTML(writer, tracer);
-            //PlaceHolder placeHolder = new PlaceHolder();
-            itemWriter.PageViewer.Write_Main_Viewer_Section(writer, tracer);
+	        itemWriter.Write_Additional_HTML(writer, tracer);
+
             //Literal citationLiteral = (Literal)placeHolder.Controls[0];
             //writer.WriteLine(citationLiteral.Text);
             //placeHolder.Controls.Clear();
@@ -893,12 +997,12 @@ namespace SobekCM.Library
             writer.WriteLine("       </tr>");
 
             // Add the download list if there are some
-            if ( currentItem.Divisions.Download_Tree.Has_Files )
+            if ( CurrentItem.Divisions.Download_Tree.Has_Files )
             {
                 writer.WriteLine("       <tr>");
                 // Create the downloads viewer to ouput the html
                 Download_ItemViewer downloadViewer = new Download_ItemViewer
-                                                         {CurrentItem = currentItem, CurrentMode = currentMode};
+                                                         {CurrentItem = CurrentItem, CurrentMode = currentMode};
 
                 // Add the HTML for this now
                 downloadViewer.Write_Main_Viewer_Section(writer, tracer);
@@ -907,7 +1011,7 @@ namespace SobekCM.Library
 
             // If there is a table of contents write it again, this time it will be complete
             // and also show a hierarchy if there is one
-            if ((currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
+            if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
             {
                 writer.WriteLine("       <tr>");
                 writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Table of Contents</span></td>");
@@ -915,9 +1019,9 @@ namespace SobekCM.Library
 
                 writer.WriteLine("       <tr>");
                 writer.WriteLine("          <td>");
-                writer.WriteLine("            <div class=\"SobekCitation\">");
+				writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
 
-                foreach (abstract_TreeNode treeNode in currentItem.Divisions.Physical_Tree.Roots)
+                foreach (abstract_TreeNode treeNode in CurrentItem.Divisions.Physical_Tree.Roots)
                 {
                     recursively_write_toc(writer, treeNode, "&nbsp; &nbsp; ");
                 }
@@ -928,10 +1032,10 @@ namespace SobekCM.Library
             }
 
             // Is the text file location included, in which case any full text should be appended to the end?
-            if ((text_file_location.Length > 0) && ( Directory.Exists(text_file_location)))
+            if ((TextFileLocation.Length > 0) && ( Directory.Exists(TextFileLocation)))
             {
                 // Get the list of all TXT files in this division
-                string[] text_files = Directory.GetFiles(text_file_location, "*.txt");
+                string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
                 Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
                 foreach (string thisTextFile in text_files)
                 {
@@ -945,10 +1049,10 @@ namespace SobekCM.Library
                     // If this has page images, check for related text files 
                     List<string> text_files_included = new List<string>();
                     bool started = false;
-                    if (currentItem.Divisions.Physical_Tree.Has_Files)
+                    if (CurrentItem.Divisions.Physical_Tree.Has_Files)
                     {
                         // Go through the first 100 text pages
-                        List<abstract_TreeNode> pages = currentItem.Divisions.Physical_Tree.Pages_PreOrder;
+                        List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
                         int page_count = 0;
                         foreach (Page_TreeNode thisPage in pages)
                         {
@@ -968,7 +1072,7 @@ namespace SobekCM.Library
                                         string root = thisFile.File_Name_Sans_Extension;
                                         if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
                                         {
-                                            string text_file = text_file_location + "\\" + thisFile.File_Name_Sans_Extension + ".txt";
+                                            string text_file = TextFileLocation + "\\" + thisFile.File_Name_Sans_Extension + ".txt";
 
                                             // SInce this is marked to be included, save this name
                                             text_files_included.Add(root.ToUpper() + ".TXT");
@@ -983,7 +1087,7 @@ namespace SobekCM.Library
                                                     writer.WriteLine("       </tr>");
                                                     writer.WriteLine("       <tr>");
                                                     writer.WriteLine("          <td>");
-                                                    writer.WriteLine("            <div class=\"SobekCitation\">");
+													writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
 
                                                     started = true;
                                                 }
@@ -1027,10 +1131,11 @@ namespace SobekCM.Library
                     }
 
                     // Now, check for any other valid text files 
-                    List<string> additional_text_files = text_files_existing.Keys.Where(thisTextFile => (!text_files_included.Contains(thisTextFile.ToUpper())) && (thisTextFile.ToUpper() != "AGREEMENT.TXT") && (thisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
+                    List<string> additional_text_files = text_files_existing.Keys.Where(ThisTextFile => (!text_files_included.Contains(ThisTextFile.ToUpper())) && (ThisTextFile.ToUpper() != "AGREEMENT.TXT") && (ThisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
 
                     // Now, include any additional text files, which would not be page text files, possiblye 
                     // full text for included PDFs, Powerpoint, Word Doc, etc..
+	                started = false;
                     foreach (string thisTextFile in additional_text_files)
                     {
                         if (!started)
@@ -1040,12 +1145,12 @@ namespace SobekCM.Library
                             writer.WriteLine("       </tr>");
                             writer.WriteLine("       <tr>");
                             writer.WriteLine("          <td>");
-                            writer.WriteLine("            <div class=\"SobekCitation\">");
+							writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
 
                             started = true;
                         }
 
-                        string text_file = text_file_location + "\\" + thisTextFile;
+                        string text_file = TextFileLocation + "\\" + thisTextFile;
 
                         try
                         {
@@ -1067,61 +1172,70 @@ namespace SobekCM.Library
 
                         writer.WriteLine("<br /><br />");
                     }
+
+					// End this if it was ever started
+					if (started)
+					{
+						writer.WriteLine("            </div>");
+						writer.WriteLine("          </td>");
+						writer.WriteLine("       </tr>");
+					}
                 }
             }
 
             writer.WriteLine("      </table>");
-            writer.WriteLine("    </td>");
-            writer.WriteLine("  </tr>");
-            writer.WriteLine("</table>");
+			writer.WriteLine("      </div>");
 
             // Write the footer
             Display_Footer(writer, itemWriter.Skin);
+
+			writer.WriteLine("</body>");
+			writer.WriteLine("</html>");
 
             writer.Flush();
             writer.Close();
 
             // Restore the text searchable flag and robot flag
             currentMode.Is_Robot = false;
-            currentItem.Behaviors.Text_Searchable = false;
+            CurrentItem.Behaviors.Text_Searchable = false;
         }
 
-        private void recursively_write_toc(StreamWriter writer, abstract_TreeNode treeNode, string indent)
+        private void recursively_write_toc(StreamWriter Writer, abstract_TreeNode TreeNode, string Indent)
         {
             // Write this label, regardless of whether it is a page or a division (some page names have useful info)
-            if ( treeNode.Label.Length > 0 )
-                writer.WriteLine(indent + treeNode.Label + "<br />");
+            if ( TreeNode.Label.Length > 0 )
+                Writer.WriteLine(Indent + TreeNode.Label + "<br />");
             else
-                writer.WriteLine(indent + treeNode.Type + "<br />");
+                Writer.WriteLine(Indent + TreeNode.Type + "<br />");
 
             // If not a page, recurse more
-            if (!treeNode.Page)
+            if (!TreeNode.Page)
             {
-                Division_TreeNode divNode = (Division_TreeNode)treeNode;
+                Division_TreeNode divNode = (Division_TreeNode)TreeNode;
                 foreach (abstract_TreeNode childNode in divNode.Nodes)
                 {
-                    recursively_write_toc(writer, childNode, indent + "&nbsp; &nbsp; ");
+                    recursively_write_toc(Writer, childNode, Indent + "&nbsp; &nbsp; ");
                 }
             }
         }
 
 
-
-        /// <summary> Writes the static header to go at the top of the static digital resource page </summary>
-        /// <param name="writer"> Open stream to write the HTML header to </param>
-        /// <param name="htmlSkin"> Default html web skin/interface</param>
-        public void Display_Header(TextWriter writer, SobekCM_Skin_Object htmlSkin)
+	    /// <summary> Writes the static header to go at the top of the static digital resource page </summary>
+	    /// <param name="Writer"> Open stream to write the HTML header to </param>
+	    /// <param name="HTMLSkin"> Default html web skin/interface</param>
+	    /// <param name="Banner"> Banner HTML</param>
+	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, string Banner )
         {
-            string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">UFDC Home</a>";
+            string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Name + " Home</a>";
 
-            writer.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL));
-            writer.WriteLine(String.Empty);
+            Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>",Banner));
+            Writer.WriteLine(String.Empty);
         }
 
         /// <summary> Writes the static footer to go at the bottom of the static digital resource page </summary>
-        /// <param name="writer"> Open stream to write the HTML footer to </param>
-        /// <param name="htmlInterface"> Default html web skin/interface</param>
-        public void Display_Footer(TextWriter writer, SobekCM_Skin_Object htmlInterface)
+        /// <param name="Writer"> Open stream to write the HTML footer to </param>
+		/// <param name="HTMLSkin"> Default html web skin/interface</param>
+		public void Display_Footer(TextWriter Writer, SobekCM_Skin_Object HTMLSkin)
         {
             // Get the current contact URL
             Display_Mode_Enum thisMode = currentMode.Mode;
@@ -1131,26 +1245,26 @@ namespace SobekCM.Library
             // Restore the old mode
             currentMode.Mode = thisMode;
 
-            writer.WriteLine(currentMode.Mode == Display_Mode_Enum.Item_Display
-                                 ? htmlInterface.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%VERSION%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Trim()
-                                 : htmlInterface.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%VERSION%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Trim());
+            Writer.WriteLine(currentMode.Mode == Display_Mode_Enum.Item_Display
+								 ? HTMLSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%VERSION%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Trim()
+								 : HTMLSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%VERSION%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Trim());
         }
 
         #endregion
 
-        #region Code for creating the RSS feeds for UFDC
+        #region Code for creating the RSS feeds 
 
         /// <summary> Create the RSS feed files necessary </summary>
         /// <param name="Collection_Code"> Aggregation Code for this collection </param>
-        /// <param name="rss_feed_location"> Location for the updated RSS feed to be updated </param>
+        /// <param name="RssFeedLocation"> Location for the updated RSS feed to be updated </param>
         /// <param name="Collection_Title"> Title of this aggregation/collection </param>
-        /// <param name="allItems"> DataSet of all items within this aggregation </param>
+        /// <param name="AllItems"> DataSet of all items within this aggregation </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Create_RSS_Feed(string Collection_Code, string rss_feed_location, string Collection_Title, DataSet allItems)
+        public bool Create_RSS_Feed(string Collection_Code, string RssFeedLocation, string Collection_Title, DataSet AllItems)
         {
             try
             {
-                if (allItems == null)
+                if (AllItems == null)
                     return false;
 
                 int recordNumber = 0;
@@ -1158,9 +1272,9 @@ namespace SobekCM.Library
                 if (Collection_Code == "all")
                     final_most_recent = 100;
 
-                DataView viewer = new DataView(allItems.Tables[0]) {Sort = "CreateDate DESC"};
+                DataView viewer = new DataView(AllItems.Tables[0]) {Sort = "CreateDate DESC"};
 
-                StreamWriter rss_writer = new StreamWriter(rss_feed_location + Collection_Code + "_rss.xml");
+                StreamWriter rss_writer = new StreamWriter(RssFeedLocation + Collection_Code + "_rss.xml");
                 rss_writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 rss_writer.WriteLine("<rss version=\"2.0\">");
                 rss_writer.WriteLine("<channel>");
@@ -1172,7 +1286,7 @@ namespace SobekCM.Library
                 rss_writer.WriteLine("<lastBuildDate>" + DateTime.Now.ToUniversalTime().ToLongTimeString() + "</lastBuildDate>");
                 rss_writer.WriteLine("");
 
-                StreamWriter short_rss_writer = new StreamWriter(rss_feed_location + Collection_Code + "_short_rss.xml");
+                StreamWriter short_rss_writer = new StreamWriter(RssFeedLocation + Collection_Code + "_short_rss.xml");
                 short_rss_writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 short_rss_writer.WriteLine("<rss version=\"2.0\">");
                 short_rss_writer.WriteLine("<channel>");
@@ -1330,7 +1444,7 @@ namespace SobekCM.Library
                 short_rss_writer.Flush();
                 short_rss_writer.Close();
 
-                return true;
+                return AllItems.Tables[0].Rows.Count > 0;
             }
             catch
             {
@@ -1341,32 +1455,5 @@ namespace SobekCM.Library
 
         #endregion
 
-        #region Code for pulling a html page over the web
-
-        private string GetHtmlPage(string strURL)
-        {
-            try
-            {
-                // the html retrieved from the page
-                String strResult;
-                WebRequest objRequest = WebRequest.Create(strURL);
-                WebResponse objResponse = objRequest.GetResponse();
-                // the using keyword will automatically dispose the object 
-                // once complete
-                using (StreamReader sr =new StreamReader(objResponse.GetResponseStream()))
-                {
-                    strResult = sr.ReadToEnd();
-                    // Close and clean up the StreamReader
-                    sr.Close();
-                }
-                return strResult;
-            }
-            catch
-            {
-                return "<strong>ERROR LOADING HTML FROM SOURCE (" + strURL + ")</strong><br />";
-            }
-        }
-
-        #endregion
     }
 }

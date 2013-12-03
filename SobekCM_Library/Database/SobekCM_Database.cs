@@ -17,6 +17,7 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Library.Results;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
 using SobekCM.Tools.FDA;
 
@@ -320,35 +321,6 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Adds an error while processing during execution of the SobekCM Builder </summary>
-		/// <param name="BibID"> Bibliographic identifier for the item (or name of failed process)</param>
-		/// <param name="VID"> Volume identifier for the item </param>
-		/// <param name="METS_Type"> Type of METS or action during error</param>
-		/// <param name="ErrorDescription"> Description of the error encountered </param>
-		/// <returns>TRUE if successful, otherwise FALSE</returns>
-		/// <remarks> This calls the 'SobekCM_Add_Item_Error_Log' stored procedure </remarks>
-		public static bool Builder_Add_Item_Error_Log(string BibID, string VID, string METS_Type, string ErrorDescription)
-		{
-
-			try
-			{
-				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@BibID", BibID);
-				paramList[1] = new SqlParameter("@VID", VID);
-				paramList[2] = new SqlParameter("@METS_Type", METS_Type);
-				paramList[3] = new SqlParameter("@ErrorDescription", ErrorDescription);
-				//Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Error_Log", paramList);
-				return true;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				return false;
-			}
-		}
-
 		/// <summary> Clears the item error log associated with a particular bibid / vid </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item (or name of failed process)</param>
 		/// <param name="VID"> Volume identifier for the item </param>
@@ -358,6 +330,11 @@ namespace SobekCM.Library.Database
 		/// This calls the 'SobekCM_Clear_Item_Error_Log' stored procedure </remarks>
 		public static bool Builder_Clear_Item_Error_Log(string BibID, string VID, string ClearedBy)
 		{
+			// Note, this is no longer utilized in the new logging system.
+			// Keeping this hook while we consider if we should expire errors in the system.
+			// Will create new online web interfac and then decide
+			return true;
+
 			try
 			{
 				// build the parameter list
@@ -405,14 +382,15 @@ namespace SobekCM.Library.Database
 		/// <param name="BibID_VID"> BibID / VID, if this is related to an item error (either existing item, or not) </param>
 		/// <param name="LogType"> Type of the log entry ( i.e., Error, Complete, etc.. )</param>
 		/// <param name="LogMessage"> Actual log entry message </param>
+		/// <param name="MetsType"> Type of the METS file (if related to one) </param>
 		/// <returns> The primary key for this new log entry, in case detail logs need to be added </returns>
 		/// <remarks> This calls the 'SobekCM_Builder_Add_Log' stored procedure </remarks>
-		public static int Builder_Add_Log_Entry(int RelatedBuilderLogID, string BibID_VID, string LogType, string LogMessage )
+		public static long Builder_Add_Log_Entry(long RelatedBuilderLogID, string BibID_VID, string LogType, string LogMessage, string MetsType )
 		{
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[5];
+				SqlParameter[] paramList = new SqlParameter[6];
 				if ( RelatedBuilderLogID < 0 )
 					paramList[0] = new SqlParameter("@RelatedBuilderLogID", DBNull.Value);
 				else
@@ -421,12 +399,12 @@ namespace SobekCM.Library.Database
 				paramList[1] = new SqlParameter("@BibID_VID", BibID_VID);
 				paramList[2] = new SqlParameter("@LogType", LogType);
 				paramList[3] = new SqlParameter("@LogMessage", LogMessage);
-				paramList[4] = new SqlParameter("@BuilderLogID", -1);
-				paramList[4].Direction = ParameterDirection.InputOutput;
+				paramList[4] = new SqlParameter("@Mets_Type", MetsType);
+				paramList[5] = new SqlParameter("@BuilderLogID", -1) {Direction = ParameterDirection.InputOutput};
 
 				//Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Add_Log", paramList);
-				return Convert.ToInt32(paramList[4].Value);
+				return Convert.ToInt64(paramList[5].Value);
 			}
 			catch (Exception ee)
 			{
@@ -1848,45 +1826,45 @@ namespace SobekCM.Library.Database
 					titlesInCurrentList++;
 				}
 
-				int ItemID = Reader.GetInt32(1);
-				string VID = Reader.GetString(2);
-				string Title = Reader.GetString(3);
-				short IP_Restriction_Mask = Reader.GetInt16(4);
-				string MainThumbnail = Reader.GetString(5);
-				short Level1_Index = (short) Reader.GetInt32(6);
-				string Level1_Text = Reader.GetString(7);
-				short Level2_Index = (short) Reader.GetInt32(8);
-				string Level2_Text = Reader.GetString(9);
-				short Level3_Index = (short) Reader.GetInt32(10);
-				string Level3_Text = Reader.GetString(11);
-				string PubDate = Reader.GetString(12);
-				int PageCount = Reader.GetInt32(13);
-				string Link = Reader.GetString(14);
-				string Spatial_KML = Reader.GetString(15);
-				string COinS_OpenURL = Reader.GetString(16);
+				int itemID = Reader.GetInt32(1);
+				string vid = Reader.GetString(2);
+				string title = Reader.GetString(3);
+				short ipRestrictionMask = Reader.GetInt16(4);
+				string mainThumbnail = Reader.GetString(5);
+				short level1Index = (short) Reader.GetInt32(6);
+				string level1Text = Reader.GetString(7);
+				short level2Index = (short) Reader.GetInt32(8);
+				string level2Text = Reader.GetString(9);
+				short level3Index = (short) Reader.GetInt32(10);
+				string level3Text = Reader.GetString(11);
+				string pubDate = Reader.GetString(12);
+				int pageCount = Reader.GetInt32(13);
+				string link = Reader.GetString(14);
+				string spatialKML = Reader.GetString(15);
+				string cOinSOpenURL = Reader.GetString(16);
 
-				titleResult.Spatial_Coordinates = Spatial_KML;
+				titleResult.Spatial_Coordinates = spatialKML;
 
 
 				// Create new database item object for this
 				Database_Item_Result result = new Database_Item_Result
 				{
-					ItemID = ItemID,
-					VID = VID,
-					Title = Title,
-					IP_Restriction_Mask = IP_Restriction_Mask,
-					MainThumbnail = MainThumbnail,
-					Level1_Index = Level1_Index,
-					Level1_Text = Level1_Text,
-					Level2_Index = Level2_Index,
-					Level2_Text = Level2_Text,
-					Level3_Index = Level3_Index,
-					Level3_Text = Level3_Text,
-					PubDate = PubDate,
-					PageCount = PageCount,
-					Link = Link,
-					Spatial_KML = Spatial_KML,
-					COinS_OpenURL = COinS_OpenURL
+					ItemID = itemID,
+					VID = vid,
+					Title = title,
+					IP_Restriction_Mask = ipRestrictionMask,
+					MainThumbnail = mainThumbnail,
+					Level1_Index = level1Index,
+					Level1_Text = level1Text,
+					Level2_Index = level2Index,
+					Level2_Text = level2Text,
+					Level3_Index = level3Index,
+					Level3_Text = level3Text,
+					PubDate = pubDate,
+					PageCount = pageCount,
+					Link = link,
+					Spatial_KML = spatialKML,
+					COinS_OpenURL = cOinSOpenURL
 				};
 
 				//// Create new database item object for this
@@ -2476,7 +2454,7 @@ namespace SobekCM.Library.Database
 		/// <param name="VID"> Volume identifier for the volume to retrieve </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with detailed information about this item from the database </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Item_Details' stored procedure </remarks> 
+		/// <remarks> This calls the 'SobekCM_Get_Item_Details2' stored procedure </remarks> 
 		public static DataSet Get_Item_Details(string BibID, string VID, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
@@ -2543,7 +2521,7 @@ namespace SobekCM.Library.Database
 		/// <summary> Pulls the item id, main thumbnail, and aggregation codes and adds them to the resource object </summary>
 		/// <param name="Resource"> Digital resource object </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'Builder_Get_Minimum_Item_Information' stored procedure </remarks> 
+		/// <remarks> This calls the 'SobekCM_Builder_Get_Minimum_Item_Information' stored procedure </remarks> 
 		public static bool Add_Minimum_Builder_Information(SobekCM_Item Resource)
 		{
 			try
@@ -2553,7 +2531,7 @@ namespace SobekCM.Library.Database
 				parameters[1] = new SqlParameter("@vid", Resource.VID);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Builder_Get_Minimum_Item_Information", parameters);
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -2577,6 +2555,45 @@ namespace SobekCM.Library.Database
 					Resource.Behaviors.Add_Aggregation(code);
 				}
 
+				// Add the icons
+				Resource.Behaviors.Clear_Wordmarks();
+				foreach (DataRow iconRow in tempSet.Tables[2].Rows)
+				{
+					string image = iconRow[0].ToString();
+					string link = iconRow[1].ToString().Replace("&", "&amp;").Replace("\"", "&quot;");
+					string code = iconRow[2].ToString();
+					string name = iconRow[3].ToString();
+					if (name.Length == 0)
+						name = code.Replace("&", "&amp;").Replace("\"", "&quot;");
+
+					string html;
+					if (link.Length == 0)
+					{
+						html = "<img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" />";
+					}
+					else
+					{
+						if (link[0] == '?')
+						{
+							html = "<a href=\"" + link + "\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" /></a>";
+						}
+						else
+						{
+							html = "<a href=\"" + link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" /></a>";
+						}
+					}
+
+					Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+					Resource.Behaviors.Add_Wordmark(newIcon);
+				}
+
+				// Add the web skins
+				Resource.Behaviors.Clear_Web_Skins();
+				foreach (DataRow skinRow in tempSet.Tables[3].Rows)
+				{
+					Resource.Behaviors.Add_Web_Skin(skinRow[0].ToString().ToUpper());
+				}
+
 				// Return the first table from the returned dataset
 				return true;
 			}
@@ -2585,6 +2602,38 @@ namespace SobekCM.Library.Database
 				lastException = ee;
 				return false;
 			}            
+		}
+
+		/// <summary> Pulls the item id by BibID / VID </summary>
+		/// <param name="BibID"> Bibliographic identifier for the digital resource object </param>
+		/// <param name="VID"> Volume identifier for the digital resource object </param>
+		/// <returns> Primary key for this item from the database </returns>
+		/// <remarks> This calls the 'SobekCM_Builder_Get_Minimum_Item_Information' stored procedure </remarks> 
+		public static int Get_ItemID_From_Bib_VID( string BibID, string VID)
+		{
+			try
+			{
+				SqlParameter[] parameters = new SqlParameter[2];
+				parameters[0] = new SqlParameter("@bibid",BibID);
+				parameters[1] = new SqlParameter("@vid", VID);
+
+				// Define a temporary dataset
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
+
+				// If there was no data for this collection and entry point, return null (an ERROR occurred)
+				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+				{
+					return -1;
+				}
+
+				// Get the item id and the thumbnail from the first table
+				return Convert.ToInt32(tempSet.Tables[0].Rows[0][0]);
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return -1;
+			}
 		}
 
 		#endregion
@@ -5990,6 +6039,7 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Deletes a HTML web skin fromo the database </summary>
 		/// <param name="Skin_Code"> Code for the  HTML web skin to delete </param>
+		/// <param name="Force_Delete"> Flag indicates if this should be deleted, even if things are still attached to this web skin (system admin)</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Web_Skin' stored procedure </remarks> 
@@ -6387,8 +6437,8 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets all the milestones for a single item aggregation  </summary>
 		/// <param name="AggregationCode"> Item aggregation code </param>
 		/// <returns> Table of latest updates </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Item_Aggregation_Milestone' stored procedure</remarks> 
-		public static DataTable Get_Item_Aggregation_Milestone(string AggregationCode, string Milestone, string User)
+		/// <remarks> This calls the 'SobekCM_Add_Item_Aggregation_Milestone' stored procedure</remarks> 
+		public static DataTable Get_Item_Aggregation_Milestone(string AggregationCode)
 		{
 			try
 			{
@@ -8683,10 +8733,9 @@ namespace SobekCM.Library.Database
             try
             {
                 //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Users_Scanning_Processing", connect);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Users_Scanning_Processing", connect) {CommandType = CommandType.StoredProcedure};
 
-                //Open the connection
+	            //Open the connection
                 connect.Open();
 
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
@@ -8718,10 +8767,9 @@ namespace SobekCM.Library.Database
             try
             {
                 //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Scanners_List", connect);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Scanners_List", connect) {CommandType = CommandType.StoredProcedure};
 
-                //Open the connection
+	            //Open the connection
                 connect.Open();
 
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
@@ -8744,9 +8792,9 @@ namespace SobekCM.Library.Database
         }
 
         /// <summary> Gets the corresponding BibID, VID for a given itemID </summary>
-        /// <param name="itemID"></param>
-        /// <returns></returns>
-        public static DataRow Tracking_Get_Item_Info_from_ItemID(int itemID)
+        /// <param name="ItemID"> Primary identifier for this item from the database </param>
+        /// <returns> Datarow with the BibID/VID </returns>
+        public static DataRow Tracking_Get_Item_Info_from_ItemID(int ItemID)
         {
             // Create the connection
             SqlConnection connect = new SqlConnection(connectionString);
@@ -8754,9 +8802,8 @@ namespace SobekCM.Library.Database
             try
             {
                 //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Item_Info_from_ItemID", connect);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@itemID", itemID);
+                SqlCommand cmd = new SqlCommand("Tracking_Get_Item_Info_from_ItemID", connect) {CommandType = CommandType.StoredProcedure};
+	            cmd.Parameters.AddWithValue("@itemID", ItemID);
 
                 //Open the connection
                 connect.Open();
@@ -8780,10 +8827,11 @@ namespace SobekCM.Library.Database
 
         }
 
-        /// <summary> Gets the related workflows for an item by ItemID </summary>
-        /// <param name="itemID"></param>
-        /// <returns>DataTable of previously saved workflows for this item</returns>
-        public static DataTable Tracking_Get_Open_Workflows(int itemID, int eventNum)
+		/// <summary> Gets the related workflows for an item by ItemID </summary>
+		/// <param name="ItemID"> Primary key for this item in the database </param>
+		/// <param name="EventNum"> Number of the event </param>
+		/// <returns> DataTable of previously saved workflows for this item</returns>
+		public static DataTable Tracking_Get_Open_Workflows(int ItemID, int EventNum)
         {
             // Create the connection
             SqlConnection connect = new SqlConnection(connectionString);
@@ -8791,10 +8839,9 @@ namespace SobekCM.Library.Database
             try
             {
                 //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Get_Last_Open_Workflow_By_ItemID", connect);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@itemID", itemID);
-                cmd.Parameters.AddWithValue("@EventNumber", eventNum);
+                SqlCommand cmd = new SqlCommand("SobekCM_Get_Last_Open_Workflow_By_ItemID", connect) {CommandType = CommandType.StoredProcedure};
+	            cmd.Parameters.AddWithValue("@itemID", ItemID);
+                cmd.Parameters.AddWithValue("@EventNumber", EventNum);
              
                 //Open the connection
                 connect.Open();

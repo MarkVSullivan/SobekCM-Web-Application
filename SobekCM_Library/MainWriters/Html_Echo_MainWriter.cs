@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System.IO;
+using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Navigation;
 
@@ -36,13 +37,33 @@ namespace SobekCM.Library.MainWriters
         {
             Tracer.Add_Trace("Html_Echo_MainWriter.Write_Within_HTML_Head", "Adding style references to HTML");
 
-            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\">");
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
 
-            // Include the interface's style sheet if it has one
-            Output.WriteLine("  <style type=\"text/css\" media=\"screen\">");
-            Output.WriteLine("    @import url( " + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/" + currentMode.Base_Skin + ".css );");
-            Output.WriteLine("  </style>");
+			// Write the style sheet to use 
+#if DEBUG
+            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+
+#endif
+			// Write the main SobekCM item style sheet to use 
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+
+
+			// Always add jQuery library (changed as of 7/8/2013)
+			if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
+			{
+#if DEBUG
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
+#else
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+#endif
+			}
+
+			// Include the interface's style sheet if it has one
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/" + currentMode.Base_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
         }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -68,12 +89,6 @@ namespace SobekCM.Library.MainWriters
             {
                 Output.WriteLine("ERROR READING THE SOURCE FILE");
             }
-
-            Tracer.Add_Trace("Html_Echo_MainWriter.Add_Text_To_Page", "Finished reading and writing the file");
-
-            Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
-            Output.WriteLine("<br /><br />Total Execution Time: " + Tracer.Milliseconds + " Milliseconds<br /><br />");
-            Output.WriteLine(Tracer.Complete_Trace + "<br />");
         }
     }
 }

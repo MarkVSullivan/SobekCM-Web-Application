@@ -1,7 +1,9 @@
-﻿using System;
+﻿#region Using directives
+
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Win32;
+using SobekCM.Library.Database;
+
+#endregion
 
 namespace SobekCM.Builder
 {
@@ -30,7 +32,7 @@ namespace SobekCM.Builder
     /// <summary> Class is used to check for a builder abort request via a database flag </summary>
     public class Abort_Database_Mechanism
     {
-        private static string setting_key;
+        private static readonly string setting_key;
 
         /// <summary> Static constructor for the Abort_Database_Mechanism class  </summary>
         /// <remarks> This constructor sets the settings key to check for, but does no other preparation </remarks>
@@ -44,7 +46,7 @@ namespace SobekCM.Builder
         {
             get
             {
-                Dictionary<string, string> builder_settings = SobekCM.Library.Database.SobekCM_Database.Get_Settings(null);
+                Dictionary<string, string> builder_settings = SobekCM_Database.Get_Settings(null);
                 if (builder_settings.ContainsKey(setting_key))
                 {
                     switch( builder_settings[setting_key].ToUpper().Replace("_"," "))
@@ -63,11 +65,7 @@ namespace SobekCM.Builder
                             return Builder_Operation_Flag_Enum.STANDARD_OPERATION;
                     }
                 }
-                else
-                {
-                    return Builder_Operation_Flag_Enum.STANDARD_OPERATION;
-                }
-
+	            return Builder_Operation_Flag_Enum.STANDARD_OPERATION;
             }
             set
             {
@@ -94,7 +92,7 @@ namespace SobekCM.Builder
                         newValue = "LAST EXECUTION ABORTED";
                         break;
                 }
-                SobekCM.Library.Database.SobekCM_Database.Set_Setting(setting_key, newValue);
+                SobekCM_Database.Set_Setting(setting_key, newValue);
 
             }
         }
@@ -103,7 +101,7 @@ namespace SobekCM.Builder
         /// <returns> TRUE if the flag is currently ABORT REQUESTED, ABORTING, or NO BUILDER REQUESTED</returns>
         public static bool Abort_Requested()
         {
-            Dictionary<string, string> builder_settings = SobekCM.Library.Database.SobekCM_Database.Get_Settings(null);
+            Dictionary<string, string> builder_settings = SobekCM_Database.Get_Settings(null);
             if (builder_settings.ContainsKey(setting_key))
             {
                 switch (builder_settings[setting_key].ToUpper().Replace("_", " "))
