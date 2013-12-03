@@ -218,7 +218,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("<div id=\"sbkCiv_Citation\" itemprop=\"about\" itemscope itemtype=\"http://schema.org/" + microdata_type + "\">");
 			}
 
-			Add_Citation_View_Tabs(Output);
+			if ( !CurrentMode.Is_Robot )
+				Add_Citation_View_Tabs(Output);
 
 		    // Now, add the text
             Output.WriteLine();

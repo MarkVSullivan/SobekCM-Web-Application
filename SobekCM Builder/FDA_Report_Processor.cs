@@ -143,7 +143,7 @@ namespace SobekCM.Builder
                                         {
                                             File.Delete(data.FileName);
                                         }
-                                        catch (Exception ee)
+                                        catch
                                         {
                                             error_count++;
                                         }
@@ -151,7 +151,7 @@ namespace SobekCM.Builder
                                 }
                             }
                         }
-                        catch (Exception ee)
+                        catch 
                         {
                             error_count++;
                         }

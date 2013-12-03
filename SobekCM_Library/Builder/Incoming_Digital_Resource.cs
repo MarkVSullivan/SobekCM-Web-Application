@@ -53,15 +53,14 @@ namespace SobekCM.Library.Builder
 
         #endregion
 
-        private SobekCM_Item bibPackage;
-        private string bibid;
+	    private string bibid;
         private string fileRoot;
         private string metsfile;
         private DateTime packageTime;
         private string resourceFolder;
-        private readonly Builder_Source_Folder sourceFolder;
-        private Incoming_Digital_Resource_Type type;
+	    private Incoming_Digital_Resource_Type type;
         private string vid;
+	    private string metsTypeOverride;
 
         /// <summary> Constructor for a new instance of the Incoming_Digital_Resource class </summary>
         /// <param name="Resource_Folder"> Folder for this incoming digital resource </param>
@@ -70,35 +69,27 @@ namespace SobekCM.Library.Builder
         {
             type = Incoming_Digital_Resource_Type.UNKNOWN;
             resourceFolder = Resource_Folder;
-            sourceFolder = Source_Folder;
+            this.Source_Folder = Source_Folder;
 
             // Set some defaults
             bibid = String.Empty;
             vid = String.Empty;
             packageTime = DateTime.Now;
+	        metsTypeOverride = String.Empty;
 
             fileRoot = "collect/image_files/";
         }
 
-        /// <summary> Returns the object which contains all the metadata (bibliographic, structural, administrative) for the digital resource </summary>
-        public SobekCM_Item Metadata
-        {
-            get
-            {
-                return bibPackage;
-            }
-        }
+	    /// <summary> Returns the object which contains all the metadata (bibliographic, structural, administrative) for the digital resource </summary>
+	    public SobekCM_Item Metadata { get; private set; }
 
-        /// <summary> Returns the information about the original source folder for this incoming digital resource </summary>
-        public Builder_Source_Folder Source_Folder
-        {
-            get
-            {
-                return sourceFolder;
-            }
-        }
+	    /// <summary> Returns the information about the original source folder for this incoming digital resource </summary>
+	    public Builder_Source_Folder Source_Folder { get; private set; }
 
-        /// <summary> Gets the file hashtable to allow checking for the file object from the METS
+		/// <summary> Primary key for the main builder log entry for this item </summary>
+		public long BuilderLogId { get; set;  }
+
+	    /// <summary> Gets the file hashtable to allow checking for the file object from the METS
         /// file by the name of the file </summary>
         public Dictionary<string, SobekCM_File_Info> File_Hashtable
         {
@@ -106,7 +97,7 @@ namespace SobekCM.Library.Builder
             {
                 Dictionary<string, SobekCM_File_Info> returnValue = new Dictionary<string, SobekCM_File_Info>();
                 // Now, step through each file in this mets and look for attributes in the other
-                foreach (SobekCM_File_Info thisFile in bibPackage.Divisions.Files)
+                foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
                 {
                     returnValue[thisFile.System_Name] = thisFile;
                 }
@@ -119,9 +110,9 @@ namespace SobekCM.Library.Builder
         {
             set
             {
-                if (bibPackage != null)
+                if (Metadata != null)
                 {
-                    bibPackage.Web.File_Root = value;
+                    Metadata.Web.File_Root = value;
                 }
                 fileRoot = value;
             }
@@ -132,30 +123,30 @@ namespace SobekCM.Library.Builder
         }
 
         /// <summary> Gets or sets the size (in MBs) of all the files and metadata for this resource </summary>
-        public double DiskSpace_MB
+        public double DiskSpaceMb
         {
             get
             {
-                return bibPackage.DiskSize_MB;
+                return Metadata.DiskSize_MB;
             }
             set
             {
-                bibPackage.DiskSize_MB = value;
+                Metadata.DiskSize_MB = value;
             }
         }
 
         #region IComparable<Incoming_Digital_Resource> Members
 
         /// <summary> Compares this incoming digital resource to another digital resource for sorting purposes </summary>
-        /// <param name="other"> Incoming digital resource object to compare this to </param>
+        /// <param name="Other"> Incoming digital resource object to compare this to </param>
         /// <returns> Value indicating how to sort these </returns>
         /// <remarks> This sort is a simple compare based on bibliographic identifier and volume identifier </remarks>
-        public int CompareTo(Incoming_Digital_Resource other)
+        public int CompareTo(Incoming_Digital_Resource Other)
         {
             string thisObjectId = bibid + "_" + vid;
-            string thatObjectId = other.BibID + "_" + other.VID;
+            string thatObjectId = Other.BibID + "_" + Other.VID;
 
-            return thisObjectId.CompareTo(thatObjectId);
+            return String.Compare(thisObjectId, thatObjectId, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -175,14 +166,14 @@ namespace SobekCM.Library.Builder
             try
             {
                 // Load the METS file
-                bibPackage = SobekCM_Item.Read_METS(Source_File);
+                Metadata = SobekCM_Item.Read_METS(Source_File);
 
                 // If null was returned, this failed
-                if (bibPackage == null)
+                if (Metadata == null)
                     return false;
 
                 // TEMPORARY
-                foreach (Identifier_Info thisIdentifier in bibPackage.Bib_Info.Identifiers)
+                foreach (Identifier_Info thisIdentifier in Metadata.Bib_Info.Identifiers)
                 {
                     if (thisIdentifier.Type == "accn")
                         thisIdentifier.Type = "accession number";
@@ -190,13 +181,13 @@ namespace SobekCM.Library.Builder
 
                 // Save the BibID and VID.  If a VID already existed here, and not in the METS,
                 // assign that to the METS.  (For example, when '00001' can be assumed
-                bibid = bibPackage.BibID;
-                if (bibPackage.VID.Length > 0)
-                    vid = bibPackage.VID;
+                bibid = Metadata.BibID;
+                if (Metadata.VID.Length > 0)
+                    vid = Metadata.VID;
                 else if ( !String.IsNullOrEmpty(vid))
-                    bibPackage.VID = vid;
+                    Metadata.VID = vid;
 
-                switch (bibPackage.METS_Header.RecordStatus_Enum)
+                switch (Metadata.METS_Header.RecordStatus_Enum)
                 {
                     case METS_Record_Status.METADATA_UPDATE:
                         type = Incoming_Digital_Resource_Type.METADATA_UPDATE;
@@ -231,7 +222,7 @@ namespace SobekCM.Library.Builder
         /// <remarks> This is called to clear the memory in use by the object </remarks>
         public void Clear_METS()
         {
-            bibPackage = null;
+            Metadata = null;
         }
 
         /// <summary> Load all the file attributes into this wrapper class </summary>
@@ -258,10 +249,10 @@ namespace SobekCM.Library.Builder
                     SobekCM_Item serviceMETS = SobekCM_Item.Read_METS(Metadata_Location + "/" + bibid + "_" + vid + ".mets.xml");
 
                     // Create a hashtable of all the files in the service METS and tep through each file in this mets and look for attributes in the other
-                    Dictionary<string, SobekCM_File_Info> serviceMetsFiles = serviceMETS.Divisions.Files.ToDictionary(thisFile => thisFile.System_Name);
+                    Dictionary<string, SobekCM_File_Info> serviceMetsFiles = serviceMETS.Divisions.Files.ToDictionary(ThisFile => ThisFile.System_Name);
 
                     // Now, step through each file in this mets and look for attributes in the other
-                    foreach (SobekCM_File_Info thisFile in bibPackage.Divisions.Files)
+                    foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
                     {
                         // Is there a match?
                         if (serviceMetsFiles.ContainsKey(thisFile.System_Name))
@@ -285,7 +276,7 @@ namespace SobekCM.Library.Builder
             // Now, just look for the data being present in each file
             if (Directory.Exists(File_Location))
             {
-                foreach (SobekCM_File_Info thisFile in bibPackage.Divisions.Files)
+                foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
                 {
                     // Is this a jpeg?
                     if (thisFile.System_Name.ToUpper().IndexOf(".JPG") > 0)
@@ -360,12 +351,12 @@ namespace SobekCM.Library.Builder
             return false;
         }
 
-        private bool get_attributes_from_jpeg2000(SobekCM_File_Info JPEG2000_File, string file)
+        private bool get_attributes_from_jpeg2000(SobekCM_File_Info JPEG2000_File, string File)
         {
             try
             {
                 // Get the height and width of this JPEG file
-                FileStream reader = new FileStream(file, FileMode.Open, FileAccess.Read);
+                FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
                 int[] previousValues = new[] { 0, 0, 0, 0 };
                 int bytevalue = reader.ReadByte();
                 int count = 1;
@@ -420,7 +411,7 @@ namespace SobekCM.Library.Builder
             try
             {
 
-                bibPackage.Save_SobekCM_METS();
+                Metadata.Save_SobekCM_METS();
                 return true;
             }
             catch 
@@ -429,32 +420,19 @@ namespace SobekCM.Library.Builder
             }
         }
 
-        /// <summary> Saves the citation-only METS file for this incoming digital resource </summary>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This is used for displaying the full citation information in the browse/search FULL VIEW </remarks>
-        public bool Save_Citation_METS()
-        {
-            try
-            {
-                bibPackage.Save_Citation_Only_METS();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         /// <summary> Creates the static HTML file for this incoming digital resource </summary>
-        /// <param name="staticBuilder"> Builder object helps to build the static pages </param>
+        /// <param name="StaticBuilder"> Builder object helps to build the static pages </param>
         /// <returns> The name (including directory) for the resultant static html page </returns>
-        public string Save_Static_HTML(Static_Pages_Builder staticBuilder)
+        public string Save_Static_HTML(Static_Pages_Builder StaticBuilder)
         {
             try
             {
-                staticBuilder.Item_List.Add_SobekCM_Item(bibPackage);
-                string filename = Resource_Folder + "\\" + bibPackage.BibID + "_" + bibPackage.VID + ".html";
-                staticBuilder.Create_Item_Citation_HTML(bibPackage.BibID, bibPackage.VID, filename, resourceFolder);
+	            if (!Directory.Exists(Resource_Folder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
+		            Directory.CreateDirectory(Resource_Folder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+
+                string filename = Resource_Folder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + Metadata.BibID + "_" + Metadata.VID + ".html";
+                StaticBuilder.Create_Item_Citation_HTML(Metadata, filename, resourceFolder);
 
                 return filename;
             }
@@ -472,26 +450,23 @@ namespace SobekCM.Library.Builder
             try
             {
                 // Set the image location
-                string greenstoneLink = SobekCM_Library_Settings.Image_URL;
-                bibPackage.Web.Image_Root = greenstoneLink + bibPackage.Web.File_Root.Replace("\\", "/");
-                if (bibPackage.Web.Image_Root.IndexOf("/" + vid) < 0)
-                    bibPackage.Web.Image_Root = bibPackage.Web.Image_Root + "/" + vid;
-                bibPackage.Web.Set_BibID_VID(bibPackage.BibID, bibPackage.VID);
+				Metadata.Web.Image_Root = SobekCM_Library_Settings.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
+                Metadata.Web.Set_BibID_VID(Metadata.BibID, Metadata.VID);
 
 
                 List<string> collectionnames = new List<string>();
                 // Get the collection names
-                if ((bibPackage.Behaviors.Aggregation_Count > 0) && ( Collection_Codes != null ))
+                if ((Metadata.Behaviors.Aggregation_Count > 0) && ( Collection_Codes != null ))
                 {
-                    collectionnames.AddRange(from aggregation in bibPackage.Behaviors.Aggregations select aggregation.Code into altCollection select Collection_Codes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
+                    collectionnames.AddRange(from aggregation in Metadata.Behaviors.Aggregations select aggregation.Code into altCollection select Collection_Codes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
                 }
 
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
-                string Error_Message;
+                string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = bibPackage.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
-                return marcWriter.Write_Metadata(bibPackage.Source_Directory + "\\marc.xml", bibPackage, options, out Error_Message);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Metadata.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                return marcWriter.Write_Metadata(Metadata.Source_Directory + "\\marc.xml", Metadata, options, out errorMessage);
 
             }
             catch
@@ -506,7 +481,7 @@ namespace SobekCM.Library.Builder
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Save_to_Database(DataTable Item_List, bool New_Item)
         {
-            if (bibPackage == null)
+            if (Metadata == null)
                 return false;
 
             try
@@ -524,8 +499,8 @@ namespace SobekCM.Library.Builder
                 }
 
                 // Set the file root again
-                bibPackage.Web.File_Root = fileRoot;
-                SobekCM_Database.Save_Digital_Resource(bibPackage, createTime, existed);
+                Metadata.Web.File_Root = fileRoot;
+                SobekCM_Database.Save_Digital_Resource(Metadata, createTime, existed);
 
                 // Save the behaviors if this is a new item
                 if (!existed)
@@ -533,11 +508,11 @@ namespace SobekCM.Library.Builder
                     // Some work here just in case the METS is missing stuff, or has old data
 
                     // Make sure not set to UFDC as only web skin by default (used to list UFDC on all METS files )
-                    if ((bibPackage.Behaviors.Web_Skin_Count == 1) && (bibPackage.Behaviors.Web_Skins[0].ToUpper().Trim() == "UFDC"))
-                        bibPackage.Behaviors.Clear_Web_Skins();
+                    if ((Metadata.Behaviors.Web_Skin_Count == 1) && (Metadata.Behaviors.Web_Skins[0].ToUpper().Trim() == "UFDC"))
+                        Metadata.Behaviors.Clear_Web_Skins();
 
                     // Now, save the behaviors for this item
-                    SobekCM_Database.Save_Behaviors(bibPackage, false, false);
+                    SobekCM_Database.Save_Behaviors(Metadata, false, false);
                 }
 
                 //// Set the suppress endeca flag
@@ -572,9 +547,9 @@ namespace SobekCM.Library.Builder
             }
         }
 
-        private void delete_directory(string directory)
+        private void delete_directory(string Directory)
         {
-            string[] files = Directory.GetFiles(directory);
+            string[] files = System.IO.Directory.GetFiles(Directory);
             foreach (string thisFile in files)
             {
 	            try
@@ -587,13 +562,13 @@ namespace SobekCM.Library.Builder
 	            }
             }
 
-            string[] subdirs = Directory.GetDirectories(directory);
+            string[] subdirs = System.IO.Directory.GetDirectories(Directory);
             foreach (string thisSubDir in subdirs)
             {
                 delete_directory(thisSubDir);
             }
 
-            Directory.Delete(directory);
+            System.IO.Directory.Delete(Directory);
         }
 
         #endregion
@@ -647,13 +622,13 @@ namespace SobekCM.Library.Builder
         {
             get
             {
-                return SobekCM_Library_Settings.System_Base_URL + "/" + bibPackage.BibID + "/" + bibPackage.VID;
+                return SobekCM_Library_Settings.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
             }
         }
 
         /// <summary> Gets the age in TICKS of this resource folder and files </summary>
         /// <remarks> This is read from the last write time for the folder </remarks>
-        public long Age_in_Ticks
+        public long AgeInTicks
         {
             get { return DateTime.Now.Ticks - Directory.GetLastWriteTime(resourceFolder).Ticks; }
         }
@@ -711,10 +686,13 @@ namespace SobekCM.Library.Builder
         {
             get
             {
-                if (bibPackage == null)
+	            if (metsTypeOverride.Length > 0)
+		            return metsTypeOverride;
+
+                if (Metadata == null)
                     return "NULL";
 
-                switch (bibPackage.METS_Header.RecordStatus_Enum)
+                switch (Metadata.METS_Header.RecordStatus_Enum)
                 {
                     case METS_Record_Status.BIB_LEVEL:
                         return "Bib Level";
@@ -730,6 +708,7 @@ namespace SobekCM.Library.Builder
                         return "unknown";
                 }
             }
+			set { metsTypeOverride = value; }
         }
 
         /// <summary> Flag indicates this is a METS only type package, which should not have any associated
@@ -791,19 +770,19 @@ namespace SobekCM.Library.Builder
         #region Method to move this package
 
         /// <summary> Moves the incoming digital resource folder, along with all files and subdirectories, to a new location </summary>
-        /// <param name="destination_directory"> New location for this incoming digital resource </param>
+        /// <param name="DestinationDirectory"> New location for this incoming digital resource </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Move(string destination_directory)
+        public bool Move(string DestinationDirectory)
         {
             try
             {
                 // Make sure the destination directory exists
-                if (!Directory.Exists(destination_directory))
-                    Directory.CreateDirectory(destination_directory);
+                if (!Directory.Exists(DestinationDirectory))
+                    Directory.CreateDirectory(DestinationDirectory);
 
                 // Determine if this directory needs to be flattened.
                 DirectoryInfo dirInfo = new DirectoryInfo(resourceFolder);
-                string destFolder = destination_directory + dirInfo.Name;
+                string destFolder = DestinationDirectory + dirInfo.Name;
                 string parentDirectory = String.Empty;
 
                 // Does this directory appear to be a VID folder?
@@ -814,7 +793,7 @@ namespace SobekCM.Library.Builder
                     if (bibidCheck.Length == 10)
                     {
                         parentDirectory = Directory.GetParent(resourceFolder).FullName;
-                        destFolder = destination_directory + bibidCheck + "_" + dirInfo.Name.ToUpper().Replace("VID", "");
+                        destFolder = DestinationDirectory + bibidCheck + "_" + dirInfo.Name.ToUpper().Replace("VID", "");
                     }
                 }
 

@@ -49,9 +49,9 @@ namespace SobekCM.Library.MySobekViewer
     /// </ul></remarks>
     public class New_Group_And_Item_MySobekViewer : abstract_MySobekViewer
     {
-        private DJAccessibleProgressBar DJAccessibleProgrssBar1;
-        private DJFileUpload DJFileUpload1;
-        private DJUploadController DJUploadController1;
+        private DJAccessibleProgressBar djAccessibleProgrssBar1;
+        private DJFileUpload djFileUpload1;
+        private DJUploadController djUploadController1;
 
         private readonly Aggregation_Code_Manager codeManager;
         private bool criticalErrorEncountered;
@@ -288,9 +288,9 @@ namespace SobekCM.Library.MySobekViewer
 									thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
 									thumbnailImg.Dispose();
 								}
-								catch (Exception)
+								catch 
 								{
-									bool error = true;
+
 								}
 								finally
 								{
@@ -454,7 +454,7 @@ namespace SobekCM.Library.MySobekViewer
                         string acquisition_append = "Submitted by " + user.Full_Name + ".";
                         if (item.Bib_Info.Notes_Count > 0)
                         {
-                            foreach (Note_Info thisNote in item.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.acquisition))
+                            foreach (Note_Info thisNote in item.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.acquisition))
                             {
                                 if (thisNote.Note.IndexOf(acquisition_append) < 0)
                                     thisNote.Note = thisNote.Note.Trim() + "  " + acquisition_append;
@@ -571,7 +571,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         // Get list of files in this package
                         string[] all_files = Directory.GetFiles(userInProcessDirectory);
-                        List<string> acceptable_files = all_files.Where(thisFile => (thisFile.IndexOf("agreement.txt") < 0) && (thisFile.IndexOf("TEMP000001_00001.mets") < 0)).ToList();
+                        List<string> acceptable_files = all_files.Where(ThisFile => (ThisFile.IndexOf("agreement.txt") < 0) && (ThisFile.IndexOf("TEMP000001_00001.mets") < 0)).ToList();
 
                         // Acceptable files found?
                         if ( acceptable_files.Count > 0 )
@@ -610,12 +610,12 @@ namespace SobekCM.Library.MySobekViewer
 		/// <summary> Scales an existing SourceImage to a new max width / max height </summary>
 		/// <param name="SourceImage"> Source image </param>
 		/// <param name="MaxWidth"> Maximum width for the new image </param>
-		/// <param name="maxHeight"> Maximum height for the new image </param>
+		/// <param name="MaxHeight"> Maximum height for the new image </param>
 		/// <returns> Newly scaled image, without changing the original source image </returns>
-		public static System.Drawing.Image ScaleImage(System.Drawing.Image SourceImage, int MaxWidth, int maxHeight)
+		public static System.Drawing.Image ScaleImage(System.Drawing.Image SourceImage, int MaxWidth, int MaxHeight)
 		{
 			var ratioX = (double)MaxWidth / SourceImage.Width;
-			var ratioY = (double)maxHeight / SourceImage.Height;
+			var ratioY = (double)MaxHeight / SourceImage.Height;
 			var ratio = Math.Min(ratioX, ratioY);
 
 			var newWidth = (int)(SourceImage.Width * ratio);
@@ -802,7 +802,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(userInProcessDirectory);
-                double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
+                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length)/1024));
                 Item_To_Complete.DiskSize_MB = size;
 
                 // BibID and VID will be automatically assigned
@@ -851,7 +851,7 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, itemList, iconList, webSkin);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, null, webSkin.Skin_Code);
                     string filename = userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
                 }
@@ -899,10 +899,10 @@ namespace SobekCM.Library.MySobekViewer
                 //}
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
-                string Error_Message;
+                string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
                 options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
-                marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out Error_Message);
+                marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
                 // Delete the TEMP mets file
                 if (File.Exists(userInProcessDirectory + "\\TEMP000001_00001.mets"))
@@ -1087,9 +1087,9 @@ namespace SobekCM.Library.MySobekViewer
 
             string templateLabel = "Template";
             string projectLabel = "Project";
-            const string col1Width = "15px";
-            const string col2Width = "80px";
-            const string col3Width = "625px";
+            const string COL1_WIDTH = "15px";
+            const string COL2_WIDTH = "80px";
+            const string COL3_WIDTH = "625px";
 
             if (currentMode.Language == Web_Language_Enum.French)
             {
@@ -1168,8 +1168,8 @@ namespace SobekCM.Library.MySobekViewer
 
                     if (user.Templates.Count > 1)
                     {
-                        Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td width=\"" + col2Width + "\"><b>" + templateLabel + ":</b></td>");
-                        Output.WriteLine("    <td width=\"" + col3Width + "\">");
+                        Output.WriteLine("  <tr><td width=\"" + COL1_WIDTH + "\">&nbsp;</td><td width=\"" + COL2_WIDTH + "\"><b>" + templateLabel + ":</b></td>");
+                        Output.WriteLine("    <td width=\"" + COL3_WIDTH + "\">");
                         Output.WriteLine("      <select name=\"prefTemplate\" id=\"prefTemplate\" class=\"preferences_language_select\" onChange=\"template_changed()\" >");
                         foreach (string t in user.Templates)
                         {
@@ -1188,8 +1188,8 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if (user.Projects.Count > 1)
                     {
-                        Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td width=\"" + col2Width + "\"><b>" + projectLabel + ":</b></td>");
-                        Output.WriteLine("    <td width=\"" + col3Width + "\">");
+                        Output.WriteLine("  <tr><td width=\"" + COL1_WIDTH + "\">&nbsp;</td><td width=\"" + COL2_WIDTH + "\"><b>" + projectLabel + ":</b></td>");
+                        Output.WriteLine("    <td width=\"" + COL3_WIDTH + "\">");
                         Output.WriteLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" onChange=\"project_changed()\" >");
                         foreach (string t in user.Projects)
                         {
@@ -1696,7 +1696,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #region Step 3: Upload Related Files
 
-        private void add_upload_controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
+        private void add_upload_controls(PlaceHolder MainPlaceholder, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
 
@@ -1709,37 +1709,37 @@ namespace SobekCM.Library.MySobekViewer
                 filesBuilder.AppendLine("<blockquote>");
 
                 LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-                placeHolder.Controls.Add(filesLiteral2);
+                MainPlaceholder.Controls.Add(filesLiteral2);
                 filesBuilder.Remove(0, filesBuilder.Length);
 
-                DJUploadController1 = new DJUploadController
+                djUploadController1 = new DJUploadController
                                           {
                                               CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
                                               ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
                                               ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
                                               AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types + "," + SobekCM_Library_Settings.Upload_Image_Types
                                           };
-                placeHolder.Controls.Add(DJUploadController1);
+                MainPlaceholder.Controls.Add(djUploadController1);
 
-                DJAccessibleProgrssBar1 = new DJAccessibleProgressBar();
-                placeHolder.Controls.Add(DJAccessibleProgrssBar1);
+                djAccessibleProgrssBar1 = new DJAccessibleProgressBar();
+                MainPlaceholder.Controls.Add(djAccessibleProgrssBar1);
 
-                DJFileUpload1 = new DJFileUpload {ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1};
-                placeHolder.Controls.Add(DJFileUpload1);
+                djFileUpload1 = new DJFileUpload {ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1};
+                MainPlaceholder.Controls.Add(djFileUpload1);
 
                 // Set the default processor
                 FileSystemProcessor fs = new FileSystemProcessor {OutputPath = userInProcessDirectory};
-                DJUploadController1.DefaultFileProcessor = fs;
+                djUploadController1.DefaultFileProcessor = fs;
 
                 // Change the file processor and set it's properties.
                 FieldTestProcessor fsd = new FieldTestProcessor {OutputPath = userInProcessDirectory};
-                DJFileUpload1.FileProcessor = fsd;
+                djFileUpload1.FileProcessor = fsd;
 
                 filesBuilder.AppendLine("</blockquote><br />");
             }
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            placeHolder.Controls.Add(literal1);
+            MainPlaceholder.Controls.Add(literal1);
         }
 
         #endregion

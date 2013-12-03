@@ -12,6 +12,7 @@ namespace SobekCM.Library.Configuration
 		{
 			Database_Type = SobekCM_Database_Type_Enum.MSSQL;
 			Is_Active = true;
+			Can_Abort = true;
 			Name = String.Empty;
 		}
 
@@ -25,6 +26,12 @@ namespace SobekCM.Library.Configuration
 		/// <remarks> The configuration file for the builder may have multiple database settings to allow a single
 		/// SobekCM builder to support multiple SobekCM instances.  </remarks>
 		public bool Is_Active { get; set; }
+
+		/// <summary> Flag indicates if this database instance can force an abort
+		/// of the SobekCM system, or a NO BUILDING REQUESTED. </summary>
+		/// <remarks> Any system can pause itself, but only certain ones may request
+		/// a full abort through the web interface </remarks>
+		public bool Can_Abort { get; set;  }
 
 		/// <summary> Name for this database instance </summary>
 		/// <remarks> This is only used by the SobekCM builder to be able to report the instance
