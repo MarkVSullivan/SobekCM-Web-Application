@@ -295,15 +295,22 @@ namespace SobekCM.Configuration
             {
                 StreamWriter writer = new StreamWriter(Application.StartupPath + "\\sobekcm.config", false);
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
-                writer.WriteLine("<configuration>");
-                writer.WriteLine("  <connection_string type=\"" + db_type + "\">" + connectionTextBox.Text.Trim().Replace("&", "&amp;").Replace("\"", "&quot;").Replace(">","&gt;").Replace("<","&lt;") + "</connection_string>");
-                if ( error_emails.Length > 0 )
-                    writer.WriteLine("  <error_emails>" + error_emails + "</error_emails>");
-                if ( error_page.Length > 0 )
-                    writer.WriteLine("  <error_page>" + error_page + "</error_page>");
-                writer.WriteLine("  <ghostscript_executable>" + ghostscriptComboBox.Text.Trim().Replace("&", "&amp;").Replace("\"", "&quot;").Replace(">", "&gt;").Replace("<", "&lt;") + "</ghostscript_executable>");
-                writer.WriteLine("  <imagemagick_executable>" + imageMagickComboBox.Text.Trim().Replace("&", "&amp;").Replace("\"", "&quot;").Replace(">", "&gt;").Replace("<", "&lt;") + "</imagemagick_executable>");
-                writer.WriteLine("</configuration>");
+                writer.WriteLine("<SobekCM_Config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+				writer.WriteLine("	xmlns=\"http://sobekrepository.org/schemas/sobekcm_config\"");
+				writer.WriteLine("  xsi:schemaLocation=\"http://sobekrepository.org/schemas/sobekcm_config ");
+				writer.WriteLine("    http://sobekrepository.org/schemas/sobekcm_config.xsd\">");
+				writer.WriteLine("  <Connections>");
+                writer.WriteLine("    <Connection_String type=\"" + db_type + "\">" + connectionTextBox.Text.Trim().Replace("&", "&amp;").Replace("\"", "&quot;").Replace(">","&gt;").Replace("<","&lt;") + "</Connection_String>");
+				writer.WriteLine("  </Connections>");
+				//if ( error_emails.Length > 0 )
+				//	writer.WriteLine("  <error_emails>" + error_emails + "</error_emails>");
+				//if ( error_page.Length > 0 )
+				//	writer.WriteLine("  <error_page>" + error_page + "</error_page>");
+				writer.WriteLine("  <Builder>");
+                writer.WriteLine("    <Ghostscript_Executable>" + ghostscriptComboBox.Text.Trim().Replace("&", "&amp;").Replace("\"", "&quot;").Replace(">", "&gt;").Replace("<", "&lt;") + "</Ghostscript_Executable>");
+                writer.WriteLine("    <Imagemagick_Executable>" + imageMagickComboBox.Text.Trim().Replace("&", "&amp;").Replace("\"", "&quot;").Replace(">", "&gt;").Replace("<", "&lt;") + "</Imagemagick_Executable>");
+				writer.WriteLine("  </Builder>");
+				writer.WriteLine("</SobekCM_Config>");
                 writer.Flush();
                 writer.Close();
 
@@ -407,5 +414,6 @@ namespace SobekCM.Configuration
             else
                 MessageBox.Show("CONNECTION FAILED!");
         }
+
     }
 }

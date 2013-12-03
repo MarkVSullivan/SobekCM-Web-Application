@@ -112,9 +112,9 @@ namespace SobekCM.Builder
                 }
                 return true;
             }
-            catch ( Exception ee )
+            catch 
             {
-                bool error = true;
+                
             }
             finally
             {

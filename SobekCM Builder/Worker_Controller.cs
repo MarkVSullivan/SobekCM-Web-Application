@@ -1,13 +1,18 @@
+#region Using directives
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 using SobekCM.Library;
-using SobekCM.Library.Builder;
+using SobekCM.Library.Configuration;
 using SobekCM.Library.Settings;
+using SobekCM.Resource_Object.Database;
+using SobekCM.Tools.Logs;
+
+#endregion
 
 namespace SobekCM.Builder
 {
@@ -16,11 +21,10 @@ namespace SobekCM.Builder
     public class Worker_Controller
     {
         private bool aborted;
-        private bool complete_static_rebuild;
         private DateTime controllerStarted;
         private const int BULK_LOADER_END_HOUR = 23;
         private DateTime feedNextBuildTime;
-        private bool verbose;
+        private readonly bool verbose;
 
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
@@ -29,79 +33,22 @@ namespace SobekCM.Builder
             verbose = Verbose;
             controllerStarted = DateTime.Now;
             aborted = false;
-            complete_static_rebuild = false;
 
             // Assign the database connection strings
-            SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-            SobekCM.Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+            Library.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
 
             // Pull the values from the database and assign other setting values
-            SobekCM_Library_Settings.Local_Log_Directory = System.Windows.Forms.Application.StartupPath + "\\Logs\\";
-            DataSet settings = SobekCM.Library.Database.SobekCM_Database.Get_Builder_Settings_Complete(null);
+            SobekCM_Library_Settings.Local_Log_Directory = Application.StartupPath + "\\Logs\\";
+            DataSet settings = Library.Database.SobekCM_Database.Get_Builder_Settings_Complete(null);
             if (settings == null)
             {
-                Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + SobekCM.Library.Database.SobekCM_Database.Last_Exception.Message);
+                Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);
                 return;
             }
             if (!SobekCM_Library_Settings.Refresh(settings))
             {
                 Console.WriteLine("Error using database settings to refresh SobekCM_Library_Settings in Worker_Controller constructor");
-            }
-
-            // Clear any LOCAL logs older than XX days old
-            if ( Directory.Exists( SobekCM_Library_Settings.Local_Log_Directory ))
-            {
-                string[] existing_log_files = Directory.GetFiles(SobekCM_Library_Settings.Local_Log_Directory, "incoming_*.html");
-                foreach (string thisFile in existing_log_files)
-                {
-                    try
-                    {
-                        string fileName = (new FileInfo(thisFile)).Name.ToUpper().Replace(".HTML", "").Replace("INCOMING_", "");
-                        if (fileName.Length == 10)
-                        {
-                            int year = Convert.ToInt32(fileName.Substring(0, 4));
-                            int month = Convert.ToInt32(fileName.Substring(5, 2));
-                            int day = Convert.ToInt32(fileName.Substring(8, 2));
-
-                            DateTime logDate = new DateTime(year, month, day);
-                            TimeSpan logAge = DateTime.Now.Subtract(logDate);
-                            if (logAge.TotalDays > SobekCM_Library_Settings.Builder_Log_Expiration_Days )
-                                File.Delete(thisFile);
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
-
-            // Clear any WEB logs older than XX days old
-            if (Directory.Exists(SobekCM_Library_Settings.Log_Files_Directory))
-            {
-                string[] existing_log_files = Directory.GetFiles(SobekCM_Library_Settings.Log_Files_Directory, "incoming_*.html");
-                foreach (string thisFile in existing_log_files)
-                {
-                    try
-                    {
-                        string fileName = (new FileInfo(thisFile)).Name.ToUpper().Replace(".HTML", "").Replace("INCOMING_", "");
-                        if (fileName.Length == 10)
-                        {
-                            int year = Convert.ToInt32(fileName.Substring(0, 4));
-                            int month = Convert.ToInt32(fileName.Substring(5, 2));
-                            int day = Convert.ToInt32(fileName.Substring(8, 2));
-
-                            DateTime logDate = new DateTime(year, month, day);
-                            TimeSpan logAge = DateTime.Now.Subtract(logDate);
-                            if (logAge.TotalDays > SobekCM_Library_Settings.Builder_Log_Expiration_Days )
-                                File.Delete(thisFile);
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-                }
             }
 
             // If this starts in an ABORTED mode, set to standard
@@ -115,180 +62,371 @@ namespace SobekCM.Builder
         /// <summary> Continuously execute the processes in a recurring background thread </summary>
         public void Execute_In_Background()
         {
-            // Check that this should not be skipped or aborted
-            Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
-            switch (operationFlag)
-            {
-                case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
-                case Builder_Operation_Flag_Enum.ABORT_REQUESTED:
-                case Builder_Operation_Flag_Enum.ABORTING:
-                    return;
-            }
-
-            //// Always do a complete static rebuild of all the aggregation browses and RSS feeds first
-            //if (operationFlag != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
-            //{
-            //    SobekCM.Tools.Logs.LogFileXHTML staticRebuildLog = new SobekCM.Tools.Logs.LogFileXHTML(System.Windows.Forms.Application.StartupPath + "/Logs/static_rebuild.html");
-            //    staticRebuildLog.New();
-            //    SobekCM.Library.Static_Pages_Builder builder = new SobekCM.Library.Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location);
-            //    int errors = builder.Rebuild_All_Static_Pages(staticRebuildLog, false, SobekCM_Library_Settings.Local_Log_Directory);
-
-            //    // Always build an endeca feed first (so it occurs once a day)
-            //    if (SobekCM_Library_Settings.Build_MARC_Feed_By_Default)
-            //    {
-            //        Create_Complete_MarcXML_Feed(false);
-            //    }
-            //}
+			// Load all the settings
+			SobekCM_Library_Settings.Refresh(Library.Database.SobekCM_Database.Get_Settings_Complete(null));
 
             // Set the variable which will control background execution
-            int time_between_polls = Convert.ToInt32(SobekCM_Library_Settings.Builder_Seconds_Between_Polls);
-
-            // Create the local log directories
-            if (!Directory.Exists(SobekCM_Library_Settings.Local_Log_Directory))
-            {
-                Console.WriteLine("Creating local log directory: " + SobekCM_Library_Settings.Local_Log_Directory);
-                Directory.CreateDirectory(SobekCM_Library_Settings.Local_Log_Directory);
-            }
-
-            // Create the web log directory 
-            string log_web_location = SobekCM_Library_Settings.Log_Files_Directory;
-            if ( SobekCM_Library_Settings.Log_Files_Directory.Length > 0 )
-            {
-                if (!Directory.Exists(log_web_location))
-                    Directory.CreateDirectory(log_web_location);
-            }
+	        int time_between_polls = SobekCM_Library_Settings.Builder_Override_Seconds_Between_Polls;
+			if (( time_between_polls < 0 ) || ( SobekCM_Library_Settings.Database_Connections.Count == 1 ))
+				time_between_polls = Convert.ToInt32(SobekCM_Library_Settings.Builder_Seconds_Between_Polls);
 
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
             string local_log_name = SobekCM_Library_Settings.Local_Log_Directory + "\\" + log_name;
 
             // Create the new log file
-            SobekCM.Tools.Logs.LogFileXHTML preloader_logger = new SobekCM.Tools.Logs.LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
+            LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
-            // Create the prebuilder object
-            Worker_BulkLoader bulkLoader = new Worker_BulkLoader(preloader_logger, verbose);
+			// Set the time for the next feed building event to 10 minutes from now
+			feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
 
-            // Process any pending FDA reports from the FDA Report DropBox
-            if (operationFlag != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
-                Process_Any_Pending_FDA_Reports(bulkLoader);
+			// First, step through each active configuration and see if building is currently aborted 
+			// while doing very minimal processes
+			aborted = false;
+			Console.WriteLine("Checking for initial abort condition");
+			preloader_logger.AddNonError("Checking for initial abort condition");
+	        string abort_message = String.Empty;
+			Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+	        foreach (Database_Instance_Configuration dbConfig in SobekCM_Library_Settings.Database_Connections)
+	        {
+		        if ((!aborted) && (dbConfig.Is_Active) && (dbConfig.Can_Abort))
+		        {
+			        SobekCM_Database.Connection_String = dbConfig.Connection_String;
+			        Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
-            // Set the time for the next feed building event to 10 minutes from now
-            feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
+			        // Check that this should not be skipped or aborted
+			        Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
+			        switch (operationFlag)
+			        {
+				        case Builder_Operation_Flag_Enum.ABORT_REQUESTED:
+				        case Builder_Operation_Flag_Enum.ABORTING:
+					        abort_message = "PREVIOUS ABORT flag found in " + dbConfig.Name;
+							abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
+							Console.WriteLine(abort_message);
+							preloader_logger.AddNonError(abort_message);
+					        aborted = true;
+							Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
+					        break;
+
+						case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
+					        abort_message = "PREVIOUS NO BUILDING flag found in " + dbConfig.Name;
+							Console.WriteLine(abort_message);
+							preloader_logger.AddNonError(abort_message);
+							aborted = true;
+							break;
+
+			        }
+		        }
+	        }
+
+			// If initially aborted, step through each instance and set a message
+			if (aborted)
+			{
+				// Add messages in each active instance
+				foreach (Database_Instance_Configuration dbConfig in SobekCM_Library_Settings.Database_Connections)
+				{
+					if (dbConfig.Is_Active) 
+					{
+						Console.WriteLine("Setting previous abort flag message in " + dbConfig.Name);
+						preloader_logger.AddNonError("Setting previous abort flag message in " + dbConfig.Name);
+						SobekCM_Database.Connection_String = dbConfig.Connection_String;
+						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
+
+						// Save information about this last run
+						Library.Database.SobekCM_Database.Set_Setting("Builder Version", SobekCM_Library_Settings.CURRENT_BUILDER_VERSION);
+						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", abort_message);
+
+						// Finally, set the builder flag appropriately
+						if (abort_flag != Builder_Operation_Flag_Enum.STANDARD_OPERATION)
+							Abort_Database_Mechanism.Builder_Operation_Flag = abort_flag;
+					}
+				}
+
+				// Do nothing else
+				return;
+			}
+
+	        // Build all the bulk loader objects
+	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
+	        bool activeInstanceFound = false;
+			foreach (Database_Instance_Configuration dbConfig in SobekCM_Library_Settings.Database_Connections)
+			{
+				if (!dbConfig.Is_Active)
+				{
+					loaders.Add(null);
+					Console.WriteLine(dbConfig.Name + " is set to INACTIVE");
+					preloader_logger.AddNonError(dbConfig.Name + " is set to INACTIVE");
+				}
+				else
+				{
+					activeInstanceFound = true;
+					SobekCM_Database.Connection_String = dbConfig.Connection_String;
+					Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+					Console.WriteLine(dbConfig.Name + " - Preparing to begin polling");
+					preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
+					Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
+
+					Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig.Name, dbConfig.Can_Abort);
+					loaders.Add(newLoader);
+				}
+			}
+
+			// If no active instances, just exit
+			if (!activeInstanceFound)
+			{
+				Console.WriteLine("No active databases in the config file");
+				preloader_logger.AddError("No active databases in config file... Aborting");
+				return;
+			}
+
+	        bool firstRun = true;
+
 
             // Loop continually until the end hour is achieved
             do
             {
+				// Is it time to build any RSS/XML feeds?
+	            bool rebuildRssFeeds = false;
+				if (DateTime.Compare(DateTime.Now, feedNextBuildTime) >= 0)
+				{
+					rebuildRssFeeds = true;
+					feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
+				}
 
-                // Check for abort
-                if (checkForAbort())
-                {
-                    Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
-                    return;
-                }
+				// Step through each instance
+				for (int i = 0; i < SobekCM_Library_Settings.Database_Connections.Count; i++)
+				{
+					if (loaders[i] != null)
+					{
+						// Get the instance
+						Database_Instance_Configuration dbInstance = SobekCM_Library_Settings.Database_Connections[i];
 
-                // Pull the abort/pause flag
-                Builder_Operation_Flag_Enum currentPauseFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
+						// Set the database connection strings
+						SobekCM_Database.Connection_String = dbInstance.Connection_String;
+						Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
-                // Run the PREBUILDER
-                if (currentPauseFlag != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
-                {
-                    Run_BulkLoader(bulkLoader, verbose);
+						// Look for abort
+						if ((dbInstance.Can_Abort) && (CheckForAbort()))
+						{
+							if ((!dbInstance.Can_Abort) && (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED))
+								Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+							break;
+						}
 
-                    if (aborted)
-                    {
-                        Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
-                        return;
-                    }
+						// Refresh all settings, etc..
+						loaders[i].Refresh_Settings_And_Item_List();
 
-                    // Is it time to build any RSS/XML feeds?
-                    if (DateTime.Compare(DateTime.Now, feedNextBuildTime) >= 0)
-                    {
-                        bulkLoader.Build_Feeds();
-                        feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
-                    }
-                }
-                else
-                {
-                    preloader_logger.AddNonError("Building paused");
+						// Pull the abort/pause flag
+						Builder_Operation_Flag_Enum currentPauseFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
 
-                    try
-                    {
-                        // Publish the log file
-                        File.Copy(local_log_name, SobekCM_Library_Settings.Log_Files_Directory + "\\" + log_name, true);
-                    }
-                    catch (Exception ee)
-                    {
-                    }
-                }
+						// If not paused, run the prebuilder
+						if (currentPauseFlag != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
+						{
+							if (firstRun)
+							{
 
-                // Sleep for coorect number of milliseconds
+								//    // Always build an endeca feed first (so it occurs once a day)
+								//    if (SobekCM_Library_Settings.Build_MARC_Feed_By_Default)
+								//    {
+								//        Create_Complete_MarcXML_Feed(false);
+								//    }
+								//}
+								
+								// CLear the old logs
+								Console.WriteLine(dbInstance.Name + " - Expiring old log entries");
+								preloader_logger.AddNonError(dbInstance.Name + " - Expiring old log entries");
+								Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Expiring old log entries", String.Empty);
+								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(SobekCM_Library_Settings.Builder_Log_Expiration_Days);
+
+
+
+								// Rebuild all the static pages
+								Console.WriteLine(dbInstance.Name + " - Rebuilding all static pages");
+								preloader_logger.AddNonError(dbInstance.Name + " - Rebuilding all static pages");
+								long staticRebuildLogId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
+
+								Static_Pages_Builder builder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location, SobekCM_Library_Settings.Application_Server_Network);
+								builder.Rebuild_All_Static_Pages(preloader_logger, false, SobekCM_Library_Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
+
+
+
+								// Process any pending FDA reports from the FDA Report DropBox
+								Process_Any_Pending_FDA_Reports(loaders[i]);
+
+							}
+
+							Run_BulkLoader(loaders[i], verbose);
+
+							if (aborted)
+							{
+								if ((!dbInstance.Can_Abort) && (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED))
+									Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+								break;
+							}
+
+							if (rebuildRssFeeds)
+								loaders[i].Build_Feeds();
+
+							// Clear memory from this loader 
+							loaders[i].Clear_Item_List();
+						}
+						else
+						{
+							preloader_logger.AddNonError( dbInstance.Name +  " - Building paused");
+							Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building temporarily PAUSED", String.Empty);
+						}
+					}
+				}
+
+	            if (aborted)
+		            break;
+
+
+				// No longer the first run
+				firstRun = false;
+
+				// Publish the log
+	            publish_log_file(local_log_name);
+
+                // Sleep for correct number of milliseconds
                 Thread.Sleep(1000 * time_between_polls);
+
+
             } while (DateTime.Now.Hour < BULK_LOADER_END_HOUR);
 
+			// Do the final work for all of the different dbInstances
+	        if (!aborted)
+	        {
+		        for (int i = 0; i < SobekCM_Library_Settings.Database_Connections.Count; i++)
+		        {
+			        if (loaders[i] != null)
+			        {
+				        // Get the instance
+				        Database_Instance_Configuration dbInstance = SobekCM_Library_Settings.Database_Connections[i];
 
-            // Pull the abort/pause flag
-            Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
-            if (currentPauseFlag2 == Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
-                return;
+				        // Set the database flag
+				        SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
-            // Initiate the recreation of the links between metadata and collections
-            SobekCM.Library.Database.SobekCM_Database.Admin_Update_Cached_Aggregation_Metadata_Links();
+				        // Pull the abort/pause flag
+				        Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
 
-            // Initiate a solr/lucene index optimization since we are done loading for a while
-            if (DateTime.Now.Day % 2 == 0)
-            {
-                if (SobekCM_Library_Settings.Document_Solr_Index_URL.Length > 0)
-                {
-                    Console.WriteLine("Initiating Solr/Lucene document index optimization");
-                    SobekCM.Library.Solr.Solr_Controller.Optimize_Document_Index(SobekCM_Library_Settings.Document_Solr_Index_URL);
-                }
-            }
-            else
-            {
-                if (SobekCM_Library_Settings.Page_Solr_Index_URL.Length > 0)
-                {
-                    Console.WriteLine("Initiating Solr/Lucene page index optimization");
-                    SobekCM.Library.Solr.Solr_Controller.Optimize_Page_Index(SobekCM_Library_Settings.Page_Solr_Index_URL);
-                }
-            }
+				        // If not paused, run the prebuilder
+				        if (currentPauseFlag2 != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
+				        {
+					        // Refresh all settings, etc..
+					        loaders[i].Refresh_Settings_And_Item_List();
 
-            // Sleep for ten minutes to end this
-            Thread.Sleep(1000 * 10 * 60);
+					        // Initiate the recreation of the links between metadata and collections
+					        Library.Database.SobekCM_Database.Admin_Update_Cached_Aggregation_Metadata_Links();
+				        }
+
+				        // Clear the memory
+				        loaders[i].Clear_Item_List();
+			        }
+		        }
+	        }
+	        else
+	        {
+		        // Mark the aborted in each instance
+		        foreach (Database_Instance_Configuration dbConfig in SobekCM_Library_Settings.Database_Connections)
+		        {
+					if (dbConfig.Is_Active)
+					{
+						Console.WriteLine("Setting abort flag message in " + dbConfig.Name);
+						preloader_logger.AddNonError("Setting abort flag message in " + dbConfig.Name);
+						SobekCM_Database.Connection_String = dbConfig.Connection_String;
+						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
+
+						// Save information about this last run
+						Library.Database.SobekCM_Database.Set_Setting("Builder Version", SobekCM_Library_Settings.CURRENT_BUILDER_VERSION);
+						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", "Building ABORTED per request");
+
+						// Finally, set the builder flag appropriately
+						if (( !dbConfig.Can_Abort ) && ( Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED ))
+							Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
+					}
+		        }
+	        }
+
+
+	        // Publish the log
+			publish_log_file(local_log_name);
+
+
+			//// Initiate a solr/lucene index optimization since we are done loading for a while
+			//if (DateTime.Now.Day % 2 == 0)
+			//{
+			//	if (SobekCM_Library_Settings.Document_Solr_Index_URL.Length > 0)
+			//	{
+			//		Console.WriteLine("Initiating Solr/Lucene document index optimization");
+			//		Solr_Controller.Optimize_Document_Index(SobekCM_Library_Settings.Document_Solr_Index_URL);
+			//	}
+			//}
+			//else
+			//{
+			//	if (SobekCM_Library_Settings.Page_Solr_Index_URL.Length > 0)
+			//	{
+			//		Console.WriteLine("Initiating Solr/Lucene page index optimization");
+			//		Solr_Controller.Optimize_Page_Index(SobekCM_Library_Settings.Page_Solr_Index_URL);
+			//	}
+			//}
+			//// Sleep for twenty minutes to end this (the index rebuild might take some time)
+            //Thread.Sleep(1000 * 20 * 60);
         }
 
-        private void Process_Any_Pending_FDA_Reports( Worker_BulkLoader prebuilder )
+		private void publish_log_file(string LocalLogName)
+		{
+			try
+			{
+				if ((SobekCM_Library_Settings.Builder_Logs_Publish_Directory.Length > 0) && (Directory.Exists(SobekCM_Library_Settings.Builder_Logs_Publish_Directory)))
+				{
+					if ( File.Exists(LocalLogName))
+						File.Copy(LocalLogName, SobekCM_Library_Settings.Builder_Logs_Publish_Directory + "\\" + Path.GetFileName(LocalLogName), true );
+				}
+			}
+			catch
+			{
+				// Not critical error
+			}
+		}
+
+        private void Process_Any_Pending_FDA_Reports( Worker_BulkLoader Prebuilder )
         {
 
             try
             {
-                prebuilder.Process_Any_Pending_FDA_Reports();
+                Prebuilder.Process_Any_Pending_FDA_Reports();
 
-                if (prebuilder.Aborted)
+                if (Prebuilder.Aborted)
                     aborted = true;
             }
-            catch (Exception ee)
+            catch 
             {
-                int error = 1;
+
             }
         }
 
-        private void Run_BulkLoader(Worker_BulkLoader prebuilder, bool Verbose)
+        private void Run_BulkLoader(Worker_BulkLoader Prebuilder, bool Verbose)
         {
             try
             {
-                prebuilder.Perform_BulkLoader( Verbose );
+                Prebuilder.Perform_BulkLoader( Verbose );
 
                 // Save information about this last run
                 Library.Database.SobekCM_Database.Set_Setting("Builder Version", SobekCM_Library_Settings.CURRENT_BUILDER_VERSION);
                 Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", prebuilder.Final_Message);
+                Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", Prebuilder.Final_Message);
 
-                if (prebuilder.Aborted)
+                if (Prebuilder.Aborted)
                     aborted = true;
             }
-            catch (Exception ee)
+            catch
             {
-                bool error = true;
+
             }
         }
   
@@ -301,86 +439,73 @@ namespace SobekCM.Builder
                 Directory.CreateDirectory(SobekCM_Library_Settings.Local_Log_Directory);
             }
 
-            // Create the web log directory 
-            string log_web_location = SobekCM_Library_Settings.Log_Files_Directory;
-            if (!Directory.Exists(log_web_location))
-            {
-                Console.WriteLine("Creating log files directory: " + SobekCM_Library_Settings.Log_Files_Directory);
-                Directory.CreateDirectory(log_web_location);
-            }
-
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
             string local_log_name = SobekCM_Library_Settings.Local_Log_Directory + "\\" + log_name;
 
             // Create the new log file
-            SobekCM.Tools.Logs.LogFileXHTML preloader_logger = new SobekCM.Tools.Logs.LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
+            LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
-            try
-            {
+			// Step through each database instance
+	        foreach (Database_Instance_Configuration dbConfig in SobekCM_Library_Settings.Database_Connections)
+	        {
+		        try
+		        {
+			        if (!dbConfig.Is_Active)
+			        {
+				        Console.WriteLine( dbConfig.Name + " is set to INACTIVE");
+				        preloader_logger.AddNonError(dbConfig.Name + " is set to INACTIVE");
+			        }
+			        else
+			        {
+				        SobekCM_Database.Connection_String = dbConfig.Connection_String;
+				        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig.Name, dbConfig.Can_Abort);
+						newLoader.Perform_BulkLoader(Verbose);
 
-                Worker_BulkLoader prebuilder = new Worker_BulkLoader(preloader_logger, Verbose );
-                prebuilder.Perform_BulkLoader( Verbose );
+						// Save information about this last run
+						Library.Database.SobekCM_Database.Set_Setting("Builder Version", SobekCM_Library_Settings.CURRENT_BUILDER_VERSION);
+						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", newLoader.Final_Message);
+			        }
+		        }
+		        catch
+		        {
 
-                // Save information about this last run
-                Library.Database.SobekCM_Database.Set_Setting("Builder Version", SobekCM_Library_Settings.CURRENT_BUILDER_VERSION);
-                Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", prebuilder.Final_Message );
-
-
-                if (prebuilder.Aborted)
-                    aborted = true;
-            }
-            catch (Exception ee)
-            {
-                int error = 1;
-            }
-
-            try
-            {
-                // Publish the log file
-                File.Copy(local_log_name, SobekCM_Library_Settings.Log_Files_Directory + "\\" + log_name, true);
-            }
-            catch (Exception ee)
-            {
-            }
-
-
+		        }
+	        }
         }
 
          #endregion
 
         #region Method to immediately execute all requested processes
 
-        /// <summary> Immediately perform all requested tasks </summary>
-        /// <param name="build_production_marcxml_feed"> Flag indicates if the MarcXML feed for Mango should be produced </param>
-        /// <param name="run_bulkloader"> Flag indicates if the preload </param>
-        /// <param name="complete_static_rebuild"> Flag indicates whether to rebuild all the item static pages </param>
-        /// <param name="marcrebuild"> Flag indicates if all the MarcXML files for each resource should be rewritten from the METS/MODS metadata files </param>
-        public void Execute_Immediately(bool build_production_marcxml_feed, bool build_test_marcxml_feed, bool run_bulkloader, bool complete_static_rebuild, bool marcrebuild )
+	    /// <summary> Immediately perform all requested tasks </summary>
+	    /// <param name="BuildProductionMarcxmlFeed"> Flag indicates if the MarcXML feed for OPACs should be produced </param>
+	    /// <param name="BuildTestMarcxmlFeed"> Flag indicates if the items set to be put in a TEST feed should have their MarcXML feed produced</param>
+	    /// <param name="RunBulkloader"> Flag indicates if the preload </param>
+	    /// <param name="CompleteStaticRebuild"> Flag indicates whether to rebuild all the item static pages </param>
+	    /// <param name="MarcRebuild"> Flag indicates if all the MarcXML files for each resource should be rewritten from the METS/MODS metadata files </param>
+	    public void Execute_Immediately(bool BuildProductionMarcxmlFeed, bool BuildTestMarcxmlFeed, bool RunBulkloader, bool CompleteStaticRebuild, bool MarcRebuild )
         {
-            // Save the flag for complete static rebuild
-            this.complete_static_rebuild = complete_static_rebuild;
-
-            if (complete_static_rebuild)
+            if (CompleteStaticRebuild)
             {
-                SobekCM.Tools.Logs.LogFileXHTML staticRebuildLog = new SobekCM.Tools.Logs.LogFileXHTML(System.Windows.Forms.Application.StartupPath + "/Logs/static_rebuild.html");
-                SobekCM.Library.Static_Pages_Builder builder = new SobekCM.Library.Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location);
-                int errors = builder.Rebuild_All_Static_Pages(staticRebuildLog, false, SobekCM_Library_Settings.Local_Log_Directory);
+                LogFileXHTML staticRebuildLog = new LogFileXHTML(Application.StartupPath + "/Logs/static_rebuild.html");
+				Static_Pages_Builder builder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location, SobekCM_Library_Settings.Application_Server_Network);
+                builder.Rebuild_All_Static_Pages(staticRebuildLog, true, SobekCM_Library_Settings.Local_Log_Directory, String.Empty, -1);
             }
             
-            if ( marcrebuild )
+            if ( MarcRebuild )
             {
-                SobekCM.Library.Static_Pages_Builder builder = new SobekCM.Library.Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location);
-                int errors = builder.Rebuild_All_MARC_Files(@"\\cns-uflib-ufdc\UFDC\RESOURCES\" );
+				Static_Pages_Builder builder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location, SobekCM_Library_Settings.Application_Server_Network);
+                builder.Rebuild_All_MARC_Files( SobekCM_Library_Settings.Image_Server_Network );
             }
 
-            if (build_production_marcxml_feed)
+            if (BuildProductionMarcxmlFeed)
             {
                 Create_Complete_MarcXML_Feed(false);
             }
 
-            if (build_test_marcxml_feed)
+            if (BuildTestMarcxmlFeed)
             {
                 Create_Complete_MarcXML_Feed(true);
             }
@@ -391,7 +516,7 @@ namespace SobekCM.Builder
                 Directory.CreateDirectory(directory);
 
             // Run the PRELOADER
-            if (run_bulkloader)
+            if (RunBulkloader)
             {
                 Run_BulkLoader( verbose );
             }
@@ -399,18 +524,13 @@ namespace SobekCM.Builder
             {
                 Console.WriteLine("PreLoader skipped per command line arguments");
             }
-
-            if (checkForAbort())
-            {
-                return;
-            }
         }
 
         #endregion
 
         #region Methods to handle checking for abort requests
 
-        private bool checkForAbort()
+        private bool CheckForAbort()
         {
             if (aborted)
                 return true;
@@ -451,7 +571,7 @@ namespace SobekCM.Builder
                 // Publish this feed
                 if (reportSuccess)
                 {
-                    SobekCM.Library.Database.SobekCM_Database.Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
+                    Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
                     File.Copy(SobekCM_Library_Settings.Local_Log_Directory + file_name, SobekCM_Library_Settings.MarcXML_Feed_Location + file_name, true);
                 }
                 else
@@ -466,15 +586,16 @@ namespace SobekCM.Builder
                         writer.Flush();
                         writer.Close();
 
-                        SobekCM.Library.Database.SobekCM_Database.Add_Item_Error_Log(feed_name.ToUpper(), "", "N/A", "Resulting file failed validation");
+                        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Resulting file failed validation", "");
 
                         File.Copy(SobekCM_Library_Settings.Local_Log_Directory + file_name, SobekCM_Library_Settings.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
                     }
                 }
             }
-            catch (Exception ee)
+            catch 
             {
-                SobekCM.Library.Database.SobekCM_Database.Add_Item_Error_Log(feed_name.ToUpper(), "", "N/A", "Unknown exception caught");
+				Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Unknown exception caught", "");
+
                 Console.WriteLine("ERROR BUILDING THE " + feed_name.ToUpper());
             }
         }

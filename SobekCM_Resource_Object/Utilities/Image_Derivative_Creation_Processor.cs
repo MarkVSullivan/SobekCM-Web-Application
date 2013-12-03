@@ -14,7 +14,7 @@ namespace SobekCM.Resource_Object.Utilities
 
 	/// <summary> Delegate for the custom event which is fired when the status
 	/// string on the main form needs to change </summary>
-	public delegate void Image_Creation_New_Status_String_Delegate(string new_message);
+	public delegate void Image_Creation_New_Status_String_Delegate(string NewMessage, long ParentLogID, string BibID_VID);
 
 	/// <summary> Delegate for the custom event which is fired when the progress
 	/// bar should change. </summary>
@@ -29,29 +29,34 @@ namespace SobekCM.Resource_Object.Utilities
 	/// destined for a SobekCM library, including thumbnails, jpeg images, and a service jpeg2000 file </summary>
 	public class Image_Derivative_Creation_Processor
 	{
-		private const string SOBEKCM_IMAGE_LOCATION = @"\\cns-uflib-ufdc\UFDC\RESOURCES\";
-		private const string SOBEKCM_DROPBOX_LOCATION = @"\\cns-uflib-ufdc\UFDC\INCOMING\";
-		private const string SOBEKCM_DATA_LOCATION = @"\\cns-uflib-ufdc\UFDC\DATA\";
-
-		private bool catastrophic_failure_detected = false;
+		private bool catastrophic_failure_detected;
 		private int consecutive_image_creation_error;
-		private bool create_jpeg2000_images;
-		private bool create_jpeg_images;
-		private bool create_qc_images;
+		private readonly bool create_qc_images;
 		private bool errorEncountered;
-		private bool first_jpeg_successfully_created = false;
+		private bool first_jpeg_successfully_created;
 
-		private string image_magick_path;
-		private string imagemagick_executable;
-		private int jpeg_height;
-		private int jpeg_width;
-		private int kakadu_error_count;
-		private string kakadu_path;
-		private string temp_folder;
-		private int thumbnail_height;
-		private int thumbnail_width;
+		private readonly string image_magick_path;
 
-		/// <summary> Constructor for a new instance of this class </summary>
+		private readonly int jpeg_height;
+		private readonly int jpeg_width;
+		private readonly string kakadu_path;
+		private readonly string temp_folder;
+		private readonly int thumbnail_height;
+		private readonly int thumbnail_width;
+		private readonly bool create_jpeg2000_images;
+		private readonly bool create_jpeg_images;
+
+
+		/// <summary> Constructor for a new instance of the Image_Derivative_Creation_Processor class </summary>
+		/// <param name="Image_Magick_Path"> Path (and executable name) for the image magick files for processing JPEG images </param>
+		/// <param name="Kakadu_Path"> Path to the Kakadu library for creating JPEG2000's </param>
+		/// <param name="Create_JPEGs"> Flag indicates whether JPEGs should be created </param>
+		/// <param name="Create_JPEG2000s"> Flag indicates whether JPEG2000s should be created </param>
+		/// <param name="JPEG_Width"> Width for the JPEGs to be generated </param>
+		/// <param name="JPEG_Height"> Height for the JPEGs to be generated </param>
+		/// <param name="Create_QC_Images"> Flag indicates if medium size JPEGs should be created for the QC windows application </param>
+		/// <param name="Thumbnail_Width"> Width of the bounding box for the thumbnail </param>
+		/// <param name="Thumbnail_Height"> Height of the bounding box for the thumbnail </param>
 		public Image_Derivative_Creation_Processor(string Image_Magick_Path, string Kakadu_Path, bool Create_JPEGs, bool Create_JPEG2000s, int JPEG_Width, int JPEG_Height, bool Create_QC_Images, int Thumbnail_Width, int Thumbnail_Height)
 		{
 			// Save all the parameters
@@ -68,14 +73,10 @@ namespace SobekCM.Resource_Object.Utilities
 			// Save the location for temporary files
 			temp_folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 			temp_folder = temp_folder + "\\DLC Toolbox\\Temporary";
-			imagemagick_executable = String.Empty;
 		}
 
 		/// <summary> Gets the count of the number of failures Kakadu experienced while creating JPEG2000 derivatives </summary>
-		public int Kakadu_Failures
-		{
-			get { return kakadu_error_count; }
-		}
+		public int Kakadu_Failures { get; private set; }
 
 		/// <summary> Custom event is fired when the task string on the 
 		/// main form needs to change. </summary>
@@ -92,7 +93,8 @@ namespace SobekCM.Resource_Object.Utilities
 		public event Image_Creation_Process_Complete_Delegate Process_Complete;
 
 		/// <summary> Processes a single package </summary>
-		public bool Process(string Package_Directory, string BibID, string VID, string[] TIF_Files)
+		/// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
+		public bool Process(string Package_Directory, string BibID, string VID, string[] TifFiles, long ParentLogId )
 		{
 			// Create the temp folder
 			if (!Directory.Exists(temp_folder))
@@ -100,7 +102,7 @@ namespace SobekCM.Resource_Object.Utilities
 				Directory.CreateDirectory(temp_folder);
 			}
 
-			kakadu_error_count = 0;
+			Kakadu_Failures = 0;
 			consecutive_image_creation_error = 0;
 			catastrophic_failure_detected = false;
 
@@ -110,7 +112,7 @@ namespace SobekCM.Resource_Object.Utilities
 			// Perform imaging work on all the files, in a try/catch
 			try
 			{
-				if (Create_Derivative_Files(Package_Directory, TIF_Files, BibID + ":" + VID))
+				if (Create_Derivative_Files(Package_Directory, TifFiles, BibID + ":" + VID, ParentLogId ))
 				{
 					kakaduErrorEncountered = true;
 				}
@@ -124,16 +126,16 @@ namespace SobekCM.Resource_Object.Utilities
 			catch (Exception ee)
 			{
 				// Add this error to the log
-				OnErrorEncountered("Error encountered during image work on " + BibID + ":" + VID);
-				OnErrorEncountered(ee.Message);
+				OnErrorEncountered("Error encountered during image work on " + BibID + ":" + VID, ParentLogId, BibID + ":" + VID);
+				OnErrorEncountered(ee.Message, ParentLogId, BibID + ":" + VID);
 				errorEncountered = true;
 			}
 
 			// Add a warning if there were kakdu error
 			if (kakaduErrorEncountered)
 			{
-				kakadu_error_count++;
-				OnErrorEncountered("Warning: Error during JPEG2000 creation for " + BibID + ":" + VID);
+				Kakadu_Failures++;
+				OnErrorEncountered("Warning: Error during JPEG2000 creation for " + BibID + ":" + VID, ParentLogId, BibID + ":" + VID);
 			}
 
 			// Delete the temporary folder
@@ -150,7 +152,7 @@ namespace SobekCM.Resource_Object.Utilities
 			}
 			else
 			{
-				OnErrorEncountered("ImageMagick Error Detected - Process Aborted");
+				OnErrorEncountered("ImageMagick Error Detected - Process Aborted", ParentLogId, BibID + ":" + VID);
 
 				OnProcessComplete();
 				Thread.Sleep(2000);
@@ -163,54 +165,47 @@ namespace SobekCM.Resource_Object.Utilities
 		{
 			if (New_Progress != null)
 			{
-				if (Value > Max)
-				{
-					New_Progress(Value, Value);
-				}
-				else
-				{
-					New_Progress(Value, Max);
-				}
+				New_Progress(Value, Value > Max ? Value : Max);
 			}
 		}
 
-		private void OnNewTask(string newMessage)
+		private void OnNewTask(string NewMessage, long ParentLogID, string BibID_VID)
 		{
 			if (New_Task_String != null)
-				New_Task_String(newMessage);
+				New_Task_String(NewMessage, ParentLogID, BibID_VID);
 		}
 
-		private void OnErrorEncountered(string newMessage)
+		private void OnErrorEncountered(string NewMessage, long ParentLogID, string BibID_VID)
 		{
 			if (Error_Encountered != null)
-				Error_Encountered(newMessage);
+				Error_Encountered(NewMessage, ParentLogID, BibID_VID);
 		}
 
 		private void OnProcessComplete()
 		{
 			if (Process_Complete != null)
-				Process_Complete(1, kakadu_error_count);
+				Process_Complete(1, Kakadu_Failures);
 		}
 
 		#region Create Derivative Files
 
-		private bool Create_Derivative_Files(string directory, string[] tif_files, string package_name)
+		private bool Create_Derivative_Files(string Directory, string[] TifFiles, string PackageName, long ParentLogId )
 		{
 			bool kakadu_error = false;
 
 			// Ensure the directory does not end in a '\' for later work
-			if (directory[directory.Length - 1] == '\\')
-				directory = directory.Substring(0, directory.Length - 1);
+			if (Directory[Directory.Length - 1] == '\\')
+				Directory = Directory.Substring(0, Directory.Length - 1);
 
 			// Itereate through all the files in this volume
 			int fileCtr = 1;
-			int totalCount = tif_files.Length;
+			int totalCount = TifFiles.Length;
 			if (totalCount > 0)
 			{
-				OnNewTask("\t\tProcessing Images for " + package_name);
+				OnNewTask("\t\tProcessing Images for " + PackageName, ParentLogId, PackageName);
 
 				// Step through each TIF file
-				foreach (string tifFile in tif_files)
+				foreach (string tifFile in TifFiles)
 				{
 					// Get the basic file information
 					FileInfo tifFileInfo = new FileInfo(tifFile);
@@ -219,10 +214,10 @@ namespace SobekCM.Resource_Object.Utilities
 					if (fileNameUpper.IndexOf("_ARCHIVE") < 0)
 					{
 						string tiffNameSansExtension = tifFileInfo.Name.Replace(tifFileInfo.Extension, "");
-						string rootName = directory + "\\" + tiffNameSansExtension;
+						string rootName = Directory + "\\" + tiffNameSansExtension;
 
 						// Add to log
-						OnNewTask("\t\t\tProcessing Image '" + fileName + "'");
+						OnNewTask("\t\t\tProcessing Image '" + fileName + "'", ParentLogId, PackageName);
 						OnNewProgress(fileCtr++, (totalCount + 1));
 
 
@@ -255,16 +250,18 @@ namespace SobekCM.Resource_Object.Utilities
 								}
 								catch
 								{
-									OnErrorEncountered("ERROR DELETING EXISTING TEMP.TIF FILE");
+									OnErrorEncountered("ERROR DELETING EXISTING TEMP.TIF FILE", ParentLogId, PackageName);
 									consecutive_image_creation_error++;
 								}
 							}
 
 							// Process this file, as necessary
-							Image_Magick_Process_TIFF_File(localTempFile, tiffNameSansExtension, directory, true, jpeg_width, jpeg_height);
+							if ( create_jpeg_images )	
+								Image_Magick_Process_TIFF_File(localTempFile, tiffNameSansExtension, Directory, true, jpeg_width, jpeg_height, ParentLogId, PackageName);
 
 							// Create the JPEG2000
-							kakadu_error = !Create_JPEG2000(localTempFile, tiffNameSansExtension, directory);
+							if ( create_jpeg2000_images )
+								kakadu_error = !Create_JPEG2000(localTempFile, tiffNameSansExtension, Directory, ParentLogId, PackageName);
 						}
 					}
 				}
@@ -277,36 +274,31 @@ namespace SobekCM.Resource_Object.Utilities
 
 		#region ImageMagick all files
 
-		/// <summary> Sets the executable location for the ImageMagick installation on the local machine </summary>
-		public string ImageMagick_Executable
-		{
-			set { imagemagick_executable = value; }
-		}
-
 		/// <summary> Process this image via ImageMagick, to create the needed jpeg derivative(s) </summary>
-		/// <param name="localTempFile"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
-		/// <param name="thisTiffFile"> Name (excluding extension and directory) for the original TIFF file, to be used for naming of the derivatives </param>
-		/// <param name="volumeDirectory"> Directory where the derivatives should be created </param>
-		/// <param name="make_thumbnail"> Flag indicates whether a thumbnail image should be generated for this TIFF </param>
-		/// <param name="width"> Requested width limit of the resulting full-size jpeg image to create </param>
-		/// <param name="height"> Requested height limit of the resulting full-size jpeg image to create </param>
-		public void Image_Magick_Process_TIFF_File(string localTempFile, string thisTiffFile, string volumeDirectory, bool make_thumbnail, int width, int height)
+		/// <param name="LocalTempFile"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
+		/// <param name="ThisTiffFile"> Name (excluding extension and directory) for the original TIFF file, to be used for naming of the derivatives </param>
+		/// <param name="VolumeDirectory"> Directory where the derivatives should be created </param>
+		/// <param name="MakeThumbnail"> Flag indicates whether a thumbnail image should be generated for this TIFF </param>
+		/// <param name="Width"> Requested width limit of the resulting full-size jpeg image to create </param>
+		/// <param name="Height"> Requested height limit of the resulting full-size jpeg image to create </param>
+		/// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
+		/// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
+		public void Image_Magick_Process_TIFF_File(string LocalTempFile, string ThisTiffFile, string VolumeDirectory, bool MakeThumbnail, int Width, int Height, long ParentLogId, string PackageName)
 		{
 			// Get the full file name
-			string fullFileName = volumeDirectory + "\\" + thisTiffFile + ".tif";
-			string rootName = volumeDirectory + "\\" + thisTiffFile;
+			string rootName = VolumeDirectory + "\\" + ThisTiffFile;
 
 			try
 			{
 				// Make a thumbnail image, if necessary
-				if ((make_thumbnail) && (thumbnail_height > 0) && (thumbnail_width > 0))
+				if ((MakeThumbnail) && (thumbnail_height > 0) && (thumbnail_width > 0))
 				{
 					// Save a 150 pixel wide JPEG
-					ImageMagick_Create_JPEG(localTempFile, rootName + "thm.jpg", thumbnail_width, thumbnail_height);
+					ImageMagick_Create_JPEG(LocalTempFile, rootName + "thm.jpg", thumbnail_width, thumbnail_height, ParentLogId, PackageName);
 				}
 
 				// Save a 630 pixel wide JPEG
-				ImageMagick_Create_JPEG(localTempFile, rootName + ".jpg", width, height);
+				ImageMagick_Create_JPEG(LocalTempFile, rootName + ".jpg", Width, Height, ParentLogId, PackageName);
 
 				if (catastrophic_failure_detected)
 				{
@@ -316,38 +308,34 @@ namespace SobekCM.Resource_Object.Utilities
 				// Save a 315 pixel wide JPEG
 				if (create_qc_images)
 				{
-					ImageMagick_Create_JPEG(localTempFile, rootName + ".QC.jpg", 315, 500);
+					ImageMagick_Create_JPEG(LocalTempFile, rootName + ".QC.jpg", 315, 500, ParentLogId, PackageName);
 				}
 			}
 			catch (Exception ee)
 			{
-				OnErrorEncountered("Error caught during image derivative creation: " + ee.Message);
+				OnErrorEncountered("Error caught during image derivative creation: " + ee.Message, ParentLogId, PackageName);
 				consecutive_image_creation_error++;
 			}
 		}
 
 		/// <summary> Use ImageMagick to create a JPEG derivative file </summary>
-		/// <param name="sourcefile"> Source file </param>
-		/// <param name="finalfile"> Final file</param>
-		/// <param name="width"> Width restriction for the resulting jpeg </param>
-		/// <param name="height"> Height restriction for the resulting jpeg</param>
-		public void ImageMagick_Create_JPEG(string sourcefile, string finalfile, int width, int height)
+		/// <param name="Sourcefile"> Source file </param>
+		/// <param name="Finalfile"> Final file</param>
+		/// <param name="Width"> Width restriction for the resulting jpeg </param>
+		/// <param name="Height"> Height restriction for the resulting jpeg</param>
+		/// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
+		/// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
+		public void ImageMagick_Create_JPEG(string Sourcefile, string Finalfile, int Width, int Height, long ParentLogId, string PackageName)
 		{
 			try
 			{
 				// Start this process
-				Process convert = new Process();
-				convert.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-				convert.StartInfo.CreateNoWindow = true;
-				convert.StartInfo.ErrorDialog = true;
-				convert.StartInfo.RedirectStandardError = true;
-				convert.StartInfo.UseShellExecute = false;
+				Process convert = new Process {StartInfo = {WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false}};
 				if (image_magick_path.ToUpper().IndexOf("CONVERT.EXE") > 0)
 					convert.StartInfo.FileName = image_magick_path;
 				else
 					convert.StartInfo.FileName = image_magick_path + "\\convert.exe";
-				convert.StartInfo.Arguments = "-geometry " + width + "x" + height + " \"" + sourcefile + "\" \"" + finalfile + "\"";
-				string command = convert.StartInfo.FileName + " " + convert.StartInfo.Arguments;
+				convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\" \"" + Finalfile + "\"";
 
 				// Start
 				convert.Start();
@@ -361,7 +349,7 @@ namespace SobekCM.Resource_Object.Utilities
 				convert.Dispose();
 
 				// If the final file did not appear, there was a problem
-				if (!File.Exists(finalfile))
+				if (!File.Exists(Finalfile))
 				{
 					if (error.Length > 0)
 					{
@@ -371,11 +359,11 @@ namespace SobekCM.Resource_Object.Utilities
 						{
 							catastrophic_failure_detected = true;
 						}
-						OnErrorEncountered("Error encountered during ImageMagick execution; no JPEG created!");
-						OnErrorEncountered(error);
+						OnErrorEncountered("Error encountered during ImageMagick execution; no JPEG created!", ParentLogId, PackageName);
+						OnErrorEncountered(error, ParentLogId, PackageName);
 						consecutive_image_creation_error++;
 						errorEncountered = true;
-						kakadu_error_count++;
+						Kakadu_Failures++;
 					}
 					else
 					{
@@ -383,11 +371,11 @@ namespace SobekCM.Resource_Object.Utilities
 						{
 							catastrophic_failure_detected = true;
 						}
-						OnErrorEncountered("No error discovered during ImageMagick execution, but no JPEG was created either!");
+						OnErrorEncountered("No error discovered during ImageMagick execution, but no JPEG was created either!", ParentLogId, PackageName);
 
 						consecutive_image_creation_error++;
 						errorEncountered = true;
-						kakadu_error_count++;
+						Kakadu_Failures++;
 					}
 				}
 				else
@@ -401,7 +389,7 @@ namespace SobekCM.Resource_Object.Utilities
 			{
 				consecutive_image_creation_error++;
 				errorEncountered = true;
-				kakadu_error_count++;
+				Kakadu_Failures++;
 			}
 		}
 
@@ -411,41 +399,29 @@ namespace SobekCM.Resource_Object.Utilities
 
 		/// <summary> Creates a JPEG2000 derivative service file, according to NDNP specs, for display 
 		/// within a SobekCM library </summary>
-		/// <param name="localTempFile"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
-		/// <param name="filename"> Name of the resulting JPEG2000 file </param>
-		/// <param name="directory"> Directory where the resulting JPEG2000 should be created ( usually the directory for the volume )</param>
+		/// <param name="LocalTempFile"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
+		/// <param name="Filename"> Name of the resulting JPEG2000 file </param>
+		/// <param name="Directory"> Directory where the resulting JPEG2000 should be created ( usually the directory for the volume )</param>
+		/// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
+		/// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
-		public bool Create_JPEG2000(string localTempFile, string filename, string directory)
+		public bool Create_JPEG2000(string LocalTempFile, string Filename, string Directory, long ParentLogId, string PackageName)
 		{
 			bool returnVal = true;
 
 			// Create the JPEG2000
-			string rootFile = directory + "\\" + filename;
+			string rootFile = Directory + "\\" + Filename;
 			string fullFileName = rootFile + ".tif";
 
 			if ((!File.Exists(rootFile + ".jp2")) || (File.GetLastWriteTime(rootFile + ".jp2").CompareTo(File.GetLastWriteTime(fullFileName)) < 0))
 			{
 				// Save the JPEG2000
-				// IF there is a special temporary TIFF to use, use that one instead
-				string source_file = fullFileName;
-				string temp_file = temp_folder + "\\TEMP.tif";
-				if (File.Exists(temp_file))
-				{
-					source_file = temp_file;
-				}
-				if (File.Exists(rootFile + ".tempjp2.tif"))
-				{
-					// Use the temporary file instead
-					source_file = rootFile + ".tempjp2.tif";
-				}
-
-				// Save the JPEG2000
-				returnVal = Kakadu_Create_JPEG2000(localTempFile, rootFile + ".jp2");
+				returnVal = Kakadu_Create_JPEG2000(LocalTempFile, rootFile + ".jp2", ParentLogId, PackageName);
 			}
 
 			try
 			{
-				File.Delete(localTempFile);
+				File.Delete(LocalTempFile);
 			}
 			catch
 			{
@@ -466,40 +442,39 @@ namespace SobekCM.Resource_Object.Utilities
 			return returnVal;
 		}
 
-		private bool Kakadu_Create_JPEG2000(string sourcefile, string finalfile)
+
+		private bool Kakadu_Create_JPEG2000(string Sourcefile, string Finalfile, long ParentLogId, string PackageName )
 		{
 			bool returnVal = true;
 
 			// Start this process
-			Process convert = new Process();
-			convert.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-			convert.StartInfo.CreateNoWindow = true;
-			convert.StartInfo.ErrorDialog = true;
-			convert.StartInfo.RedirectStandardError = true;
-			convert.StartInfo.UseShellExecute = false;
-			convert.StartInfo.FileName = kakadu_path + "\\kdu_compress_libtiff.exe";
-			convert.StartInfo.Arguments = " -i \"" + sourcefile + "\" -o \"" + finalfile + "\" -rate 1.0,0.84,0.7,0.6,0.5,0.4,0.35,0.3,0.25,0.21,0.18,0.15,0.125,0.1,0.088,0.075,0.0625,0.05,0.04419,0.03716,0.03125,0.025,0.0221,0.01858,0.015625 Clevels=6 Stiles={1024,1024} Corder=RLCP Cblk={64,64} Sprofile=PROFILE1";
-
-
-			////			StreamWriter writer = new StreamWriter( Application.StartupPath + "\\Logs\\kakadu.log", true );
-			////			writer.WriteLine( convert.StartInfo.Arguments );
-			////			writer.Flush();
-			////			writer.Close();
+			Process convert = new Process
+				{
+					StartInfo = {WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false, FileName = kakadu_path + "\\kdu_compress_libtiff.exe", Arguments = " -i \"" + Sourcefile + "\" -o \"" + Finalfile + "\" -rate 1.0,0.84,0.7,0.6,0.5,0.4,0.35,0.3,0.25,0.21,0.18,0.15,0.125,0.1,0.088,0.075,0.0625,0.05,0.04419,0.03716,0.03125,0.025,0.0221,0.01858,0.015625 Clevels=6 Stiles={1024,1024} Corder=RLCP Cblk={64,64} Sprofile=PROFILE1"}
+				};
 
 			convert.Start();
 
 			// Check for any error
 			StreamReader readError = convert.StandardError;
 			string error = readError.ReadToEnd();
-			if (error.Length > 0)
-			{
-				returnVal = false;
-				OnErrorEncountered("......." + error);
-			}
 
 			// Make sure it is complete
 			convert.WaitForExit();
 			convert.Dispose();
+
+			if (error.Length > 0)
+			{
+				returnVal = false;
+				if (File.Exists(Finalfile))
+				{
+					OnErrorEncountered("WARNING: " + error, ParentLogId, PackageName);
+				}
+				else
+				{
+					OnErrorEncountered("ERROR: " + error, ParentLogId, PackageName);
+				}
+			}
 
 			return returnVal;
 		}

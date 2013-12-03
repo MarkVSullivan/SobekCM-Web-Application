@@ -431,7 +431,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</div>");
 
             // Pull this date from the database
-            DataTable values = SobekCM_Database.Get_Build_Error_Logs(Tracer, new DateTime( first_year, first_month, 1 ), new DateTime( second_year, second_month, 1).AddMonths(1));
+            DataTable values = SobekCM_Database.Builder_Get_Error_Logs(Tracer, new DateTime( first_year, first_month, 1 ), new DateTime( second_year, second_month, 1).AddMonths(1));
 
             if ((values == null) || (values.Rows.Count == 0))
             {

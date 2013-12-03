@@ -245,56 +245,56 @@ namespace SobekCM.Builder
                 }
             }
 
-            // Assign the connection string and test the connection
-            SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-            if (!SobekCM_Database.Test_Connection())
-            {
-                Console.WriteLine("Unable to connect to the database using provided connection string:");
-                Console.WriteLine();
-                Console.WriteLine(SobekCM_Database.Connection_String);
-                Console.WriteLine();
-                Console.WriteLine("Run this application with an argument of '--config' to launch the configuration tool.");
-                return;
-            }
-
-            // Load all the settings
-            SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(null));
+            // Assign the connection string and test the connection (if only a single connection listed)
+	        if (SobekCM_Library_Settings.Database_Connections.Count == 1)
+	        {
+		        SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+		        if (!SobekCM_Database.Test_Connection())
+		        {
+			        Console.WriteLine("Unable to connect to the database using provided connection string:");
+			        Console.WriteLine();
+			        Console.WriteLine(SobekCM_Database.Connection_String);
+			        Console.WriteLine();
+			        Console.WriteLine("Run this application with an argument of '--config' to launch the configuration tool.");
+			        return;
+		        }
+	        }
 
             // Verify connectivity and rights on the logs subfolder
-            string logfile_dir = Application.StartupPath + "\\logs";
-            if (!Directory.Exists(logfile_dir))
+            SobekCM_Library_Settings.Local_Log_Directory = Application.StartupPath + "\\logs";
+			if (!Directory.Exists(SobekCM_Library_Settings.Local_Log_Directory))
             {
                 try
                 {
-                    Directory.CreateDirectory(logfile_dir);
+					Directory.CreateDirectory(SobekCM_Library_Settings.Local_Log_Directory);
                 }
                 catch
                 {
                     Console.WriteLine("Error creating necessary logs subfolder under the application folder.\n");
                     Console.WriteLine("Please create manually.\n");
-                    Console.WriteLine(logfile_dir);
+					Console.WriteLine(SobekCM_Library_Settings.Local_Log_Directory);
                     return;
                 }
             }
             try
             {
-                StreamWriter testWriter = new StreamWriter(logfile_dir + "\\test.log", false);
+				StreamWriter testWriter = new StreamWriter(SobekCM_Library_Settings.Local_Log_Directory + "\\test.log", false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
 
-                File.Delete(logfile_dir + "\\test.log");
+				File.Delete(SobekCM_Library_Settings.Local_Log_Directory + "\\test.log");
             }
             catch
             {
                 Console.WriteLine("The service account needs modify rights on the logs subfolder.\n");
                 Console.WriteLine("Please correct manually.\n");
-                Console.WriteLine(logfile_dir);
+				Console.WriteLine(SobekCM_Library_Settings.Local_Log_Directory);
                 return;
             }
 
             // If this is to refresh the OAI, don't use the worker controller
-            if (refresh_oai)
+            if (( refresh_oai ) &&  (SobekCM_Library_Settings.Database_Connections.Count == 1))
             {
                 // Set the item for the current mode
                 int successes = 0;

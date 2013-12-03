@@ -196,7 +196,8 @@ namespace SobekCM.Configuration.Database
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Builder_Incoming_Folder_Edit' stored procedure </remarks> 
         public static bool Edit_Builder_Incoming_Folder(int FolderID, string Folder_Name, string Network_Folder, string Error_Folder, string Processing_Folder,
-            bool Perform_Checksum, bool Archive_TIFF, bool Archive_All_Files, bool Allow_Deletes, bool Allow_Folders_No_Metadata, bool Contains_Institutional_Folders )
+			bool Perform_Checksum, bool Archive_TIFF, bool Archive_All_Files, bool Allow_Deletes, bool Allow_Folders_No_Metadata, Nullable<bool> Can_Move_To_Content_Folder,
+			string BibID_Roots_Restrictions )
         {
             try
             {
@@ -216,8 +217,13 @@ namespace SobekCM.Configuration.Database
                     executeCommand.Parameters.AddWithValue("@Archive_All_Files", Archive_All_Files);
                     executeCommand.Parameters.AddWithValue("@Allow_Deletes", Allow_Deletes);
                     executeCommand.Parameters.AddWithValue("@Allow_Folders_No_Metadata", Allow_Folders_No_Metadata);
-                    executeCommand.Parameters.AddWithValue("@Contains_Institutional_Folders", Contains_Institutional_Folders);
                     executeCommand.Parameters.AddWithValue("@FolderName", Folder_Name);
+					if (Can_Move_To_Content_Folder.HasValue)
+						executeCommand.Parameters.AddWithValue("@Can_Move_To_Content_Folder", Can_Move_To_Content_Folder.Value);
+					else
+						executeCommand.Parameters.AddWithValue("@Can_Move_To_Content_Folder", DBNull.Value );
+
+					executeCommand.Parameters.AddWithValue("@BibID_Roots_Restrictions", BibID_Roots_Restrictions);
                     executeCommand.Parameters.AddWithValue("@NewID", -1).Direction = ParameterDirection.Output;
 
                     // Create the data reader

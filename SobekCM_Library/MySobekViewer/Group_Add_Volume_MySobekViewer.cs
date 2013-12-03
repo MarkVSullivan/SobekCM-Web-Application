@@ -357,7 +357,7 @@ namespace SobekCM.Library.MySobekViewer
             string base_url = currentMode.Base_URL;
             try
             {
-                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, itemList, iconList, webSkin);
+                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, null, webSkin.Skin_Code);
                 string filename = user_in_process_directory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                 staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
             }
@@ -389,10 +389,10 @@ namespace SobekCM.Library.MySobekViewer
 
             List<string> collectionnames = new List<string>();
             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
-            string Error_Message;
+            string errorMessage;
             Dictionary<string, object> options = new Dictionary<string, object>();
             options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
-            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out Error_Message);
+            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
 
             // Copy this to all the image servers
