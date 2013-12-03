@@ -23,9 +23,12 @@ namespace SobekCM.Library.Skins
         /// The default skins currently include: UFDC (english), dLOC (english, french, and spanish) </remarks>
         public static bool Populate_Default_Skins(SobekCM_Skin_Collection Skin_List, Custom_Tracer tracer)
 		{
-            tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
+		    if (tracer != null)
+		    {
+			    tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
+		    }
 
-            // Get the data from the database
+		    // Get the data from the database
             DataTable skinData = SobekCM_Database.Get_All_Web_Skins(tracer);
 
             // Just return if the data appears bad..

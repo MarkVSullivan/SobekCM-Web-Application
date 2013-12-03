@@ -185,6 +185,11 @@ public partial class SobekMain : System.Web.UI.Page
         {
             Response.Output.Write(((SobekCM.Library.MainWriters.Html_MainWriter)pageGlobals.mainWriter).Get_Body_Attributes(pageGlobals.tracer));
         }
+
+		if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo) && (pageGlobals.currentMode.Mode == Display_Mode_Enum.Item_Display))
+		{
+			Response.Output.Write("id=\"itembody\"");
+		}
     }
 
     protected void Write_Html()

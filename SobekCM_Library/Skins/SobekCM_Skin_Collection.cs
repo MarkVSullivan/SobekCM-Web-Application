@@ -64,12 +64,8 @@ namespace SobekCM.Library.Skins
         {
             get
             {
-                List<string> allSkinCodes = new List<string>();
-                foreach (DataRow thisRow in Skin_Table.Rows)
-                {
-                    allSkinCodes.Add(thisRow[0].ToString());
-                }
-                return new ReadOnlyCollection<string>(allSkinCodes);
+                List<string> allSkinCodes = (from DataRow thisRow in Skin_Table.Rows select thisRow[0].ToString()).ToList();
+	            return new ReadOnlyCollection<string>(allSkinCodes);
             }
         }
 

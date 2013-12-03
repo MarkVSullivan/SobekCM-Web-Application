@@ -493,10 +493,6 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("\t</ul></div>");
 			Output.WriteLine();
 
-			// Add the scripts needed
-			Output.WriteLine("<!-- Add references to the superfish and hoverintent libraries for the main user menu -->");
-			Output.WriteLine(); 
-
 			Output.WriteLine("<!-- Initialize the main user menu -->");
 			Output.WriteLine("<script>");
 			Output.WriteLine("  jQuery(document).ready(function () {");

@@ -66,10 +66,6 @@ namespace SobekCM.Library.AggregationViewer
 			{
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
-					if (Current_Mode.Is_Robot)
-					{
-						return "<li>ADVANCED SEARCH</li>" + Environment.NewLine;
-					}
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Advanced, Translations.Get_Translation("ADVANCED SEARCH", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
@@ -97,6 +93,19 @@ namespace SobekCM.Library.AggregationViewer
 
 		private static string Menu_HTML_Helper(string SkinCode, Search_Type_Enum Search_Type, string Display_Text, SobekCM_Navigation_Object Current_Mode)
 		{
+			if (Current_Mode.Is_Robot)
+			{
+				if ((Current_Mode.Mode == Display_Mode_Enum.Search) && (Current_Mode.Search_Type == Search_Type))
+				{
+					return "<li class=\"selected-sf-menu-item-link\"><a href=\"\">" + Display_Text + "</a></li>" + Environment.NewLine;
+				}
+				else
+				{
+					return "<li><a href=\"\">" + Display_Text + "</a></li>" + Environment.NewLine;
+
+				}
+			}
+
 			if ((Current_Mode.Mode == Display_Mode_Enum.Search) && (Current_Mode.Search_Type == Search_Type))
 			{
 				return "<li class=\"selected-sf-menu-item-link\"><a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a></li>" + Environment.NewLine;

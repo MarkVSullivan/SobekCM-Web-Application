@@ -24,34 +24,6 @@ namespace SobekCM.Resource_Object.Database
 	/// Object created by Mark V Sullivan and Ying Tang (2006) for University of Florida's Digital Library Center.</remarks>
 	public class SobekCM_Database
 	{
-		/// <summary>Method used to get all SobekCM icons</summary>
-		/// <returns></returns>
-		public static DataRow TEMP_Get_Group_Info_By_BibID( string BibID )
-		{
-			try
-			{
-				// build the parameter list
-				SqlParameter[] param_list = new SqlParameter[1];
-				param_list[0] = new SqlParameter("@bibid", BibID);
-
-				//Execute this non-query stored procedure
-				DataSet returnVal = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "TEMP_Get_Group_Info_By_BibID", param_list);
-
-				if (returnVal == null)
-					return null;
-
-				if (returnVal.Tables[0].Rows.Count == 0)
-					return null;
-
-				return returnVal.Tables[0].Rows[0];
-			}
-			catch (Exception ee)
-			{
-				exception_caught("TEMP_Get_Group_Info_By_BibID", ee);
-				return null;
-			}
-		}
-
 		/// <summary> Private constant string variable stores the connection string 
 		/// to get to the SobekCM Database on the SQL server. </summary>
 		private static string connectionString = "data source=lib-ufdc-cache\\UFDCPROD;initial catalog=UFDC_prod;integrated security=SSPI;persist security info=False;workstation id=WSID3246;packet size=4096";

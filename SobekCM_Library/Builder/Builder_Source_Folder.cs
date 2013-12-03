@@ -262,7 +262,7 @@ namespace SobekCM.Library.Builder
             foreach (Incoming_Digital_Resource resource in inboundResources)
             {
                 // Is this resource a candidate to move for continued processing?
-                long resource_age = resource.Age_in_Ticks;
+                long resource_age = resource.AgeInTicks;
                 if ((resource_age > SobekCM_Library_Settings.Complete_Package_Required_Aging) || ((resource_age > SobekCM_Library_Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))
