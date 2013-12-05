@@ -1326,28 +1326,29 @@ function changeMapLayer(layer) {
 
 //pan map handler
 function panMap(direction) {
-    panOverlay(direction);
-    //switch (direction) {
-    //    case "up":
-    //        map.panBy(0, -100);
-    //        testBounds();
-    //        break;
-    //    case "down":
-    //        map.panBy(0, 100);
-    //        testBounds();
-    //        break;
-    //    case "left":
-    //        map.panBy(-100, 0);
-    //        testBounds();
-    //        break;
-    //    case "right":
-    //        map.panBy(100, 0);
-    //        testBounds();
-    //        break;
-    //    case "reset":
-    //        map.panTo(globalVar.mapCenter);
-    //        break;
-    //}
+    //panOverlay(direction);
+
+    switch (direction) {
+        case "up":
+            map.panBy(0, -100);
+            testBounds();
+            break;
+        case "down":
+            map.panBy(0, 100);
+            testBounds();
+            break;
+        case "left":
+            map.panBy(-100, 0);
+            testBounds();
+            break;
+        case "right":
+            map.panBy(100, 0);
+            testBounds();
+            break;
+        case "reset":
+            map.panTo(globalVar.mapCenter);
+            break;
+    }
 }
 
 //zoom map handler
@@ -1883,13 +1884,26 @@ function clear(id) {
                 place("overlay");
                 //delete all incoming overlays
                 clearIncomingOverlays();
-                //show all the incoming overlays
-                displayIncomingPolygons();
                 //clear the save cache
                 clearCacheSaveOverlay();
-                //redraw list items of overlays
-                initOverlayList();
-                //say we are finished
+
+                //de(globalVar.overlaysOnMap.length);
+                //for (var i = 0; i < globalVar.overlaysOnMap.length; i++) {
+                //    de(i);
+                //    if (globalVar.overlaysOnMap[i + 1].image_ == globalVar.incomingPolygonSourceURL[i]) {
+                //        globalVar.incomingPolygonFeatureType[i] = "hidden";
+                //        globalVar.incomingPolygonPolygonType[i] = "hidden";
+                //    }
+                //}
+                ////show all the incoming overlays
+                //displayIncomingPolygons();
+                
+                ////clear ooms
+                //clearOverlaysOnMap();
+                ////redraw list items of overlays
+                //initOverlayList();
+                
+                ////say we are finished
                 displayMessage(L10);
             } else {
                 displayMessage(L46);
@@ -5501,6 +5515,17 @@ function clearCacheSaveOverlay() {
         de("nothing in cache");
     }
     
+}
+
+//clear the ooms
+function clearOverlaysOnMap() {
+    de("attempting to clear ooms");
+    if (globalVar.overlaysOnMap.length > 0) {
+        globalVar.overlaysOnMap = [];
+        de("ooms reset");
+    } else {
+    de("no overlays on the map");
+    }
 }
 
 //keypress shortcuts/actions
