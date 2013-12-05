@@ -1877,38 +1877,28 @@ function clear(id) {
 
             break;
 
-        case "overlay":
-            if ((globalVar.workingOverlayIndex != null) || (globalVar.overlayCount != globalVar.overlaysOnMap.length)) {
+        case "overlay":            
+            if ((globalVar.workingOverlayIndex != null) || ((globalVar.overlayCount != globalVar.overlaysOnMap.length) && (globalVar.overlayCount != 0))) {
                 displayMessage(localize.L52);
                 //reset edit mode
                 place("overlay");
+                //reset hidden overlays
+                resetHiddenOverlays();
                 //delete all incoming overlays
                 clearIncomingOverlays();
                 //clear the save cache
                 clearCacheSaveOverlay();
-
-                //de(globalVar.overlaysOnMap.length);
-                //for (var i = 0; i < globalVar.overlaysOnMap.length; i++) {
-                //    de(i);
-                //    if (globalVar.overlaysOnMap[i + 1].image_ == globalVar.incomingPolygonSourceURL[i]) {
-                //        globalVar.incomingPolygonFeatureType[i] = "hidden";
-                //        globalVar.incomingPolygonPolygonType[i] = "hidden";
-                //    }
-                //}
-                ////show all the incoming overlays
-                //displayIncomingPolygons();
-                
-                ////clear ooms
-                //clearOverlaysOnMap();
-                ////redraw list items of overlays
-                //initOverlayList();
-                
-                ////say we are finished
+                //show all the incoming overlays
+                displayIncomingPolygons();
+                //clear ooms
+                clearOverlaysOnMap();
+                //redraw list items of overlays
+                initOverlayList();
+                //say we are finished
                 displayMessage(L10);
             } else {
                 displayMessage(L46);
             }
-
             break;
 
         case "poi":
@@ -5523,8 +5513,29 @@ function clearOverlaysOnMap() {
     if (globalVar.overlaysOnMap.length > 0) {
         globalVar.overlaysOnMap = [];
         de("ooms reset");
+        //globalVar.overlayCount = 0;
     } else {
     de("no overlays on the map");
+    }
+}
+
+function resetHiddenOverlays() {
+    alert(globalVar.overlaysOnMap.length);
+    for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
+        alert("i:"+i);
+        for (var j = 0; j < globalVar.incomingPolygonSourceURL.length; j++) {
+            de("i(" + i + ") " + j);
+            alert("j:" + j);
+                try {
+                    if (globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) {
+                        globalVar.incomingPolygonFeatureType[j] = "hidden";
+                        globalVar.incomingPolygonPolygonType[j] = "hidden";
+                    }
+                } catch (e) {
+                    alert("err");
+                    de("[ERROR]: Not found.");
+                }
+        }
     }
 }
 
