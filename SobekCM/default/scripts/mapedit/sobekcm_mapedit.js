@@ -1026,99 +1026,6 @@ function resetAll() {
 
 }
 
-function panOverlay(direction) {
-    switch (direction) {
-        case "up":
-            //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0001;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0001;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
-            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
-            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-            de(pixelPoint.x);
-            //div.style.left = pixelPoint.x + "px";
-            div.style.top = pixelPoint.y + "px";
-            //testBounds();
-            break;
-        case "down":
-            //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() - 0.0001;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() - 0.0001;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
-            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
-            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-            de(pixelPoint.x);
-            //div.style.left = pixelPoint.x + "px";
-            div.style.top = pixelPoint.y + "px";
-            //testBounds();
-            break;
-        case "left":
-            //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() - 0.0001;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() - 0.0001;
-            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
-            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-            de(pixelPoint.x);
-            div.style.left = pixelPoint.x + "px";
-            //div.style.top = pixelPoint.y + "px";
-            //testBounds();
-            break;
-        case "right":
-            //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0001;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0001;
-            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
-            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-            de(pixelPoint.x);
-            div.style.backgroundPosition = pixelPoint.x + "px";
-            
-            //div.style.top = pixelPoint.y + "px";
-            //testBounds();
-            break;
-        case "reset":
-            //globalVar.overlaysOnMap[globalVar.workingOverlayIndex].panBy((-1 * xaxis), (-1 * yaxis));
-            break;
-    }
-}
-
-function latLngToPixel(latLng) {
-    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
-    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
-    var scale = Math.pow(2, map.getZoom());
-    var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
-    return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
-}
-
 //toggle items handler
 function toggleVis(id) {
 
@@ -4721,21 +4628,25 @@ function overlayShowMe(id) {
 
 //delete poi from map and list
 function overlayDeleteMe(id) {
-    confirm(localize.L54);
-    try {
-        createSavedOverlay("delete", id, "", "", "", "");
-        globalVar.overlaysOnMap[id].setMap(null);
-        globalVar.overlaysOnMap[id] = null;
-        globalVar.ghostOverlayRectangle[id].setMap(null);
-        globalVar.ghostOverlayRectangle[id] = null;
-        //var strg = "#overlayListItem" + id; //create <li> overlay string
-        //$(strg).remove(); //remove <li>
-        globalVar.overlayCount--;
-        //displayMessage(id + " " + L33);
-        displayMessage(localize.L55 + " " + id);
-    } catch(e) {
+    if (globalVar.overlaysOnMap[id]) {
+        confirm(localize.L54);
+        try {
+            createSavedOverlay("delete", id, "", "", "", "");
+            globalVar.overlaysOnMap[id].setMap(null);
+            globalVar.overlaysOnMap[id] = null;
+            globalVar.ghostOverlayRectangle[id].setMap(null);
+            globalVar.ghostOverlayRectangle[id] = null;
+            //var strg = "#overlayListItem" + id; //create <li> overlay string
+            //$(strg).remove(); //remove <li>
+            globalVar.overlayCount--;
+            //displayMessage(id + " " + L33);
+            displayMessage(localize.L55 + " " + id);
+        } catch (e) {
+            displayMessage(localize.L57); //nothing to delete
+        }
+    } else {
         displayMessage(localize.L57); //nothing to delete
-    } 
+    }
 }
 
 //open the infoWindow of a poi
@@ -5535,6 +5446,7 @@ function clearOverlaysOnMap() {
     }
 }
 
+//reset hidden overlays
 function resetHiddenOverlays() {
     de("total oom count: "+globalVar.overlaysOnMap.length);
     for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
@@ -5562,6 +5474,101 @@ function resetHiddenOverlays() {
             }
         }
     }
+}
+
+//EXPERIMENTAL
+function panOverlay(direction) {
+    switch (direction) {
+        case "up":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0001;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0001;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            //div.style.left = pixelPoint.x + "px";
+            div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "down":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() - 0.0001;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() - 0.0001;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            //div.style.left = pixelPoint.x + "px";
+            div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "left":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() - 0.0001;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() - 0.0001;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            div.style.left = pixelPoint.x + "px";
+            //div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "right":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0001;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0001;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            div.style.backgroundPosition = pixelPoint.x + "px";
+
+            //div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "reset":
+            //globalVar.overlaysOnMap[globalVar.workingOverlayIndex].panBy((-1 * xaxis), (-1 * yaxis));
+            break;
+    }
+}
+
+//EXPERIMENTAL
+function latLngToPixel(latLng) {
+    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+    var scale = Math.pow(2, map.getZoom());
+    var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
+    return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
 }
 
 //keypress shortcuts/actions
