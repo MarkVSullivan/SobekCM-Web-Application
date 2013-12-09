@@ -1762,6 +1762,10 @@ function save(id) {
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
                         try {
+                            //explicitly change TEMP_ IDs
+                            globalVar.incomingPolygonFeatureType[i] = "main";
+                            globalVar.incomingPolygonPolygonType[i] = "rectangle";
+
                             de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                             createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                             if (globalVar.toServerSuccess == true) {
@@ -3371,16 +3375,22 @@ function displayIncomingLines() {
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingPolygons() {
     //go through and display overlays as long as there is an overlay to display
-    alert("length: "+globalVar.incomingPolygonPath.length);
+    de("length: "+globalVar.incomingPolygonPath.length);
     for (var i = 0; i < globalVar.incomingPolygonPath.length; i++) {
-        alert("ft: " + globalVar.incomingPolygonFeatureType[i]);
+        de("ft: " + globalVar.incomingPolygonFeatureType[i]);
         switch (globalVar.incomingPolygonFeatureType[i]) {
+        case "TEMP_main":
+            //hidden do nothing
+            globalVar.incomingPolygonFeatureType[i] = "hidden";
+            globalVar.incomingPolygonPolygonType[i] = "hidden";
+            de("converting TEMP_ for " + i);
+            break;
         case "hidden":
             //hidden do nothing
-            alert("doing nothing for " + i);
+            de("doing nothing for " + i);
             break;
         case "":
-            alert("doing case2 for " + i);
+            de("doing case2 for " + i);
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
@@ -3397,7 +3407,7 @@ function displayIncomingPolygons() {
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "main":
-            alert("doing case3 for " + i);
+            de("doing case3 for " + i);
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
@@ -3414,7 +3424,7 @@ function displayIncomingPolygons() {
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "poi":
-            alert("doing case4 for " + i);
+            de("doing case4 for " + i);
             //globalVar.placerType = "poi";
             if (globalVar.placerType == "poi") {
                 //determine polygon type
@@ -5185,9 +5195,9 @@ function createOverlayFromPage(pageId) {
     //indicate that we drew this overlay
     globalVar.overlayType = "drawn";
     //assign featuretype
-    globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "main";
+    globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "TEMP_main";
     //assign polygon type
-    globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "rectangle";
+    globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "TEMP_rectangle";
     //add the rotation
     globalVar.incomingPolygonRotation[globalVar.convertedOverlayIndex] = 0;
     //add the working overlay index
@@ -5233,8 +5243,8 @@ function convertToOverlay() {
         actionsACL("none", "item");
         actionsACL("full", "overlay");
         //(confirm 'main' if not already there) fixes a bug 
-        globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "main";
-        globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "rectangle";
+        globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "TEMP_main";
+        globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "TEMP_rectangle";
         //explicitly open overlay tab (fixes bug)
         openToolboxTab(3);
         //converted
