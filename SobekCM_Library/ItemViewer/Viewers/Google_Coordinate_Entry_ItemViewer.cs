@@ -211,39 +211,47 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
-                    if (saveTypeHandle == "delete2")
+                    if (saveTypeHandle == "delete")
                     {
                         switch (saveType)
                         {
                             #region overlay
                             case "overlay":
-                                //parse the array id of the page
-                                int arrayId = (Convert.ToInt32(ar[2]) - 1); //is this always true (minus one of the human page id)?
-                                //get the geocoordinate object for that pageId
-                                GeoSpatial_Information pageGeo = pages[arrayId].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                                try
+                                {
+                                    //parse the array id of the page
+                                    int arrayId = (Convert.ToInt32(ar[2]) - 1); //is this always true (minus one of the human page id)?
+                                    //get the geocoordinate object for that pageId
+                                    GeoSpatial_Information pageGeo = pages[arrayId].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                                    Coordinate_Polygon pagePolygon = pageGeo.Polygons[0];
 
-                                Coordinate_Polygon pagePolygon = pageGeo.Polygons[0];
-                                //reset edgepoints
-                                pagePolygon.Clear_Edge_Points();
-                                //reset rotation
-                                pagePolygon.Rotation = 0;
-                                //add the featureType (explicitly add to make sure it is there)
-                                pagePolygon.FeatureType = "main";
-                                //add the polygon type
-                                pagePolygon.PolygonType = "rectangle";
-                                //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
-                                pageGeo.Clear_NonPOIs();
-                                //add polygon to pagegeo
-                                pageGeo.Add_Polygon(pagePolygon);
+                                    //reset edgepoints
+                                    pagePolygon.Clear_Edge_Points();
+                                    //reset rotation
+                                    pagePolygon.Rotation = 0;
+                                    //add the featureType (explicitly add to make sure it is there)
+                                    pagePolygon.FeatureType = "hidden";
+                                    //add the polygon type
+                                    pagePolygon.PolygonType = "hidden";
+                                    //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
+                                    pageGeo.Clear_NonPOIs();
+                                    //add polygon to pagegeo
+                                    pageGeo.Add_Polygon(pagePolygon);
 
-                                ////if there isnt any already there
-                                //if (pageGeo != null)
-                                //    pageGeo.Remove_Polygon(pageGeo.Polygons[0]);
+                                    ////if there isnt any already there
+                                    //if (pageGeo != null)
+                                    //    pageGeo.Remove_Polygon(pageGeo.Polygons[0]);
 
-                                //add the pagegeo obj
-                                pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
-                                //save to db
-                                Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                                    //add the pagegeo obj
+                                    pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
+                                    //save to db
+                                    Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                                }
+                                catch (Exception)
+                                {
+                                    //
+                                }
+                                
                                 break;
                             #endregion
                         }
@@ -777,6 +785,52 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + itemPolygon.Page_Sequence + ";");
                             //iterate
+                            totalAddedPolygonIndex++;
+                        }
+                    }
+                    #endregion
+
+                    #region Add the page info so we can convert to overlays in the app
+                    foreach (var page in pages)
+                    {
+                        if (totalAddedPolygonIndex < pages.Count)
+                        {
+                            //add featuretype
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
+                            //add polygontype
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
+                            //add label
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
+                            //add page sequence
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
+                            //add image url
+                            try
+                            {
+                                //your way
+                                List<SobekCM_File_Info> first_page_files = CurrentItem.Web.Pages_By_Sequence[totalAddedPolygonIndex].Files;
+
+                                string first_page_jpeg = String.Empty;
+                                foreach (SobekCM_File_Info thisFile in first_page_files)
+                                {
+                                    if ((thisFile.System_Name.ToLower().IndexOf(".jpg") > 0) &&
+                                        (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
+                                    {
+                                        first_page_jpeg = thisFile.System_Name;
+                                        break;
+                                    }
+                                }
+                                string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                                ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
+                                //polygonURL.Add(first_page_complete_url);
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
+                            }
+                            catch (Exception)
+                            {
+                                //my way
+                                string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
+                                //throw;
+                            }
                             totalAddedPolygonIndex++;
                         }
                     }
