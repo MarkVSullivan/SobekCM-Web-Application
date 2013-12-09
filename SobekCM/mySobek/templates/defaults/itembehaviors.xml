@@ -20,11 +20,12 @@
 			<name language="eng">Behaviors</name>
 			<panel>
 				<name>Basic Information</name>
-				<element type="Tickler" />
-				<element type="Bib" mandatory="true" readonly="true" />
-				<element type="VID" mandatory="true" readonly="true" />
-				<element type="Thumbnail" repeatable="false" />
+				<element type="Aggregations" />
+				<element type="Icon" repeatable="true" />
 				<element type="SerialHierarchy" subtype="panel" />
+				<element type="Viewer"  repeatable="true" />
+				<element type="Thumbnail" repeatable="false" />
+				<element type="Tickler" />
 				<element type="Dark_Flag" />
 			</panel>
 			<panel>
@@ -33,20 +34,7 @@
 				<element type="Tracking_Box" />
 				<element type="Disposition_Advice" />
 			</panel>
-			<panel>
-				<name>Membership</name>
-				<element type="Aggregations" />
-				<element type="Source" subtype="complex" />
-				<element type="Holding" subtype="complex" />
-			</panel>
-			<panel>
-				<name language="eng">Wordmarks for web page</name>
-				<element type="Icon" repeatable="true" />
-			</panel>
-			<panel>
-				<name>Viewers for this resource</name>
-				<element type="Viewer"  repeatable="true" />
-			</panel>
+
 		</page>
 	</inputs>
 </input_template>
