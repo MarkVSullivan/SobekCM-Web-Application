@@ -1788,8 +1788,9 @@ function clear(id) {
 
             break;
 
-        case "overlay":            
-            if ((globalVar.workingOverlayIndex != null) || ((globalVar.overlayCount != globalVar.overlaysOnMap.length) && (globalVar.overlayCount != 0))) {
+        case "overlay":
+            //if ((globalVar.workingOverlayIndex != null) || ((globalVar.overlayCount != globalVar.overlaysOnMap.length) && (globalVar.overlayCount != 0))) {
+            if(globalVar.savingOverlayIndex.length>0){
                 displayMessage(localize.L52);
                 //reset edit mode
                 place("overlay");
@@ -1799,10 +1800,10 @@ function clear(id) {
                 clearIncomingOverlays();
                 //clear the save cache
                 clearCacheSaveOverlay();
-                //show all the incoming overlays
-                displayIncomingPolygons();
                 //clear ooms
                 clearOverlaysOnMap();
+                //show all the incoming overlays
+                displayIncomingPolygons();
                 //redraw list items of overlays
                 initOverlayList();
                 //say we are finished
@@ -4638,7 +4639,8 @@ function overlayDeleteMe(id) {
             globalVar.ghostOverlayRectangle[id] = null;
             //var strg = "#overlayListItem" + id; //create <li> overlay string
             //$(strg).remove(); //remove <li>
-            globalVar.overlayCount--;
+            globalVar.overlayCount += -1;
+            globalVar.workingOverlayIndex = null;
             //displayMessage(id + " " + L33);
             displayMessage(localize.L55 + " " + id);
         } catch (e) {
@@ -4845,8 +4847,12 @@ $(function () {
 //keeps a specific opacity
 function keepOpacity(opacityIn) {
     de("keepOpacity: " + opacityIn);
-    var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-    div.style.opacity = opacityIn;
+    try {
+        var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+        div.style.opacity = opacityIn;
+    } catch(e) {
+        //
+    } 
     globalVar.preservedOpacity = opacityIn;
 }
 
@@ -5463,7 +5469,7 @@ function resetHiddenOverlays() {
             for (var j = 0; j < globalVar.incomingPolygonSourceURL.length; j++) {
                 de("incoming ID:" + j);
                 try {
-                    if (globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) {
+                    if ((globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) && (globalVar.incomingPolygonFeatureType[j] == "TEMP_main")) {
                         globalVar.incomingPolygonFeatureType[j] = "hidden";
                         globalVar.incomingPolygonPolygonType[j] = "hidden";
                         de("[INFO]: Set Incoming To 'Hidden'");
