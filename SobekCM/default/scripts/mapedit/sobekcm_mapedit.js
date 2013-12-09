@@ -3371,12 +3371,16 @@ function displayIncomingLines() {
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingPolygons() {
     //go through and display overlays as long as there is an overlay to display
+    alert("length: "+globalVar.incomingPolygonPath.length);
     for (var i = 0; i < globalVar.incomingPolygonPath.length; i++) {
+        alert("ft: " + globalVar.incomingPolygonFeatureType[i]);
         switch (globalVar.incomingPolygonFeatureType[i]) {
         case "hidden":
             //hidden do nothing
+            alert("doing nothing for " + i);
             break;
         case "":
+            alert("doing case2 for " + i);
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
@@ -3393,6 +3397,7 @@ function displayIncomingPolygons() {
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "main":
+            alert("doing case3 for " + i);
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
@@ -3409,6 +3414,7 @@ function displayIncomingPolygons() {
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "poi":
+            alert("doing case4 for " + i);
             //globalVar.placerType = "poi";
             if (globalVar.placerType == "poi") {
                 //determine polygon type
@@ -5520,21 +5526,30 @@ function clearOverlaysOnMap() {
 }
 
 function resetHiddenOverlays() {
-    alert(globalVar.overlaysOnMap.length);
+    de("total oom count: "+globalVar.overlaysOnMap.length);
     for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
-        alert("i:"+i);
-        for (var j = 0; j < globalVar.incomingPolygonSourceURL.length; j++) {
-            de("i(" + i + ") " + j);
-            alert("j:" + j);
+        de("oom ID:" + i);
+        var isComparable = false;
+        try {
+            if (globalVar.overlaysOnMap[i].image_) {
+                isComparable = true;
+            }
+        } catch (e) {
+            de("[WARN]: No image for oom ID" + i);
+        }
+        if (isComparable) {
+            for (var j = 0; j < globalVar.incomingPolygonSourceURL.length; j++) {
+                de("incoming ID:" + j);
                 try {
                     if (globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) {
                         globalVar.incomingPolygonFeatureType[j] = "hidden";
                         globalVar.incomingPolygonPolygonType[j] = "hidden";
+                        de("[INFO]: Set Incoming To 'Hidden'");
                     }
                 } catch (e) {
-                    alert("err");
                     de("[ERROR]: Not found.");
                 }
+            }
         }
     }
 }
