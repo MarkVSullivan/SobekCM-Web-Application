@@ -232,7 +232,7 @@ namespace SobekCM.Library.MainWriters
                             builder.Append("\tLast Mode:\t\t\t" + HttpContext.Current.Session["Last_Mode"] + "\n");
                         builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
                     }
-                    catch (Exception ee)
+                    catch
                     {
 
                     }
@@ -444,32 +444,11 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.My_Sobek:
 
-                    if (subwriter is MySobek_HtmlSubwriter)
+					MySobek_HtmlSubwriter mySobekWriter = subwriter as MySobek_HtmlSubwriter;
+					if (mySobekWriter != null)
                     {
-                        MySobek_HtmlSubwriter mySobekWriter = (MySobek_HtmlSubwriter) subwriter;
-
-						//// If the my sobek writer contains pop up forms, add the header here first
-						//if (mySobekWriter.Contains_Popup_Forms)
-						//{
-						//	StringBuilder header_builder = new StringBuilder();
-						//	StringWriter header_writer = new StringWriter(header_builder);
-						//	Display_Header(header_writer, Tracer);
-						//	LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-						//	Main_Place_Holder.Controls.Add(header_literal);
-						//}
-
                         // Add any necessary controls
                         mySobekWriter.Add_Controls(Main_Place_Holder, Tracer);
-
-						//// Finally, add the footer
-						//if (mySobekWriter.Contains_Popup_Forms)
-						//{
-						//	StringBuilder footer_builder = new StringBuilder();
-						//	StringWriter footer_writer = new StringWriter(footer_builder);
-						//	Display_Footer(footer_writer, Tracer);
-						//	LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
-						//	Main_Place_Holder.Controls.Add(footer_literal);
-						//}
                     }
                     break;
 
@@ -478,12 +457,9 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and controls for ADMINISTRATIVE mode
 
                 case Display_Mode_Enum.Administrative:
-
-                    if (subwriter is Admin_HtmlSubwriter)
+		            Admin_HtmlSubwriter adminWriter = subwriter as Admin_HtmlSubwriter;
+					if (adminWriter != null )
                     {
-                        // Build the my sobek subwriter
-                        Admin_HtmlSubwriter adminWriter = (Admin_HtmlSubwriter) subwriter;
-
 						// If the my sobek writer contains pop up forms, add the header here first
 						if (adminWriter.Contains_Popup_Forms)
 						{
@@ -515,7 +491,8 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and add controls for RESULTS mode
 
                 case Display_Mode_Enum.Results:
-                    if (subwriter is Search_Results_HtmlSubwriter)
+		            Search_Results_HtmlSubwriter searchResultsSub = subwriter as Search_Results_HtmlSubwriter;
+					if (searchResultsSub != null )
                     {
                         // Make sure the corresponding 'search' is the latest
                         currentMode.Mode = Display_Mode_Enum.Search;
@@ -523,7 +500,7 @@ namespace SobekCM.Library.MainWriters
                         currentMode.Mode = Display_Mode_Enum.Results;
 
                         // Add the controls 
-                        ((Search_Results_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer, null);
+						searchResultsSub.Add_Controls(Main_Place_Holder, Tracer, null);
                     }
 
                     break;
@@ -533,10 +510,11 @@ namespace SobekCM.Library.MainWriters
                 #region Add HTML and controls for PUBLIC FOLDER mode
 
                 case Display_Mode_Enum.Public_Folder:
-                    if (subwriter is Public_Folder_HtmlSubwriter)
+		            Public_Folder_HtmlSubwriter publicFolderSub = subwriter as Public_Folder_HtmlSubwriter;
+					if (publicFolderSub != null )
                     {
                         // Also try to add any controls
-                        ((Public_Folder_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer, null);
+						publicFolderSub.Add_Controls(Main_Place_Holder, Tracer, null);
                     }
                     break;
 
@@ -546,10 +524,11 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.Search:
                 case Display_Mode_Enum.Aggregation:
-                    if (subwriter is Aggregation_HtmlSubwriter)
+		            Aggregation_HtmlSubwriter aggregationSub = subwriter as Aggregation_HtmlSubwriter;
+					if (aggregationSub != null )
                     {
                         // Also try to add any controls
-                        ((Aggregation_HtmlSubwriter) subwriter).Add_Controls(Main_Place_Holder, Tracer);
+						aggregationSub.Add_Controls(Main_Place_Holder, Tracer);
                     }
                     break;
 
@@ -558,10 +537,9 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and add controls for ITEM DISPLAY mode
 
                 case Display_Mode_Enum.Item_Display:
-                    if (subwriter is Item_HtmlSubwriter)
+		            Item_HtmlSubwriter itemWriter = subwriter as Item_HtmlSubwriter;
+					if (itemWriter != null )
                     {
-                        Item_HtmlSubwriter itemWriter = (Item_HtmlSubwriter) subwriter;
-
                         // Add the TOC section
                         Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add table of contents to <i>tocPlaceHolder</i>");
                         itemWriter.Add_Standard_TOC(TOC_Place_Holder, Tracer);
@@ -826,11 +804,16 @@ namespace SobekCM.Library.MainWriters
         {
             Tracer.Add_Trace("Html_MainWriter.Display_Header", "Adding header to HTML");
 
-            // In GnuBooks page turner, this is a full-screen view.. so no footer
-            if ((currentMode.Mode == Display_Mode_Enum.Item_Display) && (currentMode.ViewerCode == "pageturner"))
-            {
-                return;
-            }
+			// If the subwriter is NULL, do nothing (but sure seems like an error!)
+	        if (subwriter == null)
+		        return;
+
+			// Get the list of behaviors here
+	        List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
+
+            // If no header should be added, just return
+	        if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
+		        return;
 
             // Should the internal header be added?
             if ((subwriter != null) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative) && (currentUser != null))
@@ -861,7 +844,7 @@ namespace SobekCM.Library.MainWriters
                     }
                 }
                 
-                if (( displayHeader ) && ( !subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
+                if (( displayHeader ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = currentMode.Redirect_URL();
                     if ((HttpContext.Current != null) && (HttpContext.Current.Session["Original_URL"] != null))
@@ -902,150 +885,156 @@ namespace SobekCM.Library.MainWriters
             if (url_options.Length > 0)
                 modified_url_options = "?" + url_options;
 
+			// Determine which header and footer to display
+			bool useItemHeader = (currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
+			
             // Create the breadcrumbs text
             string breadcrumbs = "&nbsp; &nbsp; ";
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Error:
-                    breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
-                    break;
+			if (useItemHeader)
+			{
+				StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>");
 
-                case Display_Mode_Enum.Item_Display:
-                    StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>");
+				int codes_added = 0;
+				if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+				{
+					breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>");
+					codes_added++;
+				}
 
-                    int codes_added = 0;
-                    if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
-                    {
-                        breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>");
-                        codes_added++;
-                    }
+				if (currentItem != null)
+				{
+					if (currentItem.Behaviors.Aggregation_Count > 0)
+					{
+						foreach (Aggregation_Info aggregation in currentItem.Behaviors.Aggregations)
+						{
+							string aggrCode = aggregation.Code;
+							if (aggrCode.ToLower() != currentMode.Aggregation)
+							{
+								if ((aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Source.Code.ToUpper()) &&
+									(aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Location.Holding_Code.ToUpper()))
+								{
+									Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
+									if ((thisAggr != null) && (thisAggr.Active))
+									{
+										breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+																  aggrCode.ToLower() + modified_url_options + "\">" +
+																  thisAggr.ShortName +
+																  "</a>");
+										codes_added++;
+									}
+								}
+							}
+							if (codes_added == 5)
+								break;
+						}
+					}
 
-                    if (currentItem != null)
-                    {
-                        if (currentItem.Behaviors.Aggregation_Count > 0)
-                        {
-                            foreach (Aggregation_Info aggregation in currentItem.Behaviors.Aggregations)
-                            {
-                                string aggrCode = aggregation.Code;
-                                if (aggrCode.ToLower() != currentMode.Aggregation)
-                                {
-                                    if ((aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Source.Code.ToUpper()) &&
-                                        (aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Location.Holding_Code.ToUpper()))
-                                    {
-	                                    Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
-	                                    if ((thisAggr != null) && (thisAggr.Active))
-	                                    {
-		                                    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-		                                                              aggrCode.ToLower() + modified_url_options + "\">" +
-		                                                              thisAggr.ShortName +
-		                                                              "</a>");
-		                                    codes_added++;
-	                                    }
-                                    }
-                                }
-                                if (codes_added == 5)
-                                    break;
-                            }
-                        }
+					if (codes_added < 5)
+					{
+						if ((currentItem.Bib_Info.Source.Code.Length > 0) &&
+							(currentItem.Bib_Info.Source.Code != "UF") &&
+							(currentItem.Bib_Info.Source.Code.ToUpper() != "IUF"))
+						{
+							// Add source code
+							string source_code = currentItem.Bib_Info.Source.Code;
+							if ((source_code[0] != 'i') && (source_code[0] != 'I'))
+								source_code = "I" + source_code;
+							Item_Aggregation_Related_Aggregations thisSourceAggr = codeManager[source_code];
+							if ((thisSourceAggr != null) && (!thisSourceAggr.Hidden) && (thisSourceAggr.Active))
+							{
+								string source_name = thisSourceAggr.ShortName;
+								if (source_name.ToUpper() != "ADDED AUTOMATICALLY")
+								{
+									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+															  source_code.ToLower() + modified_url_options + "\">" +
+															  source_name + "</a>");
+								}
+							}
 
-                        if (codes_added < 5)
-                        {
-                            if ((currentItem.Bib_Info.Source.Code.Length > 0) &&
-                                (currentItem.Bib_Info.Source.Code != "UF") &&
-                                (currentItem.Bib_Info.Source.Code.ToUpper() != "IUF"))
-                            {
-                                // Add source code
-                                string source_code = currentItem.Bib_Info.Source.Code;
-                                if ((source_code[0] != 'i') && (source_code[0] != 'I'))
-                                    source_code = "I" + source_code;
-								Item_Aggregation_Related_Aggregations thisSourceAggr = codeManager[source_code];
-								if ((thisSourceAggr != null) && (!thisSourceAggr.Hidden) && (thisSourceAggr.Active))
-	                            {
-									string source_name = thisSourceAggr.ShortName;
-		                            if (source_name.ToUpper() != "ADDED AUTOMATICALLY")
-		                            {
-			                            breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-			                                                      source_code.ToLower() + modified_url_options + "\">" +
-			                                                      source_name + "</a>");
-		                            }
-	                            }
+							// Add the holding code
+							if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
+								(currentItem.Bib_Info.Location.Holding_Code != currentItem.Bib_Info.Source.Code) &&
+								(currentItem.Bib_Info.Location.Holding_Code != "UF") &&
+								(currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
+							{
+								// Add holding code
+								string holding_code = currentItem.Bib_Info.Location.Holding_Code;
+								if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
+									holding_code = "I" + holding_code;
 
-								// Add the holding code
-	                            if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
-                                    (currentItem.Bib_Info.Location.Holding_Code != currentItem.Bib_Info.Source.Code) &&
-                                    (currentItem.Bib_Info.Location.Holding_Code != "UF") &&
-                                    (currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
-                                {
-                                    // Add holding code
-                                    string holding_code = currentItem.Bib_Info.Location.Holding_Code;
-                                    if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
-                                        holding_code = "I" + holding_code;
+								Item_Aggregation_Related_Aggregations thisAggr = codeManager[holding_code];
+								if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
+								{
+									string holding_name = thisAggr.ShortName;
 
-									Item_Aggregation_Related_Aggregations thisAggr = codeManager[holding_code];
-	                                if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
-	                                {
-		                                string holding_name = thisAggr.ShortName;
+									if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
+									{
+										breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+																  holding_code.ToLower() + modified_url_options + "\">" +
+																  holding_name + "</a>");
+									}
+								}
+							}
+						}
+						else
+						{
+							if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
+								(currentItem.Bib_Info.Location.Holding_Code != "UF") &&
+								(currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
+							{
+								// Add holding code
+								string holding_code = currentItem.Bib_Info.Location.Holding_Code;
+								if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
+									holding_code = "I" + holding_code;
+								string holding_name = codeManager.Get_Collection_Short_Name(holding_code);
+								if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
+								{
+									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+															  holding_code.ToLower() + modified_url_options + "\">" +
+															  holding_name + "</a>");
+								}
+							}
+						}
+					}
+				}
+				breadcrumbs = breadcrumb_builder.ToString();
+			}
+			else
+			{
+				switch (currentMode.Mode)
+				{
+					case Display_Mode_Enum.Error:
+						breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+						break;
 
-		                                if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
-		                                {
-			                                breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-			                                                          holding_code.ToLower() + modified_url_options + "\">" +
-			                                                          holding_name + "</a>");
-		                                }
-	                                }
-                                }
-                            }
-                            else
-                            {
-                                if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
-                                    (currentItem.Bib_Info.Location.Holding_Code != "UF") &&
-                                    (currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
-                                {
-                                    // Add holding code
-                                    string holding_code = currentItem.Bib_Info.Location.Holding_Code;
-                                    if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
-                                        holding_code = "I" + holding_code;
-                                    string holding_name = codeManager.Get_Collection_Short_Name(holding_code);
-                                    if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
-                                    {
-                                        breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
-                                                                  holding_code.ToLower() + modified_url_options + "\">" +
-                                                                  holding_name + "</a>");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    breadcrumbs = breadcrumb_builder.ToString();
-                    break;
+					case Display_Mode_Enum.Aggregation:
+						if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+						{
+							if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+							{
+								breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+							}
+						}
+						else
+						{
+							breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+							if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+							{
+								breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>";
+							}
+						}
+						break;
 
-                case Display_Mode_Enum.Aggregation:
-		            if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
-		            {
-			            if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
-			            {
-				            breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
-			            }
-		            }
-		            else
-		            {
+					default:
 						breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
 						if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
 						{
 							breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>";
 						}
-		            }
-		            break;
+						break;
+				}
+			}
 
-                default:
-                    breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
-                    if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
-                    {
-                        breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>";
-                    }
-                    break;
-
-            }
             
             // Create they myUFDC text
             string mySobekLinks = String.Empty;
@@ -1150,7 +1139,7 @@ namespace SobekCM.Library.MainWriters
 
             // Determine the possible banner to display
             string banner = String.Empty;
-            if ((subwriter != null) && ( !subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
             {
                 if ((htmlSkin != null) && (htmlSkin.Override_Banner))
                 {
@@ -1181,31 +1170,29 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Item_Display:
-				case Display_Mode_Enum.Item_Print:
-                    Output.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-                    break;
+			// Add the appropriate header
+			if (useItemHeader)
+			{
+				Output.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+			}
+			else
+			{
+				if (container_inner.Length == 0)
+				{
+					if (htmlSkin.Header_Has_Container_Directive)
+						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty));
+					else
+						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+				}
+				else
+				{
+					if (htmlSkin.Header_Has_Container_Directive)
+						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">"));
+					else
+						Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
 
-                default:
-		            if (container_inner.Length == 0)
-		            {
-			            if (htmlSkin.Header_Has_Container_Directive)
-				            Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty));
-			            else
-				            Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-		            }
-		            else
-		            {
-						if ( htmlSkin.Header_Has_Container_Directive )
-							Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">"));
-						else
-							Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
-
-		            }
-		            break;
-            }
+				}
+			}
 
             Output.WriteLine(String.Empty);
         }
@@ -1217,6 +1204,20 @@ namespace SobekCM.Library.MainWriters
         {
             Tracer.Add_Trace("Html_MainWriter.Display_Footer", "Adding footer to HTML");
 
+			// If the subwriter is NULL, do nothing (but sure seems like an error!)
+			if (subwriter == null)
+				return;
+
+			// Get the list of behaviors here
+			List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
+
+			// If no header should be added, just return
+			if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
+				return;
+
+			// Determine which header and footer to display
+			bool useItemFooter = (currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
+	
             // Get the current contact URL
             Display_Mode_Enum thisMode = currentMode.Mode;
             currentMode.Mode = Display_Mode_Enum.Contact;
@@ -1246,30 +1247,27 @@ namespace SobekCM.Library.MainWriters
 	        bool end_div = !(( currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( siteMap != null ));
 
 	        const string VERSION = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
-            switch (currentMode.Mode)
-            {
-                case Display_Mode_Enum.Item_Display:
-                    Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url ) .Trim());
-                    break;
-
-                default:
-					if (htmlSkin.Footer_Has_Container_Directive)
-					{
-						if (!end_div)
-							Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>","").Trim());
-						else
-							Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Trim());
-					}
+			if (useItemFooter)
+			{
+				Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+			}
+			else
+			{
+				if (htmlSkin.Footer_Has_Container_Directive)
+				{
+					if (!end_div)
+						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Trim());
 					else
-					{
-						if (!end_div)
-							Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
-						else
-							Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
-					}
-                    break;
-            }
-
+						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Trim());
+				}
+				else
+				{
+					if (!end_div)
+						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+					else
+						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
+				}
+			}
 
             // Add the time and trace at the end
             if (( currentMode.Trace_Flag_Simple ) || (( currentUser != null ) && ( currentUser.Is_System_Admin )))

@@ -68,7 +68,7 @@ textarea.intheader_comments_input  {  FONT-FAMILY: Arial, sans-serif; font-size:
 
 /** title bar ( Item_HtmlSubwriter ) */
 #sbkIsw_Titlebar { width: 100%; background-color: #333333; padding: 4px 0 0 0; font-weight:bold; text-align:center; color:White;font-size: 0.90em; }
-#sbkIsw_Titlebar h1  { font-size: 1.25em; padding: 0 0 4px 0; margin: 0; line-height: 1.25em;font-weight: bold; }
+#sbkIsw_Titlebar h1  { font-size: 1.25em; padding: 0 0 4px 0; margin: 0; line-height: 1.25em;font-weight: bold; background-color: #333333;text-align: center;color: white;border: none; width:100%}
 #sbkIsw_Titlebar a:link { color: cornflowerblue; }
 #sbkIsw_Titlebar a:visited { color: cornflowerblue; }
 #sbkIsw_Titlebar a:hover { color: cornflowerblue; text-decoration: underline; }

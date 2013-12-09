@@ -1,12 +1,9 @@
 ﻿#region Using directives
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Text;
 using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
@@ -223,9 +220,8 @@ namespace SobekCM.Library.HTML
         /// <remarks> By default, this returns an empty list </remarks>
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get
-            {
-                return emptybehaviors;
+            get {
+	            return mySobekViewer != null ? mySobekViewer.Viewer_Behaviors : emptybehaviors;
             }
         }
 
@@ -276,7 +272,7 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
 			}
 
-			if (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata)
+			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || ( currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors ))
 			{
 				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			}
@@ -339,7 +335,7 @@ namespace SobekCM.Library.HTML
 
 
 			}
-			else
+			else if ( !Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
 			{
 				// Start the page container
 				Output.WriteLine("<div id=\"pagecontainer\">");
@@ -405,9 +401,14 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<!-- Close the pagecontainer div -->");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
+            
+	        if (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
+	        {
+				Output.WriteLine("<!-- Close the pagecontainer div -->");
+				Output.WriteLine("</div>");
+				Output.WriteLine();
+	        }
+
         }
 
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

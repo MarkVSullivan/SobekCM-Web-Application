@@ -567,7 +567,13 @@ public class SobekCM_Page_Globals
             HttpContext.Current.Session["userid"] = 0;
             HttpContext.Current.Session["user"] = null;
 
-            HttpContext.Current.Response.Redirect( currentMode.Base_URL + currentMode.Return_URL, false);
+			// Determine new redirect location
+	        string redirect = currentMode.Base_URL + currentMode.Return_URL;
+			if (((currentMode.Return_URL.IndexOf("admin") >= 0) && (currentMode.Return_URL.IndexOf("admin") <= 1)) ||
+				((currentMode.Return_URL.IndexOf("mysobek") >= 0) && (currentMode.Return_URL.IndexOf("mysobek") <= 1)))
+		        redirect = currentMode.Base_URL;
+
+            HttpContext.Current.Response.Redirect( redirect, false);
             HttpContext.Current.ApplicationInstance.CompleteRequest();
             currentMode.Request_Completed = true;
             return;

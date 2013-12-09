@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object.Divisions;
 
@@ -270,7 +268,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
                         HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
                         HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
-                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
+						HtmlSubwriter_Behaviors_Enum.Suppress_Header
                     };
             }
         }
