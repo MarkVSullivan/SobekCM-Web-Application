@@ -4737,7 +4737,10 @@ function poiGetDesc(id) {
             //assign full description to the poi object
             globalVar.poiDesc[id] = temp;
 
-            //visually set desc
+            //close old info window (this negates bug where desc box would no longer be tied to point)
+            infoWindow[id].setMap(null);
+
+            //visually reset desc
             //infoWindow[id].setOptions({ content: writeHTML("poiDesc", id, "", "") });
 
             infoWindow[id] = new google.maps.InfoWindow({
