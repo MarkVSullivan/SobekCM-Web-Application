@@ -508,14 +508,38 @@ function initListeners() {
         //menubarf
         document.getElementById("content_menubar_save").addEventListener("click", function () {
             //save("all");
-            //attempt to save all three
-            displayMessage(localize.L59);
-            globalVar.RIBMode = true;
-            save("item");
-            save("overlay");
-            save("poi");
-            globalVar.RIBMode = false;
-            window.location.assign(document.URL.replace("/mapedit", ""));
+            if (globalVar.userMayLoseData) {
+                //attempt to save all three
+                displayMessage(localize.L59);
+                globalVar.RIBMode = true;
+                var savesCompleted = 0;
+                try {
+                    save("item");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save item");
+                }
+                try {
+                    save("overlay");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save overlay");
+                }
+                try {
+                    save("poi");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save poi");
+                }
+                if (savesCompleted == 3) {
+                    de("all saves completed");
+                    //window.location.assign(document.URL.replace("/mapedit", ""));
+                    globalVar.userMayLoseData = false;
+                }
+                globalVar.RIBMode = false;
+            } else {
+                displayMessage(L_NotSaved);
+            }
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
             //clear("all");
@@ -1649,6 +1673,7 @@ function save(id) {
                     }
                     //reset first save
                     globalVar.firstSaveItem = true;
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_saveItem").value = L37;
                     document.getElementById("content_toolbox_button_saveItem").title = L38;
@@ -1700,7 +1725,7 @@ function save(id) {
                     de("Applying Changes...");
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
-                        de("applying overlay: " + globalVar.savingOverlayPageId[i] + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                        de("applying overlay: " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                         createSavedOverlay("apply", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                         if (globalVar.toServerSuccess == true) {
                             displayMessage(L_Applied);
@@ -1708,6 +1733,7 @@ function save(id) {
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = true;
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                 } else {
                     displayMessage(L_NotSaved);
                 }
@@ -1759,6 +1785,7 @@ function save(id) {
                     } else {
                         displayMessage(L_NotSaved);
                     }
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_savePOI").value = L37;
                     document.getElementById("content_toolbox_button_savePOI").title = L38;
@@ -5154,8 +5181,10 @@ function convertToOverlay() {
         if (globalVar.itemMarker) {
             //hide marker
             globalVar.itemMarker.setMap(null);
-            //delete maker todo confirm this deletes
             globalVar.itemMarker = null;
+            globalVar.RIBMode = true;
+            createSavedItem("delete", null); //send to server and delete from mets
+            globalVar.RIBMode = false;
             ////open first overlay to convert
             //createOverlayFromPage(globalVar.convertedOverlayIndex + 1);
         }
@@ -5184,6 +5213,7 @@ function initOverlayList() {
     de("initOverlayList(); started...");
     document.getElementById("overlayList").innerHTML = "";
     if (globalVar.incomingPolygonPageId.length > 0) {
+        de(globalVar.incomingPolygonLabel.length);
         for (var i = 0; i < globalVar.incomingPolygonLabel.length; i++) {
             if (globalVar.incomingPolygonFeatureType[i] != "poi") {
                 de("Adding Overlay List Item");
@@ -5704,8 +5734,8 @@ function debugClear() {
 //jquery UI elements
 $(function () {
     try {
+        //init superfish
         $('ul.sf-menu').superfish();
-
         //draggable content settings
         $("#mapedit_container_toolbox").draggable({
             handle: "#mapedit_container_toolboxMinibar" //div used as handle
@@ -5720,90 +5750,91 @@ $(function () {
             heightStyle: "content" //set hieght to?
         });
         //tooltips (the tooltip text is the title of the element defined in localization js)
-        $("#content_toolbarGrabber").tooltip({ track: true });
-        $("#content_toolbar_button_reset").tooltip({ track: true });
-        $("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
-        $("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
-        $("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
-        $("#content_toolbar_button_layerSatellite").tooltip({ track: true });
-        $("#content_toolbar_button_layerTerrain").tooltip({ track: true });
-        $("#content_toolbar_button_layerControls").tooltip({ track: true });
-        $("#content_toolbar_button_layerHybrid").tooltip({ track: true });
-        $("#content_toolbar_button_layerCustom").tooltip({ track: true });
-        $("#content_toolbar_button_layerReset").tooltip({ track: true });
-        $("#content_toolbar_button_zoomIn").tooltip({ track: true });
-        $("#content_toolbar_button_zoomReset").tooltip({ track: true });
-        $("#content_toolbar_button_zoomOut").tooltip({ track: true });
-        $("#content_toolbar_button_panUp").tooltip({ track: true });
-        $("#content_toolbar_button_panDown").tooltip({ track: true });
-        $("#content_toolbar_button_panReset").tooltip({ track: true });
-        $("#content_toolbar_button_panLeft").tooltip({ track: true });
-        $("#content_toolbar_button_panRight").tooltip({ track: true });
-        $("#content_toolbar_button_manageItem").tooltip({ track: true });
-        $("#content_toolbar_button_manageOverlay").tooltip({ track: true });
-        $("#content_toolbar_button_managePOI").tooltip({ track: true });
-        $("#content_toolbar_button_manageSearch").tooltip({ track: true });
-        $("#content_toolbox_button_reset").tooltip({ track: true });
-        $("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
-        $("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
-        $("#content_toolbox_button_layerSatellite").tooltip({ track: true });
-        $("#content_toolbox_button_layerTerrain").tooltip({ track: true });
-        $("#content_toolbox_button_layerControls").tooltip({ track: true });
-        $("#content_toolbox_button_layerHybrid").tooltip({ track: true });
-        $("#content_toolbox_button_layerCustom").tooltip({ track: true });
-        $("#content_toolbox_button_layerReset").tooltip({ track: true });
-        $("#content_toolbox_button_zoomIn").tooltip({ track: true });
-        $("#content_toolbox_button_zoomReset").tooltip({ track: true });
-        $("#content_toolbox_button_zoomOut").tooltip({ track: true });
-        $("#content_toolbox_button_panUp").tooltip({ track: true });
-        $("#content_toolbox_button_panDown").tooltip({ track: true });
-        $("#content_toolbox_button_panReset").tooltip({ track: true });
-        $("#content_toolbox_button_panLeft").tooltip({ track: true });
-        $("#content_toolbox_button_panRight").tooltip({ track: true });
-        $("#content_toolbox_button_manageItem").tooltip({ track: true });
-        $("#content_toolbox_button_manageOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_managePOI").tooltip({ track: true });
-        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
-        $("#content_toolbox_button_poiMarker").tooltip({ track: true });
-        $("#content_toolbox_button_poiCircle").tooltip({ track: true });
-        $("#content_toolbox_button_poirectangle").tooltip({ track: true });
-        $("#content_toolbox_button_poiPolygon").tooltip({ track: true });
-        $("#content_toolbox_button_poiLine").tooltip({ track: true });
-        $("#rotationKnob").tooltip({ track: true });
-        $("#content_toolbox_rotationClockwise").tooltip({ track: true });
-        $("#content_toolbox_rotationReset").tooltip({ track: true });
-        $("#content_toolbox_rotationCounterClockwise").tooltip({ track: true });
-        $("#transparency").tooltip({ track: true });
-        $("#content_toolbox_rgItem").tooltip({ track: true });
-        $("#content_toolbox_posItem").tooltip({ track: true });
-        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
-        $("#descItem").tooltip({ track: true });
-        $("#content_toolbox_button_saveItem").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        $("#content_toolbox_button_saveOverlay").tooltip({ track: true });
-        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
-        $("#descPOI").tooltip({ track: true });
-        $("#content_toolbox_button_savePOI").tooltip({ track: true });
-        $("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
-        $("#content_toolbox_button_overlayToggle").tooltip({ track: true });
-        $("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
-        $("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_poiToggle").tooltip({ track: true });
-        $("#content_toolbox_button_clearItem").tooltip({ track: true });
-        $("#content_toolbox_button_clearOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_clearPOI").tooltip({ track: true });
-        $("#content_toolbar_searchField").tooltip({ track: true });
-        $("#content_toolbar_searchButton").tooltip({ track: true });
-        $("#content_toolbox_searchField").tooltip({ track: true });
-        $("#content_toolbox_searchButton").tooltip({ track: true });
-        $("#searchResults_container").tooltip({ track: true });
-        $("#overlayList_container").tooltip({ track: true });
-        $("#poiList_container").tooltip({ track: true });
+        //$("#content_toolbarGrabber").tooltip({ track: true });
+        //$("#content_toolbar_button_reset").tooltip({ track: true });
+        //$("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
+        //$("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
+        //$("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
+        //$("#content_toolbar_button_layerSatellite").tooltip({ track: true });
+        //$("#content_toolbar_button_layerTerrain").tooltip({ track: true });
+        //$("#content_toolbar_button_layerControls").tooltip({ track: true });
+        //$("#content_toolbar_button_layerHybrid").tooltip({ track: true });
+        //$("#content_toolbar_button_layerCustom").tooltip({ track: true });
+        //$("#content_toolbar_button_layerReset").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomIn").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomReset").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomOut").tooltip({ track: true });
+        //$("#content_toolbar_button_panUp").tooltip({ track: true });
+        //$("#content_toolbar_button_panDown").tooltip({ track: true });
+        //$("#content_toolbar_button_panReset").tooltip({ track: true });
+        //$("#content_toolbar_button_panLeft").tooltip({ track: true });
+        //$("#content_toolbar_button_panRight").tooltip({ track: true });
+        //$("#content_toolbar_button_manageItem").tooltip({ track: true });
+        //$("#content_toolbar_button_manageOverlay").tooltip({ track: true });
+        //$("#content_toolbar_button_managePOI").tooltip({ track: true });
+        //$("#content_toolbar_button_manageSearch").tooltip({ track: true });
+        //$("#content_toolbox_button_reset").tooltip({ track: true });
+        //$("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
+        //$("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
+        //$("#content_toolbox_button_layerSatellite").tooltip({ track: true });
+        //$("#content_toolbox_button_layerTerrain").tooltip({ track: true });
+        //$("#content_toolbox_button_layerControls").tooltip({ track: true });
+        //$("#content_toolbox_button_layerHybrid").tooltip({ track: true });
+        //$("#content_toolbox_button_layerCustom").tooltip({ track: true });
+        //$("#content_toolbox_button_layerReset").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomIn").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomReset").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomOut").tooltip({ track: true });
+        //$("#content_toolbox_button_panUp").tooltip({ track: true });
+        //$("#content_toolbox_button_panDown").tooltip({ track: true });
+        //$("#content_toolbox_button_panReset").tooltip({ track: true });
+        //$("#content_toolbox_button_panLeft").tooltip({ track: true });
+        //$("#content_toolbox_button_panRight").tooltip({ track: true });
+        //$("#content_toolbox_button_manageItem").tooltip({ track: true });
+        //$("#content_toolbox_button_manageOverlay").tooltip({ track: true });
+        //$("#content_toolbox_button_managePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        ////$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        ////$("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_poiMarker").tooltip({ track: true });
+        //$("#content_toolbox_button_poiCircle").tooltip({ track: true });
+        //$("#content_toolbox_button_poirectangle").tooltip({ track: true });
+        //$("#content_toolbox_button_poiPolygon").tooltip({ track: true });
+        //$("#content_toolbox_button_poiLine").tooltip({ track: true });
+        //$("#rotationKnob").tooltip({ track: true });
+        //$("#content_toolbox_rotationClockwise").tooltip({ track: true });
+        //$("#content_toolbox_rotationReset").tooltip({ track: true });
+        //$("#content_toolbox_rotationCounterClockwise").tooltip({ track: true });
+        //$("#transparency").tooltip({ track: true });
+        //$("#content_toolbox_rgItem").tooltip({ track: true });
+        //$("#content_toolbox_posItem").tooltip({ track: true });
+        //$("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        //$("#descItem").tooltip({ track: true });
+        $("#content_toolbox_button_saveItem").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_saveItem").tooltip("close"); }, 3000); } });
+        ////$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        $("#content_toolbox_button_saveOverlay").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_saveOverlay").tooltip("close"); }, 3000); } });
+        ////$("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#descPOI").tooltip({ track: true });
+        $("#content_toolbox_button_savePOI").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_savePOI").tooltip("close"); }, 3000); } });
+        //$("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
+        ////$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayToggle").tooltip({ track: true });
+        //$("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
+        //$("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_poiToggle").tooltip({ track: true });
+        $("#content_toolbox_button_clearItem").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearItem").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_clearOverlay").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearOverlay").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_clearPOI").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearPOI").tooltip("close"); }, 3000); } });
+        //$("#content_toolbar_searchField").tooltip({ track: true });
+        //$("#content_toolbar_searchButton").tooltip({ track: true });
+        //$("#content_toolbox_searchField").tooltip({ track: true });
+        //$("#content_toolbox_searchButton").tooltip({ track: true });
+        //$("#searchResults_container").tooltip({ track: true });
+        //$("#overlayList_container").tooltip({ track: true });
+        //$("#poiList_container").tooltip({ track: true });
+        $(document).tooltip({ track: true }); //(used to blanket all the tooltips)
         //$(".selector").tooltip({ content: "Awesome title!" });
     } catch (err) {
         alert(L51 + ": " + err);

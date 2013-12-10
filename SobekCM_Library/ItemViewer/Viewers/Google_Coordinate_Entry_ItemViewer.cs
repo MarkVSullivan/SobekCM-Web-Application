@@ -179,27 +179,62 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             else
                             {
-                                //get current polygon info
-                                Coordinate_Polygon pagePolygon = pageGeo.Polygons[0];
-                                //prep incoming bounds
-                                string[] temp2 = ar[4].Split(',');
-                                pagePolygon.Clear_Edge_Points();
-                                pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
-                                pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
-                                pagePolygon.Recalculate_Bounding_Box();
-                                //add the rotation
-                                double result;
-                                pagePolygon.Rotation = Double.TryParse(ar[6], out result) ? result : 0;
-                                //add the featureType (explicitly add to make sure it is there)
-                                pagePolygon.FeatureType = "main";
-                                //add the label
-                                pagePolygon.Label = ar[3];
-                                //add the polygon type
-                                pagePolygon.PolygonType = "rectangle";
-                                //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
-                                pageGeo.Clear_NonPOIs();
-                                //add polygon to pagegeo
-                                pageGeo.Add_Polygon(pagePolygon);
+                                try
+                                {
+                                    //get current polygon info
+                                    Coordinate_Polygon pagePolygon = pageGeo.Polygons[0];
+                                    //prep incoming bounds
+                                    string[] temp2 = ar[4].Split(',');
+                                    pagePolygon.Clear_Edge_Points();
+                                    pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                    pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                    pagePolygon.Recalculate_Bounding_Box();
+                                    //add the rotation
+                                    double result;
+                                    pagePolygon.Rotation = Double.TryParse(ar[6], out result) ? result : 0;
+                                    //add the featureType (explicitly add to make sure it is there)
+                                    pagePolygon.FeatureType = "main";
+                                    //add the label
+                                    pagePolygon.Label = ar[3];
+                                    //add the polygon type
+                                    pagePolygon.PolygonType = "rectangle";
+                                    //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
+                                    pageGeo.Clear_NonPOIs();
+                                    //add polygon to pagegeo
+                                    pageGeo.Add_Polygon(pagePolygon);
+                                }
+                                catch (Exception)
+                                {
+                                    //there were no polygons
+                                    try
+                                    {
+                                        //make a polygon
+                                        Coordinate_Polygon pagePolygon = new Coordinate_Polygon();
+                                        //prep incoming bounds
+                                        string[] temp2 = ar[4].Split(',');
+                                        pagePolygon.Clear_Edge_Points();
+                                        pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[0].Replace("(", "")), Convert.ToDouble(temp2[1].Replace(")", "")));
+                                        pagePolygon.Add_Edge_Point(Convert.ToDouble(temp2[2].Replace("(", "")), Convert.ToDouble(temp2[3].Replace(")", "")));
+                                        pagePolygon.Recalculate_Bounding_Box();
+                                        //add the rotation
+                                        double result;
+                                        pagePolygon.Rotation = Double.TryParse(ar[6], out result) ? result : 0;
+                                        //add the featureType (explicitly add to make sure it is there)
+                                        pagePolygon.FeatureType = "main";
+                                        //add the label
+                                        pagePolygon.Label = ar[3];
+                                        //add the polygon type
+                                        pagePolygon.PolygonType = "rectangle";
+                                        //clear all previous nonPOIs for this page (NOTE: this will only work if there is only one main page item)
+                                        pageGeo.Clear_NonPOIs();
+                                        //add polygon to pagegeo
+                                        pageGeo.Add_Polygon(pagePolygon);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        //welp...
+                                    }
+                                }
                             }
                             //add the pagegeo obj
                             pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
@@ -215,6 +250,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         switch (saveType)
                         {
+                            #region item
+                            case "item":
+                                //clear nonpoipoints
+                                resourceGeoInfo.Clear_NonPOIPoints();
+                                //save to db
+                                Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                                break;
+                            #endregion
                             #region overlay
                             case "overlay":
                                 try
@@ -244,6 +287,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                                     //add the pagegeo obj
                                     pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
+
                                     //save to db
                                     Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
                                 }
