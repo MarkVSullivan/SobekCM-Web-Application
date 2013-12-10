@@ -868,6 +868,22 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 polygons.Add(temp);
         }
 
+        /// <summary> Clears all of the spatial information of single points with the 'main' featureType from this digital resource </summary>
+        public void Clear_NonPOIPoints()
+        {
+            //create restore holders
+            List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
+            //add objs to restore holders
+            foreach (var temp in points)
+                if (temp.FeatureType == "poi")
+                    tempRestorePoints.Add(temp);
+            //clear all objs
+            points.Clear();
+            //now restore the restore objects
+            foreach (var temp in tempRestorePoints)
+                points.Add(temp);
+        }
+
         /// <summary> Clears all user added polygons and all coordinate lines from this digital resource </summary>
         public void Clear_User_Polygons_And_Lines()
         {
