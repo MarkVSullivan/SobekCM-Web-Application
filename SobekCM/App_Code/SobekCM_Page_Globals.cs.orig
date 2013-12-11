@@ -935,7 +935,11 @@ public class SobekCM_Page_Globals
         if (mainWriter == null)
         {
             SobekCM_Assistant assistant = new SobekCM_Assistant();
+<<<<<<< HEAD
+            htmlSkin = assistant.Get_HTML_Skin(currentMode,  Global.Skins, true, tracer);
+=======
             htmlSkin = assistant.Get_HTML_Skin(currentMode, Global.Skins, true, tracer);
+>>>>>>> 5ba29686401769ae9fcbebab815a6404e6fd37ae
 
             mainWriter = new Html_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject,
                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes, 

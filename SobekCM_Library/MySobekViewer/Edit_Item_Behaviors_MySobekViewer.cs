@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Library.Settings;
@@ -169,6 +170,70 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
+			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+			string final_title = item.Bib_Info.Main_Title.Title;
+			if (item.Bib_Info.Main_Title.NonSort.Length > 0)
+			{
+				if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+					final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+				else
+				{
+					if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+					{
+						final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+					}
+					else
+					{
+						final_title = item.Bib_Info.Main_Title.NonSort + " " + item.Bib_Info.Main_Title.Title;
+					}
+				}
+			}
+
+			// Add the Title if there is one
+			if (final_title.Length > 0)
+			{
+				// Is this a newspaper?
+				bool newspaper = item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+				// Does a custom setting override the default behavior to add a date?
+				if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+					newspaper = false;
+
+				// Add the date if it should be added
+				if ((newspaper) && ((item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+				{
+					string date = item.Bib_Info.Origin_Info.Date_Created;
+					if (item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+						date = item.Bib_Info.Origin_Info.Date_Issued;
+
+
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+					}
+				}
+				else
+				{
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+					}
+				}
+			}
+			Output.WriteLine("</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+
+			Output.WriteLine("<div id=\"container-inner1000-test\">");
+			Output.WriteLine("<div id=\"pagecontainer-test\">");
 
             Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<div class=\"SobekText\">");
@@ -183,14 +248,13 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
 
 			Output.WriteLine("<a name=\"template\"> </a>");
-			Output.WriteLine("<br />");
-			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+			Output.WriteLine("<div id=\"tabContainer\" class=\"ondarktabs\">");
 			Output.WriteLine("  <div class=\"tabs\">");
 			Output.WriteLine("    <ul>");
 			Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + BEHAVIORS + "</li>");
 			Output.WriteLine("    </ul>");
 			Output.WriteLine("  </div>");
-			Output.WriteLine("  <div class=\"graytabscontent\">");
+			Output.WriteLine("  <div class=\"tabscontent\">");
 			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
@@ -218,6 +282,8 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("    </div>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
 			Output.WriteLine("<br />");
         }
 
@@ -232,6 +298,21 @@ namespace SobekCM.Library.MySobekViewer
             // Add the hidden field
             Output.WriteLine();
         }
+
+		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get
+			{
+				return new List<HtmlSubwriter_Behaviors_Enum>
+				{
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				};
+			}
+		}
     }
 }
 

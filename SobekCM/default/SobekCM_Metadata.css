@@ -54,17 +54,17 @@
 
 .metadata_label A:link
 {
-	padding-top: 17px; color:Black; font-weight: bold;
+	padding-top: 17px; color:Black !important; font-weight: bold;
 }
 
 .metadata_label A:visited
 {
-	padding-top: 17px; color:Black; font-weight: bold;
+	padding-top: 17px; color:Black !important; font-weight: bold;
 }
 
 .metadata_label A:hover 
 {
-	padding-top: 17px; color:Black; text-decoration:underline; font-weight: bold;
+	padding-top: 17px; color:Black !important; text-decoration:underline; font-weight: bold;
 }
 
 .metadata_label2
