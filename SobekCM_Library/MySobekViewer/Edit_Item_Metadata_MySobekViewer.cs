@@ -275,9 +275,74 @@ namespace SobekCM.Library.MySobekViewer
 			// DO nothing
 		}
 
-		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Add_Controls -->");
+	    public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+	    {
+		    Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Add_Controls -->");
+
+		    Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+		    string final_title = item.Bib_Info.Main_Title.Title;
+		    if (item.Bib_Info.Main_Title.NonSort.Length > 0)
+		    {
+			    if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+				    final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+			    else
+			    {
+				    if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+				    {
+					    final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+				    }
+				    else
+				    {
+					    final_title = item.Bib_Info.Main_Title.NonSort + " " + item.Bib_Info.Main_Title.Title;
+				    }
+			    }
+		    }
+
+		    // Add the Title if there is one
+		    if (final_title.Length > 0)
+		    {
+			    // Is this a newspaper?
+			    bool newspaper = item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+			    // Does a custom setting override the default behavior to add a date?
+			    if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+				    newspaper = false;
+
+			    // Add the date if it should be added
+			    if ((newspaper) && ((item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+			    {
+				    string date = item.Bib_Info.Origin_Info.Date_Created;
+				    if (item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+					    date = item.Bib_Info.Origin_Info.Date_Issued;
+
+
+				    if (final_title.Length > 125)
+				    {
+					    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+				    }
+				    else
+				    {
+					    Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+				    }
+			    }
+			    else
+			    {
+				    if (final_title.Length > 125)
+				    {
+					    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+				    }
+				    else
+				    {
+					    Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+				    }
+			    }
+		    }
+			Output.WriteLine("</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+
+		    Output.WriteLine("<div id=\"container-inner1000\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
 			Output.WriteLine("<div class=\"SobekHomeText\">");
 			Output.WriteLine("  <br />");
 			if (!isProject)
@@ -405,6 +470,8 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("    </div>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
 			Output.WriteLine("<br />");
 			Output.WriteLine();
 
@@ -507,20 +574,6 @@ namespace SobekCM.Library.MySobekViewer
 			}
         }
 
-        void complicateButton_Click(object Sender, EventArgs E)
-        {
-
-        }
-
-        void simplifyButton_Click(object Sender, EventArgs E)
-        {
-            if (!item.Contains_Complex_Content)
-                item.Using_Complex_Template = false;
-
-            HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
-            HttpContext.Current.ApplicationInstance.CompleteRequest();
-            currentMode.Request_Completed = true;
-        }
 
         #region Method to complete a save to SobekCM
 
@@ -591,7 +644,7 @@ namespace SobekCM.Library.MySobekViewer
                     string filename = user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(item, filename, SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath);
                 }
-                catch (Exception ee)
+                catch
                 {
                     // Failing to make the static page is not the worst thing in the world...
                 }
@@ -780,6 +833,21 @@ namespace SobekCM.Library.MySobekViewer
 			get
 			{
 				return MySobek_Included_Navigation_Enum.NONE;
+			}
+		}
+
+		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get 
+			{ 
+				return new List<HtmlSubwriter_Behaviors_Enum>
+				{
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				}; 
 			}
 		}
     }

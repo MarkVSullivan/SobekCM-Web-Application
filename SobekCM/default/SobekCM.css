@@ -120,6 +120,20 @@ img { border: 0; }
     background-color:#fff;
 }
 
+#container-inner1000-test
+{
+    margin: 0 auto;
+    padding:0;
+    width: 880px;
+    position: relative;
+	background-color: #333333;
+	color: white;
+}
+
+#container-inner1000-test a:link { color: cornflowerblue; }
+#container-inner1000-test a:visited { color: cornflowerblue; }
+#container-inner1000-test a:hover { color: cornflowerblue; }
+
 #container-inner1040 {
     margin: 0 auto;
     padding:0;
@@ -415,6 +429,12 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     FONT-SIZE: small; 
 }
 
+#pagecontainer-test
+{
+    text-align:center; 
+    FONT-SIZE: small;
+	margin-top: 5px;
+}
 
 
 
@@ -1420,7 +1440,33 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 	margin:0;color:#333;}
 
 .fulltabs > .graytabscontent { border-left:2px solid #555555;border-right:2px solid #555555;border-bottom:2px solid #555555;border-top: 2px solid #555555;padding:10px 10px 25px 0;background: #eeeeee;margin:0;color:#333;}
+
+
 .fulltabs a { color: white; }
+
+
+/** ON DARK TABS STYLES **/
+.ondarktabs { margin:0;padding:15px;-moz-border-radius:4px;border-radius:4px;}
+.ondarktabs h3 { padding-left:20px;}
+.ondarktabs p { padding-left:45px;padding-right:45px;text-align:left;}
+.ondarktabs > .tabs{ margin:0;padding:0;height:29px;overflow:hidden; }
+.ondarktabs > .tabs > ul { font-size:1.0em;list-style:none;margin:0;padding:0;}
+.ondarktabs > .tabs > ul > li { font-size:1em;font-weight:bold;margin:0 2px 0 0;padding:7px 10px;display:block;float:left;color:#FFF;-webkit-user-select:none;-moz-user-select:none;user-select:none;-moz-border-radius-topleft:6px;-moz-border-radius-topright:6px;-moz-border-radius-bottomright:0;-moz-border-radius-bottomleft:0;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom-right-radius:0;border-bottom-left-radius:0;background-color:#7d90d5; }
+.ondarktabs > .tabs > ul > li:hover { background: #888888; /* old browsers */
+	background: -moz-linear-gradient(top, #888888 0%, #999999 10%, #999999 50%, #888888 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#888888), color-stop(10%,#999999), color-stop(50%,#999999), color-stop(100%,#888888)); /* webkit */
+	cursor:pointer;color: #333;}
+
+.ondarktabs > .tabs > ul > li.tabActiveHeader{
+	background: #eeeeee; /* old browsers */
+	background: -moz-linear-gradient(top, #eeeeee 0%, #666666 10%, #666666 50%, #eeeeee 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(10%,#666666), color-stop(50%,#666666), color-stop(100%,#eeeeee)); /* webkit */
+	cursor:pointer;color: #333333;}
+
+.ondarktabs > .tabscontent { border-left:2px solid #eeeeee;border-right:2px solid #555555;border-bottom:2px solid #eeeeee;border-top: 2px solid #eeeeee;padding:10px 10px 25px 0;background: #eeeeee;margin:0;color:#333;}
+
+
+.ondarktabs a { color: white; }
 
 .SobekEditPanel {
     position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 2px solid; padding: 10px 5px 5px 5px; FONT-SIZE: small; WIDTH: 790px;  white-space:nowrap; text-align:left;background-color: #eeeeee;

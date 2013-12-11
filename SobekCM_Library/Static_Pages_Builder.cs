@@ -266,6 +266,7 @@ namespace SobekCM.Library
 
 	        if (PrimaryLogId < 0)
 	        {
+				Console.WriteLine("Rebuilding all static pages");
 		        Logger.AddNonError(InstanceName + "Rebuilding all static pages");
 		        PrimaryLogId = SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
 	        }
@@ -278,6 +279,7 @@ namespace SobekCM.Library
 	        errors = 0;
             if (BuildAllCitationPages)
             {
+				Console.WriteLine(InstanceName + "Rebuildig all citation pages");
 				SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Rebuilding all item-level citation static pages", String.Empty);
 
                 DataSet item_list_table = SobekCM_Database.Get_Item_List(false, null);
@@ -300,33 +302,48 @@ namespace SobekCM.Library
 	                string itemDirectory = SobekCM_Library_Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
 	                string staticDirectory = itemDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
 
-					if (!Directory.Exists(staticDirectory))
-						Directory.CreateDirectory(staticDirectory);
+	                try
+	                {
+						if (!Directory.Exists(staticDirectory))
+							Directory.CreateDirectory(staticDirectory);
 
 
-	                string static_file = staticDirectory + "\\" + bibid + "_" + vid + ".html";
+						string static_file = staticDirectory + "\\" + bibid + "_" + vid + ".html";
 
-                    if (Create_Item_Citation_HTML(bibid, vid, static_file, itemDirectory, itemList))
-                    {
-						// Also copy to the static page location server
-	                    string web_server_directory = SobekCM_Library_Settings.Static_Pages_Location + bibid.Substring(0, 2) +"\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
-	                    if (!Directory.Exists(web_server_directory))
-		                    Directory.CreateDirectory(web_server_directory);
+						if (Create_Item_Citation_HTML(bibid, vid, static_file, itemDirectory, itemList))
+						{
+							// Also copy to the static page location server
+							string web_server_directory = SobekCM_Library_Settings.Static_Pages_Location + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+							if (!Directory.Exists(web_server_directory))
+								Directory.CreateDirectory(web_server_directory);
 
-						string web_server_file_version = web_server_directory + "\\" + bibid + "_" + vid + ".html";
-						File.Copy(static_file, web_server_file_version, true);
+							string web_server_file_version = web_server_directory + "\\" + bibid + "_" + vid + ".html";
+							File.Copy(static_file, web_server_file_version, true);
 
-                    }
-                    else
-                    {
-                        errors++;
-                        //failures.WriteLine(bibid + "\t" + vid);
-                    }
-                }
+						}
+						else
+						{
+							errors++;
+							Console.WriteLine(InstanceName + "....Error creating citation file for: " + bibid + ":" + vid);
+							Logger.AddError("....Error creating citation file for: " + bibid + ":" + vid);
+						}
+	                }
+	                catch (Exception ee)
+	                {
+						Console.WriteLine(InstanceName + "....Exception caught while creating citation file for: " + bibid + ":" + vid);
+						Logger.AddError("....Exception caught while creating citation file for: " + bibid + ":" + vid);
 
+						Console.WriteLine("........." + ee.Message);
+						Logger.AddError("........." + ee.Message);
+						Logger.AddError("........." + ee.StackTrace);
+	                }
+				}
+
+				Console.WriteLine(InstanceName + "Done rebuilding all item-level citation static pages");
+				Logger.AddNonError("Done rebuilding all item-level citation static pages");
 				SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Done rebuilding all item-level citation static pages", String.Empty);
-            }
 
+            }
 
 
             // Set the mode away from the display item mode
@@ -664,7 +681,9 @@ namespace SobekCM.Library
 			writer.WriteLine("<!DOCTYPE html>");
 			writer.WriteLine("<html>");
 			writer.WriteLine("<head>");
-	        writer.WriteLine("  <title>" + SobekCM_Library_Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");			writer.WriteLine();			writer.WriteLine("  <!-- " + SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository -->");
+	        writer.WriteLine("  <title>" + SobekCM_Library_Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");
+			writer.WriteLine();
+			writer.WriteLine("  <!-- " + SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository -->");
 			writer.WriteLine();
 			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
@@ -677,7 +696,8 @@ namespace SobekCM.Library
 			if (Aggregation.CSS_File.Length > 0)
 			{
 				writer.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + skinObject.Skin_Code + "/" + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
-			}			writer.WriteLine("</head>");
+			}
+			writer.WriteLine("</head>");
 			writer.WriteLine("<body>");
 
             writer.WriteLine("<div id=\"container-inner\">");
@@ -875,6 +895,9 @@ namespace SobekCM.Library
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
 			assistant.Get_Item(String.Empty, currentMode, Item_List, SobekCM_Library_Settings.Image_URL, iconList, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+		    if (currentItem == null)
+			    return false;
+
             if (currentItem.Behaviors.Aggregation_Count > 0)
                 currentMode.Aggregation = currentItem.Behaviors.Aggregations[0].Code;
 

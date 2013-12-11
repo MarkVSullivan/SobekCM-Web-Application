@@ -210,8 +210,12 @@ namespace SobekCM.Builder
 						// Look for abort
 						if ((dbInstance.Can_Abort) && (CheckForAbort()))
 						{
-							if ((!dbInstance.Can_Abort) && (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED))
+							aborted = true;
+							if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
+							{
+								abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
 								Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+							}
 							break;
 						}
 
@@ -259,12 +263,18 @@ namespace SobekCM.Builder
 
 							Run_BulkLoader(loaders[i], verbose);
 
-							if (aborted)
+							// Look for abort
+							if ((!aborted) && (dbInstance.Can_Abort) && (CheckForAbort()))
 							{
-								if ((!dbInstance.Can_Abort) && (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED))
+								aborted = true;
+								if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
+								{
+									abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
 									Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+								}
 								break;
 							}
+
 
 							if (rebuildRssFeeds)
 								loaders[i].Build_Feeds();
@@ -346,7 +356,7 @@ namespace SobekCM.Builder
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", "Building ABORTED per request");
 
 						// Finally, set the builder flag appropriately
-						if (( !dbConfig.Can_Abort ) && ( Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED ))
+						if ( abort_flag == Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED )
 							Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
 					}
 		        }
@@ -489,6 +499,7 @@ namespace SobekCM.Builder
         {
             if (CompleteStaticRebuild)
             {
+				Console.WriteLine("Beginning static rebuild");
                 LogFileXHTML staticRebuildLog = new LogFileXHTML(Application.StartupPath + "/Logs/static_rebuild.html");
 				Static_Pages_Builder builder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location, SobekCM_Library_Settings.Application_Server_Network);
                 builder.Rebuild_All_Static_Pages(staticRebuildLog, true, SobekCM_Library_Settings.Local_Log_Directory, String.Empty, -1);

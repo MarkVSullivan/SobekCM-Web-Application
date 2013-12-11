@@ -91,24 +91,15 @@ namespace SobekCM.Library.HTML
             iconTable = Icon_Table;
 
 
-	        if (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out)
-            {
-                Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Performing logout");
-
-                HttpContext.Current.Session["user"] = null;
-                HttpContext.Current.Response.Redirect("?", false);
-                HttpContext.Current.ApplicationInstance.CompleteRequest();
-                Current_Mode.Request_Completed = true;
-                return;
-            }
-
-            if ((Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (user != null) && (user.Is_Temporary_Password))
-            {
-                Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
-            }
-
-            if (Current_Mode.Logon_Required)
-                Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+            // All Admin pages require a user being logged on
+			if (Current_User == null)
+			{
+				Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+				Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+				Current_Mode.My_Sobek_SubMode = String.Empty;
+				Current_Mode.Redirect();
+				return;
+			}
 
             // If the user is not an admin, and admin was selected, reroute this
 			if ((!Current_User.Is_System_Admin) && (!Current_User.Is_Portal_Admin) && (Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single))

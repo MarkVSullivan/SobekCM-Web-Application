@@ -505,18 +505,41 @@ initListeners();
 
 function initListeners() {
     try {
-
         //menubarf
         document.getElementById("content_menubar_save").addEventListener("click", function () {
             //save("all");
-            //attempt to save all three
-            displayMessage(localize.L59);
-            globalVar.RIBMode = true;
-            save("item");
-            save("overlay");
-            save("poi");
-            globalVar.RIBMode = false;
-            window.location.assign(document.URL.replace("/mapedit", ""));
+            if (globalVar.userMayLoseData) {
+                //attempt to save all three
+                displayMessage(localize.L59);
+                globalVar.RIBMode = true;
+                var savesCompleted = 0;
+                try {
+                    save("item");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save item");
+                }
+                try {
+                    save("overlay");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save overlay");
+                }
+                try {
+                    save("poi");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save poi");
+                }
+                if (savesCompleted == 3) {
+                    de("all saves completed");
+                    //window.location.assign(document.URL.replace("/mapedit", ""));
+                    globalVar.userMayLoseData = false;
+                }
+                globalVar.RIBMode = false;
+            } else {
+                displayMessage(L_NotSaved);
+            }
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
             //clear("all");
@@ -1234,6 +1257,8 @@ function changeMapLayer(layer) {
 
 //pan map handler
 function panMap(direction) {
+    //panOverlay(direction);
+
     switch (direction) {
         case "up":
             map.panBy(0, -100);
@@ -1648,6 +1673,7 @@ function save(id) {
                     }
                     //reset first save
                     globalVar.firstSaveItem = true;
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_saveItem").value = L37;
                     document.getElementById("content_toolbox_button_saveItem").title = L38;
@@ -1668,6 +1694,10 @@ function save(id) {
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
                         try {
+                            //explicitly change TEMP_ IDs
+                            globalVar.incomingPolygonFeatureType[i] = "main";
+                            globalVar.incomingPolygonPolygonType[i] = "rectangle";
+
                             de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                             createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                             if (globalVar.toServerSuccess == true) {
@@ -1695,7 +1725,7 @@ function save(id) {
                     de("Applying Changes...");
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
-                        de("applying overlay: " + globalVar.savingOverlayPageId[i] + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                        de("applying overlay: " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                         createSavedOverlay("apply", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                         if (globalVar.toServerSuccess == true) {
                             displayMessage(L_Applied);
@@ -1703,6 +1733,7 @@ function save(id) {
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = true;
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                 } else {
                     displayMessage(L_NotSaved);
                 }
@@ -1754,6 +1785,7 @@ function save(id) {
                     } else {
                         displayMessage(L_NotSaved);
                     }
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_savePOI").value = L37;
                     document.getElementById("content_toolbox_button_savePOI").title = L38;
@@ -1784,16 +1816,21 @@ function clear(id) {
             break;
 
         case "overlay":
-            if ((globalVar.workingOverlayIndex != null) || (globalVar.overlayCount != globalVar.overlaysOnMap.length)) {
+            //if ((globalVar.workingOverlayIndex != null) || ((globalVar.overlayCount != globalVar.overlaysOnMap.length) && (globalVar.overlayCount != 0))) {
+            if(globalVar.savingOverlayIndex.length>0){
                 displayMessage(localize.L52);
                 //reset edit mode
                 place("overlay");
+                //reset hidden overlays
+                resetHiddenOverlays();
                 //delete all incoming overlays
                 clearIncomingOverlays();
-                //show all the incoming overlays
-                displayIncomingPolygons();
                 //clear the save cache
                 clearCacheSaveOverlay();
+                //clear ooms
+                clearOverlaysOnMap();
+                //show all the incoming overlays
+                displayIncomingPolygons();
                 //redraw list items of overlays
                 initOverlayList();
                 //say we are finished
@@ -1801,7 +1838,6 @@ function clear(id) {
             } else {
                 displayMessage(L46);
             }
-
             break;
 
         case "poi":
@@ -3274,12 +3310,22 @@ function displayIncomingLines() {
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingPolygons() {
     //go through and display overlays as long as there is an overlay to display
+    de("length: "+globalVar.incomingPolygonPath.length);
     for (var i = 0; i < globalVar.incomingPolygonPath.length; i++) {
+        de("ft: " + globalVar.incomingPolygonFeatureType[i]);
         switch (globalVar.incomingPolygonFeatureType[i]) {
+        case "TEMP_main":
+            //hidden do nothing
+            globalVar.incomingPolygonFeatureType[i] = "hidden";
+            globalVar.incomingPolygonPolygonType[i] = "hidden";
+            de("converting TEMP_ for " + i);
+            break;
         case "hidden":
             //hidden do nothing
+            de("doing nothing for " + i);
             break;
         case "":
+            de("doing case2 for " + i);
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
@@ -3296,6 +3342,7 @@ function displayIncomingPolygons() {
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "main":
+            de("doing case3 for " + i);
             globalVar.workingOverlayIndex = globalVar.incomingPolygonPageId[i];
             //create overlay with incoming
             globalVar.overlaysOnMap[globalVar.incomingPolygonPageId[i]] = new CustomOverlay(globalVar.incomingPolygonPageId[i], globalVar.incomingPolygonPath[i], globalVar.incomingPolygonSourceURL[i], map, globalVar.incomingPolygonRotation[i]);
@@ -3312,6 +3359,7 @@ function displayIncomingPolygons() {
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "poi":
+            de("doing case4 for " + i);
             //globalVar.placerType = "poi";
             if (globalVar.placerType == "poi") {
                 //determine polygon type
@@ -4476,6 +4524,8 @@ function overlayEditMe(id) {
         globalVar.pageMode = "edit";
         //if editing is being done and there is something to save, save
         if (globalVar.currentlyEditing == "yes" && globalVar.workingOverlayIndex != null) {
+            //reset overlay drawingmode
+            drawingManager.setDrawingMode(null);
             de("saving overlay " + globalVar.workingOverlayIndex);
             //trigger a cache of current working overlay
             cacheSaveOverlay(globalVar.workingOverlayIndex);
@@ -4483,29 +4533,27 @@ function overlayEditMe(id) {
             globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setOptions(globalVar.ghosting);
             //reset editing marker
             globalVar.currentlyEditing = "no";
-            //set preserved rotation to the rotation of the current overlay
-            //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
+            //set new woi
             globalVar.workingOverlayIndex = id;
+            //go through each overlay on the map
+            cycleOverlayHighlight(id);
+            //set preserved rotation to the rotation of the current overlay
+            de("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
             globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //globalVar.preservedRotation = 0;
         }
         //if editing is not being done, make it so
         if (globalVar.currentlyEditing == "no" || globalVar.workingOverlayIndex == null) {
+            //reset overlay drawingmode
+            drawingManager.setDrawingMode(null);
+            //set new woi
+            globalVar.workingOverlayIndex = id;
+            //open woi
             globalVar.overlaysOnMap[id].setMap(map);
             globalVar.ghostOverlayRectangle[id].setMap(map);
             document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
             //go through each overlay on the map
-            for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
-                de("hit: " + id + " index: " + i + " length: " + globalVar.overlaysOnMap.length);
-                //if there is a match in overlays
-                if (i == id) {
-                    //set highlight color
-                    document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
-                } else {
-                    //reset highlight
-                    document.getElementById("overlayListItem" + i).style.background = null;
-                }
-            }
+            cycleOverlayHighlight(id);
             //enable editing marker
             globalVar.currentlyEditing = "yes";
             de("editing overlay " + (globalVar.workingOverlayIndex - 1));
@@ -4579,8 +4627,27 @@ function overlayEditMe(id) {
         displayMessage(L34 + " " + globalVar.incomingPolygonLabel[(id-1)]);
     } catch (e) {
         de("[error]: " + e);
+        //go through each overlay on the map
+        cycleOverlayHighlight(id);
         //create the overlay
         createOverlayFromPage(id);
+    }
+}
+
+//cycle through all overlay list itmes and hightliht them accordingly
+function cycleOverlayHighlight(id) {
+    de("highlighting overlays");
+    //go through each overlay on the map
+    for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
+        de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
+        //if there is a match in overlays
+        if (i == id) {
+            //set highlight color
+            document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
+        } else {
+            //reset highlight
+            document.getElementById("overlayListItem" + i).style.background = null;
+        }
     }
 }
 
@@ -4608,21 +4675,26 @@ function overlayShowMe(id) {
 
 //delete poi from map and list
 function overlayDeleteMe(id) {
-    confirm(localize.L54);
-    try {
-        createSavedOverlay("delete", id, "", "", "", "");
-        globalVar.overlaysOnMap[id].setMap(null);
-        globalVar.overlaysOnMap[id] = null;
-        globalVar.ghostOverlayRectangle[id].setMap(null);
-        globalVar.ghostOverlayRectangle[id] = null;
-        //var strg = "#overlayListItem" + id; //create <li> overlay string
-        //$(strg).remove(); //remove <li>
-        globalVar.overlayCount--;
-        //displayMessage(id + " " + L33);
-        displayMessage(localize.L55 + " " + id);
-    } catch(e) {
+    if (globalVar.overlaysOnMap[id]) {
+        confirm(localize.L54);
+        try {
+            createSavedOverlay("delete", id, "", "", "", "");
+            globalVar.overlaysOnMap[id].setMap(null);
+            globalVar.overlaysOnMap[id] = null;
+            globalVar.ghostOverlayRectangle[id].setMap(null);
+            globalVar.ghostOverlayRectangle[id] = null;
+            //var strg = "#overlayListItem" + id; //create <li> overlay string
+            //$(strg).remove(); //remove <li>
+            globalVar.overlayCount += -1;
+            globalVar.workingOverlayIndex = null;
+            //displayMessage(id + " " + L33);
+            displayMessage(localize.L55 + " " + id);
+        } catch (e) {
+            displayMessage(localize.L57); //nothing to delete
+        }
+    } else {
         displayMessage(localize.L57); //nothing to delete
-    } 
+    }
 }
 
 //open the infoWindow of a poi
@@ -4711,7 +4783,10 @@ function poiGetDesc(id) {
             //assign full description to the poi object
             globalVar.poiDesc[id] = temp;
 
-            //visually set desc
+            //close old info window (this negates bug where desc box would no longer be tied to point)
+            infoWindow[id].setMap(null);
+
+            //visually reset desc
             //infoWindow[id].setOptions({ content: writeHTML("poiDesc", id, "", "") });
 
             infoWindow[id] = new google.maps.InfoWindow({
@@ -4821,8 +4896,12 @@ $(function () {
 //keeps a specific opacity
 function keepOpacity(opacityIn) {
     de("keepOpacity: " + opacityIn);
-    var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-    div.style.opacity = opacityIn;
+    try {
+        var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+        div.style.opacity = opacityIn;
+    } catch(e) {
+        //
+    } 
     globalVar.preservedOpacity = opacityIn;
 }
 
@@ -5082,13 +5161,13 @@ function createOverlayFromPage(pageId) {
     //indicate that we drew this overlay
     globalVar.overlayType = "drawn";
     //assign featuretype
-    globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "main";
+    globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "TEMP_main";
     //assign polygon type
-    globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "rectangle";
+    globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "TEMP_rectangle";
     //add the rotation
     globalVar.incomingPolygonRotation[globalVar.convertedOverlayIndex] = 0;
     //add the working overlay index
-    globalVar.workingOverlayIndex = globalVar.convertedOverlayIndex +1;
+    globalVar.workingOverlayIndex = globalVar.convertedOverlayIndex + 1;
     ////add the working overlay index
     //if (globalVar.workingOverlayIndex == null) {
     //    globalVar.workingOverlayIndex = 0;
@@ -5121,8 +5200,10 @@ function convertToOverlay() {
         if (globalVar.itemMarker) {
             //hide marker
             globalVar.itemMarker.setMap(null);
-            //delete maker todo confirm this deletes
             globalVar.itemMarker = null;
+            globalVar.RIBMode = true;
+            createSavedItem("delete", null); //send to server and delete from mets
+            globalVar.RIBMode = false;
             ////open first overlay to convert
             //createOverlayFromPage(globalVar.convertedOverlayIndex + 1);
         }
@@ -5130,8 +5211,8 @@ function convertToOverlay() {
         actionsACL("none", "item");
         actionsACL("full", "overlay");
         //(confirm 'main' if not already there) fixes a bug 
-        globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "main";
-        globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "rectangle";
+        globalVar.incomingPolygonFeatureType[globalVar.convertedOverlayIndex] = "TEMP_main";
+        globalVar.incomingPolygonPolygonType[globalVar.convertedOverlayIndex] = "TEMP_rectangle";
         //explicitly open overlay tab (fixes bug)
         openToolboxTab(3);
         //converted
@@ -5151,6 +5232,7 @@ function initOverlayList() {
     de("initOverlayList(); started...");
     document.getElementById("overlayList").innerHTML = "";
     if (globalVar.incomingPolygonPageId.length > 0) {
+        de(globalVar.incomingPolygonLabel.length);
         for (var i = 0; i < globalVar.incomingPolygonLabel.length; i++) {
             if (globalVar.incomingPolygonFeatureType[i] != "poi") {
                 de("Adding Overlay List Item");
@@ -5410,6 +5492,143 @@ function clearCacheSaveOverlay() {
     
 }
 
+//clear the ooms
+function clearOverlaysOnMap() {
+    de("attempting to clear ooms");
+    if (globalVar.overlaysOnMap.length > 0) {
+        globalVar.overlaysOnMap = [];
+        de("ooms reset");
+        //globalVar.overlayCount = 0;
+    } else {
+    de("no overlays on the map");
+    }
+}
+
+//reset hidden overlays
+function resetHiddenOverlays() {
+    de("total oom count: "+globalVar.overlaysOnMap.length);
+    for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
+        de("oom ID:" + i);
+        var isComparable = false;
+        try {
+            if (globalVar.overlaysOnMap[i].image_) {
+                isComparable = true;
+            }
+        } catch (e) {
+            de("[WARN]: No image for oom ID" + i);
+        }
+        if (isComparable) {
+            for (var j = 0; j < globalVar.incomingPolygonSourceURL.length; j++) {
+                de("incoming ID:" + j);
+                try {
+                    if ((globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) && (globalVar.incomingPolygonFeatureType[j] == "TEMP_main")) {
+                        globalVar.incomingPolygonFeatureType[j] = "hidden";
+                        globalVar.incomingPolygonPolygonType[j] = "hidden";
+                        de("[INFO]: Set Incoming To 'Hidden'");
+                    }
+                } catch (e) {
+                    de("[ERROR]: Not found.");
+                }
+            }
+        }
+    }
+}
+
+//EXPERIMENTAL
+function panOverlay(direction) {
+    switch (direction) {
+        case "up":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0001;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0001;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            //div.style.left = pixelPoint.x + "px";
+            div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "down":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() - 0.0001;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() - 0.0001;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            //div.style.left = pixelPoint.x + "px";
+            div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "left":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() - 0.0001;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() - 0.0001;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            div.style.left = pixelPoint.x + "px";
+            //div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "right":
+            //calc original
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0001;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0001;
+            var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
+            var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
+            //assign ghost position
+            globalVar.pageMode = "";
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
+            globalVar.pageMode = "edit";
+            //assign div position
+            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+            de(pixelPoint.x);
+            div.style.backgroundPosition = pixelPoint.x + "px";
+
+            //div.style.top = pixelPoint.y + "px";
+            //testBounds();
+            break;
+        case "reset":
+            //globalVar.overlaysOnMap[globalVar.workingOverlayIndex].panBy((-1 * xaxis), (-1 * yaxis));
+            break;
+    }
+}
+
+//EXPERIMENTAL
+function latLngToPixel(latLng) {
+    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+    var scale = Math.pow(2, map.getZoom());
+    var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
+    return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+}
+
 //keypress shortcuts/actions
 //window.onkeypress = keypress;
 //function keypress(e) {
@@ -5534,8 +5753,8 @@ function debugClear() {
 //jquery UI elements
 $(function () {
     try {
+        //init superfish
         $('ul.sf-menu').superfish();
-
         //draggable content settings
         $("#mapedit_container_toolbox").draggable({
             handle: "#mapedit_container_toolboxMinibar" //div used as handle
@@ -5550,90 +5769,91 @@ $(function () {
             heightStyle: "content" //set hieght to?
         });
         //tooltips (the tooltip text is the title of the element defined in localization js)
-        $("#content_toolbarGrabber").tooltip({ track: true });
-        $("#content_toolbar_button_reset").tooltip({ track: true });
-        $("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
-        $("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
-        $("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
-        $("#content_toolbar_button_layerSatellite").tooltip({ track: true });
-        $("#content_toolbar_button_layerTerrain").tooltip({ track: true });
-        $("#content_toolbar_button_layerControls").tooltip({ track: true });
-        $("#content_toolbar_button_layerHybrid").tooltip({ track: true });
-        $("#content_toolbar_button_layerCustom").tooltip({ track: true });
-        $("#content_toolbar_button_layerReset").tooltip({ track: true });
-        $("#content_toolbar_button_zoomIn").tooltip({ track: true });
-        $("#content_toolbar_button_zoomReset").tooltip({ track: true });
-        $("#content_toolbar_button_zoomOut").tooltip({ track: true });
-        $("#content_toolbar_button_panUp").tooltip({ track: true });
-        $("#content_toolbar_button_panDown").tooltip({ track: true });
-        $("#content_toolbar_button_panReset").tooltip({ track: true });
-        $("#content_toolbar_button_panLeft").tooltip({ track: true });
-        $("#content_toolbar_button_panRight").tooltip({ track: true });
-        $("#content_toolbar_button_manageItem").tooltip({ track: true });
-        $("#content_toolbar_button_manageOverlay").tooltip({ track: true });
-        $("#content_toolbar_button_managePOI").tooltip({ track: true });
-        $("#content_toolbar_button_manageSearch").tooltip({ track: true });
-        $("#content_toolbox_button_reset").tooltip({ track: true });
-        $("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
-        $("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
-        $("#content_toolbox_button_layerSatellite").tooltip({ track: true });
-        $("#content_toolbox_button_layerTerrain").tooltip({ track: true });
-        $("#content_toolbox_button_layerControls").tooltip({ track: true });
-        $("#content_toolbox_button_layerHybrid").tooltip({ track: true });
-        $("#content_toolbox_button_layerCustom").tooltip({ track: true });
-        $("#content_toolbox_button_layerReset").tooltip({ track: true });
-        $("#content_toolbox_button_zoomIn").tooltip({ track: true });
-        $("#content_toolbox_button_zoomReset").tooltip({ track: true });
-        $("#content_toolbox_button_zoomOut").tooltip({ track: true });
-        $("#content_toolbox_button_panUp").tooltip({ track: true });
-        $("#content_toolbox_button_panDown").tooltip({ track: true });
-        $("#content_toolbox_button_panReset").tooltip({ track: true });
-        $("#content_toolbox_button_panLeft").tooltip({ track: true });
-        $("#content_toolbox_button_panRight").tooltip({ track: true });
-        $("#content_toolbox_button_manageItem").tooltip({ track: true });
-        $("#content_toolbox_button_manageOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_managePOI").tooltip({ track: true });
-        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
-        $("#content_toolbox_button_poiMarker").tooltip({ track: true });
-        $("#content_toolbox_button_poiCircle").tooltip({ track: true });
-        $("#content_toolbox_button_poirectangle").tooltip({ track: true });
-        $("#content_toolbox_button_poiPolygon").tooltip({ track: true });
-        $("#content_toolbox_button_poiLine").tooltip({ track: true });
-        $("#rotationKnob").tooltip({ track: true });
-        $("#content_toolbox_rotationClockwise").tooltip({ track: true });
-        $("#content_toolbox_rotationReset").tooltip({ track: true });
-        $("#content_toolbox_rotationCounterClockwise").tooltip({ track: true });
-        $("#transparency").tooltip({ track: true });
-        $("#content_toolbox_rgItem").tooltip({ track: true });
-        $("#content_toolbox_posItem").tooltip({ track: true });
-        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
-        $("#descItem").tooltip({ track: true });
-        $("#content_toolbox_button_saveItem").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        $("#content_toolbox_button_saveOverlay").tooltip({ track: true });
-        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
-        $("#descPOI").tooltip({ track: true });
-        $("#content_toolbox_button_savePOI").tooltip({ track: true });
-        $("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
-        $("#content_toolbox_button_overlayToggle").tooltip({ track: true });
-        $("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
-        $("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_poiToggle").tooltip({ track: true });
-        $("#content_toolbox_button_clearItem").tooltip({ track: true });
-        $("#content_toolbox_button_clearOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_clearPOI").tooltip({ track: true });
-        $("#content_toolbar_searchField").tooltip({ track: true });
-        $("#content_toolbar_searchButton").tooltip({ track: true });
-        $("#content_toolbox_searchField").tooltip({ track: true });
-        $("#content_toolbox_searchButton").tooltip({ track: true });
-        $("#searchResults_container").tooltip({ track: true });
-        $("#overlayList_container").tooltip({ track: true });
-        $("#poiList_container").tooltip({ track: true });
+        //$("#content_toolbarGrabber").tooltip({ track: true });
+        //$("#content_toolbar_button_reset").tooltip({ track: true });
+        //$("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
+        //$("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
+        //$("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
+        //$("#content_toolbar_button_layerSatellite").tooltip({ track: true });
+        //$("#content_toolbar_button_layerTerrain").tooltip({ track: true });
+        //$("#content_toolbar_button_layerControls").tooltip({ track: true });
+        //$("#content_toolbar_button_layerHybrid").tooltip({ track: true });
+        //$("#content_toolbar_button_layerCustom").tooltip({ track: true });
+        //$("#content_toolbar_button_layerReset").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomIn").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomReset").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomOut").tooltip({ track: true });
+        //$("#content_toolbar_button_panUp").tooltip({ track: true });
+        //$("#content_toolbar_button_panDown").tooltip({ track: true });
+        //$("#content_toolbar_button_panReset").tooltip({ track: true });
+        //$("#content_toolbar_button_panLeft").tooltip({ track: true });
+        //$("#content_toolbar_button_panRight").tooltip({ track: true });
+        //$("#content_toolbar_button_manageItem").tooltip({ track: true });
+        //$("#content_toolbar_button_manageOverlay").tooltip({ track: true });
+        //$("#content_toolbar_button_managePOI").tooltip({ track: true });
+        //$("#content_toolbar_button_manageSearch").tooltip({ track: true });
+        //$("#content_toolbox_button_reset").tooltip({ track: true });
+        //$("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
+        //$("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
+        //$("#content_toolbox_button_layerSatellite").tooltip({ track: true });
+        //$("#content_toolbox_button_layerTerrain").tooltip({ track: true });
+        //$("#content_toolbox_button_layerControls").tooltip({ track: true });
+        //$("#content_toolbox_button_layerHybrid").tooltip({ track: true });
+        //$("#content_toolbox_button_layerCustom").tooltip({ track: true });
+        //$("#content_toolbox_button_layerReset").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomIn").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomReset").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomOut").tooltip({ track: true });
+        //$("#content_toolbox_button_panUp").tooltip({ track: true });
+        //$("#content_toolbox_button_panDown").tooltip({ track: true });
+        //$("#content_toolbox_button_panReset").tooltip({ track: true });
+        //$("#content_toolbox_button_panLeft").tooltip({ track: true });
+        //$("#content_toolbox_button_panRight").tooltip({ track: true });
+        //$("#content_toolbox_button_manageItem").tooltip({ track: true });
+        //$("#content_toolbox_button_manageOverlay").tooltip({ track: true });
+        //$("#content_toolbox_button_managePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        ////$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        ////$("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_poiMarker").tooltip({ track: true });
+        //$("#content_toolbox_button_poiCircle").tooltip({ track: true });
+        //$("#content_toolbox_button_poirectangle").tooltip({ track: true });
+        //$("#content_toolbox_button_poiPolygon").tooltip({ track: true });
+        //$("#content_toolbox_button_poiLine").tooltip({ track: true });
+        //$("#rotationKnob").tooltip({ track: true });
+        //$("#content_toolbox_rotationClockwise").tooltip({ track: true });
+        //$("#content_toolbox_rotationReset").tooltip({ track: true });
+        //$("#content_toolbox_rotationCounterClockwise").tooltip({ track: true });
+        //$("#transparency").tooltip({ track: true });
+        //$("#content_toolbox_rgItem").tooltip({ track: true });
+        //$("#content_toolbox_posItem").tooltip({ track: true });
+        //$("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        //$("#descItem").tooltip({ track: true });
+        $("#content_toolbox_button_saveItem").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_saveItem").tooltip("close"); }, 3000); } });
+        ////$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        $("#content_toolbox_button_saveOverlay").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_saveOverlay").tooltip("close"); }, 3000); } });
+        ////$("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#descPOI").tooltip({ track: true });
+        $("#content_toolbox_button_savePOI").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_savePOI").tooltip("close"); }, 3000); } });
+        //$("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
+        ////$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayToggle").tooltip({ track: true });
+        //$("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
+        //$("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_poiToggle").tooltip({ track: true });
+        $("#content_toolbox_button_clearItem").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearItem").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_clearOverlay").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearOverlay").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_clearPOI").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearPOI").tooltip("close"); }, 3000); } });
+        //$("#content_toolbar_searchField").tooltip({ track: true });
+        //$("#content_toolbar_searchButton").tooltip({ track: true });
+        //$("#content_toolbox_searchField").tooltip({ track: true });
+        //$("#content_toolbox_searchButton").tooltip({ track: true });
+        //$("#searchResults_container").tooltip({ track: true });
+        //$("#overlayList_container").tooltip({ track: true });
+        //$("#poiList_container").tooltip({ track: true });
+        $(document).tooltip({ track: true }); //(used to blanket all the tooltips)
         //$(".selector").tooltip({ content: "Awesome title!" });
     } catch (err) {
         alert(L51 + ": " + err);
