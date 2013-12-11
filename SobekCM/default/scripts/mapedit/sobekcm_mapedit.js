@@ -4524,6 +4524,8 @@ function overlayEditMe(id) {
         globalVar.pageMode = "edit";
         //if editing is being done and there is something to save, save
         if (globalVar.currentlyEditing == "yes" && globalVar.workingOverlayIndex != null) {
+            //reset overlay drawingmode
+            drawingManager.setDrawingMode(null);
             de("saving overlay " + globalVar.workingOverlayIndex);
             //trigger a cache of current working overlay
             cacheSaveOverlay(globalVar.workingOverlayIndex);
@@ -4531,29 +4533,27 @@ function overlayEditMe(id) {
             globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setOptions(globalVar.ghosting);
             //reset editing marker
             globalVar.currentlyEditing = "no";
-            //set preserved rotation to the rotation of the current overlay
-            //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
+            //set new woi
             globalVar.workingOverlayIndex = id;
+            //go through each overlay on the map
+            cycleOverlayHighlight(id);
+            //set preserved rotation to the rotation of the current overlay
+            de("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
             globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //globalVar.preservedRotation = 0;
         }
         //if editing is not being done, make it so
         if (globalVar.currentlyEditing == "no" || globalVar.workingOverlayIndex == null) {
+            //reset overlay drawingmode
+            drawingManager.setDrawingMode(null);
+            //set new woi
+            globalVar.workingOverlayIndex = id;
+            //open woi
             globalVar.overlaysOnMap[id].setMap(map);
             globalVar.ghostOverlayRectangle[id].setMap(map);
             document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
             //go through each overlay on the map
-            for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
-                de("hit: " + id + " index: " + i + " length: " + globalVar.overlaysOnMap.length);
-                //if there is a match in overlays
-                if (i == id) {
-                    //set highlight color
-                    document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
-                } else {
-                    //reset highlight
-                    document.getElementById("overlayListItem" + i).style.background = null;
-                }
-            }
+            cycleOverlayHighlight(id);
             //enable editing marker
             globalVar.currentlyEditing = "yes";
             de("editing overlay " + (globalVar.workingOverlayIndex - 1));
@@ -4627,8 +4627,27 @@ function overlayEditMe(id) {
         displayMessage(L34 + " " + globalVar.incomingPolygonLabel[(id-1)]);
     } catch (e) {
         de("[error]: " + e);
+        //go through each overlay on the map
+        cycleOverlayHighlight(id);
         //create the overlay
         createOverlayFromPage(id);
+    }
+}
+
+//cycle through all overlay list itmes and hightliht them accordingly
+function cycleOverlayHighlight(id) {
+    de("highlighting overlays");
+    //go through each overlay on the map
+    for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
+        de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
+        //if there is a match in overlays
+        if (i == id) {
+            //set highlight color
+            document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
+        } else {
+            //reset highlight
+            document.getElementById("overlayListItem" + i).style.background = null;
+        }
     }
 }
 
@@ -5148,7 +5167,7 @@ function createOverlayFromPage(pageId) {
     //add the rotation
     globalVar.incomingPolygonRotation[globalVar.convertedOverlayIndex] = 0;
     //add the working overlay index
-    globalVar.workingOverlayIndex = globalVar.convertedOverlayIndex +1;
+    globalVar.workingOverlayIndex = globalVar.convertedOverlayIndex + 1;
     ////add the working overlay index
     //if (globalVar.workingOverlayIndex == null) {
     //    globalVar.workingOverlayIndex = 0;
