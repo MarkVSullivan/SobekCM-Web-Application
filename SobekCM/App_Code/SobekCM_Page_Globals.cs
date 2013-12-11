@@ -856,7 +856,7 @@ public class SobekCM_Page_Globals
             SobekCM_Assistant assistant = new SobekCM_Assistant();
 
             // Try to get the web skin from the cache or skin collection, otherwise build it
-            htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, Global.Skins, tracer);
+            htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, Global.Skins, true, tracer);
 
             // If there was no web skin returned, forward user to URL with no web skin. 
             // This happens if the web skin code is invalid.  If a robot, just return a bad request 
@@ -929,7 +929,7 @@ public class SobekCM_Page_Globals
         if (mainWriter == null)
         {
             SobekCM_Assistant assistant = new SobekCM_Assistant();
-            htmlSkin = assistant.Get_HTML_Skin(currentMode, Global.Skins, tracer);
+            htmlSkin = assistant.Get_HTML_Skin(currentMode,  Global.Skins, true, tracer);
 
             mainWriter = new Html_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject,
                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes, 
