@@ -22,20 +22,19 @@
 			<name language="eng">Material Information</name>
       <panel>
         <name>Basic Information</name>
-        <element type="Title" subtype="simple" mandatory="true" acronym="Enter the title of your chapter, article, report, or other material here." />
-        <element type="OtherTitle" subtype="simple" mandatory="false" acronym="Enter the any additional titles for your material here." />
-        <element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material." >
+        <element type="Title" subtype="form" mandatory="true" acronym="Enter the title of your chapter, article, report, or other material here." />
+        <element type="OtherTitle" subtype="form" mandatory="false" acronym="Enter the any additional titles for your material here." />
+        <element type="Type" subtype="form" mandatory="true" acronym="Select the type which best categorizes this material." >
           <element_data>
             <options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
           </element_data>
         </element>
-        <element type="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material." />
         <element type="Language" repeatable="true" acronym="Enter the language(s) of the material." >
         </element>
       </panel>
       <panel>
         <name language="eng">Name Authorities</name>
-        <element type="Creator" subtype="complex" repeatable="true" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." />
+        <element type="Creator" subtype="form" repeatable="true" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." />
         <element type="Donor" />
       </panel>
       <panel>
@@ -51,10 +50,10 @@
       <name language="eng">Subjects and Notes</name>
       <panel>
         <name language="eng">Subjects</name>
-        <element type="Subject" subtype="scheme" repeatable="true" />
-        <element type="Genre" repeatable="true" />
+        <element type="Subject" subtype="form" repeatable="true" />
+		<element type="Genre" repeatable="true" />
         <element type="Temporal" subtype="complex" />
-        <element type="Spatial" subtype="simple" repeatable="true" />
+        <element type="Spatial" repeatable="true" />
         <element type="Coordinates" repeatable="true" />
         <element type="TargetAudience" />
       </panel>
@@ -68,35 +67,36 @@
       <name language="eng">Record Information</name>
       <panel>
         <name language="eng">Internal Record</name>
-        <element type="Bib" mandatory="true" readonly="true" />
-        <element type="VID" mandatory="true" readonly="true" />
-        <element type="RecordStatus" />
-        <element type="CreatorNotes" />
-        <element type="RecordOrigin" />
         <element type="EncodingLevel" />
-		<element type="Source" subtype="complex" />
-		<element type="Holding" subtype="complex" />
+	<element type="Source" subtype="complex" />
+	<element type="Holding" subtype="complex" />
         <element type="Rights" />
       </panel>
       <panel>
         <name language="eng">External Records</name>
         <element type="Identifier" subtype="complex" repeatable="true" />
+		<element type="Classification" repeatable="true" />
         <element type="SerialHierarchy" />
         <element type="EAD" />
         <element type="Container" />
         <element type="OtherURL" />
         <element type="RelatedItem" repeatable="true" />
       </panel>
-		<panel>
-			<name language="eng">Downloads</name>
-			<element type="Download" repeatable="true" />
-		</panel>
     </page>
-
-  <page>
-      <name language="eng">IEEE-LOM</name>
+    <page>
+      <name language="eng">Extension Schemas</name>
       <panel>
-        <name language="eng">Learning Object Metadata</name>
+        <name language="eng">Visual Resource Metadata (VRACore)</name>
+        <element type="VRA_CulturalContext" />
+        <element type="VRA_Inscription" />
+        <element type="VRA_Materials" />
+        <element type="VRA_Measurements" />
+        <element type="VRA_StateEdition" />
+        <element type="VRA_StylePeriod" />
+        <element type="VRA_Technique" />
+       </panel>
+      <panel>
+        <name language="eng">Learning Object Metadata (IEEE-LOM)</name>
         <element type="LOM_Aggregation_Level" />
         <element type="LOM_Learning_Resource_Type" />
         <element type="LOM_Status" />

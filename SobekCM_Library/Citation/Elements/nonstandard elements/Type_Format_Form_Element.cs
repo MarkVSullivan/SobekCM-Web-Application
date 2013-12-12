@@ -40,6 +40,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Type = Element_Type.Type;
             Display_SubType = "form";
+	        help_page = "type";
         }
 
         /// <summary> Sets the postback javascript, if the combo box requires a post back onChange </summary>
@@ -121,15 +122,15 @@ namespace SobekCM.Library.Citation.Elements
 
             // Render the title
             Output.WriteLine("  <!-- " + Title + " Form Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
 
             Output.WriteLine("    <td>");
@@ -215,14 +216,14 @@ namespace SobekCM.Library.Citation.Elements
             // Determine which form will be used and set several values
             Type_Format_Type_Enum formType = Type_Format_Type_Enum.None;
             string class_name = "typeformat_popup_div";
-            string form_title = "EDIT MATERIAL DETAILS";
+            string form_title = "Edit Material Details";
             int windowheight = 270;
             switch (instance_value.ToUpper())
             {
                 case "BOOK":
                     formType = Type_Format_Type_Enum.Book;
                     class_name = "typeformat_book_popup_div";
-                    form_title = "EDIT BOOK MATERIAL DETAILS";
+                    form_title = "Edit Book Material Details";
                     windowheight = 515 - 100; // Fudge to move the form down a bit
                     break;
 
@@ -232,7 +233,7 @@ namespace SobekCM.Library.Citation.Elements
                 case "VIDEO":
                     formType = Type_Format_Type_Enum.Visual_Materials;
                     class_name = "typeformat_visual_popup_div";
-                    form_title = "EDIT VISUAL MATERIAL DETAILS";
+                    form_title = "Edit Visual Material Details";
                     windowheight = 390;
                     break;
 
@@ -240,21 +241,21 @@ namespace SobekCM.Library.Citation.Elements
                 case "NEWSPAPER":
                     formType = Type_Format_Type_Enum.Continuing_Resource;
                     class_name = "typeformat_serial_popup_div";
-                    form_title = "EDIT CONTINUING RESOURCES MATERIAL DETAILS";
+                    form_title = "Edit Continuing Resources Material Details";
                     windowheight = 430;
                     break;
 
                 case "MAP":
                     formType = Type_Format_Type_Enum.Map;
                     class_name = "typeformat_map_popup_div";
-                    form_title = "EDIT MAP MATERIALS DETAILS";
+                    form_title = "Edit Map Materials Details";
                     windowheight = 430;
                     break;
 
 				case "DATASET":
 					formType = Type_Format_Type_Enum.Computer_Files;
 					class_name = "typeformat_computer_popup_div";
-					form_title = "EDIT COMPUTER FILE DETAILS";
+					form_title = "Edit Computer File Details";
 					windowheight = 430;
 					break;
 
@@ -642,8 +643,8 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("              <a title=\"Click to edit the material details\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_typeformat_term')\" onblur=\"link_blurred2('form_typeformat_term')\" onkeypress=\"return popup_keypress_focus('form_typeformat', 'form_typeformat_term', 'form_typeformat_extent', " + windowheight + ", 675, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_typeformat', 'form_typeformat_term', 'form_typeformat_extent', " + windowheight + ", 675 );\"><span class=\"" + style + " form_typeformat_line\" id=\"form_typeformat_term\">" + additional_info + "</span></a>");
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
-            Output.WriteLine("          <td valign=\"bottom\" >");
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("      </table>");
@@ -657,33 +658,33 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Type Format Form -->");
-            PopupFormBuilder.AppendLine("<div class=\"" + class_name + "\" id=\"form_typeformat\" style=\"display:none;\">");
-            PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">" + form_title + "</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_typeformat_form()\">X</a> &nbsp; </td></tr></table></div>");
+			PopupFormBuilder.AppendLine("<div class=\"" + class_name + " sbkMetadata_PopupDiv\" id=\"form_typeformat\" style=\"display:none;\">");
+			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">" + form_title + "</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_typeformat_form()\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-            PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
+			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the all materials title
             PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle_first\" >All Materials</td></tr>");
 
             // Add the extent information
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Physical Desc:</td><td colspan=\"2\">");
-            PopupFormBuilder.Append("<input class=\"formtype_large_input\" name=\"form_typeformat_extent\" id=\"form_typeformat_extent\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_extent', 'formtype_large_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_extent', 'formtype_large_input')\" />");
+            PopupFormBuilder.Append("<input class=\"formtype_large_input sbk_Focusable\" name=\"form_typeformat_extent\" id=\"form_typeformat_extent\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the date range info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Year Range:</td><td colspan=\"2\">");
-            PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_datestart', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_datestart', 'formtype_small_input')\" />");
-            PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_dateend', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_dateend', 'formtype_small_input')\" />");
+			PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\" />");
+			PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the place code info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Place Code:</td><td colspan=\"2\">");
-            PopupFormBuilder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(place_code) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_placecode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_placecode', 'formtype_small_input')\" />");
+			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(place_code) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the language code info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Language Code:</td><td colspan=\"2\">");
-            PopupFormBuilder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(language_code) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_langcode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_langcode', 'formtype_small_input')\" />");
+			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(language_code) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             #endregion
@@ -969,8 +970,8 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the projection code and scale
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Projection Code:</td><td>");
-                PopupFormBuilder.Append("<input class=\"formtype_small_input\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode( projection ) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_projcode', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_projcode', 'formtype_small_input')\" ></td>");
-                PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(scale) + "\"  onfocus=\"javascript:textbox_enter('form_typeformat_scale', 'formtype_small_input_focused')\" onblur=\"javascript:textbox_leave('form_typeformat_scale', 'formtype_small_input')\" ></td></tr>");
+				PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(projection) + "\" /></td>");
+				PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(scale) + "\" /></td></tr>");
 
                 // Add the subtype
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
@@ -1306,13 +1307,12 @@ namespace SobekCM.Library.Citation.Elements
 
 			#region Finish the pop-up form
 
+			PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+			PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_typeformat_form();\">CLOSE</button></td>");
+			PopupFormBuilder.AppendLine("    </tr>");
 			PopupFormBuilder.AppendLine("  </table>");
-            PopupFormBuilder.AppendLine("  <br />");
-
-            // Add the close button
-            PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_typeformat_form();\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-            PopupFormBuilder.AppendLine("</div>");
-            PopupFormBuilder.AppendLine();
+			PopupFormBuilder.AppendLine("</div>");
+			PopupFormBuilder.AppendLine();
 
             #endregion
 

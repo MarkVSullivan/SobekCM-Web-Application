@@ -2169,7 +2169,11 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 
             // Write the main SobekCM item style sheet to use 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#if DEBUG
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#endif
 
             // Add any viewer specific tags that need to reside within the HTML head
             if (PageViewer != null)

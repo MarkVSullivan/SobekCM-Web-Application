@@ -73,15 +73,15 @@ namespace SobekCM.Library.Citation.Elements
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
@@ -133,7 +133,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
                 
                 // Add the label input
-                Output.WriteLine("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input')\" /></span>");
+                Output.WriteLine("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"\" /></span>");
                 Output.WriteLine("            </div>");
             }
             else
@@ -222,7 +222,7 @@ namespace SobekCM.Library.Citation.Elements
 		                Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
 
 		                // Add the label input
-		                Output.Write("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(views[i - 1].Label) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_label" + i + "', '" + html_element_name + "_label_input')\" /></span>");
+		                Output.Write("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(views[i - 1].Label) + "\" /></span>");
 
 		                Output.WriteLine(i < views.Count ? "<br />" : "</div>");
 	                }
@@ -230,12 +230,12 @@ namespace SobekCM.Library.Citation.Elements
             }
             Output.WriteLine("          </td>");
 
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
             if (Repeatable)
             {
                 Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new type of viewer", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_viewer_element();\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
             }
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
 
             Output.WriteLine("        </tr>");

@@ -27,6 +27,7 @@ namespace SobekCM.Library.Citation.Elements
             Display_SubType = "panel";
             Title = "Serial Hierarchy";
             html_element_name = "panel_serial_hierarchy";
+			help_page = "serialhierarchy2";
         }
 
         #region iElement Members
@@ -47,37 +48,37 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter serial hierarchy information which explains how this volume related to the larger body of work.";
+                const string DEFAULT_ACRONYM = "Enter serial hierarchy information which explains how this volume related to the larger body of work.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
 
             Output.WriteLine("  <!-- " + Title + " Form Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
 
             Output.WriteLine("    <td>");
@@ -87,40 +88,40 @@ namespace SobekCM.Library.Citation.Elements
 
 
             // Add the rows of enumeration data
-            Output.WriteLine("    <tr><td width=\"100px\">Level 1:</td>");
+            Output.WriteLine("    <tr><td style=\"width:100px\">Level 1:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 0)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Display) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Display) + "\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum1order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" /></td></tr>");
             }
 
             Output.WriteLine("    <tr><td>Level 2:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 1)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\"></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum2order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" /></td></tr>");
             }
 
             Output.WriteLine("    <tr><td>Level 3:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 2)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"\"  onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3text', 'form_serialhierarchy_text_input')\" ></td>");
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" onfocus=\"javascript:textbox_enter('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input_focused')\" onblur=\"javascript:textbox_leave('form_serialhierarchy_enum3order', 'form_serialhierarchy_order_input')\" ></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" /></td></tr>");
             }
 
             Output.WriteLine("      </table>");
@@ -223,19 +224,19 @@ namespace SobekCM.Library.Citation.Elements
 
         #endregion
 
-        private static int convert_string_to_int_safely(string string_value)
+        private static int convert_string_to_int_safely(string StringValue)
         {
-            if (string_value.Length == 0)
+            if (StringValue.Length == 0)
                 return -1;
 
-            if (string_value.Any(thisChar => !Char.IsNumber(thisChar)))
+            if (StringValue.Any(ThisChar => !Char.IsNumber(ThisChar)))
             {
                 return -1;
             }
 
             try
             {
-                return Convert.ToInt16(string_value);
+                return Convert.ToInt16(StringValue);
             }
             catch
             {

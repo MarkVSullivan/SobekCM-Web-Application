@@ -4,6 +4,6 @@
     <StartArguments>--noload --staticrebuild</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <StartArguments>--marcxml</StartArguments>
+    <StartArguments>--backgr</StartArguments>
   </PropertyGroup>
 </Project>

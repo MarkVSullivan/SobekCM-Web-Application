@@ -244,7 +244,7 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Precision to be used while performing a metadata search in the database </summary>
 		public Search_Precision_Type_Enum Search_Precision { get; set; }
 
-		/// <summary> Returns the name of this instance ( i.e., 'UFDC', 'dLOC', etc... ) </summary>
+		/// <summary> Returns the name of this instance ( i.e., 'UDC', 'dLOC', etc... ) </summary>
 		public string SobekCM_Instance_Abbreviation
 		{
 			get 
@@ -257,7 +257,7 @@ namespace SobekCM.Library.Navigation
 			}
 		}
 
-		/// <summary> Returns the name of this instance ( i.e., 'UFDC', 'dLOC', etc... ) </summary>
+		/// <summary> Returns the name of this instance ( i.e., 'UDC', 'dLOC', etc... ) </summary>
 		public string SobekCM_Instance_Name
 		{
 			get
@@ -1676,7 +1676,7 @@ namespace SobekCM.Library.Navigation
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
-		/// <summary> URL for the general image folder containing images used throughout UFDC, and not aggregation or item specific </summary>
+		/// <summary> URL for the general image folder containing images used throughout the system, and not aggregation or item specific </summary>
 		/// <value> [Base_URL] + 'default/images/' </value>
 		public string Default_Images_URL
 		{

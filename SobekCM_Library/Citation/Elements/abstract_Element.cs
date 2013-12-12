@@ -37,6 +37,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Name used for style sheet references and html id's for this subtype of this element </summary>
         protected string html_element_name;
 
+		/// <summary> Name of the help page, if different than default </summary>
+	    protected string help_page;
+
         /// <summary> Constructor for a new abstract element object </summary>
         protected abstract_Element()
         {
@@ -87,6 +90,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Flag indicating this is mandatory </summary>
         public bool Mandatory { get; set; }
+
 
         /// <summary> Reads from the template XML format </summary>
         /// <param name="xmlReader"> Current template xml configuration reader </param>
@@ -144,10 +148,16 @@ namespace SobekCM.Library.Citation.Elements
         /// <returns> HTML for the URL for the element help </returns>
         protected string Help_URL(string Skin_Code, string Current_Base_URL)
         {
-            return SobekCM_Library_Settings.Metadata_Help_URL(Current_Base_URL) + "help/" + html_element_name.Replace("_", "");
+	        if ( String.IsNullOrEmpty(help_page))
+	            return SobekCM_Library_Settings.Metadata_Help_URL(Current_Base_URL) + "help/" + html_element_name.Replace("_", "");
+	        return SobekCM_Library_Settings.Metadata_Help_URL(Current_Base_URL) + "help/" + help_page;
         }
 
-        #region Abstract Methods to be implemented by abstract_Element classes
+		/// <summary> Returns TRUE if this element has some data </summary>
+		/// <value> By default, this returns TRUE to be on the same side </value>
+		public bool HasData { get { return true; } }
+
+	    #region Abstract Methods to be implemented by abstract_Element classes
 
         /// <summary> Reads the inner data from the Template XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>

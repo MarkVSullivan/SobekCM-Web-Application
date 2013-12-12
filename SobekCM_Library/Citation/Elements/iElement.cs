@@ -30,7 +30,10 @@ namespace SobekCM.Library.Citation.Elements
 		/// <summary> Flag indicating this is mandatory </summary>
 		bool Mandatory { get; set; }
 
-	    /// <summary> Title of this element in the current language </summary>
+		/// <summary> Returns TRUE if this element has some data </summary>
+		bool HasData { get; }
+
+		/// <summary> Title of this element in the current language </summary>
 	    string Title { get; }
 
 	    /// <summary> Reads from the template XML format </summary>

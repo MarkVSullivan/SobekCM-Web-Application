@@ -28,6 +28,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Display_SubType = "scheme";
             Type = Element_Type.Subject;
+	        help_page = "subject";
         }
 
 

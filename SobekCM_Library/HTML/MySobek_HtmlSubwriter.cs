@@ -62,6 +62,7 @@ namespace SobekCM.Library.HTML
 	    /// <param name="Current_User"> Currently logged on user </param>
 	    /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
 	    /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
+		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 	    public MySobek_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
                                      List<iSearch_Title_Result> Paged_Results,
@@ -75,6 +76,7 @@ namespace SobekCM.Library.HTML
                                      User_Object Current_User,
                                      Dictionary<string, Wordmark_Icon> Icon_Table,
                                      Statistics_Dates Stats_Date_Range,
+									 SobekCM_Skin_Collection HTML_Skin_Collection,
                                      Custom_Tracer Tracer )
         {
 
@@ -120,7 +122,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.New_Item:
-                    mySobekViewer = new New_Group_And_Item_MySobekViewer(user, Current_Mode, itemList, codeManager, iconTable, htmlSkin, translator, Tracer);
+                    mySobekViewer = new New_Group_And_Item_MySobekViewer(user, Current_Mode, itemList, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Folder_Management:
@@ -152,11 +154,11 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Metadata:
-                    mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, Tracer);
+					mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.File_Management:
-                    mySobekViewer = new File_Management_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, htmlSkin, translator, Tracer);
+					mySobekViewer = new File_Management_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Group_Behaviors:
@@ -183,7 +185,7 @@ namespace SobekCM.Library.HTML
                         // Store in cache if retrieved
                         Cached_Data_Manager.Store_Items_In_Title(currentItem.BibID, itemsInTitle, Tracer);
                     }
-                    mySobekViewer = new Group_Add_Volume_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, itemsInTitle, translator, Tracer);
+					mySobekViewer = new Group_Add_Volume_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, itemsInTitle, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Group_AutoFill_Volumes:
@@ -262,8 +264,14 @@ namespace SobekCM.Library.HTML
 		{
 			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+#if DEBUG
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#endif
+
 
 			// If we are currently uploading files, add those specific upload styles 
 			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
@@ -272,9 +280,13 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
 			}
 
-			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || ( currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors ))
+			if (( mySobekViewer != null ) && ( mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
 			{
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#if DEBUG
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#endif
 			}
 		}
 

@@ -121,28 +121,28 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Title.IndexOf(":") < 0)
             {
                 if (Acronym.Length > 0)
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                    Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
                 }
                 else
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                    Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
                 }
             }
             else
             {
                 if (Acronym.Length > 0)
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + "</acronym></a></td>");
+                    Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + "</acronym></a></td>");
                 }
                 else
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + "</a></td>");
+                    Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + "</a></td>");
                 }
             }
 
@@ -160,8 +160,8 @@ namespace SobekCM.Library.Citation.Elements
                         Output.Write("<br />");
                 }
                 Output.WriteLine("</div></td>");
-                Output.WriteLine("          <td valign=\"bottom\" >");
-                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
+                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
                 Output.WriteLine("          </td>");
                 Output.WriteLine("        </tr>");
                 Output.WriteLine("      </table>");
@@ -179,17 +179,17 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     if (i == allValues.Count)
                     {
-                        Output.WriteLine("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" onfocus=\"javascript:textbox_enter('" + HTML_ID_Name + i + "', '" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + HTML_ID_Name + i + "', '" + html_element_name + "_input')\" />");
+                        Output.WriteLine("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" />");
                     }
                     else
                     {
-                        Output.WriteLine("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" onfocus=\"javascript:textbox_enter('" + HTML_ID_Name + i + "', '" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + HTML_ID_Name + i + "', '" + html_element_name + "_input')\" /><br />");
+						Output.WriteLine("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" /><br />");
                     }
                 }
 
                 Output.WriteLine("            </div>");
                 Output.WriteLine("          </td>");
-                Output.WriteLine("          <td valign=\"bottom\" >");
+                Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
                 if (view_choices_string.Length > 0)
                 {
@@ -198,10 +198,10 @@ namespace SobekCM.Library.Citation.Elements
 
                 if (Repeatable)
                 {
-                    Output.WriteLine("          <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_new_element_adv('" + HTML_ID_Name + "', '" + html_element_name + "');\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
+                    Output.WriteLine("          <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_new_element_adv('" + HTML_ID_Name + "', '" + html_element_name + "');\"><img class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
                 }
 
-                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
 
                 Output.WriteLine("          </td>");
                 Output.WriteLine("        </tr>");
@@ -240,8 +240,8 @@ namespace SobekCM.Library.Citation.Elements
         protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
         {
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
 
             // Get the label to show
             string label_to_show = Title.Replace(":", "");
@@ -250,11 +250,11 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</a></td>");
             }
 
             if (Read_Only)
@@ -263,7 +263,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("      <table>");
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td><div class=\"" + HTML_ID_Name + "_div\">" + instance_value + "</div></td>");
-                Output.WriteLine("          <td valign=\"bottom\" >");
+                Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
                 Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
                 Output.WriteLine("          </td>");
                 Output.WriteLine("        </tr>");
@@ -278,10 +278,10 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"" + HTML_ID_Name + "_div\">");
-                Output.WriteLine("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(instance_value.Replace("<i>", "").Replace("</i>", "")) + "\" onfocus=\"javascript:textbox_enter('" + HTML_ID_Name + "1', '" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + HTML_ID_Name + "1', '" + html_element_name + "_input')\" />");
+                Output.WriteLine("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(instance_value.Replace("<i>", "").Replace("</i>", "")) + "\" />");
                 Output.WriteLine("            </div>");
                 Output.WriteLine("          </td>");
-                Output.WriteLine("          <td valign=\"bottom\" >");
+                Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
                 if (view_choices_string.Length > 0)
                 {
@@ -290,10 +290,10 @@ namespace SobekCM.Library.Citation.Elements
 
                 if (Repeatable)
                 {
-                    Output.WriteLine("          <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_new_element_adv('" + HTML_ID_Name + "', '" + html_element_name + "');\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
+                    Output.WriteLine("          <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_new_element_adv('" + HTML_ID_Name + "', '" + html_element_name + "');\"><img class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
                 }
 
-                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
 
                 Output.WriteLine("          </td>");
                 Output.WriteLine("        </tr>");

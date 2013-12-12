@@ -27,6 +27,7 @@ namespace SobekCM.Library.Citation.Elements
             Type = Element_Type.Manufacturer;
             Title = "Manufacturer";
             html_element_name = "complex_manufacturer";
+	        help_page = "manufacturer";
         }
 
         #region iElement Members
@@ -71,15 +72,15 @@ namespace SobekCM.Library.Citation.Elements
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
@@ -91,12 +92,11 @@ namespace SobekCM.Library.Citation.Elements
             {
                 const int i = 1;
                 Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Name", CurrentLanguage) + ":</span>");
-                Output.Write("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_name" + i + "', '" + html_element_name + "_name_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_name" + i + "', '" + html_element_name + "_name_input')\" />");
-                Output.WriteLine("<br />");
+                Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"\" /><br />");
                 Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Location(s)", CurrentLanguage) + ":</span>");
-                Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_firstloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_firstloc" + i + "', '" + html_element_name + "_location_input')\" />");
-                Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_secondloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_secondloc" + i + "', '" + html_element_name + "_location_input')\" />");
-                Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_thirdloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_thirdloc" + i + "', '" + html_element_name + "_location_input')\" />");
+				Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+				Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+				Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.WriteLine("</div>");
                 Output.WriteLine("          </td>");
             }
@@ -106,33 +106,32 @@ namespace SobekCM.Library.Citation.Elements
                 for (int i = 1; i <= manufacturers.Count; i++)
                 {
                     Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Name", CurrentLanguage) + ":</span>");
-                    Output.Write("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(manufacturers[i - 1].Name) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_name" + i + "', '" + html_element_name + "_name_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_name" + i + "', '" + html_element_name + "_name_input')\" />");
-                    Output.WriteLine("<br />");
+					Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(manufacturers[i - 1].Name) + "\" /><br />");
                     Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Location(s)", CurrentLanguage) + ":</span>");
                     ReadOnlyCollection<Origin_Info_Place> places = manufacturers[i - 1].Places;
                     if ((places.Count > 0) && (places[0].Place_Text.Length > 0))
                     {
-                        Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[0].Place_Text) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_firstloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_firstloc" + i + "', '" + html_element_name + "_location_input')\" />");
+						Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[0].Place_Text) + "\" />");
                     }
                     else
                     {
-                        Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_firstloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_firstloc" + i + "', '" + html_element_name + "_location_input')\" />");
+						Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                     }
                     if ((places.Count > 1) && (places[1].Place_Text.Length > 0))
                     {
-                        Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[1].Place_Text) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_secondloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_secondloc" + i + "', '" + html_element_name + "_location_input')\" />");
+						Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[1].Place_Text) + "\" />");
                     }
                     else
                     {
-                        Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_secondloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_secondloc" + i + "', '" + html_element_name + "_location_input')\" />");
+						Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                     }
                     if ((places.Count > 2) && (places[2].Place_Text.Length > 0))
                     {
-                        Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[2].Place_Text) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_thirdloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_thirdloc" + i + "', '" + html_element_name + "_location_input')\" />");
+						Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[2].Place_Text) + "\" />");
                     }
                     else
                     {
-                        Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_thirdloc" + i + "', '" + html_element_name + "_location_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_thirdloc" + i + "', '" + html_element_name + "_location_input')\" />");
+                        Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                     }
 
                     if (i < manufacturers.Count)
@@ -147,12 +146,12 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
             if (Repeatable)
             {
-                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new manufacturer", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_publisher_element('" + html_element_name + "');\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new manufacturer", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_publisher_element('" + html_element_name + "');\"><img class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
             }
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
 
             Output.WriteLine("        </tr>");

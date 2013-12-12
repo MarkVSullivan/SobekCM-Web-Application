@@ -15,7 +15,7 @@ using SobekCM.Library.Settings;
 
 namespace SobekCM.Library.MySobekViewer
 {
-    /// <summary> Class allows a user to logon, either with using the myUFDC authentication, or clicking the link for Gatorlink authentication </summary>
+    /// <summary> Class allows a user to logon, either with using the mySobek authentication, or clicking the link for Gatorlink authentication </summary>
     /// <remarks> This class extends the <see cref="abstract_MySobekViewer"/> class.<br /><br />
     /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -123,7 +123,7 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-        /// <value> The value of this message changes depending on which instance or by which URL the query arrives ( i.e., UFDC, dLOC, etc.. )</value>
+        /// <value> The value of this message changes depending on which instance or by which URL the query arrives ( i.e., UDC, dLOC, etc.. )</value>
         public override string Web_Title
         {
             get 
@@ -195,7 +195,7 @@ namespace SobekCM.Library.MySobekViewer
 	    /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        ///  <remarks> This adds the pop-up form for logging on through myUFDC authentication </remarks>
+        ///  <remarks> This adds the pop-up form for logging on through mySobek authentication </remarks>
         public override void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Logon_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
