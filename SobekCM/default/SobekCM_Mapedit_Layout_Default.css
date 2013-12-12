@@ -64,6 +64,11 @@ opacity: 0.75;*/
     margin-left: 10px; /*used to override SobekCM_ItemMenus.css > .sf-menu > margin-left:150px*/
 }
 
+.sf-menu:hover
+{
+    cursor: pointer;
+}
+
 .customSelectable
 {
 }
