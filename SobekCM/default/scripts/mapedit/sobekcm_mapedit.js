@@ -169,7 +169,92 @@ function initDeclarations() {
                 strokeWeight: 1,                        //sobek standard
                 fillOpacity: 0.0,                       //sobek standard 
                 zindex: 5                               //sobek standard
-            }//,
+            },
+            markerOptionsDefault: {
+                draggable: true,
+                zIndex: 5
+            },
+            rectangleOptionsDefault: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillOpacity: 0.5
+            },
+            polygonOptionsDefault: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillOpacity: 0.5
+            },
+            circleOptionsDefault: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillOpacity: 0.5
+            },
+            polylineOptionsDefault: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1
+            },
+            rectangleOptionsOverlay: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 0.2,
+                strokeWeight: 1,
+                fillOpacity: 0.0
+            },
+            markerOptionsItem: {
+                //icon: 'http://maps.google.com/mapfiles/ms/micons/blue.png',
+                draggable: true,
+                zIndex: 5
+            },
+            markerOptionsPOI: {
+                //icon: '',
+                draggable: true,
+                zIndex: 5
+            },
+            circleOptionsPOI: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillOpacity: 0.5
+            },
+            rectangleOptionsPOI: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillOpacity: 0.5
+            },
+            polygonOptionsPOI: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillOpacity: 0.5
+            },
+            polylineOptionsPOI: {
+                editable: true,
+                draggable: true,
+                zIndex: 5,
+                strokeOpacity: 1.0,
+                strokeWeight: 1
+            }
+            //,
             ////public methods
             //addListeners: function () {
             //    //alert(globalVar.test1);
@@ -1439,8 +1524,8 @@ function place(id) {
                     useSearchAsItemLocation();
                     displayMessage(L18);
                 } else {
+                    drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER], markerOptions: globalVar.markerOptionsItem } });
                     drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-                    drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER] } });
                     drawingManager.setMap(map);
                 }
             }
@@ -1522,7 +1607,7 @@ function place(id) {
 
         case "poi":
             //buttonActive("poiPlace");
-            drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE] } });
+            drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE], markerOptions: globalVar.markerOptionsPOI, circleOptions: globalVar.circleOptionsPOI, rectangleOptions: globalVar.rectangleOptionsPOI, polygonOptions: globalVar.polygonOptionsPOI, polylineOptions: globalVar.polylineOptionsPOI } });
             globalVar.placerType = "poi";
             break;
     }
@@ -1533,22 +1618,27 @@ function placePOI(type) {
     globalVar.placerType = "poi";
     switch (type) {
         case "marker":
+            drawingManager.setOptions({ drawingModes: [google.maps.drawing.OverlayType.MARKER], markerOptions: globalVar.markerOptionsPOI });
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
             buttonActive("poiMarker");
             break;
         case "circle":
+            drawingManager.setOptions({ drawingModes: [google.maps.drawing.OverlayType.CIRCLE], circleOptions: globalVar.circleOptionsPOI });
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.CIRCLE);
             buttonActive("poiCircle");
             break;
         case "rectangle":
+            drawingManager.setOptions({ drawingModes: [google.maps.drawing.OverlayType.RECTANGLE], rectangleOptions: globalVar.rectangleOptionsPOI });
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
             buttonActive("poiRectangle");
             break;
         case "polygon":
+            drawingManager.setOptions({ drawingModes: [google.maps.drawing.OverlayType.POLYGON], polygonOptions: globalVar.polygonOptionsPOI });
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
             buttonActive("poiPolygon");
             break;
         case "line":
+            drawingManager.setOptions({ drawingModes: [google.maps.drawing.OverlayType.POLYLINE], polylineOptions: globalVar.polylineOptionsPOI });
             drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYLINE);
             buttonActive("poiLine");
             break;
@@ -1601,6 +1691,7 @@ function geolocate(id) {
                 alert(L4);
             }
             drawingManager.setDrawingMode(null);
+            //drawingManager.setMap(null);
             break;
 
         case "overlay":
@@ -1757,7 +1848,7 @@ function save(id) {
                     }
                     //explicitly turn off the drawing manager 
                     drawingManager.setDrawingMode(null);
-                    drawingManager.setMap(null);
+                    //drawingManager.setMap(null);
                     //reset first save
                     //globalVar.firstSavePOI = false;
                     //change save button to apply button
@@ -2050,9 +2141,11 @@ function initialize() {
             //used to prevent multi markers
             if (globalVar.firstMarker > 0) {
                 drawingManager.setDrawingMode(null); //only place one at a time
+                //drawingManager.setMap(null);
             } else {
                 globalVar.firstMarker++;
                 drawingManager.setDrawingMode(null); //only place one at a time
+                //drawingManager.setMap(null);
             }
             globalVar.itemMarker = marker; //assign globally
             de("marker placed");
@@ -2336,6 +2429,7 @@ function initialize() {
                 //overlayCenterOnMe(globalVar.convertedOverlayIndex);
                 //reset drawing manager no matter what
                 drawingManager.setDrawingMode(null);
+                //drawingManager.setMap(null);
             } else {
                 //mark that we are editing
                 globalVar.firstSaveOverlay = true;
@@ -2354,6 +2448,7 @@ function initialize() {
 
                 //prevent redraw
                 drawingManager.setDrawingMode(null);
+                //drawingManager.setMap(null);
             }
             //create cache save overlay for the new converted overlay only
             if (globalVar.isConvertedOverlay == true) {
@@ -2788,6 +2883,7 @@ function initialize() {
     //on right click stop drawing thing
     google.maps.event.addListener(map, 'rightclick', function () {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
+        //drawingManager.setMap(null);
     });
     //used to display cursor location via lat/long
     google.maps.event.addDomListener(map, 'mousemove', function (point) {
@@ -3310,8 +3406,8 @@ function displayIncomingLines() {
 //Displays all the overlays sent from the C# code. Also calls displayglobalVar.ghostOverlayRectangle.
 function displayIncomingPolygons() {
     //go through and display overlays as long as there is an overlay to display
-    de("length: "+globalVar.incomingPolygonPath.length);
-    for (var i = 0; i < globalVar.incomingPolygonPath.length; i++) {
+    de("length: " + globalVar.incomingPolygonFeatureType.length);
+    for (var i = 0; i < globalVar.incomingPolygonFeatureType.length; i++) {
         de("ft: " + globalVar.incomingPolygonFeatureType[i]);
         switch (globalVar.incomingPolygonFeatureType[i]) {
         case "TEMP_main":
@@ -3339,6 +3435,7 @@ function displayIncomingPolygons() {
             globalVar.mainCount++;
             globalVar.incomingACL = "overlay";
             drawingManager.setDrawingMode(null); //reset drawing manager no matter what
+            //drawingManager.setMap(null);
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "main":
@@ -3356,6 +3453,7 @@ function displayIncomingPolygons() {
             globalVar.mainCount++;
             globalVar.incomingACL = "overlay";
             drawingManager.setDrawingMode(null); //reset drawing manager no matter what
+            //drawingManager.setMap(null);
             globalVar.overlaysCurrentlyDisplayed = true;
             break;
         case "poi":
@@ -3727,6 +3825,7 @@ function setGhostOverlay(ghostIndex, ghostBounds) {
     //set listener for right click (fixes reset issue over overlays)
     google.maps.event.addListener(globalVar.ghostOverlayRectangle[ghostIndex], 'rightclick', function () {
         drawingManager.setDrawingMode(null); //reset drawing manager no matter what
+        //drawingManager.setMap(null);
     });
 
 }
@@ -3929,52 +4028,20 @@ var drawingManager = new google.maps.drawing.DrawingManager({
     //drawingMode: google.maps.drawing.OverlayType.MARKER, //set default/start type
     drawingControl: false,
     drawingControlOptions: {
-        position: google.maps.ControlPosition.TOP_CENTER,
-        drawingModes: [
-          google.maps.drawing.OverlayType.MARKER,
-          google.maps.drawing.OverlayType.CIRCLE,
-          google.maps.drawing.OverlayType.RECTANGLE,
-          google.maps.drawing.OverlayType.POLYGON,
-          google.maps.drawing.OverlayType.POLYLINE
-        ]
-    },
-    markerOptions: {
-        draggable: true,
-        zIndex: 5
-    },
-    circleOptions: {
-        editable: true,
-        draggable: true,
-        zIndex: 5
-    },
-    polygonOptions: {
-        editable: true,
-        draggable: true,
-        zIndex: 5
-    },
-    polylineOptions: {
-        editable: true,
-        draggable: true,
-        zIndex: 5
-    },
-    rectangleOptions: {
-        editable: true,
-        draggable: true,
-        zIndex: 5
-    }
-});
-drawingManager.setOptions({
-    drawingControl: true, drawingControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_TOP,
-        drawingModes: [
-            google.maps.drawing.OverlayType.MARKER,
-            google.maps.drawing.OverlayType.CIRCLE,
-            google.maps.drawing.OverlayType.RECTANGLE,
-            google.maps.drawing.OverlayType.POLYGON,
-            google.maps.drawing.OverlayType.POLYLINE
-        ]
-    }
-});
+    position: google.maps.ControlPosition.RIGHT_TOP,
+    drawingModes: [
+        google.maps.drawing.OverlayType.MARKER,
+        google.maps.drawing.OverlayType.CIRCLE,
+        google.maps.drawing.OverlayType.RECTANGLE,
+        google.maps.drawing.OverlayType.POLYGON,
+        google.maps.drawing.OverlayType.POLYLINE
+    ]},
+    markerOptions: globalVar.markerOptionsDefault,
+    circleOptions: globalVar.circleOptionsDefault,
+    polygonOptions: globalVar.polygonOptionsDefault,
+    polylineOptions: globalVar.polylineOptionsDefault,
+    rectangleOptions: globalVar.rectangleOptionsDefault
+    });
 
 KmlLayer.setOptions({ suppressinfowindows: true });
 
@@ -4526,6 +4593,7 @@ function overlayEditMe(id) {
         if (globalVar.currentlyEditing == "yes" && globalVar.workingOverlayIndex != null) {
             //reset overlay drawingmode
             drawingManager.setDrawingMode(null);
+            //drawingManager.setMap(null);
             de("saving overlay " + globalVar.workingOverlayIndex);
             //trigger a cache of current working overlay
             cacheSaveOverlay(globalVar.workingOverlayIndex);
@@ -4546,6 +4614,7 @@ function overlayEditMe(id) {
         if (globalVar.currentlyEditing == "no" || globalVar.workingOverlayIndex == null) {
             //reset overlay drawingmode
             drawingManager.setDrawingMode(null);
+            //drawingManager.setMap(null);
             //set new woi
             globalVar.workingOverlayIndex = id;
             //open woi
@@ -5148,8 +5217,8 @@ function createOverlayFromPage(pageId) {
     globalVar.convertedOverlayIndex = pageId-1;
     //select the area to draw the overlay
     displayMessage(L41);
-    //define drawing manager
-    drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] }, rectangleOptions: { strokeOpacity: 0.2, strokeWeight: 1, fillOpacity: 0.0 } });
+    //define drawing manager todo: move this to a var to prevent future confusion. 
+    drawingManager.setOptions({ drawingControl: false, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.RECTANGLE] }, rectangleOptions: globalVar.rectangleOptionsOverlay });
     //set drawingmode to rectangle
     drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
     //apply the changes
@@ -5219,11 +5288,13 @@ function convertToOverlay() {
         displayMessage(L44);
         //explicitly disallow editing after converting
         drawingManager.setDrawingMode(null);
+        //drawingManager.setMap(null);
     } else {
         //cannot convert
         displayMessage(L40);
         //explicitly disallow editing after a failed convert
         drawingManager.setDrawingMode(null);
+        //drawingManager.setMap(null);
     }
 }
 
