@@ -27,6 +27,7 @@ namespace SobekCM.Library.Citation.Elements
             Display_SubType = "form";
             Title = "Other Titles";
             html_element_name = "form_title_other";
+	        help_page = "othertitle";
         }
 
         #region iElement Members
@@ -70,15 +71,15 @@ namespace SobekCM.Library.Citation.Elements
 
             // Render this in HTML
             Output.WriteLine("  <!-- " + Title + " Form Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
 
             Output.WriteLine("    <td>");
@@ -93,7 +94,7 @@ namespace SobekCM.Library.Citation.Elements
                 Title_Info thisTitle = Bib.Bib_Info.SeriesTitle;
 
                 // Add the link for the series title
-                Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675 );\"><div class=\"form_linkline form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\">" + thisTitle.NonSort + thisTitle.Title);
+                Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "' );\"><div class=\"form_linkline form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\">" + thisTitle.NonSort + thisTitle.Title);
                 if (thisTitle.Subtitle.Length > 0)
                     Output.Write(" : " + thisTitle.Subtitle);
 
@@ -101,13 +102,13 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the popup form
                 PopupFormBuilder.AppendLine("<!-- Other Title Form " + title_count + " -->");
-                PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
-                PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT OTHER TITLE</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
+				PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div sbkMetadata_PopupDiv\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
+				PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Other Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
                 PopupFormBuilder.AppendLine("  <br />");
-                PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
+				PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                 // Add the title type (and optionally display label)
-                PopupFormBuilder.Append("    <tr><td width=\"90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"javascript:other_title_type_change(" + title_count + ")\" >");
+                PopupFormBuilder.Append("    <tr><td style=\"width:90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"other_title_type_change(" + title_count + ")\" >");
                 PopupFormBuilder.Append("<option value=\"abbreviated\">Abbreviated Title</option>");
                 PopupFormBuilder.Append("<option value=\"alternate\">Alternative Title</option>");
                 PopupFormBuilder.Append("<option value=\"series\"  selected=\"selected\" >Series Title</option>");
@@ -133,32 +134,32 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the nonsort and language text boxes
                 PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
-                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.NonSort) + "\"  onfocus=\"javascript:textbox_enter('formothertitlenonsort_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlenonsort_" + title_count + "', 'formtitle_small_input')\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.NonSort) + "\" />");
                 PopupFormBuilder.Append("</td><td width=\"255px\" >Language: &nbsp; ");
-                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Language) + "\" onfocus=\"javascript:textbox_enter('formothertitlelanguage_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlelanguage_" + title_count + "', 'formtitle_small_input')\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Language) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the title and subtitle
-                PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Title) + "\" onfocus=\"javascript:textbox_enter('formothertitletitle_" + title_count + "', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formothertitletitle_" + title_count + "', 'formtitle_large_input')\" /></td></tr>");
-                PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Subtitle) + "\" onfocus=\"javascript:textbox_enter('formothertitlesubtitle_" + title_count + "', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlesubtitle_" + title_count + "', 'formtitle_large_input')\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Title) + "\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Subtitle) + "\" /></td></tr>");
 
                 // Add the part numbers
                 PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
                 if (thisTitle.Part_Numbers_Count > 0)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Numbers_Count > 1)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 PopupFormBuilder.AppendLine("</td></tr>");
 
@@ -166,29 +167,30 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
                 if (thisTitle.Part_Names_Count > 0)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartname1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartname1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Names_Count > 1)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartname2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartname2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
-                PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Authority) + "\"  onfocus=\"javascript:textbox_enter('formothertitleauthority_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitleauthority_" + title_count + "', 'formtitle_small_input')\" />");
+				PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Authority) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
-                PopupFormBuilder.AppendLine("  </table>");
-                PopupFormBuilder.AppendLine("  <br />");
 
-                // Add the close button
-                PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_othertitle_form('form_othertitle_" + title_count + "');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-                PopupFormBuilder.AppendLine("</div>");
-                PopupFormBuilder.AppendLine();
+				// Finish the popup form and add the close button
+				PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+				PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
+				PopupFormBuilder.AppendLine("    </tr>");
+				PopupFormBuilder.AppendLine("  </table>");
+				PopupFormBuilder.AppendLine("</div>");
+				PopupFormBuilder.AppendLine();
 
                 title_count++;
             }
@@ -204,7 +206,7 @@ namespace SobekCM.Library.Citation.Elements
                 // Add the link for the other title
                 if ((thisTitle.Title.Trim().Length > 0) || ( thisTitle.NonSort.Trim().Length > 0 ))
                 {
-                    Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675 );\"><div class=\"form_linkline form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\">" + thisTitle.NonSort + thisTitle.Title);
+                    Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "' );\"><div class=\"form_linkline form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\">" + thisTitle.NonSort + thisTitle.Title);
                     if (thisTitle.Subtitle.Length > 0)
                         Output.Write(" : " + thisTitle.Subtitle);
                     switch (thisTitle.Title_Type)
@@ -228,20 +230,21 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 else
                 {
-                    Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'form_othertitle_line_" + title_count + "', 'formothertitletitle_" + title_count + "', 295, 675 );\"><div class=\"form_linkline_empty form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\"><i>Empty Other Title</i>");
+                    Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "' );\"><div class=\"form_linkline_empty form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\"><i>Empty Other Title</i>");
                 }
 
                 Output.Write("</div></a>");
 
                 // Add the popup form
                 PopupFormBuilder.AppendLine("<!-- Other Title Form " + title_count + " -->");
-                PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
-                PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT OTHER TITLE</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
-                PopupFormBuilder.AppendLine("  <br />");
-                PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
+
+				PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div sbkMetadata_PopupDiv\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
+				PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Other Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
+				PopupFormBuilder.AppendLine("  <br />");
+				PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                 // Add the title type (and optionally display label)
-                PopupFormBuilder.Append("    <tr><td width=\"90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"javascript:other_title_type_change(" + title_count + ")\" >");
+                PopupFormBuilder.Append("    <tr><td style=\"width:90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"other_title_type_change(" + title_count + ")\" >");
                 PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.abbreviated
                                               ? "<option value=\"abbreviated\" selected=\"selected\" >Abbreviated Title</option>"
                                               : "<option value=\"abbreviated\">Abbreviated Title</option>");
@@ -355,32 +358,32 @@ namespace SobekCM.Library.Citation.Elements
                     
                 // Add the nonsort and language text boxes
                 PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
-                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.NonSort) + "\"  onfocus=\"javascript:textbox_enter('formothertitlenonsort_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlenonsort_" + title_count + "', 'formtitle_small_input')\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.NonSort) + "\" />");
                 PopupFormBuilder.Append("</td><td width=\"255px\" >Language: &nbsp; ");
-                PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Language) + "\" onfocus=\"javascript:textbox_enter('formothertitlelanguage_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlelanguage_" + title_count + "', 'formtitle_small_input')\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Language) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the title and subtitle
-                PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Title) + "\" onfocus=\"javascript:textbox_enter('formothertitletitle_" + title_count + "', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formothertitletitle_" + title_count + "', 'formtitle_large_input')\" /></td></tr>");
-                PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Subtitle) + "\" onfocus=\"javascript:textbox_enter('formothertitlesubtitle_" + title_count + "', 'formtitle_large_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlesubtitle_" + title_count + "', 'formtitle_large_input')\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Title) + "\"  /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Subtitle) + "\" /></td></tr>");
 
                 // Add the part numbers
                 PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
                 if (thisTitle.Part_Numbers_Count > 0)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Numbers_Count > 1)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartnum2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 PopupFormBuilder.AppendLine("</td></tr>");
 
@@ -388,27 +391,28 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
                 if (thisTitle.Part_Names_Count > 0)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartname1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartname1_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname1_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Names_Count > 1)
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" onfocus=\"javascript:textbox_enter('formothertitlepartname2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" />");
                 }
                 else
                 {
-                    PopupFormBuilder.Append("<input class=\"formtitle_small_input\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('formothertitlepartname2_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitlepartname2_" + title_count + "', 'formtitle_small_input')\" />");
+					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
-                PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Authority) + "\"  onfocus=\"javascript:textbox_enter('formothertitleauthority_" + title_count + "', 'formtitle_small_input_focused')\" onblur=\"javascript:textbox_leave('formothertitleauthority_" + title_count + "', 'formtitle_small_input')\" />");
+				PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisTitle.Authority) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
-                PopupFormBuilder.AppendLine("  </table>");
-                PopupFormBuilder.AppendLine("  <br />");
 
-                // Add the close button
-                PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_othertitle_form('form_othertitle_" + title_count + "');\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
+				// Finish the popup form and add the close button
+				PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+				PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
+				PopupFormBuilder.AppendLine("    </tr>");
+				PopupFormBuilder.AppendLine("  </table>");
                 PopupFormBuilder.AppendLine("</div>");
                 PopupFormBuilder.AppendLine();
 
@@ -419,12 +423,12 @@ namespace SobekCM.Library.Citation.Elements
             // Add the link to add a new other title
             Output.WriteLine("      </div>");
             Output.WriteLine("          </td>");
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
             if (Repeatable)
             {
-                Output.WriteLine("            <img title=\"" + Translator.Get_Translation("Click to add a new other title", CurrentLanguage) + ".\" alt=\"+\" border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" onmousedown=\"new_title_link_clicked('" + Template_Page + "');return false;\" />");
+                Output.WriteLine("            <img title=\"" + Translator.Get_Translation("Click to add a new other title", CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" onmousedown=\"new_title_link_clicked('" + Template_Page + "');return false;\" />");
             }
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("      </table>");

@@ -113,31 +113,6 @@ namespace SobekCM.Library.MainWriters
             if ( base.paged_results.Count > 0 )
                 Output.WriteLine("</TitleResult>");          
             Output.WriteLine("</ResultSet>");
-
-            //SobekCM.Resource_Object.Database.DataSets.UFDC_All_Items simplified_xml = new SobekCM.Resource_Object.Database.DataSets.UFDC_All_Items();
-
-            //List<Results.SobekCM_Item_Collection.SobekCM_Item_Row> itemRows;
-            //for ( int i = 0 ; i < search_results.Title_Count ; i++ )
-            //{
-            //    Results.SobekCM_Item_Collection.SobekCM_Item_Group_Row titleRow = search_results.GetRow(i);
-
-            //    // Get the related child rows
-            //    itemRows = titleRow.Child_Rows;
-
-            //    // Step through each child row and add to the new table
-            //    foreach (SobekCM.Library.Results.SobekCM_Item_Collection.SobekCM_Item_Row itemRow in itemRows)
-            //    {
-            //        Application_State.Single_Item dbItem = allItems.Item_By_Bib_VID(titleRow.BibID, itemRow.VID, null );
-            //        Application_State.Multiple_Volume_Item dbTitle = allItems.Title_By_Bib(titleRow.BibID);
-            //        if ((dbItem != null) && ( dbTitle != null ))
-            //        {
-            //            simplified_xml.Add_Row(titleRow.BibID, itemRow.VID, itemRow.Title, current_greenstone_image_root + dbTitle.File_Root + "/" + dbItem.VID_String );
-            //        }
-            //    }
-            //}
-
-            //// Write this information
-            //simplified_xml.WriteXml(Output, XmlWriteMode.WriteSchema);
         }
 
         private static void Write_XML( TextWriter Output, string Value )

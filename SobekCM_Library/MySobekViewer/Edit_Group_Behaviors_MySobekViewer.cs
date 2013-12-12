@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Library.Settings;
@@ -158,12 +159,29 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
+			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+			string grouptitle = item.Behaviors.GroupTitle;
+			if (grouptitle.Length > 125)
+			{
+				Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
+			}
+			else
+			{
+				Output.WriteLine("\t<h1 itemprop=\"name\">" + grouptitle + "</h1>");
+			}
+
+			Output.WriteLine("</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+
+			Output.WriteLine("<div id=\"container-inner1000\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
 
             Output.WriteLine("<!-- Edit_Group_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<div class=\"SobekText\">");
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
 
-            Output.WriteLine("  <b>Edit the behaviors associated with this item group within this library.</b>");
+            Output.WriteLine("  <h2>Edit the behaviors associated with this item group within this library</h2>");
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter the data for this item group below and press the SAVE button when all your edits are complete.</li>");
             Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
@@ -175,7 +193,6 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
 
             Output.WriteLine("<a name=\"template\"> </a>");
-            Output.WriteLine("<br />");
 			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 			Output.WriteLine("  <div class=\"tabs\">");
 			Output.WriteLine("    <ul>");
@@ -211,9 +228,8 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("    </div>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine("</div>");
-            Output.WriteLine("<br />");
-
-
+			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
         }
 
         /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
@@ -227,6 +243,21 @@ namespace SobekCM.Library.MySobekViewer
             // Add the hidden field
             Output.WriteLine();
         }
+
+		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get
+			{
+				return new List<HtmlSubwriter_Behaviors_Enum>
+				{
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				};
+			}
+		}
     }
 }
 

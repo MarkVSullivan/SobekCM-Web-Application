@@ -59,13 +59,7 @@ namespace SobekCM.Library.Statistics
             DataSet lookupTables = SobekCM_Database.Get_Statistics_Lookup_Tables();
 
             // ***** CODE BELOW READS ALL THE LOG FILES AND THEN WRITES THEM AS XML DATASETS *****//
-            SobekCM_Log_Reader ufdc_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
-            //string[] files = Directory.GetFiles(sobekcm_log_location, "*.log");
-            //foreach (string thisFile in files)
-            //{
-            //    On_New_Status("Processing " + (new FileInfo(thisFile)).Name);
-            //    ufdc_log_reader.Read_Log(thisFile).Write_XML(dataset_location);
-            //}
+
 
             // ***** CODE BELOW READS ALL THE DAILY XML DATASETS AND COMBINES THEM INTO MONTHLY *****//
             // ***** DATASETS WHICH ARE SUBSEQUENTLY WRITTEN AS XML DATASETS AS WELL            *****//    

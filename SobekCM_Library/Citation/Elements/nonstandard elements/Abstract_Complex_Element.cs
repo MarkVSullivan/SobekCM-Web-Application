@@ -33,6 +33,7 @@ namespace SobekCM.Library.Citation.Elements
             cols = TEXT_AREA_COLUMNS;
             colsMozilla = MOZILLA_TEXT_AREA_COLUMNS;
             html_element_name = "complex_abstract";
+	        help_page = "abstract";
         }
 
         /// <summary> Gets and sets the number of lines for this text box </summary>
@@ -56,23 +57,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter your abstract here. If your material does not have an abstract, you may include a summary of your document here.";
+                const string DEFAULT_ACRONYM = "Enter your abstract here. If your material does not have an abstract, you may include a summary of your document here.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -86,19 +87,19 @@ namespace SobekCM.Library.Citation.Elements
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
-            Output.WriteLine("        <tr align=\"left\">");
+            Output.WriteLine("        <tr style=\"text-align:left;\">");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
@@ -106,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 Output.WriteLine("              <div id=\"" + html_element_name + "_topdiv1\">");
                 Output.WriteLine("                <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Type", CurrentLanguage) +":</span>");
-                Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type1\" id=\"" + id_name + "_type1\" onfocus=\"javascript:textbox_enter('" + id_name + "_type1','" + html_element_name + "_type_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_type1','" + html_element_name + "_type')\" >");
+                Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type1\" id=\"" + id_name + "_type1\" >");
                 Output.WriteLine("                  <option selected=\"selected=\" value=\"\"></option>");
                 Output.WriteLine("                  <option value=\"abstract\">Abstract</option>");
                 Output.WriteLine("                  <option value=\"content\">Content Advice</option>");
@@ -117,9 +118,9 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("                </select>");
 
                 Output.WriteLine("                <span class=\"metadata_sublabel\">" + Translator.Get_Translation("Language", CurrentLanguage) + ":</span>");
-                Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_language1', '" + html_element_name + "_language_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_language1', '" + html_element_name + "_language')\" />");
+				Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.WriteLine("              </div>");
-                Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea1\" id=\"" + id_name + "_textarea1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "_textarea1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_textarea1','" + html_element_name + "_input')\"></textarea>");
+				Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea1\" id=\"" + id_name + "_textarea1\" class=\"" + html_element_name + "_input sbk_Focusable\" ></textarea>");
             }
             else
             {
@@ -128,7 +129,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     Output.WriteLine("              <div id=\"" + html_element_name + "_topdiv" + i + "\">");
                     Output.WriteLine("                <span class=\"metadata_sublabel2\">Type:</span>");
-                    Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_type" + i + "','" + html_element_name + "_type_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_type" + i + "','" + html_element_name + "_type')\" >");
+                    Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" >");
                     Output.WriteLine("                  <option value=\"\"></option>");
 
                     Output.WriteLine(thisAbstract.Type.ToLower() != "abstract"
@@ -158,9 +159,9 @@ namespace SobekCM.Library.Citation.Elements
                     Output.WriteLine("                </select>");
                     
                     Output.WriteLine("                <span class=\"metadata_sublabel\">Language:</span>");
-                    Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisAbstract.Language) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_language1', '" + html_element_name + "_language_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_language1', '" + html_element_name + "_language')\" />");
+					Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisAbstract.Language) + "\" />");
                     Output.WriteLine("              </div>");
-                    Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "_textarea" + i + "','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_textarea" + i + "','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(thisAbstract.Abstract_Text) + "</textarea>");
+					Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + HttpUtility.HtmlEncode(thisAbstract.Abstract_Text) + "</textarea>");
 
 
                     if ( i < Bib.Bib_Info.Notes_Count )
@@ -179,13 +180,13 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
 
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\">");
             if (Repeatable)
             {
-                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new abstract", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_complex_abstract('" + Rows + "','" + actual_cols + "');\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new abstract", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_complex_abstract('" + Rows + "','" + actual_cols + "');\"><img class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
             }
 
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
 
             Output.WriteLine("          </td>");
        

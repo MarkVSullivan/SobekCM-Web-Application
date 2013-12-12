@@ -28,6 +28,7 @@ namespace SobekCM.Library.Citation.Elements
             Display_SubType = "form";
             Title = "Creator";
             html_element_name = "form_creator";
+	        help_page = "creator";
         }
 
         #region iElement Members
@@ -48,38 +49,38 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name].";
+                const string DEFAULT_ACRONYM = "Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name].";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
 
             // Render this in HTML
             Output.WriteLine("  <!-- " + Title + " Form Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
 
             Output.WriteLine("    <td>");
@@ -114,12 +115,12 @@ namespace SobekCM.Library.Citation.Elements
                 if (!thisName.hasData)
                 {
                     thisNameText = "<i>Empty Name</i>";
-                    Output.WriteLine("              <a title=\"Click to edit this named entity\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_name_line_" + name_count + "')\" onblur=\"link_blurred2('form_name_line_" + name_count + "')\" onkeypress=\"return popup_keypress_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 375, 700, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 375, 700 );\"><div class=\"form_linkline_empty form_name_line\" id=\"form_name_line_" + name_count + "\">" + thisNameText + "</div></a>");
+                    Output.WriteLine("              <a title=\"Click to edit this named entity\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_name_line_" + name_count + "')\" onblur=\"link_blurred2('form_name_line_" + name_count + "')\" onkeypress=\"return popup_keypress_focus('form_name_" + name_count + "', 'form_name_full_" + name_count + "', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_name_" + name_count + "', 'form_name_full_" + name_count + "' );\"><div class=\"form_linkline_empty form_name_line\" id=\"form_name_line_" + name_count + "\">" + thisNameText + "</div></a>");
 
                 }
                 else
                 {
-                    Output.WriteLine("              <a title=\"Click to edit this named entity\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_name_line_" + name_count + "')\" onblur=\"link_blurred2('form_name_line_" + name_count + "')\" onkeypress=\"return popup_keypress_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 375, 700, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_name_" + name_count + "', 'form_name_line_" + name_count + "', 'form_name_full_" + name_count + "', 375, 700 );\"><div class=\"form_linkline form_name_line\" id=\"form_name_line_" + name_count + "\">" + thisNameText + "</div></a>");
+                    Output.WriteLine("              <a title=\"Click to edit this named entity\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_name_line_" + name_count + "')\" onblur=\"link_blurred2('form_name_line_" + name_count + "')\" onkeypress=\"return popup_keypress_focus('form_name_" + name_count + "', 'form_name_full_" + name_count + "', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_name_" + name_count + "', 'form_name_full_" + name_count + "' );\"><div class=\"form_linkline form_name_line\" id=\"form_name_line_" + name_count + "\">" + thisNameText + "</div></a>");
                 }
 
                 // Determine if this is a personal name
@@ -135,16 +136,16 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the popup form
                 PopupFormBuilder.AppendLine("<!-- Name Form " + name_count + " -->");
-                PopupFormBuilder.AppendLine("<div class=\"" + form_class + "\" id=\"form_name_" + name_count + "\" style=\"display:none;\">");
-                PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT NAMED ENTITY</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_name_form('form_name_" + name_count + "')\">X</a> &nbsp; </td></tr></table></div>");
+				PopupFormBuilder.AppendLine("<div class=\"" + form_class + " sbkMetadata_PopupDiv\" id=\"form_name_" + name_count + "\" style=\"display:none;\">");
+				PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Named Entity</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_name_form('form_name_" + name_count + "')\">X</a> &nbsp; </td></tr></table></div>");
                 PopupFormBuilder.AppendLine("  <br />");
-                PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
+				PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                 // Add the name type combo box and radio buttons
                 PopupFormBuilder.AppendLine("    <tr>");
                 PopupFormBuilder.AppendLine("      <td>Name Type:</td>");
                 PopupFormBuilder.AppendLine("      <td>");
-                PopupFormBuilder.AppendLine("        <select class=\"form_name_select\" id=\"form_name_type_" + name_count + "\" name=\"form_name_type_" + name_count + "\" onChange=\"javascript:name_type_changed('" + name_count + "')\" >");
+                PopupFormBuilder.AppendLine("        <select class=\"form_name_select\" id=\"form_name_type_" + name_count + "\" name=\"form_name_type_" + name_count + "\" onChange=\"name_type_changed('" + name_count + "');\" >");
                 PopupFormBuilder.AppendLine(thisName.Name_Type == Name_Info_Type_Enum.conference
                                                   ? "          <option value=\"conference\" selected=\"selected\" >Conference</option>"
                                                   : "          <option value=\"conference\">Conference</option>");
@@ -174,24 +175,24 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.AppendLine("    </tr>");
 
                 // Add the full name box
-                PopupFormBuilder.AppendLine("    <tr><td>Full Name:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input\" id=\"form_name_full_" + name_count + "\" name=\"form_name_full_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Full_Name) + "\" onfocus=\"javascript:textbox_enter('form_name_full_" + name_count + "', 'form_name_large_input_focused')\" onblur=\"javascript:textbox_leave('form_name_full_" + name_count + "', 'form_name_large_input')\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Full Name:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_full_" + name_count + "\" name=\"form_name_full_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Full_Name) + "\" /></td></tr>");
 
                 // Add the given name and family name(s)
-                PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel1_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Given Names:</span></td><td><input type=\"text\" class=\"form_name_medium_input\" id=\"form_name_given_" + name_count + "\" name=\"form_name_given_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Given_Name) + "\" onfocus=\"javascript:textbox_enter('form_name_given_" + name_count + "', 'form_name_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_name_given_" + name_count + "', 'form_name_medium_input')\" style=\"display:" + personal_values_display + ";\" /></td>");
-                PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel2_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Family Name:</span><input type=\"text\" class=\"form_name_medium_input\" id=\"form_name_family_" + name_count + "\" name=\"form_name_family_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Family_Name) + "\" onfocus=\"javascript:textbox_enter('form_name_family_" + name_count + "', 'form_name_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_name_family_" + name_count + "', 'form_name_medium_input')\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
+				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel1_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Given Names:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_given_" + name_count + "\" name=\"form_name_given_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Given_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
+				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel2_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Family Name:</span><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_family_" + name_count + "\" name=\"form_name_family_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Family_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
 
                 // Add the display form and terms of address
-                PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel3_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Display Form:</span></td><td><input type=\"text\" class=\"form_name_medium_input\" id=\"form_name_display_" + name_count + "\" name=\"form_name_display_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Display_Form) + "\" onfocus=\"javascript:textbox_enter('form_name_display_" + name_count + "', 'form_name_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_name_display_" + name_count + "', 'form_name_medium_input')\" style=\"display:" + personal_values_display + ";\" /></td>");
-                PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel4_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Terms of Address:</span><input type=\"text\" class=\"form_name_small_input\" id=\"form_name_terms_" + name_count + "\" name=\"form_name_terms_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Terms_Of_Address) + "\" onfocus=\"javascript:textbox_enter('form_name_terms_" + name_count + "', 'form_name_small_input_focused')\" onblur=\"javascript:textbox_leave('form_name_terms_" + name_count + "', 'form_name_small_input')\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
+				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel3_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Display Form:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_display_" + name_count + "\" name=\"form_name_display_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Display_Form) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
+				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel4_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Terms of Address:</span><input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_terms_" + name_count + "\" name=\"form_name_terms_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Terms_Of_Address) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
 
                 // Add the dates
-                PopupFormBuilder.AppendLine("    <tr><td>Dates:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_medium_input\" id=\"form_name_dates_" + name_count + "\" name=\"form_name_dates_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Dates) + "\" onfocus=\"javascript:textbox_enter('form_name_dates_" + name_count + "', 'form_name_medium_input_focused')\" onblur=\"javascript:textbox_leave('form_name_dates_" + name_count + "', 'form_name_medium_input')\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Dates:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_dates_" + name_count + "\" name=\"form_name_dates_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Dates) + "\" /></td></tr>");
 
                 // Add the description
-                PopupFormBuilder.AppendLine("    <tr><td><span id=\"name_desc_location_span_" + name_count + "\">" + description_location_display + ":</span></td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input\" id=\"form_name_desc_" + name_count + "\" name=\"form_name_desc_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Description) + "\" onfocus=\"javascript:textbox_enter('form_name_desc_" + name_count + "', 'form_name_large_input_focused')\" onblur=\"javascript:textbox_leave('form_name_desc_" + name_count + "', 'form_name_large_input')\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td><span id=\"name_desc_location_span_" + name_count + "\">" + description_location_display + ":</span></td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_desc_" + name_count + "\" name=\"form_name_desc_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Description) + "\" /></td></tr>");
 
                 // Add the affiliation
-                PopupFormBuilder.AppendLine("    <tr><td>Affiliation:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input\" id=\"form_name_affiliation_" + name_count + "\" name=\"form_name_affiliation_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Affiliation) + "\" onfocus=\"javascript:textbox_enter('form_name_affiliation_" + name_count + "', 'form_name_large_input_focused')\" onblur=\"javascript:textbox_leave('form_name_affiliation_" + name_count + "', 'form_name_large_input')\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Affiliation:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_affiliation_" + name_count + "\" name=\"form_name_affiliation_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Affiliation) + "\" /></td></tr>");
 
                 // Determine the roles to display
                 string role1 = String.Empty;
@@ -222,17 +223,16 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the roles
                 PopupFormBuilder.Append("    <tr><td>Roles:</td><td colspan=\"2\">");
-                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input\" id=\"form_name_role1_" + name_count + "\" name=\"form_name_role1_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role1) + "\" onfocus=\"javascript:textbox_enter('form_name_role1_" + name_count + "', 'form_name_small_input_focused')\" onblur=\"javascript:textbox_leave('form_name_role1_" + name_count + "', 'form_name_small_input')\" />");
-                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input\" id=\"form_name_role2_" + name_count + "\" name=\"form_name_role2_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role2) + "\" onfocus=\"javascript:textbox_enter('form_name_role2_" + name_count + "', 'form_name_small_input_focused')\" onblur=\"javascript:textbox_leave('form_name_role2_" + name_count + "', 'form_name_small_input')\" />");
-                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input\" id=\"form_name_role3_" + name_count + "\" name=\"form_name_role3_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role3) + "\" onfocus=\"javascript:textbox_enter('form_name_role3_" + name_count + "', 'form_name_small_input_focused')\" onblur=\"javascript:textbox_leave('form_name_role3_" + name_count + "', 'form_name_small_input')\" />");
+                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role1_" + name_count + "\" name=\"form_name_role1_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role1) + "\" />");
+				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role2_" + name_count + "\" name=\"form_name_role2_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role2) + "\" />");
+				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role3_" + name_count + "\" name=\"form_name_role3_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role3) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
-                
 
+				// Close the form and add the button
+				PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+				PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_name_form('form_name_" + name_count + "');\">CLOSE</button></td>");
+				PopupFormBuilder.AppendLine("    </tr>");
                 PopupFormBuilder.AppendLine("  </table>");
-                PopupFormBuilder.AppendLine("  <br />");
-
-                // Add the close button
-                PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_name_form('form_name_" + name_count + "')\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
                 PopupFormBuilder.AppendLine("</div>");
                 PopupFormBuilder.AppendLine();
 
@@ -245,12 +245,12 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
 
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
             if (Repeatable)
             {
-                Output.WriteLine("            <img title=\"" + Translator.Get_Translation("Click to add a new named object to this resource", CurrentLanguage) + ".\" alt=\"+\" border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" onmousedown=\"return new_creator_link_clicked('" + Template_Page + "');return false;\" />");
+                Output.WriteLine("            <img title=\"" + Translator.Get_Translation("Click to add a new named object to this resource", CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" onmousedown=\"return new_creator_link_clicked('" + Template_Page + "');return false;\" />");
             }
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
 
             Output.WriteLine("        </tr>");

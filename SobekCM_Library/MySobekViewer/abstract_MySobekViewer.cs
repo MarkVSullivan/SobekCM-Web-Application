@@ -38,7 +38,7 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  If the action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-    /// <li>To allow the requested action, the mySobek subwriter will create one of the myUFDC viewers( implementing this class )</li>
+    /// <li>To allow the requested action, the mySobek subwriter will create one of the mySobek viewers( implementing this class )</li>
     /// </ul></remarks>
     public abstract class abstract_MySobekViewer : iMySobek_Admin_Viewer
     {

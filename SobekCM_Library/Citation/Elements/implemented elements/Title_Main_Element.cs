@@ -23,6 +23,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Type = Element_Type.Title;
             Display_SubType = "simple";
+	        help_page = "titlesimple";
         }
 
 

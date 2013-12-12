@@ -31,6 +31,7 @@ namespace SobekCM.Library.Citation.Elements
             Display_SubType = "ir";
             rows = 5;
             baseURL = String.Empty;
+	        help_page = "typeir";
         }
 
         /// <summary> Sets the base url for the current request </summary>
@@ -106,7 +107,9 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("      <div id=\"" + html_element_name + "_div\">");
             Output.WriteLine("        <textarea rows=\"" + rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(Bib.Bib_Info.Access_Condition.Text.Replace(DEFAULT_PREFIX, "").Trim()) + "</textarea>");
             Output.WriteLine("        <div class=\"ShowOptionsRow\">");
-            Output.WriteLine("          <a href=\"\" onclick=\"return open_cc_rights();\"><img src=\"" + baseURL + "design/skins/" + Skin_Code + "/tabs/cLDG.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">CREATIVE COMMONS</span><img src=\"" + baseURL + "design/skins/" + Skin_Code + "/tabs/cRDG.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+			Output.WriteLine("                <ul class=\"sbk_FauxDownwardTabsList\">");
+			Output.WriteLine("                  <li><a href=\"\" onclick=\"return open_cc_rights();\">CREATIVE COMMONS</a></li>");
+			Output.WriteLine("                </ul>");
             Output.WriteLine("        </div>");
             Output.WriteLine("      </div>");
 

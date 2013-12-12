@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Library.HTML;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
@@ -488,16 +489,83 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("File_Management_MySobekViewer.Write_HTML", "Add instructions");
 
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<div class=\"sbkPiu_MainArea\">");
-            Output.WriteLine("<h2>Upload Page Images</h2>");
-            Output.WriteLine("<blockquote>");
-            Output.WriteLine("Upload the page images for your item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.<br /><br />");
+
+			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+			string final_title = item.Bib_Info.Main_Title.Title;
+			if (item.Bib_Info.Main_Title.NonSort.Length > 0)
+			{
+				if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+					final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+				else
+				{
+					if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+					{
+						final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+					}
+					else
+					{
+						final_title = item.Bib_Info.Main_Title.NonSort + " " + item.Bib_Info.Main_Title.Title;
+					}
+				}
+			}
+
+			// Add the Title if there is one
+			if (final_title.Length > 0)
+			{
+				// Is this a newspaper?
+				bool newspaper = item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+				// Does a custom setting override the default behavior to add a date?
+				if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+					newspaper = false;
+
+				// Add the date if it should be added
+				if ((newspaper) && ((item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+				{
+					string date = item.Bib_Info.Origin_Info.Date_Created;
+					if (item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+						date = item.Bib_Info.Origin_Info.Date_Issued;
+
+
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+					}
+				}
+				else
+				{
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+					}
+				}
+			}
+			Output.WriteLine("</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+
+			Output.WriteLine("<div id=\"container-inner1000\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
+
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+			Output.WriteLine("  <br />");
+
+            Output.WriteLine("  <h2>Upload Page Images</h2>");
+            Output.WriteLine("  <p>Upload the page images for your item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.</p>");
 
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">Click here to add download files instead.</a>");
+            Output.WriteLine("  <p><a href=\"" + currentMode.Redirect_URL() + "\">Click here to add download files instead.</a></p>");
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
 
-            Output.WriteLine("</blockquote><br />");
+			Output.WriteLine("  <br />");
         }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -621,6 +689,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");
             Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
         }
 
         #endregion
@@ -642,7 +712,7 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder filesBuilder = new StringBuilder(2000);
             filesBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            filesBuilder.AppendLine("Add a new page SourceImage for this package:");
+            filesBuilder.AppendLine("Add a new page image for this package:");
             filesBuilder.AppendLine("<blockquote>");
 
             LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
@@ -677,6 +747,21 @@ namespace SobekCM.Library.MySobekViewer
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
             placeHolder.Controls.Add(literal1);
         }
+
+		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get
+			{
+				return new List<HtmlSubwriter_Behaviors_Enum>
+				{
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				};
+			}
+		}
     }
 }
   

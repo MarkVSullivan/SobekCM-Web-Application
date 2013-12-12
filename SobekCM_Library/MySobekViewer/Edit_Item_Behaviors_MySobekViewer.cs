@@ -232,13 +232,13 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
 
-			Output.WriteLine("<div id=\"container-inner1000-test\">");
-			Output.WriteLine("<div id=\"pagecontainer-test\">");
+			Output.WriteLine("<div id=\"container-inner1000\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
 
             Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<div class=\"SobekText\">");
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <b>Edit this item's behaviors within this library.</b>");
+            Output.WriteLine("  <h2>Edit this item's behaviors within this library</h2>");
             Output.WriteLine("  <ul>");
             Output.WriteLine("    <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
             Output.WriteLine("    <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
@@ -248,13 +248,13 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
 
 			Output.WriteLine("<a name=\"template\"> </a>");
-			Output.WriteLine("<div id=\"tabContainer\" class=\"ondarktabs\">");
+			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 			Output.WriteLine("  <div class=\"tabs\">");
 			Output.WriteLine("    <ul>");
 			Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + BEHAVIORS + "</li>");
 			Output.WriteLine("    </ul>");
 			Output.WriteLine("  </div>");
-			Output.WriteLine("  <div class=\"tabscontent\">");
+			Output.WriteLine("  <div class=\"graytabscontent\">");
 			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");

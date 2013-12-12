@@ -1115,7 +1115,7 @@ namespace SobekCM.Library.Settings
 		/// <summary> Relative location to the folders on the web server </summary>
 		/// <remarks> This is only used when building static pages in the SobekCM Builder, which allows for
 		/// the replacement of all the relative references ( i.e., '/design/skins/dloc/dloc.css') with the full
-		/// link ( i.e., 'http://ufdc.ufl.edu/design/skins/dloc/dloc.css' ) </remarks>
+		/// link ( i.e., 'http://example.edu/design/skins/dloc/dloc.css' ) </remarks>
 		public static string Base_SobekCM_Location_Relative { get; set; }
 
 		/// <summary> URL to the Aware JPEG2000 zoomable image server </summary>
@@ -1248,8 +1248,8 @@ namespace SobekCM.Library.Settings
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
-		/// <summary> Directory for this application's myUFDC folder, where the template and project files reside for online submittal and editing</summary>
-		/// <value> [Base_Directory] + 'myUFDC\' </value>
+		/// <summary> Directory for this application's mySobek folder, where the template and project files reside for online submittal and editing</summary>
+		/// <value> [Base_Directory] + 'mySobek\' </value>
 		public static string Base_MySobek_Directory
 		{
 			get { return baseDirectory + "mySobek\\"; }

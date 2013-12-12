@@ -62,6 +62,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string title;
         private readonly string trackingBox;
         private readonly SobekCM_Skin_Object webSkin;
+		private readonly SobekCM_Skin_Collection skins;
 
 
         /// <summary> Constructor for a new instance of the Group_Add_Volume_MySobekViewer class </summary>
@@ -74,6 +75,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
         /// <param name="Items_In_Title"> List of items within this title </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
+		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public Group_Add_Volume_MySobekViewer(User_Object User,
             SobekCM_Navigation_Object Current_Mode,
@@ -83,6 +85,7 @@ namespace SobekCM.Library.MySobekViewer
             SobekCM_Skin_Object HTML_Skin,
             SobekCM_Items_In_Title Items_In_Title,
             Language_Support_Info Translator,
+			SobekCM_Skin_Collection HTML_Skin_Collection,
             Custom_Tracer Tracer)
             : base(User)
         {
@@ -96,6 +99,7 @@ namespace SobekCM.Library.MySobekViewer
             webSkin = HTML_Skin;
             itemsInTitle = Items_In_Title;
             base.Translator = Translator;
+	        skins = HTML_Skin_Collection;
 
             // Set some defaults
             ipRestrict = -1;
@@ -357,9 +361,23 @@ namespace SobekCM.Library.MySobekViewer
             string base_url = currentMode.Base_URL;
             try
             {
-                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, null, webSkin.Skin_Code);
+                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
                 string filename = user_in_process_directory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                 staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
+
+				// Copy the static HTML file to the web server
+				try
+				{
+					if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+						Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+					if (File.Exists(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
+						File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+				}
+				catch (Exception)
+				{
+					// This is not critical
+				}
+
             }
             catch (Exception ee)
             {
@@ -371,7 +389,6 @@ namespace SobekCM.Library.MySobekViewer
             // Save the rest of the metadata
             Item_To_Complete.Source_Directory = user_in_process_directory;
             Item_To_Complete.Save_SobekCM_METS();
-            Item_To_Complete.Save_Citation_Only_METS();
 
             // Add this to the cache
             itemList.Add_SobekCM_Item(Item_To_Complete);
@@ -386,7 +403,7 @@ namespace SobekCM.Library.MySobekViewer
             Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, user.Full_Name, String.Empty);
 
 
-
+			// Save the MARC file
             List<string> collectionnames = new List<string>();
             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
@@ -397,14 +414,26 @@ namespace SobekCM.Library.MySobekViewer
 
             // Copy this to all the image servers
             SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(Tracer));
-            string[] allFiles = Directory.GetFiles(user_in_process_directory);
+            
 
             // Copy all the files over to the server 
             string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
+
             // Create the folder
             if (!Directory.Exists(serverNetworkFolder))
                 Directory.CreateDirectory(serverNetworkFolder);
+			if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
+				Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
 
+			// Copy the static HTML page over first
+			if (File.Exists(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
+			{
+				File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + ".html", true);
+				File.Delete(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html");
+			}
+
+			// Copy all the files 
+			string[] allFiles = Directory.GetFiles(user_in_process_directory);
             foreach (string thisFile in allFiles)
             {
                 string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
@@ -456,137 +485,170 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_HTML", "Do nothing");
         }
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-	        const string NEWVOLUME = "NEW VOLUME";
+	    /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
+	    /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+	    {
+		    const string NEWVOLUME = "NEW VOLUME";
 
-            Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
+		    Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
 
-            Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
-            Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
+		    Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
+		    Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
+
+		    Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+		    string grouptitle = item.Behaviors.GroupTitle;
+		    if (grouptitle.Length > 125)
+		    {
+			    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
+		    }
+		    else
+		    {
+			    Output.WriteLine("\t<h1 itemprop=\"name\">" + grouptitle + "</h1>");
+		    }
+
+		    Output.WriteLine("</div>");
+		    Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+
+		    Output.WriteLine("<div id=\"container-inner1000\">");
+		    Output.WriteLine("<div id=\"pagecontainer\">");
 
 
-            Output.WriteLine("<!-- Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <b>Add a new volume to this existing title/item group.</b>");
-            Output.WriteLine("    <ul>");
-            Output.WriteLine("      <li>Only enter data that you wish to override the data in the existing base volume.</li>");
-            //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-            Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
-            Output.WriteLine("     </ul>");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
+		    Output.WriteLine("<!-- Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing -->");
+		    Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+		    Output.WriteLine("  <br />");
+		    Output.WriteLine("  <h2>Add a new volume to this existing title/item group</h2>");
+		    Output.WriteLine("    <ul>");
+		    Output.WriteLine("      <li>Only enter data that you wish to override the data in the existing base volume.</li>");
+		    //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+		    Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
+		    Output.WriteLine("     </ul>");
+		    Output.WriteLine("</div>");
+		    Output.WriteLine();
 
-            if (message.Length > 0)
-            {
-                Output.WriteLine("" + message + "<br />");
-            }
+		    if (message.Length > 0)
+		    {
+			    Output.WriteLine("" + message + "<br />");
+		    }
 
-			Output.WriteLine("<a name=\"template\"> </a>");
-			Output.WriteLine("<br />");
-			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
-			Output.WriteLine("  <div class=\"tabs\">");
-			Output.WriteLine("    <ul>");
-			Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + NEWVOLUME + "</li>");
-			Output.WriteLine("    </ul>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine("  <div class=\"graytabscontent\">");
-			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
+		    Output.WriteLine("<a name=\"template\"> </a>");
+		    Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+		    Output.WriteLine("  <div class=\"tabs\">");
+		    Output.WriteLine("    <ul>");
+		    Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + NEWVOLUME + "</li>");
+		    Output.WriteLine("    </ul>");
+		    Output.WriteLine("  </div>");
+		    Output.WriteLine("  <div class=\"graytabscontent\">");
+		    Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
-            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-            Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-			Output.WriteLine();
+		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
+		    Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+		    Output.WriteLine();
 
-			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_BigButton\">SAVE & ADD ANOTHER</button>");
-			Output.WriteLine("      </div>");
-			Output.WriteLine("      <br /><br />");
-			Output.WriteLine();
+		    Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_BigButton\">SAVE & ADD ANOTHER</button>");
+		    Output.WriteLine("      </div>");
+		    Output.WriteLine("      <br /><br />");
+		    Output.WriteLine();
 
-			// Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
-			Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
-			Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
+		    // Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
+		    Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
+		    Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
-			DataColumn vidColumn = itemsInTitle.Item_Table.Columns["VID"];
-			bool first = true;
-			DataView sortedView = new DataView(itemsInTitle.Item_Table) { Sort = "VID DESC" };
-			foreach (DataRowView itemRowView in sortedView)
+		    DataColumn vidColumn = itemsInTitle.Item_Table.Columns["VID"];
+		    bool first = true;
+		    DataView sortedView = new DataView(itemsInTitle.Item_Table) {Sort = "VID DESC"};
+		    foreach (DataRowView itemRowView in sortedView)
+		    {
+			    if (first)
+			    {
+				    Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\" selected=\"selected\">" + itemRowView.Row[vidColumn] + "</option>");
+				    first = false;
+			    }
+			    else
+			    {
+				    Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\">" + itemRowView.Row[vidColumn] + "</option>");
+			    }
+		    }
+		    Output.WriteLine("        </select>");
+		    Output.WriteLine("      </div>");
+		    Output.WriteLine();
+
+		    bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+
+		    // Create a new blank item for display purposes
+		    SobekCM_Item displayItem = new SobekCM_Item {BibID = item.BibID};
+		    displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
+		    displayItem.Behaviors.Serial_Info.Clear();
+		    displayItem.Tracking.Born_Digital = bornDigital;
+		    displayItem.Tracking.Tracking_Box = trackingBox;
+		    displayItem.Tracking.Material_Received_Notes = materialRecdNotes;
+		    displayItem.Tracking.Material_Received_Date = materialRecdDate;
+		    displayItem.Tracking.Disposition_Advice = dispositionAdvice;
+		    displayItem.Tracking.Disposition_Advice_Notes = dispositionAdviceNotes;
+		    if (title.Length > 0)
+		    {
+			    displayItem.Bib_Info.Main_Title.Clear();
+			    displayItem.Bib_Info.Main_Title.Title = title;
+		    }
+		    if (date.Length > 0)
+			    displayItem.Bib_Info.Origin_Info.Date_Issued = date;
+		    if ((level1.Length > 0) && (level1Order >= 0))
+		    {
+			    displayItem.Behaviors.Serial_Info.Add_Hierarchy(1, level1Order, level1);
+			    if ((level2.Length > 0) && (level2Order >= 0))
+			    {
+				    displayItem.Behaviors.Serial_Info.Add_Hierarchy(2, level2Order, level2);
+				    if ((level3.Length > 0) && (level3Order >= 0))
+				    {
+					    displayItem.Behaviors.Serial_Info.Add_Hierarchy(3, level3Order, level3);
+				    }
+			    }
+		    }
+
+		    template.Render_Template_HTML(Output, displayItem, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
+
+		    // Add the second buttons at the bottom of the form
+		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
+		    Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+		    Output.WriteLine("      </div>");
+		    Output.WriteLine();
+
+		    Output.WriteLine("      <br /><br />");
+		    Output.WriteLine("      <hr />");
+		    Output.WriteLine();
+
+		    Output.WriteLine("      <p>In addition, the following actions are available:</p>");
+		    Output.WriteLine("      <button onclick=\"addvolume_save_form('_edit'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & EDIT ITEM</button> &nbsp; &nbsp; ");
+		    Output.WriteLine("      <button onclick=\"addvolume_save_form('_addfiles'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD FILES</button> &nbsp; &nbsp; ");
+		    Output.WriteLine("      <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD ANOTHER</button>");
+
+		    Output.WriteLine("    </div>");
+		    Output.WriteLine("  </div>");
+		    Output.WriteLine("</div>");
+		    Output.WriteLine("</div>");
+		    Output.WriteLine("</div>");
+	    }
+
+	    /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get
 			{
-				if (first)
+				return new List<HtmlSubwriter_Behaviors_Enum>
 				{
-					Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\" selected=\"selected\">" + itemRowView.Row[vidColumn] + "</option>");
-					first = false;
-				}
-				else
-				{
-					Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\">" + itemRowView.Row[vidColumn] + "</option>");
-				}
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				};
 			}
-			Output.WriteLine("        </select>");
-	        Output.WriteLine("      </div>");
-			Output.WriteLine();
-
-	        bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
-
-	        // Create a new blank item for display purposes
-            SobekCM_Item displayItem = new SobekCM_Item {BibID = item.BibID};
-            displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
-            displayItem.Behaviors.Serial_Info.Clear();
-            displayItem.Tracking.Born_Digital = bornDigital;
-            displayItem.Tracking.Tracking_Box = trackingBox;
-            displayItem.Tracking.Material_Received_Notes = materialRecdNotes;
-            displayItem.Tracking.Material_Received_Date = materialRecdDate;
-            displayItem.Tracking.Disposition_Advice = dispositionAdvice;
-            displayItem.Tracking.Disposition_Advice_Notes = dispositionAdviceNotes;
-            if (title.Length > 0)
-            {
-                displayItem.Bib_Info.Main_Title.Clear();
-                displayItem.Bib_Info.Main_Title.Title = title;
-            }
-            if (date.Length > 0)
-                displayItem.Bib_Info.Origin_Info.Date_Issued = date;
-            if ((level1.Length > 0) && (level1Order >= 0))
-            {
-                displayItem.Behaviors.Serial_Info.Add_Hierarchy(1, level1Order, level1);
-                if ((level2.Length > 0) && (level2Order >= 0))
-                {
-                    displayItem.Behaviors.Serial_Info.Add_Hierarchy(2, level2Order, level2);
-                    if ((level3.Length > 0) && (level3Order >= 0))
-                    {
-                        displayItem.Behaviors.Serial_Info.Add_Hierarchy(3, level3Order, level3);
-                    }
-                }
-            }
-
-            template.Render_Template_HTML(Output, displayItem, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1); 
-
-            // Add the second buttons at the bottom of the form
-            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
-			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
-			Output.WriteLine("      </div>");
-			Output.WriteLine();
-
-			Output.WriteLine("      <br /><br />");
-			Output.WriteLine("      <hr />");
-			Output.WriteLine();
-
-			Output.WriteLine("      <p>In addition, the following actions are available:</p>");
-			Output.WriteLine("      <button onclick=\"addvolume_save_form('_edit'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & EDIT ITEM</button> &nbsp; &nbsp; ");
-			Output.WriteLine("      <button onclick=\"addvolume_save_form('_addfiles'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD FILES</button> &nbsp; &nbsp; ");
-			Output.WriteLine("      <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD ANOTHER</button>");
-
-			Output.WriteLine("    </div>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine("<br />");
-        }
+		}
     }
 }

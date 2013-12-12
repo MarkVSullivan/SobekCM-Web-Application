@@ -177,7 +177,7 @@ namespace SobekCM.Library.HTML
                             if (projectObject != null)
                             {
                                 Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid project file found in cache");
-                                adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, htmlSkin, Tracer);
+                                adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, htmlSkin, null, null, Tracer);
                             }
                             else
                             {
@@ -196,7 +196,7 @@ namespace SobekCM.Library.HTML
 
                                     Cached_Data_Manager.Store_Project(user.UserID, project_code, pmets_item, Tracer);
 
-                                    adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, pmets_item, codeManager, iconTable, htmlSkin, Tracer);
+                                    adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, pmets_item, codeManager, iconTable, htmlSkin, null, null, Tracer);
                                 }
                             }
                         }
@@ -383,12 +383,20 @@ namespace SobekCM.Library.HTML
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+#if DEBUG
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#endif
 
             // If editing projects, add the mySobek stylesheet as well
             if ((currentMode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (currentMode.My_Sobek_SubMode.Length > 0))
             {
-                Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#if DEBUG
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#endif
             }
         }
 

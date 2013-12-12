@@ -164,7 +164,7 @@ namespace SobekCM.Library.HTML
 		}
 
 		/// <summary> If the results dataset should be displayed in the context of an outer form (such as in
-		/// the case that this is part of the myUFDC bookshelf functionality) then the form name should go here.  If 
+		/// the case that this is part of the mySobek bookshelf functionality) then the form name should go here.  If 
 		/// no outer form name is provided, this will create its own sort form  </summary>
 		public string Outer_Form_Name { get; set; }
 
@@ -1158,7 +1158,7 @@ namespace SobekCM.Library.HTML
 								fields[i] = fields[i].Substring(1);
 							}
 
-							string write_value = Search_Label_from_UFDC_Code(fields[i]).ToLower() + " ";
+							string write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
 							Output.Write(write_value);
 							length_of_explanation += write_value.Length;
 						}
@@ -1209,7 +1209,7 @@ namespace SobekCM.Library.HTML
 			}
 		}
 
-		private string Search_Label_from_UFDC_Code(string Code)
+		private string Search_Label_from_Sobek_Code(string Code)
 		{
 			string in_language = "in ";
 			if (currentMode.Language == Web_Language_Enum.French)

@@ -23,7 +23,8 @@ namespace SobekCM.Library.Citation.Elements
         public Type_Element() : base("Resource Type", "type")
         {
             Repeatable = false;
-            Type = Element_Type.Type;            
+            Type = Element_Type.Type;
+	        help_page = "typesimple";
         }
 
         /// <summary> Sets the postback javascript, if the combo box requires a post back onChange </summary>

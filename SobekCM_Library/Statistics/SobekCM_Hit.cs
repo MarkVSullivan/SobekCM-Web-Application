@@ -14,14 +14,14 @@ namespace SobekCM.Library.Statistics
         /// <param name="Time"> Date/Time of the hit against the web server </param>
         /// <param name="IP"> IP address from which the query was issued </param>
         /// <param name="Query_String"> Query string (includes the rewritten URL portion )</param>
-        /// <param name="UFDC_URL"> Incoming URL which was queried </param>
+		/// <param name="SobekCM_URL"> Incoming URL which was queried </param>
         /// <param name="UserAgent"> All the information about the user's browser/settings </param>
-        public SobekCM_Hit(DateTime Time, string IP, string Query_String, string UFDC_URL, string UserAgent)
+        public SobekCM_Hit(DateTime Time, string IP, string Query_String, string SobekCM_URL, string UserAgent)
         {
             this.Time = Time;
             this.IP = IP;
             this.Query_String = Query_String;
-            this.UFDC_URL = UFDC_URL;
+			this.SobekCM_URL = SobekCM_URL;
             this.UserAgent = UserAgent;
         }
 
@@ -39,7 +39,7 @@ namespace SobekCM.Library.Statistics
         public string Query_String { get; private set; }
 
         /// <summary> Incoming URL which was queried </summary>
-        public string UFDC_URL { get; set; }
+		public string SobekCM_URL { get; set; }
 
         #region IComparable<SobekCM_Hit> Members
 
