@@ -508,14 +508,38 @@ function initListeners() {
         //menubarf
         document.getElementById("content_menubar_save").addEventListener("click", function () {
             //save("all");
-            //attempt to save all three
-            displayMessage(localize.L59);
-            globalVar.RIBMode = true;
-            save("item");
-            save("overlay");
-            save("poi");
-            globalVar.RIBMode = false;
-            window.location.assign(document.URL.replace("/mapedit", ""));
+            if (globalVar.userMayLoseData) {
+                //attempt to save all three
+                displayMessage(localize.L59);
+                globalVar.RIBMode = true;
+                var savesCompleted = 0;
+                try {
+                    save("item");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save item");
+                }
+                try {
+                    save("overlay");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save overlay");
+                }
+                try {
+                    save("poi");
+                    savesCompleted++;
+                } catch(e) {
+                    de("could not save poi");
+                }
+                if (savesCompleted == 3) {
+                    de("all saves completed");
+                    //window.location.assign(document.URL.replace("/mapedit", ""));
+                    globalVar.userMayLoseData = false;
+                }
+                globalVar.RIBMode = false;
+            } else {
+                displayMessage(L_NotSaved);
+            }
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
             //clear("all");
@@ -1649,6 +1673,7 @@ function save(id) {
                     }
                     //reset first save
                     globalVar.firstSaveItem = true;
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_saveItem").value = L37;
                     document.getElementById("content_toolbox_button_saveItem").title = L38;
@@ -1700,7 +1725,7 @@ function save(id) {
                     de("Applying Changes...");
                     for (var i = 0; i < globalVar.savingOverlayIndex.length; i++) {
                         //save to temp xml file
-                        de("applying overlay: " + globalVar.savingOverlayPageId[i] + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
+                        de("applying overlay: " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                         createSavedOverlay("apply", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
                         if (globalVar.toServerSuccess == true) {
                             displayMessage(L_Applied);
@@ -1708,6 +1733,7 @@ function save(id) {
                     }
                     //reset first save
                     globalVar.firstSaveOverlay = true;
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                 } else {
                     displayMessage(L_NotSaved);
                 }
@@ -1759,6 +1785,7 @@ function save(id) {
                     } else {
                         displayMessage(L_NotSaved);
                     }
+                    //globalVar.userMayLoseData = false; //do not use until each save is dependent on each other.
                     //reset apply button to save
                     document.getElementById("content_toolbox_button_savePOI").value = L37;
                     document.getElementById("content_toolbox_button_savePOI").title = L38;
@@ -1788,8 +1815,9 @@ function clear(id) {
 
             break;
 
-        case "overlay":            
-            if ((globalVar.workingOverlayIndex != null) || ((globalVar.overlayCount != globalVar.overlaysOnMap.length) && (globalVar.overlayCount != 0))) {
+        case "overlay":
+            //if ((globalVar.workingOverlayIndex != null) || ((globalVar.overlayCount != globalVar.overlaysOnMap.length) && (globalVar.overlayCount != 0))) {
+            if(globalVar.savingOverlayIndex.length>0){
                 displayMessage(localize.L52);
                 //reset edit mode
                 place("overlay");
@@ -1799,10 +1827,10 @@ function clear(id) {
                 clearIncomingOverlays();
                 //clear the save cache
                 clearCacheSaveOverlay();
-                //show all the incoming overlays
-                displayIncomingPolygons();
                 //clear ooms
                 clearOverlaysOnMap();
+                //show all the incoming overlays
+                displayIncomingPolygons();
                 //redraw list items of overlays
                 initOverlayList();
                 //say we are finished
@@ -4496,6 +4524,8 @@ function overlayEditMe(id) {
         globalVar.pageMode = "edit";
         //if editing is being done and there is something to save, save
         if (globalVar.currentlyEditing == "yes" && globalVar.workingOverlayIndex != null) {
+            //reset overlay drawingmode
+            drawingManager.setDrawingMode(null);
             de("saving overlay " + globalVar.workingOverlayIndex);
             //trigger a cache of current working overlay
             cacheSaveOverlay(globalVar.workingOverlayIndex);
@@ -4503,29 +4533,27 @@ function overlayEditMe(id) {
             globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setOptions(globalVar.ghosting);
             //reset editing marker
             globalVar.currentlyEditing = "no";
-            //set preserved rotation to the rotation of the current overlay
-            //alert("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
+            //set new woi
             globalVar.workingOverlayIndex = id;
+            //go through each overlay on the map
+            cycleOverlayHighlight(id);
+            //set preserved rotation to the rotation of the current overlay
+            de("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
             globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
             //globalVar.preservedRotation = 0;
         }
         //if editing is not being done, make it so
         if (globalVar.currentlyEditing == "no" || globalVar.workingOverlayIndex == null) {
+            //reset overlay drawingmode
+            drawingManager.setDrawingMode(null);
+            //set new woi
+            globalVar.workingOverlayIndex = id;
+            //open woi
             globalVar.overlaysOnMap[id].setMap(map);
             globalVar.ghostOverlayRectangle[id].setMap(map);
             document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
             //go through each overlay on the map
-            for (var i = 1; i < globalVar.overlaysOnMap.length; i++) {
-                de("hit: " + id + " index: " + i + " length: " + globalVar.overlaysOnMap.length);
-                //if there is a match in overlays
-                if (i == id) {
-                    //set highlight color
-                    document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
-                } else {
-                    //reset highlight
-                    document.getElementById("overlayListItem" + i).style.background = null;
-                }
-            }
+            cycleOverlayHighlight(id);
             //enable editing marker
             globalVar.currentlyEditing = "yes";
             de("editing overlay " + (globalVar.workingOverlayIndex - 1));
@@ -4599,8 +4627,27 @@ function overlayEditMe(id) {
         displayMessage(L34 + " " + globalVar.incomingPolygonLabel[(id-1)]);
     } catch (e) {
         de("[error]: " + e);
+        //go through each overlay on the map
+        cycleOverlayHighlight(id);
         //create the overlay
         createOverlayFromPage(id);
+    }
+}
+
+//cycle through all overlay list itmes and hightliht them accordingly
+function cycleOverlayHighlight(id) {
+    de("highlighting overlays");
+    //go through each overlay on the map
+    for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
+        de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
+        //if there is a match in overlays
+        if (i == id) {
+            //set highlight color
+            document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
+        } else {
+            //reset highlight
+            document.getElementById("overlayListItem" + i).style.background = null;
+        }
     }
 }
 
@@ -4638,7 +4685,8 @@ function overlayDeleteMe(id) {
             globalVar.ghostOverlayRectangle[id] = null;
             //var strg = "#overlayListItem" + id; //create <li> overlay string
             //$(strg).remove(); //remove <li>
-            globalVar.overlayCount--;
+            globalVar.overlayCount += -1;
+            globalVar.workingOverlayIndex = null;
             //displayMessage(id + " " + L33);
             displayMessage(localize.L55 + " " + id);
         } catch (e) {
@@ -4735,7 +4783,10 @@ function poiGetDesc(id) {
             //assign full description to the poi object
             globalVar.poiDesc[id] = temp;
 
-            //visually set desc
+            //close old info window (this negates bug where desc box would no longer be tied to point)
+            infoWindow[id].setMap(null);
+
+            //visually reset desc
             //infoWindow[id].setOptions({ content: writeHTML("poiDesc", id, "", "") });
 
             infoWindow[id] = new google.maps.InfoWindow({
@@ -4845,8 +4896,12 @@ $(function () {
 //keeps a specific opacity
 function keepOpacity(opacityIn) {
     de("keepOpacity: " + opacityIn);
-    var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
-    div.style.opacity = opacityIn;
+    try {
+        var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
+        div.style.opacity = opacityIn;
+    } catch(e) {
+        //
+    } 
     globalVar.preservedOpacity = opacityIn;
 }
 
@@ -5112,7 +5167,7 @@ function createOverlayFromPage(pageId) {
     //add the rotation
     globalVar.incomingPolygonRotation[globalVar.convertedOverlayIndex] = 0;
     //add the working overlay index
-    globalVar.workingOverlayIndex = globalVar.convertedOverlayIndex +1;
+    globalVar.workingOverlayIndex = globalVar.convertedOverlayIndex + 1;
     ////add the working overlay index
     //if (globalVar.workingOverlayIndex == null) {
     //    globalVar.workingOverlayIndex = 0;
@@ -5145,8 +5200,10 @@ function convertToOverlay() {
         if (globalVar.itemMarker) {
             //hide marker
             globalVar.itemMarker.setMap(null);
-            //delete maker todo confirm this deletes
             globalVar.itemMarker = null;
+            globalVar.RIBMode = true;
+            createSavedItem("delete", null); //send to server and delete from mets
+            globalVar.RIBMode = false;
             ////open first overlay to convert
             //createOverlayFromPage(globalVar.convertedOverlayIndex + 1);
         }
@@ -5175,6 +5232,7 @@ function initOverlayList() {
     de("initOverlayList(); started...");
     document.getElementById("overlayList").innerHTML = "";
     if (globalVar.incomingPolygonPageId.length > 0) {
+        de(globalVar.incomingPolygonLabel.length);
         for (var i = 0; i < globalVar.incomingPolygonLabel.length; i++) {
             if (globalVar.incomingPolygonFeatureType[i] != "poi") {
                 de("Adding Overlay List Item");
@@ -5463,7 +5521,7 @@ function resetHiddenOverlays() {
             for (var j = 0; j < globalVar.incomingPolygonSourceURL.length; j++) {
                 de("incoming ID:" + j);
                 try {
-                    if (globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) {
+                    if ((globalVar.overlaysOnMap[i].image_ == globalVar.incomingPolygonSourceURL[j]) && (globalVar.incomingPolygonFeatureType[j] == "TEMP_main")) {
                         globalVar.incomingPolygonFeatureType[j] = "hidden";
                         globalVar.incomingPolygonPolygonType[j] = "hidden";
                         de("[INFO]: Set Incoming To 'Hidden'");
@@ -5695,8 +5753,8 @@ function debugClear() {
 //jquery UI elements
 $(function () {
     try {
+        //init superfish
         $('ul.sf-menu').superfish();
-
         //draggable content settings
         $("#mapedit_container_toolbox").draggable({
             handle: "#mapedit_container_toolboxMinibar" //div used as handle
@@ -5711,90 +5769,91 @@ $(function () {
             heightStyle: "content" //set hieght to?
         });
         //tooltips (the tooltip text is the title of the element defined in localization js)
-        $("#content_toolbarGrabber").tooltip({ track: true });
-        $("#content_toolbar_button_reset").tooltip({ track: true });
-        $("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
-        $("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
-        $("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
-        $("#content_toolbar_button_layerSatellite").tooltip({ track: true });
-        $("#content_toolbar_button_layerTerrain").tooltip({ track: true });
-        $("#content_toolbar_button_layerControls").tooltip({ track: true });
-        $("#content_toolbar_button_layerHybrid").tooltip({ track: true });
-        $("#content_toolbar_button_layerCustom").tooltip({ track: true });
-        $("#content_toolbar_button_layerReset").tooltip({ track: true });
-        $("#content_toolbar_button_zoomIn").tooltip({ track: true });
-        $("#content_toolbar_button_zoomReset").tooltip({ track: true });
-        $("#content_toolbar_button_zoomOut").tooltip({ track: true });
-        $("#content_toolbar_button_panUp").tooltip({ track: true });
-        $("#content_toolbar_button_panDown").tooltip({ track: true });
-        $("#content_toolbar_button_panReset").tooltip({ track: true });
-        $("#content_toolbar_button_panLeft").tooltip({ track: true });
-        $("#content_toolbar_button_panRight").tooltip({ track: true });
-        $("#content_toolbar_button_manageItem").tooltip({ track: true });
-        $("#content_toolbar_button_manageOverlay").tooltip({ track: true });
-        $("#content_toolbar_button_managePOI").tooltip({ track: true });
-        $("#content_toolbar_button_manageSearch").tooltip({ track: true });
-        $("#content_toolbox_button_reset").tooltip({ track: true });
-        $("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
-        $("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
-        $("#content_toolbox_button_layerSatellite").tooltip({ track: true });
-        $("#content_toolbox_button_layerTerrain").tooltip({ track: true });
-        $("#content_toolbox_button_layerControls").tooltip({ track: true });
-        $("#content_toolbox_button_layerHybrid").tooltip({ track: true });
-        $("#content_toolbox_button_layerCustom").tooltip({ track: true });
-        $("#content_toolbox_button_layerReset").tooltip({ track: true });
-        $("#content_toolbox_button_zoomIn").tooltip({ track: true });
-        $("#content_toolbox_button_zoomReset").tooltip({ track: true });
-        $("#content_toolbox_button_zoomOut").tooltip({ track: true });
-        $("#content_toolbox_button_panUp").tooltip({ track: true });
-        $("#content_toolbox_button_panDown").tooltip({ track: true });
-        $("#content_toolbox_button_panReset").tooltip({ track: true });
-        $("#content_toolbox_button_panLeft").tooltip({ track: true });
-        $("#content_toolbox_button_panRight").tooltip({ track: true });
-        $("#content_toolbox_button_manageItem").tooltip({ track: true });
-        $("#content_toolbox_button_manageOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_managePOI").tooltip({ track: true });
-        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
-        $("#content_toolbox_button_poiMarker").tooltip({ track: true });
-        $("#content_toolbox_button_poiCircle").tooltip({ track: true });
-        $("#content_toolbox_button_poirectangle").tooltip({ track: true });
-        $("#content_toolbox_button_poiPolygon").tooltip({ track: true });
-        $("#content_toolbox_button_poiLine").tooltip({ track: true });
-        $("#rotationKnob").tooltip({ track: true });
-        $("#content_toolbox_rotationClockwise").tooltip({ track: true });
-        $("#content_toolbox_rotationReset").tooltip({ track: true });
-        $("#content_toolbox_rotationCounterClockwise").tooltip({ track: true });
-        $("#transparency").tooltip({ track: true });
-        $("#content_toolbox_rgItem").tooltip({ track: true });
-        $("#content_toolbox_posItem").tooltip({ track: true });
-        $("#content_toolbox_button_itemPlace").tooltip({ track: true });
-        $("#descItem").tooltip({ track: true });
-        $("#content_toolbox_button_saveItem").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
-        $("#content_toolbox_button_saveOverlay").tooltip({ track: true });
-        //$("#content_toolbox_button_placePOI").tooltip({ track: true });
-        $("#descPOI").tooltip({ track: true });
-        $("#content_toolbox_button_savePOI").tooltip({ track: true });
-        $("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
-        //$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
-        $("#content_toolbox_button_overlayToggle").tooltip({ track: true });
-        $("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
-        $("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
-        $("#content_toolbox_button_poiToggle").tooltip({ track: true });
-        $("#content_toolbox_button_clearItem").tooltip({ track: true });
-        $("#content_toolbox_button_clearOverlay").tooltip({ track: true });
-        $("#content_toolbox_button_clearPOI").tooltip({ track: true });
-        $("#content_toolbar_searchField").tooltip({ track: true });
-        $("#content_toolbar_searchButton").tooltip({ track: true });
-        $("#content_toolbox_searchField").tooltip({ track: true });
-        $("#content_toolbox_searchButton").tooltip({ track: true });
-        $("#searchResults_container").tooltip({ track: true });
-        $("#overlayList_container").tooltip({ track: true });
-        $("#poiList_container").tooltip({ track: true });
+        //$("#content_toolbarGrabber").tooltip({ track: true });
+        //$("#content_toolbar_button_reset").tooltip({ track: true });
+        //$("#content_toolbar_button_toggleMapControls").tooltip({ track: true });
+        //$("#content_toolbar_button_toggleToolbox").tooltip({ track: true });
+        //$("#content_toolbar_button_layerRoadmap").tooltip({ track: true });
+        //$("#content_toolbar_button_layerSatellite").tooltip({ track: true });
+        //$("#content_toolbar_button_layerTerrain").tooltip({ track: true });
+        //$("#content_toolbar_button_layerControls").tooltip({ track: true });
+        //$("#content_toolbar_button_layerHybrid").tooltip({ track: true });
+        //$("#content_toolbar_button_layerCustom").tooltip({ track: true });
+        //$("#content_toolbar_button_layerReset").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomIn").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomReset").tooltip({ track: true });
+        //$("#content_toolbar_button_zoomOut").tooltip({ track: true });
+        //$("#content_toolbar_button_panUp").tooltip({ track: true });
+        //$("#content_toolbar_button_panDown").tooltip({ track: true });
+        //$("#content_toolbar_button_panReset").tooltip({ track: true });
+        //$("#content_toolbar_button_panLeft").tooltip({ track: true });
+        //$("#content_toolbar_button_panRight").tooltip({ track: true });
+        //$("#content_toolbar_button_manageItem").tooltip({ track: true });
+        //$("#content_toolbar_button_manageOverlay").tooltip({ track: true });
+        //$("#content_toolbar_button_managePOI").tooltip({ track: true });
+        //$("#content_toolbar_button_manageSearch").tooltip({ track: true });
+        //$("#content_toolbox_button_reset").tooltip({ track: true });
+        //$("#content_toolbox_button_toggleMapControls").tooltip({ track: true });
+        //$("#content_toolbox_button_layerRoadmap").tooltip({ track: true });
+        //$("#content_toolbox_button_layerSatellite").tooltip({ track: true });
+        //$("#content_toolbox_button_layerTerrain").tooltip({ track: true });
+        //$("#content_toolbox_button_layerControls").tooltip({ track: true });
+        //$("#content_toolbox_button_layerHybrid").tooltip({ track: true });
+        //$("#content_toolbox_button_layerCustom").tooltip({ track: true });
+        //$("#content_toolbox_button_layerReset").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomIn").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomReset").tooltip({ track: true });
+        //$("#content_toolbox_button_zoomOut").tooltip({ track: true });
+        //$("#content_toolbox_button_panUp").tooltip({ track: true });
+        //$("#content_toolbox_button_panDown").tooltip({ track: true });
+        //$("#content_toolbox_button_panReset").tooltip({ track: true });
+        //$("#content_toolbox_button_panLeft").tooltip({ track: true });
+        //$("#content_toolbox_button_panRight").tooltip({ track: true });
+        //$("#content_toolbox_button_manageItem").tooltip({ track: true });
+        //$("#content_toolbox_button_manageOverlay").tooltip({ track: true });
+        //$("#content_toolbox_button_managePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        ////$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        ////$("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#content_toolbox_button_poiMarker").tooltip({ track: true });
+        //$("#content_toolbox_button_poiCircle").tooltip({ track: true });
+        //$("#content_toolbox_button_poirectangle").tooltip({ track: true });
+        //$("#content_toolbox_button_poiPolygon").tooltip({ track: true });
+        //$("#content_toolbox_button_poiLine").tooltip({ track: true });
+        //$("#rotationKnob").tooltip({ track: true });
+        //$("#content_toolbox_rotationClockwise").tooltip({ track: true });
+        //$("#content_toolbox_rotationReset").tooltip({ track: true });
+        //$("#content_toolbox_rotationCounterClockwise").tooltip({ track: true });
+        //$("#transparency").tooltip({ track: true });
+        //$("#content_toolbox_rgItem").tooltip({ track: true });
+        //$("#content_toolbox_posItem").tooltip({ track: true });
+        //$("#content_toolbox_button_itemPlace").tooltip({ track: true });
+        //$("#descItem").tooltip({ track: true });
+        $("#content_toolbox_button_saveItem").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_saveItem").tooltip("close"); }, 3000); } });
+        ////$("#content_toolbox_button_overlayPlace").tooltip({ track: true });
+        $("#content_toolbox_button_saveOverlay").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_saveOverlay").tooltip("close"); }, 3000); } });
+        ////$("#content_toolbox_button_placePOI").tooltip({ track: true });
+        //$("#descPOI").tooltip({ track: true });
+        $("#content_toolbox_button_savePOI").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_savePOI").tooltip("close"); }, 3000); } });
+        //$("#content_toolbox_button_itemGetUserLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayGetUserLocation").tooltip({ track: true });
+        ////$("#content_toolbox_button_overlayEdit").tooltip({ track: true });
+        //$("#content_toolbox_button_overlayToggle").tooltip({ track: true });
+        //$("#content_toolbox_button_useSearchAsLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_convertToOverlay").tooltip({ track: true });
+        //$("#content_toolbox_button_poiGetUserLocation").tooltip({ track: true });
+        //$("#content_toolbox_button_poiToggle").tooltip({ track: true });
+        $("#content_toolbox_button_clearItem").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearItem").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_clearOverlay").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearOverlay").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_clearPOI").tooltip({ track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearPOI").tooltip("close"); }, 3000); } });
+        //$("#content_toolbar_searchField").tooltip({ track: true });
+        //$("#content_toolbar_searchButton").tooltip({ track: true });
+        //$("#content_toolbox_searchField").tooltip({ track: true });
+        //$("#content_toolbox_searchButton").tooltip({ track: true });
+        //$("#searchResults_container").tooltip({ track: true });
+        //$("#overlayList_container").tooltip({ track: true });
+        //$("#poiList_container").tooltip({ track: true });
+        $(document).tooltip({ track: true }); //(used to blanket all the tooltips)
         //$(".selector").tooltip({ content: "Awesome title!" });
     } catch (err) {
         alert(L51 + ": " + err);
