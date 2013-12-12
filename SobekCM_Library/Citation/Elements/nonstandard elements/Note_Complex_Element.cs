@@ -38,6 +38,8 @@ namespace SobekCM.Library.Citation.Elements
             colsMozilla = MOZILLA_TEXT_AREA_COLUMNS;
             Include_Statement_Responsibility = true;
             Include_Acquisition_Note = true;
+
+	        help_page = "note";
         }
 
         /// <summary> Flag indicates whether to include the statement of responsibility in the list of notes </summary>
@@ -69,23 +71,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter any notes about this digital manifestation or the original material";
+                const string DEFAULT_ACRONYM = "Enter any notes about this digital manifestation or the original material";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -99,33 +101,33 @@ namespace SobekCM.Library.Citation.Elements
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
+            Output.WriteLine("  <tr>");
             Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
-            Output.WriteLine("        <tr align=\"left\">");
+            Output.WriteLine("        <tr style=\text-align:left\">");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
             int notes_count = 0;
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                notes_count += Bib.Bib_Info.Notes.Count(thisNote => ((thisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) || (Include_Statement_Responsibility)) && (thisNote.Note_Type != Note_Type_Enum.default_type));
+                notes_count += Bib.Bib_Info.Notes.Count(ThisNote => ((ThisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) || (Include_Statement_Responsibility)) && (ThisNote.Note_Type != Note_Type_Enum.default_type));
             }
 
             if (notes_count == 0)
             {
                 Output.WriteLine("              <div id=\"" + html_element_name + "_topdiv1\">");
                 Output.WriteLine("                <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Type", CurrentLanguage) + ":</span>");
-                Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type1\" id=\"" + id_name + "_type1\" onchange=\"javascript:complexnote_type_change('1')\" onfocus=\"javascript:textbox_enter('" + id_name + "_type1','" + html_element_name + "_type_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_type1','" + html_element_name + "_type')\" >");
+                Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type1\" id=\"" + id_name + "_type1\" onchange=\"complexnote_type_change('1');\" >");
                 Output.WriteLine("                  <option selected=\"selected=\" value=\"500\"></option>");
                 Output.WriteLine("                  <option value=\"541\">Acquisition</option>");
                 Output.WriteLine("                  <option value=\"530\">Additional Physical Form</option>");
@@ -160,7 +162,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("                </select>");
                 Output.WriteLine("              </div>");
 
-                Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea1\" id=\"" + id_name + "_textarea1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "_textarea1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_textarea1','" + html_element_name + "_input')\"></textarea>");
+                Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea1\" id=\"" + id_name + "_textarea1\" class=\"" + html_element_name + "_input sbk_Focusable\" ></textarea>");
             }
             else
             {
@@ -175,7 +177,7 @@ namespace SobekCM.Library.Citation.Elements
 
                         Output.WriteLine("              <div id=\"" + html_element_name + "_topdiv" + i + "\">");
                         Output.WriteLine("                <span class=\"metadata_sublabel2\">Type:</span>");
-                        Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" onchange=\"javascript:complexnote_type_change('" + i + "')\" onfocus=\"javascript:textbox_enter('" + id_name + "_type" + i + "','" + html_element_name + "_type_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_type" + i + "','" + html_element_name + "_type')\" >");
+                        Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" onchange=\"complexnote_type_change('" + i + "');\" >");
 
                         if (thisNote.Note_Type == Note_Type_Enum.NONE)
                         {
@@ -337,12 +339,12 @@ namespace SobekCM.Library.Citation.Elements
                         if (note_display_label.Length > 0)
                         {
                             Output.Write("<span class=\"metadata_sublabel\" id=\"complexnote_inputtext" + i + "\" name=\"complexnote_inputtext" + i + "\">" + display_label_prompt + ":</span>");
-                            Output.WriteLine("<input class=\"complexnote_input\" id=\"complexnote_inputtext" + i + "\" name=\"complexnote_input" + i + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(note_display_label) + "\" onfocus=\"javascript:textbox_enter('complexnote_input" + i + "', 'complexnote_input_focused')\" onblur=\"javascript:textbox_leave('complexnote_input" + i + "', 'complexnote_input')\" />");
+                            Output.WriteLine("<input class=\"complexnote_input sbk_Focusable\" id=\"complexnote_inputtext" + i + "\" name=\"complexnote_input" + i + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(note_display_label) + "\" />");
                         }
 
                         Output.WriteLine("              </div>");
 
-                        Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "_textarea" + i + "','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_textarea" + i + "','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(thisNote.Note) + "</textarea>");
+                        Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + HttpUtility.HtmlEncode(thisNote.Note) + "</textarea>");
 
                         if (i < Bib.Bib_Info.Notes_Count)
                         {
@@ -360,12 +362,13 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
             }
 
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
+			
             if (Repeatable)
             {
-                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new abstract", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_complex_note('" + Rows + "','" + actual_cols + "');\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new note", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_complex_note('" + Rows + "','" + actual_cols + "');\"><img class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
             }
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
 
             Output.WriteLine("        </tr>");
@@ -389,7 +392,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
-                    List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(thisNote => (thisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) && (thisNote.Note_Type != Note_Type_Enum.default_type)).ToList();
+                    List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(ThisNote => (ThisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) && (ThisNote.Note_Type != Note_Type_Enum.default_type)).ToList();
 
                     foreach (Note_Info thisNote in deletes)
                     {

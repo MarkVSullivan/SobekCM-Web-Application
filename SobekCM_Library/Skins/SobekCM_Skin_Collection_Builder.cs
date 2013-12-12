@@ -19,8 +19,7 @@ namespace SobekCM.Library.Skins
         /// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> Most HTML skins are built as they are needed and then cached for a period of time.  The main default skins are
-        /// permanently stored in this global <see cref="SobekCM_Skin_Collection"/> object.<br /><br />
-        /// The default skins currently include: UFDC (english), dLOC (english, french, and spanish) </remarks>
+        /// permanently stored in this global <see cref="SobekCM_Skin_Collection"/> object.</remarks>
         public static bool Populate_Default_Skins(SobekCM_Skin_Collection Skin_List, Custom_Tracer tracer)
 		{
 		    if (tracer != null)

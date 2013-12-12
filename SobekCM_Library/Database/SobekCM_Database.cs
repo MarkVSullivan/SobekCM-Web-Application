@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.Data.SqlTypes;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -8176,7 +8177,7 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Marks an item as been editing online through UFDC </summary>
+		/// <summary> Marks an item as been editing online through the web interface </summary>
 		/// <param name="ItemID"> Primary key for the item having a progress/worklog entry added </param>
 		/// <param name="User">User name who did the edit</param>
 		/// <param name="UserNotes">Any user notes about this edit</param>
@@ -8661,35 +8662,6 @@ namespace SobekCM.Library.Database
 			return returnRecord;
 		}
 
-
-
-
-		///// <summary> Returns the items and groups along with group creation date for inclusion in the OAI data source files </summary>
-		///// <param name="AggregationCode"> Aggregation code for the item aggregation in question (or empty string) </param>
-		///// <remarks> This calls the 'SobekCM_OAI_Item_List' stored procedure <br /><br />
-		///// This is used during creation of the OAI fields at the group level</remarks>
-		//public static DataSet Get_OAI_Item_List(string AggregationCode)
-		//{
-		//    try
-		//    {
-		//        // build the parameter list
-		//        SqlParameter[] paramList = new SqlParameter[2];
-		//        paramList[0] = new SqlParameter("@app_server_name", "lib-ufdcweb3");
-		//        paramList[1] = new SqlParameter("@collection_code", AggregationCode);
-
-		//        // Define a temporary dataset
-		//        DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_OAI_Item_List", paramList);
-
-		//        // Return the first table from the returned dataset
-		//        return tempSet;
-		//    }
-		//    catch (Exception ee)
-		//    {
-		//        lastException = ee;
-		//        return null;
-		//    }
-		//}
-
 		#endregion
 
 		#region Methods used by the Statistics Usage Reader
@@ -8863,6 +8835,125 @@ namespace SobekCM.Library.Database
                 throw new ApplicationException("Error retrieving last open workflow by itemID from the Database" + ee.Message);
             }
 
+        }
+
+        /// <summary> Save a new workflow entry during tracking</summary>
+        /// <param name="itemID"></param>
+        /// <param name="workPerformedBy"></param>
+        /// <param name="relatedEquipment"></param>
+        /// <param name="dateStarted"></param>
+        /// <param name="dateCompleted"></param>
+        /// <param name="EventNum"></param>
+        /// <param name="StartEvent"></param>
+        /// <param name="EndEvent"></param>
+        /// <param name="Start_End_Event"></param>
+        /// <returns></returns>
+        public static int Tracking_Save_New_Workflow(int itemID, string workPerformedBy, string relatedEquipment, SqlDateTime dateStarted, SqlDateTime dateCompleted, int EventNum, int StartEvent, int EndEvent, int Start_End_Event)
+        {
+            int this_workflow_id=-1;  
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("Tracking_Add_New_Workflow", connect) {CommandType = CommandType.StoredProcedure};
+                cmd.Parameters.AddWithValue("@itemid", itemID);
+                cmd.Parameters.AddWithValue("@user", workPerformedBy);
+                cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
+                cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
+                cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
+                cmd.Parameters.AddWithValue("@EventNumber", EventNum);
+                cmd.Parameters.AddWithValue("@StartEventNumber", StartEvent);
+                cmd.Parameters.AddWithValue("@EndEventNumber", EndEvent);
+                cmd.Parameters.AddWithValue("@Start_End_Event", Start_End_Event);
+               
+                //Add the output parameter to get back the workflow id for this entry
+                SqlParameter outputParam = cmd.Parameters.Add("@workflow_entry_id", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+
+                cmd.ExecuteNonQuery();
+                this_workflow_id = Convert.ToInt32(outputParam.Value);
+
+              
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error saving workflow entry to the database. "+ee.Message);
+            }
+                connect.Close();
+            return this_workflow_id;
+        }
+
+
+/// <summary> Update an already saved tracking workflow entry </summary>
+/// <param name="workflowID"></param>
+/// <param name="itemID"></param>
+/// <param name="workPerformedBy"></param>
+/// <param name="dateStarted"></param>
+/// <param name="dateCompleted"></param>
+/// <param name="relatedEquipment"></param>
+/// <param name="eventNumber"></param>
+/// <param name="startEventNumber"></param>
+/// <param name="endEventNum"></param>
+        public static void Tracking_Update_Workflow(int workflowID, int itemID, string workPerformedBy, SqlDateTime dateStarted, SqlDateTime dateCompleted, string relatedEquipment, int eventNumber, int startEventNumber, int endEventNum)
+        {
+             // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("Tracking_Update_Workflow", connect) {CommandType = CommandType.StoredProcedure};
+                cmd.Parameters.AddWithValue("@workflow_entry_id", workflowID);
+                cmd.Parameters.AddWithValue("@itemid", itemID);
+                cmd.Parameters.AddWithValue("@user", workPerformedBy);
+                cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
+                cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
+                cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
+                cmd.Parameters.AddWithValue("@EventNumber", eventNumber);
+                cmd.Parameters.AddWithValue("@StartEventNumber", startEventNumber);
+                cmd.Parameters.AddWithValue("@EndEventNumber", endEventNum);
+
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error updating tracking workflow "+ee.Message);
+            }
+            connect.Close();
+            
+        }
+
+
+        public static void Tracking_Delete_Workflow(int workflow_id)
+        {
+              // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("Tracking_Delete_Workflow", connect) {CommandType = CommandType.StoredProcedure};
+                cmd.Parameters.AddWithValue("@workflow_entry_id", workflow_id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error deleting workflow" +ee.Message);
+            }
+            connect.Close();
         }
 
         #endregion

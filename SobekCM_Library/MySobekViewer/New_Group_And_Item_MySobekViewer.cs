@@ -66,6 +66,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string userInProcessDirectory;
         private readonly List<string> validationErrors;
         private readonly SobekCM_Skin_Object webSkin;
+		private readonly SobekCM_Skin_Collection skins;
 
         #region Constructor
 
@@ -77,6 +78,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
+		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public New_Group_And_Item_MySobekViewer(User_Object User, 
                                                 SobekCM_Navigation_Object Current_Mode, Item_Lookup_Object Item_List,
@@ -84,6 +86,7 @@ namespace SobekCM.Library.MySobekViewer
                                                 Dictionary<string, Wordmark_Icon> Icon_Table,
                                                 SobekCM_Skin_Object HTML_Skin,
                                                 Language_Support_Info Translator,
+												SobekCM_Skin_Collection HTML_Skin_Collection,
                                                 Custom_Tracer Tracer)
             : base(User)
         {
@@ -95,6 +98,7 @@ namespace SobekCM.Library.MySobekViewer
             iconList = Icon_Table;
             webSkin = HTML_Skin;
             base.Translator = Translator;
+			skins = HTML_Skin_Collection;
 
             // If the user cannot submit items, go back
             if (!user.Can_Submit)
@@ -851,9 +855,22 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, null, webSkin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
                     string filename = userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
+
+					// Copy the static HTML file to the web server
+					try
+					{
+						if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+							Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+						if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
+							File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+					}
+					catch (Exception)
+					{
+						// This is not critical
+					}
                 }
                 catch (Exception)
                 {
@@ -864,7 +881,6 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
-                Item_To_Complete.Save_Citation_Only_METS();
 
                 // Add this to the cache
                 itemList.Add_SobekCM_Item(Item_To_Complete);
@@ -874,30 +890,11 @@ namespace SobekCM.Library.MySobekViewer
                 //Database.SobekCM_Database.Add_User_BibID_Link(user.UserID, item.Behaviors.GroupID);
                 //Database.SobekCM_Database.Add_Item_To_User_Folder(user.UserID, "Submitted Items", item.BibID, item.VID, 0, String.Empty, Tracer);
 
-                // Save Bib_Level METS?
-                //SobekCM.Resource_Object.Writers.OAI_Writer oaiWriter = new SobekCM.Resource_Object.Writers.OAI_Writer();
-                //oaiWriter.Save_OAI_File(bibPackage, resource_folder + "\\oai_dc.xml", bibPackage.Processing_Parameters.Collection_Primary.ToLower(), createDate);
 
+                
 
-                List<string> collectionnames = new List<string>();
-                //// Get the collection names
-                //if (item.Processing_Parameters.Collection_Primary.Length > 0)
-                //{
-                //    DataRow[] primCode = Collection_Codes.Select("collectioncode = '" + item.Processing_Parameters.Collection_Primary + "'");
-                //    if (primCode.Length > 0)
-                //    {
-                //        collectionnames.Add(primCode[0]["ShortName"].ToString());
-                //    }
-                //}
-                //foreach (string altCollection in bibPackage.Processing_Parameters.Collections_Alternate)
-                //{
-                //    DataRow[] altCode = Collection_Codes.Select("collectioncode = '" + altCollection + "'");
-                //    if (altCode.Length > 0)
-                //    {
-                //        collectionnames.Add(altCode[0]["ShortName"].ToString());
-                //    }
-                //}
                 // Save the marc xml file
+				List<string> collectionnames = new List<string>();
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
@@ -917,7 +914,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Copy this to all the image servers
                 SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(Tracer));
-                string[] allFiles = Directory.GetFiles(userInProcessDirectory);
+                
 
 
                 string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
@@ -925,24 +922,22 @@ namespace SobekCM.Library.MySobekViewer
                 // Create the folder
                 if (!Directory.Exists(serverNetworkFolder))
                     Directory.CreateDirectory(serverNetworkFolder);
+				if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
+					Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
 
+				// Copy the static HTML page over first
+				if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
+				{
+					File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + ".html", true);
+					File.Delete(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html");
+				}
+
+				// Copy all the files
+				string[] allFiles = Directory.GetFiles(userInProcessDirectory);
                 foreach (string thisFile in allFiles)
                 {
                     string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
                     File.Copy(thisFile, destination_file, true);
-                }
-
-                // Copy the static HTML file as well
-                try
-                {
-                    if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8)))
-                        Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8));
-                    if (File.Exists(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html"))
-                        File.Copy(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8) + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", true);
-                }
-                catch (Exception)
-                {
-                    // An error here is not catastrophic
                 }
 
                 // Add this to the cache
@@ -1324,7 +1319,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         FileInfo thisFileInfo = new FileInfo(thisFile);
 
-                        if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("ufdc_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                        if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                         {
                             // Get information about this files name and extension
                             string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -1560,7 +1555,7 @@ namespace SobekCM.Library.MySobekViewer
             //        {
             //            System.IO.FileInfo thisFileInfo = new System.IO.FileInfo(thisFile);
 
-            //            if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("ufdc_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+            //            if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
             //            {
             //                acceptable_files.Add(thisFile);
             //            }
@@ -1748,10 +1743,6 @@ namespace SobekCM.Library.MySobekViewer
 
         private void add_congratulations_html(TextWriter Output, Custom_Tracer Tracer)
         {
-            // default/images/home_button.gif = myUFDC Home
-            // default/images/new_item.gif = Start a new item
-            // default/images/submitted_items.gif = View all my submitted items
-
 
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_congratulations_html", String.Empty);
 
@@ -1785,7 +1776,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<blockquote>");
 
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">Return to myUFDC Home</a><br/><br />");
+            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">Return to my home</a><br/><br />");
 
             if (!criticalErrorEncountered)
             {

@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
@@ -38,6 +39,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly SobekCM_Item item;
         private readonly Item_Lookup_Object itemList;
         private readonly SobekCM_Skin_Object webSkin;
+	    private readonly SobekCM_Skin_Collection skins;
 
         #region Constructor
 
@@ -50,6 +52,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
+		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public File_Management_MySobekViewer(User_Object User,
                                              SobekCM_Navigation_Object Current_Mode,
@@ -59,6 +62,7 @@ namespace SobekCM.Library.MySobekViewer
                                              Dictionary<string, Wordmark_Icon> Icon_Table,
                                              SobekCM_Skin_Object HTML_Skin,
                                              Language_Support_Info Translator,
+											 SobekCM_Skin_Collection HTML_Skin_Collection,
                                              Custom_Tracer Tracer)
             : base(User)
         {
@@ -74,6 +78,7 @@ namespace SobekCM.Library.MySobekViewer
 	        base.Translator = Translator;
             item = Current_Item;
             digitalResourceDirectory = Current_Item.Source_Directory;
+			skins = HTML_Skin_Collection;
 
             // If the user cannot edit this item, go back
             if (!user.Can_Edit_This_Item(item))
@@ -188,7 +193,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 FileInfo thisFileInfo = new FileInfo(thisFile);
 
-                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("ufdc_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -311,9 +316,24 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, null, webSkin.Skin_Code);
-                    string filename = digitalResourceDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
+	                if (!Directory.Exists(digitalResourceDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
+		                Directory.CreateDirectory(digitalResourceDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+                    string filename = digitalResourceDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
+
+					// Copy the static HTML file to the web server
+					try
+					{
+						if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+							Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+						if (File.Exists(filename))
+							File.Copy(filename, SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+					}
+					catch (Exception)
+					{
+						// This is not critical
+					}
                 }
                 catch (Exception)
                 {
@@ -383,16 +403,83 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("File_Management_MySobekViewer.Write_HTML", "Add instructions");
 
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-            Output.WriteLine("<div class=\"sbkPiu_MainArea\">");
-            Output.WriteLine("<h2>Manage Downloads</h2>");
-            Output.WriteLine("<blockquote>");
-            Output.WriteLine("Upload the download files for your item.  You can also provide labels for each file, once they are uploaded.<br /><br />");
+
+			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+			string final_title = item.Bib_Info.Main_Title.Title;
+			if (item.Bib_Info.Main_Title.NonSort.Length > 0)
+			{
+				if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+					final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+				else
+				{
+					if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+					{
+						final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
+					}
+					else
+					{
+						final_title = item.Bib_Info.Main_Title.NonSort + " " + item.Bib_Info.Main_Title.Title;
+					}
+				}
+			}
+
+			// Add the Title if there is one
+			if (final_title.Length > 0)
+			{
+				// Is this a newspaper?
+				bool newspaper = item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+				// Does a custom setting override the default behavior to add a date?
+				if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+					newspaper = false;
+
+				// Add the date if it should be added
+				if ((newspaper) && ((item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+				{
+					string date = item.Bib_Info.Origin_Info.Date_Created;
+					if (item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+						date = item.Bib_Info.Origin_Info.Date_Issued;
+
+
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+					}
+				}
+				else
+				{
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+					}
+				}
+			}
+			Output.WriteLine("</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+
+			Output.WriteLine("<div id=\"container-inner1000\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
+
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+			Output.WriteLine("  <br />");
+
+            Output.WriteLine("  <h2>Manage Downloads</h2>");
+            Output.WriteLine("  <p>Upload the download files for your item.  You can also provide labels for each file, once they are uploaded.</p>");
             
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">Click here to upload page images instead.</a>");
+            Output.WriteLine("  <p><a href=\"" + currentMode.Redirect_URL() + "\">Click here to upload page images instead.</a></p>");
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
 
-            Output.WriteLine("</blockquote><br />");
+			Output.WriteLine("  <br />");
 
         }
 
@@ -445,7 +532,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 FileInfo thisFileInfo = new FileInfo(thisFile);
 
-                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("ufdc_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                 {
                     // Get information about this files name and extension
                     string extension_upper = thisFileInfo.Extension.ToUpper();
@@ -502,79 +589,6 @@ namespace SobekCM.Library.MySobekViewer
 
             // Any page images?
             int file_counter = 0;
-            //if (SobekCM_Library_Settings.Allow_Page_Image_File_Management)
-            //{
-            //    if (image_files.Count > 0)
-            //    {
-            //        Output.WriteLine("The following page images are already uploaded for this package:");
-            //        Output.WriteLine("<blockquote>");
-            //        Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
-            //        Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
-            //        Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
-            //        Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
-            //        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
-            //        Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
-            //        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
-            //        Output.WriteLine("  </tr>");
-
-            //        // Step through all the page image file groups
-            //        foreach (string fileKey in image_files.Keys)
-            //        {
-            //            // Get this group of files
-            //            List<string> fileGroup = image_files[fileKey];
-
-            //            // Add each individual file
-            //            foreach (string thisFile in fileGroup)
-            //            {
-            //                file_counter++;
-
-            //                // Add the file name literal
-            //                FileInfo fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
-            //                Output.WriteLine("<tr align=\"left\" >");
-            //                Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
-            //                if (fileInfo.Length < 1024)
-            //                    Output.WriteLine("<td>" + fileInfo.Length + "</td>");
-            //                else
-            //                {
-            //                    if (fileInfo.Length < (1024 * 1024))
-            //                        Output.WriteLine("<td>" + (fileInfo.Length / 1024) + " KB</td>");
-            //                    else
-            //                        Output.WriteLine("<td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
-            //                }
-
-            //                Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
-            //                Output.WriteLine("<td></td>");
-            //            //    Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
-            //            }
-
-            //            // Now add the row to include the label
-            //            string input_name = "upload_label" + file_counter.ToString();
-            //            Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
-            //            Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-            //            if (HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] == null)
-            //            {
-            //                if ( image_files_to_labels.ContainsKey( fileKey ))
-            //                {
-            //                    HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey] = image_files_to_labels[fileKey];
-            //                    Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( image_files_to_labels[fileKey] ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-            //                }
-            //                else
-            //                {
-            //                    Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");                            
-            //                }
-            //            }
-            //            else
-            //            {
-            //                string label_from_session = HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + fileKey].ToString();
-            //                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode( label_from_session ) + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-            //            }
-            //            Output.WriteLine("</td></tr>");
-            //            Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
-            //            Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
-            //        }
-            //        Output.WriteLine("</table></blockquote><br />");
-            //    }
-            //}
 
             // Any download files?
             if (download_files.Count > 0)
@@ -656,7 +670,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <td height=\"40px\" width=\"450\">" + COMPLETION_MESSAGE + "</td>");
             Output.WriteLine("    <td height=\"40px\" align=\"right\">");
             Output.WriteLine("      <button title=\"Cancel this and remove the recentely uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
-	        Output.WriteLine(download_files.Count == 0 ? "      <button title=\"You must upload some files before you can submit your changes\" disabled=\"disabled\" class=\"sbkPiu_RoundButtonDisabled\">SUBMIT</button> &nbsp; " : "      <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+	        Output.WriteLine("      <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
 	        Output.WriteLine("    </td>");
             Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("  </tr>");
@@ -673,6 +687,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");
             Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine("</div>");
 
             #endregion
 
@@ -732,6 +748,21 @@ namespace SobekCM.Library.MySobekViewer
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
             MainPlaceHolder.Controls.Add(literal1);
         }
+
+		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get
+			{
+				return new List<HtmlSubwriter_Behaviors_Enum>
+				{
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				};
+			}
+		}
     }
 }
   

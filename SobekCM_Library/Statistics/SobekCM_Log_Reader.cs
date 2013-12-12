@@ -105,7 +105,7 @@ namespace SobekCM.Library.Statistics
             // Now, step through each hit in the list
             foreach (SobekCM_Hit hit in hits.Values)
             {
-                if (hit.UFDC_URL.ToUpper().IndexOf(".ASPX") < 0)
+				if (hit.SobekCM_URL.ToUpper().IndexOf(".ASPX") < 0)
                 {
                     // Always increment the hits
                     returnValue.Increment_Hits();
@@ -114,16 +114,16 @@ namespace SobekCM.Library.Statistics
                     returnValue.Add_IP_Hit(hit.IP, hit.UserAgent);
 
                     // Shouldn't start with '/'
-                    if (hit.UFDC_URL[0] == '/')
+					if (hit.SobekCM_URL[0] == '/')
                     {
-                        hit.UFDC_URL = hit.UFDC_URL.Substring(1);
+						hit.SobekCM_URL = hit.SobekCM_URL.Substring(1);
                     }
-                    hit.UFDC_URL = hit.UFDC_URL.ToLower();
-                    if (hit.UFDC_URL.IndexOf("design/webcontent/") == 0)
-                        hit.UFDC_URL = hit.UFDC_URL.Substring(18);
+					hit.SobekCM_URL = hit.SobekCM_URL.ToLower();
+					if (hit.SobekCM_URL.IndexOf("design/webcontent/") == 0)
+						hit.SobekCM_URL = hit.SobekCM_URL.Substring(18);
 
                     // Add this as a webcontent hit
-                    returnValue.Add_WebContent_Hit(hit.UFDC_URL);
+					returnValue.Add_WebContent_Hit(hit.SobekCM_URL);
                 }
                 else
                 {
@@ -140,7 +140,7 @@ namespace SobekCM.Library.Statistics
                             queryStringCollection[query_name] = query_value;
 
                             if (query_name.ToLower() == "portal")
-                                hit.UFDC_URL = query_value;
+								hit.SobekCM_URL = query_value;
                         }
                     }
 
@@ -148,7 +148,7 @@ namespace SobekCM.Library.Statistics
 
                     try
                     {
-                        SobekCM_Navigation_Object currentMode = new SobekCM_Navigation_Object(queryStringCollection, hit.UFDC_URL,
+						SobekCM_Navigation_Object currentMode = new SobekCM_Navigation_Object(queryStringCollection, hit.SobekCM_URL,
                                                                                               new string[] {"en"}, Codes, Collection_Aliases,
                                                                                               ref Item_Lookup_Object, URL_Portals, null);
                         if (currentMode != null)
@@ -199,13 +199,13 @@ namespace SobekCM.Library.Statistics
                                 {
                                     if (currentMode.ItemID_DEPRECATED <= 0)
                                     {
-                                        DataRow[] ufdc2_bib_select =
+                                        DataRow[] sobek2_bib_select =
                                             itemList.Select("bibid = '" + currentMode.BibID + "' and vid='" +
                                                             currentMode.VID + "'");
-                                        if (ufdc2_bib_select.Length > 0)
+										if (sobek2_bib_select.Length > 0)
                                         {
                                             currentMode.ItemID_DEPRECATED =
-                                                Convert.ToInt32(ufdc2_bib_select[0]["itemid"]);
+												Convert.ToInt32(sobek2_bib_select[0]["itemid"]);
                                         }
                                     }
 
@@ -283,8 +283,6 @@ namespace SobekCM.Library.Statistics
                     {
                         bool error = true;
                     }
-
-                    //System.Windows.Forms.MessageBox.Show("'" + hit.Time.ToString() + "' '" + hit.IP + "' '" + hit.UFDC_URL + "'");
                 }
             }
 
@@ -304,9 +302,9 @@ namespace SobekCM.Library.Statistics
             if (stats_line_upper.IndexOf("UNKNOWN UNKNOWN") > 0)
                 return;
 
-            // If this was not just /ufdc/ and did not include the .ASPX, then return (i.e., static images,etc..)
-            if ((stats_line_upper.IndexOf("/UFDC.ASPX") < 0) && (stats_line_upper.IndexOf("/SOBEKCM_DATA.ASPX") < 0) &&
-                (stats_line_upper.IndexOf("/UFDC_DATA.ASPX") < 0) && (stats_line_upper.IndexOf("/SOBEKCM_OAI.ASPX") < 0) &&
+            // If this was not just .. and did not include the .ASPX, then return (i.e., static images,etc..)
+            if ((stats_line_upper.IndexOf("/SOBEKCM_DATA.ASPX") < 0) && 
+                (stats_line_upper.IndexOf("/SOBEKCM_DATA.ASPX") < 0) && (stats_line_upper.IndexOf("/SOBEKCM_OAI.ASPX") < 0) &&
                 (stats_line_upper.IndexOf("/SOBEKCM.ASPX") < 0) && (stats_line_upper.IndexOf(".MSI") < 0) &&
                 (stats_line_upper.IndexOf(".ZIP") < 0))
                 return;
