@@ -181,17 +181,9 @@ namespace SobekCM.Library.Items
 			try
 			{
 				// Get the response object for this METS file
-				//string mets_file = METS_Location.Replace(".53/",".47/") + "/ufdc_mets2.xml";
 				string mets_file = METS_Location.Replace("\\", "/") + "/citation_mets.xml";
 
 				SobekCM_Item thisPackage = Build_Item_From_METS(mets_file, "citation_mets.xml", Tracer);
-
-				// Check if that failed
-				if (thisPackage == null)
-				{
-					const string SECOND_METS_FILE = "ufdc_mets.xml";
-					thisPackage = Build_Item_From_METS(METS_Location + "/" + SECOND_METS_FILE, SECOND_METS_FILE, Tracer);
-				}
 
 				if (thisPackage == null)
 				{
@@ -257,14 +249,14 @@ namespace SobekCM.Library.Items
 				if (mets_location.IndexOf(".mets") > 0)
 					mets_file = mets_location;
 
-				// Try to read the UFDC service METS
+				// Try to read the service METS
 				SobekCM_Item thisPackage = Build_Item_From_METS(mets_file, BibID + "_" + VID + ".mets.xml", Tracer);
 
 				if (thisPackage == null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the UFDC service METS file", Custom_Trace_Type_Enum.Error);
+						Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the SobekCM service METS file", Custom_Trace_Type_Enum.Error);
 					}
 
 					return null;
@@ -315,7 +307,7 @@ namespace SobekCM.Library.Items
 					return null;
 
 
-				// Try to read the UFDC service METS
+				// Try to read the service METS
 				SobekCM_Item thisPackage = Build_Item_From_METS(METS_Location, String.Empty, Tracer);
 
 				if (thisPackage == null)

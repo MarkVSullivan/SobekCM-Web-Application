@@ -7,7 +7,7 @@ var page = 1;
 function setCurrentTab(thisPage) {
    
     page = thisPage;
-    alert(page);
+    //alert(page);
 }
 
 
@@ -35,7 +35,7 @@ function rbEntryTypeChanged(value) {
 //Tab2 - Without Duration tracking
 //Hide/Unhide the item info fields based on the entry type selected - Barcode/Manual
 function rbEntryType2Changed(value) {
-    alert(' rbEntryType2Changed called');
+   alert(' rbEntryType2Changed called');
     if (value == 0) {
 
         document.getElementById("tblrow2_Barcode").style.display = 'table-row';
@@ -55,10 +55,18 @@ function rbEntryType2Changed(value) {
 
 //Save function: set the hidden field(s) accordingly
 function BarcodeStringTextbox_Changed(barcode_string) {
-
+    //alert('in this function');
     document.getElementById('Track_Item_behaviors_request').value ="decode_barcode";
     document.getElementById('Track_Item_hidden_value').value = barcode_string;
-    document.itemNavForm.submit();
+  //  document.itemNavForm.submit();
+    return false;
+}
+
+//function for the barcode scanned textfield on the second tab
+function BarcodeStringTextbox2_Changed(barcode_string) {
+    document.getElementById('Track_Item_behaviors_request').value = "decode_barcode";
+    document.getElementById('Track_Item_hidden_value').value = barcode_string;
+    //  document.itemNavForm.submit();
     return false;
 }
 
@@ -73,11 +81,33 @@ function Add_new_entry() {
     document.itemNavForm.submit();
     return false;
 }
+
+//Function called when new entry is entered manually, through the second tab
+function Add_new_entry2() {
+    alert('in function Add_new_entry2');
+    document.getElementById('Track_Item_behaviors_request').value = "read_manual_entry";
+    document.getElementById('hidden_BibID').value = document.getElementById('txtBibID2').value;
+    document.getElementById('hidden_VID').value = document.getElementById('txtVID2').value;
+    document.getElementById('hidden_event_num').value = document.getElementById('ddlManualEvent2').value;
+
+    document.itemNavForm.submit();
+    return false;
+}
+
 //Function called when new entry is added through a scanned barcode
 function Add_new_entry_barcode()
 {
     document.getElementById('Track_Item_behaviors_request').value = "decode_barcode";
     document.getElementById('Track_Item_hidden_value').value = document.getElementById('txtScannedString').value;
+    document.itemNavForm.submit();
+    return false;
+}
+
+//Function called when new entry is added through a scanned barcode on the second tab
+function Add_new_entry_barcode2() {
+    alert('in function Add_new_entry_barcode2');
+    document.getElementById('Track_Item_behaviors_request').value = "decode_barcode";
+    document.getElementById('Track_Item_hidden_value').value = document.getElementById('txtScannedString2').value;
     document.itemNavForm.submit();
     return false;
 }

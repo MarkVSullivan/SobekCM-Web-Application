@@ -1367,26 +1367,27 @@ function popup_keypress_focus(windowname, linkname, focusname, windowheight, win
 function popup_keypress(windowname, linkname, windowheight, windowwidth, isMozilla) {
 	if (isMozilla == 'False') {
 		popup(windowname);
-		//blanket_size(windowname, linkname, windowheight );
-		//window_pos(windowname, windowwidth);
-		//toggle('blanket_outer');
-		//toggle(windowname);	
 	}
 	else {
-		theKeyPressed = evt.charCode || evt.keyCode;
+		var theKeyPressed = evt.charCode || evt.keyCode;
 		if (theKeyPressed != 9) {
 			popup(windowname);
-			//blanket_size(windowname, linkname, windowheight );
-			//window_pos(windowname, windowwidth);
-			//toggle('blanket_outer');
-			//toggle(windowname);		
 		}
 	}
 
-	// Create the draggable object to allow this window to be dragged around
-	//document.getElementById(windowname).draggable();
-	//$('#' + windowname).draggable();
-	//mydrag = new Draggable( windowname, {starteffect:null});
+	return false;
+}
+
+function popup_keypress(windowname, linkname, isMozilla) {
+	if (isMozilla == 'False') {
+		popup(windowname);
+	}
+	else {
+		var theKeyPressed = evt.charCode || evt.keyCode;
+		if (theKeyPressed != 9) {
+			popup(windowname);
+		}
+	}
 
 	return false;
 }
@@ -1395,21 +1396,18 @@ function popup_focus(windowname, linkname, focusname, windowheight, windowwidth)
 
 	popup(windowname);
 
-	//blanket_size(windowname, linkname, windowheight );
-	//window_pos(windowname, windowwidth);
-	//toggle('blanket_outer');
-	//toggle(windowname);
-
-	// Create the draggable object to allow this window to be dragged around
-	//document.getElementById(windowname).draggable();
-	//$('#' + windowname).draggable();
-	//mydrag = new Draggable( windowname, {starteffect:null});
-
 	var focusfield = document.getElementById(focusname);
 	focusfield.focus();
 
+	return false;
+}
 
+function popup_focus(windowname, focusname ) {
 
+	popup(windowname);
+
+	var focusfield = document.getElementById(focusname);
+	focusfield.focus();
 
 	return false;
 }
@@ -1430,27 +1428,29 @@ function popup(windowname, linkname, windowheight, windowwidth) {
 }
 
 function popup(windowname) {
+	
+	var popUpDiv = jQuery('#' + windowname);
+	
 	// Get the size of the popup
-	var windowwidth = $('#' + windowname).width();
 	var windowheight = $('#' + windowname).height();
 
 	blanket_size(windowname, windowheight);
+	
 
-	var total_width = $(window).width();
-	var total_height = $(window).height();
+	// Set the correct top
+	var popUpHeight = popUpDiv.height();
+	var windowheight2 = jQuery(window).height();
+	popUpDiv.css({ top: ((windowheight2 - popUpHeight) / 2) + 'px' });
 
-	var new_x = (total_width - windowwidth) / 2;
-	var new_y = (total_height - windowheight) / 2;
+	// Set the correct left
+	var popUpWidth = popUpDiv.width();
+	var windowwidth = jQuery(window).width();
+	popUpDiv.css({ left: ((windowwidth - popUpWidth) / 2) + 'px' });
 
-	$('#' + windowname).css({
-		position: "absolute",
-		top: new_y,
-		left: new_x
-	});
 
 	toggle('blanket_outer');
 	toggle(windowname);
-
+	
 	// Create the draggable object to allow this window to be dragged around
 	//document.getElementById(windowname).draggable();
 	$('#' + windowname).draggable();

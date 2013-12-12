@@ -52,7 +52,7 @@ namespace SobekCM.Library
 	    /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
 	    /// <param name="Static_Data_Location"> Network location for the data directory </param>
 	    /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-	    /// <param name="HTML_Skin_Collection"> HTML Web skin which controls the overall appearance of this digital library </param>
+	    /// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
 	    /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
 	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
 	    /// <param name="Default_Skin"> Default skin code </param>
@@ -834,7 +834,7 @@ namespace SobekCM.Library
                 currentMode.BibID = BIBID;
                 currentMode.VID = VID;
                 currentMode.ViewerCode = "citation";
-                currentMode.Skin = "UFDC";
+                currentMode.Skin = "";
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
                 currentMode.Language = Web_Language_Enum.English;
                 currentMode.Internal_User = false;
@@ -954,7 +954,7 @@ namespace SobekCM.Library
 			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
 			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
-			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 
 			writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 			if (skinObject.CSS_Style.Length > 0)

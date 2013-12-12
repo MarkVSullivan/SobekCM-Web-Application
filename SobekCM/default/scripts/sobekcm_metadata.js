@@ -214,9 +214,7 @@ function add_new_element_adv( elementName, className )
     newInput.name = id + "new" + new_element_index;
     newInput.type = "text";    
     newInput.id = id + "new" + new_element_index;   
-    newInput.className= className + "_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, className + '_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, className + '_input') };
+    newInput.className= className + "_input sbk_Focusable";
     thisDiv.appendChild(newInput);
     new_element_index++;  
     
@@ -240,9 +238,7 @@ function add_new_element( elementName )
     newInput.name = id + "new" + new_element_index;
     newInput.type = "text";    
     newInput.id = id + "new" + new_element_index;   
-    newInput.className= elementName + "_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, elementName + '_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, elementName + '_input') };
+    newInput.className= elementName + "_input sbk_Focusable";
     thisDiv.appendChild(newInput);
     new_element_index++;  
     
@@ -285,9 +281,7 @@ function add_new_multi_element( elementName, original_count, max_boxes, boxes_pe
     newInput.name = id + "new" + new_count;
     newInput.type = "text";
     newInput.id = id + "new" + new_count;   
-    newInput.className= elementName + "_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, elementName + '_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, elementName + '_input') };
+    newInput.className= elementName + "_input sbk_Focusable";
     thisDiv.appendChild(newInput);
 
     // Should we hide the repeat button now as well?
@@ -387,9 +381,7 @@ function add_two_text_box_element( elementName, firstLabel, secondLabel )
     newInput1.name = id + "_firstnew" + new_element_index;
     newInput1.type = "text";    
     newInput1.id = id + "_firstnew" + new_element_index;   
-    newInput1.className = elementName + "_first_input";
-    newInput1.onfocus = function() { textbox_enter(newInput1.id, elementName + '_first_input_focused') };
-    newInput1.onblur = function() { textbox_leave(newInput1.id, elementName + '_first_input') };
+    newInput1.className = elementName + "_first_input sbk_Focusable";
     thisDiv.appendChild(newInput1);
     
     // Add the second sublabel, if necessary
@@ -407,9 +399,7 @@ function add_two_text_box_element( elementName, firstLabel, secondLabel )
     newInput2.name = id + "_secondnew" + new_element_index;
     newInput2.type = "text";    
     newInput2.id = id + "_secondnew" + new_element_index;   
-    newInput2.className= elementName + "_second_input";
-    newInput2.onfocus = function() { textbox_enter(newInput2.id, elementName + '_second_input_focused') };
-    newInput2.onblur = function() { textbox_leave(newInput2.id, elementName + '_second_input') };
+    newInput2.className = elementName + "_second_input sbk_Focusable";
     thisDiv.appendChild(newInput2);
     
     new_element_index++;  
@@ -456,9 +446,7 @@ function container_add_new_item()
     newInput.name = "container_textnew" + new_element_index;
     newInput.type = "text";    
     newInput.id = "container_textnew" + new_element_index;   
-    newInput.className= "container_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, 'container_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, 'container_input') };
+    newInput.className= "container_input sbk_Focusable";
     thisDiv.appendChild(newInput);
     
      new_element_index++;    
@@ -483,9 +471,7 @@ function add_text_box_select_element( elementName, second_label )
     newInput.name = id + "_textnew" + other_title_new_index;
     newInput.type = "text";    
     newInput.id = id + "_textnew" + other_title_new_index;   
-    newInput.className= elementName + "_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, elementName + '_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, elementName + '_input') };
+    newInput.className= elementName + "_input sbk_Focusable";
     thisDiv.appendChild(newInput);
 
     // Add a new span for the 'second_label' if there is one
@@ -561,9 +547,7 @@ function download_add_new_item()
     newInput.name = id + "_textnew" + new_element_index;
     newInput.type = "text";    
     newInput.id = id + "_textnew" + new_element_index;   
-    newInput.className= elementName + "_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, elementName + '_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, elementName + '_input') };
+    newInput.className= elementName + "_input sbk_Focusable";
     thisDiv.appendChild(newInput);
     
     
@@ -595,9 +579,7 @@ function add_publisher_element( elementName )
     newInput1.name = id + "_namenew" + new_element_index;
     newInput1.type = "text";    
     newInput1.id = id + "_namenew" + new_element_index;   
-    newInput1.className = elementName + "_name_input";
-    newInput1.onfocus = function() { textbox_enter(newInput1.id, elementName + '_name_input_focused') };
-    newInput1.onblur = function() { textbox_leave(newInput1.id, elementName + '_name_input') };
+    newInput1.className = elementName + "_name_input sbk_Focusable";
     thisDiv.appendChild(newInput1);
     
     // Add a <br> line here
@@ -615,9 +597,7 @@ function add_publisher_element( elementName )
     newInput2.name = id + "_firstlocnew" + new_element_index;
     newInput2.type = "text";    
     newInput2.id = id + "_firstlocnew" + new_element_index;   
-    newInput2.className= elementName + "_location_input";
-    newInput2.onfocus = function() { textbox_enter(newInput2.id, elementName + '_location_input_focused') };
-    newInput2.onblur = function() { textbox_leave(newInput2.id, elementName + '_location_input') };
+    newInput2.className = elementName + "_location_input sbk_Focusable";
     thisDiv.appendChild(newInput2);
     
     // Add the second new location text box
@@ -625,9 +605,7 @@ function add_publisher_element( elementName )
     newInput3.name = id + "_secondlocnew" + new_element_index;
     newInput3.type = "text";    
     newInput3.id = id + "_secondlocnew" + new_element_index;   
-    newInput3.className= elementName + "_location_input";
-    newInput3.onfocus = function() { textbox_enter(newInput3.id, elementName + '_location_input_focused') };
-    newInput3.onblur = function() { textbox_leave(newInput3.id, elementName + '_location_input') };
+    newInput3.className = elementName + "_location_input sbk_Focusable";
     thisDiv.appendChild(newInput3);
     
     // Add the third new location text box
@@ -635,9 +613,7 @@ function add_publisher_element( elementName )
     newInput4.name = id + "_thirdlocnew" + new_element_index;
     newInput4.type = "text";    
     newInput4.id = id + "_thirdlocnew" + new_element_index;   
-    newInput4.className= elementName + "_location_input";
-    newInput4.onfocus = function() { textbox_enter(newInput4.id, elementName + '_location_input_focused') };
-    newInput4.onblur = function() { textbox_leave(newInput4.id, elementName + '_location_input') };
+    newInput4.className = elementName + "_location_input sbk_Focusable";
     thisDiv.appendChild(newInput4);
     
     new_element_index++;  
@@ -660,11 +636,9 @@ function abstract_add_new_item( cols )
     var newInput = document.createElement('textarea');    
     newInput.name = "abstractnew" + abstract_new_index;
     newInput.id = "abstractnew" + abstract_new_index;   
-    newInput.className="abstract_input";
+    newInput.className="abstract_input sbk_Focusable";
     newInput.setAttribute("rows", "3");
     newInput.setAttribute("cols", cols );
-    newInput.onfocus = function() { textbox_enter(newInput.id, 'abstract_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, 'abstract_input') };
     abstractDiv.appendChild(newInput);
     abstract_new_index++;   
     
@@ -686,11 +660,9 @@ function note_add_new_item( cols )
     var newInput = document.createElement('textarea');    
     newInput.name = "notenew" + note_new_index;
     newInput.id = "notenew" + note_new_index;   
-    newInput.className="note_input";
+    newInput.className="note_input sbk_Focusable";
     newInput.setAttribute("rows", "3");
     newInput.setAttribute("cols", cols );
-    newInput.onfocus = function() { textbox_enter(newInput.id, 'note_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, 'note_input') };
     noteDiv.appendChild(newInput);
     note_new_index++;   
     
@@ -720,9 +692,7 @@ function add_temporal_element( )
     newInput1.name = id + "_startnew" + new_element_index;
     newInput1.type = "text";    
     newInput1.id = id + "_startnew" + new_element_index;   
-    newInput1.className = elementName + "_year_input";
-    newInput1.onfocus = function() { textbox_enter(newInput1.id, elementName + '_year_input_focused') };
-    newInput1.onblur = function() { textbox_leave(newInput1.id, elementName + '_year_input') };
+    newInput1.className = elementName + "_year_input sbk_Focusable";
     temporal_div.appendChild(newInput1);
     
     // Add the end year label
@@ -736,9 +706,7 @@ function add_temporal_element( )
     newInput2.name = id + "_endnew" + new_element_index;
     newInput2.type = "text";    
     newInput2.id = id + "_endnew" + new_element_index;   
-    newInput2.className = elementName + "_year_input";
-    newInput2.onfocus = function() { textbox_enter(newInput2.id, elementName + '_year_input_focused') };
-    newInput2.onblur = function() { textbox_leave(newInput2.id, elementName + '_year_input') };
+    newInput2.className = elementName + "_year_input sbk_Focusable";
     temporal_div.appendChild(newInput2);
     
     // Add the period label
@@ -752,9 +720,7 @@ function add_temporal_element( )
     newInput3.name = id + "_periodnew" + new_element_index;
     newInput3.type = "text";    
     newInput3.id = id + "_endperiod" + new_element_index;   
-    newInput3.className = elementName + "_period_input";
-    newInput3.onfocus = function() { textbox_enter(newInput3.id, elementName + '_period_input_focused') };
-    newInput3.onblur = function() { textbox_leave(newInput3.id, elementName + '_period_input') };
+    newInput3.className = elementName + "_period_input sbk_Focusable";
     temporal_div.appendChild(newInput3);    
         
     new_element_index++;     
@@ -798,7 +764,7 @@ function ir_type_change( )
             new_label_value = "Larger Body of Work:";
             break;
     }
-    larger_label_div.innerHTML = "<b>" + new_label_value + "</b>"; 
+    larger_label_div.innerHTML = new_label_value; 
     
     // Select the initial 'Select Material Type' test
     var select_to_remove = -1;
@@ -833,9 +799,7 @@ function ir_type_change( )
             newInput.name = "irtype_otherinput";
             newInput.type = "text";    
             newInput.id = "irtype_otherinput";  
-            newInput.className = "irtype_other_input";
-            newInput.onfocus = function() { textbox_enter(newInput.id, 'irtype_other_input_focused') };
-            newInput.onblur = function() { textbox_leave(newInput.id, 'irtype_other_input') };
+            newInput.className = "irtype_other_input sbk_Focusable";
             ir_div.appendChild(newInput);  
         }  
     }
@@ -893,9 +857,7 @@ function complexnote_type_change( note_index )
                 newInput.name = "complexnote_input" + note_index;
                 newInput.type = "text";    
                 newInput.id = "complexnote_input" + note_index;
-                newInput.className = "complexnote_input";
-                newInput.onfocus = function() { textbox_enter(newInput.id, 'complexnote_input_focused') };
-                newInput.onblur = function() { textbox_leave(newInput.id, 'complexnote_input') };
+                newInput.className = "complexnote_input sbk_Focusable";
                 top_div.appendChild(newInput);  
             } 
             else
@@ -975,11 +937,9 @@ function add_complex_note( rows, cols )
     var newInput = document.createElement('textarea');    
     newInput.name = "complexnote_textarea" + append_new_note_id;
     newInput.id = "complexnote_textarea" + append_new_note_id;   
-    newInput.className="complex_note_input";
+    newInput.className="complex_note_input sbk_Focusable";
     newInput.setAttribute("rows", rows );
     newInput.setAttribute("cols", cols );
-    newInput.onfocus = function() { textbox_enter(newInput.id, 'complex_note_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, 'complex_note_input') };
     complex_div.appendChild(newInput);    
 
     // Increment the counter
@@ -1044,20 +1004,16 @@ function add_complex_abstract( rows, cols )
     langInput.name = "complexabstract_language" + append_new_note_id;
     langInput.type = "text";    
     langInput.id = "complexabstract_language" + append_new_note_id;
-    langInput.className = "complex_abstract_language";
-    langInput.onfocus = function() { textbox_enter(langInput.id, 'complex_abstract_language_focused') };
-    langInput.onblur = function() { textbox_leave(langInput.id, 'complex_abstract_language') };
+    langInput.className = "complex_abstract_language sbk_Focusable";
     top_div.appendChild(langInput);  
     
     // Add a new text box
     var newInput = document.createElement('textarea');    
     newInput.name = "complexabstract_textarea" + append_new_note_id;
     newInput.id = "complexabstract_textarea" + append_new_note_id;   
-    newInput.className="complex_abstract_input";
+    newInput.className="complex_abstract_input sbk_Focusable";
     newInput.setAttribute("rows", rows );
     newInput.setAttribute("cols", cols );
-    newInput.onfocus = function() { textbox_enter(newInput.id, 'complex_abstract_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, 'complex_abstract_input') };
     complex_div.appendChild(newInput);    
 
     // Increment the counter
@@ -1151,9 +1107,7 @@ function add_viewer_element( )
     newInput.type = "text";    
     newInput.name = "viewer_label" + append_new_id;
     newInput.id = "viewer_label" + append_new_id;   
-    newInput.className="viewer_label_input";
-    newInput.onfocus = function() { textbox_enter(newInput.id, 'viewer_label_input_focused') };
-    newInput.onblur = function() { textbox_leave(newInput.id, 'viewer_label_input') };
+    newInput.className="viewer_label_input sbk_Focusable";
     detailsSpan.appendChild(newInput);    
     
     // Increment the counter
@@ -1806,7 +1760,7 @@ function name_type_changed( nameid )
             personal_input_2.style.display = 'inline';
             personal_input_3.style.display = 'inline';
             personal_input_4.style.display = 'inline';
-            form_obj.className = 'name_popup_div_personal';
+            form_obj.className = 'name_popup_div_personal sbkMetadata_PopupDiv';
         }
         else
         {
@@ -1819,7 +1773,7 @@ function name_type_changed( nameid )
             personal_input_2.style.display = 'none';
             personal_input_3.style.display = 'none';
             personal_input_4.style.display = 'none';
-            form_obj.className = 'name_popup_div';
+            form_obj.className = 'name_popup_div sbkMetadata_PopupDiv';
         }
     }
 }

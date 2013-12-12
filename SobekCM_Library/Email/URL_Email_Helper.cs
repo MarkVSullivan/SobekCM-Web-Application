@@ -16,7 +16,7 @@ namespace SobekCM.Library.Email
         /// <param name="CC_List"> CC list for this email </param>
         /// <param name="Comments"> Sender's comments to be included in the email </param>
         /// <param name="User_Name"> Name of the user that sent this email </param>
-        /// <param name="SobekCM_Instance_Name"> Name of the current SobekCM instance (i.e., UFDC, dLOC, etc..)</param>
+        /// <param name="SobekCM_Instance_Name"> Name of the current SobekCM instance (i.e., UDC, dLOC, etc..)</param>
         /// <param name="URL"> URL being shared </param>
         /// <param name="URL_Title"> Title associated with the URL </param>
         /// <param name="HTML_Format"> Tells if this should be sent as HMTL, otherwise it will be plain text </param>

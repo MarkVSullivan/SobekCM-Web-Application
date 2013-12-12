@@ -414,7 +414,7 @@ namespace SobekCM.Library.HTML
 				}
 			}
 
-            // In the home mode, add the open search XML file to allow users to add SobekCM/UFDC as a default search in browsers
+            // In the home mode, add the open search XML file to allow users to add SobekCM as a default search in browsers
             if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
             {
                 Output.WriteLine("  <link rel=\"search\" href=\"" + currentMode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + currentMode.SobekCM_Instance_Abbreviation + " Search\" />");

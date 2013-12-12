@@ -37,8 +37,8 @@ namespace SobekCM.Library.Citation.Elements
 		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, Users.User_Object Current_User, Configuration.Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
 		{
 			Output.WriteLine("  <!-- Literal Element -->");
-			Output.WriteLine("  <tr align=\"left\">");
-			Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+			Output.WriteLine("  <tr>");
+			Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
 			Output.WriteLine("    <td colspan=\"2\">" + html_text + "</td>");
 			Output.WriteLine("  </tr>");
 		}

@@ -26,6 +26,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Display_SubType = "simple";
             Type = Element_Type.Creator;
+	        help_page = "creatorsimple";
         }
 
         /// <summary> Sets the flag that the contributor is included in this element, so 

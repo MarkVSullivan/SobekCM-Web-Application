@@ -49,7 +49,7 @@ namespace SobekCM.Library.Statistics
 
         #region Constructor
 
-        /// <summary> Constructor for a new instance of the UFDC Statistics dataset </summary>
+        /// <summary> Constructor for a new instance of the SobekCM Statistics dataset </summary>
         public SobekCM_Stats_DataSet()
         {
             // Create the dictionaries for quick lookups;
@@ -70,10 +70,10 @@ namespace SobekCM.Library.Statistics
             ip_to_agent = new Dictionary<string, string>();
 
             // Create the dataset
-            stats = new DataSet {DataSetName = "UFDC_Stats"};
+            stats = new DataSet {DataSetName = "SobekCM_Stats"};
 
             // Create the table to hold the collection hits
-            sobekcm_stats = new DataTable("UFDC_Hits");
+            sobekcm_stats = new DataTable("SobekCM_Hits");
             sobekcm_stats.Columns.Add("sessions", typeof(Int32));
             sobekcm_stats.Columns.Add("hits", typeof(Int32));
             sobekcm_stats.Columns.Add("xml", typeof(Int32));
@@ -181,7 +181,7 @@ namespace SobekCM.Library.Statistics
 
         #region Basic properties
 
-        internal DataTable UFDC_Stats_Table
+        internal DataTable SobekCM_Stats_Table
         {
             get { return sobekcm_stats; }
         }
@@ -608,13 +608,6 @@ namespace SobekCM.Library.Statistics
             if (increment_session > 0)
             {
                 newRow["sessions"] = Convert.ToInt32(newRow["sessions"]) + 1;
-            }
-
-            // Analyze this hit
-            if (ViewerCode.IndexOf("UFDC2") == 0)
-            {
-                newRow["static_hits"] = Convert.ToInt32(newRow["static_hits"]) + 1;
-                return;
             }
 
             if (Text_Search.Length > 0)
@@ -1048,7 +1041,7 @@ namespace SobekCM.Library.Statistics
         public void Merge(SobekCM_Stats_DataSet Stats_DataSet)
         {
             // Add overall stats
-            foreach (DataRow thisRow in Stats_DataSet.UFDC_Stats_Table.Rows)
+            foreach (DataRow thisRow in Stats_DataSet.SobekCM_Stats_Table.Rows)
             {
                 sobekcm_stats.Rows[0][0] = Convert.ToInt32(sobekcm_stats.Rows[0][0]) + Convert.ToInt32(thisRow[0]);
                 sobekcm_stats.Rows[0][1] = Convert.ToInt32(sobekcm_stats.Rows[0][1]) + Convert.ToInt32(thisRow[1]);
