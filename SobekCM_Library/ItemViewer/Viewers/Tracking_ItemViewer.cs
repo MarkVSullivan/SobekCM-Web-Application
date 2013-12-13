@@ -573,7 +573,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add each metadata file
                 List<string> files_handled = new List<string>();
-                foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "UFDC_METS.XML") || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == CurrentItem.BibID.ToUpper() + "_" + CurrentItem.VID + ".HTML")))
+                foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == CurrentItem.BibID.ToUpper() + "_" + CurrentItem.VID + ".HTML")))
                 {
                     files_handled.Add(thisFile);
                     Add_File_HTML(sortedFiles[thisFile], builder, url, true);
@@ -730,7 +730,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             type = "MARC XML File";
                             break;
 
-                        case "UFDC_METS.XML":
                         case "SobekCM_METS.XML":
                             type = "SobekCM Service METS File";
                             break;

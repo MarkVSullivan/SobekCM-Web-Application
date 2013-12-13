@@ -28,6 +28,7 @@ namespace SobekCM.Library.Citation.Elements
             Display_SubType = "complex";
             Title = "Temporal Coverage";
             html_element_name = "complex_temporal";
+	        help_page = "temporal";
         }
 
         #region iElement Members
@@ -72,15 +73,15 @@ namespace SobekCM.Library.Citation.Elements
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
@@ -92,11 +93,11 @@ namespace SobekCM.Library.Citation.Elements
             {
                 const int  i = 1;
                 Output.Write("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Start Year", CurrentLanguage) + ":</span>");
-                Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_start" + i + "', '" + html_element_name + "_year_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_start" + i + "', '" + html_element_name + "_year_input')\" />");
+                Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("End Year", CurrentLanguage) + ":</span>");
-                Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_end" + i + "', '" + html_element_name + "_year_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_end" + i + "', '" + html_element_name + "_year_input')\" />");
+				Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("Period", CurrentLanguage) + ":</span>");
-                Output.WriteLine("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('" + id_name + "_period" + i + "', '" + html_element_name + "_period_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_period" + i + "', '" + html_element_name + "_period_input')\" /></div>");
+				Output.WriteLine("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"\" /></div>");
                 Output.WriteLine("            </div>");
             }
             else
@@ -105,23 +106,23 @@ namespace SobekCM.Library.Citation.Elements
                 for (int i = 1; i <= temporalSubjects.Count; i++)
                 {
                     Output.Write("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Start Year", CurrentLanguage) + ":</span>");
-                    Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input\" type=\"text\" value=\"" + temporalSubjects[i - 1].Start_Year.ToString().Replace("-1", "") + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_start" + i + "', '" + html_element_name + "_year_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_start" + i + "', '" + html_element_name + "_year_input')\" />");
+					Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].Start_Year.ToString().Replace("-1", "") + "\" />");
                     Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("End Year", CurrentLanguage) + ":</span>");
-                    Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input\" type=\"text\" value=\"" + temporalSubjects[i - 1].End_Year.ToString().Replace("-1", "") + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_end" + i + "', '" + html_element_name + "_year_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_end" + i + "', '" + html_element_name + "_year_input')\" />");
+					Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].End_Year.ToString().Replace("-1", "") + "\" />");
                     Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("Period", CurrentLanguage) + ":</span>");
-                    Output.Write("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(temporalSubjects[i - 1].TimePeriod) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "_period" + i + "', '" + html_element_name + "_period_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "_period" + i + "', '" + html_element_name + "_period_input')\" />");
+					Output.Write("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(temporalSubjects[i - 1].TimePeriod) + "\" />");
 
                     Output.WriteLine(i < temporalSubjects.Count ? "<br />" : "\n            </div>");
                 }
             }
             Output.WriteLine("          </td>");
 
-            Output.WriteLine("          <td valign=\"bottom\" >");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
             if (Repeatable)
             {
-                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new temporal coverage field", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_temporal_element();\"><img border=\"0px\" class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new temporal coverage field", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_temporal_element();\"><img class=\"repeat_button\" src=\"" + Base_URL + REPEAT_BUTTON_URL + "\" /></a>");
             }
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
 
             Output.WriteLine("        </tr>");

@@ -46,7 +46,7 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter the web skins under which this material can appear (i.e., UFDC, dLOC, etc...)";
+                const string defaultAcronym = "Enter the web skins under which this material can appear (i.e., UDC, dLOC, etc...)";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:

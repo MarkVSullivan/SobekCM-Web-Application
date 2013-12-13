@@ -420,7 +420,13 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />");
+
+			// Write the style sheet to use 
+#if DEBUG
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#endif
 
             // If this is the static html web content view, add any special text which came from the original
             // static html file which was already read, which can include style sheets, etc..

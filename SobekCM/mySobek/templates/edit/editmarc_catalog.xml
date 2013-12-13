@@ -20,6 +20,10 @@
 	<inputs>
 		<page>
 			<name language="eng">Material Information</name>
+			<panel>
+				<name>Tickler</name>
+				<element type="Tickler" />
+			</panel>
       <panel>
         <name>Basic Information</name>
         <element type="Title" subtype="form" mandatory="true" acronym="Enter the title of your chapter, article, report, or other material here." />
@@ -48,10 +52,15 @@
     </page>
     <page>
       <name language="eng">Subjects and Notes</name>
+		<panel>
+			<name>Tickler</name>
+			<element type="Tickler" />
+		</panel>
       <panel>
         <name language="eng">Subjects</name>
         <element type="Subject" subtype="form" repeatable="true" />
-		<element type="Genre" repeatable="true" />
+	<element type="Genre" repeatable="true" />
+	<element type="FAST_Subject" />
         <element type="Temporal" subtype="complex" />
         <element type="Spatial" repeatable="true" />
         <element type="Coordinates" repeatable="true" />
@@ -65,17 +74,15 @@
     </page>
     <page>
       <name language="eng">Record Information</name>
+		<panel>
+			<name>Tickler</name>
+			<element type="Tickler" />
+		</panel>
       <panel>
         <name language="eng">Internal Record</name>
-        <element type="Bib" mandatory="true" readonly="true" />
-        <element type="VID" mandatory="true" readonly="true" />
-        <element type="RecordStatus" />
-        <element type="CreatorNotes" />
-        <element type="RecordOrigin" />
         <element type="EncodingLevel" />
         <element type="Source" subtype="complex" />
         <element type="Holding" subtype="complex" />
-        <element type="Tickler" />
         <element type="Rights" />
       </panel>
       <panel>
@@ -86,19 +93,24 @@
         <element type="EAD" />
         <element type="Container" />
         <element type="OtherURL" />
-        <element type="EmbeddedVideo" />
         <element type="RelatedItem" repeatable="true" />
       </panel>
-		<panel>
-			<name language="eng">Downloads</name>
-			<element type="Download" repeatable="true" />
-		</panel>
     </page>
 
-  <page>
-      <name language="eng">IEEE-LOM</name>
+    <page>
+      <name language="eng">Extension Schemas</name>
       <panel>
-        <name language="eng">Learning Object Metadata</name>
+        <name language="eng">Visual Resource Metadata (VRACore)</name>
+        <element type="VRA_CulturalContext" />
+        <element type="VRA_Inscription" />
+        <element type="VRA_Materials" />
+        <element type="VRA_Measurements" />
+        <element type="VRA_StateEdition" />
+        <element type="VRA_StylePeriod" />
+        <element type="VRA_Technique" />
+       </panel>
+      <panel>
+        <name language="eng">Learning Object Metadata (IEEE-LOM)</name>
         <element type="LOM_Aggregation_Level" />
         <element type="LOM_Learning_Resource_Type" />
         <element type="LOM_Status" />
@@ -108,20 +120,6 @@
         <element type="LOM_Intended_End_User_Role" />
         <element type="LOM_Context" />
         <element type="LOM_Typical_Age_Range" />
-       </panel>
-    </page>
-
-    <page>
-      <name language="eng">VRACore</name>
-      <panel>
-        <name language="eng">Visual Resource Metadata</name>
-        <element type="VRA_CulturalContext" />
-        <element type="VRA_Inscription" />
-        <element type="VRA_Materials" />
-        <element type="VRA_Measurements" />
-        <element type="VRA_StateEdition" />
-        <element type="VRA_StylePeriod" />
-        <element type="VRA_Technique" />
        </panel>
     </page>
 	</inputs>

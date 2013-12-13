@@ -22,14 +22,14 @@ namespace SobekCM.Library.Citation.Elements
     public class IR_Type_Element : abstract_Element
     {
         /// <summary> Protected field holds the default value(s) </summary>
-        protected List<string> default_values;
+        private List<string> default_values;
 
         /// <summary> Protected field holds all the possible, selectable values </summary>
-        protected List<string> items;
+		private List<string> items;
 
         /// <summary> Protected field holds the flag that tells if a value from the package which is not in the
         /// provided options should be discarded or permitted </summary>
-        protected bool restrict_values;
+		private bool restrict_values;
 
         /// <summary> Constructor for a new instance of the IR_Type_Element class </summary>
         public IR_Type_Element()
@@ -43,6 +43,7 @@ namespace SobekCM.Library.Citation.Elements
             items = new List<string>();
             Title = Title;
             html_element_name = "type_ir";
+	        help_page = "typeir";
             default_values = new List<string>();
            
         }
@@ -65,23 +66,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the type which best categorizes this material and provide information about the larger body of work on the next line.";
+                const string DEFAULT_ACRONYM = "Select the type which best categorizes this material and provide information about the larger body of work on the next line.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -161,15 +162,15 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             Output.WriteLine("  <!-- Institutional Repository Material Type Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\">" + Translator.Get_Translation(title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\">" + Translator.Get_Translation(title, CurrentLanguage) + ":</a></td>");
             }
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
@@ -178,11 +179,11 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <div id=\"" + html_element_name_irtype + "_div\">");
             if (material_type.IndexOf("Select") == 0)
             {
-                Output.WriteLine("              <select class=\"" + html_element_name_irtype + "_input_init\" name=\"" + id_name + "\" id=\"" + id_name + "\" onchange=\"javascript:ir_type_change()\" onfocus=\"javascript:textbox_enter('" + id_name + "', '" + html_element_name_irtype + "_input_focused')\" onblur=\"javascript:selectbox_leave('" + id_name + "', '" + html_element_name_irtype + "_input', '" + html_element_name_irtype + "_input_init')\" >");
+                Output.WriteLine("              <select class=\"" + html_element_name_irtype + "_input_init\" name=\"" + id_name + "\" id=\"" + id_name + "\" onchange=\"javascript:ir_type_change()\" >");
             }
             else
             {
-                Output.WriteLine("              <select class=\"" + html_element_name_irtype + "_input\" name=\"" + id_name + "\" id=\"" + id_name + "\" onchange=\"javascript:ir_type_change()\" onfocus=\"javascript:textbox_enter('" + id_name + "', '" + html_element_name_irtype + "_input_focused')\" onblur=\"javascript:selectbox_leave('" + id_name + "', '" + html_element_name_irtype + "_input', '" + html_element_name_irtype + "_input_init')\" >");
+                Output.WriteLine("              <select class=\"" + html_element_name_irtype + "_input\" name=\"" + id_name + "\" id=\"" + id_name + "\" onchange=\"javascript:ir_type_change()\" >");
             }
 
             bool found_option = false;
@@ -206,13 +207,13 @@ namespace SobekCM.Library.Citation.Elements
             if (other_value)
             {
                 Output.WriteLine("              <span class=\"metadata_sublabel\" id=\"irtype_othertext\" name=\"irtype_othertext\">" + Translator.Get_Translation("Specify Type", CurrentLanguage) + ":</span>");
-                Output.WriteLine("              <input type=\"text\" class=\"irtype_other_input\" id=\"irtype_otherinput\" name=\"irtype_otherinput\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" onfocus=\"javascript:textbox_enter('irtype_otherinput', 'irtype_other_input_focused')\" onblur=\"javascript:textbox_leave('irtype_otherinput', 'irtype_other_input')\"/>");
+                Output.WriteLine("              <input type=\"text\" class=\"irtype_other_input sbk_Focusable\" id=\"irtype_otherinput\" name=\"irtype_otherinput\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" />");
 
             }
             Output.WriteLine("              </div>");
             Output.WriteLine("          </td>");
             Output.WriteLine("          <td valign=\"bottom\" >");
-            Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("      </table>");
@@ -225,21 +226,21 @@ namespace SobekCM.Library.Citation.Elements
             title = larger_text;
 
             Output.WriteLine("  <!-- Institutional Repository Larger Body of Work (IR_Type_Element) -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Read_Only)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\">" + Translator.Get_Translation(title, CurrentLanguage) + "</b></td>");
+                Output.WriteLine("    <td class=\"metadata_label\">" + Translator.Get_Translation(title, CurrentLanguage) + "</td>");
             }
             else
             {
                 if (Acronym.Length > 0)
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\"><b><acronym title=\"" + Acronym + "\"><span id=\"larger_body_label\">" + title + "</span></acronym></b></a></td>");
+                    Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\"><acronym title=\"" + Acronym + "\"><span id=\"larger_body_label\">" + title + "</span></acronym></a></td>");
                 }
                 else
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\"><b><span id=\"larger_body_label\">" + title + "</span></b></a></td>");
+                    Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name_irtype.ToUpper() + "\"><span id=\"larger_body_label\">" + title + "</span></a></td>");
                 }
             }
 
@@ -255,10 +256,10 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("    <td>");
                 Output.WriteLine("      <table><tr><td>");
                 Output.WriteLine("      <div id=\"" + html_element_name_irtype + "_div\">");
-                Output.WriteLine("      <input name=\"" + id_name + "\" id=\"" + id_name + "\" class=\"" + html_element_name_irtype + "_input\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(larger_value.Replace("<i>", "").Replace("</i>", "")) + "\" onfocus=\"javascript:textbox_enter('" + id_name + "', '" + html_element_name_irtype + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "', '" + html_element_name_irtype + "_input')\" /></div>");
+                Output.WriteLine("      <input name=\"" + id_name + "\" id=\"" + id_name + "\" class=\"" + html_element_name_irtype + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(larger_value.Replace("<i>", "").Replace("</i>", "")) + "\" /></div>");
                 Output.WriteLine("    </td>");
-                Output.WriteLine("         <td valign=\"bottom\" >");
-                Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("         <td vstyle=\"vertical-align=:bottom\" >");
+                Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
                 Output.WriteLine("          </td>");
                 Output.WriteLine("  </tr></table>");
                 Output.WriteLine("  </td>");

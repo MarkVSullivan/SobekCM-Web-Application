@@ -223,7 +223,7 @@ namespace SobekCM.Library.MainWriters
                                 }
                             }
 
-                        builder.Append("\n\nUFDC HISTORY\n");
+                        builder.Append("\n\nHISTORY\n");
                         if (HttpContext.Current.Session["LastSearch"] != null)
                             builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
                         if (HttpContext.Current.Session["LastResults"] != null)
@@ -249,7 +249,7 @@ namespace SobekCM.Library.MainWriters
                     break;
 
                 case Display_Mode_Enum.My_Sobek:
-                    subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, Tracer);
+                    subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, webSkins, Tracer);
                     break;
 
                 case Display_Mode_Enum.Administrative:
@@ -1036,7 +1036,7 @@ namespace SobekCM.Library.MainWriters
 			}
 
             
-            // Create they myUFDC text
+            // Create the mySobek text
             string mySobekLinks = String.Empty;
             if (!currentMode.Is_Robot)
             {

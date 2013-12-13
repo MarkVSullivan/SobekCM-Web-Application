@@ -44,7 +44,7 @@ namespace SobekCM.Library.Skins
         }
 
 	    /// <summary> Address a single skin from this Collection, by skin code </summary>
-        /// <param name="Skin_Language_Code"> Code to retrieve this skin ( [SKIN CODE] + '_' + [LANGUAGE CODE] , i.e., 'ufdc', 'dloc_fr', etc.. )</param>
+        /// <param name="Skin_Language_Code"> Code to retrieve this skin ( [SKIN CODE] + '_' + [LANGUAGE CODE] , i.e., 'sobek', 'dloc_fr', etc.. )</param>
         /// <returns> Existing HTML skin, or NULL </returns>
 		public SobekCM_Skin_Object this[string Skin_Language_Code ]
 		{
