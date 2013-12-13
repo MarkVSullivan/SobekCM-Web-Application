@@ -50,6 +50,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly Template template;
         private readonly SobekCM_Skin_Object webSkin;
 	    private readonly string delayed_popup;
+		private readonly SobekCM_Skin_Collection skins;
 
         #region Constructor
 
@@ -61,6 +62,8 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
         /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
+		/// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public Edit_Item_Metadata_MySobekViewer(User_Object User,
                                                 SobekCM_Navigation_Object Current_Mode, 
@@ -68,6 +71,8 @@ namespace SobekCM.Library.MySobekViewer
                                                 SobekCM_Item Current_Item, Aggregation_Code_Manager Code_Manager,
                                                 Dictionary<string, Wordmark_Icon> Icon_Table,
                                                 SobekCM_Skin_Object HTML_Skin,
+												Language_Support_Info Translator,
+												SobekCM_Skin_Collection HTML_Skin_Collection,
                                                 Custom_Tracer Tracer)
             : base(User)
         {
@@ -81,6 +86,9 @@ namespace SobekCM.Library.MySobekViewer
             webSkin = HTML_Skin;
             popUpFormsHtml = String.Empty;
 	        delayed_popup = String.Empty;
+			base.Translator = Translator;
+	        skins = HTML_Skin_Collection;
+
 
 
             // If the user cannot edit this item, go back
@@ -110,7 +118,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML( SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\" + template_code + ".xml", template, true);
+                reader.Read_XML( SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\edit\\" + template_code + ".xml", template, true);
 
                 // Add the current codes to this template
                 template.Add_Codes(Code_Manager);
@@ -342,12 +350,13 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
 
 		    Output.WriteLine("<div id=\"container-inner1000\">");
-			Output.WriteLine("<div id=\"pagecontainer\">");
-			Output.WriteLine("<div class=\"SobekHomeText\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
+
+			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
 			Output.WriteLine("  <br />");
 			if (!isProject)
 			{
-				Output.WriteLine("  <b>Edit this item</b>");
+				Output.WriteLine("  <h2>Edit this item</h2>");
 				Output.WriteLine("    <ul>");
 				Output.WriteLine("      <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
 				Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
@@ -472,7 +481,6 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine("</div>");
 			Output.WriteLine("</div>");
-			Output.WriteLine("<br />");
 			Output.WriteLine();
 
 		}
@@ -640,9 +648,22 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, null, webSkin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
                     string filename = user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(item, filename, SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath);
+
+					// Copy the static HTML file to the web server
+					try
+					{
+						if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+							Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+						if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
+							File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+					}
+					catch
+					{
+						// This is not critical
+					}
                 }
                 catch
                 {
@@ -653,10 +674,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 item.Source_Directory = user_bib_vid_process_directory;
                 item.Save_SobekCM_METS();
-                item.Save_Citation_Only_METS();
 
 
-                // If this was not able to be saved in the UFDC database, try it again
+                // If this was not able to be saved in the database, try it again
                 if (!successful_save)
                 {
                     SobekCM_Database.Save_Digital_Resource(item, DateTime.Now, false);
@@ -672,6 +692,8 @@ namespace SobekCM.Library.MySobekViewer
                     // This is not critical
                 }
 
+
+				// Save the MARC file
                 List<string> collectionnames = new List<string>();
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
@@ -681,41 +703,44 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Copy this to all the image servers
                 SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(null));
-                string[] allFiles = Directory.GetFiles(user_bib_vid_process_directory);
 
+				// Determine the server folder
                 string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath;
 
                 // Create the folder
-                if (!Directory.Exists(serverNetworkFolder))
-                    Directory.CreateDirectory(serverNetworkFolder);
-                else
-                {
-                    // Rename any existing standard mets to keep a backup
-                    if (File.Exists(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml"))
-                    {
-                        FileInfo currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml");
-                        DateTime lastModDate = currentMetsFileInfo.LastWriteTime;
-                        File.Copy(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml", serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
-                    }
-                }
+	            if (!Directory.Exists(serverNetworkFolder))
+	            {
+		            Directory.CreateDirectory(serverNetworkFolder);
+		            if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
+			            Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+	            }
+	            else
+	            {
+					if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
+						Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
 
-                foreach (string thisFile in allFiles)
+		            // Rename any existing standard mets to keep a backup
+		            if (File.Exists(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml"))
+		            {
+			            FileInfo currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml");
+			            DateTime lastModDate = currentMetsFileInfo.LastWriteTime;
+			            File.Copy(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
+		            }
+	            }
+
+				// Copy the static HTML page over first
+	            if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
+	            {
+					File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + ".html", true);
+					File.Delete(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html");
+	            }
+
+	            // Copy all the files 
+				string[] allFiles = Directory.GetFiles(user_bib_vid_process_directory);
+	            foreach (string thisFile in allFiles)
                 {
                     string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
                     File.Copy(thisFile, destination_file, true);
-                }
-
-                // Copy the static HTML file as well
-                try
-                {
-                    if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-                        Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
-                    if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
-                        File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
-                }
-                catch (Exception)
-                {
-                    // This is not critical
                 }
 
                 // Add this to the cache

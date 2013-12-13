@@ -47,8 +47,11 @@ namespace SobekCM.Library.MainWriters
 
 #endif
 			// Write the main SobekCM item style sheet to use 
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-
+#if DEBUG
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+#else
+			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+#endif
 
 			// Always add jQuery library (changed as of 7/8/2013)
 			if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))

@@ -8,7 +8,7 @@ using System.IO;
 namespace SobekCM.Library.Skins
 {
     /// <summary> Stores information about an HTML skin, which determines the header, footer, stylesheet, and other design elements for the rendered HTML </summary>
-    /// <remarks> This class and concept allows the same pages in this digital library to appear branded in different ways, either as UFDC, dLOC, or something else.  It allows
+    /// <remarks> This class and concept allows the same pages in this digital library to appear branded in different ways.  It allows
     /// the rendered html to be altered to match a partner's institutional web pages as well. <br /><br />
     /// Since this class holds the header, footer, and banner information, this HTML skin object is language-specific.</remarks>
     [Serializable]

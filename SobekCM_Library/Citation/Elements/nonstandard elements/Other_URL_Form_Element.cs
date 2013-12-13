@@ -26,6 +26,7 @@ namespace SobekCM.Library.Citation.Elements
             Display_SubType = "form";
             Title = "Related URL";
             html_element_name = "form_related_url";
+	        help_page = "relatedurl";
         }
 
         #region iElement Members
@@ -46,37 +47,37 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter any related URL for this material";
+                const string DEFAULT_ACRONYM = "Enter any related URL for this material";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
 
             Output.WriteLine("  <!-- Related URL Form Element -->");
-            Output.WriteLine("  <tr align=\"left\">");
-            Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
 
             Output.WriteLine("    <td>");
@@ -88,12 +89,12 @@ namespace SobekCM.Library.Citation.Elements
             // Write the EAD popup link 
             if (Bib.Bib_Info.Location.Other_URL.Length == 0)
             {
-                Output.Write("              <a title=\"Click to edit the related URL information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_url_term')\" onblur=\"link_blurred2('form_related_url_term')\" onkeypress=\"return popup_keypress_focus('form_related_url', 'form_related_url_term', 'form_relatedurl_label', 210, 620, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_url', 'form_related_url_term', 'form_relatedurl_label', 210, 620 );\"><div class=\"form_linkline_empty form_related_url_line\" id=\"form_related_url_term\">");
+                Output.Write("              <a title=\"Click to edit the related URL information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_url_term')\" onblur=\"link_blurred2('form_related_url_term')\" onkeypress=\"return popup_keypress_focus('form_related_url', 'form_relatedurl_label', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_url', 'form_relatedurl_label' );\"><div class=\"form_linkline_empty form_related_url_line\" id=\"form_related_url_term\">");
                 Output.Write("<i>Empty Related URL </i>");
             }
             else
             {
-                Output.Write("              <a title=\"Click to edit the related URL information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_url_term')\" onblur=\"link_blurred2('form_related_url_term')\" onkeypress=\"return popup_keypress_focus('form_related_url', 'form_related_url_term', 'form_relatedurl_label', 210, 620, '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_url', 'form_related_url_term', 'form_relatedurl_label', 210, 620 );\"><div class=\"form_linkline form_related_url_line\" id=\"form_related_url_term\">");
+                Output.Write("              <a title=\"Click to edit the related URL information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_url_term')\" onblur=\"link_blurred2('form_related_url_term')\" onkeypress=\"return popup_keypress_focus('form_related_url', 'form_relatedurl_label', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_url', 'form_relatedurl_label' );\"><div class=\"form_linkline form_related_url_line\" id=\"form_related_url_term\">");
                 Output.Write(HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL));
                 if (Bib.Bib_Info.Location.Other_URL_Display_Label.Length > 0 )
                 {
@@ -103,8 +104,8 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("</div></a>");
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
-            Output.WriteLine("          <td valign=\"bottom\" >");
-            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("      </table>");
@@ -114,23 +115,24 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Related URL Form -->");
-            PopupFormBuilder.AppendLine("<div class=\"related_url_popup_div\" id=\"form_related_url\" style=\"display:none;\">");
-            PopupFormBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">EDIT RELATED URL</td><td align=\"right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_url_form()\">X</a> &nbsp; </td></tr></table></div>");
+			PopupFormBuilder.AppendLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_related_url\" style=\"display:none;\">");
+			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related URL</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_url_form()\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-            PopupFormBuilder.AppendLine("  <table class=\"popup_table\">");
+			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the rows of data
-            PopupFormBuilder.AppendLine("    <tr><td width=\"70px\">Label:</td><td><input class=\"form_relatedurl_input\" name=\"form_relatedurl_label\" id=\"form_relatedurl_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "\" onfocus=\"javascript:textbox_enter('form_relatedurl_label', 'form_relatedurl_input_focused')\" onblur=\"javascript:textbox_leave('form_relatedurl_label', 'form_relatedurl_input')\" /></td></tr>");
-            PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td><input class=\"form_relatedurl_input\" name=\"form_relatedurl_url\" id=\"form_relatedurl_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL) + "\" onfocus=\"javascript:textbox_enter('form_relatedurl_url', 'form_relatedurl_input_focused')\" onblur=\"javascript:textbox_leave('form_relatedurl_url', 'form_relatedurl_input')\" /></td></tr>");
-            PopupFormBuilder.AppendLine("    <tr><td>Note:</td><td><input class=\"form_relatedurl_input\" name=\"form_relatedurl_note\" id=\"form_relatedurl_note\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Note) + "\" onfocus=\"javascript:textbox_enter('form_relatedurl_note', 'form_relatedurl_input_focused')\" onblur=\"javascript:textbox_leave('form_relatedurl_note', 'form_relatedurl_input')\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td style=\"width:70px\">Label:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_label\" id=\"form_relatedurl_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_url\" id=\"form_relatedurl_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>Note:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_note\" id=\"form_relatedurl_note\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Note) + "\" /></td></tr>");
 
 
-            // Finish the popup form
-            PopupFormBuilder.AppendLine("  </table>");
-            PopupFormBuilder.AppendLine("  <br />");
-            PopupFormBuilder.AppendLine("  <center><a href=\"#template\" onclick=\"return close_related_url_form();\"><img border=\"0\" src=\"" + Close_Button_URL(Skin_Code, Base_URL ) + "\" alt=\"CLOSE\" /></a></center>");
-            PopupFormBuilder.AppendLine("</div>");
-            PopupFormBuilder.AppendLine();
+			// Finish the popup form and add the CLOSE button
+			PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+			PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_url_form();\">CLOSE</button></td>");
+			PopupFormBuilder.AppendLine("    </tr>");
+			PopupFormBuilder.AppendLine("  </table>");
+			PopupFormBuilder.AppendLine("</div>");
+			PopupFormBuilder.AppendLine();
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>

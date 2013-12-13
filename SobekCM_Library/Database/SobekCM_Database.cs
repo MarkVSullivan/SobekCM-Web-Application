@@ -8177,7 +8177,7 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Marks an item as been editing online through UFDC </summary>
+		/// <summary> Marks an item as been editing online through the web interface </summary>
 		/// <param name="ItemID"> Primary key for the item having a progress/worklog entry added </param>
 		/// <param name="User">User name who did the edit</param>
 		/// <param name="UserNotes">Any user notes about this edit</param>
@@ -8661,35 +8661,6 @@ namespace SobekCM.Library.Database
 
 			return returnRecord;
 		}
-
-
-
-
-		///// <summary> Returns the items and groups along with group creation date for inclusion in the OAI data source files </summary>
-		///// <param name="AggregationCode"> Aggregation code for the item aggregation in question (or empty string) </param>
-		///// <remarks> This calls the 'SobekCM_OAI_Item_List' stored procedure <br /><br />
-		///// This is used during creation of the OAI fields at the group level</remarks>
-		//public static DataSet Get_OAI_Item_List(string AggregationCode)
-		//{
-		//    try
-		//    {
-		//        // build the parameter list
-		//        SqlParameter[] paramList = new SqlParameter[2];
-		//        paramList[0] = new SqlParameter("@app_server_name", "lib-ufdcweb3");
-		//        paramList[1] = new SqlParameter("@collection_code", AggregationCode);
-
-		//        // Define a temporary dataset
-		//        DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_OAI_Item_List", paramList);
-
-		//        // Return the first table from the returned dataset
-		//        return tempSet;
-		//    }
-		//    catch (Exception ee)
-		//    {
-		//        lastException = ee;
-		//        return null;
-		//    }
-		//}
 
 		#endregion
 

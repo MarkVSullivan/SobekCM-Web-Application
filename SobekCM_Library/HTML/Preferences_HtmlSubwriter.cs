@@ -14,8 +14,8 @@ namespace SobekCM.Library.HTML
 {
     /// <summary> [TO BE DEPRECATED] Prefernces html subwriter allows the user to set some basic preferences </summary>
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class.<br /><br />
-    /// This class is planned to be deprecated and treat each user (whether authenticated or not) as a myUFDC
-    /// user.  Preferences would then be served from the myUFDC account/preferences writer </remarks>
+    /// This class is planned to be deprecated and treat each user (whether authenticated or not) as a mySobek
+    /// user.  Preferences would then be served from the mySobek account/preferences writer </remarks>
     public class Preferences_HtmlSubwriter : abstractHtmlSubwriter
     {
         /// <summary> Constructor for a new instance of the Preferences_HtmlSubwriter class </summary>
