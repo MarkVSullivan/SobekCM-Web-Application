@@ -33,6 +33,7 @@ namespace SobekCM.Library.MySobekViewer
         private string hidden_value;
         private string title;
         private string equipment;
+        private int current_workflow_id = -1;
 
         private string start_Time;
         private string end_Time;
@@ -150,7 +151,7 @@ namespace SobekCM.Library.MySobekViewer
                 HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
             
-            //Check the hidden value if user was previously changed
+            //Check if the selected user has been changed
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_selected_username"]) )
             {
                current_selected_user = new User_Object();
@@ -244,6 +245,20 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     break;
 
+
+                case "save":
+                    int thisWorkflowId = Convert.ToInt32(HttpContext.Current.Request.Form["Track_Item_hidden_value"]);
+                    int hidden_itemID = Convert.ToInt32(HttpContext.Current.Request.Form["hidden_itemID"]);
+                    Get_Bib_VID_from_ItemID(hidden_itemID);
+                    Add_or_Update_Workflow(thisWorkflowId, hidden_itemID);
+               
+                    break;
+
+                case "delete":
+                    int WorkflowId = Convert.ToInt32(HttpContext.Current.Request.Form["Track_Item_hidden_value"]);
+                    Database.SobekCM_Database.Tracking_Delete_Workflow(WorkflowId);
+                    break;
+                    
                 default:
                     break;
                }
@@ -274,12 +289,181 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //If a valid Bib, VID workflow was entered, add this to the current session
-            if (String.IsNullOrEmpty(error_message) && !String.IsNullOrEmpty(BibID) && !String.IsNullOrEmpty(VID))
+            if (String.IsNullOrEmpty(error_message) && !String.IsNullOrEmpty(BibID) && !String.IsNullOrEmpty(VID) && hidden_request!="save")
             {
                 Add_New_Workflow();
             }
 
           }
+
+
+        /// <summary> Save or Update Workflow when a 'Save' button for a tracking entry is clicked </summary>
+        /// <param name="thisWorkflowId"></param>
+        private void Add_or_Update_Workflow(int thisWorkflowId, int thisItemID)
+        {
+                   string thisWorkflowId_string = thisWorkflowId.ToString();
+                    string new_start_time="";
+                    string new_end_time="";
+                    DateTime new_date;
+                    int selected_ddl_workflow;
+                    int this_event = -1;
+                    int start_event_num=-1;
+                    int end_event_num=-1;
+                    int start_end_event_num=-1;
+
+                    if (thisWorkflowId == -1)
+                    {
+                        thisWorkflowId_string = "-1";
+                    }
+                    new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string]);
+                  selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent" + thisWorkflowId_string]);
+                    if (page == 1)
+                    {
+                            new_start_time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]).ToString("HH:mm");
+                            new_end_time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]).ToString("HH:mm");
+                            if (selected_ddl_workflow == 1)
+                            {
+                                this_event = 1;
+                                start_event_num = 1;
+                                if (!String.IsNullOrEmpty(new_end_time))
+                                {
+                                    end_event_num = 2;
+                                    this_event = 2;
+                                }
+                            }
+                            else
+                            {
+                                this_event = 3;
+                                start_event_num = 3;
+                                if (!String.IsNullOrEmpty(new_end_time))
+                                {
+                                    end_event_num = 4;
+                                    this_event = 4;
+                                }
+                            }
+                        }
+
+                         //If this is from the second tab, set the appropriate start_end_event number
+                        else
+                        {
+                            if (selected_ddl_workflow == 1)
+                            {
+                                start_end_event_num = 2;
+                            }
+                            else
+                            {
+                                start_end_event_num = 4;
+                            }
+                        }
+
+                     //Create a new workflow object for this workflow
+                            Tracking_Workflow this_workflow = new Tracking_Workflow();
+                            SqlDateTime start_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_start_time);
+                            SqlDateTime end_time_to_save = String.IsNullOrEmpty(new_end_time) ? SqlDateTime.Null : DateTime.Parse(new_date.ToShortDateString() + " " + new_end_time);
+
+
+                            this_workflow.BibID = BibID;
+                            this_workflow.VID = VID;
+                            this_workflow.Equipment = equipment;
+                            this_workflow.Date = new_date.ToString("yyyy-MM-dd");
+                            this_workflow.Saved = true;
+                            this_workflow.Title = title;
+                            this_workflow.StartTime = Convert.ToDateTime(new_start_time).ToString("HH:mm");
+                            this_workflow.EndTime = String.IsNullOrEmpty(new_end_time) ? "" : Convert.ToDateTime(new_end_time).ToString("HH:mm");
+                            this_workflow.Workflow_type = this_event;
+                            this_workflow.thisUser = current_selected_user;
+
+
+                            //Fetch the workflow dictionaries from the session if present
+                            current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
+                            current_workflows_no_durations = (HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
+
+                            //else create new ones
+                            if (current_workflows == null && page == 1)
+                            {
+                                current_workflows = new Dictionary<string, Tracking_Workflow>();
+                            }
+                            else if (current_workflows_no_durations == null && page == 2)
+                            {
+                                current_workflows_no_durations = new Dictionary<string, Tracking_Workflow>();
+                            }
+
+
+
+                    //If this has not been previously saved, create a new entry in the DB
+                        if (thisWorkflowId == -1)
+                        {
+                            string stage_from_event = (this_event == 1 || this_event == 2) ? "s" : "p";
+
+                            string key = page + thisItemID + stage_from_event + current_selected_user.UserName;
+
+                            if (page == 1)
+                            {
+                                //Save this to the DB
+                                this_workflow.WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(thisItemID, current_selected_user.UserName, equipment, start_time_to_save, end_time_to_save, this_event, start_event_num, end_event_num, start_end_event_num);
+
+                                //Remove the old value from the dictionary
+                                if (current_workflows.ContainsKey(key))
+                                    current_workflows.Remove(key);
+
+                                //Add this to the dictionary
+                                current_workflows.Add(key, this_workflow);
+                            }
+
+                            else if (page == 2)
+                            {
+
+                                //Save this workflow to the database
+                                this_workflow.WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(thisItemID, current_selected_user.UserName, equipment, start_time_to_save, end_time_to_save, stage, start_event_num, end_event_num, start_end_event_num);
+
+                              //Remove the old value from the dictionary if present
+                                if (current_workflows_no_durations.ContainsKey(key))
+                                    current_workflows_no_durations.Remove(key);
+
+                                //Add this to the dictionary
+                                current_workflows_no_durations.Add(key, this_workflow);
+
+                            }
+
+                  
+                        }
+                        //Else update this workflow in the database
+                        else
+                        {
+                            string stage_from_event = (this_event == 1 || this_event == 2) ? "s" : "p";
+
+                            string key = page + thisItemID + stage_from_event + current_selected_user.UserName;
+
+                            Database.SobekCM_Database.Tracking_Update_Workflow(thisWorkflowId, thisItemID, current_selected_user.UserName, start_time_to_save, end_time_to_save, equipment, this_event, start_event_num, end_event_num);                            
+
+                            if (page == 1)
+                            {
+                             //Remove the old value from the dictionary
+                                if (current_workflows.ContainsKey(key))
+                                    current_workflows.Remove(key);
+
+                                //Add this to the dictionary
+                                current_workflows.Add(key, this_workflow);
+                            }
+
+                            else if (page == 2)
+                            {
+                                //Remove the old value from the dictionary if present
+                                if (current_workflows_no_durations.ContainsKey(key))
+                                    current_workflows_no_durations.Remove(key);
+
+                                //Add this to the dictionary
+                                current_workflows_no_durations.Add(key, this_workflow);
+
+                            }
+
+                          
+                        }
+
+                        //Save the dictionaries back to the session
+                        HttpContext.Current.Session["Tracking_Current_Workflows"] = current_workflows;
+                        HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"] = current_workflows_no_durations;
+        }
 
 
        /// <summary>
@@ -318,7 +502,7 @@ namespace SobekCM.Library.MySobekViewer
                 end_Time = null;
                 
                 //If there are previously opened workflows, return. We will not save this entry yet, till the previous ones are resolved 
-                if ((page==1)&&(open_workflows_from_DB == null || open_workflows_from_DB.Rows.Count > 0))
+                if ((page==1)&&!(open_workflows_from_DB == null || open_workflows_from_DB.Rows.Count == 0))
                     return;
             }
             else if ((stage == 2 || stage == 4) &&(page==1))
@@ -368,12 +552,12 @@ namespace SobekCM.Library.MySobekViewer
             this_workflow.StartTime = start_Time;
             this_workflow.EndTime = end_Time;
             this_workflow.Date = DateTime.Now.ToString("yyyy-MM-dd");
-
+           
             this_workflow.itemID = itemID;
             this_workflow.Saved = false;
             this_workflow.Title = title;
             this_workflow.Workflow_type = stage;
-           int WorkflowID;
+           
 
             //Combine the times and dates to single DateTime variables to save to the database
            SqlDateTime start_date_time = String.IsNullOrEmpty(start_Time) ? SqlDateTime.Null : DateTime.Parse(this_workflow.Date + " " + start_Time);
@@ -414,15 +598,15 @@ namespace SobekCM.Library.MySobekViewer
 
            string stage_from_event = (stage == 1 || stage == 2) ? "s" : "p";
 
-            string key = page + itemID + stage_from_event + current_selected_user.UserName;
+           string key = page + itemID + stage_from_event + current_selected_user.UserName;
            
             if ((page==1) && !current_workflows.ContainsKey(key) && (stage==1 || stage==3))
             {
                 //Save this workflow to the database
-                WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
+                current_workflow_id = Database.SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
 
                 //Add the workflow id obtained after saving to the database 
-                this_workflow.WorkflowID = WorkflowID;
+                this_workflow.WorkflowID = current_workflow_id;
                 
                 //Add this to the dictionary
                  current_workflows.Add(key,this_workflow);
@@ -448,10 +632,10 @@ namespace SobekCM.Library.MySobekViewer
                 else start_date_time = end_date_time;
 
                 //Save this workflow to the database
-                WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
+                current_workflow_id = Database.SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
 
                 //Add the workflow id obtained after saving to the database 
-                this_workflow.WorkflowID = WorkflowID;
+                this_workflow.WorkflowID = current_workflow_id;
 
                 //Add this to the dictionary
                 current_workflows_no_durations.Add(key, this_workflow);
@@ -501,9 +685,7 @@ namespace SobekCM.Library.MySobekViewer
             return is_valid_checksum;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Get the itemID from the encoded ID in the barcode </summary>
         /// <param name="encoded_ItemID"></param>
         /// <returns></returns>
         private bool Get_Item_Info_from_Barcode(string encoded_ItemID)
@@ -601,7 +783,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_equipment\" name=\"hidden_equipment\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_selected_username\" name=\"hidden_selected_username\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"tracking_new_page\" name=\"tracking_new_page\" value=\"\"/>");
-           
+            builder.AppendLine("<input type=\"hidden\" id=\"hidden_itemID\" name=\"hidden_itemID\" value=\"\"/>");
   
 
             //Start the User, Equipment info table
@@ -639,7 +821,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("</table>");
 
 
-            ////Start the Item Information Table
+            //Start the Item Information Table
             string bibid = (String.IsNullOrEmpty(BibID)) ? String.Empty : BibID;
             string vid = (String.IsNullOrEmpty(VID)) ? String.Empty : VID;
 
@@ -707,7 +889,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
+                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
                     manual_row_style = "style=\"margin-left:200px\";";
 
                     builder.AppendLine("<tr id=\"tblrow_Barcode\" " + barcode_row_style + "><td></td><td>Scan barcode here:</td>");
@@ -717,7 +899,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">ADD</button>");
                     builder.AppendLine("</div></td></tr>");
 
-                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
+                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
                     builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"" + bibid + "\" /></td>");
                     builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"" + vid + "\" /></td>");
                     builder.AppendLine("</tr>");
@@ -754,139 +936,140 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 //If a new event has been scanned/entered, then display this table
-                if (!String.IsNullOrEmpty(bibid) && !String.IsNullOrEmpty(vid) )
+            if (!String.IsNullOrEmpty(bibid) && !String.IsNullOrEmpty(vid))
+            {
+
+                string selected_text_scanning = String.Empty;
+                string selected_text_processing = String.Empty;
+                string currentTime = DateTime.Now.ToString("");
+
+                if (page == 1)
+                {
+                    //Start the Tracking Info section
+                    builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
+                    builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
+                    builder.AppendLine("<table class=\"sbkTi_table\">");
+
+                    //If the user is trying to close an unopened entry, display error message
+                    if (close_error == true)
+                    {
+                        builder.AppendLine("<tr><td colspan=\"4\">");
+                        builder.AppendLine("<span style=\"color:red;\">There is no matching open workflow to close!</span>");
+                        builder.AppendLine("</td></tr>");
+                    }
+
+                    builder.AppendLine("<tr >");
+                    builder.AppendLine("<td>Item: </td><td>" + bibid + ":" + vid + "</td>");
+
+                    builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
+                    builder.AppendLine("</tr>");
+
+                    builder.AppendLine("<tr><td>Workflow:</td>");
+                    builder.AppendLine("         <td><select id=\"ddlEvent" + current_workflow_id + "\" name=\"ddlEvent" + current_workflow_id + "\"> disabled");
+                    builder.AppendLine("                  <option value=\"1\" " + selected_text_scanning + ">Scanning</option>");
+                    builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
+                    builder.AppendLine("         </td>");
+                    builder.AppendLine("         <td>Date:</td>");
+                    string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                    builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate" + current_workflow_id + "\" id=\"txtStartDate" + current_workflow_id + "\" value=\"" + currentDate + "\" /> </td>");
+                    builder.AppendLine("</tr>");
+
+                    //Add the Start and End Times
+                    builder.AppendLine("<tr>");
+                    builder.AppendLine("<td>Start Time:</td>");
+                    if (close_error == true)
+                        builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime" + current_workflow_id + "\" class=\"sbkTi_ErrorBox\" id=\"txtStartTime" + current_workflow_id + "\" value = \"" + start_Time + "\"/></td>");
+                    else
+                    {
+                        builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime" + current_workflow_id + "\" id=\"txtStartTime" + current_workflow_id + "\" value = \"" + start_Time + "\"/></td>");
+                    }
+                    builder.AppendLine("<td>End Time:</td>");
+                    builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime" + current_workflow_id + "\" id=\"txtEndTime" + current_workflow_id + "\" value = \"" + end_Time + "\"/></td></tr>");
+                    builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
+                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "',' " + itemID + "'); \">SAVE</button>");
+                    builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + current_workflow_id + "); \">DELETE</button>");
+                    builder.AppendLine("</span></td></tr>");
+
+                    //End this table
+                    builder.AppendLine("</table>");
+
+                    builder.AppendLine("</span>");
+                }
+
+                //If there are any previously opened and unclosed workflows for this item
+                if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0)
                 {
 
-                    string selected_text_scanning = String.Empty;
-                    string selected_text_processing = String.Empty;
-                    string currentTime = DateTime.Now.ToString("");
-
-                    if (page == 1)
+                    //builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>User</th><th>Equipment</th></tr>");
+                    foreach (DataRow row in open_workflows_from_DB.Rows)
                     {
-                        //Start the Tracking Info section
-                        builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
-                        builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
-                        builder.AppendLine("<table class=\"sbkTi_table\">");
-                        
-                        //If the user is trying to close an unopened entry, display the error message
-                        if (close_error == true)
+                        string thisWorkflowID = row["ProgressID"].ToString();
+                        //If this is a "close" workflow event, display all open and unclosed workflows from before today
+                        if (stage == 2 || stage == 4)
                         {
-                            builder.AppendLine("<tr><td colspan=\"4\">");
-                            builder.AppendLine("<span style=\"color:red;\">There is no matching open workflow to close!</span>");
-                            builder.AppendLine("</td></tr>");
+                            if (Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                continue;
                         }
 
+                        builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span" + row["ProgressID"] + "\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
+                        builder.AppendLine("<table class=\"sbkTi_table\" >");
+
+                        builder.AppendLine("<tr><td colspan=\"4\">");
+                        builder.AppendLine("<span style=\"color:red;\">You have a previously opened workflow from " + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "! </span>");
+
+                        builder.AppendLine("</td></tr>");
+
+
+                        //Start the table
                         builder.AppendLine("<tr >");
-                        builder.AppendLine("<td>Item: </td><td>" + bibid + ":" + vid + "</td>");
+                        builder.AppendLine("<td>Item: </td><td>" + BibID + ":" + VID + "</td>");
 
                         builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
                         builder.AppendLine("</tr>");
 
+                        string this_workflow = row["WorkFlowName"].ToString();
+                        if (this_workflow == "Scanning")
+                        {
+                            selected_text_scanning = "selected";
+                            selected_text_processing = "";
+                        }
+                        else if (this_workflow == "Processing")
+                        {
+                            selected_text_scanning = "";
+                            selected_text_processing = "selected";
+                        }
                         builder.AppendLine("<tr><td>Workflow:</td>");
-                        builder.AppendLine("         <td><select id=\"ddlEvent\" name=\"ddlEvent\"> disabled");
+                        builder.AppendLine("         <td><select id=\"ddlEvent" + thisWorkflowID + "\" name=\"ddlEvent" + thisWorkflowID + "\"> disabled");
                         builder.AppendLine("                  <option value=\"1\" " + selected_text_scanning + ">Scanning</option>");
                         builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
                         builder.AppendLine("         </td>");
                         builder.AppendLine("         <td>Date:</td>");
-                        string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
-                        builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + currentDate + "\" /> </td>");
+
+                        builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate" + thisWorkflowID + "\" id=\"txtStartDate" + thisWorkflowID + "\" value=\"" + Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") + "\" /> </td>");
                         builder.AppendLine("</tr>");
 
                         //Add the Start and End Times
                         builder.AppendLine("<tr>");
                         builder.AppendLine("<td>Start Time:</td>");
-                        if(close_error==true)
-                            builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" class=\"sbkTi_ErrorBox\" id=\"txtStartTime\" value = \"" + start_Time + "\"/></td>");
-                        else
-                        {
-                            builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \"" + start_Time + "\"/></td>");
-                        }
+                        builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime" + thisWorkflowID + "\" id=\"txtStartTime" + thisWorkflowID + "\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm") + "\"/></td>");
                         builder.AppendLine("<td>End Time:</td>");
-                        builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" value = \"" + end_Time + "\"/></td></tr>");
+                        builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime" + thisWorkflowID + "\" id=\"txtEndTime" + thisWorkflowID + "\" class=\"sbkTi_ErrorBox\" value = \"" + end_Time + "\"/></td></tr>");
+
                         builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow(); return false;\">SAVE</button>");
-                        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
+                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + thisWorkflowID + "','" + row["ItemID"] + "'); \">SAVE</button>");
+                        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + thisWorkflowID + "); \">DELETE</button>");
                         builder.AppendLine("</span></td></tr>");
 
                         //End this table
                         builder.AppendLine("</table>");
-
                         builder.AppendLine("</span>");
-                    }
 
-                    //If there are any previously opened and unclosed workflows for this item
-                    if ( open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0 )
-                    {
-
-                        //builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>User</th><th>Equipment</th></tr>");
-                        foreach (DataRow row in open_workflows_from_DB.Rows)
-                        {
-                            //If this is a "close" workflow event, display all open and unclosed workflows from before today
-                            if (stage == 2 || stage == 4)
-                            {
-                                if (Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
-                                    continue;
-                            }
-                         
-                            builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
-                            builder.AppendLine("<table class=\"sbkTi_table\" >");
-
-                            builder.AppendLine("<tr><td colspan=\"4\">");
-                            builder.AppendLine("<span style=\"color:red;\">You have a previously opened workflow from " + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "! </span>");
-
-                            builder.AppendLine("</td></tr>");
-
-
-                            //Start the table
-                            builder.AppendLine("<tr >");
-                            builder.AppendLine("<td>Item: </td><td>" + BibID + ":" + VID + "</td>");
-
-                            builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
-                            builder.AppendLine("</tr>");
-
-                            string this_workflow = row["WorkFlowName"].ToString();
-                            if (this_workflow == "Scanning")
-                            {
-                                selected_text_scanning = "selected";
-                                selected_text_processing = "";
-                            }
-                            else if (this_workflow == "Processing")
-                            {
-                                selected_text_scanning = "";
-                                selected_text_processing = "selected";
-                            }
-                            builder.AppendLine("<tr><td>Workflow:</td>");
-                            builder.AppendLine("         <td><select id=\"ddlEvent\" name=\"ddlEvent\"> disabled");
-                            builder.AppendLine("                  <option value=\"1\" " + selected_text_scanning + ">Scanning</option>");
-                            builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
-                            builder.AppendLine("         </td>");
-                            builder.AppendLine("         <td>Date:</td>");
-
-                            builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") + "\" /> </td>");
-                            builder.AppendLine("</tr>");
-
-                            //Add the Start and End Times
-                            builder.AppendLine("<tr>");
-                            builder.AppendLine("<td>Start Time:</td>");
-                            builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm") + "\"/></td>");
-                            builder.AppendLine("<td>End Time:</td>");
-                            builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" class=\"sbkTi_ErrorBox\" value = \"" + end_Time + "\"/></td></tr>");
-
-                            builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                            builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow(); return false;\">SAVE</button>");
-                            builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
-                            builder.AppendLine("</span></td></tr>");
-
-                            //End this table
-                            builder.AppendLine("</table>");
-                            builder.AppendLine("</span>");
-
-
-                        }
 
                     }
 
-                    //Add the current History table
+                }
+            }
+            //Add the current History table
                     if (current_workflows != null && current_workflows.Count > 0)
                     {
                         builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Current Work History</h2></span>");
@@ -925,7 +1108,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("</div");
                     builder.AppendLine("<br/><br/>");
 
-                }
+   //             }
 
                 //Close the inner tab div
                 builder.AppendLine("</div>");
@@ -977,7 +1160,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryType2Changed(this.value);\">Barcode Entry</td></tr>");
+                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryType2Changed(this.value);\"/>Barcode Entry</td></tr>");
                     manual_row_style = "style=\"margin-left:200px\";";
 
                     builder.AppendLine("<tr id=\"tblrow2_Barcode\" " + barcode_row_style + "><td></td><td>Scan barcode here:</td>");
@@ -987,7 +1170,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode2(); return false;\">ADD</button>");
                     builder.AppendLine("</div></td></tr>");
 
-                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 onclick=\"rbEntry2TypeChanged(this.value);\">Manual Entry</td></tr>");
+                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 onclick=\"rbEntryType2Changed(this.value);\"/>Manual Entry</td></tr>");
                     builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\" value=\"" + bibid + "\" /></td>");
                     builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"" + vid + "\" /></td>");
                     builder.AppendLine("</tr>");
@@ -1024,121 +1207,49 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 //If a new event has been scanned/entered, then display this table
-                if (!String.IsNullOrEmpty(bibid) && !String.IsNullOrEmpty(vid))
+            if (!String.IsNullOrEmpty(bibid) && !String.IsNullOrEmpty(vid))
+            {
+
+                string selected_text_scanning = String.Empty;
+                string selected_text_processing = String.Empty;
+                string currentTime = DateTime.Now.ToString("");
+
+
+                //Start the Tracking Info section
+                if (page == 2)
                 {
+                    builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
+                    builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
+                    builder.AppendLine("<table class=\"sbkTi_table\">");
+                    builder.AppendLine("<tr >");
+                    builder.AppendLine("<td>Item: </td><td>" + bibid + ":" + vid + "</td>");
 
-                    string selected_text_scanning = String.Empty;
-                    string selected_text_processing = String.Empty;
-                    string currentTime = DateTime.Now.ToString("");
+                    builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
+                    builder.AppendLine("</tr>");
 
+                    builder.AppendLine("<tr><td>Workflow:</td>");
+                    builder.AppendLine("         <td><select id=\"ddlEvent2\" name=\"ddlEvent2\"> disabled");
+                    builder.AppendLine("                  <option value=\"1\" " + selected_text_scanning + ">Scanning</option>");
+                    builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
+                    builder.AppendLine("         </td>");
+                    builder.AppendLine("         <td>Date:</td>");
+                    string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                    builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate2\" id=\"txtStartDate2\" value=\"" + currentDate + "\" /> </td>");
+                    builder.AppendLine("</tr>");
 
-                    //Start the Tracking Info section
-                    if (page == 2)
-                    {
-                        builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
-                        builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
-                        builder.AppendLine("<table class=\"sbkTi_table\">");
-                        builder.AppendLine("<tr >");
-                        builder.AppendLine("<td>Item: </td><td>" + bibid + ":" + vid + "</td>");
+                    builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
+                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"r('" + current_workflow_id + "','" + itemID + "'); return false;\">SAVE</button>");
+                    builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
+                    builder.AppendLine("</span></td></tr>");
 
-                        builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
-                        builder.AppendLine("</tr>");
+                    //End this table
+                    builder.AppendLine("</table>");
 
-                        builder.AppendLine("<tr><td>Workflow:</td>");
-                        builder.AppendLine("         <td><select id=\"ddlEvent2\" name=\"ddlEvent2\"> disabled");
-                        builder.AppendLine("                  <option value=\"1\" " + selected_text_scanning + ">Scanning</option>");
-                        builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
-                        builder.AppendLine("         </td>");
-                        builder.AppendLine("         <td>Date:</td>");
-                        string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
-                        builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate2\" id=\"txtStartDate2\" value=\"" + currentDate + "\" /> </td>");
-                        builder.AppendLine("</tr>");
+                    builder.AppendLine("</span>");
+                }
 
-                        builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow(); return false;\">SAVE</button>");
-                        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
-                        builder.AppendLine("</span></td></tr>");
-
-                        //End this table
-                        builder.AppendLine("</table>");
-
-                        builder.AppendLine("</span>");
-                    }
-
-                    ////If there are any previously opened and unclosed workflows for this item
-                    //if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0)
-                    //{
-
-               
-                    //    foreach (DataRow row in open_workflows_from_DB.Rows)
-                    //    {
-                    //        //If this is a "close" workflow event, display all open unclosed workflows from before today
-                    //        if (stage == 2 || stage == 4)
-                    //        {
-                    //            if (Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
-                    //                continue;
-                    //        }
-                    //        //           builder.AppendLine("<table width=\"75%\"><tr style=\"background:#333333\"><td ></td></tr></table>");
-
-                    //        builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
-                    //        builder.AppendLine("<table class=\"sbkTi_table\" >");
-
-                    //        builder.AppendLine("<tr><td colspan=\"4\">");
-                    //        builder.AppendLine("<span style=\"color:red;\">You have a previously opened workflow from " + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "! </span>");
-
-                    //        builder.AppendLine("</td></tr>");
-
-
-                    //        //Start the table
-                    //        builder.AppendLine("<tr >");
-                    //        builder.AppendLine("<td>Item: </td><td>" + BibID + ":" + VID + "</td>");
-
-                    //        builder.AppendLine("<td>Title: </td><td>" + title + "</td>");
-                    //        builder.AppendLine("</tr>");
-
-                    //        string this_workflow = row["WorkFlowName"].ToString();
-                    //        if (this_workflow == "Scanning")
-                    //        {
-                    //            selected_text_scanning = "selected";
-                    //            selected_text_processing = "";
-                    //        }
-                    //        else if (this_workflow == "Processing")
-                    //        {
-                    //            selected_text_scanning = "";
-                    //            selected_text_processing = "selected";
-                    //        }
-                    //        builder.AppendLine("<tr><td>Workflow:</td>");
-                    //        builder.AppendLine("         <td><select id=\"ddlEvent\" name=\"ddlEvent\"> disabled");
-                    //        builder.AppendLine("                  <option value=\"1\" " + selected_text_scanning + ">Scanning</option>");
-                    //        builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
-                    //        builder.AppendLine("         </td>");
-                    //        builder.AppendLine("         <td>Date:</td>");
-
-                    //        builder.AppendLine("         <td><input type=\"date\" name=\"txtStartDate\" id=\"txtStartDate\" value=\"" + Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") + "\" /> </td>");
-                    //        builder.AppendLine("</tr>");
-
-                    //        ////Add the Start and End Times
-                    //        //builder.AppendLine("<tr>");
-                    //        //builder.AppendLine("<td>Start Time:</td>");
-                    //        //builder.AppendLine("<td><input type=\"time\" name=\"txtStartTime\" id=\"txtStartTime\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm") + "\"/></td>");
-                    //        //builder.AppendLine("<td>End Time:</td>");
-                    //        //builder.AppendLine("<td><input type=\"time\" name=\"txtEndTime\" id=\"txtEndTime\" class=\"sbkTi_ErrorBox\" value = \"" + end_Time + "\"/></td></tr>");
-
-                    //        builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                    //        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow(); return false;\">SAVE</button>");
-                    //        builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(); return false;\">DELETE</button>");
-                    //        builder.AppendLine("</span></td></tr>");
-
-                    //        //End this table
-                    //        builder.AppendLine("</table>");
-                    //        builder.AppendLine("</span>");
-
-
-                    //    }
-
-                    //}
-
-                    //Add the current History table
+            }
+            //Add the current History table
                     if (current_workflows_no_durations != null && current_workflows_no_durations.Count > 0)
                     {
                         builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Current Work History</h2></span>");
@@ -1177,7 +1288,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("</div");
                     builder.AppendLine("<br/><br/>");
 
-                }
+       //         }
 
                 //Close the inner tab div
                 builder.AppendLine("</div>");
