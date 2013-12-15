@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" CodeBehind="UploadiFiveFileHandler.ashx.cs" Class="UploadifyProject.UploadiFiveFileHandler" %>
+﻿<%@ WebHandler Language="C#" CodeBehind="UploadiFiveFileHandler.ashx.cs" Class="SobekCM.UploadiFiveFileHandler" %>

@@ -257,7 +257,8 @@
     <Compile Include="Statistics\SobekCM_Stats_Reader_Processor.cs" />
     <Compile Include="UploadiFive\UploadiFive.cs" />
     <Compile Include="UploadiFive\UploadiFiveControl.cs" />
-    <Compile Include="UploadiFive\UploadiFive_Method_Enum.cs" />
+    <Compile Include="UploadiFive\UploadiFive_Enums.cs" />
+    <Compile Include="UploadiFive\UploadiFive_Security_Token.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
     <Compile Include="AggregationViewer\Viewers\Item_Count_AggregationViewer.cs" />

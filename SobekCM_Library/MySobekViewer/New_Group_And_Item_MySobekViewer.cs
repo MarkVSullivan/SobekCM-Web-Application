@@ -1706,8 +1706,10 @@ namespace SobekCM.Library.MySobekViewer
 
 				UploadiFiveControl uploadControl = new UploadiFiveControl();
 				uploadControl.UploadPath = userInProcessDirectory;
-				uploadControl.UploadScript = currentMode.Base_URL + "\\UploadiFiveFileHandler.ashx";
+				uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
 				uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types + "," + SobekCM_Library_Settings.Upload_Image_Types;
+				uploadControl.SubmitWhenQueueCompletes = true;
+	            uploadControl.RemoveCompleted = true;
 				MainPlaceholder.Controls.Add(uploadControl);
 
                 filesBuilder.AppendLine("</blockquote><br />");

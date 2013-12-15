@@ -507,8 +507,11 @@ namespace SobekCM.Library.AdminViewer
 
 			UploadiFiveControl uploadControl = new UploadiFiveControl();
 			uploadControl.UploadPath = wordmarkDirectory;
-			uploadControl.UploadScript = currentMode.Base_URL + "\\UploadiFiveFileHandler.ashx";
+			uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
 			uploadControl.AllowedFileExtensions = ".jpg,.png,.gif,.bmp,.jpeg";
+			uploadControl.RemoveCompleted = true;
+			uploadControl.SubmitWhenQueueCompletes = true;
+			uploadControl.Multi = false;
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

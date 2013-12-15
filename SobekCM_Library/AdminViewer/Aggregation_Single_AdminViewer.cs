@@ -3350,8 +3350,11 @@ namespace SobekCM.Library.AdminViewer
 
 			UploadiFiveControl uploadControl = new UploadiFiveControl();
 			uploadControl.UploadPath = UploadDirectory;
-			uploadControl.UploadScript = currentMode.Base_URL + "\\UploadiFiveFileHandler.ashx";
+			uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
 			uploadControl.AllowedFileExtensions = FileExtensions;
+			uploadControl.SubmitWhenQueueCompletes = true;
+			uploadControl.RemoveCompleted = true;
+			uploadControl.Multi = false;
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

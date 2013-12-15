@@ -11,4 +11,15 @@ namespace SobekCM.Library.UploadiFive
 		/// <remarks> This is not supported by the related ASP.net classes </remarks>
 		Get
 	}
+
+	/// <summary> Enumeration for the version being utilized, either the HTML5 version (UploadiFive)
+	/// or the FLASH version (Uploadify) </summary>
+	public enum UploadiFive_Version_Enum : byte
+	{
+		/// <summary> HTML5 - UploadiFive </summary>
+		HTML5,
+
+		/// <summary> FLASH - Uploadify </summary>
+		Flash
+	}
 }

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace SobekCM.Library.UploadiFive
 {
+	/// <summary> Control is used for uploading files through the UploadiFive library </summary>
 	public class UploadiFiveControl : WebControl
 	{
 		/// <summary> Constructor for a new instance of the UploadiFiveControl class </summary>
@@ -17,12 +19,21 @@ namespace SobekCM.Library.UploadiFive
 			UseSecureFileHandler = false;
 			SubmitWhenQueueCompletes = false;
 			UploadPath = string.Empty;
+			UploadScript = "UploadiFiveFileHandler.ashx";
+			FileObjName = "Filedata";
+			DisallowedFileExtenstionMessage = "File types of '<extension>' are not allowed";
+			Version = UploadiFive_Version_Enum.HTML5;
 
 			// Declare the dictionary object
 			FormData = new Dictionary<string, string>();
 		}
 
 		#region Properties specific to the ASP.net implementation
+
+		/// <summary> Version being utilized, either the HTML5 version (UploadiFive)
+		/// or the FLASH version (Uploadify) </summary>
+		/// <value> Default is to use the HTML5 version </value>
+		public UploadiFive_Version_Enum Version { get; set;  }
 
 		/// <summary> ID to use for the file input element </summary>
 		/// <value> Default value is 'file_upload' </value>
@@ -45,28 +56,171 @@ namespace SobekCM.Library.UploadiFive
 		/// <summary> List of file extensions allowed </summary>
 		public string AllowedFileExtensions { get; set; }
 
+		/// <summary> If a user attempts to upload a disallowed file extension, this is the
+		/// message that will be popped up to the user </summary>
+		/// <remarks> You can use '&lt;extension&gt;' in the string to have the extension
+		/// of the attempted file in your message.  Setting this to an empty string will 
+		/// cause no alert to happen clientside, but the upload will be cancelled. </remarks>
+		/// <value> Default value is 'File types of '&lt;extension&gt;' are not allowed' </value>
+		public string DisallowedFileExtenstionMessage { get; set; }
+
 
 		#endregion
 				
+		/// <summary> Writes the file input and script necessary for the upload of the files </summary>
+		/// <param name="Output"> Stream to write to </param>
 		protected override void RenderContents(HtmlTextWriter Output)
 		{
+			// If there is no current HTTPContext, can't do this...
 			if ((UploadPath.Length > 0) && (HttpContext.Current != null))
 			{
-				HttpContext.Current.Session["Uploadify_Path"] = UploadPath;
+				// Create a new security token, save in session, and set token GUID in the form data
+				UploadiFive_Security_Token newToken = new UploadiFive_Security_Token(UploadPath, AllowedFileExtensions, FileObjName);
+				FormData["token"] = newToken.ThisGuid.ToString();
+				HttpContext.Current.Session["#UPLOADIFIVE::" + newToken.ThisGuid.ToString()] = newToken;
 			}
 
+			// Add the file input element
 			Output.Write("<input id=\"" + FileInputID + "\" name=\"" + FileInputID + "\" ");
 			if (FileInputClass.Length > 0)
 				Output.Write("class=\"" + FileInputClass + "\" ");
 			Output.WriteLine("type=\"file\" />");
 			Output.WriteLine();
 
+			// Add the script for this to be added to the ready document event
 			Output.WriteLine("<script type=\"text/javascript\">");
 			Output.WriteLine("  $(document).ready(function() {");
-			Output.WriteLine("    $('#" + FileInputID + "').uploadifive({");
-			Output.WriteLine("      'uploadScript': '" + UploadScript + "',");
-			Output.WriteLine("      'removeCompleted': true,");
-			Output.WriteLine("      'onQueueComplete': function (uploads) { $('#" + FileInputID + "').closest(\"form\").submit(); }");
+			if (Version == UploadiFive_Version_Enum.HTML5)
+				Output.WriteLine("    $('#" + FileInputID + "').uploadifive({");
+			else
+				Output.WriteLine("    $('#" + FileInputID + "').uploadify({");
+
+
+
+			// Add all the uploadifive options
+			if (Auto.HasValue)
+				Output.WriteLine("      'auto': " + Auto.Value.ToString().ToLower() + ",");
+			if (!string.IsNullOrEmpty(ButtonClass))
+				Output.WriteLine("      'buttonClass': '" + ButtonClass + "',");
+			if (!string.IsNullOrEmpty(ButtonText))
+				Output.WriteLine("      'buttonText': '" + ButtonText + "',");
+			if (!string.IsNullOrEmpty(CheckScript))
+				Output.WriteLine("      'checkScript': '" + CheckScript + "',");
+			if (DragAndDrop.HasValue)
+				Output.WriteLine("      'dnd': " + DragAndDrop.Value.ToString().ToLower() + ",");
+			if (!string.IsNullOrEmpty(FileObjName))
+				Output.WriteLine("      'fileObjName': '" + FileObjName + "',");
+			if (!string.IsNullOrEmpty(FileSizeLimit))
+				Output.WriteLine("      'fileSizeLimit': '" + FileSizeLimit + "',");
+			if (!string.IsNullOrEmpty(FileType))
+				Output.WriteLine("      'fileType': '" + FileType + "',");
+
+			// Add the form data
+			if (FormData.Count > 0)
+			{
+				Output.Write("      'formData': { ");
+				bool first = true;
+				foreach (KeyValuePair<string, string> thisData in FormData)
+				{
+					// After the first one, start with the comma seperation
+					if (first)
+						first = false;
+					else
+						Output.Write(", ");
+
+					Output.Write("'" + thisData.Key + "' : '" + thisData.Value + "'");
+				}
+				Output.WriteLine(" },");
+			}
+
+			// Finish the uploadifive options
+			if (ButtonHeight.HasValue)
+				Output.WriteLine("      'height': " + ButtonHeight.Value + ",");
+			if (!string.IsNullOrEmpty(ItemTemplate))
+				Output.WriteLine("      'itemTemplate': '" + ItemTemplate + "',");
+			if (Method == UploadiFive_Method_Enum.Get)
+				Output.WriteLine("      'method': 'get',");
+			if (Multi.HasValue)
+				Output.WriteLine("      'multi': " + Multi.Value.ToString().ToLower() + ",");
+			if (!string.IsNullOrEmpty(QueueID))
+				Output.WriteLine("      'queueID': '" + QueueID + "',");
+			if (QueueSizeLimit.HasValue)
+				Output.WriteLine("      'queueSizeLimit': " + QueueSizeLimit.Value + ",");
+			if (RemoveCompleted.HasValue)
+				Output.WriteLine("      'removeCompleted': " + RemoveCompleted.Value.ToString().ToLower() + ",");
+			if (TruncateLength.HasValue)
+				Output.WriteLine("      'truncateLength': " + TruncateLength.Value + ",");
+			if (UploadLimit.HasValue)
+				Output.WriteLine("      'uploadLimit': " + UploadLimit.Value + ",");
+			if (ButtonWidth.HasValue)
+				Output.WriteLine("      'width': " + ButtonWidth.Value + ",");
+
+			// Add some event handlers
+			if (SubmitWhenQueueCompletes)
+				Output.WriteLine("      'onQueueComplete': function (uploads) { $('#" + FileInputID + "').closest(\"form\").submit(); },");
+
+			// Is there a file extension restriction here?
+			if (!string.IsNullOrEmpty(AllowedFileExtensions))
+			{
+				// Build the json array of possible file extensions
+				string[] split = AllowedFileExtensions.Split(",|".ToCharArray());
+				StringBuilder jsonArrayBuilder = new StringBuilder(AllowedFileExtensions.Length * 2);
+				bool first = true;
+				foreach (string thisSplit in split)
+				{
+					if (first)
+					{
+						jsonArrayBuilder.Append("\"" + thisSplit.Trim().ToLower() + "\"");
+						first = false;
+					}
+					else
+					{
+						jsonArrayBuilder.Append(", \"" + thisSplit.Trim().ToLower() + "\"");
+					}
+				}
+
+				// Now, add the event
+				if (Version == UploadiFive_Version_Enum.HTML5)
+					Output.WriteLine("      'onAddQueueItem' : function(file) {");
+				else
+					Output.WriteLine("      'onSelect' : function(file) {");
+				Output.WriteLine("                             var extArray = JSON.parse('[ " + jsonArrayBuilder + " ]');");
+				Output.WriteLine("                             var fileName = file.name;");
+				Output.WriteLine("                             var ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();");
+				Output.WriteLine("                             var isExtValid = false;");
+				Output.WriteLine("                             for(var i = 0; i < extArray.length; i++) { ");
+				Output.WriteLine("                                 if ( ext == extArray[i] ) { isExtValid = true; break; }");
+				Output.WriteLine("                             }");
+
+				if (Version == UploadiFive_Version_Enum.HTML5)
+				{
+					if (DisallowedFileExtenstionMessage.Length > 0)
+						Output.WriteLine("                             if ( !isExtValid ) {  alert(\"" + DisallowedFileExtenstionMessage + "\".replace('<extension>', ext)); $('#" + FileInputID + "').uploadifive('cancel', file);  }");
+					else
+						Output.WriteLine("                             if ( !isExtValid ) {  $('#" + FileInputID + "').uploadifive('cancel', file);  }");
+				}
+				else
+				{
+					if (DisallowedFileExtenstionMessage.Length > 0)
+						Output.WriteLine("                             if ( !isExtValid ) {  alert(\"" + DisallowedFileExtenstionMessage + "\".replace('<extension>', ext)); $('#" + FileInputID + "').uploadify('cancel', '*');  }");
+					else
+						Output.WriteLine("                             if ( !isExtValid ) {  $('#" + FileInputID + "').uploadify('cancel', '*');  }");
+				}
+
+				Output.WriteLine("                         },");
+
+			}
+
+
+			// Set the upload script and finish this
+			if (Version == UploadiFive_Version_Enum.HTML5)
+				Output.WriteLine("      'uploadScript': '" + UploadScript + "'");
+			else
+			{
+				Output.WriteLine("      'swf': 'uploadify/uploadify.swf',");
+				Output.WriteLine("      'uploader': '" + UploadScript + "'");
+			}
+
 			Output.WriteLine("    });");
 			Output.WriteLine("  });");
 			Output.WriteLine("</script>");
@@ -99,7 +253,7 @@ namespace SobekCM.Library.UploadiFive
 		/// <summary> The name of the file object to use in your server-side script </summary>
 		/// <remarks> For example, in PHP, if this option is set to ‘the_files’, you can 
 		/// access the files that have been uploaded using $_FILES['the_files'];</remarks>
-		/// <value> Default value from UploadiFive is 'Filedata' </value>
+		/// <value> Default value is 'Filedata' </value>
 		public string FileObjName { get; set;  }
 
 		/// <summary> The maximum upload size allowed in KB </summary>
@@ -123,7 +277,7 @@ namespace SobekCM.Library.UploadiFive
 
 		/// <summary> The height of the browse button in pixels </summary>
 		/// <value> Default value from UploadiFive is 30 </value>
-		public int? Button_Height { get; set; }
+		public int? ButtonHeight { get; set; }
 
 		/// <summary> The itemTemplate option allows you to specify a special HTML template for 
 		/// each item that is added to the queue </summary>
@@ -184,7 +338,7 @@ namespace SobekCM.Library.UploadiFive
 
 		/// <summary> The width of the browse button in pixels </summary>
 		/// <value> Default value from UploadiFive is 100 </value>
-		public int? Button_Width { get; set; }
+		public int? ButtonWidth { get; set; }
 
 		#endregion
 
