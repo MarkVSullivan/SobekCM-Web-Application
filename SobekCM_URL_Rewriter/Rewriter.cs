@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Text.RegularExpressions;
 using System.Web;
 
 #endregion
@@ -10,8 +11,8 @@ namespace SobekCM.URL_Rewriter
     /// <summary> Rewrites the URL to remove the ugly query string context in many cases  </summary>
     /// <remarks> This extends the IHttpModule class.  This allows for the query string to be constructed
     /// from the longer URL, providing cleaner URLs with less visible query strings.  This class would take an incoming URL 
-    /// like http://ufdc.ufl.edu/UF00012345/00002/2j and do an internal rewrite so that within the application the URL is
-    /// actually http://ufdc.ufl.edu/sobekcm.aspx?urlquery=UF00012345/00002/2j&amp;portal=ufdc.ufl.edu.</remarks>
+    /// like http://digital.edu/UF00012345/00002/2j and do an internal rewrite so that within the application the URL is
+    /// actually http://digital.edu/sobekcm.aspx?urlquery=UF00012345/00002/2j&amp;portal=digital.edu.</remarks>
     public class Rewriter : IHttpModule
     {
         #region IHttpModule Members
@@ -46,7 +47,7 @@ namespace SobekCM.URL_Rewriter
                 return;
 
             // If this is a direct request for a valid file, skip out immediately
-            if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || ( appRelative.IndexOf(".html") > 0 ) || ( appRelative.IndexOf(".htm") > 0 ))
+			if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || (appRelative.IndexOf(".html") > 0) || (appRelative.IndexOf(".htm") > 0) || (appRelative.IndexOf(".ashx") > 0))
                 return;
 
 			// Special code for the favicon.ico
@@ -192,6 +193,27 @@ namespace SobekCM.URL_Rewriter
                         }
                         else
                         {
+							// Special code to redirect to static pages
+							if ((appRelative.Length == 16) && ( appRelative[10] == '/' ))
+							{
+								string bib_possibly = appRelative.Substring(0, 10);
+								string vid_possibly = appRelative.Substring(11, 5);
+					
+								// Use regular expressions to check format
+								string bibid_regex = @"[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}";
+								string vid_regex = @"^[0-9]{5}$";
+								if ((Regex.Match(bib_possibly.ToUpper(), bibid_regex).Success) && (Regex.Match(vid_possibly, vid_regex).Success))
+								{
+									// This is for an item, so check for ROBOT here
+									if (( !String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["robot"])) || ( Library.Navigation.SobekCM_Navigation_Object.Is_UserAgent_IP_Robot(HttpContext.Current.Request.UserAgent, HttpContext.Current.Request.UserHostAddress)))
+									{
+										string directory = bib_possibly.Substring(0, 2) + "/" + bib_possibly.Substring(2, 2) + "/" + bib_possibly.Substring(4, 2) + "/" + bib_possibly.Substring(6, 2) + "/" + bib_possibly.Substring(8);
+										string redirect_dir = "~/data/" + directory + "/" + bib_possibly + "_" + vid_possibly + ".html";
+										HttpContext.Current.RewritePath(redirect_dir, true);
+										return;
+									}
+								}
+							}
 
                             // Standard rewrite to the sobek application
                             if (current_querystring.Length > 0)

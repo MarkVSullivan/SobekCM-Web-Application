@@ -2483,6 +2483,45 @@ namespace SobekCM.Library.Database
 			}
 		}
 
+		/// <summary> Determines what restrictions are present on an item  </summary>
+		/// <param name="BibID"> Bibliographic identifier for the volume to retrieve </param>
+		/// <param name="VID"> Volume identifier for the volume to retrieve </param>
+		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <returns> DataSet with detailed information about this item from the database </returns>
+		/// <remarks> This calls the 'SobekCM_Get_Item_Restrictions' stored procedure </remarks> 
+		public static void Get_Item_Restrictions(string BibID, string VID, Custom_Tracer Tracer, out bool IsDark, out short IP_Restrction_Mask )
+		{
+			IsDark = true;
+			IP_Restrction_Mask = -1;
+
+			if (Tracer != null)
+			{
+				Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", "");
+			}
+
+			try
+			{
+				SqlParameter[] parameters = new SqlParameter[2];
+				parameters[0] = new SqlParameter("@BibID", BibID);
+				parameters[1] = new SqlParameter("@VID", VID);
+
+
+				// Define a temporary dataset
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Item_Restrictions", parameters);
+
+				// Was there an answer?
+				if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
+				{
+					IP_Restrction_Mask = short.Parse(tempSet.Tables[0].Rows[0]["IP_Restriction_Mask"].ToString());
+					IsDark = bool.Parse(tempSet.Tables[0].Rows[0]["Dark"].ToString());
+				}
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+			}
+		}
+
 		/// <summary> Gets some basic information about an item before displaing it, such as the descriptive notes from the database, ability to add notes, etc.. </summary>
 		/// <param name="ItemID"> Bibliographic identifier for the volume to retrieve </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -8957,6 +8996,8 @@ namespace SobekCM.Library.Database
         }
 
         #endregion
+
+
 
     }
 

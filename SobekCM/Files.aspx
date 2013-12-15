@@ -1,6 +1,6 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Files.aspx.cs" Inherits="Files" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Files.aspx.cs" Inherits="SobekCM.Files" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -9,7 +9,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        FILE: <%= file_url %>
+    
     </div>
     </form>
 </body>

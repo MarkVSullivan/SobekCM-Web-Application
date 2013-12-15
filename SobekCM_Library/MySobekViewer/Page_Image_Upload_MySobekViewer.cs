@@ -15,6 +15,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Database;
@@ -23,7 +24,6 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Users;
-using darrenjohnstone.net.FileUpload;
 
 #endregion
 
@@ -33,9 +33,6 @@ namespace SobekCM.Library.MySobekViewer
 
     public class Page_Image_Upload_MySobekViewer : abstract_MySobekViewer
     {
-        private DJAccessibleProgressBar DJAccessibleProgrssBar1;
-        private DJFileUpload DJFileUpload1;
-        private DJUploadController DJUploadController1;
         private readonly Aggregation_Code_Manager codeManager;
         private bool criticalErrorEncountered;
         private readonly string digitalResourceDirectory;
@@ -550,7 +547,7 @@ namespace SobekCM.Library.MySobekViewer
 				}
 			}
 			Output.WriteLine("</div>");
-			Output.WriteLine("<div class=\"sbkMenu_Bar\" style=\"height:20px\">&nbsp;</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -719,30 +716,13 @@ namespace SobekCM.Library.MySobekViewer
             placeHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
-            DJUploadController1 = new DJUploadController
-                                      {
-                                          CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
-                                          ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
-                                          ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
-                                          AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types
-                                      };
-            placeHolder.Controls.Add(DJUploadController1);
+			UploadiFiveControl uploadControl = new UploadiFiveControl();
+			uploadControl.UploadPath = digitalResourceDirectory;
+			uploadControl.UploadScript = currentMode.Base_URL + "\\UploadiFiveFileHandler.ashx";
+			uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types;
+			placeHolder.Controls.Add(uploadControl);
 
-            DJAccessibleProgrssBar1 = new DJAccessibleProgressBar();
-            placeHolder.Controls.Add(DJAccessibleProgrssBar1);
-
-            DJFileUpload1 = new DJFileUpload { ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1, AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types, GoButton_CSS = "sbkPiu_RoundButton" };
-            placeHolder.Controls.Add(DJFileUpload1);
-
-            // Set the default processor
-            FileSystemProcessor fs = new FileSystemProcessor {OutputPath = digitalResourceDirectory};
-            DJUploadController1.DefaultFileProcessor = fs;
-
-            // Change the file processor and set it's properties.
-            FieldTestProcessor fsd = new FieldTestProcessor {OutputPath = digitalResourceDirectory};
-            DJFileUpload1.FileProcessor = fsd;
-
-            filesBuilder.AppendLine("</blockquote><br />");
+			filesBuilder.AppendLine("</blockquote><br />");
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
             placeHolder.Controls.Add(literal1);

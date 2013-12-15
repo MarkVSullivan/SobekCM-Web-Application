@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="SobekCM.aspx.cs" Inherits="SobekMain" validateRequest="false" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SobekCM.aspx.cs" Inherits="SobekCM.SobekCM" %>
 <!DOCTYPE html>
 <html>
 <head>

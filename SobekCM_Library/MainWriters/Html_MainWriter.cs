@@ -931,9 +931,7 @@ namespace SobekCM.Library.MainWriters
 
 					if (codes_added < 5)
 					{
-						if ((currentItem.Bib_Info.Source.Code.Length > 0) &&
-							(currentItem.Bib_Info.Source.Code != "UF") &&
-							(currentItem.Bib_Info.Source.Code.ToUpper() != "IUF"))
+						if (currentItem.Bib_Info.Source.Code.Length > 0) 
 						{
 							// Add source code
 							string source_code = currentItem.Bib_Info.Source.Code;
@@ -953,9 +951,7 @@ namespace SobekCM.Library.MainWriters
 
 							// Add the holding code
 							if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
-								(currentItem.Bib_Info.Location.Holding_Code != currentItem.Bib_Info.Source.Code) &&
-								(currentItem.Bib_Info.Location.Holding_Code != "UF") &&
-								(currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
+								(currentItem.Bib_Info.Location.Holding_Code != currentItem.Bib_Info.Source.Code))
 							{
 								// Add holding code
 								string holding_code = currentItem.Bib_Info.Location.Holding_Code;
@@ -978,9 +974,7 @@ namespace SobekCM.Library.MainWriters
 						}
 						else
 						{
-							if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
-								(currentItem.Bib_Info.Location.Holding_Code != "UF") &&
-								(currentItem.Bib_Info.Location.Holding_Code.ToUpper() != "IUF"))
+							if (currentItem.Bib_Info.Location.Holding_Code.Length > 0)
 							{
 								// Add holding code
 								string holding_code = currentItem.Bib_Info.Location.Holding_Code;

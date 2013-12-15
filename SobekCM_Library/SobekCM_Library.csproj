@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -42,6 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\SobekCM_Library.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SobekCM_Library.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,6 +62,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -69,6 +72,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AjaxControlToolkit">
@@ -251,6 +255,9 @@
     <Compile Include="Statistics\SobekCM_Session.cs" />
     <Compile Include="Statistics\SobekCM_Stats_DataSet.cs" />
     <Compile Include="Statistics\SobekCM_Stats_Reader_Processor.cs" />
+    <Compile Include="UploadiFive\UploadiFive.cs" />
+    <Compile Include="UploadiFive\UploadiFiveControl.cs" />
+    <Compile Include="UploadiFive\UploadiFive_Method_Enum.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
     <Compile Include="AggregationViewer\Viewers\Item_Count_AggregationViewer.cs" />
@@ -558,10 +565,6 @@
     <Compile Include="WebContent\HTML_Based_Content.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileUploadLibrary\FileUploadLibrary.csproj">
-      <Project>{7886866E-6B81-4001-8B50-069E8E7B3CB8}</Project>
-      <Name>FileUploadLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395C2621-CE19-41E0-AA1A-ABDB37F6E815}</Project>
       <Name>SobekCM_Resource_Object</Name>

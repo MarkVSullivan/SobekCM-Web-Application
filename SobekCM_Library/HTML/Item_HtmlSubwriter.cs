@@ -1089,7 +1089,7 @@ namespace SobekCM.Library.HTML
 
 			    // Add the item views
 			    Output.WriteLine("<!-- Add the different view and social options -->");
-				Output.WriteLine("<nav class=\"sbkMenu_Bar\">");
+				Output.WriteLine("<nav class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\">");
 
 
 			    // Add the sharing buttons if this is not restricted by IP address or checked out
@@ -1192,7 +1192,7 @@ namespace SobekCM.Library.HTML
 						string[] first_splitter = first_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
 						if (first_splitter.Length > 0)
 						{
-							Output.WriteLine("\t\t<li><a href=\"" + first_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(first_splitter[0]) + "\">" + System.Web.HttpUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
+							Output.WriteLine("\t\t<li><a href=\"" + first_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(first_splitter[0]) + "\">" + HttpUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
 						}
 					}
 					if (second_pre_menu_option.Length > 0)
@@ -1200,7 +1200,7 @@ namespace SobekCM.Library.HTML
 						string[] second_splitter = second_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
 						if (second_splitter.Length > 0)
 						{
-							Output.WriteLine("\t\t<li><a href=\"" + second_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(second_splitter[0]) + "\">" + System.Web.HttpUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
+							Output.WriteLine("\t\t<li><a href=\"" + second_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(second_splitter[0]) + "\">" + HttpUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
 						}
 					}
 					if (third_pre_menu_option.Length > 0)
@@ -1208,7 +1208,7 @@ namespace SobekCM.Library.HTML
 						string[] third_splitter = third_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
 						if (third_splitter.Length > 0)
 						{
-							Output.WriteLine("\t\t<li><a href=\"" + third_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(third_splitter[0]) + "\">" + System.Web.HttpUtility.HtmlEncode(third_splitter[0]) + "</a></li>");
+							Output.WriteLine("\t\t<li><a href=\"" + third_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(third_splitter[0]) + "\">" + HttpUtility.HtmlEncode(third_splitter[0]) + "</a></li>");
 						}
 					}
 				}
@@ -1223,91 +1223,105 @@ namespace SobekCM.Library.HTML
 					    // Special code for the CITATION view (TEMPORARY - v.3.2)
 					    if (thisView.View_Type == View_Enum.CITATION)
 					    {
-						    currentMode.ViewerCode = "citation";
-						    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-							    currentMode.ViewerCode = "description";
-						    if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
-						        (viewerCode == "usage") || (viewerCode == "description"))
+						    if (currentMode.Is_Robot)
 						    {
-							    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
+								Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
 						    }
 						    else
 						    {
-							    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
+							    currentMode.ViewerCode = "citation";
+							    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+								    currentMode.ViewerCode = "description";
+							    if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
+							        (viewerCode == "usage") || (viewerCode == "description"))
+							    {
+								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
+							    }
+							    else
+							    {
+								    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
+							    }
+							    Output.WriteLine("<ul>");
+
+
+							    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+								    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Archival Description</a></li>");
+							    else
+								    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
+
+
+
+							    currentMode.ViewerCode = "marc";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">MARC View</a></li>");
+
+
+							    currentMode.ViewerCode = "metadata";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Metadata</a></li>");
+
+
+							    currentMode.ViewerCode = "usage";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Usage Statistics</a></li>");
+
+
+							    Output.WriteLine("\t\t</ul></li>");
+							    currentMode.ViewerCode = viewerCode;
 						    }
-						    Output.WriteLine("<ul>");
-
-
-						    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Archival Description</a></li>");
-						    else
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
-
-
-
-						    currentMode.ViewerCode = "marc";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">MARC View</a></li>");
-
-
-						    currentMode.ViewerCode = "metadata";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Metadata</a></li>");
-
-
-						    currentMode.ViewerCode = "usage";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Usage Statistics</a></li>");
-
-
-						    Output.WriteLine("\t\t</ul></li>");
-						    currentMode.ViewerCode = viewerCode;
 					    }
 					    else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
 					    {
-						    string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
-						    string all_volumes = "All Volumes";
-						    if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
-						    {
-							    all_volumes = "All Issues";
-						    }
-						    else if (resource_type_upper.IndexOf("MAP") >= 0)
-						    {
-							    all_volumes = "Related Maps";
-						    }
-						    else if (resource_type_upper.IndexOf("AERIAL") >= 0)
-						    {
-							    all_volumes = "Related Flights";
-						    }
+							string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
+							string all_volumes = "All Volumes";
+							if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
+							{
+								all_volumes = "All Issues";
+							}
+							else if (resource_type_upper.IndexOf("MAP") >= 0)
+							{
+								all_volumes = "Related Maps";
+							}
+							else if (resource_type_upper.IndexOf("AERIAL") >= 0)
+							{
+								all_volumes = "Related Flights";
+							}
 
-
-						    currentMode.ViewerCode = "allvolumes";
-						    if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
-						        (viewerCode == "allvolumes3"))
+						    if (currentMode.Is_Robot)
 						    {
-							    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+								Output.Write("\t\t<li><a href=\"" + SobekCM_Library_Settings.Base_URL + "\\" + currentItem.BibID + "\">" + all_volumes + "</a></li>");
 						    }
 						    else
 						    {
-							    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+
+							    currentMode.ViewerCode = "allvolumes";
+							    if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
+							        (viewerCode == "allvolumes3"))
+							    {
+								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+							    }
+							    else
+							    {
+								    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+							    }
+							    Output.WriteLine("<ul>");
+
+
+							    currentMode.ViewerCode = "allvolumes";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Tree View</a></li>");
+
+
+							    currentMode.ViewerCode = "allvolumes2";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Thumbnails</a></li>");
+
+
+							    if (currentMode.Internal_User)
+							    {
+								    currentMode.ViewerCode = "allvolumes3";
+								    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">List View</a></li>");
+							    }
+
+
+							    Output.WriteLine("\t\t</ul></li>");
+							    currentMode.ViewerCode = viewerCode;
 						    }
-						    Output.WriteLine("<ul>");
-
-
-						    currentMode.ViewerCode = "allvolumes";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Tree View</a></li>");
-
-							
-						    currentMode.ViewerCode = "allvolumes2";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Thumbnails</a></li>");
-
-
-						    if (currentMode.Internal_User)
-						    {
-							    currentMode.ViewerCode = "allvolumes3";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">List View</a></li>");
-						    }
-
-
-						    Output.WriteLine("\t\t</ul></li>");
-						    currentMode.ViewerCode = viewerCode;
 					    }
 					    else
 					    {

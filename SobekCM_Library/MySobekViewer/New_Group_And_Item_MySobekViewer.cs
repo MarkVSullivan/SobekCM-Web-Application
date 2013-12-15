@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -28,7 +29,6 @@ using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Users;
-using darrenjohnstone.net.FileUpload;
 
 #endregion
 
@@ -49,10 +49,6 @@ namespace SobekCM.Library.MySobekViewer
     /// </ul></remarks>
     public class New_Group_And_Item_MySobekViewer : abstract_MySobekViewer
     {
-        private DJAccessibleProgressBar djAccessibleProgrssBar1;
-        private DJFileUpload djFileUpload1;
-        private DJUploadController djUploadController1;
-
         private readonly Aggregation_Code_Manager codeManager;
         private bool criticalErrorEncountered;
         private readonly int currentProcessStep;
@@ -1707,28 +1703,12 @@ namespace SobekCM.Library.MySobekViewer
                 MainPlaceholder.Controls.Add(filesLiteral2);
                 filesBuilder.Remove(0, filesBuilder.Length);
 
-                djUploadController1 = new DJUploadController
-                                          {
-                                              CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
-                                              ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
-                                              ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
-                                              AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types + "," + SobekCM_Library_Settings.Upload_Image_Types
-                                          };
-                MainPlaceholder.Controls.Add(djUploadController1);
 
-                djAccessibleProgrssBar1 = new DJAccessibleProgressBar();
-                MainPlaceholder.Controls.Add(djAccessibleProgrssBar1);
-
-                djFileUpload1 = new DJFileUpload {ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1};
-                MainPlaceholder.Controls.Add(djFileUpload1);
-
-                // Set the default processor
-                FileSystemProcessor fs = new FileSystemProcessor {OutputPath = userInProcessDirectory};
-                djUploadController1.DefaultFileProcessor = fs;
-
-                // Change the file processor and set it's properties.
-                FieldTestProcessor fsd = new FieldTestProcessor {OutputPath = userInProcessDirectory};
-                djFileUpload1.FileProcessor = fsd;
+				UploadiFiveControl uploadControl = new UploadiFiveControl();
+				uploadControl.UploadPath = userInProcessDirectory;
+				uploadControl.UploadScript = currentMode.Base_URL + "\\UploadiFiveFileHandler.ashx";
+				uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types + "," + SobekCM_Library_Settings.Upload_Image_Types;
+				MainPlaceholder.Controls.Add(uploadControl);
 
                 filesBuilder.AppendLine("</blockquote><br />");
             }
