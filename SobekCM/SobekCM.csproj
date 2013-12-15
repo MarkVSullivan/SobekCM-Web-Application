@@ -58,10 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dashboard.aspx" />
-    <Content Include="data\IR\00\00\35\45\IR00003545_00001.html" />
-    <Content Include="data\IR\00\00\35\45\IR00003545_00002.html" />
-    <Content Include="data\IR\00\00\35\45\IR00003545_00003.html" />
-    <Content Include="data\IR\00\00\35\45\IR00003545_00004.html" />
     <Content Include="default\images\16px-Feed-icon.svg.png" />
     <Content Include="default\images\add_comment.png" />
     <Content Include="default\images\add_volume.png" />
@@ -543,20 +539,6 @@
     <Content Include="default\scripts\uploadify\license-standard.txt" />
     <Content Include="default\scripts\uploadify\uploadifive-cancel.png" />
     <Content Include="default\scripts\uploadify\uploadifive.css" />
-    <Content Include="default\scripts\upload_images\addbutton.gif" />
-    <Content Include="default\scripts\upload_images\cancelbutton.gif" />
-    <Content Include="default\scripts\upload_images\removebutton.gif" />
-    <Content Include="default\scripts\upload_images\selectbutton.gif" />
-    <Content Include="default\scripts\upload_images\uploadbutton.gif" />
-    <Content Include="default\scripts\upload_scripts\effects.js" />
-    <Content Include="default\scripts\upload_scripts\fileupload.js" />
-    <Content Include="default\scripts\upload_scripts\modalbox.js" />
-    <Content Include="default\scripts\upload_scripts\prototype.js" />
-    <Content Include="default\scripts\upload_scripts\scriptaculous.js" />
-    <Content Include="default\scripts\upload_styles\dynamicstyles.css" />
-    <Content Include="default\scripts\upload_styles\modalbox.css" />
-    <Content Include="default\scripts\upload_styles\spinner.gif" />
-    <Content Include="default\scripts\upload_styles\uploadstyles.css" />
     <Content Include="default\SobekCM.css" />
     <Content Include="default\SobekCM.min.css" />
     <Content Include="default\SobekCM_Admin.css" />
