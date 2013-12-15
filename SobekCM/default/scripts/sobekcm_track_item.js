@@ -171,6 +171,25 @@ function save_item_tracking(page) {
     return false;
 }
 
+function save_workflow(workflow_ID, itemID) {
+    alert(workflow_ID + ' ' + itemID);
+    document.getElementById('Track_Item_behaviors_request').value = 'save';
+    document.getElementById('Track_Item_hidden_value').value = workflow_ID;
+    document.getElementById('hidden_itemID').value = itemID;
+
+    document.itemNavForm.submit();
+    return false;
+}
+
+function delete_workflow(workflow_ID) {
+    alert(workflow_ID);
+    document.getElementById('Track_Item_behaviors_request').value = 'delete';
+    document.getElementById('Track_Item_hidden_value').value = workflow_ID;
+
+    document.itemNavForm.submit();
+    return false;
+}
+
 
 
 (function ($) {
