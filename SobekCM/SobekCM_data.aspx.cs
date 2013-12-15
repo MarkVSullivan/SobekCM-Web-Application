@@ -1,63 +1,49 @@
-﻿#region Includes
-
-using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.IO;
-using System.Text;
-using System.Web;
-using System.Net.Mail;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using SobekCM.Library.Application_State;
+﻿using System;
 using SobekCM.Library.Navigation;
 
-#endregion
-
-public partial class SobekCM_data : System.Web.UI.Page
+namespace SobekCM
 {
-    private SobekCM_Page_Globals Page_Globals;
+	public partial class SobekCM_Data : System.Web.UI.Page
+	{
+		private SobekCM_Page_Globals pageGlobals;
 
-    #region Page_Load method does the final checks and creates the writer type
+		#region Page_Load method does the final checks and creates the writer type
 
-    protected void Page_Load(object sender, EventArgs e)
-    {
-        try
-        {
-            Page_Globals.On_Page_Load();
-        }
-        catch (OutOfMemoryException ee)
-        {
-            Page_Globals.Email_Information("UFDC Out of Memory Exception", ee);
-        }
-        catch (Exception ee)
-        {
-            Page_Globals.currentMode.Mode = Display_Mode_Enum.Error;
-            Page_Globals.currentMode.Error_Message = "Unknown error caught while executing your request";
-            Page_Globals.currentMode.Caught_Exception = ee;
-        }
-    }
+		protected void Page_Load(object Sender, EventArgs E)
+		{
+			try
+			{
+				pageGlobals.On_Page_Load();
+			}
+			catch (OutOfMemoryException ee)
+			{
+				pageGlobals.Email_Information("UFDC Out of Memory Exception", ee);
+			}
+			catch (Exception ee)
+			{
+				pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
+				pageGlobals.currentMode.Error_Message = "Unknown error caught while executing your request";
+				pageGlobals.currentMode.Caught_Exception = ee;
+			}
+		}
 
-    #endregion
+		#endregion
 
-    #region Methods called during execution of the page
+		#region Methods called during execution of the page
 
-	protected void Write_Html_XML_or_JSON()
-    {
-        // Add the HTML and controls to start this off
-        Page_Globals.mainWriter.Write_Html(Response.Output, Page_Globals.tracer);
-    }
+		protected void Write_Html_XML_or_JSON()
+		{
+			// Add the HTML and controls to start this off
+			pageGlobals.mainWriter.Write_Html(Response.Output, pageGlobals.tracer);
+		}
 
-    #endregion
+		#endregion
 
-    protected override void OnInit(EventArgs e)
-    {
-        Page_Globals = new SobekCM_Page_Globals(IsPostBack, "SOBEKCM_DATA");
+		protected override void OnInit(EventArgs E)
+		{
+			pageGlobals = new SobekCM_Page_Globals(IsPostBack, "SOBEKCM_DATA");
 
-        base.OnInit(e);
-    }
+			base.OnInit(E);
+		}
+	}
 }

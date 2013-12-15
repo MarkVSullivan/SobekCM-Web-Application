@@ -9,6 +9,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Library.Aggregations;
@@ -254,12 +255,14 @@ namespace SobekCM.Library
             return errors;
         }
 
-        /// <summary> Rebuilds all static pages, including the RSS feeds and site maps </summary>
-        /// <param name="Logger"> Log file to record progress </param>
-        /// <param name="BuildAllCitationPages"> Flag indicates to build the individual static HTML pages for each digital resource </param>
-        /// <param name="RssFeedLocation"> Location where the RSS feeds should be updated to </param>
-        /// <returns> The number of encountered errors </returns>
-        public int Rebuild_All_Static_Pages(LogFileXHTML Logger, bool BuildAllCitationPages, string RssFeedLocation, string InstanceName, long PrimaryLogId )
+	    /// <summary> Rebuilds all static pages, including the RSS feeds and site maps </summary>
+	    /// <param name="Logger"> Log file to record progress </param>
+	    /// <param name="BuildAllCitationPages"> Flag indicates to build the individual static HTML pages for each digital resource </param>
+	    /// <param name="RssFeedLocation"> Location where the RSS feeds should be updated to </param>
+	    /// <param name="InstanceName"> Name of this instance </param>
+	    /// <param name="PrimaryLogId"> Log ID in the case this is the builder and it has been pre-logged </param>
+	    /// <returns> The number of encountered errors </returns>
+	    public int Rebuild_All_Static_Pages(LogFileXHTML Logger, bool BuildAllCitationPages, string RssFeedLocation, string InstanceName, long PrimaryLogId )
         {
 	        if (InstanceName.Length > 0)
 		        InstanceName = InstanceName + " - ";
@@ -301,6 +304,93 @@ namespace SobekCM.Library
                     string vid = thisRow["VID"].ToString();
 	                string itemDirectory = SobekCM_Library_Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
 	                string staticDirectory = itemDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
+
+
+					// ********** TEMPORARY CLEAN UP ***********************//
+					/// TODO: REMOVE THIS!
+					// *******************************************//
+					try
+					{
+						if (Directory.Exists(itemDirectory))
+						{
+							if (!Directory.Exists(staticDirectory))
+								Directory.CreateDirectory(staticDirectory);
+
+							if ( File.Exists(itemDirectory + "\\thumbs.db"))
+								File.Delete(itemDirectory + "\\thumbs.db");
+
+							if ( File.Exists(itemDirectory + "\\doc.xml"))
+								File.Delete(itemDirectory + "\\doc.xml");
+
+							if ( File.Exists(itemDirectory + "\\citation_mets.xml"))
+								File.Delete(itemDirectory + "\\citation_mets.xml");
+
+							if ( File.Exists(itemDirectory + "\\" + bibid + "_" + vid + ".html"))
+								File.Delete(itemDirectory + "\\" + bibid + "_" + vid + ".html");
+
+							if ( File.Exists(itemDirectory + "\\errors.xml"))
+								File.Delete(itemDirectory + "\\errors.xml");
+
+							if ( File.Exists(itemDirectory + "\\qc_error.html"))
+								File.Delete(itemDirectory + "\\qc_error.html");
+
+							string[] files = Directory.GetFileSystemEntries(itemDirectory, "*.job");
+							foreach( string thisFile in files )
+								File.Delete(thisFile);
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "*.bridge*");
+							foreach (string thisFile in files)
+								File.Delete(thisFile);
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "*.qc.jpg");
+							foreach (string thisFile in files)
+								File.Delete(thisFile);
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "*_qc.jpg");
+							foreach (string thisFile in files)
+								File.Delete(thisFile);
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "*_INGEST_xml.txt");
+							foreach (string thisFile in files)
+								File.Delete(thisFile);
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "*_INGEST.xml");
+							if (files.Length > 0)
+							{
+								if (!Directory.Exists(itemDirectory + "\\fda_files"))
+									Directory.CreateDirectory(itemDirectory + "\\fda_files");
+
+								foreach (string thisFile in files)
+								{
+									string filename = Path.GetFileName(thisFile);
+									File.Move(thisFile, itemDirectory + "\\fda_files\\" + filename);
+								}
+							}
+
+							if (File.Exists(itemDirectory + "\\original.mets.xml"))
+								File.Move(itemDirectory + "\\original.mets.xml", staticDirectory + "\\original.mets.xml");
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "recd_*.mets.xml");
+							foreach (string thisFile in files)
+							{
+								string filename = Path.GetFileName(thisFile);
+								File.Move(thisFile, staticDirectory+ "\\" + filename);
+							}
+
+							files = Directory.GetFileSystemEntries(itemDirectory, "*.mets.bak");
+							foreach (string thisFile in files)
+							{
+								string filename = Path.GetFileName(thisFile);
+								File.Move(thisFile, staticDirectory + "\\" + filename);
+							}
+						}
+					}
+					catch 
+					{
+						Console.WriteLine(InstanceName + "....Error cleaning up folder " + bibid + ":" + vid);
+						Logger.AddError("....Error cleaning up folder " + bibid + ":" + vid);
+					}
+					// ************* END TEMPORARY CLEAN UP ******************//
 
 	                try
 	                {
@@ -351,15 +441,10 @@ namespace SobekCM.Library
 			currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 	        currentMode.Skin = defaultSkin;
 
-
 			// Get the default web skin
-			SobekCM_Skin_Object defaultSkinObject = skinsCollection[defaultSkin];
-			if (defaultSkinObject == null)
-			{
-				defaultSkinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
-			}
+			SobekCM_Skin_Object defaultSkinObject = skinsCollection[defaultSkin] ?? assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
 
-            // Get the list of all collections
+	        // Get the list of all collections
             DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);
             DataView collectionView = new DataView(allCollections) {Sort = "Name ASC"};
 
@@ -635,7 +720,7 @@ namespace SobekCM.Library
                 writer.Flush();
                 writer.Close();
             }
-            catch ( Exception ee )
+            catch 
             {
                 Logger.AddError("ERROR BUILDING RSS INDEX.HTM FILE");
                 Console.WriteLine(@"Error building RSS index.htm file");
@@ -912,8 +997,8 @@ namespace SobekCM.Library
 
         private void Finish_writing_html(SobekCM_Item CurrentItem, Page_TreeNode CurrentPage, string Filename, string TextFileLocation )
         {
-            string bibid = CurrentItem.BibID;
-            CurrentItem.Behaviors.Text_Searchable = false;
+	        bool textSearchable = CurrentItem.Behaviors.Text_Searchable;
+	        CurrentItem.Behaviors.Text_Searchable = false;
 			if (staticSobekcmLocation.Length > 0)
 		        SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
 
@@ -971,9 +1056,20 @@ namespace SobekCM.Library
 			writer.WriteLine("</head>");
 			writer.WriteLine("<body>");
 
+			// Is this item DARK or PRIVATE
+			if ((CurrentItem.Behaviors.Dark_Flag) || ( CurrentItem.Behaviors.IP_Restriction_Membership < 0 ))
+			{
+				writer.WriteLine("THIS ITEM IS CURRENTLY DARK OR PRIVATE");
+				writer.WriteLine("</body>");
+				writer.WriteLine("</html>");
+				writer.Flush();
+				writer.Close();
+				return;
+			}
+
 
             // Add the header
-            Display_Header(writer, itemWriter.Skin, String.Empty);
+            Display_Header(writer, itemWriter.Skin, CurrentItem);
 
             // Begin to write the item view
             itemWriter.Write_HTML(writer, tracer);
@@ -1019,194 +1115,197 @@ namespace SobekCM.Library
             // Close out this tables and form
             writer.WriteLine("       </tr>");
 
-            // Add the download list if there are some
-            if ( CurrentItem.Divisions.Download_Tree.Has_Files )
-            {
-                writer.WriteLine("       <tr>");
-                // Create the downloads viewer to ouput the html
-                Download_ItemViewer downloadViewer = new Download_ItemViewer
-                                                         {CurrentItem = CurrentItem, CurrentMode = currentMode};
+			// If this is IP restricted, show nothing else
+	        if (CurrentItem.Behaviors.IP_Restriction_Membership == 0)
+	        {
+		        // Add the download list if there are some
+		        if (CurrentItem.Divisions.Download_Tree.Has_Files)
+		        {
+			        writer.WriteLine("       <tr>");
+			        // Create the downloads viewer to ouput the html
+			        Download_ItemViewer downloadViewer = new Download_ItemViewer {CurrentItem = CurrentItem, CurrentMode = currentMode};
 
-                // Add the HTML for this now
-                downloadViewer.Write_Main_Viewer_Section(writer, tracer);
-                writer.WriteLine("       </tr>");
-            }
+			        // Add the HTML for this now
+			        downloadViewer.Write_Main_Viewer_Section(writer, tracer);
+			        writer.WriteLine("       </tr>");
+		        }
 
-            // If there is a table of contents write it again, this time it will be complete
-            // and also show a hierarchy if there is one
-            if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
-            {
-                writer.WriteLine("       <tr>");
-                writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Table of Contents</span></td>");
-                writer.WriteLine("       </tr>");
+		        // If there is a table of contents write it again, this time it will be complete
+		        // and also show a hierarchy if there is one
+		        if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
+		        {
+			        writer.WriteLine("       <tr>");
+			        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Table of Contents</span></td>");
+			        writer.WriteLine("       </tr>");
 
-                writer.WriteLine("       <tr>");
-                writer.WriteLine("          <td>");
-				writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
+			        writer.WriteLine("       <tr>");
+			        writer.WriteLine("          <td>");
+			        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
 
-                foreach (abstract_TreeNode treeNode in CurrentItem.Divisions.Physical_Tree.Roots)
-                {
-                    recursively_write_toc(writer, treeNode, "&nbsp; &nbsp; ");
-                }
+			        foreach (abstract_TreeNode treeNode in CurrentItem.Divisions.Physical_Tree.Roots)
+			        {
+				        recursively_write_toc(writer, treeNode, "&nbsp; &nbsp; ");
+			        }
 
-                writer.WriteLine("            </div>");
-                writer.WriteLine("          </td>");
-                writer.WriteLine("       </tr>");
-            }
+			        writer.WriteLine("            </div>");
+			        writer.WriteLine("          </td>");
+			        writer.WriteLine("       </tr>");
+		        }
 
-            // Is the text file location included, in which case any full text should be appended to the end?
-            if ((TextFileLocation.Length > 0) && ( Directory.Exists(TextFileLocation)))
-            {
-                // Get the list of all TXT files in this division
-                string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
-                Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
-                foreach (string thisTextFile in text_files)
-                {
-                    string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
-                    text_files_existing[text_filename] = text_filename;
-                }
-                
-                // Are there ANY text files?
-                if (text_files.Length > 0)
-                {
-                    // If this has page images, check for related text files 
-                    List<string> text_files_included = new List<string>();
-                    bool started = false;
-                    if (CurrentItem.Divisions.Physical_Tree.Has_Files)
-                    {
-                        // Go through the first 100 text pages
-                        List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
-                        int page_count = 0;
-                        foreach (Page_TreeNode thisPage in pages)
-                        {
-                            // Keep track of the page count
-                            page_count++;
+		        // Is the text file location included, in which case any full text should be appended to the end?
+		        if ((TextFileLocation.Length > 0) && (Directory.Exists(TextFileLocation)))
+		        {
+			        // Get the list of all TXT files in this division
+			        string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
+			        Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+			        foreach (string thisTextFile in text_files)
+			        {
+				        string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
+				        text_files_existing[text_filename] = text_filename;
+			        }
 
-                            // Look for files in this page
-                            if (thisPage.Files.Count > 0)
-                            {
-                                bool found_non_thumb_file = false;
-                                foreach (SobekCM_File_Info thisFile in thisPage.Files)
-                                {
-                                    // Make sure this is not a thumb
-                                    if (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0)
-                                    {
-                                        found_non_thumb_file = true;
-                                        string root = thisFile.File_Name_Sans_Extension;
-                                        if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
-                                        {
-                                            string text_file = TextFileLocation + "\\" + thisFile.File_Name_Sans_Extension + ".txt";
+			        // Are there ANY text files?
+			        if (text_files.Length > 0)
+			        {
+				        // If this has page images, check for related text files 
+				        List<string> text_files_included = new List<string>();
+				        bool started = false;
+				        if (CurrentItem.Divisions.Physical_Tree.Has_Files)
+				        {
+					        // Go through the first 100 text pages
+					        List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
+					        int page_count = 0;
+					        foreach (Page_TreeNode thisPage in pages)
+					        {
+						        // Keep track of the page count
+						        page_count++;
 
-                                            // SInce this is marked to be included, save this name
-                                            text_files_included.Add(root.ToUpper() + ".TXT");
+						        // Look for files in this page
+						        if (thisPage.Files.Count > 0)
+						        {
+							        bool found_non_thumb_file = false;
+							        foreach (SobekCM_File_Info thisFile in thisPage.Files)
+							        {
+								        // Make sure this is not a thumb
+								        if (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0)
+								        {
+									        found_non_thumb_file = true;
+									        string root = thisFile.File_Name_Sans_Extension;
+									        if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
+									        {
+										        string text_file = TextFileLocation + "\\" + thisFile.File_Name_Sans_Extension + ".txt";
 
-                                            // For size reasons, we only include the text from the first 100 pages
-                                            if (page_count <= 100)
-                                            {
-                                                if (!started)
-                                                {
-                                                    writer.WriteLine("       <tr>");
-                                                    writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
-                                                    writer.WriteLine("       </tr>");
-                                                    writer.WriteLine("       <tr>");
-                                                    writer.WriteLine("          <td>");
-													writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
+										        // SInce this is marked to be included, save this name
+										        text_files_included.Add(root.ToUpper() + ".TXT");
 
-                                                    started = true;
-                                                }
+										        // For size reasons, we only include the text from the first 100 pages
+										        if (page_count <= 100)
+										        {
+											        if (!started)
+											        {
+												        writer.WriteLine("       <tr>");
+												        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+												        writer.WriteLine("       </tr>");
+												        writer.WriteLine("       <tr>");
+												        writer.WriteLine("          <td>");
+												        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
 
-                                                try
-                                                {
-                                                    StreamReader reader = new StreamReader(text_file);
-                                                    string text_line = reader.ReadLine();
-                                                    while (text_line != null)
-                                                    {
-                                                        writer.WriteLine(text_line + "<br />");
-                                                        text_line = reader.ReadLine();
-                                                    }
-                                                    reader.Close();
-                                                }
-                                                catch
-                                                {
-                                                    writer.WriteLine("Unable to read file: " + text_file);
-                                                }
+												        started = true;
+											        }
 
-                                                writer.WriteLine("<br /><br />");
-                                            }
-                                        }
+											        try
+											        {
+												        StreamReader reader = new StreamReader(text_file);
+												        string text_line = reader.ReadLine();
+												        while (text_line != null)
+												        {
+													        writer.WriteLine(text_line + "<br />");
+													        text_line = reader.ReadLine();
+												        }
+												        reader.Close();
+											        }
+											        catch
+											        {
+												        writer.WriteLine("Unable to read file: " + text_file);
+											        }
 
-                                    }
+											        writer.WriteLine("<br /><br />");
+										        }
+									        }
 
-                                    // If a suitable file was found, break here
-                                    if (found_non_thumb_file)
-                                        break;
-                                }
-                            }
-                        }
+								        }
 
-                        // End this if it was ever started
-                        if (started)
-                        {
-                            writer.WriteLine("            </div>");
-                            writer.WriteLine("          </td>");
-                            writer.WriteLine("       </tr>");
-                        }
-                    }
+								        // If a suitable file was found, break here
+								        if (found_non_thumb_file)
+									        break;
+							        }
+						        }
+					        }
 
-                    // Now, check for any other valid text files 
-                    List<string> additional_text_files = text_files_existing.Keys.Where(ThisTextFile => (!text_files_included.Contains(ThisTextFile.ToUpper())) && (ThisTextFile.ToUpper() != "AGREEMENT.TXT") && (ThisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
+					        // End this if it was ever started
+					        if (started)
+					        {
+						        writer.WriteLine("            </div>");
+						        writer.WriteLine("          </td>");
+						        writer.WriteLine("       </tr>");
+					        }
+				        }
 
-                    // Now, include any additional text files, which would not be page text files, possiblye 
-                    // full text for included PDFs, Powerpoint, Word Doc, etc..
-	                started = false;
-                    foreach (string thisTextFile in additional_text_files)
-                    {
-                        if (!started)
-                        {
-                            writer.WriteLine("       <tr>");
-                            writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
-                            writer.WriteLine("       </tr>");
-                            writer.WriteLine("       <tr>");
-                            writer.WriteLine("          <td>");
-							writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
+				        // Now, check for any other valid text files 
+				        List<string> additional_text_files = text_files_existing.Keys.Where(ThisTextFile => (!text_files_included.Contains(ThisTextFile.ToUpper())) && (ThisTextFile.ToUpper() != "AGREEMENT.TXT") && (ThisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
 
-                            started = true;
-                        }
+				        // Now, include any additional text files, which would not be page text files, possiblye 
+				        // full text for included PDFs, Powerpoint, Word Doc, etc..
+				        started = false;
+				        foreach (string thisTextFile in additional_text_files)
+				        {
+					        if (!started)
+					        {
+						        writer.WriteLine("       <tr>");
+						        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+						        writer.WriteLine("       </tr>");
+						        writer.WriteLine("       <tr>");
+						        writer.WriteLine("          <td>");
+						        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
 
-                        string text_file = TextFileLocation + "\\" + thisTextFile;
+						        started = true;
+					        }
 
-                        try
-                        {
-                            
+					        string text_file = TextFileLocation + "\\" + thisTextFile;
 
-                            StreamReader reader = new StreamReader(text_file);
-                            string text_line = reader.ReadLine();
-                            while (text_line != null)
-                            {
-                                writer.WriteLine(text_line + "<br />");
-                                text_line = reader.ReadLine();
-                            }
-                            reader.Close();
-                        }
-                        catch
-                        {
-                            writer.WriteLine("Unable to read file: " + text_file);
-                        }
+					        try
+					        {
 
-                        writer.WriteLine("<br /><br />");
-                    }
 
-					// End this if it was ever started
-					if (started)
-					{
-						writer.WriteLine("            </div>");
-						writer.WriteLine("          </td>");
-						writer.WriteLine("       </tr>");
-					}
-                }
-            }
+						        StreamReader reader = new StreamReader(text_file);
+						        string text_line = reader.ReadLine();
+						        while (text_line != null)
+						        {
+							        writer.WriteLine(text_line + "<br />");
+							        text_line = reader.ReadLine();
+						        }
+						        reader.Close();
+					        }
+					        catch
+					        {
+						        writer.WriteLine("Unable to read file: " + text_file);
+					        }
 
-            writer.WriteLine("      </table>");
+					        writer.WriteLine("<br /><br />");
+				        }
+
+				        // End this if it was ever started
+				        if (started)
+				        {
+					        writer.WriteLine("            </div>");
+					        writer.WriteLine("          </td>");
+					        writer.WriteLine("       </tr>");
+				        }
+			        }
+		        }
+	        }
+
+	        writer.WriteLine("      </table>");
 			writer.WriteLine("      </div>");
 
             // Write the footer
@@ -1220,7 +1319,7 @@ namespace SobekCM.Library
 
             // Restore the text searchable flag and robot flag
             currentMode.Is_Robot = false;
-            CurrentItem.Behaviors.Text_Searchable = false;
+			CurrentItem.Behaviors.Text_Searchable = textSearchable;
         }
 
         private void recursively_write_toc(StreamWriter Writer, abstract_TreeNode TreeNode, string Indent)
@@ -1246,14 +1345,115 @@ namespace SobekCM.Library
 	    /// <summary> Writes the static header to go at the top of the static digital resource page </summary>
 	    /// <param name="Writer"> Open stream to write the HTML header to </param>
 	    /// <param name="HTMLSkin"> Default html web skin/interface</param>
-	    /// <param name="Banner"> Banner HTML</param>
-	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, string Banner )
+	    /// <param name="CurrentItem"> Current item, to include the aggregations in the breadcrumbs </param>
+	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
         {
-            string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Name + " Home</a>";
+			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Abbreviation + " Home</a>");
 
-            Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>",Banner));
+			int codes_added = 0;
+				if (CurrentItem.Behaviors.Aggregation_Count > 0)
+				{
+					foreach (Aggregation_Info aggregation in CurrentItem.Behaviors.Aggregations)
+					{
+						string aggrCode = aggregation.Code;
+						if (aggrCode.ToLower() != currentMode.Aggregation)
+						{
+							if ((aggrCode.ToUpper() != "I" + CurrentItem.Bib_Info.Source.Code.ToUpper()) &&
+								(aggrCode.ToUpper() != "I" + CurrentItem.Bib_Info.Location.Holding_Code.ToUpper()))
+							{
+								Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
+								if ((thisAggr != null) && (thisAggr.Active))
+								{
+									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+															  aggrCode.ToLower() + "\">" +
+															  thisAggr.ShortName +
+															  "</a>");
+									codes_added++;
+								}
+							}
+						}
+						if (codes_added == 5)
+							break;
+					}
+				}
+
+		    if (codes_added < 5)
+		    {
+			    if (CurrentItem.Bib_Info.Source.Code.Length > 0) 
+			    {
+				    // Add source code
+				    string source_code = CurrentItem.Bib_Info.Source.Code;
+				    if ((source_code[0] != 'i') && (source_code[0] != 'I'))
+					    source_code = "I" + source_code;
+				    Item_Aggregation_Related_Aggregations thisSourceAggr = codeManager[source_code];
+				    if ((thisSourceAggr != null) && (!thisSourceAggr.Hidden) && (thisSourceAggr.Active))
+				    {
+					    string source_name = thisSourceAggr.ShortName;
+					    if (source_name.ToUpper() != "ADDED AUTOMATICALLY")
+					    {
+						    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+						                              source_code.ToLower() + "\">" +
+						                              source_name + "</a>");
+					    }
+				    }
+
+				    // Add the holding code
+				    if ((CurrentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
+				        (CurrentItem.Bib_Info.Location.Holding_Code != CurrentItem.Bib_Info.Source.Code))
+				    {
+					    // Add holding code
+					    string holding_code = CurrentItem.Bib_Info.Location.Holding_Code;
+					    if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
+						    holding_code = "I" + holding_code;
+
+					    Item_Aggregation_Related_Aggregations thisAggr = codeManager[holding_code];
+					    if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
+					    {
+						    string holding_name = thisAggr.ShortName;
+
+						    if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
+						    {
+							    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+							                              holding_code.ToLower() + "\">" +
+							                              holding_name + "</a>");
+						    }
+					    }
+				    }
+			    }
+			    else
+			    {
+				    if (CurrentItem.Bib_Info.Location.Holding_Code.Length > 0)
+				    {
+					    // Add holding code
+					    string holding_code = CurrentItem.Bib_Info.Location.Holding_Code;
+					    if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
+						    holding_code = "I" + holding_code;
+					    string holding_name = codeManager.Get_Collection_Short_Name(holding_code);
+					    if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
+					    {
+						    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+						                              holding_code.ToLower() + "\">" +
+						                              holding_name + "</a>");
+					    }
+				    }
+			    }
+		    }
+		    string breadcrumbs = breadcrumb_builder.ToString();
+
+            Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>",String.Empty));
             Writer.WriteLine(String.Empty);
         }
+
+		/// <summary> Writes the static header to go at the top of the static digital resource page </summary>
+		/// <param name="Writer"> Open stream to write the HTML header to </param>
+		/// <param name="HTMLSkin"> Default html web skin/interface</param>
+		/// <param name="Banner"> Banner HTML</param>
+		public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, string Banner)
+		{
+			string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Name + " Home</a>";
+			Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>", Banner));
+			Writer.WriteLine(String.Empty);
+		}
 
         /// <summary> Writes the static footer to go at the bottom of the static digital resource page </summary>
         /// <param name="Writer"> Open stream to write the HTML footer to </param>

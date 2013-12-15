@@ -21,10 +21,10 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
+using SobekCM.Library.UploadiFive;
 using SobekCM.Library.Users;
 using SobekCM.Library.WebContent;
 using SobekCM.Tools;
-using darrenjohnstone.net.FileUpload;
 
 #endregion
 
@@ -50,10 +50,6 @@ namespace SobekCM.Library.AdminViewer
 		private Item_Aggregation itemAggregation;
 		private readonly List<Thematic_Heading> thematicHeadings;
 		private readonly SobekCM_Skin_Collection webSkins;
-
-		private DJAccessibleProgressBar djAccessibleProgrssBar1;
-		private DJFileUpload djFileUpload1;
-		private DJUploadController djUploadController1;
 
 		private readonly int page;
 
@@ -3352,28 +3348,11 @@ namespace SobekCM.Library.AdminViewer
 			UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
 			filesBuilder.Remove(0, filesBuilder.Length);
 
-			djUploadController1 = new DJUploadController
-			{
-				CSSPath = currentMode.Base_URL + "default/scripts/upload_styles",
-				ImagePath = currentMode.Base_URL + "default/scripts/upload_images",
-				ScriptPath = currentMode.Base_URL + "default/scripts/upload_scripts",
-				AllowedFileExtensions = FileExtensions
-			};
-			UploadFilesPlaceHolder.Controls.Add(djUploadController1);
-
-			djAccessibleProgrssBar1 = new DJAccessibleProgressBar();
-			UploadFilesPlaceHolder.Controls.Add(djAccessibleProgrssBar1);
-
-			djFileUpload1 = new DJFileUpload { ShowAddButton = false, ShowUploadButton = true, MaxFileUploads = 1, AllowedFileExtensions = ".jpg,.png,.gif,.bmp,.jpeg", GoButton_CSS = "sbkAdm_UploadButton" };
-			UploadFilesPlaceHolder.Controls.Add(djFileUpload1);
-
-			// Set the default processor
-			FileSystemProcessor fs = new FileSystemProcessor { OutputPath = UploadDirectory };
-			djUploadController1.DefaultFileProcessor = fs;
-
-			// Change the file processor and set it's properties.
-			FieldTestProcessor fsd = new FieldTestProcessor { OutputPath = UploadDirectory };
-			djFileUpload1.FileProcessor = fsd;
+			UploadiFiveControl uploadControl = new UploadiFiveControl();
+			uploadControl.UploadPath = UploadDirectory;
+			uploadControl.UploadScript = currentMode.Base_URL + "\\UploadiFiveFileHandler.ashx";
+			uploadControl.AllowedFileExtensions = FileExtensions;
+			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
 			UploadFilesPlaceHolder.Controls.Add(literal1);

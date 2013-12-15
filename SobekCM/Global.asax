@@ -1,2 +1,1 @@
-<%@ Application Language="C#" Inherits="Global" %>
-
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="SobekCM.Global" Language="C#" %>
