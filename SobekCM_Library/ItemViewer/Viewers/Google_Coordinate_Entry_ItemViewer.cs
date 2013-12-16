@@ -981,7 +981,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 //string mapeditHTMLFile = @""+ CurrentMode.Base_URL + "default/mapedit.txt";
                 //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapedit.txt");
-                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html ");
+                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html");
                 for (int i = 0; i < lines.Length; i++)
                 {
                     mapeditBuilder.AppendLine(Convert.ToString(lines[i]));
@@ -1070,6 +1070,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_useSearchAsLocation\"></a></li> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_convertToOverlay\"></a></li> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemReset\"></a></li> ");
+                mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemDelete\"></a></li> ");
                 mapeditBuilder.AppendLine("                     </ul> ");
                 mapeditBuilder.AppendLine("                 </li> ");
                 mapeditBuilder.AppendLine("                 <li> ");
@@ -1269,6 +1270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
                 mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveItem\" > </div> ");
                 mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearItem\" > </div> ");
+                mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_deleteItem\" > </div> ");
                 mapeditBuilder.AppendLine("                         </div> ");
                 mapeditBuilder.AppendLine("                     </div> ");
                 mapeditBuilder.AppendLine("                 </div> ");

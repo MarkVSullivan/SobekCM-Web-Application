@@ -318,6 +318,16 @@
     background-size: 25px 25px;
 }
 
+#content_menubar_itemDelete
+{
+    background: url("images/mapedit/button-itemReset.png") no-repeat 5px;
+    padding-left: 35px;
+    -webkit-background-size: 25px 25px;
+    -o-background-size: 25px 25px;
+    -moz-background-size: 25px 25px;
+    background-size: 25px 25px;
+}
+
 #content_menubar_manageOverlay
 {
     background: url("images/mapedit/button-manageOverlay.png") no-repeat 5px;

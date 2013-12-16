@@ -35,7 +35,8 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
-            listItemHighlightColor: "#FFFFC2",           //holds the default highlight color 
+            toServerSuccessMessage: "Completed",        //holds server success message
+            listItemHighlightColor: "#FFFFC2",          //holds the default highlight color 
             pageLoadTime: null,                         //holds time page was loaded
             toServerSuccess: false,                     //holds a marker indicating if toserver was sucessfull
             tempYo: false,                              //holds tempyo for fixing ff info window issue
@@ -292,13 +293,15 @@ var L_Applied = "Applied";
 var L_Completed = "Completed";
 var L_Working = "Working...";
 var L_NotSaved = "Nothing To Save";
-var L_NotCleared = "Nothing to Reset";
+var L_NotCleared = "Nothing To Reset";
 var L_Save = "Save";
 var L_Apply = "Apply";
 var L_Editing = "Editing";
 var L_Removed = "Removed";
 var L_Showing = "Showing";
 var L_Hiding = "Hiding";
+var L_Deleted = "Deleted";
+var L_NotDeleted = "Not Deleted";
 var L1 = "<div style=\"font-size:.95em;\">SobekCM Plugin &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Legal</a> &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Report a Sobek error</a> &nbsp</div>"; //copyright node
 var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
 var L3 = "Description (Optional)"; //describe poi box
@@ -378,10 +381,10 @@ function initLocalization() {
             L64: "Delete Coordinate Data For Overlay",
             L65: "Save This Description",
             L66: "Edit This POI",
-            L67: "",
-            L68: "",
-            L69: "",
-            L70: "",
+            L67: "Item Location Converted to Listing Overlays",
+            L68: "Overaly Geographic Data Deleted",
+            L69: "Item Geographic Location Deleted",
+            L70: "This will delete the geographic coordinate data for this item, are you sure?",
             //tooltips
             byTooltips: function () {
                 //#region localization by listeners
@@ -447,6 +450,7 @@ function initLocalization() {
                     document.getElementById("content_toolbox_rgItem").title = "Address: This is the nearest address of the point you selected.";
                     document.getElementById("content_toolbox_button_saveItem").title = "Save Location Changes";
                     document.getElementById("content_toolbox_button_clearItem").title = "Reset Location Changes";
+                    document.getElementById("content_toolbox_button_deleteItem").title = "Delete Geographic Location";
                     //tab
                     //document.getElementById("content_toolbox_button_overlayEdit").title = "Toggle Overlay Editing";
                     //document.getElementById("content_toolbox_button_overlayPlace").title = "Place A New Overlay";
@@ -522,6 +526,7 @@ function initLocalization() {
                     document.getElementById("content_menubar_useSearchAsLocation").innerHTML = "Use Search Result As Location";
                     document.getElementById("content_menubar_convertToOverlay").innerHTML = "Convert To Overlay";
                     document.getElementById("content_menubar_itemReset").innerHTML = "Reset Location";
+                    document.getElementById("content_menubar_itemDelete").innerHTML = "Delete Geographic Location";
                     document.getElementById("content_menubar_overlayGetUserLocation").innerHTML = "Center On Current Location";
                     //document.getElementById("content_menubar_overlayEdit").innerHTML = "Toggle Overlay Editing";
                     //document.getElementById("content_menubar_overlayPlace").innerHTML = "Place A New Overlay";
@@ -549,6 +554,7 @@ function initLocalization() {
                     document.getElementById("content_minibar_header").innerHTML = "Toolbox";
                     document.getElementById("content_toolbox_button_saveItem").value = "Save";
                     document.getElementById("content_toolbox_button_clearItem").value = "Reset";
+                    document.getElementById("content_toolbox_button_deleteItem").value = "Delete";
                     document.getElementById("content_toolbox_button_saveOverlay").value = "Save";
                     document.getElementById("content_toolbox_button_clearOverlay").value = "Reset";
                     document.getElementById("content_toolbox_button_savePOI").value = "Save";
@@ -598,6 +604,7 @@ function initListeners() {
             if (globalVar.userMayLoseData) {
                 //attempt to save all three
                 displayMessage(localize.L59);
+                //saveMSG
                 globalVar.RIBMode = true;
                 var savesCompleted = 0;
                 try {
@@ -729,6 +736,10 @@ function initListeners() {
         document.getElementById("content_menubar_itemReset").addEventListener("click", function () {
             openToolboxTab("item");
             clear("item");
+        }, false);
+        document.getElementById("content_menubar_itemDelete").addEventListener("click", function () {
+            openToolboxTab("item");
+            deleteItemLocation();
         }, false);
         document.getElementById("content_menubar_manageOverlay").addEventListener("click", function () {
             action("manageOverlay");
@@ -1036,6 +1047,9 @@ function initListeners() {
         document.getElementById("content_toolbox_button_clearItem").addEventListener("click", function () {
             clear("item");
         }, false);
+        document.getElementById("content_toolbox_button_deleteItem").addEventListener("click", function () {
+            deleteItemLocation();
+        }, false);
         //tab
         //document.getElementById("content_toolbox_button_overlayPlace").addEventListener("click", function () {
         //    place("overlay");
@@ -1222,9 +1236,11 @@ function toggleVis(id) {
 
         case "mapDrawingManager":
             if (globalVar.mapDrawingManagerDisplayed == true) {
+                drawingManager.setDrawingMode(null);
                 drawingManager.setMap(null);
                 globalVar.mapDrawingManagerDisplayed = false;
             } else {
+                drawingManager.setDrawingMode(null);
                 drawingManager.setMap(map);
                 globalVar.mapDrawingManagerDisplayed = true;
             }
@@ -1392,7 +1408,7 @@ function action(id) {
     de("action: " + id);
     switch (id) {
         case "manageItem":
-            globalVar.userMayLoseData = true;
+            //globalVar.userMayLoseData = true;
             globalVar.actionActive = "Item";  //note case (uppercase is tied to the actual div)
             buttonActive("action");
             if (globalVar.toolboxDisplayed != true) {
@@ -1417,7 +1433,7 @@ function action(id) {
             break;
 
         case "manageOverlay":
-            globalVar.userMayLoseData = true; //mark that we may lose data if we exit page
+            //globalVar.userMayLoseData = true; //mark that we may lose data if we exit page
             
             globalVar.actionActive = "Overlay"; //notice case (uppercase is tied to the actual div)
             buttonActive("action"); 
@@ -1446,7 +1462,7 @@ function action(id) {
             break;
 
         case "managePOI":
-            globalVar.userMayLoseData = true;
+            //globalVar.userMayLoseData = true;
             globalVar.actionActive = "POI"; //notice case (uppercase is tied to the actual div)
             buttonActive("action");
             if (globalVar.toolboxDisplayed != true) {
@@ -1748,10 +1764,11 @@ function save(id) {
                         de("Saving Changes...");
                         de("saving location: " + globalVar.savingMarkerCenter);
                         //save to temp xml file
+                        globalVar.toServerSuccessMessage = L_Saved;
                         createSavedItem("save", globalVar.savingMarkerCenter);
-                        if (globalVar.toServerSuccess == true) {
-                            displayMessage(L_Saved);
-                        }
+                        //if (globalVar.toServerSuccess == true) {
+                        //    displayMessage(L_Saved);
+                        //}
                         globalVar.userMayLoseData = false;
                         //not used yet 
                         //reset first save
@@ -1802,12 +1819,12 @@ function save(id) {
                                 //explicitly change TEMP_ IDs
                                 globalVar.incomingPolygonFeatureType[i] = "main";
                                 globalVar.incomingPolygonPolygonType[i] = "rectangle";
-
+                                globalVar.toServerSuccessMessage = L_Saved;
                                 de("saving overlay: (" + i + ") " + globalVar.savingOverlayPageId[i] + "\nlabel: " + globalVar.savingOverlayLabel[i] + "\nsource: " + globalVar.savingOverlaySourceURL[i] + "\nbounds: " + globalVar.savingOverlayBounds[i] + "\nrotation: " + globalVar.savingOverlayRotation[i]);
                                 createSavedOverlay("save", globalVar.savingOverlayPageId[i], globalVar.savingOverlayLabel[i], globalVar.savingOverlaySourceURL[i], globalVar.savingOverlayBounds[i], globalVar.savingOverlayRotation[i]); //send overlay to the server
-                                if (globalVar.toServerSuccess == true) {
-                                    displayMessage(L_Saved);
-                                }
+                                //if (globalVar.toServerSuccess == true) {
+                                //    displayMessage(L_Saved);
+                                //}
                             } catch (e) {
                                 //no overlay at this point to save
                             }
@@ -1863,10 +1880,11 @@ function save(id) {
                     if (globalVar.userMayLoseData) {
                         //save to temp xml file
                         de("saving " + globalVar.poiObj.length + " POIs...");
+                        globalVar.toServerSuccessMessage = L_Saved;
                         createSavedPOI("save");
-                        if (globalVar.toServerSuccess == true) {
-                            displayMessage(L_Saved);
-                        }
+                        //if (globalVar.toServerSuccess == true) {
+                        //    displayMessage(L_Saved);
+                        //}
                         //explicitly turn off the drawing manager 
                         drawingManager.setDrawingMode(null);
                         globalVar.userMayLoseData = false;
@@ -1991,6 +2009,7 @@ function clear(id) {
                 globalVar.poi_i = -1;
                 //send to server to delete all the pois
                 globalVar.RIBMode = true;
+                globalVar.toServerSuccessMessage = L_Deleted;
                 createSavedPOI("save");
                 globalVar.RIBMode = false;
                 //reset poi arrays
@@ -1999,7 +2018,7 @@ function clear(id) {
                 globalVar.poiKML = [];
                 //reset
                 globalVar.userMayLoseData = false;
-                displayMessage(L11);
+                //displayMessage(L11);
             } else {
                 displayMessage(L_NotCleared);
             }
@@ -4826,9 +4845,12 @@ function toServer(dataPackage) {
             success: function(result) {
                 //de("server result:" + result);
                 de("Sallback from server - success");
-                displayMessage(L_Completed);
+                //displayMessage(L_Completed);
                 //displayMessage(L_Saved);
-                globalVar.toServerSuccess = true;
+                displayMessage(globalVar.toServerSuccessMessage);
+                //reset success message
+                globalVar.toServerSuccessMessage = L_Completed;
+                globalVar.toServerSuccess = true; //not really used
                 globalVar.csoi = 0; //reset
             }
         });
@@ -5007,6 +5029,8 @@ function overlayDeleteMe(id) {
     if (globalVar.overlaysOnMap[id]) {
         confirm(localize.L54);
         try {
+            //globalVar.toServerSuccessMessage = localize.L68;
+            globalVar.toServerSuccessMessage = localize.L55 + " " + id;
             createSavedOverlay("delete", id, "", "", "", "");
             globalVar.overlaysOnMap[id].setMap(null);
             globalVar.overlaysOnMap[id] = null;
@@ -5017,7 +5041,8 @@ function overlayDeleteMe(id) {
             globalVar.overlayCount += -1;
             globalVar.workingOverlayIndex = null;
             //displayMessage(id + " " + L33);
-            displayMessage(localize.L55 + " " + id);
+            //displayMessage(localize.L55 + " " + id);
+            globalVar.userMayLoseData = false;
         } catch (e) {
             displayMessage(localize.L57); //nothing to delete
         }
@@ -5470,6 +5495,38 @@ function useSearchAsItemLocation() {
     }
 }
 
+//delete the item geo info
+function deleteItemLocation() {
+    if (globalVar.itemMarker) {
+        //confirm
+        confirmMessage(localize.L70);
+        //hide marker
+        globalVar.itemMarker.setMap(null);
+        globalVar.itemMarker = null;
+        //msg
+        globalVar.serverSuccessMessage = localize.L69;
+        //send to server and delete from mets
+        globalVar.RIBMode = true;
+        createSavedItem("delete", null); 
+        globalVar.RIBMode = false;
+        //deleted
+        //displayMessage(L_Deleted);
+        //explicitly disallow editing after converting
+        drawingManager.setDrawingMode(null);
+        //drawingManager.setMap(null);
+        globalVar.userMayLoseData = false;
+        //clear item boxes
+        document.getElementById("content_toolbox_posItem").value = null;
+        document.getElementById("content_toolbox_rgItem").value = null;
+    } else {
+        //did not delete
+        displayMessage(L_NotDeleted);
+        //explicitly disallow editing after a failed convert
+        drawingManager.setDrawingMode(null);
+        //drawingManager.setMap(null);
+    }
+}
+
 //used to create an overlay from a page
 function createOverlayFromPage(pageId) {
     //assign convertedoverlay index
@@ -5503,6 +5560,7 @@ function createOverlayFromPage(pageId) {
     //} else {
     //    globalVar.workingOverlayIndex++;
     //}
+    globalVar.userMayLoseData = true;
 }
 
 //used to convert an incoming point to an overlay
@@ -5530,6 +5588,7 @@ function convertToOverlay() {
             //hide marker
             globalVar.itemMarker.setMap(null);
             globalVar.itemMarker = null;
+            globalVar.toServerSuccessMessage = localize.L67;
             globalVar.RIBMode = true;
             createSavedItem("delete", null); //send to server and delete from mets
             globalVar.RIBMode = false;
@@ -5549,6 +5608,7 @@ function convertToOverlay() {
         //explicitly disallow editing after converting
         drawingManager.setDrawingMode(null);
         //drawingManager.setMap(null);
+        globalVar.userMayLoseData = false;
     } else {
         //cannot convert
         displayMessage(L40);
