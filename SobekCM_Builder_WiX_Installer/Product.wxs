@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The upgrade code never changes.  Create a new ProductCode for each instance -->
+<!-- The product code identifies the MSI and prevents two of the same exact      -->
+<!-- version to be installed.  Always change this for each new version.          -->
+<?define UpgradeCode="{D13F62A2-9BE7-4DC8-89A6-27AC2B15E25F}"?>
+<?define ProductCode="{16CF589F-81A4-469A-A3F0-0689F27D5DA5}"?>
+<?define ProductVersion="3.40.0.0"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="$(var.ProductCode)" Name="SobekCM Builder" Language="1033" Version="$(var.ProductVersion)" Manufacturer="SobekCM" UpgradeCode="$(var.UpgradeCode)">
+    <Package  Id="*"  Description="SobekCM Builder Installer" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." AllowDowngrades="no" />
+
+    <Condition Message="You need to be an administrator to install this product.">Privileged</Condition>
+
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="SobekCM" Name="SobekCM">
+          <Directory Id="INSTALLDIR" Name="Builder">
+            <Component Id="MainExecutable" Guid="4756AAFA-147D-4F98-BF83-D5D4E6E729B3">
+              <File Id="SobekBuilderExe" Name="SobekCM_Builder.exe" Source="$(var.SobekCM Builder.TargetDir)\SobekCM_Builder.exe" KeyPath="yes" />
+            </Component>
+            <Component Id="SobekLibraryHelperLibrary" Guid="57B71BED-365A-4DBA-BDFB-4103E885240C">
+              <File Id="SobekLibraryDll" Name="SobekCM_Library.dll" Source="$(var.SobekCM Builder.TargetDir)\SobekCM_Library.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="FileUploadHelperLibrary" Guid="0F4FE297-3F1C-4E74-A72F-928CC581C3F6">
+              <File Id="FileUploadLibraryDll" Name="FileUploadLibrary.dll" Source="$(var.SobekCM Builder.TargetDir)\FileUploadLibrary.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="SobekResourceHelperLibrary" Guid="72BD7014-0B21-44D9-9B66-FE87B75C6F02">
+              <File Id="SobekResourceDll" Name="SobekCM_Resource_Object.dll" Source="$(var.SobekCM Builder.TargetDir)\SobekCM_Resource_Object.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="SobekToolsHelperLibrary" Guid="AA246A17-907F-47EE-9E99-3E9DD3314ED5">
+              <File Id="SobekToolsDll" Name="SobekCM_Tools.dll" Source="$(var.SobekCM Builder.TargetDir)\SobekCM_Tools.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="GemBoxSpreadsheetHelperLibrary" Guid="31D028A4-E03D-4EED-A63C-D50C00C78D63">
+              <File Id="GemBoxSpreadsheetDll" Name="GemBox.Spreadsheet.dll" Source="$(var.SobekCM Builder.TargetDir)\GemBox.Spreadsheet.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="MicrosoftApplicationBlocksData" Guid="048868F5-11C8-4090-A58A-4355890AB419">
+              <File Id="MicrosoftApplicationBlocksDataDll" Name="Microsoft.ApplicationBlocks.Data.dll" Source="$(var.SobekCM Builder.TargetDir)\Microsoft.ApplicationBlocks.Data.Dll" KeyPath="yes" />
+            </Component>
+            <Component Id="iTextSharpHelperLibrary" Guid="5569E6A4-EB8F-41B4-B4A3-0763ABE29DD1">
+              <File Id="iTextSharpDll" Name="itextsharp.dll" Source="$(var.SobekCM Builder.TargetDir)\itextsharp.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="UseOfficeHelperLibrary" Guid="04D3EB30-0956-49FA-A59C-F3014D53B37A">
+              <File Id="UseOfficeDll" Name="UseOffice.dll" Source="$(var.SobekCM Builder.TargetDir)\UseOffice.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="CachingCoreHelperLibrary" Guid="776EAB6C-611E-4000-AF1E-EE3E7CFFBAD7">
+              <File Id="CachingCoreDll" Name="Microsoft.ApplicationServer.Caching.Core.dll" Source="$(var.SobekCM Builder.TargetDir)\Microsoft.ApplicationServer.Caching.Core.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="CachingClientHelperLibrary" Guid="7EEDE5F5-F686-40A8-B0D2-B08BB1ED3050">
+              <File Id="CachingClientDll" Name="Microsoft.ApplicationServer.Caching.Client.dll" Source="$(var.SobekCM Builder.TargetDir)\Microsoft.ApplicationServer.Caching.Client.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="Z3950HelperLibraries" Guid="4450E7F3-1D73-4269-8082-CDBB9C03EB25">
+              <File Id="ZoomNetDll" Name="Zoom.Net.dll" Source="..\DLLs\Zoom.Net\Zoom.Net.dll" KeyPath="yes" />
+              <File Id="ZoomNetYazSharpDll" Name="Zoom.Net.YazSharp.dll" Source="..\DLLs\Zoom.Net\Zoom.Net.YazSharp.dll" />
+              <File Id="Zlib1Dll" Name="zlib1.dll" Source="..\DLLs\Zoom.Net\zlib1.dll" />
+              <File Id="YazDll" Name="yaz.dll" Source="..\DLLs\Zoom.Net\yaz.dll" />
+              <File Id="IConvDll" Name="iconv.dll" Source="..\DLLs\Zoom.Net\iconv.dll" />
+              <File Id="LibXml2Dll" Name="libxml2.dll" Source="..\DLLs\Zoom.Net\libxml2.dll" />
+              <File Id="LibXsltDll" Name="libxslt.dll" Source="..\DLLs\Zoom.Net\libxslt.dll" />
+            </Component>
+            <Component Id="SolrNetHelperLibraries" Guid="711F2CAB-2947-437E-9500-699C586C2A96">
+              <File Id="SolrNetDll" Name="SolrNet.dll" Source="..\DLLs\SolrNet\SolrNet.dll" KeyPath="yes" />
+              <File Id="MicrosoftPracticesServiceLocDll" Name="Microsoft.Practices.ServiceLocation.dll" Source="..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll" />
+            </Component>
+            <Component Id="GplLicense" Guid="7DBCE146-6A4D-4F18-8241-9B8626300B61">
+              <File Id="LicenseTxt" Name="LICENSE.txt" Source="..\SobekCM Builder Files\LICENSE.txt" KeyPath="yes" />
+            </Component>
+            <Component Id="Readme" Guid="F07F09C2-BC65-407C-A63F-AEF5CEAF1EAC">
+              <File Id="ReadmeTxt" Name="README.txt" Source="..\SobekCM Builder Files\README.txt" KeyPath="yes" />
+            </Component>
+            <Directory Id="z3950SubDir" Name="z3950">
+              <Component Id="Z3950LicensesComponent" Guid="EB956B0A-293F-4A5C-BB9B-873A4940F34B">
+                <File Id="LicenseNoExt" Name="LICENSE" Source="..\DLLs\Zoom.Net\z3950\LICENSE" KeyPath="yes" />
+                <File Id="LicenseIconv" Name="LICENSE.iconv" Source="..\DLLs\Zoom.Net\z3950\LICENSE.iconv" />
+                <File Id="LicenseLibXml2" Name="LICENSE.libxml2" Source="..\DLLs\Zoom.Net\z3950\LICENSE.libxml2" />
+                <File Id="LicenseYaz" Name="LICENSE.yaz" Source="..\DLLs\Zoom.Net\z3950\LICENSE.yaz" />
+                <File Id="LicenseZlib" Name="LICENSE.zlib" Source="..\DLLs\Zoom.Net\z3950\LICENSE.zlib" />
+                <File Id="LicenseZoomNet" Name="LICENSE.zoom.net" Source="..\DLLs\Zoom.Net\z3950\LICENSE.zoom.net" />
+                <File Id="LicenseZoomNetYazSharp" Name="LICENSE.zoom.net.yazsharp" Source="..\DLLs\Zoom.Net\z3950\LICENSE.zoom.net.yazsharp" />
+              </Component>
+            </Directory>
+            <Directory Id="KakaduSubDir" Name="Kakadu">
+              <Component Id="KakaduComponent" Guid="D21022E5-8615-4A0F-9B47-65C98D4DA6A7">
+                <File Id="KduCompressExe" Name="kdu_compress.exe" Source="..\SobekCM Builder Files\Kakadu\kdu_compress.exe" KeyPath="yes" />
+                <File Id="KduCompressLibTiffExe" Name="kdu_compress_libtiff.exe" Source="..\SobekCM Builder Files\Kakadu\kdu_compress_libtiff.exe" />
+                <File Id="KduV60rDll" Name="kdu_v60R.dll" Source="..\SobekCM Builder Files\Kakadu\kdu_v60R.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="configSubDir" Name="config">
+              <Component Id= "configSubDirComponent" DiskId ="1" Guid="3E985C67-78CE-4FC9-84B2-41E99D15F966">
+                <CreateFolder Directory="configSubDir">
+                  <Permission GenericAll="yes" Read="yes" ReadAttributes="yes" CreateChild="yes" Delete="yes" DeleteChild="yes" WriteAttributes="yes" User="Everyone" />
+                </CreateFolder>
+                <File Id="SobekBuilderConfigExe" Name="SobekCM_Builder_Configuration.exe" Source="$(var.SobekCM_Builder_Configuration.TargetDir)\SobekCM_Builder_Configuration.exe" KeyPath="yes" />
+                <File Id="SobekBuilderConfigExeConfig" Name="SobekCM_Builder_Configuration.exe.config" Source="$(var.SobekCM_Builder_Configuration.TargetDir)\SobekCM_Builder_Configuration.exe.config" />
+              </Component>
+            </Directory>
+            <Directory Id="logsSubDir" Name="logs">
+              <Component Id= "logsSubDirComponent" DiskId ="1" Guid="CC6A0669-AD8D-4BD5-A764-FDB26591ED1A">
+                <CreateFolder Directory="logsSubDir">
+                  <Permission GenericAll="yes" Read="yes" ReadAttributes="yes" CreateChild="yes" Delete="yes" DeleteChild="yes" WriteAttributes="yes" User="Everyone" />
+                </CreateFolder>
+              </Component>
+            </Directory>
+            <Directory Id="imagesSubDir" Name="images">
+              <Component Id="imagesSubDirComponent" Guid="5E332A04-EC2A-4FC2-99B6-F8656016F3CA">
+                <File Id="imagesMultimediaJpg" Name="multimedia.jpg" Source="..\SobekCM Builder Files\images\multimedia.jpg" KeyPath="yes" />
+                <File Id="imagesAudioJpg" Name="audio.jpg" Source="..\SobekCM Builder Files\images\audio.jpg" />
+                <File Id="imagesVideoJpg" Name="video.jpg" Source="..\SobekCM Builder Files\images\video.jpg" />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="SobekCM">
+          <Component Id="ProgramMenuDir" Guid="1B7C3B0F-A225-42F9-B3E9-E80AA9500310">
+            <RemoveFolder Id='RemoveProgramMenuDir' Directory='ProgramMenuDir'  On='uninstall' />
+            <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+
+
+    <Feature Id="Complete" Title="SobekCM Builder" Description="Complete Package" Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">
+      <Feature Id="MainProgram" Title="SobekCM Builder Executables" Description="Main Executable" Level="1">
+        <ComponentRef Id="MainExecutable" />
+        <ComponentRef Id="SobekLibraryHelperLibrary" />
+        <ComponentRef Id="FileUploadHelperLibrary" />
+        <ComponentRef Id="SobekResourceHelperLibrary" />
+        <ComponentRef Id="SobekToolsHelperLibrary" />
+        <ComponentRef Id="GemBoxSpreadsheetHelperLibrary" />
+        <ComponentRef Id="MicrosoftApplicationBlocksData" />
+        <ComponentRef Id="Z3950HelperLibraries" />
+        <ComponentRef Id="SolrNetHelperLibraries" />
+        <ComponentRef Id="GplLicense" />
+        <ComponentRef Id="Readme" />
+        <ComponentRef Id="Z3950LicensesComponent" />
+        <ComponentRef Id="ProgramMenuDir" />
+        <ComponentRef Id="configSubDirComponent" />
+        <ComponentRef Id="iTextSharpHelperLibrary" />
+        <ComponentRef Id="UseOfficeHelperLibrary" />
+        <ComponentRef Id="CachingCoreHelperLibrary" />
+        <ComponentRef Id="CachingClientHelperLibrary" />
+        <ComponentRef Id="KakaduComponent" />
+        <ComponentRef Id="logsSubDirComponent" />
+        <ComponentRef Id="imagesSubDirComponent"/>
+        <!--        <ComponentGroupRef Id="Product.Generated" /> -->
+      </Feature>
+    </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <Icon Id="App.ico" SourceFile="..\SobekCM Builder\Sobek_Builder.ico" />
+    <Property Id="ARPPRODUCTICON" Value="App.ico" />
+    <Property Id="ARPHELPLINK" Value="http://ufdc.ufl.edu/smart" />
+
+  </Product>
+</Wix>

@@ -1,0 +1,66 @@
+/**************************************************************************
+**     SOBEKCM_Print.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for printing.                                       
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
+
+h1 {
+	font-size: 1.2em;
+	margin-top: 10px;
+}
+
+BODY  	
+{
+	PADDING: 0px 0px 0px 0px; MARGIN: 0px; font-family:Arial, Helvetica, sans-serif;
+	width: 100%;
+		
+	}
+	
+A:link { COLOR: #00a; TEXT-DECORATION: none; }
+A:visited { COLOR: #00a; TEXT-DECORATION: none; }
+A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
+
+.print_header {  font-family: Times New Roman;  height: 25px; font-size: 18px; background-color: #113e98; width: 100%; color: White; padding: 2px 0px 2px 0px; }
+.float_right { float: right; }
+.float_left { float: left; }
+
+.citation { font-size: 14px;  }
+.thumbnails { font-size: smaller; color:gray; }
+
+
+.SobekCitation {
+	BORDER-WIDTH: 0px; COLOR: black; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left; font-size: 0.8em;
+}
+
+.SobekCitationSectionTitle1
+{
+	color:Gray; padding-top: 10px;
+}
+
+.SobekCitationSection1
+{
+	BACKGROUND-COLOR: White; /*#F8FFBB*/
+}
+
+.SobekCitationSectionTitle2
+{
+	color:Gray; padding-top: 10px;
+}
+
+.SobekCitationSection2
+{
+	 /* background-color: #eeeeee;*/ /*d2ddff;*/
+}
+
+.sbkTs_MainTable{ width: 100%;}

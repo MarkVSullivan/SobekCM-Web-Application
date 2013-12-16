@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ufdc_map xmlns="http://tempuri.org/ufdc_map.xsd" bibid="UF12345678" vid="00001">
+    <indexes>
+        <image type="static" id="I1">
+            <title>Map Index</title>
+            <file>00001.jpg</file>
+            <html>00001.html</html>
+        </image>
+    </indexes>
+    <entities>
+        <street id="S1" name="East Main">
+            <segment sheetid="MS1" start="121" end="233" direction="W" side="S">Near the handy way</segment>
+            <segment sheetid="MS2" />
+        </street>
+        <feature id="F1" name="Cotton Ginnery" type="Gin">
+            <corpref corpid="C1" />
+            <location>
+                <desc>Corner of West Main and Lane St</desc>
+                <coordinates units="degrees" latitude="29.66000902787949" longitude="-82.31927399675921" />
+                <sheetref refid="MS2" x="232" y="1221" />
+            </location>
+        </feature>
+        <feature id="F2" name="Oliver Hotel" type="Hotel">
+            <persref persid="P1" reftype="owner" />
+            <location>
+                <desc>Corner of West Main and Masonic</desc>
+                <coordinates units="degrees" latitude="29.66000902718172" longitude="-82.31927396829692" />
+                <sheetref sheetid="MS1" x="193" y="101" />
+            </location>
+        </feature>
+        <street id="S2" name="West Main">
+            <segment sheetid="MS1" start="121" end="233" direction="W" side="S">Near the handy way</segment>
+            <segment sheetid="MS2" />
+        </street>
+        <corporation id="C1">
+            <corpname type="primary">Dutton &amp; Co's</corpname>
+            <corpname type="alternate">Dutton and Company</corpname>
+        </corporation>
+        <person id="P1">
+            <persname>Thomas Oliver</persname>
+        </person>
+    </entities>
+    <sheets>
+        <sheet id="MS1">
+            <fileref fileid="f1" />
+            <ufdcref index="1" />
+        </sheet>
+    </sheets>
+    <sheets>
+        <sheet id="MS2">
+            <fileref fileid="f2" />
+            <ufdcref index="2" />
+        </sheet>
+    </sheets>
+</ufdc_map>

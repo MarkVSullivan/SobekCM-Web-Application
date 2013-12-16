@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+  
+    <Document>
+
+      <name>Panoramas</name>
+      <open>1</open>
+
+      <Style id="panoramaStyle">
+        <IconStyle>
+          <Icon><href>http://gigapan.com/images/ge_icon.png</href></Icon>
+        </IconStyle>
+        <BalloonStyle>
+          <text>$[description]</text>
+        </BalloonStyle>
+      </Style>
+
+      
+  <PhotoOverlay id="gigapan_67219">
+  <name>St. Augustine Pirate &amp; Treasure Museum</name>
+  <Snippet maxLines="1">
+    <![CDATA[<a href="#gigapan_67219">Enter panorama</a>]]>
+  </Snippet>
+
+  
+    <description>
+      <![CDATA[
+
+        <div align="center">
+
+          <table width="500">
+            <tr>
+              <td>
+                <a href="http://gigapan.com">
+                  <img alt="Logo" src='http://gigapan.com/images/logo.png?1368120969/' />
+                </a>
+              </td>
+              <td>
+                <font size="10">$[name]</font>
+                <hr>
+                <a href="#gigapan_67219;flyto">Enter Panorama</a> |
+                <a href="http://gigapan.com/gigapans/67219">
+                  "Panorama at GigaPan.com"</a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" align="center">
+                <a href="#gigapan_67219"><img alt="67219-498x124" class="thumbnail" src="http://static.gigapan.org/gigapans0/67219/images/67219-498x124.jpg" /></a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <p></p>
+                <p>Explore Score: $[score]</p>
+                <p align="right">
+                  <b>Author</b>:
+                  <a href="http://gigapan.com/profiles/skirack">
+                    David Sirak
+                  </a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      ]]>
+    </description>
+  
+
+  <Camera id="gigapan_67219_camera">
+    <longitude>-81.31336</longitude>
+    <latitude>29.897472</latitude>
+    <altitude>6.0</altitude>
+    <heading>0.0</heading>
+    <tilt>90.0</tilt>
+    <roll>0.0</roll>
+  </Camera>
+
+  <styleUrl>#panoramaStyle</styleUrl>
+
+  <ExtendedData>
+    <Data name="score">
+      <value>0.0</value>
+    </Data>
+  </ExtendedData>
+
+  <color>feffffff</color>
+
+  <Icon>
+    <href>http://gigapan.com/get_ge_tile/67219/$[level]/$[y]/$[x]</href>
+  </Icon>
+
+  <rotation>0.0</rotation>
+
+  <ViewVolume id="gigapan_67219_viewvolume">
+    <leftFov>-180.0</leftFov>
+    <rightFov>180.0</rightFov>
+    <bottomFov>-64.2594</bottomFov>
+    <topFov>25.4648083758938</topFov>
+    <near>15.0</near>
+  </ViewVolume>
+
+  <ImagePyramid>
+    <tileSize>256</tileSize>
+    <maxWidth>23496</maxWidth>
+    <maxHeight>5856</maxHeight>
+    <gridOrigin>upperLeft</gridOrigin>
+  </ImagePyramid>
+
+  <Point id="gigapan_67219_point">
+    <coordinates>-81.31336,29.897472</coordinates>
+  </Point>
+
+  <shape>sphere</shape>
+
+</PhotoOverlay>
+
+
+
+
+    </Document>
+  
+</kml>

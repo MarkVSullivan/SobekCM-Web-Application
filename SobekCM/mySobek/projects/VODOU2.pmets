@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?fcla dl="no"?>
+<!--  Project level metadata for 'DLOC' ( Project ) -->
+<METS:mets OBJID="DLOC"
+  xmlns:METS="http://www.loc.gov/METS/"
+  xmlns:mods="http://www.loc.gov/mods/v3"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:sobekcm="http://digital.uflib.ufl.edu/metadata/sobekcm/"
+  xsi:schemaLocation="http://www.loc.gov/METS/
+    http://www.loc.gov/standards/mets/mets.xsd 
+    http://www.loc.gov/mods/v3
+    http://www.loc.gov/mods/v3/mods-3-3.xsd
+    http://digital.uflib.ufl.edu/metadata/sobekcm/
+    http://digital.uflib.ufl.edu/metadata/sobekcm/sobekcm.xsd
+">
+<METS:metsHdr CREATEDATE="2006-08-31T10:28:14Z" ID="DLOC" LASTMODDATE="2011-01-22T07:26:56Z" RECORDSTATUS="NEW">
+<METS:agent OTHERTYPE="SOFTWARE" ROLE="CREATOR" TYPE="OTHER"> 
+<METS:name>SobekCM Metadata Template</METS:name>
+</METS:agent>
+<METS:agent ROLE="CREATOR" TYPE="INDIVIDUAL"> 
+<METS:name>UFAD\msulliva</METS:name>
+</METS:agent>
+</METS:metsHdr>
+<METS:dmdSec ID="DMD1">
+<METS:mdWrap MDTYPE="MODS"  MIMETYPE="text/xml" LABEL="MODS Metadata">
+<METS:xmlData>
+<mods:mods>
+<mods:accessCondition type="restrictions on use" displayLabel="Rights">All applicable rights reserved by the source institution.</mods:accessCondition>
+<mods:location>
+<mods:physicalLocation>University of Florida</mods:physicalLocation>
+<mods:physicalLocation type="code">UF</mods:physicalLocation>
+</mods:location>
+<mods:recordInfo>
+<mods:recordIdentifier source="ufdc">VODOU2_00001</mods:recordIdentifier>
+</mods:recordInfo>
+<mods:subject authority="lcsh">
+<mods:topic>Vodou</mods:topic>
+<mods:geographic>Haiti</mods:geographic>
+</mods:subject>
+<mods:subject authority="lcsh">
+<mods:topic>Religion</mods:topic>
+</mods:subject>
+<mods:subject authority="lcsh">
+<mods:topic>African diaspora</mods:topic>
+<mods:geographic>Caribbean Area</mods:geographic>
+</mods:subject>
+<mods:subject authority="lcsh">
+<mods:topic>Spirituality</mods:topic>
+</mods:subject>
+<mods:subject authority="lcsh">
+<mods:topic>Creoles</mods:topic>
+<mods:topic>Social life and customs</mods:topic>
+<mods:geographic>Haiti</mods:geographic>
+</mods:subject>
+<mods:subject authority="lcsh">
+<mods:topic>Creoles</mods:topic>
+<mods:topic>Religious life and customs</mods:topic>
+<mods:geographic>Haiti</mods:geographic>
+</mods:subject>
+<mods:subject ID="SUBJ662">
+<mods:hierarchicalGeographic>
+<mods:country>Haiti</mods:country>
+</mods:hierarchicalGeographic>
+</mods:subject>
+<mods:titleInfo>
+<mods:title>Project level metadata for 'VODOU2'</mods:title>
+</mods:titleInfo>
+</mods:mods>
+</METS:xmlData>
+</METS:mdWrap>
+</METS:dmdSec>
+<METS:dmdSec ID="DMD2">
+<METS:mdWrap MDTYPE="OTHER" OTHERMDTYPE="SobekCM" MIMETYPE="text/xml" LABEL="SobekCM Custom Metadata">
+<METS:xmlData>
+<sobekcm:procParam>
+<sobekcm:Aggregation>VODOU</sobekcm:Aggregation>
+</sobekcm:procParam>
+<sobekcm:bibDesc>
+<sobekcm:BibID>VODOU2</sobekcm:BibID>
+<sobekcm:VID>00001</sobekcm:VID>
+<sobekcm:Type>Project</sobekcm:Type>
+</sobekcm:bibDesc>
+</METS:xmlData>
+</METS:mdWrap>
+</METS:dmdSec>
+<METS:structMap> <METS:div /> </METS:structMap>
+</METS:mets>

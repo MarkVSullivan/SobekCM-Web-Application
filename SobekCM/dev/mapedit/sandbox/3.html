@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+    <html> 
+    <head> 
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" /> 
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
+    <title>Google Maps JavaScript API v3 Example: KmlLayer KML</title> 
+    <script src="http://code.jquery.com/jquery-1.4.4.js"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
+    <script type="text/javascript"> 
+    $(document).ready(function(){
+    $(".b_opacity").click(function(){
+//this will find all the images in the map canvas container. Normally you would want to target specific images by the value of src
+    $("#map_canvas").find("img").css("opacity","0.4")
+
+    })
+    })
+
+
+    function initialize() {
+      var chicago = new google.maps.LatLng(41.875696,-87.624207);
+      var myOptions = {
+        zoom: 11,
+        center: chicago,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+
+      var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+      var ctaLayer = new google.maps.KmlLayer('http://code.google.com/apis/kml/documentation/KML_Samples.kml');
+      ctaLayer.setMap(map);
+    }
+    </script> 
+    </head> 
+    <body onload="initialize()"> 
+
+      <div id="map_canvas" style="width: 600px;height: 600px;"></div> 
+      <input type="button" value="dim the lights" class="b_opacity">
+    </body> 
+    </html>

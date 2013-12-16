@@ -1,0 +1,50 @@
+/**************************************************************************
+**     print.css                                                      
+**                                                                      
+**     This contains many of the default styles for the SobekCM Digital  
+**     Repository used for printing.                                        
+**                                                                       
+**     DO NOT MAKE CHANGES TO THIS FILE!                                
+**                                                                       
+**     To make sweeping changes to the appearance, you should use       
+**     the CSS in your web skin to OVERRIDE classes in this CSS.       
+**                                                                       
+**     New versions of the SobekCM repository arrive will have new  
+**     versions of this file which will cause you to lose any changes
+**     you made to this file. 
+**                                                                 
+**************************************************************************/
+
+@charset "UTF-8";
+/* CSS Document */
+
+#ufheader{
+  display: none;
+}
+#footer{
+  display: none;
+}
+.SobekColumnOne
+{
+  display: none;
+}
+.SobekViewSelectRow
+{
+  display: none;
+}
+
+
+.SobekPageNavBar
+{
+  display: none;
+}
+#SobekItemWordmark
+{
+  display: none;
+}
+#SobekCopyright{
+  display: none;
+}
+#printedimage img{width:80%; height:80%;}
+
+.sbkTs_MainTable{ width: 100%;}
