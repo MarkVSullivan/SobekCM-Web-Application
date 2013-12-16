@@ -4991,19 +4991,25 @@ function overlayEditMe(id) {
 
 //cycle through all overlay list itmes and hightliht them accordingly
 function cycleOverlayHighlight(id) {
-    de("highlighting overlays");
-    //go through each overlay on the map
-    for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
-        de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
-        //if there is a match in overlays
-        if (i == id) {
-            //set highlight color
-            document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
-        } else {
-            //reset highlight
-            document.getElementById("overlayListItem" + i).style.background = null;
+    try {
+        de("highlighting overlays");
+        //go through each overlay on the map
+        for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
+            de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
+            //if there is a match in overlays
+            if (i == id) {
+                //set highlight color
+                document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
+            } else {
+                //reset highlight
+                document.getElementById("overlayListItem" + i).style.background = null;
+            }
         }
-    }
+    } catch(e) {
+        //could not highlist
+        //alert("couldnt");
+    } 
+    
 }
 
 //hide poi on map
@@ -5745,7 +5751,7 @@ function writeHTML(type, param1, param2, param3) {
             break;
         case "overlayListItem":
             de("Creating html String");
-            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a title=\"" + localize.L60 + "\" href=\"#\" onclick=\"overlayEditMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\" title=\"" + localize.L61 + "\" ><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a title=\"" + localize.L64 + "\" href=\"#\" onclick=\"overlayDeleteMe(" + param1 + ");\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\"/></a> </div></div>";
+            htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a title=\"" + localize.L60 + "\" href=\"#\"><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "edit.png\" onclick=\"overlayEditMe(" + param1 + ");\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\" title=\"" + localize.L61 + "\" ><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + param1 + ");\" /></a> <a title=\"" + localize.L64 + "\" href=\"#\" ><img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "delete.png\" onclick=\"overlayDeleteMe(" + param1 + ");\"/></a> </div></div>";
             break;
         case "searchResultListItem":
             de("Creating search html String");
@@ -6125,7 +6131,7 @@ var debugString; //holds debug messages
 var debugs = 0; //used for keycode debugging
 function de(message) {
     //determine if debugger is on
-    var debuggerOn = true;
+    var debuggerOn = false;
     if (debuggerOn) {
         //create debug string
         var currentdate = new Date();
