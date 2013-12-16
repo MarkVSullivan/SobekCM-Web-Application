@@ -1927,6 +1927,7 @@ function save(id) {
                 //    document.getElementById("content_toolbox_button_savePOI").value = L37;
                 //    document.getElementById("content_toolbox_button_savePOI").title = L38;
                 //}
+                displayMessage(L_NotSaved);
             }
             break;
     }
@@ -1983,46 +1984,49 @@ function clear(id) {
 
         case "poi":
             de("attempting to clear " + globalVar.poiObj.length + "POIs...");
-            if (globalVar.poiObj.length > 0) {
-                displayMessage(localize.L53);
-                for (var i = 0; i < globalVar.poiObj.length; i++) {
-                    if (globalVar.poiType[i] != "deleted") {
-                        globalVar.poiType[i] = "deleted";
+            try {
+                if (globalVar.poiObj.length > 0) {
+                    displayMessage(localize.L53);
+                    for (var i = 0; i < globalVar.poiObj.length; i++) {
+                        if (globalVar.poiType[i] != "deleted") {
+                            globalVar.poiType[i] = "deleted";
+                        }
+                        if (globalVar.poiObj[i] != null) {
+                            globalVar.poiObj[i].setMap(null);
+                            //globalVar.poiObj[i] = null;
+                        }
+                        if (globalVar.poiDesc[i] != null) {
+                            globalVar.poiDesc[i] = null;
+                        }
+                        if (globalVar.poiKML[i] != null) {
+                            globalVar.poiKML[i] = null;
+                        }
+                        infoWindow[i].setMap(null);
+                        infoWindow[i] = null;
+                        label[i].setMap(null);
+                        label[i] = null;
+                        var strg = "#poi" + i; //create <li> poi string
+                        $(strg).remove(); //remove <li>
                     }
-                    if (globalVar.poiObj[i] != null) {
-                        globalVar.poiObj[i].setMap(null);
-                        //globalVar.poiObj[i] = null;
-                    }
-                    if (globalVar.poiDesc[i] != null) {
-                        globalVar.poiDesc[i] = null;
-                    }
-                    if (globalVar.poiKML[i] != null) {
-                        globalVar.poiKML[i] = null;
-                    }
-                    infoWindow[i].setMap(null);
-                    infoWindow[i] = null;
-                    label[i].setMap(null);
-                    label[i] = null;
-                    var strg = "#poi" + i; //create <li> poi string
-                    $(strg).remove(); //remove <li>
+                    globalVar.poi_i = -1;
+                    //send to server to delete all the pois
+                    globalVar.RIBMode = true;
+                    globalVar.toServerSuccessMessage = L_Deleted;
+                    createSavedPOI("save");
+                    globalVar.RIBMode = false;
+                    //reset poi arrays
+                    globalVar.poiObj = [];
+                    globalVar.poiDesc = [];
+                    globalVar.poiKML = [];
+                    //reset
+                    globalVar.userMayLoseData = false;
+                    //displayMessage(L11);
+                } else {
+                    displayMessage(L_NotCleared);
                 }
-                globalVar.poi_i = -1;
-                //send to server to delete all the pois
-                globalVar.RIBMode = true;
-                globalVar.toServerSuccessMessage = L_Deleted;
-                createSavedPOI("save");
-                globalVar.RIBMode = false;
-                //reset poi arrays
-                globalVar.poiObj = [];
-                globalVar.poiDesc = [];
-                globalVar.poiKML = [];
-                //reset
-                globalVar.userMayLoseData = false;
-                //displayMessage(L11);
-            } else {
+            } catch(e) {
                 displayMessage(L_NotCleared);
-            }
-
+            } 
             break;
     }
 }
@@ -4847,9 +4851,9 @@ function toServer(dataPackage) {
                 de("Sallback from server - success");
                 //displayMessage(L_Completed);
                 //displayMessage(L_Saved);
-                displayMessage(globalVar.toServerSuccessMessage);
+                displayMessage(globalVar.toServerSuccessMessage); //will only display last success message
                 //reset success message
-                globalVar.toServerSuccessMessage = L_Completed;
+                globalVar.toServerSuccessMessage = L_Completed; //take out, because it could interfere with multiple saves
                 globalVar.toServerSuccess = true; //not really used
                 globalVar.csoi = 0; //reset
             }
