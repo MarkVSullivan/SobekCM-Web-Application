@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SobekCM.aspx.cs" Inherits="SobekCM.SobekCM" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" validateRequest="false" CodeBehind="SobekCM.aspx.cs" Inherits="SobekCM.SobekCM" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -52,5 +52,5 @@
 <%Write_Final_HTML();%>
     
 </body>
->>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
+>>>>>>> 0d31518d560c3bf56e7a6d74b0298b65a2430d0a
 </html>
