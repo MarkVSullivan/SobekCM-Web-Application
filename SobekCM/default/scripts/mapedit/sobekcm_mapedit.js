@@ -301,7 +301,7 @@ var L_Removed = "Removed";
 var L_Showing = "Showing";
 var L_Hiding = "Hiding";
 var L_Deleted = "Deleted";
-var L_NotDeleted = "Not Deleted";
+var L_NotDeleted = "Nothing To Delete";
 var L1 = "<div style=\"font-size:.95em;\">SobekCM Plugin &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Legal</a> &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Report a Sobek error</a> &nbsp</div>"; //copyright node
 var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
 var L3 = "Description (Optional)"; //describe poi box
@@ -2639,10 +2639,7 @@ function initialize() {
                 }
 
             });
-
         }
-        
-        //regarless of type
 
         //used to get center point for lat/long tool
         google.maps.event.addListener(rectangle, 'drag', function () {
@@ -5537,7 +5534,7 @@ function deleteItemLocation() {
         globalVar.itemMarker.setMap(null);
         globalVar.itemMarker = null;
         //msg
-        globalVar.serverSuccessMessage = localize.L69;
+        globalVar.toServerSuccessMessage = localize.L69;
         //send to server and delete from mets
         globalVar.RIBMode = true;
         createSavedItem("delete", null); 
@@ -6273,6 +6270,7 @@ $(function () {
         $("#content_toolbox_button_clearItem").tooltip({ show: { delay: 500 }, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearItem").tooltip("close"); }, 3000); } });
         $("#content_toolbox_button_clearOverlay").tooltip({ show: { delay: 500 }, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearOverlay").tooltip("close"); }, 3000); } });
         $("#content_toolbox_button_clearPOI").tooltip({ show: {delay:500}, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearPOI").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_deleteItem").tooltip({ show: { delay: 500 }, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_deleteItem").tooltip("close"); }, 3000); } });
         //$("#content_toolbar_searchField").tooltip({ track: true });
         //$("#content_toolbar_searchButton").tooltip({ track: true });
         //$("#content_toolbox_searchField").tooltip({ track: true });
@@ -6280,7 +6278,7 @@ $(function () {
         //$("#searchResults_container").tooltip({ track: true });
         //$("#overlayList_container").tooltip({ track: true });
         //$("#poiList_container").tooltip({ track: true });
-        $(document).tooltip({ track: true, show: { delay: 500 }}); //(used to blanket all the tooltips)
+        $(document).tooltip({ track: true, show: { delay: 300 }}); //(used to blanket all the tooltips)
         //$(".selector").tooltip({ content: "Awesome title!" });
     } catch (err) {
         alert(L51 + ": " + err);
