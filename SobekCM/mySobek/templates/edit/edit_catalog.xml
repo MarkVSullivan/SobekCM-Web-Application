@@ -96,7 +96,31 @@
       </panel>
     </page>
     <page>
-      <name language="eng">Extension Schemas</name>
+      <name language="eng">Other</name>
+			<panel>
+				<name language="eng">Learning Object Metadata (IEEE-LOM)</name>
+				<element type="LOM_Aggregation_Level" />
+				<element type="LOM_Learning_Resource_Type" />
+				<element type="LOM_Status" />
+				<element type="LOM_Interactivity_Type" />
+				<element type="LOM_Interactivity_Level" />
+				<element type="LOM_Difficulty_Level" />
+				<element type="LOM_Intended_End_User_Role" />
+				<element type="LOM_Context" />
+				<element type="LOM_Typical_Age_Range" />
+			</panel>
+			<panel>
+				<name language="eng">Thesis / Dissertation Metadata (ETD)</name>
+				<element type="ETD_CommitteeChair" />
+				<element type="ETD_CommitteeCoChair" />
+				<element type="ETD_CommitteeMember" />
+				<element type="ETD_Degree" />
+				<element type="ETD_DegreeDiscipline" />
+				<element type="ETD_DegreeDivision" />
+				<element type="ETD_DegreeGrantor" />
+				<element type="ETD_DegreeLevel" />
+				<element type="ETD_GraduationSemester" />
+			</panel>
       <panel>
         <name language="eng">Visual Resource Metadata (VRACore)</name>
         <element type="VRA_CulturalContext" />
@@ -106,18 +130,6 @@
         <element type="VRA_StateEdition" />
         <element type="VRA_StylePeriod" />
         <element type="VRA_Technique" />
-       </panel>
-      <panel>
-        <name language="eng">Learning Object Metadata (IEEE-LOM)</name>
-        <element type="LOM_Aggregation_Level" />
-        <element type="LOM_Learning_Resource_Type" />
-        <element type="LOM_Status" />
-        <element type="LOM_Interactivity_Type" />
-        <element type="LOM_Interactivity_Level" />
-        <element type="LOM_Difficulty_Level" />
-        <element type="LOM_Intended_End_User_Role" />
-        <element type="LOM_Context" />
-        <element type="LOM_Typical_Age_Range" />
        </panel>
     </page>
 	</inputs>
