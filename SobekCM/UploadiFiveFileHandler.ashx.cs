@@ -51,7 +51,7 @@ namespace SobekCM
 					string filename = Path.GetFileName(postedFile.FileName);
 
 					// Are there file extension restrictions?
-					if (tokenObj.AllowedFileExtensions.Length > 0)
+					if ( !String.IsNullOrEmpty(tokenObj.AllowedFileExtensions))
 					{
 						string extension = Path.GetExtension(postedFile.FileName).ToLower();
 						List<string> allowed = tokenObj.AllowedFileExtensions.Split("|,".ToCharArray()).ToList();

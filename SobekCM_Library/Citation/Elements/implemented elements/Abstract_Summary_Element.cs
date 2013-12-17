@@ -66,7 +66,7 @@ namespace SobekCM.Library.Citation.Elements
             List<string> instanceValues = new List<string>();
             if (Bib.Bib_Info.Abstracts_Count > 0)
             {
-                instanceValues.AddRange(Bib.Bib_Info.Abstracts.Select(thisAbstract => thisAbstract.Abstract_Text));
+                instanceValues.AddRange(Bib.Bib_Info.Abstracts.Select(ThisAbstract => ThisAbstract.Abstract_Text));
             }
 
             render_helper(Output, instanceValues, Skin_Code, IsMozilla, Current_User, CurrentLanguage, Translator, Base_URL);

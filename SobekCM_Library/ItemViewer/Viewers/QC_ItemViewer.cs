@@ -116,8 +116,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Determine the in process directory for this
             userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
-			if (Current_User.UFID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UFID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+			if (Current_User.ShibbID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 
 			// Make the folder for the user in process directory
 			if (!Directory.Exists(userInProcessDirectory))

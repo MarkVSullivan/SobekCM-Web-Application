@@ -106,8 +106,8 @@ namespace SobekCM.Library.MySobekViewer
             itemList = Item_List;
 
             // Determine the in process directory for this
-            if (user.UFID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UFID + "\\newgroup";
+            if (user.ShibbID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newgroup";
             else
                 userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".","").Replace("@","") + "\\newgroup";
 
@@ -423,7 +423,7 @@ namespace SobekCM.Library.MySobekViewer
                         StreamWriter writer = new StreamWriter(agreement_file, false);
                         writer.WriteLine("Permissions Agreement");
                         writer.WriteLine();
-                        writer.WriteLine("User: " + user.Full_Name + " ( " + user.UFID + " )");
+                        writer.WriteLine("User: " + user.Full_Name + " ( " + user.ShibbID + " )");
                         writer.WriteLine("Date: " + agreement_date.ToString());
                         writer.WriteLine();
                         writer.WriteLine(template.Permissions_Agreement);
@@ -1036,9 +1036,9 @@ namespace SobekCM.Library.MySobekViewer
             if (currentProcessStep == 8)
             {
                 Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
-                Output.WriteLine("<div class=\"SobekHomeText\">");
-                Output.WriteLine("<br />");
-                Output.Write("<strong>Step " + totalTemplatePages + " of " + totalTemplatePages + ": ");
+				Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+				Output.WriteLine("<br />");
+                Output.Write("<h2>Step " + totalTemplatePages + " of " + totalTemplatePages + ": ");
                 string explanation = String.Empty;
                 switch( template.Upload_Types)
                 {
@@ -1058,8 +1058,8 @@ namespace SobekCM.Library.MySobekViewer
                         break;
                 }
                 Output.WriteLine(template.Upload_Mandatory
-                                     ? " ( <i>Required</i> )</strong><br />"
-                                     : " ( Optional )</strong><br />");
+                                     ? " ( <i>Required</i> )</h2>"
+                                     : " ( Optional )</h2>");
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />"); 
             }
         }
@@ -1077,21 +1077,21 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             string templateLabel = "Template";
-            string projectLabel = "Project";
+            string projectLabel = "Default Metadata";
             const string COL1_WIDTH = "15px";
-            const string COL2_WIDTH = "80px";
-            const string COL3_WIDTH = "625px";
+            const string COL2_WIDTH = "140px";
+            const string COL3_WIDTH = "325px";
 
             if (currentMode.Language == Web_Language_Enum.French)
             {
                 templateLabel = "Modèle";
-                projectLabel = "Projet";
+				projectLabel = "Métadonnées par Défaut";
             }
 
             if (currentMode.Language == Web_Language_Enum.Spanish)
             {
                 templateLabel = "Plantilla";
-                projectLabel = "Proyecto";
+				projectLabel = "Metadatos Predeterminado";
             }
 
             // Add the hidden fields first
@@ -1104,22 +1104,21 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 1)
             {
-                Output.WriteLine("<div class=\"SobekHomeText\" >");
+				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
                 Output.WriteLine("<br />");
                 if (template.Permissions_Agreement.Length > 0)
                 {
-                    Output.WriteLine("<strong>Step 1 of " + totalTemplatePages + ": Grant of Permission</strong><br />");
+                    Output.WriteLine("<h2>Step 1 of " + totalTemplatePages + ": Grant of Permission</h2>");
 
                     Output.WriteLine("<blockquote>You must read and accept the below permissions to continue.<br /><br />");
                     Output.WriteLine(template.Permissions_Agreement.Replace("<%BASEURL%>", currentMode.Base_URL));
                //     Output.WriteLine("<p>Please review the <a href=\"?g=ufirg&amp;m=hitauthor_faq#policies&amp;n=gs\">Policies</A> if you have any questions or please contact us with any questions prior to submitting files. </p>\n");
-                    Output.WriteLine("<table width=\"700\">");
-                    Output.WriteLine("  <tr align=\"right\">");
+                    Output.WriteLine("<table style=\"width:700px\">");
+                    Output.WriteLine("  <tr style=\"text-align:right\">");
                     Output.WriteLine("    <td>You must read and accept the above permissions agreement to continue. &nbsp; &nbsp; </td>");
                     Output.WriteLine("    <td>");
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_cancel();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>");
-                    Output.WriteLine("      &nbsp; &nbsp; ");
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_next_phase(2);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/accept_button_22.gif\" alt=\"ACCEPT\" /></a>");
+					Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+					Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> ACCEPT <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                     Output.WriteLine("    </td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("</table>");
@@ -1129,23 +1128,22 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     Output.WriteLine("<strong>Step 1 of " + totalTemplatePages + ": Confirm Template and Project</strong><br />");
                     Output.WriteLine("<blockquote>");
-                    Output.WriteLine("<table width=\"720\">");
+                    Output.WriteLine("<table style=\"width:720px\">");
                     Output.WriteLine("  <tr>");
-                    Output.WriteLine("    <td width=\"450px\">&nbsp;</td>");
+                    Output.WriteLine("    <td style=\"width:450px\">&nbsp;</td>");
                     Output.WriteLine("    <td>");
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_cancel();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>");
-                    Output.WriteLine("      &nbsp; &nbsp; ");
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_next_phase(2);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/accept_button_22.gif\" alt=\"ACCEPT\" /></a>");
-                    Output.WriteLine("    </td>");
+					Output.WriteLine("      <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+					Output.WriteLine("      <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> ACCEPT <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+					Output.WriteLine("    </td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("</table>");
                 }
 
                 if ((user.Templates.Count > 1) || (user.Projects.Count > 1))
                 {
-                    string changeable = "project and template";
+                    string changeable = "template and default metadata";
                     if (user.Projects.Count == 0)
-                        changeable = "project";
+                        changeable = "default metadata";
                     if (user.Templates.Count == 0)
                         changeable = "template";
 
@@ -1155,12 +1153,14 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("<br />");
                     Output.WriteLine("<hr />");
                     Output.WriteLine("You may also change your current " + changeable + " for this submission.");
-                    Output.WriteLine("<table width=\"700px\" cellpadding=\"5px\" class=\"SobekCitationSection1\" >");
+                    Output.WriteLine("<table style=\"margin: 8px 0;\">");
 
                     if (user.Templates.Count > 1)
                     {
-                        Output.WriteLine("  <tr><td width=\"" + COL1_WIDTH + "\">&nbsp;</td><td width=\"" + COL2_WIDTH + "\"><b>" + templateLabel + ":</b></td>");
-                        Output.WriteLine("    <td width=\"" + COL3_WIDTH + "\">");
+	                    Output.WriteLine("  <tr>");
+	                    Output.WriteLine("    <td style=\"width:" + COL1_WIDTH + "; padding: 5px;\">&nbsp;</td>");
+						Output.WriteLine("    <td style=\"width:" + COL2_WIDTH + ";padding:5px;text-weight:bold;\">" + templateLabel + ":</td>");
+                        Output.WriteLine("    <td style=\"width:" + COL3_WIDTH + ";padding:5px;\">");
                         Output.WriteLine("      <select name=\"prefTemplate\" id=\"prefTemplate\" class=\"preferences_language_select\" onChange=\"template_changed()\" >");
                         foreach (string t in user.Templates)
                         {
@@ -1179,8 +1179,9 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if (user.Projects.Count > 1)
                     {
-                        Output.WriteLine("  <tr><td width=\"" + COL1_WIDTH + "\">&nbsp;</td><td width=\"" + COL2_WIDTH + "\"><b>" + projectLabel + ":</b></td>");
-                        Output.WriteLine("    <td width=\"" + COL3_WIDTH + "\">");
+						Output.WriteLine("    <td style=\"width:" + COL1_WIDTH + "; padding: 5px;\">&nbsp;</td>");
+						Output.WriteLine("    <td style=\"width:" + COL2_WIDTH + ";padding:5px;text-weight:bold;\">" + projectLabel + ":</td>");
+						Output.WriteLine("    <td style=\"width:" + COL3_WIDTH + ";padding:5px;\">");
                         Output.WriteLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" onChange=\"project_changed()\" >");
                         foreach (string t in user.Projects)
                         {
@@ -1216,7 +1217,7 @@ namespace SobekCM.Library.MySobekViewer
             {
 				Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
-                Output.WriteLine("<div class=\"SobekHomeText\">");
+				Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("<br />");
                 string template_page_title = template.InputPages[currentProcessStep - 2].Title;
                 if (template_page_title.Length == 0)
@@ -1230,7 +1231,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (template.Permissions_Agreement.Length == 0)
                     adjusted_process_step--;
 
-                Output.WriteLine("<strong>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</strong><br />");
+				Output.WriteLine("<h2>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</h2>");
                 Output.WriteLine("<blockquote>" + template_page_instructions + "</blockquote>");
                 if ((validationErrors != null) && (validationErrors.Count > 0) && (item.Web.Show_Validation_Errors))
                 {
@@ -1243,6 +1244,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("</blockquote>");
                     Output.WriteLine("</span>");
                     Output.WriteLine("<br />");
+					Output.WriteLine();
                 }
 
                 int next_step = currentProcessStep + 1;
@@ -1250,47 +1252,48 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     next_step = template.Upload_Types == Template.Template_Upload_Types.None ? 9 : 8;
                 }
-                Output.WriteLine("<div class=\"SobekEditPanel\">");
-                Output.WriteLine("<table width=\"720\">");
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td width=\"375px\">&nbsp;</td>");
-                Output.WriteLine("    <td>");
-                if (adjusted_process_step == 1)
-                {
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_cancel();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>");
-                }
-                else
-                {
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/back_button_22_g.gif\" alt=\"BACK\" /></a>");
-                }
-                Output.WriteLine("      &nbsp; &nbsp; ");
-                Output.WriteLine("      <a href=\"\" onclick=\"return new_item_clear();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/clear_button_22_g.gif\" alt=\"CLEAR\" /></a>");
-                Output.WriteLine("      &nbsp; &nbsp; ");
-                Output.WriteLine("      <a href=\"\" onclick=\"return new_item_next_phase(" + next_step + ");\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/next_button_22_g.gif\" alt=\"NEXT\" /></a>");
-                Output.WriteLine("    </td>");
-                Output.WriteLine("  </tr>");
-                Output.WriteLine("</table>");
+				Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+				Output.WriteLine("  <div class=\"graytabscontent\">");
+				Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
+
+				// Add the top buttons
+				Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+				if (adjusted_process_step == 1)
+				{
+					Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+				}
+				else
+				{
+					Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+				}
+				Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> CLEAR </button> &nbsp; &nbsp; ");
+				Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("      </div>");
+				Output.WriteLine("      <br /><br />");
+				Output.WriteLine();
+
                 string popup_forms = template.Render_Template_HTML(Output, item, currentMode.Skin, currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0, user, currentMode.Language, Translator, currentMode.Base_URL, currentProcessStep - 1);
-                Output.WriteLine("<table width=\"720\">");
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td width=\"375px\">&nbsp;</td>");
-                Output.WriteLine("    <td>");
-                if (adjusted_process_step == 1)
-                {
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_cancel();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CANCEL\" /></a>");
-                }
-                else
-                {
-                    Output.WriteLine("      <a href=\"\" onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/back_button_22_g.gif\" alt=\"BACK\" /></a>");
-                } 
-                Output.WriteLine("      &nbsp; &nbsp; ");
-                Output.WriteLine("      <a href=\"\" onclick=\"return new_item_clear();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/clear_button_22_g.gif\" alt=\"CLEAR\" /></a>");
-                Output.WriteLine("      &nbsp; &nbsp; ");
-                Output.WriteLine("      <a href=\"\" onclick=\"return new_item_next_phase(" + next_step + ");\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/next_button_22_g.gif\" alt=\"NEXT\" /></a>");
-                Output.WriteLine("    </td>");
-                Output.WriteLine("  </tr>");
-                Output.WriteLine("</table>");
-                Output.WriteLine("</div>");
+
+
+				// Add the bottom buttons
+				Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+				if (adjusted_process_step == 1)
+				{
+					Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+				}
+				else
+				{
+					Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+				}
+				Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> CLEAR </button> &nbsp; &nbsp; ");
+				Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("      </div>");
+				Output.WriteLine("      <br />");
+				Output.WriteLine();
+
+                Output.WriteLine("    </div>");
+				Output.WriteLine("  </div>");
+				Output.WriteLine("</div>");
                 Output.WriteLine("<br />");
 
 
@@ -1374,14 +1377,13 @@ namespace SobekCM.Library.MySobekViewer
                     if ( image_files.Count > 0 )
                     {
                         Output.WriteLine("The following page images are already uploaded for this package:");
-                        Output.WriteLine("<blockquote>");
-                        Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
-                        Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
-                        Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
-                        Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
-                        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
-                        Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
-                        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
+						Output.WriteLine("<table class=\"sbkNgi_FileTable\">");
+                        Output.WriteLine("  <tr>");
+                        Output.WriteLine("    <th style=\"width:100px;\">FILENAME</th>");
+                        Output.WriteLine("    <th style=\"width:150px;\">&nbsp;</th>");
+                        Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
+                        Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
+                        Output.WriteLine("    <th style=\"width:90px;\">ACTION</th>");
                         Output.WriteLine("  </tr>");
 
                         // Step through all the page image file groups
@@ -1397,55 +1399,58 @@ namespace SobekCM.Library.MySobekViewer
 
                                 // Add the file name literal
                                 FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
-                                Output.WriteLine("<tr align=\"left\" >");
-                                Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
+                                Output.WriteLine("  <tr>");
+                                Output.WriteLine("    <td colspan=\"2\">" + fileInfo.Name + "</td>");
                                 if (fileInfo.Length < 1024)
-                                    Output.WriteLine("<td>" + fileInfo.Length + "</td>");
+                                    Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
                                 else
                                 {
                                     if (fileInfo.Length < (1024 * 1024))
-                                        Output.WriteLine("<td>" + (fileInfo.Length / 1024) + " KB</td>");
+                                        Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
                                     else
-                                        Output.WriteLine("<td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
+                                        Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
                                 }
 
-                                Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
-                                Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
+                                Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
+	                            Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td>");
+								Output.WriteLine("  </tr>");
                             }
 
                             // Now add the row to include the label
                             string input_name = "upload_label" + file_counter.ToString();
-                            Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
-                            Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+	                        Output.WriteLine("  <tr>");
+	                        Output.WriteLine("    <td style=\"text-align:right; color:gray;\">Label:</td>");
+							Output.WriteLine("    <td colspan=\"4\">");
+                            Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
                             if (HttpContext.Current.Session["file_" + fileKey] == null)
                             {
-                                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
+								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" ></input>");
                             }
                             else
                             {
                                 string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
-                                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
+								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" ></input>");
                             }
-                            Output.WriteLine("</td></tr>");
-                            Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
-                            Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
+	                        Output.WriteLine("    </td>");
+							Output.WriteLine("  </tr>");
+							Output.WriteLine("  <tr><td class=\"sbkNgi_FileTableRule\" colspan=\"5\"></td></tr>");
+                            Output.WriteLine("  <tr style=\"height:6px\"><td colspan=\"5\"></td></tr>");
                         }
-                        Output.WriteLine("</table></blockquote><br />");
+                        Output.WriteLine("</table>");
                     }
 
                     // Any download files?
                     if (download_files.Count > 0)
                     {
                         Output.WriteLine("The following files are already uploaded for this package and will be included as downloads:");
-                        Output.WriteLine("<blockquote>");
-                        Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
-                        Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
-                        Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
-                        Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
-                        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
-                        Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
-                        Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
-                        Output.WriteLine("  </tr>");
+						Output.WriteLine("<table class=\"sbkNgi_FileTable\">");
+						Output.WriteLine("  <tr>");
+						Output.WriteLine("    <th style=\"width:100px;\">FILENAME</th>");
+						Output.WriteLine("    <th style=\"width:150px;\">&nbsp;</th>");
+						Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
+						Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
+						Output.WriteLine("    <th style=\"width:90px;\">ACTION</th>");
+						Output.WriteLine("  </tr>");
 
                         // Step through all the download file groups
                         foreach (string fileKey in download_files.Keys)
@@ -1458,42 +1463,46 @@ namespace SobekCM.Library.MySobekViewer
                             {
                                 file_counter++;
 
-                                // Add the file name literal
-                                FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
-                                Output.WriteLine("<tr align=\"left\" >");
-                                Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
-                                if (fileInfo.Length < 1024)
-                                    Output.WriteLine("<td>" + fileInfo.Length + "</td>");
-                                else
-                                {
-                                    if (fileInfo.Length < (1024 * 1024))
-                                        Output.WriteLine("<td>" + (fileInfo.Length / 1024) + " KB</td>");
-                                    else
-                                        Output.WriteLine("<td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
-                                }
+								// Add the file name literal
+								FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
+								Output.WriteLine("  <tr>");
+								Output.WriteLine("    <td colspan=\"2\">" + fileInfo.Name + "</td>");
+								if (fileInfo.Length < 1024)
+									Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
+								else
+								{
+									if (fileInfo.Length < (1024 * 1024))
+										Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
+									else
+										Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
+								}
 
-                                Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
-                                Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
-                            }
+								Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
+								Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td>");
+								Output.WriteLine("  </tr>");
+							}
 
                             // Now add the row to include the label
                             string input_name = "upload_label" + file_counter.ToString();
-                            Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
-                            Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-                            if (HttpContext.Current.Session["file_" + fileKey] == null)
-                            {
-                                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-                            }
-                            else
-                            {
-                                string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
-                                Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-                            }
-                            Output.WriteLine("</td></tr>");
-                            Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
-                            Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
+							Output.WriteLine("  <tr>");
+							Output.WriteLine("    <td style=\"text-align:right; color:gray;\">Label:</td>");
+							Output.WriteLine("    <td colspan=\"4\">");
+							Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+							if (HttpContext.Current.Session["file_" + fileKey] == null)
+							{
+								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" ></input>");
+							}
+							else
+							{
+								string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
+								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" ></input>");
+							}
+							Output.WriteLine("    </td>");
+							Output.WriteLine("  </tr>");
+							Output.WriteLine("  <tr><td class=\"sbkNgi_FileTableRule\" colspan=\"5\"></td></tr>");
+							Output.WriteLine("  <tr style=\"height:6px\"><td colspan=\"5\"></td></tr>");
                         }
-                        Output.WriteLine("</table></blockquote><br />");
+                        Output.WriteLine("</table>");
                     }
                 }
 
@@ -1501,7 +1510,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     Output.WriteLine("Enter a URL for this digital resource:");
                     Output.WriteLine("<blockquote>");
-                    Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + HttpUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" onfocus=\"javascript:textbox_enter('url_input', 'upload_url_input_focused')\" onblur=\"javascript:textbox_leave('url_input', 'upload_url_input')\" ></input>");
+                    Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + HttpUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" ></input>");
                     Output.WriteLine("</blockquote>");
                 }
 
@@ -1526,135 +1535,19 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
 
-                Output.WriteLine("<table width=\"750\">");
-                Output.WriteLine("  <tr height=\"40px\" align=\"left\" valign=\"middle\" >");
-                Output.WriteLine("    <td height=\"40px\" width=\"450\">" + completion_message + "</td>");
-                Output.WriteLine("    <td height=\"40px\" align=\"right\">");
-                Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(" + (template.InputPages.Count + 1) + ");\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/back_button_22.gif\" alt=\"BACK\" /></a>");
-                Output.WriteLine("      &nbsp; ");
-                Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(9);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/submit_button_22.gif\" alt=\"NEXT\" /></a> &nbsp; ");
+                Output.WriteLine("<table style=\"width:750px\">");
+                Output.WriteLine("  <tr style=\"height:40px; text-align:left; vertical-align:middle\">");
+                Output.WriteLine("    <td style=\"width:450px\">" + completion_message + "</td>");
+                Output.WriteLine("    <td style=\"text-align:right\">");
+				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (template.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("    </td>");
-                Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
+                Output.WriteLine("    <td style=\"width:65px;\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
                 Output.WriteLine("  </tr>");
                 Output.WriteLine("</table>");
                 Output.WriteLine("<br /><br />");
                 Output.WriteLine("</div>");
             }
-
-            //if (current_process_step == 8)
-            //{
-            //    if ((template.Upload_Types == SobekCM.Library.Citation.Template.Template.Template_Upload_Types.File) || (template.Upload_Types == SobekCM.Library.Citation.Template.Template.Template_Upload_Types.File_or_URL))
-            //    {
-            //        string[] all_files = System.IO.Directory.GetFiles(user_in_process_directory);
-            //        List<string> acceptable_files = new List<string>();
-            //        foreach (string thisFile in all_files)
-            //        {
-            //            System.IO.FileInfo thisFileInfo = new System.IO.FileInfo(thisFile);
-
-            //            if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
-            //            {
-            //                acceptable_files.Add(thisFile);
-            //            }
-            //        }
-
-            //        if (acceptable_files.Count > 0)
-            //        {
-            //            Output.WriteLine("The following files are already uploaded for this package:");
-            //            Output.WriteLine("<blockquote>");
-            //            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
-            //            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
-            //            Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
-            //            Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
-            //            Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
-            //            Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
-            //            Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
-            //            Output.WriteLine("  </tr>");
-
-            //            int file_counter = 0;
-            //            foreach (string thisFile in acceptable_files)
-            //            {
-            //                file_counter++;
-
-            //                // Add the file name literal
-            //                System.IO.FileInfo fileInfo = new System.IO.FileInfo(thisFile);
-            //                Output.WriteLine("<tr align=\"left\" >");
-            //                Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
-            //                if (fileInfo.Length < 1024)
-            //                    Output.WriteLine("<td>" + fileInfo.Length + "</td>");
-            //                else
-            //                {
-            //                    if (fileInfo.Length < (1024 * 1024))
-            //                        Output.WriteLine("<td>" + (fileInfo.Length / 1024) + " KB</td>");
-            //                    else
-            //                        Output.WriteLine("<td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
-            //                }
-
-            //                Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
-            //                Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
-
-            //                string input_name = "upload_label" + file_counter.ToString();
-            //                Output.WriteLine("<tr><td width=\"120px\" align=\"right\"><span style=\"color:gray\">Label:</span></td><td colspan=\"4\">");
-            //                Output.WriteLine("<input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileInfo.Name + "\" />");
-            //                if (System.Web.HttpContext.Current.Session["file_" + fileInfo.Name] == null)
-            //                {
-            //                    Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-            //                }
-            //                else
-            //                {
-            //                    string label_from_session = System.Web.HttpContext.Current.Session["file_" + fileInfo.Name].ToString();
-            //                    Output.WriteLine("<input type=\"text\" class=\"upload_label_input\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onfocus=\"javascript:textbox_enter('" + input_name + "', 'upload_label_input_focused')\" onblur=\"javascript:textbox_leave('" + input_name + "', 'upload_label_input')\" ></input>");
-            //                }
-            //                Output.WriteLine("</td></tr>");
-            //                Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
-            //                Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
-            //            }
-            //            Output.WriteLine("</table></blockquote><br />");
-            //        }
-            //    }
-
-            //    if ((template.Upload_Types == SobekCM.Library.Citation.Template.Template.Template_Upload_Types.File_or_URL) || (template.Upload_Types == SobekCM.Library.Citation.Template.Template.Template_Upload_Types.URL))
-            //    {
-            //        Output.WriteLine("Enter a URL for this digital resource:");
-            //        Output.WriteLine("<blockquote>");
-            //        Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + System.Web.HttpUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" onfocus=\"javascript:textbox_enter('url_input', 'upload_url_input_focused')\" onblur=\"javascript:textbox_leave('url_input', 'upload_url_input')\" ></input>");
-            //        Output.WriteLine("</blockquote>");
-            //    }
-
-            //    string completion_message = String.Empty;
-            //    switch (template.Upload_Types)
-            //    {
-            //        case SobekCM.Library.Citation.Template.Template.Template_Upload_Types.URL:
-            //            completion_message = "Once the URL is entered, press SUBMIT to finish this item.";
-            //            break;
-
-            //        case SobekCM.Library.Citation.Template.Template.Template_Upload_Types.File_or_URL:
-            //            completion_message = "Once you enter any files and/or URL, press SUBMIT to finish this item.";
-            //            break;
-
-            //        case SobekCM.Library.Citation.Template.Template.Template_Upload_Types.File:
-            //            completion_message = "Once all files are uploaded, press SUBMIT to finish this item.";
-            //            break;
-
-            //        default:
-            //            completion_message = "Once complete, press SUBMIT to finish this item.";
-            //            break;
-            //    }
-
-
-            //    Output.WriteLine("<table width=\"750\">");
-            //    Output.WriteLine("  <tr height=\"40px\" align=\"left\" valign=\"middle\" >");
-            //    Output.WriteLine("    <td height=\"40px\" width=\"450\">" + completion_message + "</td>");
-            //    Output.WriteLine("    <td height=\"40px\" align=\"right\">");
-            //    Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(" + (template.InputPages.Count + 1) + ");\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/back_button_22.gif\" alt=\"BACK\" /></a>");
-            //    Output.WriteLine("      &nbsp; ");
-            //    Output.WriteLine("      <a href=\"\" onclick=\"return new_upload_next_phase(9);\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/submit_button_22.gif\" alt=\"NEXT\" /></a> &nbsp; ");
-            //    Output.WriteLine("    </td>");
-            //    Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
-            //    Output.WriteLine("  </tr>");
-            //    Output.WriteLine("</table>");
-            //    Output.WriteLine("<br /><br />");
-            //    Output.WriteLine("</div>");
-            //}
 
             #endregion
 
@@ -1681,10 +1574,6 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        #region Step 2: Metadata Template
-
-        #endregion
-
         #region Step 3: Upload Related Files
 
         private void add_upload_controls(PlaceHolder MainPlaceholder, Custom_Tracer Tracer)
@@ -1707,7 +1596,7 @@ namespace SobekCM.Library.MySobekViewer
 				UploadiFiveControl uploadControl = new UploadiFiveControl();
 				uploadControl.UploadPath = userInProcessDirectory;
 				uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
-				uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types + "," + SobekCM_Library_Settings.Upload_Image_Types;
+				uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types + "," + SobekCM_Library_Settings.Upload_File_Types;
 				uploadControl.SubmitWhenQueueCompletes = true;
 	            uploadControl.RemoveCompleted = true;
 				MainPlaceholder.Controls.Add(uploadControl);

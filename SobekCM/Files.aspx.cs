@@ -9,23 +9,19 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
+using SobekCM.Library.Users;
 
 namespace SobekCM
 {
 	public partial class Files : System.Web.UI.Page
 	{
-		protected string file_url;
+		private string file_url;
 
 
-		protected void Page_Load(object sender, EventArgs e)
+		protected void Page_Load(object Sender, EventArgs E)
 		{
 			// Pull out the http request
 			HttpRequest request = HttpContext.Current.Request;
-
-			// Get the base url
-			string base_url = request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
-			if (base_url.IndexOf("?") > 0)
-				base_url = base_url.Substring(0, base_url.IndexOf("?"));
 
 			if (String.IsNullOrEmpty(SobekCM_Database.Connection_String))
 			{
@@ -59,7 +55,7 @@ namespace SobekCM
 					if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || (HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
 					{
 						// Create an error message 
-						string errorMessage = "Error caught while validating application state";
+						string errorMessage;
 						if ((SobekCM_Library_Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connections[0].Connection_String)))
 						{
 							errorMessage = "No database connection string found!";
@@ -104,8 +100,8 @@ namespace SobekCM
 			}
 
 
-			string BibID = null;
-			string VID = null;
+			string bibID = null;
+			string vid = null;
 
 			// Is this a robot?  They should never get access to files this way
 			if (SobekCM_Navigation_Object.Is_UserAgent_IP_Robot(request.UserAgent, request.UserHostAddress))
@@ -130,23 +126,23 @@ namespace SobekCM
 					if ((url_relative_list.Count > 2) && (url_relative_list[2].Length == 10))
 					{
 						// This is a BibID for an existing title with at least one public item
-						BibID = url_relative_list[2].ToUpper();
+						bibID = url_relative_list[2].ToUpper();
 
 						// Is the next part a VID?
 						if (url_relative_list.Count > 3)
 						{
 							string possible_vid = url_relative_list[3].Trim().PadLeft(5, '0');
-							int vid_as_int = -1;
+							int vid_as_int;
 							if (Int32.TryParse(possible_vid, out vid_as_int))
-								VID = possible_vid;
+								vid = possible_vid;
 						}
 					}
 
 					// Only continue if there is a BibID / VID
-					if ((!String.IsNullOrEmpty(BibID)) && (!String.IsNullOrEmpty(VID)))
+					if ((!String.IsNullOrEmpty(bibID)) && (!String.IsNullOrEmpty(vid)))
 					{
 						// Determine the new URL
-						StringBuilder urlBuilder = new StringBuilder(SobekCM_Library_Settings.Image_Server_Network + BibID.Substring(0, 2) + "\\" + BibID.Substring(2, 2) + "\\" + BibID.Substring(4, 2) + "\\" + BibID.Substring(6, 2) + "\\" + BibID.Substring(8) + "\\" + VID + "\\" + url_relative_list[4], 250);
+						StringBuilder urlBuilder = new StringBuilder(SobekCM_Library_Settings.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
 						for (int i = 5; i < url_relative_list.Count; i++)
 						{
 							urlBuilder.Append("\\" + url_relative_list[i]);
@@ -156,20 +152,20 @@ namespace SobekCM
 
 
 						// Get the extension
-						string Extension = Path.GetExtension(file_url);
-						if (Extension != null)
+						string extension = Path.GetExtension(file_url);
+						if (extension != null)
 						{
 							// Lookup the MIME type by extension
-							Mime_Type_Info MimeType = null;
-							if (Global.Mime_Types.ContainsKey(Extension.ToLower()))
-								MimeType = Global.Mime_Types[Extension.ToLower()];
+							Mime_Type_Info mimeType = null;
+							if (Global.Mime_Types.ContainsKey(extension.ToLower()))
+								mimeType = Global.Mime_Types[extension.ToLower()];
 
-							if ((MimeType != null) && (!MimeType.isBlocked))
+							if ((mimeType != null) && (!mimeType.isBlocked))
 							{
 								// Since everything is valid, check the database
-								bool isDark = false;
-								short restrictions = -1;
-								SobekCM_Database.Get_Item_Restrictions(BibID, VID, null, out isDark, out restrictions);
+								bool isDark;
+								short restrictions;
+								SobekCM_Database.Get_Item_Restrictions(bibID, vid, null, out isDark, out restrictions);
 
 								// If not DARK, and is restricted, check for access here						
 								if ((!isDark) && (restrictions > 0))
@@ -189,16 +185,19 @@ namespace SobekCM
 									int comparison = restrictions & current_user_mask;
 									if (comparison == 0)
 									{
-										isDark = true;
+										// If the user is Shibboleth authenticated, that is okay
+										User_Object possible_user = HttpContext.Current.Session["user"] as User_Object;
+										if (( possible_user == null ) || ( !possible_user.Shibboleth_Authenticated ))
+											isDark = true;
 									}
 								}
 
 								if (!isDark)
 								{
 									// Should this be forwarded for this mimetype?
-									if (MimeType.shouldForward)
+									if (mimeType.shouldForward)
 									{
-										StringBuilder forwardBuilder = new StringBuilder(SobekCM_Library_Settings.Image_URL + BibID.Substring(0, 2) + "/" + BibID.Substring(2, 2) + "/" + BibID.Substring(4, 2) + "/" + BibID.Substring(6, 2) + "/" + BibID.Substring(8) + "/" + VID + "/" + url_relative_list[4], 250);
+										StringBuilder forwardBuilder = new StringBuilder(SobekCM_Library_Settings.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
 										for (int i = 5; i < url_relative_list.Count; i++)
 										{
 											forwardBuilder.Append("/" + url_relative_list[i]);
@@ -208,15 +207,15 @@ namespace SobekCM
 									else
 									{
 										Response.Clear();
-										Response.ContentType = MimeType.MIME_Type;
+										Response.ContentType = mimeType.MIME_Type;
 
 										string filename = file_url;
 
 										if (File.Exists(filename))
 										{
-											using (FileStream SourceStream = File.OpenRead(filename))
+											using (FileStream sourceStream = File.OpenRead(filename))
 											{
-												SourceStream.CopyTo(Response.OutputStream, 32768);
+												sourceStream.CopyTo(Response.OutputStream, 32768);
 											}
 										}
 

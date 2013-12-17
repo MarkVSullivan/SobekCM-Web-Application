@@ -4194,7 +4194,7 @@ namespace SobekCM.Library.Database
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[20];
 				paramList[0] = new SqlParameter("@userid", User.UserID);
-				paramList[1] = new SqlParameter("@ufid", User.UFID);
+				paramList[1] = new SqlParameter("@ufid", User.ShibbID);
 				paramList[2] = new SqlParameter("@username", User.UserName);
 				paramList[3] = new SqlParameter("@password", encryptedPassword);
 				paramList[4] = new SqlParameter("@emailaddress", User.Email);
@@ -4497,7 +4497,7 @@ namespace SobekCM.Library.Database
 			User_Object user = new User_Object();
 
 			DataRow userRow = ResultSet.Tables[0].Rows[0];
-			user.UFID = userRow["UFID"].ToString();
+			user.ShibbID = userRow["UFID"].ToString();
 			user.UserID = Convert.ToInt32(userRow["UserID"]);
 			user.UserName = userRow["username"].ToString();
 			user.Email = userRow["EmailAddress"].ToString();

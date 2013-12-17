@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -589,34 +588,33 @@ namespace SobekCM
 			if (HttpContext.Current.Session["user"] == null)
 			{
 				// If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
-				string shibboleth_id = HttpContext.Current.Request.ServerVariables["HTTP_UFID"];
+				string shibboleth_id = HttpContext.Current.Request.ServerVariables[SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute];
 				if (shibboleth_id == null)
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable NOT found");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
 				}
 				else
-					//if ((currentModeCheck.Mode == Display_Mode_Enum.My_Sobek) && (currentModeCheck.My_Sobek_Type ==My_Sobek_Type_Enum.Gatorlink_Landing) && (System.Web.HttpContext.Current.Session["user"] == null) && (ufid != null))
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable found");
-					// string ufid = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_UFID"].ToString();
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable found");
 
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "HTTP_UFID server variable = '" + shibboleth_id + "'");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
 
 					if (shibboleth_id.Length == 8)
 					{
-						tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by ufid");
+						tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by shibboleth id");
 
 						User_Object possible_user_by_shibboleth_id = SobekCM_Database.Get_User(shibboleth_id, tracer);
 
 						// Check to see if we got a valid user back
 						if (possible_user_by_shibboleth_id != null)
 						{
-							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from ufid");
+							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from shibboleth id");
+							possible_user_by_shibboleth_id.Shibboleth_Authenticated = true;
 							HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
 						}
 						else
 						{
-							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from ufid was null.. adding user");
+							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from shibboleth id was null.. adding user");
 
 							// First pull the data from the Shibboleth session
 							string email = String.Empty;
@@ -640,7 +638,7 @@ namespace SobekCM
 							newUser.Family_Name = lastname;
 							newUser.Given_Name = firstname;
 							newUser.Organization = "University of Florida";
-							newUser.UFID = shibboleth_id;
+							newUser.ShibbID = shibboleth_id;
 							newUser.UserID = -1;
 							if (email.Length > 0)
 								newUser.UserName = email;
@@ -664,9 +662,10 @@ namespace SobekCM
 							SobekCM_Database.Save_User(newUser, password, tracer);
 
 							// Now, pull back out of the database
-							User_Object possible_user_by_ufid2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
-							possible_user_by_ufid2.Is_Just_Registered = true;
-							HttpContext.Current.Session["user"] = possible_user_by_ufid2;
+							User_Object possible_user_by_shib2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
+							possible_user_by_shib2.Is_Just_Registered = true;
+							possible_user_by_shib2.Shibboleth_Authenticated = true;
+							HttpContext.Current.Session["user"] = possible_user_by_shib2;
 						}
 
 						if (HttpContext.Current.Session["user"] != null)

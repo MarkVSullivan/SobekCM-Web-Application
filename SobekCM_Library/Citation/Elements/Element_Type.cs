@@ -87,6 +87,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Edition element type maps to <see cref="Edition_Element"/> </summary>
         Edition,
 
+		/// <summary> Date the embargo on this item is set to expire </summary>
+		EmbargoDate,
+
         /// <summary> Embedded video module stores all the HTML to embed a video </summary>
         EmbeddedVideo,
 
@@ -105,8 +108,11 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Electronic Thesis and Disseratation information - type of degree granted </summary>
         ETD_Degree,
 
-        /// <summary> Electronic Thesis and Disseratation information - name of the college or department </summary>
+        /// <summary> Electronic Thesis and Disseratation information - discipline </summary>
         ETD_DegreeDiscipline,
+
+		/// <summary> Electronic Thesis and Disseratation information - division </summary>
+		ETD_DegreeDivision,
 
         /// <summary> Electronic Thesis and Disseratation information - name of the institution in standard form </summary>
         ETD_DegreeGrantor,
@@ -117,15 +123,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Electronic Thesis and Disseratation information - student's graduation date </summary>
         ETD_GraduationDate,
 
+		/// <summary> Electronic Thesis and Dissertation information - student's graduation semester ( i.e., 'Fall 2012' ) </summary>
+		ETD_GraduationSemester,
+
         /// <summary> Electronic Thesis and Dissertation inforamtion - send to UMI information </summary>
         ETD_UMI,
 
         /// <summary> Frequency element type maps to <see cref="FAST_Subject_Element"/> </summary>
         FAST_Subject,
-
-        /// <summary> Flags used to indicate if an item should load to PALMM or FDA for items 
-        /// with a destination of FCLA ( Florida Center of Library Automation )  (FUTURE PLAN) </summary>
-        FCLA_Flags,
 
         /// <summary> FDA Account element type does not currently map to any element (FUTURE PLAN) </summary>
         FDA_Account,
@@ -226,9 +231,6 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Other URL element type maps to <see cref="Other_URL_Form_Element"/> or <see cref="Other_URL_Element" /> </summary>
         OtherURL,
 
-        /// <summary> PALMM code element type does not currently map to any element (FUTURE PLAN) </summary>
-        PALMM_Code,
-
         /// <summary> Primary alternate identifier associated with this item group, maps to <see cref="Primary_Alt_Identifier_Element"/> </summary>
         Primary_Identifier,
 
@@ -276,7 +278,7 @@ namespace SobekCM.Library.Citation.Elements
         Subject,
 
 		/// <summary> Superintendent of Documents Classification System </summary>
-		SuDOC,
+		SuDoc,
 
         /// <summary> Target audience element type maps to <see cref="Target_Audience_Element"/> </summary>
         TargetAudience,
@@ -463,6 +465,9 @@ namespace SobekCM.Library.Citation.Elements
                 case "EDITION":
                     return Element_Type.Edition;
 
+				case "EMBARGODATE":
+					return Element_Type.EmbargoDate;
+
                 case "EMBEDDEDVIDEO":
                     return Element_Type.EmbeddedVideo;
 
@@ -484,6 +489,9 @@ namespace SobekCM.Library.Citation.Elements
                 case "ETD_DEGREEDISCIPLINE":
                     return Element_Type.ETD_DegreeDiscipline;
 
+				case "ETD_DEGREEDIVISION":
+					return Element_Type.ETD_DegreeDivision;
+
                 case "ETD_DEGREEGRANTOR":
                     return Element_Type.ETD_DegreeGrantor;
 
@@ -493,14 +501,14 @@ namespace SobekCM.Library.Citation.Elements
                 case "ETD_GRADUATIONDATE":
                     return Element_Type.ETD_GraduationDate;
 
+				case "ETD_GRADUATIONSEMESTER":
+					return Element_Type.ETD_GraduationSemester;
+
                 case "ETD_UMI":
                     return Element_Type.ETD_UMI;
 
                 case "FAST_SUBJECT":
                     return Element_Type.FAST_Subject;
-
-                case "FCLA_FLAGS":
-                    return Element_Type.FCLA_Flags;
 
                 case "FDA_ACCOUNT":
                     return Element_Type.FDA_Account;
@@ -599,9 +607,6 @@ namespace SobekCM.Library.Citation.Elements
                 case "OTHERURL":
                     return Element_Type.OtherURL;
 
-                case "PALMM_Code":
-                    return Element_Type.PALMM_Code;
-
                 case "PRIMARYIDENTIFIER":
                 case "PRIMARY_IDENTIIER":
                     return Element_Type.Primary_Identifier;
@@ -649,7 +654,7 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Subject;
 
 				case "SUDOC":
-					return Element_Type.SuDOC;
+					return Element_Type.SuDoc;
 
                 case "TARGETAUDIENCE":
                     return Element_Type.TargetAudience;
@@ -846,17 +851,50 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Edition:
                     return "Edition";
 
+				case Element_Type.EmbargoDate:
+					return "EmbargoDate";
+
                 case Element_Type.EmbeddedVideo:
 			        return "EmbeddedVideo";
 
                 case Element_Type.EncodingLevel:
                     return "EncodingLevel";
 
+				case Element_Type.ETD_CommitteeChair:
+					return "ETD_CommitteeChair";
+
+				case Element_Type.ETD_CommitteeCoChair:
+					return "ETD_CommitteeCoChair";
+
+				case Element_Type.ETD_CommitteeMember: 
+					return "ETD_CommitteeMember";
+
+				case Element_Type.ETD_Degree:
+					return "ETD_Degree";
+
+				case Element_Type.ETD_DegreeDiscipline:
+					return "ETD_DegreeDiscipline";
+
+				case Element_Type.ETD_DegreeDivision:
+					return "ETD_DegreeDivision";
+
+				case Element_Type.ETD_DegreeGrantor:
+					return "ETD_DegreeGrantor";
+
+				case Element_Type.ETD_DegreeLevel:
+					return "ETD_DegreeLevel";
+
+				case Element_Type.ETD_GraduationDate:
+					return "ETD_GraduationDate";
+
+				case Element_Type.ETD_GraduationSemester: 
+					return "ETD_GraduationSemester";
+
+				case Element_Type.ETD_UMI:
+					return "ETD_UMI";
+
                 case Element_Type.FAST_Subject:
                     return "FAST_Subject";
-
-                case Element_Type.FCLA_Flags:
-                    return "FCLA_Flags";
 
                 case Element_Type.FDA_Account:
                     return "FDA_Account";
@@ -918,9 +956,6 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.OtherURL:
                     return "OtherURL";
 
-                case Element_Type.PALMM_Code:
-                    return "PALMM_Code";
-
                 case Element_Type.Primary_Identifier:
                     return "PrimaryIdentifier";
 
@@ -963,7 +998,7 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Subject:
                     return "Subject";
 
-				case Element_Type.SuDOC:
+				case Element_Type.SuDoc:
 					return "SuDOC";
 
                 case Element_Type.TargetAudience:

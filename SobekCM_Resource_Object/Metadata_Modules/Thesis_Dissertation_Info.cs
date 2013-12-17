@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 #endregion
 
@@ -46,6 +47,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         private string degreeGrantor;
         private Thesis_Degree_Level_Enum degreeLevel;
         private Nullable<DateTime> graduationDate;
+		private string graduationSemester;
 
         /// <summary> Constructor for a new instance of the Thesis_Dissertation_Info class  </summary>
         public Thesis_Dissertation_Info()
@@ -245,6 +247,14 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             set { graduationDate = value; }
         }
 
+		/// <summary> Semster in which this student graduated </summary>
+	    public string Graduation_Semester
+		{
+			get { return graduationSemester ?? String.Empty; }
+			set { graduationSemester = value; }
+		}
+
+
         /// <summary> Gets the level of this ETD work ( either 'Masters' or 'Doctorate' )  </summary>
         public Thesis_Degree_Level_Enum Degree_Level
         {
@@ -257,15 +267,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                if ((!String.IsNullOrEmpty(committeeChair)) || (!String.IsNullOrEmpty(committeeCoChair)) ||
-					(!String.IsNullOrEmpty(degree)) || (!String.IsNullOrEmpty(degreeGrantor)) ||
-                    (degreeLevel != Thesis_Degree_Level_Enum.Unknown) || (graduationDate.HasValue) ||
-                    ((committeeMember != null) && (committeeMember.Count > 0)) ||
-					((degreeDiscipline != null) && (degreeDiscipline.Count > 0)) ||
-					((degreeDivision != null) && (degreeDivision.Count > 0)))
-                    return true;
-                else
-                    return false;
+	            return (!String.IsNullOrEmpty(committeeChair)) || (!String.IsNullOrEmpty(committeeCoChair)) ||
+	                   (!String.IsNullOrEmpty(degree)) || (!String.IsNullOrEmpty(degreeGrantor)) ||
+	                   (degreeLevel != Thesis_Degree_Level_Enum.Unknown) || (graduationDate.HasValue) ||
+	                   (!String.IsNullOrEmpty(graduationSemester)) ||
+	                   ((committeeMember != null) && (committeeMember.Count > 0)) ||
+	                   ((degreeDiscipline != null) && (degreeDiscipline.Count > 0)) ||
+	                   ((degreeDivision != null) && (degreeDivision.Count > 0));
             }
         }
 
@@ -301,8 +309,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the rest of the committee
                 if ( committeeMember != null )
                 {
-                    foreach( string thisCommitteeMember in committeeMember )
-                        metadataTerms.Add(new KeyValuePair<string, string>("ETD Committee", thisCommitteeMember));
+	                metadataTerms.AddRange(committeeMember.Select(ThisCommitteeMember => new KeyValuePair<string, string>("ETD Committee", ThisCommitteeMember)));
                 }
 
                 // Add the degree
@@ -314,15 +321,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the degree disciplines
 				if (degreeDiscipline != null)
 				{
-					foreach (string thisSplit in degreeDiscipline)
-						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Discipline", thisSplit.Trim()));
+					metadataTerms.AddRange(degreeDiscipline.Select(ThisSplit => new KeyValuePair<string, string>("ETD Degree Discipline", ThisSplit.Trim())));
 				}
 
 				// Add the degree divisions
 				if (degreeDivision != null)
 				{
-					foreach (string thisSplit in degreeDivision)
-						metadataTerms.Add(new KeyValuePair<string, string>("ETD Degree Division", thisSplit.Trim()));
+					metadataTerms.AddRange(degreeDivision.Select(ThisSplit => new KeyValuePair<string, string>("ETD Degree Division", ThisSplit.Trim())));
 				}
 
                 // Add the degree grantor

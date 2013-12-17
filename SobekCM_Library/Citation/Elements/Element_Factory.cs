@@ -115,11 +115,44 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Edition:
                     return new Edition_Element();
 
+		//		case Element_Type.EmbargoDate:
+		//            return new EmbargoDate_Element();
+
                 case Element_Type.EmbeddedVideo:
                     return new EmbeddedVideo_Element();
 
                 case Element_Type.EncodingLevel:
                     return new Encoding_Level_Element();
+
+				case Element_Type.ETD_CommitteeChair:
+					return new ETD_CommitteeChair_Element();
+
+				case Element_Type.ETD_CommitteeCoChair:
+					return new ETD_CommitteeCoChair_Element();
+
+				case Element_Type.ETD_CommitteeMember:
+					return new ETD_CommitteeMember_Element();
+
+				case Element_Type.ETD_Degree:
+					return new ETD_Degree_Element();
+
+				case Element_Type.ETD_DegreeDiscipline:
+					return new ETD_DegreeDiscipline_Element();
+
+				case Element_Type.ETD_DegreeDivision:
+					return new ETD_DegreeDivision_Element();
+
+				case Element_Type.ETD_DegreeGrantor:
+					return new ETD_DegreeGrantor_Element();
+
+				case Element_Type.ETD_DegreeLevel:
+					return new ETD_DegreeLevel_Element();
+
+		//		case Element_Type.ETD_GraduationDate:
+		//            return new ETD_GraduationDate_Element();
+
+				case Element_Type.ETD_GraduationSemester:
+					return new ETD_GraduationSemester_Element();
 
                 case Element_Type.FAST_Subject:
                     return new FAST_Subject_Element();
@@ -274,7 +307,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     }
 
-				case Element_Type.SuDOC:
+				case Element_Type.SuDoc:
 					return new SuDOC_Element();
 
                 case Element_Type.TargetAudience:
