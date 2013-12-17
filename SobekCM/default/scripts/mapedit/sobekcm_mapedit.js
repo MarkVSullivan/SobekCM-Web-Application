@@ -4739,6 +4739,16 @@ function displayMessage(message) {
         
         if (duplicateMessage) {
             de("Same message to display as previous, not displaying");
+            //remove the previous
+            $("#" + "message" + (globalVar.messageCount - 1)).remove();
+            //display the new
+            document.getElementById(currentDivId).style.display = "block"; //display element
+            //fade message out
+            setTimeout(function () {
+                $("#" + currentDivId).fadeOut("slow", function () {
+                    $("#" + currentDivId).remove();
+                });
+            }, 3000); //after 3 sec
         } else {
             //de("Unique message to display");
             //show message
@@ -4890,9 +4900,7 @@ function overlayEditMe(id) {
             //set new woi
             globalVar.workingOverlayIndex = id;
             //go through each overlay on the map
-            alert("1a");
             cycleOverlayHighlight(id);
-            alert(1);
             //set preserved rotation to the rotation of the current overlay
             de("setting preserved rotation to globalVar.savingOverlayRotation[" + (globalVar.workingOverlayIndex-1) + "] (" + globalVar.savingOverlayRotation[(globalVar.workingOverlayIndex-1)] + ")");
             globalVar.preservedRotation = globalVar.savingOverlayRotation[globalVar.workingOverlayIndex - 1];
@@ -4910,9 +4918,7 @@ function overlayEditMe(id) {
             globalVar.ghostOverlayRectangle[id].setMap(map);
             document.getElementById("overlayToggle" + id).innerHTML = "<img src=\"" + globalVar.baseURL + globalVar.baseImageDirURL + "sub.png\" onclick=\"overlayHideMe(" + id + ");\" />";
             //go through each overlay on the map
-            alert("2a");
             cycleOverlayHighlight(id);
-            alert(2);
             //enable editing marker
             globalVar.currentlyEditing = "yes";
             de("editing overlay " + (globalVar.workingOverlayIndex - 1));
@@ -4987,9 +4993,7 @@ function overlayEditMe(id) {
     } catch (e) {
         de("[error]: " + e);
         //go through each overlay on the map
-        alert("3a");
         cycleOverlayHighlight(id);
-        alert(3);
         //create the overlay
         createOverlayFromPage(id);
     }
@@ -4997,27 +5001,19 @@ function overlayEditMe(id) {
 
 //cycle through all overlay list itmes and hightliht them accordingly
 function cycleOverlayHighlight(id) {
-    var tempDE = 0;
-    alert("highlighting overlays");
+    de("highlighting overlays");
     //go through each overlay on the map
-    for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
+    for (var i = 0; i < globalVar.incomingPolygonSourceURL.length ; i++) {
         de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
         //if there is a match in overlays
-        if (i == id) {
+        if (globalVar.incomingPolygonPageId[i] == id) {
             //set highlight color
-            alert("match");
-            document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
-            alert("completed match" + i);
-            tempDE++;
+            document.getElementById("overlayListItem" + globalVar.incomingPolygonPageId[i]).style.background = globalVar.listItemHighlightColor;
         } else {
             //reset highlight
-            tempDE++;
-            alert(tempDE);
-            document.getElementById("overlayListItem" + i).style.background = null;
+            document.getElementById("overlayListItem" + globalVar.incomingPolygonPageId[i]).style.background = null;
         }
     }
-    alert(tempDE);
-
     //try {
     //    de("highlighting overlays");
     //    //go through each overlay on the map
