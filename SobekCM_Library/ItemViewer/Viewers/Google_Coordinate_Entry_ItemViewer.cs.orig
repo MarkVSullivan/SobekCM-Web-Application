@@ -762,15 +762,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (itemPolygon.FeatureType != "poi")
                         {
                             //add the featureType
-                            if (itemPolygon.FeatureType == "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"main\";");
-                            else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
                             //add the polygonType
-                            if (itemPolygon.PolygonType == "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"rectangle\";");
-                            else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             //add the label
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             //create the bounds string
@@ -850,7 +844,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add polygontype
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
                             //add image url
@@ -987,7 +981,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 //string mapeditHTMLFile = @""+ CurrentMode.Base_URL + "default/mapedit.txt";
                 //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapedit.txt");
+<<<<<<< HEAD
                 string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html");
+=======
+                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html ");
+>>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
                 for (int i = 0; i < lines.Length; i++)
                 {
                     mapeditBuilder.AppendLine(Convert.ToString(lines[i]));
@@ -1076,7 +1074,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_useSearchAsLocation\"></a></li> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_convertToOverlay\"></a></li> ");
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemReset\"></a></li> ");
+<<<<<<< HEAD
                 mapeditBuilder.AppendLine("                         <li><a id=\"content_menubar_itemDelete\"></a></li> ");
+=======
+>>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
                 mapeditBuilder.AppendLine("                     </ul> ");
                 mapeditBuilder.AppendLine("                 </li> ");
                 mapeditBuilder.AppendLine("                 <li> ");
@@ -1276,7 +1277,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("                             <div class=\"lineBreak\"></div> ");
                 mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_saveItem\" > </div> ");
                 mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_clearItem\" > </div> ");
+<<<<<<< HEAD
                 mapeditBuilder.AppendLine("                             <div class=\"button2\"> <input type=\"button\" id=\"content_toolbox_button_deleteItem\" > </div> ");
+=======
+>>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
                 mapeditBuilder.AppendLine("                         </div> ");
                 mapeditBuilder.AppendLine("                     </div> ");
                 mapeditBuilder.AppendLine("                 </div> ");
