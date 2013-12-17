@@ -318,6 +318,7 @@
     background-size: 25px 25px;
 }
 
+<<<<<<< HEAD
 #content_menubar_itemDelete
 {
     background: url("images/mapedit/button-itemReset.png") no-repeat 5px;
@@ -328,6 +329,8 @@
     background-size: 25px 25px;
 }
 
+=======
+>>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
 #content_menubar_manageOverlay
 {
     background: url("images/mapedit/button-manageOverlay.png") no-repeat 5px;

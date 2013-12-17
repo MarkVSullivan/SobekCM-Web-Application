@@ -76,7 +76,10 @@
                         <li><a id="content_menubar_useSearchAsLocation"></a></li>
                         <li><a id="content_menubar_convertToOverlay"></a></li>
                         <li><a id="content_menubar_itemReset"></a></li>
+<<<<<<< HEAD
                         <li><a id="content_menubar_itemDelete"></a></li>
+=======
+>>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
                     </ul>
                 </li>
                 <li>
@@ -276,7 +279,10 @@
                             <div class="lineBreak"></div>
                             <div class="button2"> <input type="button" id="content_toolbox_button_saveItem" > </div>
                             <div class="button2"> <input type="button" id="content_toolbox_button_clearItem" > </div>
+<<<<<<< HEAD
                             <div class="button2"> <input type="button" id="content_toolbox_button_deleteItem" > </div>
+=======
+>>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
                         </div>
                     </div>
                 </div>
