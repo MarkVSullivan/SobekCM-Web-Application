@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
+
+#endregion
 
 namespace SobekCM.Library.Citation.Elements
 {
-	/// <summary> Element allows entry of the Supervisor of Documents Classification Number </summary>
+	/// <summary> Element allows entry of the ETD degree grantor (university) metadata for an item </summary>
 	/// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-	public class SuDOC_Element : simpleTextBox_Element
+	public class ETD_DegreeGrantor_Element : simpleTextBox_Element
 	{
-		/// <summary> Constructor for a new instance of the SuDOC_Element class </summary>
-		public SuDOC_Element() : base("SuDoc Number", "sudoc")
-        {
-            Repeatable = false;
-            Type = Element_Type.SuDoc;
-        }
-
+		/// <summary> Constructor for a new instance of the ETD_DegreeGrantor_Element class </summary>
+		public ETD_DegreeGrantor_Element()
+			: base("Degree Grantor", "etd_degreegrantor")
+		{
+			Repeatable = false;
+			Type = Element_Type.ETD_DegreeGrantor;
+		}
 
 		/// <summary> Renders the HTML for this element </summary>
 		/// <param name="Output"> Textwriter to write the HTML for this element </param>
@@ -40,50 +42,25 @@ namespace SobekCM.Library.Citation.Elements
 			// Check that an acronym exists
 			if (Acronym.Length == 0)
 			{
-				const string defaultAcronym = "SuDoc classification number";
-				switch (CurrentLanguage)
-				{
-					case Web_Language_Enum.English:
-						Acronym = defaultAcronym;
-						break;
-
-					case Web_Language_Enum.Spanish:
-						Acronym = defaultAcronym;
-						break;
-
-					case Web_Language_Enum.French:
-						Acronym = defaultAcronym;
-						break;
-
-					default:
-						Acronym = defaultAcronym;
-						break;
-				}
+				Acronym = "Enter the name of the degree grantor (university) for this thesis/dissertation";
 			}
 
-			const string identifierType = "SuDoc";
-			string identifier_value = String.Empty;
-			foreach (Classification_Info thisIdentifier in Bib.Bib_Info.Classifications.Where(thisIdentifier => thisIdentifier.Authority.ToUpper() == identifierType))
-			{
-				identifier_value = thisIdentifier.Classification;
-				break;
-			}
+			// Is there an ETD object?
+			string valueToDisplay = string.Empty;
+			Thesis_Dissertation_Info etdInfo = Bib.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+			if (etdInfo != null)
+				valueToDisplay = etdInfo.Degree_Grantor;
 
-			render_helper(Output, identifier_value, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+			render_helper(Output, valueToDisplay, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
 		}
 
 		/// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
 		/// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
 		/// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-		/// <remarks> Clears any existing oclc record numbers </remarks>
+		/// <remarks> This does nothing since there is only one value </remarks>
 		public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
 		{
-			const string identifierType = "OCLC";
-			List<Classification_Info> deletes = Bib.Bib_Info.Classifications.Where(thisIdentifier => thisIdentifier.Authority.ToUpper() == identifierType).ToList();
-			foreach (Classification_Info thisIdentifier in deletes)
-			{
-				Bib.Bib_Info.Remove_Classification(thisIdentifier);
-			}
+			// Do nothing since there is only one value
 		}
 
 		/// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -91,10 +68,29 @@ namespace SobekCM.Library.Citation.Elements
 		public override void Save_To_Bib(SobekCM_Item Bib)
 		{
 			string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-			foreach (string newNumber in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select HttpContext.Current.Request.Form[thisKey])
+			foreach (string thisKey in getKeys)
 			{
-				Bib.Bib_Info.Add_Classification(newNumber, "SuDoc");
-				return;
+				if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)
+				{
+					Thesis_Dissertation_Info etdInfo = Bib.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+
+					string value = HttpContext.Current.Request.Form[thisKey];
+					if (value.Length > 0)
+					{
+						if (etdInfo == null)
+						{
+							etdInfo = new Thesis_Dissertation_Info();
+							Bib.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, etdInfo);
+						}
+						etdInfo.Degree_Grantor = value;
+					}
+					else
+					{
+						if (etdInfo != null)
+							etdInfo.Degree_Grantor = String.Empty;
+					}
+					return;
+				}
 			}
 		}
 	}

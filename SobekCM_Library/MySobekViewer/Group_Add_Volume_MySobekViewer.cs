@@ -336,8 +336,8 @@ namespace SobekCM.Library.MySobekViewer
 
             // Determine the in process directory for this
             string user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\newitem";
-            if (user.UFID.Trim().Length > 0)
-                user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UFID + "\\newitem";
+            if (user.ShibbID.Trim().Length > 0)
+                user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newitem";
 
             // Ensure this directory exists
             if (!Directory.Exists(user_in_process_directory))

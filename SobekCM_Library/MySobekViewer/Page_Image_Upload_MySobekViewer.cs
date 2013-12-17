@@ -88,8 +88,8 @@ namespace SobekCM.Library.MySobekViewer
 
             // Determine the in process directory for this
             digitalResourceDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
-            if (User.UFID.Trim().Length > 0)
-                digitalResourceDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + User.UFID + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
+            if (User.ShibbID.Trim().Length > 0)
+                digitalResourceDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + User.ShibbID + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
 
             // Make the folder for the user in process directory
             if (!Directory.Exists(digitalResourceDirectory))
@@ -409,8 +409,8 @@ namespace SobekCM.Library.MySobekViewer
 
                 // This may be called from QC, so check on that as well
                 string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
-                if (user.UFID.Trim().Length > 0)
-                    userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UFID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                if (user.ShibbID.Trim().Length > 0)
+                    userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
 
                 // Make the folder for the user in process directory
                 if (Directory.Exists(userInProcessDirectory))

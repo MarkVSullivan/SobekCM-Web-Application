@@ -153,7 +153,18 @@
     <Compile Include="Citation\Elements\implemented elements\Dark_Flag_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Description_Standard_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Disposition_Advice_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\EmbargoDate_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\EmbeddedVideo_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_CommitteeChair_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_CommitteeCoChair_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_CommitteeMember_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_Degree_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_DegreeDiscipline_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_DegreeDivision_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_DegreeGrantor_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_DegreeLevel_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_GraduationDate_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\ETD_GraduationSemester_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\FAST_Subject_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Frequency_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Group_Title_Element.cs" />
@@ -1210,5 +1221,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
->>>>>>> b2b8bf49faf33bebce4213bd10546beac982d57f
+>>>>>>> 0d31518d560c3bf56e7a6d74b0298b65a2430d0a
 </Project>

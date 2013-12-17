@@ -91,7 +91,7 @@ namespace SobekCM.Library.Citation.Elements
             List<string> allWordmarks = new List<string>();
             if (Bib.Behaviors.Wordmark_Count > 0)
             {
-                allWordmarks.AddRange(Bib.Behaviors.Wordmarks.Select(thisIcon => thisIcon.Code));
+                allWordmarks.AddRange(Bib.Behaviors.Wordmarks.Select(ThisIcon => ThisIcon.Code));
             }
             render_helper(Output, new ReadOnlyCollection<string>(allWordmarks), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }

@@ -19,8 +19,6 @@ echo ....sobekcm_full.js
 ajaxminifier "%source%\SobekCM\default\scripts\sobekcm_full.js" -o "%source%\SobekCM\default\scripts\sobekcm_full.min.js" -silent
 echo.
 echo COPYING WEB FILES INTO PRECOMPILE DIRECTORY
-echo ....fileuploadlibrary
-robocopy "%source%\FileUploadLibrary" "%iis%\FileUploadLibrary" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
 echo ....sobekcm
 robocopy "%source%\SobekCM" "%iis%\SobekCM" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
 echo ....sobekcm_library
@@ -41,16 +39,17 @@ rmdir %iis%\SobekCM\dev /s /q
 rmdir %iis%\SobekCM\temp /s /q
 rmdir %iis%\SobekCM\mySobek\projects /s /q
 rmdir %iis%\SobekCM\mySobek\inProcess /s /q
+rmdir %iis%\SobekCM\obj /s /q
+rmdir %iis%\SobekCM\Properties /s /q
 echo.
 cd c:\windows\microsoft.net\framework64\v4.0.30319
 aspnet_compiler -v /SobekCM C:\Staging64
 echo DELETING UNNECESSARY FILES
-del c:\staging64\error.html
-del c:\staging64\oai2.xsl
-del c:\staging64\sobekcm.sln
 del c:\staging64\web.config
-del c:\staging64\SobekCM.sln.docstates.suo
-del c:\staging64\SobekCM.suo
+del c:\Staging64\SobekCM.csproj
+del c:\Staging64\SobekCM.csproj.user
+del c:\Staging64\Web.Debug.config
+del c:\Staging64\Web.Release.config
 echo.
 
 cd c:\

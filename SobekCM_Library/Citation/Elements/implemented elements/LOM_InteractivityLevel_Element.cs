@@ -19,11 +19,11 @@ namespace SobekCM.Library.Citation.Elements
     /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
     public class LOM_InteractivityLevel_Element : comboBox_Element
     {
-        private const string level1_text = "very low";
-        private const string level2_text = "low";
-        private const string level3_text = "medium";
-        private const string level4_text = "high";
-        private const string level5_text = "very high";
+        private const string LEVEL1_TEXT = "very low";
+        private const string LEVEL2_TEXT = "low";
+        private const string LEVEL3_TEXT = "medium";
+        private const string LEVEL4_TEXT = "high";
+        private const string LEVEL5_TEXT = "very high";
 
         /// <summary> Constructor for a new instance of the LOM_InteractivityLevel_Element class </summary>
         public LOM_InteractivityLevel_Element()
@@ -34,11 +34,11 @@ namespace SobekCM.Library.Citation.Elements
 
             items.Clear();
             items.Add(String.Empty);
-            items.Add(level1_text);
-            items.Add(level2_text);
-            items.Add(level3_text);
-            items.Add(level4_text);
-            items.Add(level5_text);
+            items.Add(LEVEL1_TEXT);
+            items.Add(LEVEL2_TEXT);
+            items.Add(LEVEL3_TEXT);
+            items.Add(LEVEL4_TEXT);
+            items.Add(LEVEL5_TEXT);
         }
 
 
@@ -58,23 +58,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Degree of interactivity characterizing this learning object.  Refers to degree to which the learner can influence the aspect or behavior of the learning object.";
+                const string DEFAULT_ACRONYM = "Degree of interactivity characterizing this learning object.  Refers to degree to which the learner can influence the aspect or behavior of the learning object.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -89,23 +89,23 @@ namespace SobekCM.Library.Citation.Elements
                 switch ( lomInfo.InteractivityLevel )
                 {
                     case InteractivityLevelEnum.very_low:
-                        value = level1_text;
+                        value = LEVEL1_TEXT;
                         break;
 
                     case InteractivityLevelEnum.low:
-                        value = level2_text;
+                        value = LEVEL2_TEXT;
                         break;
 
                     case InteractivityLevelEnum.medium:
-                        value = level3_text;
+                        value = LEVEL3_TEXT;
                         break;
 
                     case InteractivityLevelEnum.high:
-                        value = level4_text;
+                        value = LEVEL4_TEXT;
                         break;
 
                     case InteractivityLevelEnum.very_high:
-                        value = level5_text;
+                        value = LEVEL5_TEXT;
                         break;
                 }
             }
@@ -155,23 +155,23 @@ namespace SobekCM.Library.Citation.Elements
                         // Save the new value
                         switch ( value )
                         {
-                            case level1_text:
+                            case LEVEL1_TEXT:
                                 lomInfo.InteractivityLevel = InteractivityLevelEnum.very_low;
                                 break;
 
-                            case level2_text:
+                            case LEVEL2_TEXT:
                                 lomInfo.InteractivityLevel = InteractivityLevelEnum.low;
                                 break;
 
-                            case level3_text:
+                            case LEVEL3_TEXT:
                                 lomInfo.InteractivityLevel = InteractivityLevelEnum.medium;
                                 break;
 
-                            case level4_text:
+                            case LEVEL4_TEXT:
                                 lomInfo.InteractivityLevel = InteractivityLevelEnum.high;
                                 break;
 
-                            case level5_text:
+                            case LEVEL5_TEXT:
                                 lomInfo.InteractivityLevel = InteractivityLevelEnum.very_high;
                                 break;
                         }

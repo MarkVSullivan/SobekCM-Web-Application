@@ -102,7 +102,7 @@ namespace SobekCM.Library.MySobekViewer
             string selfSubmittalPrefLabel = "Self-Submittal Preferences";
             string sendEmailLabel = "Send me an email when I submit new items";
             string templateLabel = "Template";
-            string projectLabel = "Project";
+            string projectLabel = "Default Metadata";
             string defaultRightsLabel = "Default Rights";
             string rightsExplanationLabel = "(These are the default rights you give for sharing, repurposing, or remixing your item to other users. You can set this with each new item you submit, but this will be the default that appears.)";
             string rightsInstructionLabel = "You may also select a <a title=\"Explanation of different creative commons licenses.\" href=\"http://creativecommons.org/about/licenses/\">Creative Commons License</a> option below.";
@@ -131,7 +131,7 @@ namespace SobekCM.Library.MySobekViewer
                 selfSubmittalPrefLabel = "Préférences Auto-Soumission";
                 sendEmailLabel = "Envoyez-moi un email lorsque je présente les nouveaux éléments";
                 templateLabel = "Modèle";
-                projectLabel = "Projet";
+				projectLabel = "Métadonnées par Défaut";
                 defaultRightsLabel = "Droits par Défaut";
                 rightsExplanationLabel = "(Ce sont les droits par défaut que vous donnez de partager, d'adapter, ou remixer votre article à d'autres utilisateurs. Vous pouvez fixer cette valeur à chaque nouvel élément que vous soumettez, mais ce sera la valeur par défaut qui s'affiche.)";
                 rightsInstructionLabel = "Vous pouvez également sélectionner une option <a title=\"Explication des différentes licences Creative Commons.\" href=\"http://creativecommons.org/about/licenses/\">Creative Commons License</a> ci-dessous.";
@@ -161,7 +161,7 @@ namespace SobekCM.Library.MySobekViewer
                 selfSubmittalPrefLabel = "Preferencias de Presentación Auto-";
                 sendEmailLabel = "Enviadme un correo electrónico cuando se presento nuevos temas";
                 templateLabel = "Plantilla";
-                projectLabel = "Proyecto";
+				projectLabel = "Metadatos Predeterminado";
                 defaultRightsLabel = "Derechos por Defecto";
                 rightsExplanationLabel = "(Estos son los derechos por defecto le dan para compartir, reutilización, o remezclando el tema a otros usuarios. Puede establecer esto con cada artículo nuevo que presentar, pero esto será el valor por defecto que aparece.)";
                 rightsInstructionLabel = "También puede seleccionar una opción de  <a title=\"Explicación de las diferentes licencias Creative Commons\" href=\"http://creativecommons.org/about/licenses/\">Creative Commons License</a> a continuación.";
@@ -366,8 +366,8 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         // Determine the in process directory for this
                         string user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName;
-                        if (user.UFID.Trim().Length > 0)
-                            user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UFID;
+                        if (user.ShibbID.Trim().Length > 0)
+                            user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID;
                         if (Directory.Exists(user_in_process_directory))
                         {
                             if (File.Exists(user_in_process_directory + "\\TEMP000001_00001.mets"))
@@ -384,7 +384,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         user.Can_Submit = false;
                         user.Send_Email_On_Submission = true;
-                        user.UFID = ufid;
+                        user.ShibbID = ufid;
                         user.UserName = username;
                         user.UserID = -1;
 
@@ -467,7 +467,7 @@ namespace SobekCM.Library.MySobekViewer
                 department = user.Department;
                 unit = user.Unit;
                 username = user.UserName;
-                ufid = user.UFID;
+                ufid = user.ShibbID;
                 language=user.Preferred_Language;
                 send_email_on_submission = user.Send_Email_On_Submission;
                 default_rights = user.Default_Rights;
@@ -518,12 +518,10 @@ namespace SobekCM.Library.MySobekViewer
 
                 passwordBox = new TextBox
                                   {
-                                      CssClass = "preferences_small_input",
+                                      CssClass = "preferences_small_input sbk_Focusable",
                                       ID = "password_enter",
                                       TextMode = TextBoxMode.Password
                                   };
-                passwordBox.Attributes.Add("onfocus", "textbox_enter('password_enter', 'preferences_small_input_focused')");
-                passwordBox.Attributes.Add("onblur", "textbox_leave('password_enter', 'preferences_small_input')");
                 MainPlaceHolder.Controls.Add(passwordBox);
 
                 LiteralControl registerLiteral2 = new LiteralControl("   &nbsp; &nbsp; (minimum of eight digits, different than username)</td></tr>" + Environment.NewLine + "<tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"password_confirm\">" + confirmPasswordLabel + ":</label></b></td><td>");
@@ -531,12 +529,10 @@ namespace SobekCM.Library.MySobekViewer
 
                 confirmPasswordBox = new TextBox
                                          {
-                                             CssClass = "preferences_small_input",
+                                             CssClass = "preferences_small_input sbk_Focusable",
                                              ID = "password_confirm",
                                              TextMode = TextBoxMode.Password
                                          };
-                confirmPasswordBox.Attributes.Add("onfocus", "textbox_enter('password_confirm', 'preferences_small_input_focused')");
-                confirmPasswordBox.Attributes.Add("onblur", "textbox_leave('password_confirm', 'preferences_small_input')");
                 MainPlaceHolder.Controls.Add(confirmPasswordBox);
 
                 builder.AppendLine("   &nbsp; &nbsp; (minimum of eight digits, different than username)</td></tr>");
@@ -544,14 +540,14 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b>" + userNameLabel + ":</b></td><td>" + user.UserName + "</td></tr>");
-                builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b>UFID:</b></td><td>" + user.UFID + "</td></tr>");
+                builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b>UFID:</b></td><td>" + user.ShibbID + "</td></tr>");
             }
 
             builder.AppendLine("  <tr><td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + personalInfoLabel + "</b></td></tr>");
-            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefFamilyName\">" + familyNamesLabel + ":</label></b></td><td><input id=\"prefFamilyName\" name=\"prefFamilyName\" class=\"preferences_medium_input\" value=\"" + family_name + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefFamilyName', 'preferences_medium_input_focused')\" onblur=\"javascript:textbox_leave('prefFamilyName', 'preferences_medium_input')\" /></td></tr>");
-            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefGivenName\">" + givenNamesLabel + ":</label></b></td><td><input id=\"prefGivenName\" name=\"prefGivenName\" class=\"preferences_medium_input\" value=\"" + given_name + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefGivenName', 'preferences_medium_input_focused')\" onblur=\"javascript:textbox_leave('prefGivenName', 'preferences_medium_input')\" /></td></tr>");
-            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefNickName\">" + nicknameLabel + ":</label></b></td><td><input id=\"prefNickName\" name=\"prefNickName\" class=\"preferences_medium_input\" value=\"" + nickname + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefNickName', 'preferences_medium_input_focused')\" onblur=\"javascript:textbox_leave('prefNickName', 'preferences_medium_input')\" /></td></tr>");
-            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefEmail\">" + emailLabel + ":</label></b></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input\" value=\"" + email + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefEmail', 'preferences_medium_input_focused')\" onblur=\"javascript:textbox_leave('prefEmail', 'preferences_medium_input')\" /></td></tr>");
+            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefFamilyName\">" + familyNamesLabel + ":</label></b></td><td><input id=\"prefFamilyName\" name=\"prefFamilyName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + family_name + "\" type=\"text\" /></td></tr>");
+			builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefGivenName\">" + givenNamesLabel + ":</label></b></td><td><input id=\"prefGivenName\" name=\"prefGivenName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + given_name + "\" type=\"text\" /></td></tr>");
+			builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefNickName\">" + nicknameLabel + ":</label></b></td><td><input id=\"prefNickName\" name=\"prefNickName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + nickname + "\" type=\"text\" /></td></tr>");
+			builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefEmail\">" + emailLabel + ":</label></b></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" /></td></tr>");
 
             if (user.Has_Item_Stats)
             {
@@ -566,14 +562,14 @@ namespace SobekCM.Library.MySobekViewer
             }
            
             builder.AppendLine("  <tr><td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + affilitionInfoLabel + "</b></td></tr>");
-            builder.AppendLine("  <tr><td>&nbsp;</td><td><b><label for=\"prefOrganization\">" + organizationLabel + ":</label></b></td><td><input id=\"prefOrganization\" name=\"prefOrganization\" class=\"preferences_large_input\" value=\"" + organization + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefOrganization', 'preferences_large_input_focused')\" onblur=\"javascript:textbox_leave('prefOrganization', 'preferences_large_input')\" /></td></tr>");
-            builder.AppendLine("  <tr align=\"left\" ><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefCollege\">" + collegeLabel + ":</label></b></td><td><input id=\"prefCollege\" name=\"prefCollege\" class=\"preferences_large_input\" value=\"" + college + "\"type=\"text\" onfocus=\"javascript:textbox_enter('prefCollege', 'preferences_large_input_focused')\" onblur=\"javascript:textbox_leave('prefCollege', 'preferences_large_input')\" /></td></tr>");
-            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefDepartment\">" + departmentLabel + ":</label></b></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input\" value=\"" + department + "\"type=\"text\" onfocus=\"javascript:textbox_enter('prefDepartment', 'preferences_large_input_focused')\" onblur=\"javascript:textbox_leave('prefDepartment', 'preferences_large_input')\" /></td></tr>");
-            builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefUnit\">" + unitLabel + ":</label></b></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input\" value=\"" + unit + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefUnit', 'preferences_large_input_focused')\" onblur=\"javascript:textbox_leave('prefUnit', 'preferences_large_input')\" /></td></tr>");
+            builder.AppendLine("  <tr><td>&nbsp;</td><td><b><label for=\"prefOrganization\">" + organizationLabel + ":</label></b></td><td><input id=\"prefOrganization\" name=\"prefOrganization\" class=\"preferences_large_input sbk_Focusable\" value=\"" + organization + "\" type=\"text\" /></td></tr>");
+			builder.AppendLine("  <tr align=\"left\" ><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefCollege\">" + collegeLabel + ":</label></b></td><td><input id=\"prefCollege\" name=\"prefCollege\" class=\"preferences_large_input sbk_Focusable\" value=\"" + college + "\"type=\"text\" /></td></tr>");
+			builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefDepartment\">" + departmentLabel + ":</label></b></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input sbk_Focusable\" value=\"" + department + "\"type=\"text\" /></td></tr>");
+			builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefUnit\">" + unitLabel + ":</label></b></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input sbk_Focusable\" value=\"" + unit + "\" type=\"text\" /></td></tr>");
 
             if (( registration ) && ( SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0 ) && ( String.Compare(SobekCM_Library_Settings.Shibboleth_System_Name, "Gatorlink", true ) == 0 ))
             {
-                builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefUfid\">UFID:</label></b></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input\" value=\"" + ufid + "\" type=\"text\" onfocus=\"javascript:textbox_enter('prefUfid', 'preferences_small_input_focused')\" onblur=\"javascript:textbox_leave('prefUfid', 'preferences_small_input')\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
+				builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b><label for=\"prefUfid\">UFID:</label></b></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
             }
 
 
@@ -593,7 +589,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b>" + templateLabel + ":</b></td>");
                         builder.AppendLine("    <td>");
-                        builder.AppendLine("      <select name=\"prefTemplate\" id=\"prefTemplate\" class=\"preferences_language_select\" onfocus=\"javascript:textbox_enter('prefTemplate', 'preferences_language_select_focused')\" onblur=\"javascript:textbox_leave('prefTemplate', 'preferences_language_select')\" >");
+                        builder.AppendLine("      <select name=\"prefTemplate\" id=\"prefTemplate\" class=\"preferences_language_select\" >");
                         builder.AppendLine("        <option selected=\"selected\" value=\"" + user.Templates[0] + "\">" + user.Templates[0] + "</option>");
                         for (int i = 1; i < user.Templates.Count; i++)
                         {
@@ -607,7 +603,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b>" + projectLabel + ":</b></td>");
                         builder.AppendLine("    <td>");
-                        builder.AppendLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" onfocus=\"javascript:textbox_enter('prefLanguage', 'preferences_language_select_focused')\" onblur=\"javascript:textbox_leave('prefLanguage', 'preferences_language_select')\" >");
+                        builder.AppendLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" >");
                         builder.AppendLine("        <option selected=\"selected\" value=\"" + user.Projects[0] + "\">" + user.Projects[0] + "</option>");
                         for (int i = 1; i < user.Projects.Count; i++)
                         {
@@ -618,7 +614,7 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("  </tr>");
                     }
                     builder.AppendLine("  <tr valign=\"top\"><td width=\"" + col1Width + "\">&nbsp;</td><td><b>" + defaultRightsLabel + ":</b></td><td>" + rightsExplanationLabel + "</td></tr>");
-                    builder.AppendLine("  <tr><td colspan=\"2\">&nbsp;<td><textarea rows=\"5\" cols=\"88\" name=\"prefRights\" id=\"prefRights\" class=\"preference_rights_input\" onfocus=\"javascript:textbox_enter('prefRights','preference_rights_input_focused')\" onblur=\"javascript:textbox_leave('prefRights','preference_rights_input')\">" + default_rights + "</textarea></div></td></tr>");
+                    builder.AppendLine("  <tr><td colspan=\"2\">&nbsp;<td><textarea rows=\"5\" cols=\"88\" name=\"prefRights\" id=\"prefRights\" class=\"preference_rights_input sbk_Focusable\">" + default_rights + "</textarea></div></td></tr>");
                     builder.AppendLine("  <tr valign=\"top\">");
                     builder.AppendLine("    <td colspan=\"2\">&nbsp;</td>");
                     builder.AppendLine("    <td>");
@@ -640,7 +636,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("  <tr><td colspan=\"3\" class=\"SobekCitationSectionTitle1\"><b>&nbsp;" + otherPreferencesLabel + "</b></td></tr>");
             builder.AppendLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td><b>" + languageLabel + ":</b></td>");
             builder.AppendLine("    <td>");
-            builder.AppendLine("      <select name=\"prefLanguage\" id=\"prefLanguage\" class=\"preferences_language_select\" onfocus=\"javascript:textbox_enter('prefLanguage', 'preferences_language_select_focused')\" onblur=\"javascript:textbox_leave('prefLanguage', 'preferences_language_select')\" >");
+            builder.AppendLine("      <select name=\"prefLanguage\" id=\"prefLanguage\" class=\"preferences_language_select\" >");
             if ((language != "Français") && (language != "Español"))
             {
                 builder.AppendLine("        <option selected=\"selected\" value=\"en\">English</option>");

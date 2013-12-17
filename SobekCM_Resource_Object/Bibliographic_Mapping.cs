@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -1211,13 +1212,8 @@ namespace SobekCM.Resource_Object
                     Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.alternative);
                     break;
                 case Mapped_Fields.Alternate_Title_Language:
-                    List<Title_Info> otherTitles = new List<Title_Info>();
-                    foreach (Title_Info thisTitle in Package.Bib_Info.Other_Titles)
-                    {
-                        if ( thisTitle.Title_Type == Title_Type_Enum.alternative )
-                            otherTitles.Add(thisTitle);
-                    }
-                    if (otherTitles.Count > 0)
+                    List<Title_Info> otherTitles = Package.Bib_Info.Other_Titles.Where(ThisTitle => ThisTitle.Title_Type == Title_Type_Enum.alternative).ToList();
+		            if (otherTitles.Count > 0)
                     {
                         otherTitles[otherTitles.Count - 1].Language = Data;
                     }
@@ -1263,16 +1259,14 @@ namespace SobekCM.Resource_Object
                             lastNamedEntity.Family_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info();
-                            newNameEntity.Family_Name = Data;
-                            Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                            Name_Info newNameEntity = new Name_Info {Family_Name = Data};
+	                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info();
-                        newNameEntity.Family_Name = Data;
-                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                        Name_Info newNameEntity = new Name_Info {Family_Name = Data};
+	                    Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     break;
                 case Mapped_Fields.Creator_Given_Name:
@@ -1283,16 +1277,14 @@ namespace SobekCM.Resource_Object
                             lastNamedEntity.Given_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info();
-                            newNameEntity.Given_Name = Data;
-                            Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                            Name_Info newNameEntity = new Name_Info {Given_Name = Data};
+	                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info();
-                        newNameEntity.Given_Name = Data;
-                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                        Name_Info newNameEntity = new Name_Info {Given_Name = Data};
+	                    Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     break;
                 case Mapped_Fields.Creator_Role:
@@ -1820,13 +1812,9 @@ namespace SobekCM.Resource_Object
                     break;
 
                 case Mapped_Fields.Material_Received_Date:
-                    try
-                    {
-                        DateTime materialReceivedDate = Convert.ToDateTime(Data);
-                    }
-                    catch
-                    {
-                    }
+		            DateTime materialReceivedDate;
+		            if (DateTime.TryParse(Data, out materialReceivedDate))
+			            Package.Tracking.Material_Received_Date = materialReceivedDate;
                     break;
 
                 case Mapped_Fields.Materials:
