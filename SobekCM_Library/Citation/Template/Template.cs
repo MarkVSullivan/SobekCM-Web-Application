@@ -175,14 +175,14 @@ namespace SobekCM.Library.Citation.Template
 
         /// <summary> Static method reads a template XML configuraton file and creates the <see cref="Template"/> object  </summary>
         /// <param name="XmlFile"> Filename of the template XML configuraiton file to read </param>
-        /// <param name="exclude_divisions"> Flag indicates whether to include the structure map, if included in the template file </param>
+        /// <param name="ExcludeDivisions"> Flag indicates whether to include the structure map, if included in the template file </param>
         /// <returns> Fully built template object </returns>
         /// <remarks> This utilizes the <see cref="Template_XML_Reader"/> class to do the actual reading</remarks>
-        public static Template Read_XML_Template( string XmlFile, bool exclude_divisions )
+        public static Template Read_XML_Template( string XmlFile, bool ExcludeDivisions )
         {
             Template returnValue = new Template();
             Template_XML_Reader reader = new Template_XML_Reader();
-            reader.Read_XML( XmlFile, returnValue, exclude_divisions );
+            reader.Read_XML( XmlFile, returnValue, ExcludeDivisions );
             returnValue.Build_Final_Adjustment_And_Checks();
             return returnValue;
         }
@@ -195,7 +195,7 @@ namespace SobekCM.Library.Citation.Template
             Creator_Element simpleCreator = null;
 
             // Go through each of the elements and prepare to save
-            foreach (abstract_Element thisElement in templatePages.SelectMany(thisPage => thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements)))
+            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 if ((thisElement.Type == Element_Type.Creator) && (thisElement.Display_SubType == "simple"))
                     simpleCreator = (Creator_Element)thisElement;
@@ -214,7 +214,7 @@ namespace SobekCM.Library.Citation.Template
         public void Save_To_Bib( SobekCM_Item Bib, User_Object Current_User )
         {
             // Go through each of the elements and prepare to save
-            foreach (abstract_Element thisElement in templatePages.SelectMany(thisPage => thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements)))
+            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 thisElement.Prepare_For_Save(Bib, Current_User);
             }
@@ -226,7 +226,7 @@ namespace SobekCM.Library.Citation.Template
             }
 
             // Now, step through and save them all
-            foreach (abstract_Element thisElement in templatePages.SelectMany(thisPage => thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements)))
+            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 thisElement.Save_To_Bib(Bib);
             }
@@ -235,18 +235,18 @@ namespace SobekCM.Library.Citation.Template
         /// <summary> Saves the data entered by the user through one page of this template to the provided bibliographic object </summary>
         /// <param name="Bib"> Object into which to save the user-entered data </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <param name="page">Page number of the template to save</param>
-        public void Save_To_Bib(SobekCM_Item Bib, User_Object Current_User, int page)
+        /// <param name="Page">Page number of the template to save</param>
+        public void Save_To_Bib(SobekCM_Item Bib, User_Object Current_User, int Page)
         {
             // If this is not a valid page, just return
-            if ((page < 1) || (page > templatePages.Count))
+            if ((Page < 1) || (Page > templatePages.Count))
                 return;
 
             // Get the page
-            Template_Page thisPage = templatePages[page - 1];
+            Template_Page thisPage = templatePages[Page - 1];
 
             // Go through each of the elements and prepare to save
-            foreach (abstract_Element thisElement in thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements))
+            foreach (abstract_Element thisElement in thisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements))
             {
                 thisElement.Prepare_For_Save(Bib, Current_User);
             }
@@ -258,7 +258,7 @@ namespace SobekCM.Library.Citation.Template
             }
 
             // Now, step through and save them all
-            foreach (abstract_Element thisElement in thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements))
+            foreach (abstract_Element thisElement in thisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements))
             {
                 thisElement.Save_To_Bib(Bib);
             }
@@ -286,12 +286,10 @@ namespace SobekCM.Library.Citation.Template
             StringBuilder returnValue = new StringBuilder();
 
             // TEMPORARY CODE TO SUPPORT MULTI-PAGE TEMPLATES IN ONE PAGE (WILL CHANGE)
-            bool multiple_page = false;
-            if ( templatePages.Count > 1 )
-                multiple_page = true;
+	        bool multiple_page = templatePages.Count > 1;
 
-            // Set the current base url on all the elements
-            foreach (abstract_Element thisElement in templatePages.SelectMany(thisPage => thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements)))
+	        // Set the current base url on all the elements
+            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 thisElement.Set_Base_URL(Current_Mode.Base_URL);
             }
@@ -356,29 +354,29 @@ namespace SobekCM.Library.Citation.Template
             Template_Page thisPage = templatePages[page - 1];
 
             // Set the current base url on all the elements
-            foreach (abstract_Element thisElement in templatePages.SelectMany(thisPage2 => thisPage2.Panels.SelectMany(thisPanel => thisPanel.Elements)))
+            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage2 => ThisPage2.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 thisElement.Set_Base_URL(Base_URL);
             }
 
             // Now, render these pages
             Output.WriteLine("<!-- Begin to render '" + Title + "' template -->");
-            Output.WriteLine("<table cellpadding=\"4px\" border=\"0px\" cellspacing=\"0px\" class=\"SobekEditItemSection\" >");
+			Output.WriteLine("<table class=\"sbkMySobek_TemplateTbl\" cellpadding=\"4px\" >");
             Output.WriteLine();
 
             bool first_title = true;
             foreach (Template_Panel thisPanel in thisPage.Panels)
             {
                 Output.WriteLine("  <!-- '" + thisPanel.Title + "' Panel -->");
-                Output.WriteLine("  <tr align=\"left\">");
+                Output.WriteLine("  <tr>");
                 if (first_title)
                 {
-                    Output.WriteLine("    <td colspan=\"3\" class=\"SobekEditItemSectionTitle_first\">&nbsp;" + thisPanel.Title + "</td>");
+                    Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle_first\">" + thisPanel.Title + "</td>");
                     first_title = false;
                 }
                 else
                 {
-                    Output.WriteLine("    <td colspan=\"3\" class=\"SobekEditItemSectionTitle\">&nbsp;" + thisPanel.Title + "</td>");
+					Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle\">" + thisPanel.Title + "</td>");
                 }
                 Output.WriteLine("  </tr>");
                 Output.WriteLine();
@@ -390,39 +388,38 @@ namespace SobekCM.Library.Citation.Template
             }
 
             Output.WriteLine("</table>");
-            Output.WriteLine("<br />");
             return returnValue.ToString();
         }
 
         #endregion
 
         /// <summary> Adds a new template page to the collection of pages contained within this template </summary>
-        /// <param name="newPage"> New template page to add </param>
-        internal void Add_Page(Template_Page newPage)
+        /// <param name="NewPage"> New template page to add </param>
+        internal void Add_Page(Template_Page NewPage)
         {
-            templatePages.Add(newPage);
+            templatePages.Add(NewPage);
         }
 
         /// <summary> Adds a new constant to the collection of constants contained within this template </summary>
-        /// <param name="newConstant"> New constant to add </param>
-        internal void Add_Constant(abstract_Element newConstant)
+        /// <param name="NewConstant"> New constant to add </param>
+        internal void Add_Constant(abstract_Element NewConstant)
         {
-            constants.Add(newConstant);
+            constants.Add(NewConstant);
         }
 
         /// <summary> Method adds aggregation codes to the pertinent element objects ( i.e., collections, subcollecctions, etc.. ) </summary>
-        /// <param name="codeManager"> Code manager object with aggregation codes </param>
-        internal void Add_Codes(Aggregation_Code_Manager codeManager)
+        /// <param name="CodeManager"> Code manager object with aggregation codes </param>
+        internal void Add_Codes(Aggregation_Code_Manager CodeManager)
         {
             // Go through each of the elements and prepare to save
-            foreach (abstract_Element thisElement in templatePages.SelectMany(thisPage => thisPage.Panels.SelectMany(thisPanel => thisPanel.Elements)))
+            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 if (thisElement.Type == Element_Type.Aggregations)
-                    ((Aggregations_Element)thisElement).Add_Codes(codeManager);
+                    ((Aggregations_Element)thisElement).Add_Codes(CodeManager);
                 if ( thisElement.Type == Element_Type.Source )
-                    ((Source_Element)thisElement).Add_Codes(codeManager);
+                    ((Source_Element)thisElement).Add_Codes(CodeManager);
                 if (thisElement.Type == Element_Type.Holding)
-                    ((Holding_Element)thisElement).Add_Codes(codeManager);
+                    ((Holding_Element)thisElement).Add_Codes(CodeManager);
             }
         }
     }

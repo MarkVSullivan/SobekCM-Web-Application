@@ -8,7 +8,9 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Library.Users;
+using SobekCM.Resource_Object;
 
 #endregion
 
@@ -165,5 +167,76 @@ namespace SobekCM.Library.MySobekViewer
 
             // No controls to be added here
         }
+
+		/// <summary> Writes the top part of the page, mimicing the item viewer </summary>
+		/// <param name="Output"> Stream to write the item-level top to </param>
+		/// <param name="Item"> Item with all the information necessary to write the top </param>
+		protected void Write_Item_Type_Top(TextWriter Output, SobekCM_Item Item )
+		{
+			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+			string final_title = Item.Bib_Info.Main_Title.Title;
+			if (Item.Bib_Info.Main_Title.NonSort.Length > 0)
+			{
+				if (Item.Bib_Info.Main_Title.NonSort[Item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+					final_title = Item.Bib_Info.Main_Title.NonSort + Item.Bib_Info.Main_Title.Title;
+				else
+				{
+					if (Item.Bib_Info.Main_Title.NonSort[Item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+					{
+						final_title = Item.Bib_Info.Main_Title.NonSort + Item.Bib_Info.Main_Title.Title;
+					}
+					else
+					{
+						final_title = Item.Bib_Info.Main_Title.NonSort + " " + Item.Bib_Info.Main_Title.Title;
+					}
+				}
+			}
+
+			// Add the Title if there is one
+			if (final_title.Length > 0)
+			{
+				// Is this a newspaper?
+				bool newspaper = Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+				// Does a custom setting override the default behavior to add a date?
+				if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+					newspaper = false;
+
+				// Add the date if it should be added
+				if ((newspaper) && ((Item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (Item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+				{
+					string date = Item.Bib_Info.Origin_Info.Date_Created;
+					if (Item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+						date = Item.Bib_Info.Origin_Info.Date_Issued;
+
+
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+					}
+				}
+				else
+				{
+					if (final_title.Length > 125)
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+					}
+					else
+					{
+						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+					}
+				}
+			}
+			Output.WriteLine("</div>");
+			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
+
+			Output.WriteLine("<div id=\"container-inner1000\">");
+			Output.WriteLine("<div id=\"pagecontainer\">");
+		}
     }
 }

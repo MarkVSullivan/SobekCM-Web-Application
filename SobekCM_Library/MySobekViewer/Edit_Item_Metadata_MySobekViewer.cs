@@ -472,8 +472,8 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
 			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button onclick=\"editmetadata_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"editmetadata_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </div>");
 			Output.WriteLine("      <br />");
 			Output.WriteLine("    </div>");
@@ -604,8 +604,8 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 // Determine the in process directory for this
-                string user_bib_vid_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UFID + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
-                if (user.UFID.Trim().Length == 0)
+                string user_bib_vid_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
+                if (user.ShibbID.Trim().Length == 0)
                     user_bib_vid_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
 
                 // Ensure the folder exists and is empty to start with

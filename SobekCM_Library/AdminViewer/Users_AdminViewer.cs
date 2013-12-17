@@ -654,8 +654,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("  <table cellpadding=\"4px\" >");
-            if (editUser.UFID.Trim().Length > 0)
-                Output.WriteLine("  <tr valign=\"top\"><td><b>UFID:</b></td><td>" + editUser.UFID + "</td></tr>");
+            if (editUser.ShibbID.Trim().Length > 0)
+                Output.WriteLine("  <tr valign=\"top\"><td><b>UFID:</b></td><td>" + editUser.ShibbID + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>UserName:</b></td><td>" + editUser.UserName + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>Email:</b></td><td>" + editUser.Email + "</td></tr>");
             Output.WriteLine("  <tr valign=\"top\"><td><b>Full Name:</b></td><td>" + editUser.Full_Name + "</td></tr>");
@@ -713,11 +713,11 @@ namespace SobekCM.Library.AdminViewer
                 text_builder.Append(thisProject + "<br />");
             if (text_builder.Length == 0)
             {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Default_Metadata:</b></td><td><i>none</i></td></tr>");
+                Output.WriteLine("  <tr valign=\"top\"><td><b>Default Metadata:</b></td><td><i>none</i></td></tr>");
             }
             else
             {
-                Output.WriteLine("  <tr valign=\"top\"><td><b>Default_Metadata:</b></td><td>" + text_builder + "</td></tr>");
+                Output.WriteLine("  <tr valign=\"top\"><td><b>Default Metadata:</b></td><td>" + text_builder + "</td></tr>");
                 text_builder.Remove(0, text_builder.Length);
             }
 
@@ -896,15 +896,15 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <blockquote>");
                     Output.WriteLine("    <table>");
 
-                    if (editUser.UFID.Trim().Length > 0)
+                    if (editUser.ShibbID.Trim().Length > 0)
                     {
-                        if (editUser.UFID.Length > 4)
+                        if (editUser.ShibbID.Length > 4)
                         {
-                            Output.Write("      <tr height=\"27px\"><td width=\"80px\">UFID:</td><td width=\"200px\"><span class=\"form_linkline\">" + editUser.UFID.Substring(0, 4) + "-" + editUser.UFID.Substring(4) + " &nbsp; &nbsp; </span></td>");
+                            Output.Write("      <tr height=\"27px\"><td width=\"80px\">UFID:</td><td width=\"200px\"><span class=\"form_linkline\">" + editUser.ShibbID.Substring(0, 4) + "-" + editUser.ShibbID.Substring(4) + " &nbsp; &nbsp; </span></td>");
                         }
                         else
                         {
-                            Output.Write("      <tr height=\"27px\"><td width=\"80px\">UFID:</td><td width=\"200px\"><span class=\"form_linkline\">" + editUser.UFID + " &nbsp; &nbsp; </span></td>");
+                            Output.Write("      <tr height=\"27px\"><td width=\"80px\">UFID:</td><td width=\"200px\"><span class=\"form_linkline\">" + editUser.ShibbID + " &nbsp; &nbsp; </span></td>");
                         }
                     }
                     else
@@ -962,7 +962,7 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("  <br />");
                     Output.WriteLine("  <br />");
-                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Templates and Default_Metadata</span>");
+                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Templates and Default Metadata</span>");
                     Output.WriteLine("  <blockquote>");
                     Output.WriteLine("    <table>");
                     Output.WriteLine("      <tr height=\"35px\" valign=\"top\" >");
@@ -1023,7 +1023,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("        <td>");
                     Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
                     Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-                    Output.WriteLine("    <th width=\"180px\" align=\"left\"><span style=\"color: White\">PROJECTS</span></th>");
+                    Output.WriteLine("    <th width=\"180px\" align=\"left\"><span style=\"color: White\">DEFAULT METADATA</span></th>");
                     Output.WriteLine("   </tr>");
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
 

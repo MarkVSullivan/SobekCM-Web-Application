@@ -135,6 +135,27 @@
 	 padding-top: 4px;  
 }
 
+
+.SobekEditItemSectionTitle
+{
+    color:Gray; padding-top: 10px; font-weight: bold;
+}
+
+.SobekEditItemSectionTitle_first
+{
+    color:Gray; font-weight: bold;
+}
+
+.SobekEditItemSection
+{
+	padding-left: 30px;
+}
+
+.SobekEditItemSection track
+{
+	text-align: left;
+}
+
 .ShowOptionsRow
 {
 	position: relative; margin-left: auto; margin-right: auto; WIDTH: 425px; height:15px; text-align:right; 
@@ -332,6 +353,15 @@ input.vra_measurement_second_input { width: 80px; margin-right: 10px; margin-top
 input.vra_state_input { width: 150px; margin-right: 10px; margin-top: 6px; }
 input.vra_styleperiod_input { width: 150px; margin-right: 10px; margin-top: 6px; }
 input.vra_technique_input { width: 150px; margin-right: 10px; margin-top: 6px; }
+
+input.etd_committeechair_input { width: 350px; margin-right: 10px; margin-top: 6px; }
+input.etd_committeecochair_input { width: 350px; margin-right: 10px; margin-top: 6px; }
+input.etd_committeemembers_input { width: 350px; margin-right: 10px; margin-top: 6px; }
+input.etd_degreeearned_input { width: 350px; margin-right: 10px; margin-top: 6px; }
+input.etd_discipline_input { width: 150px; margin-right: 10px; margin-top: 6px; }
+input.etd_division_input { width: 150px; margin-right: 10px; margin-top: 6px; }
+input.etd_degreegrantor_input { width: 350px; margin-right: 10px; margin-top: 6px; }
+input.etd_graduationsemester_input { width: 150px; margin-right: 10px; margin-top: 6px; }
 
 #bornDigital { margin-top: 8px; }
 #darkFlag { margin-top: 8px; }

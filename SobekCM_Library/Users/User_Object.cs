@@ -42,7 +42,7 @@ namespace SobekCM.Library.Users
         {
             Family_Name = String.Empty;
             Given_Name = String.Empty;
-            UFID = String.Empty;
+            ShibbID = String.Empty;
             Email = String.Empty;
             Department = String.Empty;
             Nickname = String.Empty;
@@ -78,6 +78,7 @@ namespace SobekCM.Library.Users
             Include_Tracking_In_Standard_Forms = true;
             userOptions = new Dictionary<string, object>();
 	        Can_Delete_All = false;
+	        Shibboleth_Authenticated = false;
         }
 
         #endregion
@@ -149,7 +150,7 @@ namespace SobekCM.Library.Users
         {
             get
             {
-                return aggregations != null && aggregations.Collection.Any(aggregation => aggregation.IsCurator);
+                return aggregations != null && aggregations.Collection.Any(Aggregation => Aggregation.IsCurator);
             }
         }
 
@@ -283,8 +284,8 @@ namespace SobekCM.Library.Users
             get { return Family_Name + ", " + Given_Name; }
         }
 
-        /// <summary> User's UFID  </summary>
-        public string UFID { get; set; }
+        /// <summary> User's shibboleth ID </summary>
+        public string ShibbID { get; set; }
 
         /// <summary> User's organization affiliation information   </summary>
         public string Organization { get; set; }
@@ -310,6 +311,9 @@ namespace SobekCM.Library.Users
 
         /// <summary> User's template code editing MARC records  </summary>
         public string Edit_Template_MARC_Code { get; set; }
+
+		/// <summary> Flag indicates the user was Shibboleth authenticated </summary>
+		public bool Shibboleth_Authenticated { get; set; }
 
         /// <summary> List of item aggregations associated with this user </summary>
         public ReadOnlyCollection<User_Editable_Aggregation> Aggregations
@@ -384,7 +388,7 @@ namespace SobekCM.Library.Users
         public void Set_Aggregation_Home_Page_Flag(string Code, string Name, bool Flag)
         {
             string aggrCodeUpper = Code.ToUpper();
-            foreach (User_Editable_Aggregation thisAggregation in aggregations.Collection.Where(thisAggregation => thisAggregation.Code == aggrCodeUpper))
+            foreach (User_Editable_Aggregation thisAggregation in aggregations.Collection.Where(ThisAggregation => ThisAggregation.Code == aggrCodeUpper))
             {
                 thisAggregation.OnHomePage = Flag;
                 return;
@@ -442,20 +446,20 @@ namespace SobekCM.Library.Users
         }
 
         /// <summary> This checks that the folder name exists, and returns the proper format </summary>
-        /// <param name="name_version"> Version of the folder name to check </param>
+        /// <param name="NameVersion"> Version of the folder name to check </param>
         /// <returns> Folder name in proper format </returns>
-        public string Folder_Name(string name_version)
+        public string Folder_Name(string NameVersion)
         {
-            User_Folder folderObject = Get_Folder(name_version);
+            User_Folder folderObject = Get_Folder(NameVersion);
             return folderObject == null ? String.Empty : folderObject.Folder_Name;
         }
 
-        private void recurse_through_children(User_Folder parentFolder, SortedList<string, User_Folder> folder_builder)
+        private void recurse_through_children(User_Folder ParentFolder, SortedList<string, User_Folder> FolderBuilder)
         {
-            foreach (User_Folder thisFolder in parentFolder.Children)
+            foreach (User_Folder thisFolder in ParentFolder.Children)
             {
-                folder_builder.Add(thisFolder.Folder_Name, thisFolder);
-                recurse_through_children(thisFolder, folder_builder);
+                FolderBuilder.Add(thisFolder.Folder_Name, thisFolder);
+                recurse_through_children(thisFolder, FolderBuilder);
             }
         }
 
@@ -465,15 +469,15 @@ namespace SobekCM.Library.Users
         public User_Folder Get_Folder(string Folder_Name)
         {
             string name_version_lower = Folder_Name.ToLower();
-            return folders.Values.Select(thisFolder => recurse_to_get_folder(thisFolder, name_version_lower)).FirstOrDefault(returnValue => returnValue != null);
+            return folders.Values.Select(ThisFolder => recurse_to_get_folder(ThisFolder, name_version_lower)).FirstOrDefault(ReturnValue => ReturnValue != null);
         }
 
-        private User_Folder recurse_to_get_folder(User_Folder parentFolder, string folderName)
+        private User_Folder recurse_to_get_folder(User_Folder ParentFolder, string FolderName)
         {
-            if ( parentFolder.Folder_Name.ToLower() == folderName )
-                return parentFolder;
+            if ( ParentFolder.Folder_Name.ToLower() == FolderName )
+                return ParentFolder;
 
-            return parentFolder.Children.Select(childFolder => recurse_to_get_folder(childFolder, folderName)).FirstOrDefault(returnValue => returnValue != null);
+            return ParentFolder.Children.Select(ChildFolder => recurse_to_get_folder(ChildFolder, FolderName)).FirstOrDefault(ReturnValue => ReturnValue != null);
         }
 
         #endregion
@@ -653,13 +657,13 @@ namespace SobekCM.Library.Users
             if (Item.Behaviors.Aggregation_Count > 0)
             {
                 ReadOnlyCollection<Aggregation_Info> colls = Item.Behaviors.Aggregations;
-                if (colls.Any(thisCollection => aggregations.Can_Edit(thisCollection.Code.ToUpper())))
+                if (colls.Any(ThisCollection => aggregations.Can_Edit(ThisCollection.Code.ToUpper())))
                 {
                     return true;
                 }
             }
 
-            return editableRegexes.Select(regex_string => new Regex(regex_string)).Any(myReg => myReg.IsMatch(Item.BibID.ToUpper()));
+            return editableRegexes.Select(RegexString => new Regex(RegexString)).Any(MyReg => MyReg.IsMatch(Item.BibID.ToUpper()));
         }
 
 		/// <summary> Determines if this user can edit this item, based on several different criteria </summary>
@@ -682,7 +686,7 @@ namespace SobekCM.Library.Users
 			if (Item.Behaviors.Aggregation_Count > 0)
 			{
 				ReadOnlyCollection<Aggregation_Info> colls = Item.Behaviors.Aggregations;
-				if (colls.Any(thisCollection => aggregations.Can_Delete(thisCollection.Code)))
+				if (colls.Any(ThisCollection => aggregations.Can_Delete(ThisCollection.Code)))
 				{
 					return true;
 				}
@@ -700,12 +704,15 @@ namespace SobekCM.Library.Users
             return SecurityInfo.DES_EncryptString(Given_Name + "sobekh" + Family_Name, IP.Replace(".", "").PadRight(8, '%').Substring(0, 8), Email.Length > 8 ? Email.Substring(0, 8) : Email.PadLeft(8, 'd'));
         }
 
+        /// <summary> Gets the user-in-process directory </summary>
+        /// <param name="Directory_Name"> Subdirectory requested </param>
+        /// <returns> Full path to the requested user-in-process directory </returns>
         public string User_InProcess_Directory(string Directory_Name)
         {
             // Determine the in process directory for this
             string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
-            if (UFID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UFID + "\\" + Directory_Name;
+            if (ShibbID.Trim().Length > 0)
+                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + ShibbID + "\\" + Directory_Name;
             
             return userInProcessDirectory; 
         }

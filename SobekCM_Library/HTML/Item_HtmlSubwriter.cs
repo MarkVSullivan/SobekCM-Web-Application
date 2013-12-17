@@ -328,13 +328,18 @@ namespace SobekCM.Library.HTML
                                 break;
                         }
 
-                        // Save the new visibility
+                        // Is this new visibility different than the old one?
                         if (currentItem.Behaviors.IP_Restriction_Membership != current_mask)
                         {
+							// Save this to the database
                             if (Resource_Object.Database.SobekCM_Database.Set_IP_Restriction_Mask(currentItem.Web.ItemID, currentItem.Behaviors.IP_Restriction_Membership, currentUser.UserName, String.Empty))
                             {
+								// Update the cached item
                                 Cached_Data_Manager.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, Tracer);
                                 Cached_Data_Manager.Store_Digital_Resource_Object(currentItem.BibID, currentItem.VID, currentItem, Tracer);
+
+								// Update the web.config
+	                            Resource_Web_Config_Writer.Update_Web_Config(currentItem.Source_Directory, currentItem.Behaviors.Dark_Flag, (short) current_mask, currentItem.Behaviors.Main_Thumbnail);
                             }
                         }
                     }
