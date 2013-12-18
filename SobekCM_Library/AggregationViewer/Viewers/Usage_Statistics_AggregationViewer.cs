@@ -110,13 +110,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Usage_Statistics_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
             }
 
-            const string collectionViews = "COLLECTION VIEWS";
-            const string itemViews = "ITEM VIEWS";
-            const string topTitles = "TOP TITLES";
-            const string topItems = "TOP ITEMS";
-            const string definitions = "DEFINITIONS";
+            const string COLLECTION_VIEWS = "COLLECTION VIEWS";
+            const string ITEM_VIEWS = "ITEM VIEWS";
+            const string TOP_TITLES = "TOP TITLES";
+            const string TOP_ITEMS = "TOP ITEMS";
+            const string DEFINITIONS = "DEFINITIONS";
 
             Output.WriteLine("<div class=\"ShowSelectRow\">");
+			Output.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
 
             // Save and normalize the submode
             string submode = currentMode.Info_Browse_Mode.ToLower();
@@ -128,54 +129,55 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (submode == "views")
             {
-                Output.WriteLine("  <img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">" + collectionViews + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li class=\"current\">" + COLLECTION_VIEWS + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "views";
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">" + collectionViews + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + COLLECTION_VIEWS + "</a></li>");
             }
 
             if (submode == "itemviews")
             {
-                Output.WriteLine("  <img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">" + itemViews + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li class=\"current\">" + ITEM_VIEWS + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "itemviews";
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">" + itemViews + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + ITEM_VIEWS + "</a></li>");
             }
 
             if (submode == "titles")
             {
-                Output.WriteLine("  <img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">" + topTitles + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li class=\"current\">" + TOP_TITLES + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "titles";
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">" + topTitles + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + TOP_TITLES + "</a></li>");
             }
 
             if (submode == "items")
             {
-                Output.WriteLine("  <img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">" + topItems + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li class=\"current\">" + TOP_ITEMS + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "items";
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">" + topItems + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\tab_image\"  alt=\"\"/></a>");
+                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + TOP_ITEMS + "</a></li>");
             }
 
             if (submode == "definitions")
             {
-                Output.WriteLine("  <img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab_s\">" + definitions + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD_s.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li class=\"current\">" + DEFINITIONS + "</li>");
             }
             else
             {
                 currentMode.Info_Browse_Mode = "definitions";
-                Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\">" + definitions + "</span><img src=\"" + currentMode.Base_Design_URL + "skins/" + currentMode.Base_Skin + "/tabs/cRD.gif\" border=\"0\" class=\tab_image\" alt=\"\" /></a>");
+                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + DEFINITIONS + "</a></li>");
             }
             currentMode.Info_Browse_Mode = submode;
+			Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
 
@@ -262,7 +264,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         #region Method to add collection history as html
 
-        private void add_collection_usage_history(TextWriter Output, DataTable statsCount, Custom_Tracer Tracer)
+        private void add_collection_usage_history(TextWriter Output, DataTable StatsCount, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_collection_history", "Rendering HTML");
 
@@ -286,7 +288,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <th width=\"90px\" align=\"right\"><span style=\"color: White\">ITEM<br />VIEWS</span></th>");
             Output.WriteLine("    </tr>");
 
-            const int columns = 8;
+            const int COLUMNS = 8;
             string lastYear = String.Empty;
             int hits = 0;
             int sessions = 0;
@@ -297,18 +299,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             int itemHits = 0;
 
             // Add the collection level information
-            if (statsCount != null)
+            if (StatsCount != null)
             {
-                foreach (DataRow thisRow in statsCount.Rows)
+                foreach (DataRow thisRow in StatsCount.Rows)
                 {
                     if (thisRow[0].ToString() != lastYear)
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
+                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + COLUMNS + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
                         lastYear = thisRow[0].ToString();
                     }
                     else
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
+                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + COLUMNS + "\"></td></tr>");
                     }
                     Output.WriteLine("    <tr align=\"right\" >");
                     Output.WriteLine("      <td align=\"left\">" + Month_From_Int(Convert.ToInt32(thisRow[1])) + " " + thisRow[0] + "</td>");
@@ -350,7 +352,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     Output.WriteLine("    </tr>");
                 }
-                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
+                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + COLUMNS + "\"></td></tr>");
                 Output.WriteLine("    <tr align=\"right\" >");
                 Output.WriteLine("      <td align=\"left\"><b>TOTAL</b></td>");
                 Output.WriteLine("      <td><b>" + hits + "</td>");
@@ -372,7 +374,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         #region Method to add item usage history as html
 
-        private void add_item_usage_history(TextWriter Output, DataTable statsCount, Custom_Tracer Tracer)
+        private void add_item_usage_history(TextWriter Output, DataTable StatsCount, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_collection_history", "Rendering HTML");
 
@@ -409,20 +411,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <th width=\"90px\" align=\"right\"><span style=\"color: White\">STATIC<br />VIEWS</span></th>");
             Output.WriteLine("    </tr>");
 
-            const int columns = 10;
+            const int COLUMNS = 10;
             string lastYear = String.Empty;
-            if (statsCount != null)
+            if (StatsCount != null)
             {
-                foreach (DataRow thisRow in statsCount.Rows)
+                foreach (DataRow thisRow in StatsCount.Rows)
                 {
                     if (thisRow[0].ToString() != lastYear)
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + columns + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
+                        Output.WriteLine("    <tr><td bgcolor=\"#7d90d5\" colspan=\"" + COLUMNS + "\"><span style=\"color: White\"><b> " + thisRow[0] + " STATISTICS</b></span></td></tr>");
                         lastYear = thisRow[0].ToString();
                     }
                     else
                     {
-                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
+                        Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + COLUMNS + "\"></td></tr>");
                     }
                     Output.WriteLine("    <tr align=\"right\" >");
                     Output.WriteLine("      <td align=\"left\">" + Month_From_Int(Convert.ToInt32(thisRow[1])) + " " + thisRow[0] + "</td>");
@@ -511,7 +513,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("    </tr>");
                 }
 
-                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + columns + "\"></td></tr>");
+                Output.WriteLine("    <tr><td bgcolor=\"Black\" colspan=\"" + COLUMNS + "\"></td></tr>");
                 Output.WriteLine("    <tr align=\"right\" >");
                 Output.WriteLine("      <td align=\"left\"><b>TOTAL</b></td>");
                 Output.WriteLine("      <td><b>" + jpegViews + "</td>");
