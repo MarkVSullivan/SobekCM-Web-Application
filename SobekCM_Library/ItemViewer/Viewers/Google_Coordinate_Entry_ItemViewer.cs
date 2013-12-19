@@ -553,7 +553,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-infobox.js\"></script> ");
             //mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script> ");
-            
+
             //custom js
             #region
 
@@ -561,10 +561,46 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\"> ");
             mapeditBuilder.AppendLine(" ");
 
+            
+            //create build time
+            string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
+            const int c_PeHeaderOffset = 60;
+            const int c_LinkerTimestampOffset = 8;
+            byte[] b = new byte[2048];
+            System.IO.Stream s = null;
+            try
+            {
+                s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                s.Read(b, 0, 2048);
+            }
+            finally
+            {
+                if (s != null)
+                {
+                    s.Close();
+                }
+            }
+            int i2 = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
+            int secondsSince1970 = System.BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+            dt = dt.AddSeconds(secondsSince1970);
+            dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+            string debugTime_buildTimestamp = dt.ToString();
+            //get current timestamp
+            TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
+            double debugTime_unixTimestamp = span.TotalSeconds;
+            
             //setup server to client vars writer
             mapeditBuilder.AppendLine(" // Add Server Vars ");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
             mapeditBuilder.AppendLine("   globalVar.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
+            mapeditBuilder.AppendLine("   globalVar.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
+            mapeditBuilder.AppendLine("   globalVar.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+            //detemrine if debugging
+            if (CurrentMode.Base_URL.Contains("localhost"))
+                mapeditBuilder.AppendLine("   globalVar.debuggerOn = true; //debugger flag ");
+            else
+                mapeditBuilder.AppendLine("   globalVar.debuggerOn = false; //debugger flag ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
 
@@ -980,14 +1016,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" ");
 
             #endregion
-
+            
             //determine if we are in devmode
             bool rapidTest = CurrentMode.Base_URL.Contains("localhost");
             if (rapidTest)
             {
-                //string mapeditHTMLFile = @""+ CurrentMode.Base_URL + "default/mapedit.txt";
-                //string[] lines = File.ReadAllLines(@"http://hlmatt.com/uf/mapedit.txt");
-                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html");
+                string[] lines = File.ReadAllLines(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\dev\mapedit\mapedit.html"); //2do make this dynamic
                 for (int i = 0; i < lines.Length; i++)
                 {
                     mapeditBuilder.AppendLine(Convert.ToString(lines[i]));
