@@ -1829,15 +1829,29 @@ namespace SobekCM.Library.HTML
                                     int page_index = 1;
                                     foreach (string thisName in pageNames)
                                     {
-                                        if (currentMode.Page == page_index)
-                                        {
-                                            Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName + "</option>");
-                                        }
-                                        else
-                                        {
-                                            Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName + "</option>");
-                                        }
-                                        page_index++;
+	                                    if (thisName.Length > 75)
+	                                    {
+		                                    if (currentMode.Page == page_index)
+		                                    {
+			                                    Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName.Substring(0,75) + "...</option>");
+		                                    }
+		                                    else
+		                                    {
+												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName.Substring(0, 75) + "...</option>");
+		                                    }
+	                                    }
+	                                    else
+	                                    {
+											if (currentMode.Page == page_index)
+											{
+												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName + "</option>");
+											}
+											else
+											{
+												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName + "</option>");
+											}
+	                                    }
+	                                    page_index++;
                                     }
 
                                     Output.WriteLine("\t\t\t\t</select>");
