@@ -18,6 +18,30 @@ var geocoder;               //must define before use
 var label = [];             //used as label of poi
 var infoWindow = [];        //poi infowindow
 
+//DEBUGGING SUPPORT
+//var debugVersionNumber = "(v1.1)"; //for debuggin (2do make this dynamic)
+var debugVersionNumber = ""; //init timestamp
+//debugging 
+var debugStringBase = "<strong>Debug Panel:</strong> <a onclick=\"debugClear()\">(clear)</a><br><br>"; //starting debug string
+var debugString; //holds debug messages
+var debugs = 0; //used for keycode debugging
+function de(message) {
+    //determine if debugger is on
+    if (globalVar.debuggerOn) {
+        //create debug string
+        var currentdate = new Date();
+        var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
+        var newDebugString = "[" + time + "] " + message + "<br><hr>";
+        newDebugString += debugString;
+        document.getElementById("debugs").innerHTML = debugStringBase + newDebugString;
+        debugString = newDebugString;
+    }
+}
+function debugClear() {
+    debugString = ""; //clear debug string
+    document.getElementById("debugs").innerHTML = debugStringBase;
+}
+
 //call declarations init fcn
 //todo move into a document onload listener (TEMP)
 initDeclarations();
@@ -35,6 +59,7 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            debuggerOn: false,                          //holds debugger flag
             toServerSuccessMessage: "Completed",        //holds server success message
             listItemHighlightColor: "#FFFFC2",          //holds the default highlight color 
             pageLoadTime: null,                         //holds time page was loaded
@@ -270,6 +295,12 @@ function initDeclarations() {
     }();
     //get and set c# vars to js  
     initServerToClientVars();
+    //reinit debug time
+    if (globalVar.debuggerOn) {
+        debugVersionNumber = " (last build: " + globalVar.debugBuildTimeStamp + ") ";
+    } else {
+        debugVersionNumber = " (v1." + globalVar.debugBuildTimeStamp + ") ";
+    }
 }
 
 //#endregion
@@ -301,8 +332,8 @@ var L_Removed = "Removed";
 var L_Showing = "Showing";
 var L_Hiding = "Hiding";
 var L_Deleted = "Deleted";
-var L_NotDeleted = "Not Deleted";
-var L1 = "<div style=\"font-size:.95em;\">SobekCM Plugin &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Legal</a> &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Report a Sobek error</a> &nbsp</div>"; //copyright node
+var L_NotDeleted = "Nothing To Delete";
+var L1 = "<div style=\"font-size:.95em;\">SobekCM Plugin "+debugVersionNumber+" &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Legal</a> &nbsp&nbsp&nbsp <a href=\"#\" style=\"font-size:9px;text-decoration:none;\">Report a Sobek error</a> &nbsp</div>"; //copyright node
 var L2 = "lat: <a id=\"cLat\"></a><br/>long: <a id=\"cLong\"></a>"; //lat long of cursor position tool
 var L3 = "Description (Optional)"; //describe poi box
 var L4 = "Geolocation Service Failed."; //geolocation buttons error message
@@ -385,6 +416,7 @@ function initLocalization() {
             L68: "Overaly Geographic Data Deleted",
             L69: "Item Geographic Location Deleted",
             L70: "This will delete the geographic coordinate data for this item, are you sure?",
+            L71: "Save Description",
             //tooltips
             byTooltips: function () {
                 //#region localization by listeners
@@ -500,9 +532,9 @@ function initLocalization() {
                     document.getElementById("content_menubar_managePOI").innerHTML = "Manage POIs";
                     document.getElementById("content_menubar_header3Sub4Sub1").innerHTML = "Place";
                     document.getElementById("content_menubar_header4").innerHTML = "Help";
-                    document.getElementById("content_menubar_save").innerHTML = "Save Changes";
-                    document.getElementById("content_menubar_cancel").innerHTML = "Cancel Changes";
-                    document.getElementById("content_menubar_reset").innerHTML = "Reset Changes";
+                    document.getElementById("content_menubar_save").innerHTML = "Complete Editing";
+                    document.getElementById("content_menubar_cancel").innerHTML = "Cancel Editing";
+                    document.getElementById("content_menubar_reset").innerHTML = "Reset All Changes";
                     document.getElementById("content_menubar_toggleMapControls").innerHTML = "Map Controls";
                     document.getElementById("content_menubar_toggleToolbox").innerHTML = "Toolbox";
                     document.getElementById("content_menubar_toggleToolbar").innerHTML = "Toolbar";
@@ -627,7 +659,7 @@ function initListeners() {
                 }
                 if (savesCompleted == 3) {
                     de("all saves completed");
-                    //window.location.assign(document.URL.replace("/mapedit", ""));
+                    window.location.assign(document.URL.replace("/mapedit", ""));
                     globalVar.userMayLoseData = false;
                 }
                 globalVar.RIBMode = false;
@@ -2639,10 +2671,7 @@ function initialize() {
                 }
 
             });
-
         }
-        
-        //regarless of type
 
         //used to get center point for lat/long tool
         google.maps.event.addListener(rectangle, 'drag', function () {
@@ -4437,9 +4466,11 @@ function initOptions() {
         }
     };
     
-    //clear search boxes
+    //clear textboxes
     document.getElementById("content_toolbar_searchField").value = null;
     document.getElementById("content_toolbox_searchField").value = null;
+    document.getElementById('content_toolbox_posItem').value = null;
+    document.getElementById('content_toolbox_rgItem').value = null;
 
     //closes loading blanket
     document.getElementById("mapedit_blanket_loading").style.display = "none";
@@ -4739,6 +4770,16 @@ function displayMessage(message) {
         
         if (duplicateMessage) {
             de("Same message to display as previous, not displaying");
+            //remove the previous
+            $("#" + "message" + (globalVar.messageCount - 1)).remove();
+            //display the new
+            document.getElementById(currentDivId).style.display = "block"; //display element
+            //fade message out
+            setTimeout(function () {
+                $("#" + currentDivId).fadeOut("slow", function () {
+                    $("#" + currentDivId).remove();
+                });
+            }, 3000); //after 3 sec
         } else {
             //de("Unique message to display");
             //show message
@@ -4991,25 +5032,38 @@ function overlayEditMe(id) {
 
 //cycle through all overlay list itmes and hightliht them accordingly
 function cycleOverlayHighlight(id) {
-    try {
-        de("highlighting overlays");
-        //go through each overlay on the map
-        for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
-            de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
-            //if there is a match in overlays
-            if (i == id) {
-                //set highlight color
-                document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
-            } else {
-                //reset highlight
-                document.getElementById("overlayListItem" + i).style.background = null;
-            }
+    de("highlighting overlays");
+    //go through each overlay on the map
+    for (var i = 0; i < globalVar.incomingPolygonSourceURL.length ; i++) {
+        de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
+        //if there is a match in overlays
+        if (globalVar.incomingPolygonPageId[i] == id) {
+            //set highlight color
+            document.getElementById("overlayListItem" + globalVar.incomingPolygonPageId[i]).style.background = globalVar.listItemHighlightColor;
+        } else {
+            //reset highlight
+            document.getElementById("overlayListItem" + globalVar.incomingPolygonPageId[i]).style.background = null;
         }
-    } catch(e) {
-        //could not highlist
-        //alert("couldnt");
-    } 
-    
+    }
+    //try {
+    //    de("highlighting overlays");
+    //    //go through each overlay on the map
+    //    for (var i = 1; i < (globalVar.incomingPolygonSourceURL.length + 1) ; i++) {
+    //        de("hit: " + id + " index: " + i + " length: " + globalVar.incomingPolygonSourceURL.length);
+    //        //if there is a match in overlays
+    //        if (i == id) {
+    //            //set highlight color
+    //            document.getElementById("overlayListItem" + i).style.background = globalVar.listItemHighlightColor;
+    //        } else {
+    //            //reset highlight
+    //            document.getElementById("overlayListItem" + i).style.background = null;
+    //        }
+    //    }
+    //} catch(e) {
+    //    //could not highlist
+    //    //alert("couldnt");
+    //} 
+
 }
 
 //hide poi on map
@@ -5439,8 +5493,8 @@ function codeAddress(type, geo) {
                     position: results[0].geometry.location //set position to search results
                 });
                 var searchResult_i = 1; //temp, placeholder for later multi search result support
-                document.getElementById("searchResults_list").innerHTML = writeHTML("searchResultListItem",searchResult_i, geo, "", "");
-            } else { //if location found was outside strict map bounds...
+                document.getElementById("searchResults_list").innerHTML = writeHTML("searchResultListItem", searchResult_i, geo, "", "");
+                } else { //if location found was outside strict map bounds...
                 displayMessage(L24); //say so
             }
 
@@ -5448,7 +5502,6 @@ function codeAddress(type, geo) {
             alert(L6); //localization...
         }
     });
-
 }
 
 //get the nearest human reabable location from lat/long
@@ -5476,14 +5529,32 @@ function useSearchAsItemLocation() {
     if (globalVar.searchResult != null) {
         //this tells listeners what to do
         globalVar.placerType = "item";
-        //assign new position of marker
-        globalVar.itemMarker.setPosition(globalVar.searchResult.getPosition());
+        //determine if itemmarker is already made
+        if (globalVar.itemMarker != null) {
+            //assign new position of marker
+            globalVar.itemMarker.setPosition(globalVar.searchResult.getPosition());
+            //delete search result
+            searchResultDeleteMe();
+            //display new marker
+            globalVar.itemMarker.setMap(map);
+        } else {
+            //make search marker, item marker
+            globalVar.itemMarker = globalVar.searchResult;
+            //assign itemMarkerMode
+            globalVar.itemMarker.setOptions(globalVar.markerOptionsItem);
+            //assign flags
+            globalVar.userMayLoseData = true;
+            globalVar.firstSaveItem = true;
+            //used to prevent multi markers
+            if (globalVar.firstMarker > 0) {
+                drawingManager.setDrawingMode(null); //only place one at a time
+            } else {
+                globalVar.firstMarker++;
+                drawingManager.setDrawingMode(null); //only place one at a time
+            }
+        }
         //prevent redraw
         globalVar.firstMarker++;
-        //delete search result
-        globalVar.searchResultDeleteMe();
-        //display new marker
-        globalVar.itemMarker.setMap(map);
         //get the lat/long of item marker and put it in the item location tab
         document.getElementById('content_toolbox_posItem').value = globalVar.itemMarker.getPosition();
         //get the reverse geo address for item location and put in location tab
@@ -5498,6 +5569,9 @@ function useSearchAsItemLocation() {
             codeLatLng(globalVar.itemMarker.getPosition());
             //store coords to save
             globalVar.savingMarkerCenter = globalVar.itemMarker.getPosition();
+            //assign flags
+            globalVar.userMayLoseData = true;
+            globalVar.firstSaveItem = true;
         });
     } else {
         //nothing in search
@@ -5514,13 +5588,13 @@ function deleteItemLocation() {
         globalVar.itemMarker.setMap(null);
         globalVar.itemMarker = null;
         //msg
-        globalVar.serverSuccessMessage = localize.L69;
+        globalVar.toServerSuccessMessage = localize.L69;
         //send to server and delete from mets
         globalVar.RIBMode = true;
         createSavedItem("delete", null); 
         globalVar.RIBMode = false;
-        //deleted
-        //displayMessage(L_Deleted);
+        //clear saving item center as well
+        globalVar.savingMarkerCenter = null;
         //explicitly disallow editing after converting
         drawingManager.setDrawingMode(null);
         //drawingManager.setMap(null);
@@ -5743,11 +5817,11 @@ function writeHTML(type, param1, param2, param3) {
             break;
         case "poiDesc":
             de("Creating html String");
-            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\"></textarea> <br/> <div title=\"" + localize.L65 + "\" class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\">Save</div> </div>";
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" placeholder=\"" + L3 + "\" onblur=\"poiGetDesc(" + param1 + ");\"></textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\" >" + localize.L71 + "</div> </div>"; //title=\"" + localize.L65 + "\"
             break;
         case "poiDescIncoming":
             de("Creating html String");
-            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\">" + param2 + "</textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\" title=\"" + localize.L65 + "\">Save</div> </div>";
+            htmlString = "<div class=\"poiDescContainer\"> <textarea id=\"poiDesc" + param1 + "\" class=\"descPOI\" onblur=\"poiGetDesc(" + param1 + ");\">" + param2 + "</textarea> <br/> <div class=\"buttonPOIDesc\" id=\"poiGetDesc\" onClick=\"poiGetDesc(" + param1 + ");\" >" + localize.L71 + "</div> </div>"; //title=\"" + localize.L65 + "\"
             break;
         case "overlayListItem":
             de("Creating html String");
@@ -6107,44 +6181,24 @@ function keyup(e) {
             }
             break;
         case 68: //D (for debuggin)
-            if (isCntrlDown == true) {
-                debugs++;
-                if (debugs % 2 == 0) {
-                    document.getElementById("debugs").style.display = "none";
-                    globalVar.debugMode = false;
-                    isCntrlDown = false;
-                    displayMessage("Debug Mode Off");
-                } else {
-                    document.getElementById("debugs").style.display = "block";
-                    globalVar.debugMode = true;
-                    displayMessage("Debug Mode On");
-                    isCntrlDown = false;
+            if (globalVar.debuggerOn) {
+                if (isCntrlDown == true) {
+                    debugs++;
+                    if (debugs % 2 == 0) {
+                        document.getElementById("debugs").style.display = "none";
+                        globalVar.debugMode = false;
+                        isCntrlDown = false;
+                        displayMessage("Debug Mode Off");
+                    } else {
+                        document.getElementById("debugs").style.display = "block";
+                        globalVar.debugMode = true;
+                        displayMessage("Debug Mode On");
+                        isCntrlDown = false;
+                    }
                 }
             }
             break;
     }
-}
-
-//debugging 
-var debugStringBase = "<strong>Debug Panel:</strong> <a onclick=\"debugClear()\">(clear)</a><br><br>"; //starting debug string
-var debugString; //holds debug messages
-var debugs = 0; //used for keycode debugging
-function de(message) {
-    //determine if debugger is on
-    var debuggerOn = false;
-    if (debuggerOn) {
-        //create debug string
-        var currentdate = new Date();
-        var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + ":" + currentdate.getMilliseconds();
-        var newDebugString = "[" + time + "] " + message + "<br><hr>";
-        newDebugString += debugString;
-        document.getElementById("debugs").innerHTML = debugStringBase + newDebugString;
-        debugString = newDebugString;
-    }
-}
-function debugClear() {
-    debugString = ""; //clear debug string
-    document.getElementById("debugs").innerHTML = debugStringBase;
 }
 
 //#endregion
@@ -6250,6 +6304,7 @@ $(function () {
         $("#content_toolbox_button_clearItem").tooltip({ show: { delay: 500 }, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearItem").tooltip("close"); }, 3000); } });
         $("#content_toolbox_button_clearOverlay").tooltip({ show: { delay: 500 }, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearOverlay").tooltip("close"); }, 3000); } });
         $("#content_toolbox_button_clearPOI").tooltip({ show: {delay:500}, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_clearPOI").tooltip("close"); }, 3000); } });
+        $("#content_toolbox_button_deleteItem").tooltip({ show: { delay: 500 }, track: true, open: function () { setTimeout(function () { $("#content_toolbox_button_deleteItem").tooltip("close"); }, 3000); } });
         //$("#content_toolbar_searchField").tooltip({ track: true });
         //$("#content_toolbar_searchButton").tooltip({ track: true });
         //$("#content_toolbox_searchField").tooltip({ track: true });
@@ -6257,7 +6312,7 @@ $(function () {
         //$("#searchResults_container").tooltip({ track: true });
         //$("#overlayList_container").tooltip({ track: true });
         //$("#poiList_container").tooltip({ track: true });
-        $(document).tooltip({ track: true, show: { delay: 500 }}); //(used to blanket all the tooltips)
+        $(document).tooltip({ track: true, show: { delay: 300 }}); //(used to blanket all the tooltips)
         //$(".selector").tooltip({ content: "Awesome title!" });
     } catch (err) {
         alert(L51 + ": " + err);

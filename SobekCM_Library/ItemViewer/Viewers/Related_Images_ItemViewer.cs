@@ -140,9 +140,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			string numOfThumbnails = "thumbnails per page";
 			string goToThumbnail = "Go to thumbnail";
-			const string Small_Thumbnails = "Switch to small thumbnails";
-			const string Medium_Thumbnails = "Switch to medium thumbnails";
-			const string Large_Thumbnails = "Switch to large thumbnails";
+			const string SMALL_THUMBNAILS = "Switch to small thumbnails";
+			const string MEDIUM_THUMBNAILS = "Switch to medium thumbnails";
+			const string LARGE_THUMBNAILS = "Switch to large thumbnails";
 
 			if (CurrentMode.Language == Web_Language_Enum.French)
 			{
@@ -236,7 +236,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Small_Thumbnails + "\"><img src=\"" + image_location + "thumbs3.gif\" alt=\"Small\" /></a>");
+                Output.Write("\t\t\t<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs3.gif\" alt=\"Small\" /></a>");
 			}
 
 			if (thumbnailSize == 2)
@@ -244,14 +244,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Medium_Thumbnails + "\"><img src=\"" + image_location + "thumbs2.gif\" alt=\"Medium\" /></a>");
+                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs2.gif\" alt=\"Medium\" /></a>");
 			}
 			if (thumbnailSize == 3)
                 Output.Write("<img src=\"" + image_location + "thumbs1_selected.gif\" alt=\"Large\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + Large_Thumbnails + "\"><img src=\"" + image_location + "thumbs1.gif\" alt=\"Large\" /></a>");
+                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs1.gif\" alt=\"Large\" /></a>");
 			}
 			//Reset the current mode
 			CurrentMode.Size_Of_Thumbnails = -1;
@@ -276,7 +276,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         Output.WriteLine("\t\t\t\t<option value=\"" + currentPageURL1 + "#" + thumbnail_count + "\">" + "(page " + thumbnail_count + ")" + "</option>");
 					else
 					{
-                        Output.WriteLine("\t\t\t\t<option value=\"" + currentPageURL1 + "#" + thumbnail_count + "\">" + thisFile.Label + "</option>");
+						if ( thisFile.Label.Length > 50 )
+	                        Output.WriteLine("\t\t\t\t<option value=\"" + currentPageURL1 + "#" + thumbnail_count + "\">" + thisFile.Label.Substring(0,50) + "...</option>");
+						else
+							Output.WriteLine("\t\t\t\t<option value=\"" + currentPageURL1 + "#" + thumbnail_count + "\">" + thisFile.Label + "</option>");
+
 					}
 
 					thumbnail_count++;
@@ -377,11 +381,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     default:
                         image_url = (CurrentItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+		                width = 150;
                         break;
 
                 }
 
-                Output.WriteLine("  <table class=\"sbkRi_Thumbnail\" id=\"span" + page_index + "\">");
+				if (width > 0)
+					Output.WriteLine("  <table class=\"sbkRi_Thumbnail\" id=\"span" + page_index + "\" style=\"width:" + ( width + 15 ) + "px\">");
+				else
+					Output.WriteLine("  <table class=\"sbkRi_Thumbnail\" id=\"span" + page_index + "\">");
+                
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a id=\"" + page_index + "\" href=\"" + url + "\" title=\"" + thisPage.Label + "\">");
@@ -393,7 +402,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td style=\"align:center\">" + thisPage.Label + "</td>");
+                Output.WriteLine("      <td style=\"text-align:center\">" + thisPage.Label + "</td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </table>");
                 Output.WriteLine();

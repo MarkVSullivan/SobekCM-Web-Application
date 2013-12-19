@@ -137,7 +137,7 @@ fieldset { -moz-border-radius: 8px; border-radius: 8px; }
 
 #internalHeaderForm
 {
-    padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;
+	padding: 0; margin: 0;
 }
 
 
@@ -251,7 +251,7 @@ background-color: #7d90d5;
 /** Some general styles applied to the entire page **/
 BODY  	
 {
-    PADDING: 0px 0px 0px 0px; MARGIN: 0px; font-family:Arial, Helvetica, sans-serif;
+    PADDING: 0; MARGIN: 0; font-family:Arial, Helvetica, sans-serif;
     width: 100%;
    /* background:#a4a4a4; */
     background: #555555;
@@ -353,22 +353,18 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 }
 
 .SobekSearchPanel {
-    position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 1px solid; padding: 0px 0px 0px 0px; FONT-SIZE: small; WIDTH: 750px; BACKGROUND-COLOR: #eee; white-space:nowrap; text-align:left;
+    position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 1px solid; padding: 0; FONT-SIZE: small; WIDTH: 750px; BACKGROUND-COLOR: #eee; white-space:nowrap; text-align:left;
 }
 
 .SobekSearchPanel h1 {
     FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; height: 22px; margin-left: 25px; padding-top:6px;
 }
 
-#addedForm
+#addedForm, #itemNavForm
 {
-    padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;
+    padding: 0; margin: 0;
 }
 
-#itemNavForm
-{
-    padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;
-}
 
 .SobekHomeSearchBox {
     WIDTH: 422px; color: Blue; background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9;
@@ -401,7 +397,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 .ResultSavePrintButtons
 {
-    padding: 0px 0px 0px 0px; margin: 0px 0px 0px 4px; font-size: xx-small; line-height: 1px;
+    padding: 0; margin: 0 0 0 4px; font-size: xx-small; line-height: 1px;
 }
 
 
@@ -480,7 +476,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 /* Used for the highlight */
 #SobekHighlight {
     float: right;
-    margin:0px 0 10px 20px;
+    margin:0 0 10px 20px;
     padding:8px;
 }
 
@@ -543,7 +539,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 .hidden_progress 
 { 
-    padding: 0px;
+    padding: 0;
     width: 32px;
     height: 32px;
 }
@@ -553,7 +549,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 { 
     background-image: url( images/spinner.gif );
     cursor: wait;
-    padding: 0px;
+    padding: 0;
     width: 32px;
     height: 32px;
 }
@@ -562,7 +558,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 { 
     background-image: url( images/spinner_gray.gif  );
     cursor: wait;
-    padding: 0px;
+    padding: 0;
     width: 32px;
     height: 32px;
 }
@@ -575,7 +571,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 .sbk_PopupButtonsDiv { width: 100%;text-align: center; }
 
 .print_popup_div { position:absolute; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; text-align: left; -moz-border-radius: 7px; width:500px; } 
-.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0px 6px 10px;  -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px;  -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
 .popup_table { padding-left: 20px; margin-left: 20px; text-align: left; }
 .print_radiobutton { padding-bottom: 5px;	}
@@ -622,7 +618,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .calendar_button
 {
     margin-top: 4px;
-    padding-bottom: 0px; 
+    padding-bottom: 0; 
     cursor: pointer;
 }
 
@@ -645,7 +641,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 
 .go_button {
     height: 21px;
-    padding: 0px;
+    padding: 0;
     vertical-align: middle;
     border: none;
     width: 54px; 
@@ -678,7 +674,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .intheader_button_aggr
 {
     height: 39px;
-    padding: 0px;
+    padding: 0;
     vertical-align: middle;
     border: none;
     width: 119px; 
