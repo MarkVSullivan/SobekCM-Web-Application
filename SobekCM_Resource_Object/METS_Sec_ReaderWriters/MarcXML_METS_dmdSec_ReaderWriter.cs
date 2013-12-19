@@ -2550,7 +2550,15 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 if (thisRecord.has_Subfield('a'))
                 {
-                    thisBibInfo.Add_Note(thisRecord['a'], Note_Type_Enum.biographical);
+					if (thisRecord.has_Subfield('b'))
+					{
+						thisBibInfo.Add_Note(thisRecord['a'] + " " + thisRecord['b'], Note_Type_Enum.biographical);
+					}
+					else
+					{
+						thisBibInfo.Add_Note(thisRecord['a'], Note_Type_Enum.biographical);
+					}
+                    
                 }
             }
 
