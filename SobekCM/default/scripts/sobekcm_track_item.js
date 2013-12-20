@@ -7,7 +7,7 @@ var page = 1;
 function setCurrentTab(thisPage) {
    
     page = thisPage;
-    //alert(page);
+//    alert(page);
 }
 
 
@@ -72,7 +72,7 @@ function BarcodeStringTextbox2_Changed(barcode_string) {
 
 //Function called when new entry is entered manually
 function Add_new_entry() {
-  
+    alert('Function Add_new_entry called');
     document.getElementById('Track_Item_behaviors_request').value = "read_manual_entry";
     document.getElementById('hidden_BibID').value = document.getElementById('txtBibID').value;
     document.getElementById('hidden_VID').value = document.getElementById('txtVID').value;
@@ -84,7 +84,7 @@ function Add_new_entry() {
 
 //Function called when new entry is entered manually, through the second tab
 function Add_new_entry2() {
-    alert('in function Add_new_entry2');
+    alert('function Add_new_entry2 called');
     document.getElementById('Track_Item_behaviors_request').value = "read_manual_entry";
     document.getElementById('hidden_BibID').value = document.getElementById('txtBibID2').value;
     document.getElementById('hidden_VID').value = document.getElementById('txtVID2').value;
@@ -130,8 +130,14 @@ function DisableRow_RemoveCSSClass(elementID) {
 
 //Set the dropdown value for the workflow type
 function SetDropdown_Selected(value_to_set) {
-    $("#ddlManualEvent").val(value_to_set);
+    if(page=='1')
+        $("#ddlManualEvent").val(value_to_set);
+    else {
+        $("#ddlManualEvent2").val(value_to_set);
+    }
 }
+
+
 
 
 function entry_span_mouseover(spanid) {
@@ -172,7 +178,14 @@ function save_item_tracking(page) {
 }
 
 function save_workflow(workflow_ID, itemID) {
+    var isValid = true;
     alert(workflow_ID + ' ' + itemID);
+    //First do some validations
+    if (page == 1) {
+  //      var startDate = document.getElementById('txtStartDate' + workflow_ID);
+  //      if(startDate)
+    }
+
     document.getElementById('Track_Item_behaviors_request').value = 'save';
     document.getElementById('Track_Item_hidden_value').value = workflow_ID;
     document.getElementById('hidden_itemID').value = itemID;
@@ -254,3 +267,17 @@ function delete_workflow(workflow_ID) {
         }
     };
 })(jQuery);
+
+function setDatePicker(elementID) {
+
+    var thisElement = document.getElementById(elementID);
+ //   alert(thisElement);
+    $( "#"+elementID ).datepicker();
+}
+
+function setTimePicker(elementID) {
+
+    var thisElement = document.getElementById(elementID);
+ //     alert(thisElement);
+    $("#" + elementID).timeEntry();
+}
