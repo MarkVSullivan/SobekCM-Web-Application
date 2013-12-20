@@ -282,6 +282,22 @@ function PaginationTextChanged(TextboxID)
     
 	
     var textboxValue = document.getElementById(TextboxID).value;
+    
+    //If an empty string was entered, replace this with the division type
+    if (textboxValue.length == 0) {
+        var divType = document.getElementById(TextboxID.replace('textbox', 'selectDivType')).value;
+        var valueToAssign = divType;
+        if (divType[0] == '!') {
+            var divLabel = document.getElementById(TextboxID.replace('textbox', 'txtDivName')).value;
+            if (divLabel.length > 0)
+                valueToAssign = divLabel;
+        }
+        document.getElementById(TextboxID).value = valueToAssign + " 1";
+        textboxValue = document.getElementById(TextboxID).value;
+     //   alert(textboxValue);
+        return;
+    }
+ 
 	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
     //var onlyNumberEntered = textboxValue.match(/\d+/g);
     var onlyNumberEntered = ((!isNaN(parseFloat(textboxValue))) && isFinite(textboxValue));
@@ -504,17 +520,22 @@ function PaginationTextChanged(TextboxID)
 		  total=total+values[i];
 		}
 		
-		if((typeof total)=="number" && (romanToNumberError=="No error"))
-		{
+		if((typeof total)=="number" && (romanToNumberError=="No error")) {
+		
+		    //If only a roman numeral was entered, add the text 'Page' before the numeral
+		    if (lastNumber == document.getElementById(TextboxID).value) {
+		        document.getElementById(TextboxID).value = 'Page ' + textboxValue;
+		        textboxValue = document.getElementById(TextboxID).value;
+		    }
 
-		   //Set the QC form hidden variable with this mode
+		    //Set the QC form hidden variable with this mode
 		   var hidden_autonumber_mode = document.getElementById('autonumber_mode_from_form');
 		   hidden_autonumber_mode.value = '0';
 		   
 		   var hidden_number_system = document.getElementById('Autonumber_number_system');
 		   hidden_number_system.value='ROMAN';
 
-		   numberOnlyLastBox.value = total;
+            numberOnlyLastBox.value = total;
 		    
 		  //Now autonumber all the remaining textboxes of the document
             for(var i=spanArray.indexOf('span'+TextboxID.split('textbox')[1])+1;i<=spanArray.length;i++)
@@ -566,7 +587,7 @@ function PaginationTextChanged(TextboxID)
 			  }//end if(textbox found)
 			}//end for loop
 		}
-	}
+	 }
 }//end function
 
 
