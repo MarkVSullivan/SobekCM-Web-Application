@@ -748,6 +748,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Now, step through each of the pages in the return
 				string[] keysFromForm = HttpContext.Current.Request.Form.AllKeys;
+			    
 				foreach (string thisKey in keysFromForm)
 				{
 					// Has this gotten to the next page?
@@ -762,7 +763,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						// Get the page name 
 						thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
 
-						// Was this page selected with the checkbox?  (for bulk delete or move)
+                       // Was this page selected with the checkbox?  (for bulk delete or move)
 						//Get this info only if the move/delete operations are explicitly triggered
 						if (hidden_request == "delete_page" || hidden_request == "delete_selected_pages" || hidden_request == "move_selected_pages")
 						{
