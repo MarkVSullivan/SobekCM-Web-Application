@@ -310,7 +310,8 @@ function PaginationTextChanged(TextboxID)
         document.getElementById(TextboxID).value = valueToAssign + " 1";
         textboxValue = document.getElementById(TextboxID).value;
      //   alert(textboxValue);
-        return;
+        //Extend the autonumbering only for the current div, irrespective of the autonumberingMode selected
+        Mode = 1;
     }
  
 	//if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
