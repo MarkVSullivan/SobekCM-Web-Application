@@ -95,6 +95,21 @@ function QC_Change_Sortable_Setting(option, image_location)
   {
     disableID.src = image_location+"checkmark.png";
     $("#allThumbnailsOuterDiv").sortable("disable");
+
+      //Override the mouse events for input and select fields within the sortable div, otherwise these get disabled as well
+    $('#allThumbnailsOuterDiv input').bind('click.sortable mousedown.sortable', function (ev) {
+        ev.target.focus();
+    });
+
+    $('#allThumbnailsOuterDiv select').bind('click.sortable mousedown.sortable', function (ev) {
+        ev.target.focus();
+    });
+      
+    $('#allThumbnailsOuterDiv').delegate('input[type=text],textarea', "focus", function () {
+        $('#allThumbnailsOuterDiv').enableSelection();
+    });
+
+
   }
     // Close the superfish menu
    $('ul.qc-menu').hideSuperfishUl();
@@ -948,16 +963,37 @@ function MakeSortable1()
         }, placeholder: "ui-state-highlight"
     });
     
-    $('#allThumbnailsOuterDiv input').bind('click.sortable mousedown.sortable', function(ev) {
-        ev.target.focus();
-    });
+  //  $('#allThumbnailsOuterDiv input').bind('click.sortable mousedown.sortable', function(ev) {
+  //      ev.target.focus();
+//    });
 							 
     $("#allThumbnailsOuterDiv").disableSelection();
+
 	if(makeSortable==3)
 	{
-	  $("#allThumbnailsOuterDiv").sortable('disable');
+	    $("#allThumbnailsOuterDiv").sortable('disable');
+
 	}
+
+      $('#allThumbnailsOuterDiv input').bind('click.sortable mousedown.sortable', function(ev) {
+          ev.target.focus();
+      });
+    
+      $('#allThumbnailsOuterDiv select').bind('click.sortable mousedown.sortable', function (ev) {
+          ev.target.focus();
+      });
+    
+      $('#allThumbnailsOuterDiv').delegate('input[type=text],textarea', "focus", function () {
+          $('#allThumbnailsOuterDiv').enableSelection();
+      });
+
+
+
 }
+
+
+
+
 
 //Cancel function: set the hidden field(s) accordingly
 function behaviors_cancel_form() 
