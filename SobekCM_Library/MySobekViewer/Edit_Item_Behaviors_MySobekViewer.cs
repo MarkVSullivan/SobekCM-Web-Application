@@ -170,67 +170,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
-			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
-
-			string final_title = item.Bib_Info.Main_Title.Title;
-			if (item.Bib_Info.Main_Title.NonSort.Length > 0)
-			{
-				if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
-					final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
-				else
-				{
-					if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
-					{
-						final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
-					}
-					else
-					{
-						final_title = item.Bib_Info.Main_Title.NonSort + " " + item.Bib_Info.Main_Title.Title;
-					}
-				}
-			}
-
-			// Add the Title if there is one
-			if (final_title.Length > 0)
-			{
-				// Is this a newspaper?
-				bool newspaper = item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
-
-				// Does a custom setting override the default behavior to add a date?
-				if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
-					newspaper = false;
-
-				// Add the date if it should be added
-				if ((newspaper) && ((item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
-				{
-					string date = item.Bib_Info.Origin_Info.Date_Created;
-					if (item.Bib_Info.Origin_Info.Date_Created.Length == 0)
-						date = item.Bib_Info.Origin_Info.Date_Issued;
-
-
-					if (final_title.Length > 125)
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
-					}
-					else
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
-					}
-				}
-				else
-				{
-					if (final_title.Length > 125)
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
-					}
-					else
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
-					}
-				}
-			}
-			Output.WriteLine("</div>");
-			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
+			// Write the top item mimic html portion
+			Write_Item_Type_Top(Output, item);
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");

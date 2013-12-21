@@ -134,7 +134,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.Preferences:
-                    mySobekViewer = new Preferences_MySobekViewer(user, Tracer);
+                    mySobekViewer = new Preferences_MySobekViewer(user, Current_Mode, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Logon:
@@ -146,7 +146,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.Delete_Item:
-                    mySobekViewer = new Delete_Item_MySobekViewer(user, Current_Mode, All_Items_Lookup, Tracer);
+                    mySobekViewer = new Delete_Item_MySobekViewer(user, Current_Mode, currentItem, All_Items_Lookup, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Behaviors:
@@ -279,9 +279,6 @@ namespace SobekCM.Library.HTML
 			// If we are currently uploading files, add those specific upload styles 
 			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 			{
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/modalbox.css\" />");
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/upload_styles/uploadstyles.css\" />");
-
 				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
 				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadify/uploadifive.css\">");
 			}

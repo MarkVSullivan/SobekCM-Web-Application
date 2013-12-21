@@ -487,67 +487,8 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 
-			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
-
-			string final_title = item.Bib_Info.Main_Title.Title;
-			if (item.Bib_Info.Main_Title.NonSort.Length > 0)
-			{
-				if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
-					final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
-				else
-				{
-					if (item.Bib_Info.Main_Title.NonSort[item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
-					{
-						final_title = item.Bib_Info.Main_Title.NonSort + item.Bib_Info.Main_Title.Title;
-					}
-					else
-					{
-						final_title = item.Bib_Info.Main_Title.NonSort + " " + item.Bib_Info.Main_Title.Title;
-					}
-				}
-			}
-
-			// Add the Title if there is one
-			if (final_title.Length > 0)
-			{
-				// Is this a newspaper?
-				bool newspaper = item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
-
-				// Does a custom setting override the default behavior to add a date?
-				if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
-					newspaper = false;
-
-				// Add the date if it should be added
-				if ((newspaper) && ((item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
-				{
-					string date = item.Bib_Info.Origin_Info.Date_Created;
-					if (item.Bib_Info.Origin_Info.Date_Created.Length == 0)
-						date = item.Bib_Info.Origin_Info.Date_Issued;
-
-
-					if (final_title.Length > 125)
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
-					}
-					else
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
-					}
-				}
-				else
-				{
-					if (final_title.Length > 125)
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
-					}
-					else
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
-					}
-				}
-			}
-			Output.WriteLine("</div>");
-			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
+			// Write the top item mimic html portion
+			Write_Item_Type_Top(Output, item);
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -591,15 +532,13 @@ namespace SobekCM.Library.MySobekViewer
             if (files.Length > 0)
             {
                 Output.WriteLine("The following new page images will be added to the item once you click SUBMIT:");
-                Output.WriteLine("<blockquote>");
-                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\">");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" height=\"22px\" >");
-                Output.WriteLine("    <th width=\"100px\" align=\"left\"><span style=\"color: White\">FILENAME</span></th>");
-                Output.WriteLine("    <th width=\"150px\" align=\"left\">&nbsp;</th>");
-                Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">SIZE</span></th>");
-                Output.WriteLine("    <th width=\"170px\"><span style=\"color: White\">DATE UPLOADED</span></th>");
-                Output.WriteLine("    <th width=\"90px\"><span style=\"color: White\">ACTION</span></th>");
-                Output.WriteLine("  </tr>");
+				Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
+				Output.WriteLine("  <tr style=\"min-height:22px;\" >");
+				Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
+				Output.WriteLine("    <th style=\"width:90px\">SIZE</th>");
+				Output.WriteLine("    <th style=\"width:170px\">DATE UPLOADED</th>");
+				Output.WriteLine("    <th style=\"width:90px; text-align: center;\">ACTION</th>");
+				Output.WriteLine("  </tr>");
 
                 // Collect the page files we are uploading into groups
                 SortedDictionary<string, List<string>> file_groups = new SortedDictionary<string, List<string>>();
@@ -624,7 +563,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
 
-                // Step through all the download file groups
+                // Step through all the page image file groups
                 int file_counter = 0;
                 for (int i = 0; i < file_groups.Count; i++)
                 {
@@ -635,46 +574,41 @@ namespace SobekCM.Library.MySobekViewer
                         file_counter++;
 
                         // Add the file name literal
-                        FileInfo fileInfo = new FileInfo(thisFile);
-                        Output.WriteLine("<tr align=\"left\" >");
-                        Output.WriteLine("<td colspan=\"2\">" + fileInfo.Name + "</td>");
+                        FileInfo fileInfo = new FileInfo(thisFile);  
+						Output.WriteLine("  <tr style=\"min-height:22px;\">");
+                        Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                         if (fileInfo.Length < 1024)
-                            Output.WriteLine("<td>" + fileInfo.Length + "</td>");
+                            Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
                         else
                         {
                             if (fileInfo.Length < (1024*1024))
-                                Output.WriteLine("<td>" + (fileInfo.Length/1024) + " KB</td>");
+                                Output.WriteLine("    <td>" + (fileInfo.Length/1024) + " KB</td>");
                             else
-                                Output.WriteLine("<td>" + (fileInfo.Length/(1024*1024)) + " MB</td>");
+                                Output.WriteLine("    <td>" + (fileInfo.Length/(1024*1024)) + " MB</td>");
                         }
 
-                        Output.WriteLine("<td>" + fileInfo.LastWriteTime + "</td>");
-                        Output.WriteLine("<td align=\"center\"> <span class=\"SobekFolderActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td></tr>");
+                        Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
+						Output.WriteLine("    <td align=\"center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td>");
+	                    Output.WriteLine("  </tr>");
                     }
-                    Output.WriteLine("<tr><td bgcolor=\"#0022a7\" colspan=\"5\"></td></tr>");
-                    Output.WriteLine("<tr height=\"6px\"><td colspan=\"5\"></td></tr>");
+					Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
                 }
-                Output.WriteLine("</table></blockquote><br />");
+                Output.WriteLine("</table>");
+				Output.WriteLine();
             }
 
+			Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
+			Output.WriteLine("  <button title=\"Cancel this and remove the recentely uploaded images\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
+			Output.WriteLine("  <button title=\"Submit the recently uploaded page images and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+			Output.WriteLine("  <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+			Output.WriteLine("</div>");
+			Output.WriteLine();
 
-            const string completionMessage = "Once all images are uploaded, press SUBMIT to finish this item.";
+			const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this item.";
 
-            Output.WriteLine("<table width=\"750px\">");
-            Output.WriteLine("  <tr height=\"40px\" align=\"left\" valign=\"middle\" >");
-            Output.WriteLine("    <td height=\"40px\" width=\"450\">" + completionMessage + "</td>");
-            Output.WriteLine("    <td height=\"40px\" align=\"right\">");
-            Output.WriteLine("      <button title=\"Cancel this and remove the recentely uploaded images\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
-            if ( files.Length == 0 )
-                Output.WriteLine("      <button title=\"You must upload some page images before you can submit your changes\" disabled=\"disabled\" class=\"sbkPiu_RoundButtonDisabled\">SUBMIT</button> &nbsp; ");
-            else
-                Output.WriteLine("      <button title=\"Submit the recently uploaded images and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+			Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
+			Output.WriteLine();
 
-            Output.WriteLine("    </td>");
-            Output.WriteLine("    <td height=\"40px\" width=\"65px\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("  <tr>");
-            Output.WriteLine("    <td colspan=\"3\">");
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<hr />");
             Output.WriteLine("<br />");
@@ -682,9 +616,6 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<blockquote>");
             Output.WriteLine(SobekCM_Library_Settings.Upload_Image_Types.Replace(",", ", "));
             Output.WriteLine("</blockquote>");
-            Output.WriteLine("    </td>");
-            Output.WriteLine("  </tr>");
-            Output.WriteLine("</table>");
             Output.WriteLine("</div>");
 			Output.WriteLine("</div>");
 			Output.WriteLine("</div>");

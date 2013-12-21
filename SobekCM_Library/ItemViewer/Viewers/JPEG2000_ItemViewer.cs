@@ -21,9 +21,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			suppressNavigator = false;
 
 			// Look for a width in the settings
-			if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("JPEG2000_ItemViewer.SuppressNavigator"))
+			if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("JPEG2000 ItemViewer.Suppress Navigator"))
 			{
-				if ( SobekCM_Library_Settings.Additional_Settings["JPEG2000_ItemViewer.SuppressNavigator"].ToLower().Trim() != "false")
+				if ( SobekCM_Library_Settings.Additional_Settings["JPEG2000 ItemViewer.Suppress Navigator"].ToLower().Trim() != "false")
 					suppressNavigator = true;
 			}
 		}
