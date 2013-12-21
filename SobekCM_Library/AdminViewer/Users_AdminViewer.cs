@@ -848,46 +848,55 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </div>");
 
             Output.WriteLine("  <div class=\"ViewsBrowsesRow\">");
+			Output.WriteLine("    <ul class=\"sbk_FauxUpwardTabsList\">");
             string last_mode = currentMode.My_Sobek_SubMode;
             currentMode.My_Sobek_SubMode = currentMode.My_Sobek_SubMode.Replace("b", "").Replace("c", "");
             if (page == 1)
             {
-                Output.WriteLine("    " + Selected_Tab_Start + " BASIC INFORMATION " + Selected_Tab_End);
+                Output.WriteLine("      <li class=\"current\"> BASIC INFORMATION </li>");
             }
             else
             {
-                Output.WriteLine("    <a href=\"\" onclick=\"return new_user_edit_page('" + editUser.UserID + "a" + "');\">" + Unselected_Tab_Start + " BASIC INFORMATION " + Unselected_Tab_End + "</a>");
+                Output.WriteLine("      <li onclick=\"return new_user_edit_page('" + editUser.UserID + "a" + "');\">" + " BASIC INFORMATION " + "</li>");
             }
 
             if (page == 2)
             {
-                Output.WriteLine("    " + Selected_Tab_Start + " GROUP MEMBERSHIP " + Selected_Tab_End);
+                Output.WriteLine("      <li class=\"current\"> GROUP MEMBERSHIP </li>" );
             }
             else
             {
-                Output.WriteLine("    <a href=\"\" onclick=\"return new_user_edit_page('" + editUser.UserID + "b" + "');\">" + Unselected_Tab_Start + " GROUP MEMBERSHIP " + Unselected_Tab_End + "</a>");
+                Output.WriteLine("    <li onclick=\"return new_user_edit_page('" + editUser.UserID + "b" + "');\">" + " GROUP MEMBERSHIP " + "</li>");
             }
 
             if (page == 3)
             {
-                Output.WriteLine("    " + Selected_Tab_Start + " AGGREGATIONS " + Selected_Tab_End);
+                Output.WriteLine("      <li class=\"current\"> AGGREGATIONS </li>");
             }
             else
             {
-                Output.WriteLine("    <a href=\"\" onclick=\"return new_user_edit_page('" + editUser.UserID + "c" + "');\">" + Unselected_Tab_Start + " AGGREGATIONS " + Unselected_Tab_End + "</a>");
+                Output.WriteLine("    <li onclick=\"return new_user_edit_page('" + editUser.UserID + "c" + "');\">" + " AGGREGATIONS " + "</li>");
 
 
                 //currentMode.My_Sobek_SubMode = edit_user.UserID + "c";
                 //Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\">" + base.Unselected_Tab_Start + " AGGREGATIONS " + base.Unselected_Tab_End + "</a>");
             }
+			Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 
             Output.WriteLine("  <div class=\"SobekEditPanel\">");
 
             // Add the buttons
-            currentMode.My_Sobek_SubMode = String.Empty;
-            Output.WriteLine("  <table width=\"100%px\"><tr><td width=\"480px\">&nbsp;</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; <a href=\"\" onclick=\"return save_user_edits();\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Save\" alt=\"Save\" /></a></td><td width=\"20px\">&nbsp;</td></tr></table>");
-            currentMode.My_Sobek_SubMode = last_mode;
+			currentMode.My_Sobek_SubMode = String.Empty;
+			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine();
+			currentMode.My_Sobek_SubMode = last_mode;
+
+			Output.WriteLine("  <br /><br />");
+			Output.WriteLine();
 
             switch (page)
             {
@@ -1185,10 +1194,17 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-            // Add the buttons
-            currentMode.My_Sobek_SubMode = String.Empty;
-            Output.WriteLine("  <table width=\"100%px\"><tr><td width=\"480px\">&nbsp;</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; <a href=\"\" onclick=\"return save_user_edits();\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Save\" alt=\"Save\" /></a></td><td width=\"20px\">&nbsp;</td></tr></table>");
-            currentMode.My_Sobek_SubMode = last_mode;
+			// Add the buttons
+			currentMode.My_Sobek_SubMode = String.Empty;
+			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine();
+			currentMode.My_Sobek_SubMode = last_mode;
+
+			Output.WriteLine("<br />");
+			Output.WriteLine("<br />");
 
 
             Output.WriteLine("</div>");

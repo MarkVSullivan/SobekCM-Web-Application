@@ -302,16 +302,7 @@ input.creation_note_input { width: 500px; margin-top: 6px; }
 
 input.target_audience_input { width: 150px; margin-right: 10px; margin-top: 6px; }
 
-input.preferences_small_input { width: 130px; margin-top: 6px; }
 
-input.preferences_medium_input { width: 225px; margin-top: 6px; }
-
-input.preferences_large_input { width: 400px; margin-top: 6px; }
-
-select.preferences_language_select { width: 125px; margin-top: 6px; }
-select.preferences_language_select_init { color:Gray; width: 125px; margin-top: 6px; }
-
-textarea.preference_rights_input { width: 450px; margin-bottom: 6px; }
 
 input.upload_label_input { width: 400px; margin-bottom: 6px; }
 

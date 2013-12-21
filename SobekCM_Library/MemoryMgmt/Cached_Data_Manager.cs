@@ -949,7 +949,7 @@ namespace SobekCM.Library.MemoryMgmt
 					// Check the number of items currently locally cached
 					if (LOCALLY_CACHED_ITEM_LIMIT > 0)
 					{
-						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(thisItem => (thisItem.Key.ToString().IndexOf("ITEM_") == 0) || (thisItem.Key.ToString().IndexOf("USERITEM") == 0));
+						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => (ThisItem.Key.ToString().IndexOf("ITEM_") == 0) || (ThisItem.Key.ToString().IndexOf("USERITEM") == 0));
 						// Locally cache if this doesn't exceed the limit
 						if (items_cached < LOCALLY_CACHED_ITEM_LIMIT)
 						{
@@ -992,7 +992,7 @@ namespace SobekCM.Library.MemoryMgmt
 			// Check the number of items currently cached
 			if ((LOCALLY_CACHED_ITEM_LIMIT > 0) || ( !caching_serving_enabled ))
 			{
-				int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(thisItem => (thisItem.Key.ToString().IndexOf("ITEM_") == 0) || (thisItem.Key.ToString().IndexOf("USERITEM") == 0));
+				int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => (ThisItem.Key.ToString().IndexOf("ITEM_") == 0) || (ThisItem.Key.ToString().IndexOf("USERITEM") == 0));
 
 				// Locally cache if this doesn't exceed the limit
 				if ( (items_cached < LOCALLY_CACHED_ITEM_LIMIT) || ( !caching_serving_enabled ))
