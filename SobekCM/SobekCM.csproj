@@ -680,7 +680,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="UploadiFiveFileHandler.ashx" />
-    <Content Include="config\sobekcm.config" />
+    <Content Include="config\sobekcm.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="config\sobekcm_metadata.config" />
     <Content Include="config\sobekcm_qc.config" />
     <Content Include="default\images\bookturner\button.psd" />

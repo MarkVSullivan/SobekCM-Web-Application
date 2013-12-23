@@ -599,10 +599,14 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
+			Output.WriteLine();
 
             Output.WriteLine("  <div class=\"ViewsBrowsesRow\">");
-            Output.WriteLine("    " + Selected_Tab_Start + " GROUP INFORMATION " + Selected_Tab_End);
+			Output.WriteLine("    <ul class=\"sbk_FauxUpwardTabsList\">");
+            Output.WriteLine("      <li class=\"current\"> GROUP INFORMATION </li>");
+			Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
+			Output.WriteLine();
 
             Output.WriteLine("  <div class=\"SobekEditPanel\">");
 
@@ -610,7 +614,11 @@ namespace SobekCM.Library.AdminViewer
             string last_mode = currentMode.My_Sobek_SubMode;
             currentMode.My_Sobek_SubMode = String.Empty;
             currentMode.Admin_Type = Admin_Type_Enum.Users;
-            Output.WriteLine("  <table width=\"100%px\"><tr><td width=\"480px\">&nbsp;</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></td><td width=\"20px\">&nbsp;</td></tr></table>");
+			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine();
             currentMode.My_Sobek_SubMode = last_mode;
             currentMode.Admin_Type = Admin_Type_Enum.User_Groups;
 
@@ -618,8 +626,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle_first\"> &nbsp; Basic Information</span>");
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    <table>");
-            Output.WriteLine("      <tr><td><b><label for=\"groupName\">Name:</label></b></td><td><input id=\"groupName\" name=\"groupName\" class=\"admin_small_input\" value=\"" + editGroup.Name + "\" type=\"text\" onfocus=\"javascript:textbox_enter('groupName', 'admin_small_input_focused')\" onblur=\"javascript:textbox_leave('groupName', 'admin_small_input')\" /></td></tr>");
-            Output.WriteLine("      <tr><td><b><label for=\"groupDescription\">Description:</label></b></td><td><input id=\"groupDescription\" name=\"groupDescription\" class=\"admin_large_input\" value=\"" + editGroup.Description + "\" type=\"text\" onfocus=\"javascript:textbox_enter('groupDescription', 'admin_large_input_focused')\" onblur=\"javascript:textbox_leave('groupDescription', 'admin_large_input')\" /></td></tr>");
+            Output.WriteLine("      <tr><td><b><label for=\"groupName\">Name:</label></b></td><td><input id=\"groupName\" name=\"groupName\" class=\"admin_small_input sbk_Focusable\" value=\"" + editGroup.Name + "\" type=\"text\" /></td></tr>");
+			Output.WriteLine("      <tr><td><b><label for=\"groupDescription\">Description:</label></b></td><td><input id=\"groupDescription\" name=\"groupDescription\" class=\"admin_large_input sbk_Focusable\" value=\"" + editGroup.Description + "\" type=\"text\" /></td></tr>");
             Output.WriteLine("    </table>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("  <br />");
@@ -793,11 +801,20 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("</td></tr></table>");
             Output.WriteLine("<br />");
 
-            // Add the buttons
-            currentMode.My_Sobek_SubMode = String.Empty;
-            Output.WriteLine("  <table width=\"100%px\"><tr><td width=\"480px\">&nbsp;</td><td align=\"right\"><a href=\"" + currentMode.Redirect_URL() + "\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></td><td width=\"20px\">&nbsp;</td></tr></table>");
-            currentMode.My_Sobek_SubMode = last_mode;
+			// Add the buttons
+			last_mode = currentMode.My_Sobek_SubMode;
+			currentMode.My_Sobek_SubMode = String.Empty;
+			currentMode.Admin_Type = Admin_Type_Enum.Users;
+			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("  </div>");
+			Output.WriteLine();
+			currentMode.My_Sobek_SubMode = last_mode;
+			currentMode.Admin_Type = Admin_Type_Enum.User_Groups;
 
+			Output.WriteLine("<br />");
+			Output.WriteLine("<br />");
             Output.WriteLine("</div>");
         }
 

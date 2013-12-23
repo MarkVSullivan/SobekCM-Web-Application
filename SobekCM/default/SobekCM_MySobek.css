@@ -72,6 +72,15 @@ input.sbkMySobek_checkbox { padding-top: 3px;border: 0; }
 .sbkMySobek_Table th { text-align: left; color: white; background-color: #0022a7; }
 .sbkMySobek_TableRule { background-color:#e7e7e7; }
 
+/** Style of the tables used to display the file listing **/
+.sbkMySobek_FileTable { border:0; border-collapse: collapse; border-spacing: 0; margin-bottom: 40px;text-align: left; margin-top: 15px;margin-left: 40px;}
+.sbkMySobek_FileTable th { text-align: left; color: white; background-color: #0022a7; }
+.sbkMySobek_FileTable td { padding: 0; }
+.sbkMySobek_FileTableLabelRow { margin-left: 90px; padding-left: 90px; }
+.sbkMySobek_FileTableRule { background-color:#e3e3e3;height: 2px; }
+.sbkMySobek_FileCompletionMsg { width: 500px;padding-top: 10px; }
+.sbkMySobek_FileRightButtons { float: right;padding-right: 100px;padding-top: 5px; }
+
 /** Page title */
 h1 { margin-left: auto; margin-right: auto; width: 710px; background-color: #eee; color: #999; font-size: 1.35em; text-align: left; height: 25px; font-weight:normal; padding: 12px 0 12px 40px; border: solid 1px #ccc; margin-top: 0; font-weight: bold; }
 .noborders { margin: 0;border: 0;width: 500px;padding: 0; }
@@ -106,10 +115,17 @@ input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
 
 
 /** New_Group_And_Item_MySobekViewer **/
-.sbkNgi_FileTable  { border:0; border-collapse: collapse; border-spacing: 0;margin: 20px 0 40px 40px; }
-.sbkNgi_FileTable th { text-align: left; color: white; background-color: #0022a7;height: 22px;padding-left: 2px; }
-.sbkNgi_FileTableRule { background-color:#e7e7e7; }
 .sbkNgi_UploadFileLabel { width: 400px; }
+
+/** Preferences_MySobekViewer **/
+.sbkPmsv_InputTable { border:0; border-collapse: collapse; border-spacing: 0;text-align: left;}
+.sbkPmsv_InputTable th { text-align: left;color: #888888;font-weight: bold;font-size: 1.05em;padding-top: 20px; }
+input.preferences_small_input { width: 130px; margin-top: 6px; }
+input.preferences_medium_input { width: 225px; margin-top: 6px; }
+input.preferences_large_input { width: 400px; margin-top: 6px; }
+select.preferences_language_select { width: 125px; margin-top: 6px; }
+select.preferences_language_select_init { color:Gray; width: 125px; margin-top: 6px; }
+textarea.preference_rights_input { width: 450px; margin-bottom: 6px; }
 
 
 /**Track_Item Viewer**/

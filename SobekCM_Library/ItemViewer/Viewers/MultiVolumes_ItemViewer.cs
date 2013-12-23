@@ -520,7 +520,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string vid = thisItem[vid_column].ToString();
                     string url = redirect_url.Replace("<%VID%>", vid).Replace("&", "&amp;");
 
-	                Output.WriteLine(Convert.ToInt32(thisItem[itemid_column]) == CurrentItem.Web.ItemID ? "  <table class=\"sbkMviv_Thumbnail\" id=\"sbkMviv_ThumbnailCurrent\">" : "  <table class=\"sbkMviv_Thumbnail\">");
+					Output.WriteLine(Convert.ToInt32(thisItem[itemid_column]) == CurrentItem.Web.ItemID ? "  <table class=\"sbkMviv_Thumbnail\" id=\"sbkMviv_ThumbnailCurrent\" style=\"width:165px\">" : "  <table class=\"sbkMviv_Thumbnail\" style=\"width:165px\">");
 	                Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>");
                     Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
@@ -529,7 +529,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
                     Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <td style=\"align:center\">" + thumbnail_text + "</td>");
+                    Output.WriteLine("      <td style=\"text-align:center\">" + thumbnail_text + "</td>");
                     Output.WriteLine("    </tr>");
                     Output.WriteLine("  </table>");
                     Output.WriteLine();

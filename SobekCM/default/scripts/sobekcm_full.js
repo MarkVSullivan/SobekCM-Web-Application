@@ -2149,11 +2149,11 @@ function jp2_set_fullscreen() {
 	var y = $("#sbkJp2_Container").offset().top;
 
 	var window_height = $(window).height();
-	var new_height = window_height - y - 10;
+	var new_height = window_height - y - 20;
 	$("#sbkJp2_Container").height(new_height);
 
 	var window_width = $(window).width();
-	var new_width = window_width - x - 20;
+	var new_width = window_width - x - 30;
 	$("#sbkJp2_Container").width(new_width);
 }
 
