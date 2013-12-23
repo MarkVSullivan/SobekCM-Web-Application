@@ -53,8 +53,8 @@ namespace SobekCM_Builder_Setup_Custom_Installer
             catch { }
 
 
-            if (!System.IO.File.Exists(install_directory + "\\config\\sobekcm.config"))
-            {
+            if (!File.Exists(install_directory + "\\config\\sobekcm.config"))
+			{
                 string config_file = install_directory + "\\config\\SobekCM_Builder_Configuration.exe";
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 process.StartInfo.FileName = config_file;
