@@ -1377,13 +1377,12 @@ namespace SobekCM.Library.MySobekViewer
                     if ( image_files.Count > 0 )
                     {
                         Output.WriteLine("The following page images are already uploaded for this package:");
-						Output.WriteLine("<table class=\"sbkNgi_FileTable\">");
+						Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
                         Output.WriteLine("  <tr>");
-                        Output.WriteLine("    <th style=\"width:100px;\">FILENAME</th>");
-                        Output.WriteLine("    <th style=\"width:150px;\">&nbsp;</th>");
+                        Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
                         Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
                         Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
-                        Output.WriteLine("    <th style=\"width:90px;\">ACTION</th>");
+                        Output.WriteLine("    <th style=\"width:90px;text-align:center;\">ACTION</th>");
                         Output.WriteLine("  </tr>");
 
                         int totalFileCount = 0;
@@ -1412,8 +1411,8 @@ namespace SobekCM.Library.MySobekViewer
 
                                 // Add the file name literal
                                 FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
-                                Output.WriteLine("  <tr>");
-                                Output.WriteLine("    <td colspan=\"2\">" + fileInfo.Name + "</td>");
+                                Output.WriteLine("  <tr style=\"min-height:22px\">");
+                                Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                                 if (fileInfo.Length < 1024)
                                     Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
                                 else
@@ -1431,10 +1430,11 @@ namespace SobekCM.Library.MySobekViewer
 
                             // Now add the row to include the label
                             string input_name = "upload_label" + file_counter.ToString();
-	                        Output.WriteLine("  <tr>");
-	                        Output.WriteLine("    <td style=\"text-align:right; color:gray;\">Label:</td>");
+							Output.WriteLine("  <tr style=\"min-height: 30px;\">");
 							Output.WriteLine("    <td colspan=\"4\">");
-                            Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+							Output.WriteLine("      <div style=\"padding-left: 90px;\">");
+							Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
+							Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
                             if (HttpContext.Current.Session["file_" + fileKey] == null)
                             {
                                 Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
@@ -1444,10 +1444,10 @@ namespace SobekCM.Library.MySobekViewer
                                 string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
                                 Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                             }
-	                        Output.WriteLine("    </td>");
+							Output.WriteLine("      </div>");
+							Output.WriteLine("    </td>");
 							Output.WriteLine("  </tr>");
-							Output.WriteLine("  <tr><td class=\"sbkNgi_FileTableRule\" colspan=\"5\"></td></tr>");
-                            Output.WriteLine("  <tr style=\"height:6px\"><td colspan=\"5\"></td></tr>");
+							Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
                         }
                         Output.WriteLine("</table>");
                     }
@@ -1456,13 +1456,12 @@ namespace SobekCM.Library.MySobekViewer
                     if (download_files.Count > 0)
                     {
                         Output.WriteLine("The following files are already uploaded for this package and will be included as downloads:");
-						Output.WriteLine("<table class=\"sbkNgi_FileTable\">");
+						Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
 						Output.WriteLine("  <tr>");
-						Output.WriteLine("    <th style=\"width:100px;\">FILENAME</th>");
-						Output.WriteLine("    <th style=\"width:150px;\">&nbsp;</th>");
+						Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
 						Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
 						Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
-						Output.WriteLine("    <th style=\"width:90px;\">ACTION</th>");
+						Output.WriteLine("    <th style=\"width:90px;text-align:center;\">ACTION</th>");
 						Output.WriteLine("  </tr>");
 
                         int totalFileCount = 0;
@@ -1492,7 +1491,7 @@ namespace SobekCM.Library.MySobekViewer
 								// Add the file name literal
 								FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
 								Output.WriteLine("  <tr>");
-								Output.WriteLine("    <td colspan=\"2\">" + fileInfo.Name + "</td>");
+								Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
 								if (fileInfo.Length < 1024)
 									Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
 								else
@@ -1525,8 +1524,7 @@ namespace SobekCM.Library.MySobekViewer
 							}
 							Output.WriteLine("    </td>");
 							Output.WriteLine("  </tr>");
-							Output.WriteLine("  <tr><td class=\"sbkNgi_FileTableRule\" colspan=\"5\"></td></tr>");
-							Output.WriteLine("  <tr style=\"height:6px\"><td colspan=\"5\"></td></tr>");
+							Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
                         }
                         Output.WriteLine("</table>");
                     }
@@ -1561,18 +1559,16 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
 
-                Output.WriteLine("<table style=\"width:750px\">");
-                Output.WriteLine("  <tr style=\"height:40px; text-align:left; vertical-align:middle\">");
-                Output.WriteLine("    <td style=\"width:450px\">" + completion_message + "</td>");
-                Output.WriteLine("    <td style=\"text-align:right\">");
+				Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
 				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (template.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
 				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-                Output.WriteLine("    </td>");
-                Output.WriteLine("    <td style=\"width:65px;\"><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
-                Output.WriteLine("  </tr>");
-                Output.WriteLine("</table>");
-                Output.WriteLine("<br /><br />");
-                Output.WriteLine("</div>");
+				Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+				Output.WriteLine("</div>");
+				Output.WriteLine();
+
+				Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + completion_message + "</div>");
+				Output.WriteLine();
+	            Output.WriteLine("</div>");
             }
 
             #endregion
