@@ -188,7 +188,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 /* JPEG2000_ITEMVIEWER */
 #sbkJp2_Container { width: 800px;height: 600px;background-color: black;border: 1px solid black;color: white; }
-#sbkJp2_Navigator { width:145px; height: 95px; }
+#sbkJp2_Navigator { width:195px; height: 195px; }
 
 /* PDF_ITEMVIEWER */
 #sbkPdf_MainArea { text-align: left; }

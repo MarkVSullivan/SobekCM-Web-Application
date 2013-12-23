@@ -11,7 +11,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
     public class JPEG2000_ItemViewer : abstractItemViewer
-    {
+	{
+		private readonly bool suppressNavigator;
+
+		/// <summary> Constructor for a new instance of the JPEG2000 viewer </summary>
+		public JPEG2000_ItemViewer()
+		{
+			// Set default height and width
+			suppressNavigator = false;
+
+			// Look for a width in the settings
+			if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("JPEG2000 ItemViewer.Suppress Navigator"))
+			{
+				if ( SobekCM_Library_Settings.Additional_Settings["JPEG2000 ItemViewer.Suppress Navigator"].ToLower().Trim() != "false")
+					suppressNavigator = true;
+			}
+		}
 
         /// <summary> Gets the type of item viewer this object represents </summary>
         /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.JPEG2000"/>. </value>
@@ -43,7 +58,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <summary> Stream to which to write the HTML for this subwriter  </summary>
 		/// <param name="Output"> Response stream for the item viewer to write directly to </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Main_Viewer_Section(System.IO.TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -56,9 +71,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<script type=\"text/javascript\">");
             Output.WriteLine("   viewer = OpenSeadragon({");
             Output.WriteLine("      id: \"sbkJp2_Container\",");
-            Output.WriteLine("      prefixUrl : \"/iipimage/openseadragon/images/\",");
-            Output.WriteLine("      showNavigator:  true,");
-            Output.WriteLine("      navigatorId:  \"sbkJp2_Navigator\"");
+			Output.WriteLine("      prefixUrl : \"/iipimage/openseadragon/images/\",");
+
+			if (suppressNavigator)
+			{
+				
+				Output.WriteLine("      showNavigator:  false");
+			}
+			else
+			{
+				Output.WriteLine("      showNavigator:  true,");
+				Output.WriteLine("      navigatorId:  \"sbkJp2_Navigator\",");
+
+				// Doesn't actually set the navigator size (the CSS does), but setting this means
+				// OpenSeaDragon won't try to set the width/height as a ratio of the main image.
+				Output.WriteLine("      navigatorWidth:  \"195px\",");
+				Output.WriteLine("      navigatorHeight:  \"195px\"");
+			}
+
             Output.WriteLine("   });");
             Output.WriteLine();
             Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + SobekCM_Library_Settings.Image_Server_Network.Replace("\\","/") + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
@@ -76,19 +106,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("JPEG2000_ItemViewer.Write_Nav_Bar_Menu_Section", "Adds small thumbnail for image navigation");
             }
 
-            string thumnbnail_text = "THUMBNAIL";
-            string click_on_thumbnail_text = "Click on Thumbnail to Recenter Image";
+	        if (suppressNavigator)
+		        return;
 
-            if (CurrentMode.Language == Web_Language_Enum.French)
+            string thumnbnail_text = "THUMBNAIL";
+
+	        if (CurrentMode.Language == Web_Language_Enum.French)
             {
                 thumnbnail_text = "MINIATURE";
-                click_on_thumbnail_text = "Faites un clic sur la minature pour faire centrer l'image";
             }
 
             if (CurrentMode.Language == Web_Language_Enum.Spanish)
             {
                 thumnbnail_text = "MINIATURA";
-                click_on_thumbnail_text = "Haga Clic en la Miniatura para centralizar la Imagen";
             }
 
             Output.WriteLine("        <ul class=\"sbkIsw_NavBarMenu\">");
@@ -113,18 +143,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Within_HTML_Head(System.IO.TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("<script src=\"" + CurrentMode.Base_URL + "iipimage/openseadragon/openseadragon.min.js\"></script>");
         }
 
         /// <summary> Gets the collection of special behaviors which this item viewer
         /// requests from the main HTML subwriter. </summary>
-        public override List<HTML.HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Footer, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar };
+				// If the navigator will be  shown, we need a left nav bar, so return different behaviors
+	            if (!suppressNavigator)
+	            {
+		            return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Footer, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar};
+	            }
+				return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Footer, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination };
+
             }
         }
     }

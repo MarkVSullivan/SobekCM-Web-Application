@@ -38,15 +38,18 @@ namespace SobekCM.Library.MySobekViewer
     public class Delete_Item_MySobekViewer : abstract_MySobekViewer
     {
         private int errorCode;
+		private readonly SobekCM_Item item;
 
 
         /// <summary> Constructor for a new instance of the Delete_Item_MySobekViewer class </summary>
         /// <param name="User"> Authenticated user information </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+		/// <param name="Current_Item"> Individual digital resource to be deleted by the user </param>
         /// <param name="All_Items_Lookup"> Allows individual items to be retrieved by various methods as <see cref="SobekCM.Library.Application_State.Single_Item"/> objects.</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public Delete_Item_MySobekViewer(User_Object User,
             SobekCM_Navigation_Object Current_Mode, 
+			SobekCM_Item Current_Item,
             Item_Lookup_Object All_Items_Lookup,
             Custom_Tracer Tracer)
             : base(User)
@@ -55,6 +58,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Save mode and set defaults
             currentMode = Current_Mode;
+	        item = Current_Item;
             errorCode = -1;
 
             // Second, ensure this is a logged on user and system administrator before continuing
@@ -76,8 +80,8 @@ namespace SobekCM.Library.MySobekViewer
 					// In this case, we actually need to build this!
 					try
 					{
-						SobekCM_Item testItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, null, Tracer);
-						if (User.Can_Delete_This_Item(testItem))
+	//					SobekCM_Item testItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, null, Tracer);
+						if (User.Can_Delete_This_Item(item))
 							canDelete = true;
 					}
 					catch
@@ -145,27 +149,27 @@ namespace SobekCM.Library.MySobekViewer
 			errorCode = 0;
 
 			// Get the current item details
-			string bib_location = String.Empty;
-			string vid_location = String.Empty;
-			if (errorCode == -1)
-			{
-				// Get item details
-				DataSet itemDetails = SobekCM_Database.Get_Item_Details(currentMode.BibID, currentMode.VID, Tracer);
+			string vid_location = item.Source_Directory;
+			string bib_location = (new DirectoryInfo(vid_location)).Parent.FullName;
+			//if (errorCode == -1)
+			//{
+			//	// Get item details
+			//	DataSet itemDetails = SobekCM_Database.Get_Item_Details(currentMode.BibID, currentMode.VID, Tracer);
 
-				// If the itemdetails was null, this item is somehow invalid item then
-				if (itemDetails == null)
-				{
-					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
-					errorCode = 2;
-				}
-				else
-				{
-					// Get the location for this METS file from the returned value
-					DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
-					bib_location = SobekCM_Library_Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
-					vid_location = bib_location + "\\" + currentMode.VID;
-				}
-			}     
+			//	// If the itemdetails was null, this item is somehow invalid item then
+			//	if (itemDetails == null)
+			//	{
+			//		Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
+			//		errorCode = 2;
+			//	}
+			//	else
+			//	{
+			//		// Get the location for this METS file from the returned value
+			//		DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
+			//		bib_location = SobekCM_Library_Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
+			//		vid_location = bib_location + "\\" + currentMode.VID;
+			//	}
+			//}     
 
 			// Perform the database delete
 			Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
@@ -234,6 +238,19 @@ namespace SobekCM.Library.MySobekViewer
 			}
 		}
 
+		/// <summary> Property indicates the standard navigation to be included at the top of the page by the
+		/// main MySobek html subwriter. </summary>
+		/// <value> This returns none since this viewer writes all the necessary navigational elements </value>
+		/// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
+		/// administrative tabs should be included as well.  </remarks>
+		public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
+		{
+			get
+			{
+				return MySobek_Included_Navigation_Enum.NONE;
+			}
+		}
+
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'Delete Item' </value>
         public override string Web_Title
@@ -259,6 +276,12 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
 				Output.WriteLine();
 
+				// Write the top item mimic html portion
+				Write_Item_Type_Top(Output, item);
+
+				Output.WriteLine("<div id=\"container-inner\">");
+				Output.WriteLine("<div id=\"pagecontainer\">");
+
 				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
                 Output.WriteLine("  <br /><br />");
                 Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
@@ -267,6 +290,9 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("    <button title=\"Confirm delete of this item\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
                 Output.WriteLine("</div>");
+				Output.WriteLine();
+				Output.WriteLine("</div>");
+				Output.WriteLine("</div>");
 				Output.WriteLine();
 				Output.WriteLine("<!-- Focus on confirm box -->");
 				Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
@@ -283,6 +309,11 @@ namespace SobekCM.Library.MySobekViewer
 
             if (errorCode >= 0)
             {
+				// Write the top item mimic html portion
+				Write_Item_Type_Top(Output, item);
+
+				Output.WriteLine("<div id=\"container-inner\">");
+				Output.WriteLine("<div id=\"pagecontainer\">");
 
 				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
                 Output.WriteLine("  <br /><br />");
@@ -314,8 +345,25 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  </p>");
                 Output.WriteLine("</div>");
                 Output.WriteLine("<br /><br />");
+				Output.WriteLine("</div>");
+				Output.WriteLine("</div>");
             }
         }
+
+		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+		/// requests from the main HTML subwriter. </summary>
+		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+		{
+			get
+			{
+				return new List<HtmlSubwriter_Behaviors_Enum>
+				{
+					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+				};
+			}
+		}
     }
 }
 
