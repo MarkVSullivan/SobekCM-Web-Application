@@ -1386,12 +1386,25 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("    <th style=\"width:90px;\">ACTION</th>");
                         Output.WriteLine("  </tr>");
 
+                        int totalFileCount = 0;
+
+                        //Determine the total number of files
+                        foreach (string fileKey in image_files.Keys)
+                        {
+                            // Get this group of files
+                            List<string> fileGroup = image_files[fileKey];
+                            foreach (string thisFile in fileGroup)
+                            {
+                                totalFileCount++;
+                            }
+                        }
+
                         // Step through all the page image file groups
                         foreach (string fileKey in image_files.Keys )
                         {
                             // Get this group of files
                             List<string> fileGroup = image_files[fileKey];
-
+                        
                             // Add each individual file
                             foreach (string thisFile in fileGroup)
                             {
@@ -1424,12 +1437,12 @@ namespace SobekCM.Library.MySobekViewer
                             Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
                             if (HttpContext.Current.Session["file_" + fileKey] == null)
                             {
-								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" ></input>");
+                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                             }
                             else
                             {
                                 string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
-								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" ></input>");
+                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                             }
 	                        Output.WriteLine("    </td>");
 							Output.WriteLine("  </tr>");
@@ -1452,12 +1465,25 @@ namespace SobekCM.Library.MySobekViewer
 						Output.WriteLine("    <th style=\"width:90px;\">ACTION</th>");
 						Output.WriteLine("  </tr>");
 
+                        int totalFileCount = 0;
+
+                        //Determine the total number of files
+                        foreach (string fileKey in download_files.Keys)
+                        {
+                            // Get this group of files
+                            List<string> fileGroup = download_files[fileKey];
+                            foreach (string thisFile in fileGroup)
+                            {
+                                totalFileCount++;
+                            }
+                        }
+
                         // Step through all the download file groups
                         foreach (string fileKey in download_files.Keys)
                         {
                             // Get this group of files
                             List<string> fileGroup = download_files[fileKey];
-
+                            
                             // Add each individual file
                             foreach (string thisFile in fileGroup)
                             {
@@ -1490,12 +1516,12 @@ namespace SobekCM.Library.MySobekViewer
 							Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
 							if (HttpContext.Current.Session["file_" + fileKey] == null)
 							{
-								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" ></input>");
+                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
 							}
 							else
 							{
 								string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
-								Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" ></input>");
+                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
 							}
 							Output.WriteLine("    </td>");
 							Output.WriteLine("  </tr>");

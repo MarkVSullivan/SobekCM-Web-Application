@@ -2061,3 +2061,252 @@ function trimString (str)
   str = this != window? this : str;
   return str.replace(/^\s+/g, '').replace(/\s+$/g, '');
 }
+
+
+//Multi-file upload - autonumber the label fields
+function upload_label_fieldChanged(TextboxID, TotalFileCount) {
+
+ //   alert(TotalFileCount);
+         var textboxValue = document.getElementById(TextboxID).value;
+
+  
+        //if only a number was entered (e.g. '5'), add text 'Page ' (i.e. 'Page 5') 
+        var onlyNumberEntered = ((!isNaN(parseFloat(textboxValue))) && isFinite(textboxValue));
+        if (onlyNumberEntered) {
+            document.getElementById(TextboxID).value = 'Page ' + textboxValue;
+            textboxValue = document.getElementById(TextboxID).value;
+        }
+
+        var index = TextboxID.replace('upload_label', '');
+        var lastNumber = textboxValue.split(" ")[(textboxValue.split(" ").length - 1)];
+
+        //	lastNumber = lastNumber.toUpperCase().trim();
+        var matches = lastNumber.match(/\d+/g);
+        var varRomanMatches = true;
+        var isRomanLower = true;
+
+        // Look for any potential roman numeral matches at the end of the string
+        for (var x = 0; x < lastNumber.length; x++) {
+            var c = lastNumber.charAt(x);
+            if ("IVXLCDM".indexOf(c) == -1 && "ivxlcdm".indexOf(c) == -1) {
+                varRomanMatches = false;
+            }
+        }
+
+        // Was there a match for numbers in the last portion of the textbox value?
+        if (matches != null) {
+            //if the number is at the end of the string, with a space before
+            if (matches[0].length == lastNumber.length) {
+
+                var textOnlyLastBox = textboxValue.substr(0, textboxValue.length - matches[0].length);
+
+
+                var number = parseInt(lastNumber);
+               
+                 for (var i = parseInt(index) + 1; i <= TotalFileCount; i++) {
+      
+                    // Determine and save the next numeric value
+                  if (document.getElementById('upload_label' + i)) {
+                        number++;
+                        var inLoopTextBoxElment = document.getElementById('upload_label' + i);
+                        inLoopTextBoxElment.value = textOnlyLastBox + number;
+                    }
+                    else
+                        continue;
+                }
+
+                //var hidden_filename = document.getElementById(spanArray[spanArray.length - 1].replace('span', 'filename'));
+                //document.getElementById('Autonumber_last_filename').value = hidden_filename.value;
+            }//end if
+        }//end if
+        else if (varRomanMatches == true) {
+
+            var romanToNumberError = "No error";
+
+          //Determine whether the roman number is in upper or lower case
+            for (var x = 0; x < lastNumber.length; x++) {
+                var c = lastNumber.charAt(x);
+                if ("IVXLCDM".indexOf(c) > -1) {
+                    isRomanLower = false;
+                }
+                else {
+                    isRomanLower = true;
+                }
+            }
+
+
+
+            var roman = lastNumber.toUpperCase().trim();
+
+            if (roman.split('V').length > 2 || roman.split('L').length > 2 || roman.split('D').length > 2) {
+                romanToNumberError = "Repeated use of V,L or D";
+            }
+            //Check that a single letter is not repeated more than thrice
+            var count = 1;
+            var last = 'Z';
+            for (var x = 0; x < roman.length; x++) {
+                //Duplicate?
+                if (roman.charAt(x) == last) {
+                    count++;
+                    if (count == 4) {
+                        romanToNumberError = "Single letter repeated more than thrice";
+                    }
+
+                }
+                else {
+                    count = 1;
+                    last = roman.charAt(x);
+                }
+            }
+
+            //Create an arraylist containing the values
+            var ptr = 0;
+            var values = new Array();
+            var maxDigit = 1000;
+            var digit = 0;
+            var nextDigit = 0;
+
+            while (ptr < roman.length) {
+                //Base value of digit
+                var numeral = roman.charAt(ptr);
+                switch (numeral) {
+                    case "I":
+                        digit = 1;
+                        break;
+                    case "V":
+                        digit = 5;
+                        break;
+                    case "X":
+                        digit = 10;
+                        break;
+                    case "L":
+                        digit = 50;
+                        break;
+                    case "C":
+                        digit = 100;
+                        break;
+                    case "D":
+                        digit = 500;
+                        break;
+                    case "M":
+                        digit = 1000;
+                        break;
+
+                }
+                //Check for subtractive combination: A small valued numeral may be placed to the left of a larger value. When this occurs, the smaller numeral is subtracted
+                //from the larger. Also, the subtracted digit must be at least 1/10th the value of the larger numeral and must be either I,X or C
+                if (digit > maxDigit) {
+                    romanToNumberError = "Smaller value incorrectly placed to the left of a larger value numeral";
+                }
+
+                //Next digit
+                var nextDigit = 0;
+                if (ptr < roman.length - 1) {
+                    var nextNumeral = roman.charAt(ptr + 1);
+                    switch (nextNumeral) {
+                        case "I":
+                            nextDigit = 1;
+                            break;
+                        case "V":
+                            nextDigit = 5;
+                            break;
+                        case "X":
+                            nextDigit = 10;
+                            break;
+                        case "L":
+                            nextDigit = 50;
+                            break;
+                        case "C":
+                            nextDigit = 100;
+                            break;
+                        case "D":
+                            nextDigit = 500;
+                            break;
+                        case "M":
+                            nextDigit = 1000;
+                            break;
+
+                    }
+                    if (nextDigit > digit) {
+                        if ("IXC".indexOf(numeral) == -1 || nextDigit > (digit * 10) || roman.split(numeral).length > 3) {
+                            romanToNumberError = "Rule of subtractive combination violated";
+                        }
+                        maxDigit = digit - 1;
+                        digit = nextDigit - digit;
+                        ptr++;
+                    }
+
+                }
+                values.push(digit);
+                //next digit
+                ptr++;
+
+
+            }
+            //Going left to right - the value should not increase
+            for (var i = 0; i < values.length - 1; i++) {
+                if (values[i] < values[i + 1]) {
+                    romanToNumberError = "Larger valued numeral(pair) found to the right of a smaller value";
+                }
+            }
+
+            //Larger numerals should be placed to the left of smaller numerals
+            var total = 0;
+            for (var i = 0; i < values.length; i++) {
+                total = total + values[i];
+            }
+
+            if ((typeof total) == "number" && (romanToNumberError == "No error")) {
+
+                //If only a roman numeral was entered, add the text 'Page' before the numeral
+                if (lastNumber == document.getElementById(TextboxID).value) {
+                    document.getElementById(TextboxID).value = 'Page ' + textboxValue;
+                    textboxValue = document.getElementById(TextboxID).value;
+                }
+
+                //Now autonumber all the remaining textboxes of the document
+                for (var i = parseInt(index) + 1; i <= TotalFileCount ; i++) {
+                    if (document.getElementById('upload_label' + i)) {
+                        total++;
+                    
+                        var number = total;
+
+                        //Convert decimal "total" back to a roman numeral
+
+                        //Set up the key-value arrays
+                        var values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+                        var numerals = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"];
+
+                        //initialize the string
+                        var result = "";
+
+                        for (var x = 0; x < 13; x++) {
+                            //If the number being converted is less than the current key value, append the corresponding numeral or numerical pair to the resultant string
+                            while (number >= values[x]) {
+                                number = number - values[x];
+                                result = result + numerals[x];
+                             
+                            }
+                            
+                        }
+                 
+
+                        if (isRomanLower) {
+                            result = result.toLowerCase();
+           
+                        }
+                      
+                        //End conversion to roman numeral
+
+                        document.getElementById('upload_label' + i).value =
+                            document.getElementById(TextboxID).value.substr(0, ((document.getElementById(TextboxID).value.length) - (lastNumber.length)) - 1) + ' ' + result;
+
+                        //           textOnlyLastBox.value = document.getElementById(TextboxID).value.substr(0, ((document.getElementById(TextboxID).value.length) - (lastNumber.length)) - 1) + ' ';
+                        //          numberOnlyLastBox.value = total;
+                    }
+                }//end for loop
+            }
+        }
+
+
+}
