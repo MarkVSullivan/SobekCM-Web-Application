@@ -3,8 +3,8 @@
 <!-- The product code identifies the MSI and prevents two of the same exact      -->
 <!-- version to be installed.  Always change this for each new version.          -->
 <?define UpgradeCode="{D13F62A2-9BE7-4DC8-89A6-27AC2B15E25F}"?>
-<?define ProductCode="{16CF589F-81A4-469A-A3F0-0689F27D5DA5}"?>
-<?define ProductVersion="3.40.0.0"?>
+<?define ProductCode="{AFA3FA3B-9031-4722-9C8C-55EB106324D7}"?>
+<?define ProductVersion="4.0.0.0"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Product Id="$(var.ProductCode)" Name="SobekCM Builder" Language="1033" Version="$(var.ProductVersion)" Manufacturer="SobekCM" UpgradeCode="$(var.UpgradeCode)">
@@ -25,9 +25,6 @@
             </Component>
             <Component Id="SobekLibraryHelperLibrary" Guid="57B71BED-365A-4DBA-BDFB-4103E885240C">
               <File Id="SobekLibraryDll" Name="SobekCM_Library.dll" Source="$(var.SobekCM Builder.TargetDir)\SobekCM_Library.dll" KeyPath="yes" />
-            </Component>
-            <Component Id="FileUploadHelperLibrary" Guid="0F4FE297-3F1C-4E74-A72F-928CC581C3F6">
-              <File Id="FileUploadLibraryDll" Name="FileUploadLibrary.dll" Source="$(var.SobekCM Builder.TargetDir)\FileUploadLibrary.dll" KeyPath="yes" />
             </Component>
             <Component Id="SobekResourceHelperLibrary" Guid="72BD7014-0B21-44D9-9B66-FE87B75C6F02">
               <File Id="SobekResourceDll" Name="SobekCM_Resource_Object.dll" Source="$(var.SobekCM Builder.TargetDir)\SobekCM_Resource_Object.dll" KeyPath="yes" />
@@ -134,7 +131,6 @@
       <Feature Id="MainProgram" Title="SobekCM Builder Executables" Description="Main Executable" Level="1">
         <ComponentRef Id="MainExecutable" />
         <ComponentRef Id="SobekLibraryHelperLibrary" />
-        <ComponentRef Id="FileUploadHelperLibrary" />
         <ComponentRef Id="SobekResourceHelperLibrary" />
         <ComponentRef Id="SobekToolsHelperLibrary" />
         <ComponentRef Id="GemBoxSpreadsheetHelperLibrary" />
@@ -157,15 +153,27 @@
       </Feature>
     </Feature>
 
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <UIRef Id="WixUI_InstallDir" />
-    <UIRef Id="WixUI_ErrorProgressText" />
-
-    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
-
+    <!-- Portions to provide information in the Add/Remove programs area -->
     <Icon Id="App.ico" SourceFile="..\SobekCM Builder\Sobek_Builder.ico" />
     <Property Id="ARPPRODUCTICON" Value="App.ico" />
     <Property Id="ARPHELPLINK" Value="http://ufdc.ufl.edu/smart" />
+
+		<!-- Prompt user to run the configuration tool custom action at the end of the install -->
+		<UI>
+			<UIRef Id="WixUI_InstallDir" />
+			<UIRef Id="WixUI_ErrorProgressText" />
+			<Publish Dialog="ExitDialog" Control="Finish" Order="1" Event="DoAction" Value="LaunchConfigTool">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+		</UI>
+		<WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Run Configuration Tool" />
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+		<!-- Custom action to launch the configuration tool -->
+		<Property Id="WixShellExecTarget" Value="[#SobekBuilderConfigExe]" />
+		<CustomAction Id="LaunchConfigTool" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+		
+		
 
   </Product>
 </Wix>

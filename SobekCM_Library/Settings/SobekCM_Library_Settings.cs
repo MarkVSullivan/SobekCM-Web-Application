@@ -29,7 +29,7 @@ namespace SobekCM.Library.Settings
 		public const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
 		/// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-		public const string CURRENT_WEB_VERSION = "3.20 BETA";
+		public const string CURRENT_WEB_VERSION = "4.0.0 ALPHA";
 
 		/// <summary> Current version number associated with this SobekCM builder application </summary>
 		public const string CURRENT_BUILDER_VERSION = "4.0.0 ALPHA";
