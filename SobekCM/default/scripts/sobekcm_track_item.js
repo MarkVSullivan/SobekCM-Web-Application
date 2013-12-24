@@ -165,7 +165,7 @@ function ddlEquipment_Changed(ddlID) {
 //Function called when the user dropdownlist selected value is changed
 function ddlUser_Changed(ddlID) {
     var ddl = document.getElementById(ddlID);
-    document.getElementById('hidden_selected_user').value = ddl.options[ddl.selectedIndex].value;
+    document.getElementById('hidden_selected_username').value = ddl.options[ddl.selectedIndex].value;
   //  alert(ddl.options[ddl.selectedIndex].value);
 }
 
@@ -177,25 +177,87 @@ function save_item_tracking(page) {
     return false;
 }
 
+function isValidDate(dateString) {
+    var result = true;
+    // Checks for the following valid date formats:
+    //   MM/DD/YYYY    MM-DD-YYYY
+    // Also separates date into month, day, and year variables
+
+    var datePat = /^(\d{1,2})(\/|-)(\d{1,2})\2(\d{4})$/;
+    
+    //Check to see if the format matches
+    var matchArray = dateString.match(datePat); 
+    if (matchArray == null) {
+        return false;
+    }
+    // Parse the date into variables
+    var month = matchArray[1]; 
+     var day = matchArray[3];
+    var year = matchArray[4];
+    // check month range
+    if (month < 1 || month > 12) {
+        return false;
+    }
+    
+    //Check date range
+    if (day < 1 || day > 31) {
+        return false;
+    }
+    if ((month==4 || month==6 || month==9 || month==11) && day==31) {
+        return false;
+    }
+    
+    // check for february 29th
+    if (month == 2) { 
+        var isleap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+        if (day>29 || (day==29 && !isleap)) {
+            return false;
+        }
+    }
+    
+    //Check that the date is not a future date
+    if (year > getFullYear || (year == getFullYear && month > getMonth) || (year == getFullYear && month == getMonth && day > getDate))
+        return false;
+    return true;  // date is valid
+}
+
 function save_workflow(workflow_ID, itemID) {
     var isValid = true;
-    alert(workflow_ID + ' ' + itemID);
+  //  alert(workflow_ID + ' ' + itemID);
     //First do some validations
     if (page == 1) {
-  //      var startDate = document.getElementById('txtStartDate' + workflow_ID);
-  //      if(startDate)
+        var startDate = document.getElementById('txtStartDate' + workflow_ID);
+    //    alert(startDate.value);
+        if (startDate.value == null || !isValidDate(startDate.value)) {
+            alert('You must enter a valid date!');
+            isValid = false;
+            return false;
+        }
+        //Check for valid start and end times
+        
+        
     }
+    else if (page == 2) {
+        var startDate = document.getElementById('txtStartDate2' + workflow_ID);
+        //    alert(startDate.value);
+        if (startDate.value == null || !isValidDate(startDate.value)) {
+            alert('You must enter a valid date!');
+            isValid = false;
+            return false;
+        }
+    }
+    if (isValid) {
+        document.getElementById('Track_Item_behaviors_request').value = 'save';
+        document.getElementById('Track_Item_hidden_value').value = workflow_ID;
+        document.getElementById('hidden_itemID').value = itemID;
 
-    document.getElementById('Track_Item_behaviors_request').value = 'save';
-    document.getElementById('Track_Item_hidden_value').value = workflow_ID;
-    document.getElementById('hidden_itemID').value = itemID;
-
-    document.itemNavForm.submit();
-    return false;
+        document.itemNavForm.submit();
+        return false;
+    }
 }
 
 function delete_workflow(workflow_ID) {
-    alert(workflow_ID);
+    //alert(workflow_ID);
     document.getElementById('Track_Item_behaviors_request').value = 'delete';
     document.getElementById('Track_Item_hidden_value').value = workflow_ID;
 
