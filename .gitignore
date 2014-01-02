@@ -163,3 +163,10 @@ SobekCM/SobekCM_.psess
 SobekCM Web.v11.suo
 SobekCM Builder.v11.suo
 
+# ====================================
+#  Installer files/folders to ignore
+# ====================================
+Installer/SobekCM_Wix_Installer/Staging64/
+Installer/SobekCM_Wix_Installer/Staging32/
+
+

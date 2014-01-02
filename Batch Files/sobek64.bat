@@ -30,7 +30,7 @@ robocopy "%source%\SobekCM_Tools" "%iis%\SobekCM_Tools" /mir /NFL /NDL /NJH /NJS
 echo ....sobekcm_url_rewriter
 robocopy "%source%\SobekCM_URL_Rewriter" "%iis%\SobekCM_URL_Rewriter" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
 echo REMOVING ANY EXISTING STAGING DIRECTORY
-rmdir c:\staging64 /s /q
+rmdir "%source%\SobekCM_Web_WiX_Installer\Staging64" /s /q
 echo.
 echo REMOVING DIRECTORIES TO NOT MOVE TO STAGING
 rmdir %iis%\SobekCM\config /s /q
@@ -43,13 +43,13 @@ rmdir %iis%\SobekCM\obj /s /q
 rmdir %iis%\SobekCM\Properties /s /q
 echo.
 cd c:\windows\microsoft.net\framework64\v4.0.30319
-aspnet_compiler -v /SobekCM C:\Staging64
+aspnet_compiler -v /SobekCM "%source%\SobekCM_Web_WiX_Installer\Staging64"
 echo DELETING UNNECESSARY FILES
-del c:\staging64\web.config
-del c:\Staging64\SobekCM.csproj
-del c:\Staging64\SobekCM.csproj.user
-del c:\Staging64\Web.Debug.config
-del c:\Staging64\Web.Release.config
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\web.config"
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\SobekCM.csproj"
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\SobekCM.csproj.user"
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\Web.Debug.config"
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\Web.Release.config"
 echo.
 
 cd c:\

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<!-- The upgrade code never changes.  Create a new ProductCode for each instance -->
+	<!-- The product code identifies the MSI and prevents two of the same exact      -->
+	<!-- version to be installed.  Always change this for each new version.          -->
+	<?define UpgradeCode2="{8EDC200F-801D-4B30-8B1C-A81C31489241}"?>
+	<?define ProductCode="{4B6F9611-0CA1-413D-90C0-04B87F427F67}"?>
+	<?define ProductVersion="4.0.0.0"?>
+	<?define ProductVersionText="Version 4.0.0 (alpha)"?>
+	<?define WebStaging64Source="Staging64"?>
+	<?define BuilderTargetSource="..\..\SobekCM Builder\bin\Release"?>
+	<?define BuilderConfigTargetSource="..\..\SobekCM_Builder_Configuration\bin\Release"?>
+	<?define IIPimageSource="IIPimage"?>
+	<?define SolrSource="Solr"?>
+	
+	
+</Include>

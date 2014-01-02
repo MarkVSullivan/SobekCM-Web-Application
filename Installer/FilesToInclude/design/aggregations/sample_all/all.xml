@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- This class contains much of the information about a collection group, collection,  -->
+<!-- subcollection, or institutional page.  Contained within this XML file are the      -->
+<!-- following types of information:                                                    -->
+<!--          1) home page source files by language                                     -->
+<!--          2) banner source files by language and bandwidth                          -->
+<!--          3) highlights, with tool tips and text by language                        -->
+<!--          4) browses, with title and source by language                             -->
+<!--          5) infos, with title and source by language                               -->
+
+<hi:hierarchyInfo xmlns:hi="http://digital.uflib.ufl.edu/metadata/hierarchyInfo/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://digital.uflib.ufl.edu/metadata/hierarchyInfo/ http://digital.uflib.ufl.edu/metadata/hierarchyInfo/hierarchyInfo.xsd" >
+	
+	<!-- Source files for the home page by language -->
+	<hi:home>
+		<hi:content>
+			<hi:body lang="en">html\home\text.html</hi:body>
+			<hi:body lang="es">html\home\text.html</hi:body>
+			<hi:body lang="fr">html\home\text.html</hi:body>
+		</hi:content>
+	</hi:home>
+	
+	<!-- Banner source files by language and bandwidth   -->
+	<!-- Source can either be jpg, gif, or html          -->
+	<hi:banner>
+		<hi:source lang="en">images/banners/coll.jpg</hi:source>
+		<hi:source lang="es">images/banners/coll.jpg</hi:source>
+		<hi:source lang="fr">images/banners/coll.jpg</hi:source>
+	</hi:banner>
+	
+
+</hi:hierarchyInfo>

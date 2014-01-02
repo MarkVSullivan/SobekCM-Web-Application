@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Begin the XML for this input template -->
+<input_template
+ xmlns="http://digital.uflib.ufl.edu/metadata/sobekcm_template/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://digital.uflib.ufl.edu/metadata/sobekcm_template/
+		http://digital.uflib.ufl.edu/metadata/sobekcm_template/sobekcm_template.xsd">
+	
+	<!-- Define the information about this input template -->
+	<name>IR@UF Self-Submittal Tool</name>
+	<notes>Template is used for self-submittal into the IR</notes>
+	<permissions>I, as copyright holder or licensee with the authority to grant copyright permissions for the title, hereby authorize the University of Florida, acting on behalf of the State of Florida, to digitize and distribute the title for nonprofit, educational purposes via the Internet or successive technologies. This is a non-exclusive grant of permissions for on-line and off-line use for an indefinite term. Off-line uses shall be consistent either, for educational uses, with the terms of U.S. copyright legislation's &quot;fair use&quot; provisions or, by the University of Florida, with the maintenance and preservation of an archival copy. Digitization allows the University of Florida to generate image- and text-based versions as appropriate and to provide and enhance access using search software. This grant of permissions prohibits use of the digitized versions for commercial use or profit unless I specifically grant rights for those uses in the rights field for this item.</permissions>
+	<dateCreated>August 20, 2009</dateCreated>
+	<lastModified>January 22, 2011</lastModified>
+	<creator>Mark V Sullivan</creator>
+	<includeUserAsAuthor>true</includeUserAsAuthor>
+	<uploads>FILE</uploads>
+	<uploadMandatory>false</uploadMandatory>
+	<bibidRoot>IR</bibidRoot>
+	<emailUponSubmit>ufdc@uflib.ufl.edu</emailUponSubmit>
+
+	<!-- This defines the inputs which are available for the user -->
+	<inputs>
+		<page>
+			<name language="eng">Item Description</name>
+			<panel>
+				<name>Enter Material Information</name>
+				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
+				<element type="Type"  subtype="ir" mandatory="true" acronym="Select the type which best categorizes this material.">
+					<element_data>
+						<options>Book Chapter, Conference Papers, Conference Proceedings, Course Material, Dataset, Journal Article, Other, Technical Reports</options>
+					</element_data>
+				</element>
+				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
+				<element type="PublicationStatus" acronym="Select the best option to describe this item">
+					<element_data>
+						<value>In Press</value>
+						<options>In Press, Published, Unpublished</options>
+					</element_data>
+				</element>
+				<element type="Publisher" subtype="simple" repeatable="true"
+				         acronym="Enter the name(s) of the publisher(s) of the larger body of work.  If your work is currently unpublished, you may enter your name as the publisher or leave the field blank.  If you are adding administrative material (newsletters, handbooks, etc.) on behalf of a department within the university, enter the name of your department as the publisher."/>
+				<element type="OtherURL" subtype="simple" repeatable="false" acronym="Enter the URL for this item on the publishers site">
+					<element_data>
+						<label>Publisher's URL</label>
+					</element_data>
+				</element>
+				<element type="PublicationPlace" repeatable="true" acronym="Enter the geographical location(s) of the publisher(s) of your material."/>
+				<element type="Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
+			</panel>
+			<panel>
+				<name language="eng">Enter Note Information</name>
+				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
+				<element type="Note" repeatable="true" subtype="simple"
+				         acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
+				<element type="IR_Rights" repeatable="false" acronym="Rights management information tells conditions under which this item may be employed by other users."/>
+			</panel>
+		</page>
+	</inputs>
+
+	<!-- This defines the constants which can not be edited by the user -->
+	<constants>
+		<element type="Acquisition">
+			<element_data>
+				<value>Collected for University of Florida's Institutional Repository by the UFIR Self-Submittal tool.</value>
+			</element_data>
+		</element>
+		<element type="Source" subtype="complex">
+			<element_data>
+				<code>UFIR</code>
+				<statement>University of Florida Institutional Repository</statement>
+				<options>UFIR</options>
+			</element_data>
+		</element>
+	</constants>
+</input_template>
+<!-- End of input template XML -->

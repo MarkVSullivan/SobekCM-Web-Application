@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<UI>
+			<Dialog Id="UI.BuilderConfigDialog"  Width="470" Height="370" Title="SobekCM Builder Configuration" NoMinimize="yes">
+
+				<Control Id="MainLabel" Type="Text" X="35" Y="75" Width="400" Height="40" TabSkip="no" Text="The builder / bulk loader service does bulk loading into the system as well as performing some maintenance tasks.  The service will run as a scheduled task on this machine." />
+
+				<Control Id="MainLabel2" Type="Text" X="35" Y="120" Width="420" Height="40" TabSkip="no" Text="Enter the service account and password under which the builder's scheduled task will run." />
+
+				<Control Id="BuilderAccountLabel" Type="Text" X="55" Y="158" Width="120" Height="15" TabSkip="no" Text="Builder Service Account:" />
+				<Control Id="BuilderAccountEdit" Type="Edit" X="180" Y="155" Width="140" Height="18" Property="BUILDER_SERVICE_ACCOUNT" Text="{80}" />
+
+				<Control Id="BuilderPasswordLabel" Type="Text" X="55" Y="192" Width="120" Height="15" TabSkip="no" Text="Builder Service Password:" />
+				<Control Id="BuilderPasswordEdit" Type="Edit" X="180" Y="189" Width="140" Height="18" Property="BUILDER_SERVICE_PASSWORD" Text="{80}" Password="yes" />
+
+
+
+				<!-- Standard buttons -->
+				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Text="!(loc.WixUIBack)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+					<Publish Property="_ErrorMessage" Value="Username and password are both required fields" Order="2">NOT BUILDER_SERVICE_ACCOUNT OR NOT BUILDER_SERVICE_PASSWORD</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Entry" Order="3">NOT BUILDER_SERVICE_ACCOUNT OR NOT BUILDER_SERVICE_PASSWORD</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="4">NOT BUILDER_SERVICE_ACCOUNT OR NOT BUILDER_SERVICE_PASSWORD</Publish>
+					<Publish Event="DoAction" Value="CA.ValidateBuilderCredentials" Order="5">BUILDER_SERVICE_ACCOUNT AND BUILDER_SERVICE_PASSWORD</Publish>
+					<Publish Property="_ErrorMessage" Value="Username/password is not a valid combination" Order="6">BUILDER_SERVICE_ACCOUNT AND BUILDER_SERVICE_PASSWORD AND NOT BUILDER_SERVICE_ACCOUNT_VALID</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Credentials" Order="7">BUILDER_SERVICE_ACCOUNT AND BUILDER_SERVICE_PASSWORD AND NOT BUILDER_SERVICE_ACCOUNT_VALID</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="8">BUILDER_SERVICE_ACCOUNT AND BUILDER_SERVICE_PASSWORD AND NOT BUILDER_SERVICE_ACCOUNT_VALID</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+
+				<!-- Top banner -->
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="470" Height="56" TabSkip="no" Text="UI.LargerBanner" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="56" Width="470" Height="0" />
+				<Control Id="Title" Type="Text" X="15" Y="8" Width="400" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Builder Configuration" />
+				<Control Id="Description" Type="Text" X="25" Y="30" Width="420" Height="33" Transparent="yes" NoPrefix="yes" Text="Enter builder account/password and what time to start scheduled task." />
+
+
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

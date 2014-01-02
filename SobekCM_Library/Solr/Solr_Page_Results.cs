@@ -163,7 +163,7 @@ namespace SobekCM.Library.Solr
 
 
             // Perform this search
-            ISolrQueryResults<Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
+            SolrQueryResults<Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
 
             // Create the results object to pass back out
             var searchResults = new Solr_Page_Results

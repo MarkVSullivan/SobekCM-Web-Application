@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+         xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+         xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
+	<Fragment>
+		<!-- Link to db create script file -->
+		<Binary Id="CreateDbBin" SourceFile="Database/Complete.sql"></Binary>
+
+
+		<DirectoryRef Id="WEBINSTALLFOLDER">
+			<Component Id="SqlComponent" Guid="8A1C82DB-1DD3-4FB5-8600-4F370FE1E04B">
+				<sql:SqlDatabase Id="SobekDatabase.IntegratedAuthentication" Database="[DB_DATABASE]" Server="[DB_SERVER]" CreateOnInstall="yes" DropOnUninstall="no" ContinueOnError="no" />
+  			<sql:SqlScript Id="CreateDatabase" SqlDb="SobekDatabase.IntegratedAuthentication" ExecuteOnInstall="yes" ExecuteOnUninstall="no" BinaryKey="CreateDbBin" ContinueOnError="no" />
+				<CreateFolder/>
+			</Component>
+		</DirectoryRef>
+
+		
+		
+	</Fragment>
+</Wix>

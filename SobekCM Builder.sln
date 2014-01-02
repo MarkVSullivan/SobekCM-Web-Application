@@ -7,13 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Tools", "SobekCM_To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM Builder", "SobekCM Builder\SobekCM Builder.csproj", "{BFE38B45-D59A-4824-999E-7617B5B1B2D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Setup_Custom_Installer", "SobekCM_Builder_Setup_Custom_Installer\SobekCM_Builder_Setup_Custom_Installer.csproj", "{05DF3961-6B6C-46E3-924B-FD9800C836D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Configuration", "SobekCM_Builder_Configuration\SobekCM_Builder_Configuration.csproj", "{04E243D0-9A12-40FE-8492-12F8FF7223A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Object", "SobekCM_Resource_Object\SobekCM_Resource_Object.csproj", "{395C2621-CE19-41E0-AA1A-ABDB37F6E815}"
-EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SobekCM_Builder_WiX_Installer", "SobekCM_Builder_WiX_Installer\SobekCM_Builder_WiX_Installer.wixproj", "{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_PlugIn_Library", "Sample_PlugIn_Library\Sample_PlugIn_Library.csproj", "{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}"
 EndProject
@@ -69,18 +65,6 @@ Global
 		{BFE38B45-D59A-4824-999E-7617B5B1B2D5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BFE38B45-D59A-4824-999E-7617B5B1B2D5}.Release|x64.ActiveCfg = Release|Any CPU
 		{BFE38B45-D59A-4824-999E-7617B5B1B2D5}.Release|x86.ActiveCfg = Release|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Release|x64.ActiveCfg = Release|Any CPU
-		{05DF3961-6B6C-46E3-924B-FD9800C836D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{04E243D0-9A12-40FE-8492-12F8FF7223A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{04E243D0-9A12-40FE-8492-12F8FF7223A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04E243D0-9A12-40FE-8492-12F8FF7223A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -107,17 +91,6 @@ Global
 		{395C2621-CE19-41E0-AA1A-ABDB37F6E815}.Release|x64.ActiveCfg = Release|x64
 		{395C2621-CE19-41E0-AA1A-ABDB37F6E815}.Release|x64.Build.0 = Release|x64
 		{395C2621-CE19-41E0-AA1A-ABDB37F6E815}.Release|x86.ActiveCfg = Release|Any CPU
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Debug|x64.ActiveCfg = Debug|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Debug|x86.ActiveCfg = Debug|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Debug|x86.Build.0 = Debug|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Release|Any CPU.ActiveCfg = Release|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Release|Mixed Platforms.Build.0 = Release|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Release|x64.ActiveCfg = Release|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Release|x86.ActiveCfg = Release|x86
-		{D97EAC7F-68D8-4F59-A51D-9F651D9C1F2E}.Release|x86.Build.0 = Release|x86
 		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
