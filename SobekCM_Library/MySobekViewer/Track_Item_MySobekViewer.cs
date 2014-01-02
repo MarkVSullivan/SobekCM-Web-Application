@@ -142,7 +142,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Also get the currently selected user
-            if (HttpContext.Current.Session["Selected_User"] != null)
+            if (HttpContext.Current.Session["Selected_User"] != null )
                 current_selected_user = (User_Object)HttpContext.Current.Session["Selected_User"];
 
             else
@@ -214,7 +214,7 @@ namespace SobekCM.Library.MySobekViewer
                             //Verify that the checksum is valid
                             bool isValidChecksum = Is_Valid_Checksum(encodedItemID, val.Value, checksum);
                             if (!isValidChecksum)
-                                error_message = "Barcode error- checksum error";
+                                error_message = "Invalid Barcode entered!";
 
                             //Save the item information for this itemID
                             bool IsValidItem = Get_Item_Info_from_Barcode(encodedItemID);
@@ -240,7 +240,7 @@ namespace SobekCM.Library.MySobekViewer
                     string hidden_event_num = HttpContext.Current.Request.Form["hidden_event_num"] ?? String.Empty;
                     if (String.IsNullOrEmpty(hidden_bibID) || String.IsNullOrEmpty(hidden_VID) || String.IsNullOrEmpty(hidden_event_num))
                     {
-                        error_message = "You must enter a BibID and a VID!";
+                        error_message = "You must enter a valid BibID and VID!";
                     }
                     else
                     {
@@ -587,7 +587,7 @@ namespace SobekCM.Library.MySobekViewer
                                 count++;
                                 if (count > 1)
                                 {
-                                    error_message = "More than one unclosed workflow entry for today!";
+                                    error_message = "You have opened more than one unclosed workflow entry for this item today!";
                                     return;
                                 }
                                 start_Time = Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm");
@@ -601,7 +601,7 @@ namespace SobekCM.Library.MySobekViewer
                       //If there were no workflows opened today, do not save this
                       if (count == 0)
                         {
-                            error_message = "No open workflow to close!";
+                         //   error_message = "No open workflow to close!";
                             close_error = true;
                             return;
                         }
@@ -933,7 +933,12 @@ namespace SobekCM.Library.MySobekViewer
                  
                  builder.AppendLine("    	<div class=\"tabpage\" id=\"tabpage_1\">");
                 //Start the item information table
-
+              
+            //Display errors if any
+                 if (error_message.Length > 0 && page==1)
+                 {
+                     builder.AppendLine("<span style=\"color:red; float:left;\">" + error_message + "</span><br/>");
+                 }
                 builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Item Information</h2></span>");
                 builder.AppendLine("<table class=\"sbkTi_table\">");
 
@@ -1204,7 +1209,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     //Add the Save and Done buttons
                     builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
-                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
+     //               builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
                     builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">DONE</button>");
                     builder.AppendLine("</div");
                     builder.AppendLine("<br/><br/>");
@@ -1224,6 +1229,11 @@ namespace SobekCM.Library.MySobekViewer
 
                 builder.AppendLine("    	<div class=\"tabpage\" id=\"tabpage_2\">");
                 //Start the item information table
+                //Display errors if any
+                if (error_message.Length > 0 && page==2)
+                {
+                    builder.AppendLine("<span style=\"color:red; float:left;\";>" + error_message + "</span><br/>");
+                }
 
                 builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Item Information</h2></span>");
                 builder.AppendLine("<table class=\"sbkTi_table\">");
@@ -1431,7 +1441,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
 
-//A tracking workflow object which holds all the details of the current workflow 
+//Tracking workflow object which holds all the details of the current workflow 
   protected class Tracking_Workflow
   {
       public int WorkflowID { get; set; }
