@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+	<Fragment>
+		<UI>
+			<Dialog Id="UI.WebConfigDialog2"  Width="470" Height="370" Title="SobekCM Web Configuration" NoMinimize="yes">
+
+				<Control Id="MainLabel" Type="Text" X="35" Y="75" Width="420" Height="60" TabSkip="no" Text="Enter the virtual directory desired. To install this at the root of the default web site, leave the virtual directory blank." />
+
+				<Control Id="MainLabel3" Type="Text" X="35" Y="110" Width="420" Height="60" TabSkip="no" Text="To install in a web site other than the default web site, run this installer as admininistrator or temporarily turn of UAC." />
+
+				<Control Id="VirtualDirectoryLabel" Type="Text" X="55" Y="156" Width="100" Height="14" NoPrefix="yes" Text="Virtual Directory:" />
+				<Control Id="VirtualDirectoryEdit" Type="Edit" X="160" Y="153" Width="140" Height="17" Property="VIRTUAL_DIRECTORY" Sunken="yes"/>
+
+				<Control Id="MainLabel2" Type="Text" X="35" Y="200" Width="420" Height="40" TabSkip="no" Text="Enter the service account and password under which the web application should run." />
+
+				<Control Id="WebAccountLabel" Type="Text" X="55" Y="228" Width="100" Height="15" TabSkip="no" Text="Web Service Account:" />
+				<Control Id="WebAccountEdit" Type="Edit" X="160" Y="225" Width="140" Height="18" Property="WEB_SERVICE_ACCOUNT" Text="{80}" />
+
+				<Control Id="WebPasswordLabel" Type="Text" X="55" Y="262" Width="105" Height="15" TabSkip="no" Text="Web Service Password:" />
+				<Control Id="WebPasswordEdit" Type="Edit" X="160" Y="259" Width="140" Height="18" Property="WEB_SERVICE_PASSWORD" Text="{80}" Password="yes" />
+
+				<!-- Standard buttons -->
+				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Text="!(loc.WixUIBack)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+					<Publish Event="DoAction" Value="CA.EnsureWebSiteSelected" Order="1">1</Publish>
+					<Publish Property="_ErrorMessage" Value="Username and password are both required fields" Order="2">NOT WEB_SERVICE_ACCOUNT OR NOT WEB_SERVICE_PASSWORD</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Entry" Order="3">NOT WEB_SERVICE_ACCOUNT OR NOT WEB_SERVICE_PASSWORD</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="4">NOT WEB_SERVICE_ACCOUNT OR NOT WEB_SERVICE_PASSWORD</Publish>
+					<Publish Event="DoAction" Value="CA.ValidateWebCredentials" Order="5">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD</Publish>
+					<Publish Property="_ErrorMessage" Value="Username/password is not a valid combination" Order="6">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND NOT WEB_SERVICE_ACCOUNT_VALID</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Credentials" Order="7">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND NOT WEB_SERVICE_ACCOUNT_VALID</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="8">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND NOT WEB_SERVICE_ACCOUNT_VALID</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+
+				<!-- Top banner -->
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="470" Height="56" TabSkip="no" Text="UI.LargerBanner" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="56" Width="470" Height="0" />
+				<Control Id="Title" Type="Text" X="15" Y="8" Width="400" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}IIS Configuration" />
+				<Control Id="Description" Type="Text" X="25" Y="30" Width="420" Height="33" Transparent="yes" NoPrefix="yes" Text="Enter setup for the main web application being installed." />
+
+
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

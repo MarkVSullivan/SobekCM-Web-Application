@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<UI>
+			<Dialog Id="UI.DatabaseDialog"  Width="470" Height="370" Title="SobekCM Database Settings" NoMinimize="yes">
+
+				<Control Id="MainLabel" Type="Text" X="35" Y="75" Width="400" Height="40" TabSkip="no" Text="Enter the information for the MS SQL database.  If the database has not yet been installed at the provided location, a new database will be created there." />
+				<Control Id="MainLabel2" Type="Text" X="35" Y="115" Width="400" Height="40" TabSkip="no" Text="If the system will be on multiple machines, you must enter the full server/instance name. If the database and all other portions will be on a single machine, you can enter 'localhost'." />
+
+				<Control Id="DbServerNameLabel" Type="Text" X="55" Y="178" Width="140" Height="15" TabSkip="no" Text="Database Server/Instance:" />
+				<Control Id="DbServerNameEdit" Type="Edit" X="180" Y="175" Width="140" Height="18" Property="DB_SERVER" Text="{80}" />
+				<Control Id="DbDatabaseNameLabel" Type="Text" X="55" Y="220" Width="140" Height="15" TabSkip="no" Text="Database Name:" />
+				<Control Id="DbDatabaseNameEdit" Type="Edit" X="180" Y="217" Width="140" Height="18" Property="DB_DATABASE" Text="{80}" />
+
+				<Control Id="MainLabel3" Type="Text" X="35" Y="270" Width="400" Height="40" TabSkip="no" Text="This installer cannot be used to upgrade from pre-version 4.0 databases.  To upgrade, you must run a SQL script which can be found at http://sobekrepository.org." />
+				
+				<Control Id="Test" Type="PushButton" X="330" Y="217" Width="100" Height="17" Text="Test Connection">
+					<Publish Property="_ErrorMessage" Value="Database server/instance and the database name are both required fields" Order="2">NOT DB_SERVER OR NOT DB_DATABASE</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Entry" Order="3">NOT DB_SERVER OR NOT DB_DATABASE</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="4">NOT DB_SERVER OR NOT DB_DATABASE</Publish>
+					<Publish Event="DoAction" Value="CA.VerifySqlConnection" Order="5">DB_SERVER AND DB_DATABASE</Publish>
+					<Publish Property="_ErrorMessage" Value="Unable to connect to the provided database server/instance.  Check your entry and permissions." Order="6">DB_SERVER AND DB_DATABASE AND NOT ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Property="_ErrorTitle" Value="Test Results" Order="7">DB_SERVER AND DB_DATABASE AND NOT ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="8">DB_SERVER AND DB_DATABASE AND NOT ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Property="_InfoMessage" Value="Connection successful!" Order="6">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Property="_InfoTitle" Value="Test Results" Order="7">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericInfoDialog" Order="8">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+				</Control>
+
+				<!-- Standard buttons -->
+				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Text="!(loc.WixUIBack)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+					<Publish Property="_ErrorMessage" Value="Database server/instance and the database name are both required fields" Order="2">NOT DB_SERVER OR NOT DB_DATABASE</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Entry" Order="3">NOT DB_SERVER OR NOT DB_DATABASE</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="4">NOT DB_SERVER OR NOT DB_DATABASE</Publish>
+					<Publish Event="DoAction" Value="CA.VerifySqlConnection" Order="5">DB_SERVER AND DB_DATABASE</Publish>
+					<Publish Property="_ErrorMessage" Value="Unable to connect to the provided database server/instance.  Check your entry and permissions." Order="6">DB_SERVER AND DB_DATABASE AND NOT ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Property="_ErrorTitle" Value="Invalid Server/Instance or Permissions" Order="7">DB_SERVER AND DB_DATABASE AND NOT ODBC_CONNECTION_ESTABLISHED</Publish>
+					<Publish Event="SpawnDialog" Value="UI.GenericErrorDialog" Order="8">DB_SERVER AND DB_DATABASE AND NOT ODBC_CONNECTION_ESTABLISHED</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+
+				<!-- Top banner -->
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="470" Height="56" TabSkip="no" Text="UI.LargerBanner" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="56" Width="470" Height="0" />
+				<Control Id="Title" Type="Text" X="15" Y="8" Width="400" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Enter Database Information" />
+				<Control Id="Description" Type="Text" X="25" Y="30" Width="420" Height="33" Transparent="yes" NoPrefix="yes" Text="Enter information for a new or existing SobekCM database." />			
+				
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

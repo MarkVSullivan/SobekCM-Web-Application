@@ -1,0 +1,20 @@
+  <h1>Preguntas frecuentes sobre B&uacute;squeda por Mapa </h1>
+  <ul>
+    <li><strong>&iquest;C&oacute;mo puedo buscar?</strong>
+      <p class="tagline">Para realizar una b&uacute;squeda, primero tiene que definir su zona o punto de inter&eacute;s y luego realizar la b&uacute;squeda. Hay varias formas de definir su &aacute;rea de inter&eacute;s. Puede escribir una direcci&oacute;n o puede trazar un &aacute;rea o un punto en el mapa. Una vez que haya definido su b&uacute;squeda haga click en el bot&oacute;n <i>Buscar</i> para obtener resultados que coincidan con esa ubicaci&oacute;n.</p>
+      <p class="tagline">Para buscar direcciones, escriba una direcci&oacute;n y haga click en el bot&oacute;n <i>Localizar</i>. Tambi&eacute;n puede ultilizar el nombre del sitio de inter&eacute;s, sin embargo escribir una direcci&oacute;n brinda mejores resultados. Aseg&uacute;rese tambi&eacute;n de ingresar la ciudad y el estado en su b&uacute;squeda. Una vez que la direcci&oacute;n se encuentre en el mapa, haga click en <i>Buscar</i> para descubrir vistas a&eacute;reas que incluyan la deseada ubicaci&oacute;n. </p>
+      <p class="tagline">Para hacer una b&uacute;squeda en nuestro mapa, haga click en el bot&oacute;n <i>Presione para Seleccionar Area</i> o en el bot&oacute;n <i>Presione para Seleccionar un Punto</i>, que se encuentran en el mapa. Cuando est&eacute; usando Seleccionar Area, haga click en un punto de partida en el mapa y luego haga click en la esquina opuesta para crear un rect&aacute;ngulo. Al hacer click en <i>Buscar</i>, por encima del mapa, usted obtendr&aacute; los resultados para esa &aacute;rea. Con el bot&oacute;n Seleccionar un Punto, elija una ubicaci&oacute;n espec&iacute;fica y haga click en <i>Buscar</i>.</p>
+    </li>
+    <li><strong>Tengo dificultad para seleccionar un &aacute;rea</strong>
+      <p class="tagline">Seleccionar un &aacute;rea rectangular de b&uacute;squeda es simple una vez que se entiende la t&eacute;cnica. Primero, seleccione el bot&oacute;n <i>Presione para Seleccionar Area</i> que se encuentra en el mapa. A continuaci&oacute;n muevase a la esquina superior izquierda del &aacute;rea que desea buscar, haga click y suelte el bot&oacute;n izquierdo del mouse. Al mover el mouse notar&aacute; que se forma un rect&aacute;ngulo lo cual indica su &aacute;rea. Cuando haga click y suelte nuevamente el mouse, definir&aacute; la esquina inferior derecha de su b&uacute;squeda. No presione ni arrastre el mouse, ya que esto arrastrar&aacute; todo el mapa y no definir&aacute; la selecci&oacute;n de &aacute;rea. Una vez que su &aacute;rea este correctamente identificada, pulse el bot&oacute;n <i>Buscar</i> para obtener resultados que coincidan con la ubicaci&oacute;n. </p>
+    </li>
+    <li><strong>Tengo dificultad para buscar por direcci&oacute;n</strong>
+      <p class="tagline">Aseg&uacute;rese de escribir la direcci&oacute;n completa, incluyendo el estado y el pa&iacute;s. Tambi&eacute;n puede tratar de utilizar el nombre del sitio de inter&eacute;s, sin embargo usando una direcci&oacute;n la p&aacute;gina le brindar&aacute; mejores resultados. Una vez que ingrese la direcci&oacute;n o el nombre del sitio de inter&eacute;s presione el bot&oacute;n <i>Localizar</i>. Mire el mapa y compruebe que la direcci&oacute;n deseada se encuentre en el mapa. A continuaci&oacute;n, presione el bot&oacute;n <i>Buscar</i> para obtener resultados que coincidan con la ubicaci&oacute;n.</p>
+    </li>
+    <li><strong>&iquest;Qu&eacute; se busca?</strong>
+      <p class="tagline">Los datos buscados dependen del tipo de material. Para los peri&oacute;dicos se busca el lugar de publicaci&oacute;n. Para los mapas se busca la cobertura geogr&aacute;fica, y para las fotos se busca la ubicaci&oacute;n de d&oacute;nde se tom&oacute; la foto.</p>
+    </li>
+    <li><strong>&iquest;Por qu&eacute; tan pocas visitas?</strong>
+      <p class="tagline">Esta interface se encuentra en beta prueba, mientras vamos a&ntilde;adiendo a nuestra base de datos m&aacute;s informaci&oacute;n de coordenadas para la b&uacute;squeda. Vuelva a visitarnos para ver nuestro progreso.</p>
+    </li>
+  </ul>

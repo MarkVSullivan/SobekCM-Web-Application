@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<UI>
+			<Dialog Id="UI.PrepareDialog" Width="470" Height="370" Title="!(loc.PrepareDlg_Title)" Modeless="yes">
+
+				<Control Id="Description" Type="Text" X="145" Y="90" Width="290" Height="40" Transparent="yes" NoPrefix="yes" Text="!(loc.PrepareDlgDescription)" />
+
+				<Control Id="Title" Type="Text" X="155" Y="30" Width="290" Height="60" Transparent="yes" NoPrefix="yes" Text="{\SobekUI_Font_Bigger}Welcome to the SobekCM Digital Repository System Setup Wizard" />
+
+				<Control Id="ActionData" Type="Text" X="145" Y="145" Width="9" Height="30" Transparent="yes" NoPrefix="yes">
+					<Subscribe Event="ActionData" Attribute="Text" />
+				</Control>
+				<Control Id="ActionText" Type="Text" X="145" Y="120" Width="290" Height="20" Transparent="yes" NoPrefix="yes">
+					<Subscribe Event="ActionText" Attribute="Text" />
+				</Control>
+
+				<!-- Standard buttons -->
+				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Disabled="yes" Text="!(loc.WixUIBack)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Disabled="yes" Text="!(loc.WixUINext)">
+					<Publish Property="WixUI_InstallMode" Value="Update">Installed AND PATCH</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+
+				<!-- Background image -->
+				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="470" Height="334" TabSkip="no" Text="UI.LargerDialogImg" />
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

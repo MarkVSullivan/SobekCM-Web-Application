@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?include Definitions.wxi ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="$(var.ProductCode)" Name="SobekCM Digital Repository" Language="1033" Version="$(var.ProductVersion)" Manufacturer="SobekCM" UpgradeCode="$(var.UpgradeCode2)">
+		<Package Id="*" Description="SobekCM Web Installer" InstallerVersion="400" Compressed="yes" InstallScope="perMachine"  />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+		<!-- Embed the CAB file into the installer -->
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+		<!-- List of main features to install -->
+		<Feature Id="WebFeature" Title="Web Application" Level="10" AllowAdvertise="no" Description="Install the main web application and configure in IIS" >
+			<Condition Level="0"><![CDATA[NOT InstallWeb]]></Condition>
+			<ComponentGroupRef Id="SobekWebComponent" />
+			<ComponentGroupRef Id="SobekWebIisConfiguration" />
+			<ComponentRef Id="R.PersistWebSiteValues" />  <!-- Registry values -->
+			<Feature Id="ZoomableFeature" Title="Zoomable Image Server" Level="10" AllowAdvertise="no" Description="IIPImage built-in zoomable image server for serving JPEG2000 and allowing zooming">
+				<ComponentGroupRef Id="SobekZoomableComponent" />
+			</Feature>
+		</Feature>
+		<Feature Id="BuilderFeature" Title="Builder Service" Level="5" AllowAdvertise="no" Description="Install and configure the builder service">
+			<Condition Level="0"><![CDATA[NOT InstallBuilder]]></Condition>
+			<ComponentGroupRef Id="SobekBuilderComponent" />
+		</Feature>
+		<Feature Id="DbFeature" Title="MSSQL Database" Level="1" Absent="disallow" AllowAdvertise="no" Description="If a SobekCM database already exists, a new one will not be installed" >
+			<ComponentRef Id="SqlComponent" />
+		</Feature>
+		<Feature Id="SolrFeature" Title="Solr Indexes" Level="2" AllowAdvertise="no" Description="Solr indexes are utilized for full-text search results within the system" >
+			<Condition Level="0"><![CDATA[NOT InstallSolr]]></Condition>
+			<ComponentGroupRef Id="SobekSolrComponent" />
+		</Feature>
+		<Feature Id="InstallInfo" Title="Basic Install Information" Level="1" AllowAdvertise="no" Absent="disallow" Description="Basic installation registry information" Display="hidden" >
+			<ComponentRef Id="R.PersistInstallValues" />  <!-- Registry values -->
+		</Feature>
+
+		<!-- Ensure administrator for the actual install portion -->
+		<Condition Message="You need to be an administrator to install this product.">Privileged</Condition>
+		
+		<!-- .NET 4.5 is required to use either the web or the builder, so just require it -->
+		<PropertyRef Id="NETFRAMEWORK45"/>
+		<Condition Message="This setup requires Microsoft .NET Framework 4.5 package.  This will need to be installed for this setup to continue.">
+			<![CDATA[Installed OR NETFRAMEWORK45]]>
+		</Condition>
+		
+		<!-- The property below forces this check, before UAC elevation, so this could be used to warn if 
+		     users aren't YET admin when the MSI initially launches.  -->
+		<!-- <Property Id="MSIUSEREALADMINDETECTION" Value="1" />  -->
+
+		<!-- Check to see if IIS is installed. It it’s not, error out. -->
+		<Property Id="IIS_MAJOR_VERSION">
+			<RegistrySearch Id="CheckIISVersion" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp" Name="MajorVersion" Type="raw" />
+		</Property>
+
+		<!-- Go find the IIS root directory from the registry. On most machines that 
+		  defaults to C:\inetpub\wwwroot. This will be the directory we install into. -->
+		<Property Id="IISROOT">
+			<RegistrySearch Id="IISROOT" Type="directory" Root="HKLM" Key="Software\Microsoft\InetStp" Name="PathWWWRoot" />
+		</Property>
+
+		<!-- Default install level and individual components -->
+		<Property Id="INSTALLLEVEL" Value="10" />
+
+		<!-- Specify User Experience (UI Set) -->
+		<UIRef Id="UX.SobekWeb" />
+		<Property Id="WIXUI_INSTALLDIR" Value="IISROOT" />  
+
+		<!-- Values collected from the user during install -->
+		<Property Id="DB_SERVER" Value="localhost"/>
+		<Property Id="DB_DATABASE" Value="SobekCM"/>
+		<SetProperty Id="BUILDER_SERVICE_ACCOUNT" Value="[%USERDOMAIN]\[LogonUser]" Before="AppSearch" />
+		<SetProperty Id="WEB_SERVICE_ACCOUNT" Value="[%USERDOMAIN]\[LogonUser]" Before="AppSearch" />
+		<Property Id="WEB_SERVICE_PASSWORD" Hidden="yes" />
+		<Property Id="BUILDER_SERVICE_PASSWORD" Hidden="yes" />
+		<Property Id="LAUNCHAPPONEXIT" Value="1" />
+		<Property Id="InstallWeb" Value="1" />
+		<Property Id="InstallSolr" Value="1" />
+		<Property Id="InstallBuilder" Value="1" />
+
+		<!-- Portions to provide information in the Add/Remove programs area -->
+		<Icon Id="App.ico" SourceFile="Images\SobekCM.ico" />
+		<Property Id="ARPPRODUCTICON" Value="App.ico" />
+		<Property Id="ARPHELPLINK" Value="http://sobekrepository.org" />
+		<Property Id="ARPCOMMENTS">SobekCM Digital Repository software components, which can include the web application, the SobekCM Builder, or other smaller components.</Property>
+
+		<!-- Properties used for the website selection -->
+		<Property Id="WEBSITE_DESCRIPTION" Value="Default Web Site">
+			<RegistrySearch Id="WebSiteDescription" Name="WebSiteDescription" Root="HKLM" Key="SOFTWARE\SobekCM\Web" Type="raw" />
+		</Property>
+		<Property Id="WEBSITE_PORT" Value="80">
+			<RegistrySearch Id="WebSitePort" Name="WebSitePort" Root="HKLM" Key="SOFTWARE\SobekCM\Web" Type="raw" />
+		</Property>
+		<Property Id="WEBSITE_IP">
+			<RegistrySearch Id="WebSiteIP" Name="WebSiteIP" Root="HKLM" Key="SOFTWARE\SobekCM\Web" Type="raw" />
+		</Property>
+		<Property Id="WEBSITE_HEADER">
+			<RegistrySearch Id="WebSiteHeader" Name="WebSiteHeader" Root="HKLM" Key="SOFTWARE\SobekCM\Web" Type="raw" />
+		</Property>
+		
+		<!-- File for all the custom actions -->
+		<Binary Id="FI.CustomActionsFile" SourceFile="$(var.SolutionDir)\SobekCM_WiX_Installer_CustomActions\bin\Debug\SobekCM_WiX_Installer_CustomActions.CA.dll" />
+
+		<!-- List of custom actions from dLL -->
+		<CustomAction Id="CA.GetIISWebSites" BinaryKey="FI.CustomActionsFile" DllEntry="GetWebSites" Execute="immediate"  Return="check" Impersonate="yes" />
+		<CustomAction Id="CA.ValidateWebCredentials" BinaryKey="FI.CustomActionsFile" DllEntry="ValidateWebCredentials" Execute="immediate"  Return="check" Impersonate="yes" />
+		<CustomAction Id="CA.ValidateBuilderCredentials" BinaryKey="FI.CustomActionsFile" DllEntry="ValidateBuilderCredentials" Execute="immediate"  Return="check" Impersonate="yes" />
+		<CustomAction Id="CA.VerifySqlConnection" BinaryKey="FI.CustomActionsFile" DllEntry="VerifySqlConnection" Execute="immediate"  Return="check" Impersonate="yes" />
+		<CustomAction Id="CA.UpdatePropsWithSelectedWebSite" BinaryKey="FI.CustomActionsFile" DllEntry="UpdatePropsWithSelectedWebSite" Execute="immediate" Return="check" />
+		<CustomAction Id="CA.EnsureWebSiteSelected" BinaryKey="FI.CustomActionsFile" DllEntry="EnsureWebSiteSelected" Execute="immediate" Return="check" />
+		<CustomAction Id="CA.FinalizeDatabaseConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeDatabaseConfig" Execute="deferred" Return="check" Impersonate="yes" />
+		<CustomAction Id="CA.FinalizeWebConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeWebConfig" Execute="deferred" Return="check" Impersonate="no" />
+		<CustomAction Id="CA.LaunchApplication" BinaryKey="FI.CustomActionsFile" DllEntry="LaunchApplication" Execute="immediate" Impersonate="yes" Return="check" />
+		
+		<!-- Custom action to set the properties for the deferred action -->
+		<CustomAction Id="CA.SetPropertyWebConfig" Execute="immediate" Property="CA.FinalizeWebConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];web_account_arg=[WEB_SERVICE_ACCOUNT];web_directory_arg=[WEBINSTALLFOLDER];virtual_dir_arg=[VIRTUAL_DIRECTORY];inst_name_arg=[INSTITUTION_NAME];inst_code_arg=[INSTITUTION_CODE]" />
+		<CustomAction Id="CA.SetPropertyDatabaseConfig" Execute="immediate" Property="CA.FinalizeDatabaseConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];web_account_arg=[WEB_SERVICE_ACCOUNT];builder_account_arg=[BUILDER_SERVICE_ACCOUNT];virtual_dir_arg=[VIRTUAL_DIRECTORY];inst_name_arg=[INSTITUTION_NAME];inst_code_arg=[INSTITUTION_CODE]" />
+
+		<!-- Get the list of websites - which only works if the installer is launched as admin -->
+		<InstallUISequence>
+			<Custom Action="CA.GetIISWebSites" After="CostFinalize" Overridable="yes">NOT Installed</Custom>
+		</InstallUISequence>
+		<InstallExecuteSequence>
+			<Custom Action="CA.SetPropertyWebConfig" After="InstallInitialize">NOT Installed</Custom>
+			<Custom Action="CA.SetPropertyDatabaseConfig" After="InstallInitialize">NOT Installed</Custom>
+			<Custom Action="CA.FinalizeDatabaseConfig" Before="InstallFinalize"><![CDATA[&DbFeature = 3]]></Custom>
+			<Custom Action="CA.FinalizeWebConfig" After="CA.FinalizeDatabaseConfig"><![CDATA[&WebFeature = 3]]></Custom>
+		</InstallExecuteSequence>
+		
+		<!-- By default, start with default website -->
+		<Property Id="WEBSITE" Value="1" />
+		
+		<!-- Set the TOMCAT root to the top-level directory first -->
+		<Property Id="TOMCAT_DIRECTORY" Value="SOLRINSTALLFOLDER" />
+
+		<!-- Directories of all the files to install, starting at the target dir ( C: ) -->
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="IISROOT" Name="WebDir">
+				<Directory Id="WEBINSTALLFOLDER" Name="SobekCM" />
+			</Directory>
+			<Directory Id="SobekCM" Name="SobekCM">
+				<Directory Id="BUILDERINSTALLFOLDER" Name="Builder" />
+				<Directory Id="IIPIMAGEINSTALLFOLDER" Name="IIPimage" />
+				<Directory Id="SOLRINSTALLFOLDER" Name="Solr" />
+			</Directory>
+			<Directory Id="ProgramMenuFolder" Name="Programs">
+				<Directory Id="ProgramMenuDir" Name="SobekCM">
+					<Component Id="ProgramMenuDir" Guid="1B7C3B0F-A225-42F9-B3E9-E80AA9500310">
+						<RemoveFolder Id='RemoveProgramMenuDir' Directory='ProgramMenuDir'  On='uninstall' />
+						<RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+					</Component>
+				</Directory>
+			</Directory>
+			<Directory Id="DesktopFolder" Name="Desktop" />
+			<Directory Id="REGISTRY_VALUES" />
+		</Directory>
+
+
+		<!-- Custom table to hold the available websites between custom actions and display -->
+		<CustomTable Id="AvailableWebSites" >
+			<Column Id="WebSiteNo" Category="Identifier" PrimaryKey="yes" Type="int" Width="4" />
+			<Column Id="WebSiteDescription" Category="Text" Type="string" PrimaryKey="no"/>
+			<Column Id="WebSitePort" Category="Text" Type="string" PrimaryKey="no"/>
+			<Column Id="WebSiteIP" Category="Text" Type="string" PrimaryKey="no" Nullable="yes"/>
+			<Column Id="WebSiteHeader" Category="Text" Type="string" PrimaryKey="no" Nullable="yes"/>
+		</CustomTable>
+		<EnsureTable Id="AvailableWebSites"/>
+
+		<!-- Set the install directory of the web application based on the selected virtual directory -->
+		<SetDirectory Id="WEBINSTALLFOLDER" Sequence="execute" Value="[IISROOT][VIRTUAL_DIRECTORY]\" />
+	</Product>
+
+
+</Wix>

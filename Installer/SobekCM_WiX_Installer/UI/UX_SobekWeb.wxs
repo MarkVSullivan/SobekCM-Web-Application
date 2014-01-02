@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+First-time install dialog sequence:
+ - WixUI_WelcomeDlg
+ - WixUI_LicenseAgreementDlg
+ - WixUI_InstallDirDlg
+ - WixUI_VerifyReadyDlg
+ - WixUI_DiskCostDlg
+ 
+Maintenance dialog sequence:
+ - WixUI_MaintenanceWelcomeDlg
+ - WixUI_MaintenanceTypeDlg
+ - WixUI_InstallDirDlg
+ - WixUI_VerifyReadyDlg
+ 
+Patch dialog sequence:
+ - WixUI_WelcomeDlg
+ - WixUI_VerifyReadyDlg
+ 
+-->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<UI Id="UX.SobekWeb">
+			<TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="10"  />
+			<TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="13" Red="77" Green="25" Blue="6" />
+			<TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="11" Bold="yes" Red="77" Green="25" Blue="6" />
+			<TextStyle Id="SobekUI_Font_Title" FaceName="Tahoma" Size="11" Bold="yes" Red="77" Green="25" Blue="6" />
+			<TextStyle Id="SobekUI_Font_Bigger" FaceName="Tahoma" Size="13" Bold="yes" Red="77" Green="25" Blue="6" />
+			<TextStyle Id="SobekUI_Font_SetupType" FaceName="Tahoma" Size="10" Bold="yes" />
+
+			<Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+			<Property Id="WixUI_Mode" Value="InstallDir" />
+
+			<DialogRef Id="BrowseDlg" />
+			<DialogRef Id="DiskCostDlg" />
+			<DialogRef Id="ErrorDlg" />
+			<DialogRef Id="FatalError" />
+			<DialogRef Id="FilesInUse" />
+			<DialogRef Id="MsiRMFilesInUse" />
+			<DialogRef Id="UI.PrepareDialog" />
+			<DialogRef Id="ProgressDlg" />
+			<DialogRef Id="ResumeDlg" />
+			<DialogRef Id="UserExit" />
+			<DialogRef Id="UI.GenericErrorDialog" />
+			<DialogRef Id="UI.GenericInfoDialog" />
+
+
+			<Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="3">1</Publish>
+			<Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4"><![CDATA[WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
+
+			<Publish Dialog="UI.WelcomeDialog" Control="Next" Event="NewDialog" Value="UI.LicenseAgreementDialog">NOT Installed</Publish>
+			<Publish Dialog="UI.WelcomeDialog" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
+
+			<Publish Dialog="UI.LicenseAgreementDialog" Control="Back" Event="NewDialog" Value="UI.WelcomeDialog">1</Publish>
+			<Publish Dialog="UI.LicenseAgreementDialog" Control="Next" Event="NewDialog" Value="UI.SetupTypeDialog">LicenseAcceptedCustom = "1"</Publish>
+
+			<Publish Dialog="UI.SetupTypeDialog" Control="Back" Event="NewDialog" Value="UI.LicenseAgreementDialog">1</Publish>
+			<Publish Dialog="UI.SetupTypeDialog" Control="SingleServerButton" Event="NewDialog" Value="UI.DatabaseDialog">1</Publish>
+			<Publish Dialog="UI.SetupTypeDialog" Control="WebServerButton" Event="NewDialog" Value="UI.DatabaseDialog">1</Publish>
+			<Publish Dialog="UI.SetupTypeDialog" Control="BackServerButton" Event="NewDialog" Value="UI.DatabaseDialog">1</Publish>
+			<Publish Dialog="UI.SetupTypeDialog" Control="AdvancedButton" Event="NewDialog" Value="UI.FeatureSelection">1</Publish>
+			<Publish Dialog="UI.SetupTypeDialog" Control="Next" Event="NewDialog" Value="UI.DatabaseDialog">1</Publish>
+
+			<Publish Dialog="UI.FeatureSelection" Control="Back" Event="NewDialog" Value="UI.SetupTypeDialog">1</Publish>
+			<Publish Dialog="UI.FeatureSelection" Control="Next" Event="NewDialog" Value="UI.DatabaseDialog">1</Publish>
+
+			<Publish Dialog="UI.DatabaseDialog" Control="Back" Event="NewDialog" Value="UI.SetupTypeDialog" Order="1"></Publish>
+			<Publish Dialog="UI.DatabaseDialog" Control="Back" Event="NewDialog" Value="UI.FeatureSelection" Order="2">AdvancedConfiguration</Publish>
+			<Publish Dialog="UI.DatabaseDialog" Control="Next" Event="NewDialog" Value="UI.RequirementsDialog" Order="9">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+
+			<Publish Dialog="UI.RequirementsDialog" Control="Back" Event="NewDialog" Value="UI.DatabaseDialog" Order="1"></Publish>
+			<Publish Dialog="UI.RequirementsDialog" Control="Next" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="9"></Publish>
+			<Publish Dialog="UI.RequirementsDialog" Control="Next" Event="NewDialog" Value="UI.WebConfigDialog2" Order="10">InstallWeb AND InstallBuilder</Publish>
+			<Publish Dialog="UI.RequirementsDialog" Control="Next" Event="NewDialog" Value="UI.WebConfigDialog" Order="11">InstallWeb AND InstallBuilder AND WEBSITE_LIST_PULLED</Publish>
+			<Publish Dialog="UI.RequirementsDialog" Control="Next" Event="NewDialog" Value="UI.InstitutionDialog" Order="12">NOT DATABASE_EXISTS</Publish>
+
+			<Publish Dialog="UI.InstitutionDialog" Control="Back" Event="NewDialog" Value="UI.DatabaseDialog" Order="1"></Publish>
+			<Publish Dialog="UI.InstitutionDialog" Control="Next" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="9">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+			<Publish Dialog="UI.InstitutionDialog" Control="Next" Event="NewDialog" Value="UI.WebConfigDialog2" Order="10">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED AND InstallWeb AND InstallBuilder</Publish>
+			<Publish Dialog="UI.InstitutionDialog" Control="Next" Event="NewDialog" Value="UI.WebConfigDialog" Order="11">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED AND InstallWeb AND InstallBuilder AND WEBSITE_LIST_PULLED</Publish>
+			
+			<Publish Dialog="UI.ServiceAcctDialog" Control="Back" Event="NewDialog" Value="UI.DatabaseDialog" Order="1"></Publish>
+			<Publish Dialog="UI.ServiceAcctDialog" Control="Back" Event="NewDialog" Value="UI.InstitutionDialog" Order="2">NOT DATABASE_EXISTS</Publish>
+			<Publish Dialog="UI.ServiceAcctDialog" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="1">1</Publish>
+			<Publish Dialog="UI.ServiceAcctDialog" Control="Next" Event="NewDialog" Value="UI.BuilderConfigDialog" Order="2">InstallBuilder</Publish>
+			<Publish Dialog="UI.ServiceAcctDialog" Control="Next" Event="NewDialog" Value="UI.WebConfigDialog2" Order="3">InstallWeb</Publish>
+			<Publish Dialog="UI.ServiceAcctDialog" Control="Next" Event="NewDialog" Value="UI.WebConfigDialog" Order="4">InstallWeb AND WEBSITE_LIST_PULLED</Publish>
+
+			<Publish Dialog="UI.WebConfigDialog" Control="Back" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="1"></Publish>
+			<Publish Dialog="UI.WebConfigDialog" Control="Back" Event="NewDialog" Value="UI.DatabaseDialog" Order="2">InstallBuilder</Publish>
+			<Publish Dialog="UI.WebConfigDialog" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="9">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND WEB_SERVICE_ACCOUNT_VALID</Publish>
+			<Publish Dialog="UI.WebConfigDialog" Control="Next" Event="NewDialog" Value="UI.BuilderConfigDialog" Order="10">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND WEB_SERVICE_ACCOUNT_VALID AND InstallBuilder</Publish>
+
+			<Publish Dialog="UI.WebConfigDialog2" Control="Back" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="1"></Publish>
+			<Publish Dialog="UI.WebConfigDialog2" Control="Back" Event="NewDialog" Value="UI.DatabaseDialog" Order="2">InstallBuilder</Publish>
+			<Publish Dialog="UI.WebConfigDialog2" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="9">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND WEB_SERVICE_ACCOUNT_VALID</Publish>
+			<Publish Dialog="UI.WebConfigDialog2" Control="Next" Event="NewDialog" Value="UI.BuilderConfigDialog" Order="10">WEB_SERVICE_ACCOUNT AND WEB_SERVICE_PASSWORD AND WEB_SERVICE_ACCOUNT_VALID AND InstallBuilder</Publish>
+
+			<Publish Dialog="UI.BuilderConfigDialog" Control="Back" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="1">NOT InstallSolr AND NOT InstallWeb</Publish>
+			<Publish Dialog="UI.BuilderConfigDialog" Control="Back" Event="NewDialog" Value="UI.WebConfigDialog2" Order="2">InstallWeb</Publish>
+			<Publish Dialog="UI.BuilderConfigDialog" Control="Back" Event="NewDialog" Value="UI.WebConfigDialog" Order="3">InstallWeb AND WEBSITE_LIST_PULLED</Publish>
+			<Publish Dialog="UI.BuilderConfigDialog" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="9">BUILDER_SERVICE_ACCOUNT AND BUILDER_SERVICE_PASSWORD AND BUILDER_SERVICE_ACCOUNT_VALID</Publish>
+
+
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="1">NOT Installed</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.WebConfigDialog2" Order="2">NOT Installed AND InstallWeb AND NOT InstallBuilder</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.WebConfigDialog" Order="3">NOT Installed AND InstallWeb AND NOT InstallBuilder AND WEBSITE_LIST_PULLED</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.BuilderConfigDialog" Order="5">NOT Installed AND InstallBuilder</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT PATCH</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.WelcomeDialog" Order="2">Installed AND PATCH</Publish>
+
+
+			<Publish Dialog="UI.ExitDialog" Control="Finish" Order="1" Event="DoAction" Value="CA.LaunchApplication">LAUNCHAPPONEXIT</Publish>
+			<Publish Dialog="UI.ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+			<Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+			<Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+			<Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+			<Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+
+			<Property Id="ARPNOMODIFY" Value="1" />
+
+			<InstallUISequence>
+				<Show Dialog="UI.PrepareDialog" Before="AppSearch" Overridable="yes" />
+				<Show Dialog="UI.WelcomeDialog" Before="ProgressDlg" Overridable="yes" >NOT Installed OR PATCH</Show>
+				<Show Dialog="UI.ExitDialog" OnExit="success" Overridable="yes" />
+			</InstallUISequence>
+
+			<AdminUISequence>
+				<Show Dialog="UI.ExitDialog" OnExit="success" Overridable="yes" />
+			</AdminUISequence>
+		</UI>
+
+
+		<WixVariable Id="WixUIBannerBmp" Value="Images/sobekbanner.bmp" />
+		<WixVariable Id="WixUIDialogBmp" Value="Images/sobekfull.bmp" />
+		<Binary Id="UI.LargerBanner" SourceFile="Images/sobekbanner2.bmp" />
+		<Binary Id="UI.LargerDialogImg" SourceFile="Images/sobekfull2.bmp" />
+		<Binary Id="UI.ErrorIcon" SourceFile="Images/exclamic.ico" />
+		<Binary Id="UI.InfoIcon" SourceFile="Images/info.ico" />
+
+		<UIRef Id="WixUI_Common" />
+	</Fragment>
+</Wix>

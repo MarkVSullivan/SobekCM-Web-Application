@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+
+		<!-- Images used for the checkmark and red X -->
+		<Binary Id="UI.Image.Disabled" SourceFile="Images/notneeded.bmp" />
+		<Binary Id="UI.Image.Met" SourceFile="Images/checkmark.bmp" />
+		<Binary Id="UI.Image.Missing" SourceFile="Images/missing.bmp" />
+		
+		
+		<UI>
+
+			<!-- Fonts used for the different requirements being met, not met, not needed -->
+			<TextStyle Id="UI.Font.Disabled" FaceName="Tahoma" Size="10" Red="168" Green="168" Blue="168"  />
+			<TextStyle Id="UI.Font.Met" FaceName="Tahoma" Size="10" Bold="yes" Red="3" Green="90" Blue="64" />
+			<TextStyle Id="UI.Font.Missing" FaceName="Tahoma" Size="10" Bold="yes" Red="170" Green="23" Blue="23" />
+			
+			<Dialog Id="UI.RequirementsDialog"  Width="470" Height="370" Title="SobekCM Prerequisites" NoMinimize="yes">
+				
+				<!-- .net 4.5 required to even run this installer, so this is always met -->
+				<Control Id="NetFrameworkMetBitmap" Type="Bitmap" X="35" Y="70" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" />
+				<Control Id="NetFrameworkMetLabel" Type="Text" X="58" Y="71" Width="400" Height="20" TabSkip="no" Text="{\UI.Font.Met}.NET Framework 4.5 is installed" />
+
+				<!-- DATABASE REQUIREMENTS MET -->
+				<Control Id="DbMetBitmap" Type="Bitmap" X="35" Y="100" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+					<Condition Action="hide">NOT SQL_FULL_TEXT_INSTALLED</Condition>
+				</Control>
+				<Control Id="DbMetLabel" Type="Text" X="58" Y="101" Width="400" Height="20" TabSkip="no" Text="{\UI.Font.Met}SQL Database with full-text indexing enabled" >
+					<Condition Action="hide">NOT SQL_FULL_TEXT_INSTALLED</Condition>
+				</Control>
+				
+				<!-- DATABASE REQUIREMENTS NOT MET ( FULL TEXT NOT INSTALLED )-->
+				<Control Id="DbMissingBitmap" Type="Bitmap" X="35" Y="100" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+					<Condition Action="hide">SQL_FULL_TEXT_INSTALLED</Condition>
+				</Control>
+				<Control Id="DbMissingLabel" Type="Text" X="58" Y="101" Width="400" Height="20" TabSkip="no" Text="{\UI.Font.Missing}SQL Database does not have full-text indexing enabled" >
+					<Condition Action="hide">SQL_FULL_TEXT_INSTALLED</Condition>
+				</Control>
+				
+				<!-- IIS NOT REQUIRED FOR THIS INSTALL -->
+				<Control Id="IisDisabledBitmap" Type="Bitmap" X="35" Y="130" Width="15" Height="15" TabSkip="no" Text="UI.Image.Disabled" >
+					<Condition Action="hide">InstallWeb</Condition>
+				</Control>
+				<Control Id="IisDisabledLabel" Type="Text" X="58" Y="131" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Disabled}IIS not required for your installation" >
+					<Condition Action="hide">InstallWeb</Condition>
+				</Control>
+
+				<!-- IIS REQUIRED AND FOUND FOR THIS INSTALL -->
+				<Control Id="IisMetBitmap" Type="Bitmap" X="35" Y="130" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+					<Condition Action="hide">NOT InstallWeb OR NOT IIS_MAJOR_VERSION</Condition>
+				</Control>
+				<Control Id="IisMetLabel" Type="Text" X="58" Y="131" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Met}IIS is installed" >
+					<Condition Action="hide">NOT InstallWeb OR NOT IIS_MAJOR_VERSION</Condition>
+				</Control>
+				
+				<!-- IIS REQUIRED AND NOT MET FOR THIS INSTALL -->
+				<Control Id="IisMissingBitmap" Type="Bitmap" X="35" Y="130" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+					<Condition Action="hide">NOT InstallWeb OR IIS_MAJOR_VERSION</Condition>
+				</Control>
+				<Control Id="IisMissingLabel" Type="Text" X="58" Y="131" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Missing}IIS is not installed on this machine" >
+					<Condition Action="hide">NOT InstallWeb OR  IIS_MAJOR_VERSION</Condition>
+				</Control>
+				
+				<!-- APACHE TOMCAT -->
+
+				
+
+				
+				
+
+				<Control Id="IisNotNeededBitmap" Type="Bitmap" X="35" Y="160" Width="15" Height="15" TabSkip="no" Text="UI.Image.Disabled" />
+				<Control Id="MainLabel3" Type="Text" X="58" Y="161" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Disabled}Apache Tomcat is not required for your installation" />
+
+
+				<!-- Standard buttons -->
+				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Text="!(loc.WixUIBack)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)"></Control>
+				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+
+
+				<!-- Top banner -->
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="470" Height="56" TabSkip="no" Text="UI.LargerBanner" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="56" Width="470" Height="0" />
+				<Control Id="Title" Type="Text" X="15" Y="8" Width="400" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Prerequisites Analysis" />
+				<Control Id="Description" Type="Text" X="25" Y="30" Width="420" Height="33" Transparent="yes" NoPrefix="yes" Text="The following elements are required for your installation to continue" />
+
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

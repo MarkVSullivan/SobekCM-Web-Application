@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.6</ProductVersion>
+    <ProjectGuid>cb0d00ad-30f1-4310-a833-57eb2154851d</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>SobekCM_4_0_0</OutputName>
+    <OutputType>Package</OutputType>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <Name>SobekCM_WiX_Installer</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Database.wxs" />
+    <Compile Include="FileLists\Builder.wxs" />
+    <Compile Include="FileLists\IIPimage.wxs" />
+    <Compile Include="FileLists\Solr.wxs" />
+    <Compile Include="FileLists\Web64.wxs" />
+    <Compile Include="Registry.wxs" />
+    <Compile Include="UI\UI_BuilderConfigDialog.wxs" />
+    <Compile Include="UI\UI_DatabaseDialog.wxs" />
+    <Compile Include="UI\UI_ExitDialog.wxs" />
+    <Compile Include="UI\UI_FeatureSelection.wxs" />
+    <Compile Include="UI\UI_GenericErrorDialog.wxs" />
+    <Compile Include="UI\UI_GenericInfoDialog.wxs" />
+    <Compile Include="UI\UI_InstitutionDialog.wxs" />
+    <Compile Include="UI\UI_LicenseAgreementDialog.wxs" />
+    <Compile Include="UI\UI_PrepareDialog.wxs" />
+    <Compile Include="UI\UI_RequirementsDialog.wxs" />
+    <Compile Include="UI\UI_ServiceAcctDialog.wxs" />
+    <Compile Include="UI\UI_SetupTypeDialog.wxs" />
+    <Compile Include="UI\UI_WebConfigDialog.wxs" />
+    <Compile Include="UI\UI_WebConfigDialog2.wxs" />
+    <Compile Include="UI\UI_WelcomeDialog.wxs" />
+    <Compile Include="UI\UX_SobekWeb.wxs" />
+    <Compile Include="IISConfiguration.wxs" />
+    <Compile Include="Product.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Database\Complete.sql" />
+    <Content Include="Definitions.wxi" />
+    <Content Include="Images\advancedserver.bmp" />
+    <Content Include="Images\checkmark.bmp" />
+    <Content Include="Images\exclamic.ico" />
+    <Content Include="Images\info.ico" />
+    <Content Include="Images\missing.bmp" />
+    <Content Include="Images\notneeded.bmp" />
+    <Content Include="Images\onserver.bmp" />
+    <Content Include="Images\sobekbanner.bmp" />
+    <Content Include="Images\SobekCM.ico" />
+    <Content Include="Images\sobekfull.bmp" />
+    <Content Include="Images\twoserver_back.bmp" />
+    <Content Include="Images\twoserver_web.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixSqlExtension">
+      <HintPath>$(WixExtDir)\WixSqlExtension.dll</HintPath>
+      <Name>WixSqlExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixIIsExtension">
+      <HintPath>$(WixExtDir)\WixIIsExtension.dll</HintPath>
+      <Name>WixIIsExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Database" />
+    <Folder Include="Images" />
+    <Folder Include="FileLists" />
+    <Folder Include="UI" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SobekCM_WiX_Installer_CustomActions\SobekCM_WiX_Installer_CustomActions.csproj">
+      <Name>SobekCM_WiX_Installer_CustomActions</Name>
+      <Project>{967c0f99-f31d-4467-a2c0-538f8bd7f3f2}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

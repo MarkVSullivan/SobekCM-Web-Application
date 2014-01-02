@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+
+		<!-- Code to make the web site selects persist for uninstall, maintenance, and upgrades -->
+		<DirectoryRef Id="REGISTRY_VALUES">
+			<Component Id="R.PersistInstallValues" Guid="0CEDE535-62CC-4723-A0A6-C595041534C7">
+				<RegistryKey Root="HKLM" Key="SOFTWARE\SobekCM\Install">
+					<RegistryValue Name="InstallSolr" Type="string" Value="[InstallSolr]" />
+					<RegistryValue Name="InstallBuilder" Type="string" Value="[InstallBuilder]" />
+					<RegistryValue Name="InstallWeb" Type="string" Value="[InstallWeb]" />
+				</RegistryKey>
+			</Component>
+			<Component Id="R.PersistWebSiteValues" Guid="084C8C74-1B37-4750-AB66-3566F89A7F92">
+				<RegistryKey Root="HKLM" Key="SOFTWARE\SobekCM\Web">
+					<RegistryValue Name="WebSiteDescription" Type="string" Value="[WEBSITE_DESCRIPTION]" />
+					<RegistryValue Name="WebSitePort" Type="string" Value="[WEBSITE_PORT]" />
+					<RegistryValue Name="WebSiteIP" Type="string" Value="[WEBSITE_IP]" />
+					<RegistryValue Name="WebSiteHeader" Type="string" Value="[WEBSITE_HEADER]" />
+					<RegistryValue Name="VirtualDirectory" Type="string" Value="[VIRTUAL_DIRECTORY]" />
+					<RegistryValue Name="WebDirectory" Type="string" Value="[WEBINSTALLFOLDER]" />
+				</RegistryKey>
+			</Component>
+		</DirectoryRef>
+		
+	</Fragment>
+</Wix>

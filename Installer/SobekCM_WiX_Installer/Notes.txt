@@ -1,0 +1,8 @@
+
+
+1) After heat, add the include statement to Web64.wxs
+	<?include "..\Definitions.wxi" ?>
+
+2) Remove outer <Directory Id="Staging64" Name="Staging64">
+
+3) Ensure sobekcm.config is NOT included

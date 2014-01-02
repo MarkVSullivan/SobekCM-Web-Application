@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<UI>
+			<Dialog Id="UI.LicenseAgreementDialog" Width="470" Height="370" Title="!(loc.LicenseAgreementDlg_Title)">
+
+				<Control Id="AcceptCheckBox" Type="CheckBox" X="20" Y="307" Width="330" Height="18" CheckBoxValue="1" Property="LicenseAcceptedCustom" Text="!(loc.LicenseAgreementDlgLicenseAcceptedCheckBox)" />
+				<Control Id="Print" Type="PushButton" X="20" Y="343" Width="56" Height="17" Text="!(loc.WixUIPrint)">
+					<Publish Event="DoAction" Value="WixUIPrintEula">1</Publish>
+				</Control>
+				<Control Id="LicenseText" Type="ScrollableText" X="20" Y="75" Width="430" Height="225" Sunken="yes" TabSkip="no">
+					<Text SourceFile="License.rtf" />
+				</Control>
+
+				<!-- Standard buttons -->
+				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Text="!(loc.WixUIBack)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+					<Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg">!(wix.WixUICostingPopupOptOut) OR CostingComplete = 1</Publish>
+					<Condition Action="disable"><![CDATA[LicenseAcceptedCustom <> "1"]]></Condition>
+					<Condition Action="enable">LicenseAcceptedCustom = "1"</Condition>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+
+				<!-- Top banner -->
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="470" Height="56" TabSkip="no" Text="UI.LargerBanner" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="56" Width="470" Height="0" />
+				<Control Id="Title" Type="Text" X="15" Y="8" Width="400" Height="15" Transparent="yes" NoPrefix="yes" Text="!(loc.LicenseAgreementDlgTitle)" />
+				<Control Id="Description" Type="Text" X="25" Y="30" Width="420" Height="33" Transparent="yes" NoPrefix="yes" Text="!(loc.LicenseAgreementDlgDescription)" />
+
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

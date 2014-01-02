@@ -94,7 +94,7 @@ namespace SobekCM.Library.Solr
 				}
 
 				// Perform this search
-				ISolrQueryResults<Solr_Document_Result> results = solrWorker.Query(QueryString, options);
+				SolrQueryResults<Solr_Document_Result> results = solrWorker.Query(QueryString, options);
 
 				// Create the search statistcs
 				List<string> metadataLabels = new List<string> {"Author", "Publisher", "Format", "Edition", "Institution", "Donor"};
