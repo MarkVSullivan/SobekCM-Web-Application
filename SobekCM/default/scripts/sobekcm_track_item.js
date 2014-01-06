@@ -35,7 +35,7 @@ function rbEntryTypeChanged(value) {
 //Tab2 - Without Duration tracking
 //Hide/Unhide the item info fields based on the entry type selected - Barcode/Manual
 function rbEntryType2Changed(value) {
-   alert(' rbEntryType2Changed called');
+   //alert(' rbEntryType2Changed called');
     if (value == 0) {
 
         document.getElementById("tblrow2_Barcode").style.display = 'table-row';
@@ -55,7 +55,7 @@ function rbEntryType2Changed(value) {
 
 //Save function: set the hidden field(s) accordingly
 function BarcodeStringTextbox_Changed(barcode_string) {
-    //alert('in this function');
+    //alert('in function BarcodeStringTextbox_Changed');
     document.getElementById('Track_Item_behaviors_request').value ="decode_barcode";
     document.getElementById('Track_Item_hidden_value').value = barcode_string;
   //  document.itemNavForm.submit();
@@ -72,7 +72,7 @@ function BarcodeStringTextbox2_Changed(barcode_string) {
 
 //Function called when new entry is entered manually
 function Add_new_entry() {
-    alert('Function Add_new_entry called');
+ //   alert('Function Add_new_entry called');
     document.getElementById('Track_Item_behaviors_request').value = "read_manual_entry";
     document.getElementById('hidden_BibID').value = document.getElementById('txtBibID').value;
     document.getElementById('hidden_VID').value = document.getElementById('txtVID').value;
@@ -84,7 +84,7 @@ function Add_new_entry() {
 
 //Function called when new entry is entered manually, through the second tab
 function Add_new_entry2() {
-    alert('function Add_new_entry2 called');
+ //   alert('function Add_new_entry2 called');
     document.getElementById('Track_Item_behaviors_request').value = "read_manual_entry";
     document.getElementById('hidden_BibID').value = document.getElementById('txtBibID2').value;
     document.getElementById('hidden_VID').value = document.getElementById('txtVID2').value;
@@ -105,7 +105,7 @@ function Add_new_entry_barcode()
 
 //Function called when new entry is added through a scanned barcode on the second tab
 function Add_new_entry_barcode2() {
-    alert('in function Add_new_entry_barcode2');
+   // alert('in function Add_new_entry_barcode2');
     document.getElementById('Track_Item_behaviors_request').value = "decode_barcode";
     document.getElementById('Track_Item_hidden_value').value = document.getElementById('txtScannedString2').value;
     document.itemNavForm.submit();
@@ -177,84 +177,100 @@ function save_item_tracking(page) {
     return false;
 }
 
+
+
 function isValidDate(dateString) {
     var result = true;
     // Checks for the following valid date formats:
     //   MM/DD/YYYY    MM-DD-YYYY
     // Also separates date into month, day, and year variables
-
-    var datePat = /^(\d{1,2})(\/|-)(\d{1,2})\2(\d{4})$/;
     
+    var datePat = /^(\d{1,2})(\/|-)(\d{1,2})\2(\d{4})$/;
+
     //Check to see if the format matches
-    var matchArray = dateString.match(datePat); 
+    var matchArray = dateString.match(datePat);
     if (matchArray == null) {
         return false;
     }
+
+ //  alert(matchArray);
     // Parse the date into variables
-    var month = matchArray[1]; 
-     var day = matchArray[3];
+    var month = matchArray[1];
+    var day = matchArray[3];
     var year = matchArray[4];
     // check month range
     if (month < 1 || month > 12) {
         return false;
     }
-    
+
     //Check date range
     if (day < 1 || day > 31) {
         return false;
     }
-    if ((month==4 || month==6 || month==9 || month==11) && day==31) {
+    if ((month == 4 || month == 6 || month == 9 || month == 11) && day == 31) {
         return false;
     }
-    
+
     // check for february 29th
-    if (month == 2) { 
+    if (month == 2) {
         var isleap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
-        if (day>29 || (day==29 && !isleap)) {
+        if (day > 29 || (day == 29 && !isleap)) {
             return false;
         }
     }
-    
+
+    var todaysDate = new Date();
+  //  alert(todaysDate);
     //Check that the date is not a future date
-    if (year > getFullYear || (year == getFullYear && month > getMonth) || (year == getFullYear && month == getMonth && day > getDate))
+ //   alert('year: ' + year + '; getFullYear: ' + todaysDate.getFullYear() + '; month: ' + month + '; getMonth: ' + todaysDate.getMonth());
+  // alert('day:' + day + '; getDate' + todaysDate.getDate());
+    if (year > todaysDate.getFullYear() || (year == todaysDate.getFullYear() && month > (todaysDate.getMonth()+1) || (year == todaysDate.getFullYear() && month == todaysDate.getMonth() && day > todaysDate.getDate())))
         return false;
+
+    alert('Valid date');
     return true;  // date is valid
 }
 
+
+
+
 function save_workflow(workflow_ID, itemID) {
-    var isValid = true;
-  //  alert(workflow_ID + ' ' + itemID);
+
     //First do some validations
     if (page == 1) {
-        var startDate = document.getElementById('txtStartDate' + workflow_ID);
-    //    alert(startDate.value);
-        if (startDate.value == null || !isValidDate(startDate.value)) {
+        var start_Date = document.getElementById('txtStartDate' + workflow_ID).value;
+        alert(isValidDate(start_Date));
+        if (start_Date == null || !isValidDate(start_Date)) {
             alert('You must enter a valid date!');
-            isValid = false;
             return false;
         }
         //Check for valid start and end times
-        
-        
+
+
     }
     else if (page == 2) {
-        var startDate = document.getElementById('txtStartDate2' + workflow_ID);
-        //    alert(startDate.value);
-        if (startDate.value == null || !isValidDate(startDate.value)) {
+        var startDate = document.getElementById('txtStartDate2' + workflow_ID).value;
+   //        alert(startDate.value);
+        if (startDate == null || !isValidDate(startDate)) {
             alert('You must enter a valid date!');
-            isValid = false;
             return false;
         }
     }
-    if (isValid) {
+
+        alert('Valid date entered');
         document.getElementById('Track_Item_behaviors_request').value = 'save';
         document.getElementById('Track_Item_hidden_value').value = workflow_ID;
         document.getElementById('hidden_itemID').value = itemID;
 
         document.itemNavForm.submit();
-        return false;
-    }
+        
+ 
+    return true;
 }
+
+
+
+
 
 function delete_workflow(workflow_ID) {
     //alert(workflow_ID);
