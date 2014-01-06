@@ -616,17 +616,6 @@
     <Content Include="SobekCM.aspx" />
     <Content Include="SobekCM_Data.aspx" />
     <Content Include="SobekCM_OAI.aspx" />
-    <Content Include="temp\exceptions.txt" />
-    <Content Include="temp\fnp.xml" />
-    <Content Include="temp\gville_epc.xml" />
-    <Content Include="temp\item_count.xml" />
-    <Content Include="temp\item_count_growth.xml" />
-    <Content Include="temp\keywest_epc.xml" />
-    <Content Include="temp\MarkAdminSull\tsBarcodes\169173\UF0000167200001A.gif" />
-    <Content Include="temp\MarkAdminSull\tsBarcodes\169173\UF0000167200001B.gif" />
-    <Content Include="temp\MarkAdminSull\tsBarcodes\169173\UF0000167200001C.gif" />
-    <Content Include="temp\MarkAdminSull\tsBarcodes\169173\UF0000167200001D.gif" />
-    <Content Include="temp\overall_usage.xml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -709,6 +698,7 @@
     <Content Include="mySobek\projects\ORAL.pmets" />
     <Content Include="mySobek\projects\UFIR.pmets" />
     <Content Include="mySobek\projects\VODOU2.pmets" />
+    <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
