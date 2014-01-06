@@ -1059,7 +1059,7 @@ namespace SobekCM.Library.MySobekViewer
                     string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
                     //Set this as a JQuery datepicker field
                     //builder.AppendLine("<script type=\"text/javascript\">$(function(){$(\"#txtStartDate" + current_workflow_id + "\").datepicker();});</script>");
-                    builder.AppendLine("         <td><input type=\"text\"  name=\"txtStartDate" + current_workflow_id + "\" id=\"txtStartDate" + current_workflow_id + "\" value=\"" + currentDate + "\" /> </td>");
+                    builder.AppendLine("         <td><input type=\"text\"  name=\"txtStartDate" + current_workflow_id + "\" id=\"txtStartDate" + current_workflow_id + "\" value=\"" + Convert.ToDateTime(currentDate).ToString("MM/dd/yyyy") + "\" /> </td>");
                     builder.AppendLine("<script type=\"text/javascript\">setDatePicker(\"txtStartDate" + current_workflow_id + "\");</script>");
                     builder.AppendLine("</tr>");
 
@@ -1086,7 +1086,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtStartTime" + current_workflow_id + "\");</script>");
 
                     builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "',' " + itemID + "'); \">SAVE</button>");
+                    builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + current_workflow_id + "',' " + itemID + "'); return false;\">SAVE</button>");
                     builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + current_workflow_id + "); \">DELETE</button>");
                     builder.AppendLine("</span></td></tr>");
 
@@ -1147,7 +1147,7 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("         </td>");
                         builder.AppendLine("         <td>Date:</td>");
 
-                        builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate" + thisWorkflowID + "\" id=\"txtStartDate" + thisWorkflowID + "\" value=\"" + Convert.ToDateTime(row["DateStarted"]).ToString("yyyy-MM-dd") + "\" /> </td>");
+                        builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate" + thisWorkflowID + "\" id=\"txtStartDate" + thisWorkflowID + "\" value=\"" + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "\" /> </td>");
                         builder.AppendLine("<script type=\"text/javascript\">setDatePicker(\"txtStartDate" + thisWorkflowID + "\");</script>");
                         builder.AppendLine("</tr>");
 
@@ -1162,7 +1162,7 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtStartTime" + thisWorkflowID + "\");</script>");
 
                         builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
-                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + thisWorkflowID + "','" + row["ItemID"] + "'); \">SAVE</button>");
+                        builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save_workflow('" + thisWorkflowID + "','" + row["ItemID"] + "'); return false;\">SAVE</button>");
                         builder.AppendLine("    <button title=\"Delete this workflow\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_workflow(" + thisWorkflowID + "); \">DELETE</button>");
                         builder.AppendLine("</span></td></tr>");
 
@@ -1345,7 +1345,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("         </td>");
                     builder.AppendLine("         <td>Date:</td>");
                     string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
-                    builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate2\" id=\"txtStartDate2\" value=\"" + currentDate + "\" /> </td>");
+                    builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate2\" id=\"txtStartDate2\" value=\"" + Convert.ToDateTime(currentDate).ToString("MM/dd/yyyy") + "\" /> </td>");
                     builder.AppendLine("<script type=\"text/javascript\">setDatePicker(\"txtStartDate2\");</script>");
                     builder.AppendLine("</tr>");
 
