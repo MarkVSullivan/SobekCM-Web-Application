@@ -47,6 +47,7 @@ namespace SobekCM.Library.MySobekViewer
         private Dictionary<string, Tracking_Workflow> current_workflows_no_durations;
         
         private User_Object current_selected_user;
+        private Tracking_Workflow this_workflow = new Tracking_Workflow();
 
         private readonly int page;
 
@@ -181,8 +182,8 @@ namespace SobekCM.Library.MySobekViewer
                 if (page == 1)
                 {
                     //Get the the form field values from the first tab
-                    start_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime"]).ToString("HH:mm");
-                    end_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime"]).ToString("HH:mm");
+                    start_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime"]).ToString("hh:mm tt");
+                    end_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime"]).ToString("hh:mm tt");
                     this_workflow_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate"]);
                 }
                 else if (page == 2)
@@ -320,6 +321,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Save or Update Workflow when a 'Save' button for a tracking entry is clicked </summary>
         /// <param name="thisWorkflowId"></param>
+        /// <param name="thisItemID"></param>
         private void Add_or_Update_Workflow(int thisWorkflowId, int thisItemID)
         {
                    string thisWorkflowId_string = thisWorkflowId.ToString();
@@ -349,8 +351,8 @@ namespace SobekCM.Library.MySobekViewer
                   
                     if (page == 1)
                     {
-                        new_start_time = String.IsNullOrEmpty(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]) ? "" :Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]).ToString("HH:mm");
-                        new_end_time = String.IsNullOrEmpty(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]) ? "" : Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]).ToString("HH:mm");
+                        new_start_time = String.IsNullOrEmpty(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]) ? "" :Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]).ToString("hh:mm tt");
+                        new_end_time = String.IsNullOrEmpty(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]) ? "" : Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]).ToString("hh:mm tt");
                             if (selected_ddl_workflow == 1)
                             {
                                 this_event = 1;
@@ -376,8 +378,8 @@ namespace SobekCM.Library.MySobekViewer
                          //If this is from the second tab, set the appropriate start_end_event number
                         else
                         {
-                            new_start_time = new_date.ToString("HH:mm");
-                            new_end_time = new_date.ToString("HH:mm");
+                            new_start_time = new_date.ToString("hh:mm tt");
+                            new_end_time = new_date.ToString("hh:mm tt");
                             if (selected_ddl_workflow == 1)
                             {
                                 this_event = 2;
@@ -403,10 +405,10 @@ namespace SobekCM.Library.MySobekViewer
                             this_workflow.Date = new_date.ToString("yyyy-MM-dd");
                             this_workflow.Saved = true;
                             this_workflow.Title = title;
-                            this_workflow.StartTime = Convert.ToDateTime(new_start_time).ToString("HH:mm");
+                            this_workflow.StartTime = Convert.ToDateTime(new_start_time).ToString("hh:mm tt");
                             if (page == 1)
                             {
-                                this_workflow.EndTime = String.IsNullOrEmpty(new_end_time) ? DateTime.MinValue.ToShortTimeString() : Convert.ToDateTime(new_end_time).ToString("HH:mm");
+                                this_workflow.EndTime = String.IsNullOrEmpty(new_end_time) ? DateTime.MinValue.ToShortTimeString() : Convert.ToDateTime(new_end_time).ToString("hh:mm tt");
                             }
                             else
                             {
@@ -550,7 +552,7 @@ namespace SobekCM.Library.MySobekViewer
                 current_workflows_no_durations = new Dictionary<string, Tracking_Workflow>();
             }
 
-            Tracking_Workflow this_workflow = new Tracking_Workflow();
+    //
             this_workflow.BibID = BibID;
             this_workflow.VID = VID;
             this_workflow.Equipment = equipment;
@@ -558,7 +560,7 @@ namespace SobekCM.Library.MySobekViewer
            
 
             //Add the date and time
-            string currentTime = DateTime.Now.ToString("HH:mm");
+            string currentTime = DateTime.Now.ToString("hh:mm tt");
 
 
             if (stage == 1 || stage == 3)
@@ -590,7 +592,7 @@ namespace SobekCM.Library.MySobekViewer
                                     error_message = "You have opened more than one unclosed workflow entry for this item today!";
                                     return;
                                 }
-                                start_Time = Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm");
+                                start_Time = Convert.ToDateTime(row["DateStarted"]).ToString("hh:mm tt");
                                 int temp;
                                 Int32.TryParse(row["ProgressID"].ToString(), out temp);
                                 this_workflow.WorkflowID = temp;
@@ -856,7 +858,7 @@ namespace SobekCM.Library.MySobekViewer
             //Add the hidden variables
             builder.AppendLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new page, etc..) -->");
             builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_behaviors_request\" name=\"Track_Item_behaviors_request\" value=\"\"/>");
-            builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_hidden_value\" name=\"Track_Item_hidden_value\"value=\"\"/>");
+            builder.AppendLine("<input type=\"hidden\" id=\"Track_Item_hidden_value\" name=\"Track_Item_hidden_value\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"TI_entry_type\" name=\"TI_entry_type\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_BibID\" name=\"hidden_BibID\" value=\"\"/>");
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_VID\" name=\"hidden_VID\" value=\"\" />");
@@ -946,7 +948,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (hidden_request == "read_manual_entry")
                 {
                     builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
-                    barcode_row_style = "style=\"margin-left:200px\";";
+                    barcode_row_style = "style=\"margin-left:200px;\"";
 
                     builder.AppendLine("<tr id=\"tblrow_Barcode\" " + barcode_row_style + "><td></td><td>Scan barcode here:</td>");
                     builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td>");
@@ -976,7 +978,7 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
                     builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 checked onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
-                    manual_row_style = "style=\"margin-left:200px\";";
+                    manual_row_style = "style=\"margin-left:200px;\"";
 
                     builder.AppendLine("<tr id=\"tblrow_Barcode\" " + barcode_row_style + "><td></td><td>Scan barcode here:</td>");
                     builder.AppendLine("         <td colspan=\"3\"><input type=\"text\" id=\"txtScannedString\" name=\"txtScannedString\" autofocus onchange=\"BarcodeStringTextbox_Changed(this.value);\"/></td>");
@@ -1027,10 +1029,38 @@ namespace SobekCM.Library.MySobekViewer
 
                 string selected_text_scanning = String.Empty;
                 string selected_text_processing = String.Empty;
+                  if (stage == 1 || stage == 2)
+                      selected_text_scanning = "selected";
+                  else
+                      selected_text_processing = "selected";
                 string currentTime = DateTime.Now.ToString("");
 
                 if (page == 1)
                 {
+                    string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                    //If this workflow has already been saved, get the saved information to display
+                    if (current_workflow_id > 0)
+                    {
+                        this_workflow = current_workflows[current_workflow_id.ToString()];
+                        //Tracking_Workflow thisSavedWorkflow = new Tracking_Workflow();
+                        bibid = this_workflow.BibID;
+                        vid = this_workflow.VID;
+                        title = this_workflow.Title;
+                        start_Time = this_workflow.StartTime;
+                        end_Time = this_workflow.EndTime;
+                        currentDate = this_workflow.Date;
+                        if (this_workflow.Workflow_type == 1 || this_workflow.Workflow_type == 2)
+                        {
+                            selected_text_scanning = "selected";
+                            selected_text_processing = String.Empty;
+                        }
+                        else
+                        {
+                            selected_text_scanning = String.Empty;
+                            selected_text_processing = "selected";
+                        }
+                    }
+
                     //Start the Tracking Info section
                     builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
                     builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
@@ -1056,7 +1086,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
                     builder.AppendLine("         </td>");
                     builder.AppendLine("         <td>Date:</td>");
-                    string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                    
                     //Set this as a JQuery datepicker field
                     //builder.AppendLine("<script type=\"text/javascript\">$(function(){$(\"#txtStartDate" + current_workflow_id + "\").datepicker();});</script>");
                     builder.AppendLine("         <td><input type=\"text\"  name=\"txtStartDate" + current_workflow_id + "\" id=\"txtStartDate" + current_workflow_id + "\" value=\"" + Convert.ToDateTime(currentDate).ToString("MM/dd/yyyy") + "\" /> </td>");
@@ -1154,11 +1184,11 @@ namespace SobekCM.Library.MySobekViewer
                         //Add the Start and End Times
                         builder.AppendLine("<tr>");
                         builder.AppendLine("<td>Start Time:</td>");
-                        builder.AppendLine("<td><input type=\"text\" name=\"txtStartTime" + thisWorkflowID + "\" id=\"txtStartTime" + thisWorkflowID + "\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("HH:mm") + "\"/></td>");
+                        builder.AppendLine("<td><input type=\"text\" name=\"txtStartTime" + thisWorkflowID + "\" id=\"txtStartTime" + thisWorkflowID + "\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("hh:mmtt") + "\"/></td>");
                         builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtStartTime" + thisWorkflowID + "\");</script>");
 
                         builder.AppendLine("<td>End Time:</td>");
-                        builder.AppendLine("<td><input type=\"text\" name=\"txtEndTime" + thisWorkflowID + "\" id=\"txtEndTime" + thisWorkflowID + "\" class=\"sbkTi_ErrorBox\" value = \"" + end_Time + "\"/></td></tr>");
+                        builder.AppendLine("<td><input type=\"text\" name=\"txtEndTime" + thisWorkflowID + "\" id=\"txtEndTime" + thisWorkflowID + "\" class=\"sbkTi_ErrorBox\" value = \"\"/></td></tr>");
                         builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtStartTime" + thisWorkflowID + "\");</script>");
 
                         builder.AppendLine("<tr><td colspan=\"4\"><span style=\"float:right;\">");
@@ -1211,7 +1241,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
      //               builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
                     builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">DONE</button>");
-                    builder.AppendLine("</div");
+                    builder.AppendLine("</div>");
                     builder.AppendLine("<br/><br/>");
 
    //             }
@@ -1324,11 +1354,33 @@ namespace SobekCM.Library.MySobekViewer
                 string selected_text_scanning = String.Empty;
                 string selected_text_processing = String.Empty;
                 string currentTime = DateTime.Now.ToString("");
+                string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
 
+            
 
                 //Start the Tracking Info section
                 if (page == 2)
                 {
+                    if (current_workflow_id > 0)
+                    {
+                        this_workflow = current_workflows_no_durations[current_workflow_id.ToString()];
+                        //Tracking_Workflow thisSavedWorkflow = new Tracking_Workflow();
+                        bibid = this_workflow.BibID;
+                        vid = this_workflow.VID;
+                        title = this_workflow.Title;
+                        currentDate = this_workflow.Date;
+                        if (this_workflow.Workflow_type == 1 || this_workflow.Workflow_type == 2)
+                        {
+                            selected_text_scanning = "selected";
+                            selected_text_processing = String.Empty;
+                        }
+                        else
+                        {
+                            selected_text_scanning = String.Empty;
+                            selected_text_processing = "selected";
+                        }
+                    }
+
                     builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Add Tracking Information</h2></span>");
                     builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
                     builder.AppendLine("<table class=\"sbkTi_table\">");
@@ -1344,7 +1396,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("                  <option value=\"2\"" + selected_text_processing + ">Processing</option></select>");
                     builder.AppendLine("         </td>");
                     builder.AppendLine("         <td>Date:</td>");
-                    string currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                    
                     builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate2\" id=\"txtStartDate2\" value=\"" + Convert.ToDateTime(currentDate).ToString("MM/dd/yyyy") + "\" /> </td>");
                     builder.AppendLine("<script type=\"text/javascript\">setDatePicker(\"txtStartDate2\");</script>");
                     builder.AppendLine("</tr>");
@@ -1396,7 +1448,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("<div id=\"divButtons\" style=\"float:right;\">");
            //         builder.AppendLine("    <button title=\"Save changes\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">SAVE</button>");
                     builder.AppendLine("    <button title=\"Save all changes and exit\" class=\"sbkMySobek_RoundButton\" onclick=\"save(); return false;\">DONE</button>");
-                    builder.AppendLine("</div");
+                    builder.AppendLine("</div>");
                     builder.AppendLine("<br/><br/>");
 
        //         }
