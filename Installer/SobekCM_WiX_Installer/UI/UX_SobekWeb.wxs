@@ -67,7 +67,8 @@ Patch dialog sequence:
 
 			<Publish Dialog="UI.DatabaseDialog" Control="Back" Event="NewDialog" Value="UI.SetupTypeDialog" Order="1"></Publish>
 			<Publish Dialog="UI.DatabaseDialog" Control="Back" Event="NewDialog" Value="UI.FeatureSelection" Order="2">AdvancedConfiguration</Publish>
-			<Publish Dialog="UI.DatabaseDialog" Control="Next" Event="NewDialog" Value="UI.RequirementsDialog" Order="9">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+			<Publish Dialog="UI.DatabaseDialog" Control="Next" Event="DoAction" Value="CA.CheckRemainingRequirements" Order="9">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
+			<Publish Dialog="UI.DatabaseDialog" Control="Next" Event="NewDialog" Value="UI.RequirementsDialog" Order="10">DB_SERVER AND DB_DATABASE AND ODBC_CONNECTION_ESTABLISHED</Publish>
 
 			<Publish Dialog="UI.RequirementsDialog" Control="Back" Event="NewDialog" Value="UI.DatabaseDialog" Order="1"></Publish>
 			<Publish Dialog="UI.RequirementsDialog" Control="Next" Event="NewDialog" Value="UI.ServiceAcctDialog" Order="9"></Publish>
@@ -111,7 +112,7 @@ Patch dialog sequence:
 			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.WelcomeDialog" Order="2">Installed AND PATCH</Publish>
 
 
-			<Publish Dialog="UI.ExitDialog" Control="Finish" Order="1" Event="DoAction" Value="CA.LaunchApplication">LAUNCHAPPONEXIT</Publish>
+			<Publish Dialog="UI.ExitDialog" Control="Finish" Event="DoAction" Value="CA.LaunchApplication" Order="1" >LAUNCHAPPONEXIT</Publish>
 			<Publish Dialog="UI.ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
 
 			<Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
