@@ -601,6 +601,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("   globalVar.debuggerOn = true; //debugger flag ");
             else
                 mapeditBuilder.AppendLine("   globalVar.debuggerOn = false; //debugger flag ");
+
+            //todo add collection load type here
+            //mapeditBuilder.AppendLine("   globalVar.collectionLoadType = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+            
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
 
@@ -786,8 +790,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add all the polygons to page
                 #region
-                //iterate how many we have added
-                int totalAddedPolygonIndex = 0;
+                //iteraters 
+                int totalAddedPolygonIndex = 0; //this holds the index counter or code/array counter (IE starts with 0)
+                int totalAddedPolygonCount = 0; //this holds the real (human) count not the index (IE starts at 1)
                 //go through and add the existing polygons
                 if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
                 {
@@ -795,6 +800,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     #region Add overlays first! this fixes index issues wtotalAddedPolygonIndexhin (thus index is always id minus 1)
                     foreach (Coordinate_Polygon itemPolygon in allPolygons)
                     {
+                        //do this so long as it is not a poi
                         if (itemPolygon.FeatureType != "poi")
                         {
                             //add the featureType
@@ -802,13 +808,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"main\";");
                             else
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
+
                             //add the polygonType
                             if (itemPolygon.PolygonType == "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"rectangle\";");
                             else
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
+                            
                             //add the label
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                            
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
                             string bounds1 = "new google.maps.LatLng";
@@ -842,6 +851,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             bounds += ")";
                             //add the bounds
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = " + bounds + ";"); //changed from bounds
+                            
                             //add image url
                             try
                             {
@@ -866,11 +876,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //there is no image
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = null;");
                             }
+                            
                             //add rotation
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + totalAddedPolygonIndex + "] = " + itemPolygon.Rotation + ";");
+                            
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + itemPolygon.Page_Sequence + ";");
-                            //iterate
+
+                            //increment the totalAddedPolygonCount (the actual number of polys added)
+                            totalAddedPolygonCount++;
+
+                            //iterate index
                             totalAddedPolygonIndex++;
                         }
                     }
@@ -888,7 +904,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add label
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
                             //add page sequence
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
+                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + totalAddedPolygonCount + ";");
                             //add image url
                             try
                             {
@@ -917,6 +933,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
                                 //throw;
                             }
+
+                            //increment the totalAddedPolygonCount (the actual number of polys added)
+                            totalAddedPolygonCount++;
+
+                            //increment index
                             totalAddedPolygonIndex++;
                         }
                     }
