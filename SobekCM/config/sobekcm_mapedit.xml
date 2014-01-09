@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_config 
 		http://sobekrepository.org/schemas/sobekcm_config.xsd">
 	<customCollections>
-		<collection id="IR00003495" bounds="new google.maps.LatLngBounds(new google.maps.LatLng(29.78225755812941, -81.4306640625),new google.maps.LatLng(29.99181288866604, -81.1917114257))" mapCenter="new google.maps.LatLng(29.8944, -81.3147)" kmlLayer="new google.maps.KmlLayer('http://hlmatt.com/uf/kml/10.kml')" />
-		<collection id="IR00003496" note="fake BIB" />
-		<collection id="IR00003497" note="fake BIB" />
+		<collection id="UF00071783" strictBounds="new google.maps.LatLngBounds(new google.maps.LatLng(29.78225755812941, -81.4306640625),new google.maps.LatLng(29.99181288866604, -81.1917114257))" mapCenter="new google.maps.LatLng(29.8944, -81.3147)" kmlLayer="new google.maps.KmlLayer('http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz')" />
+		<collection id="IR00003495" strictBounds="new google.maps.LatLngBounds(new google.maps.LatLng(29.78225755812941, -81.4306640625),new google.maps.LatLng(29.99181288866604, -81.1917114257))" mapCenter="new google.maps.LatLng(29.8944, -81.3147)" kmlLayer="new google.maps.KmlLayer('http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz')" />
+		<collection id="USACH" strictBounds="new google.maps.LatLngBounds(new google.maps.LatLng(29.78225755812941, -81.4306640625),new google.maps.LatLng(29.99181288866604, -81.1917114257))" mapCenter="new google.maps.LatLng(29.8944, -81.3147)" kmlLayer="new google.maps.KmlLayer('http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz')" />
 	</customCollections>
 </SobekCM_Config>
