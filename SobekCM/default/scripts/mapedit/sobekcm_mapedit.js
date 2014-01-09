@@ -48,7 +48,6 @@ initDeclarations();
 
 //init declarations
 function initDeclarations() {
-
     //init global object    
     globalVar = function () {
         //private
@@ -59,6 +58,7 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            kmlLayer: null,                             //holds kml layer from server
             debuggerOn: false,                          //holds debugger flag
             toServerSuccessMessage: "Completed",        //holds server success message
             listItemHighlightColor: "#FFFFC2",          //holds the default highlight color 
@@ -79,6 +79,8 @@ function initDeclarations() {
             buttonActive_poiLine: false,                //not currently used
             userMayLoseData: false,                     //holds a marker to determine if signifigant changes have been made to require a save
             baseURL: null,                              //holds place for server written vars
+            collectionLoadType: null,                   //hold place for collection load type
+            collectionParams: [],                       //hold place for collection params
             defaultOpacity: 0.5,                        //holds default opacity settings
             isConvertedOverlay: false,                  //holds a marker for converted overlay
             RIBMode: false,                             //holds a marker for running in background mode (do not display messages)
@@ -2203,6 +2205,33 @@ function setupInterface(collection) {
             //    new google.maps.LatLng(25.06678967039041, -77.33330048828125)
             //);
             break;
+        case "readFromXML":
+            //not supported in config file yet (for some reasons these must be first)
+            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
+            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
+            globalVar.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) 
+            globalVar.preservedRotation = 0;                                                  //rotation, default
+            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
+            globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+            //support in config file (loaded directly on page)
+            //globalVar.mapCenter = params[3];
+            //globalVar.strictBounds = params[2];
+            //KmlLayer = new google.maps.KmlLayer(params[4]);
+            KmlLayer = globalVar.kmlLayer;
+            break;
     }
 }
 
@@ -3097,6 +3126,7 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
         initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
         initOverlayList(); //list all the overlays in the list box"
+        resizeView(); //explicitly call resizer, fixes unknow issue where timeout of divs being added when there are a lot (IE many overlays)
     });
 }
 
@@ -4283,12 +4313,12 @@ CustomOverlay.prototype.onRemove = function () {
     this.div_ = null;
 };
 
+//start the whole thing
+//globalVar.collectionLoadType
+setupInterface("stAugustine"); //defines interface
+
 //start this whole mess once the google map is loaded
 google.maps.event.addDomListener(window, 'load', initialize);
-
-//start the whole thing
-//todo make this dynamic and read from the collection
-setupInterface("stAugustine"); //defines interface
 
 //#endregion
 
@@ -4360,8 +4390,6 @@ var drawingManager = new google.maps.drawing.DrawingManager({
     polylineOptions: globalVar.polylineOptionsDefault,
     rectangleOptions: globalVar.rectangleOptionsDefault
     });
-
-KmlLayer.setOptions({ suppressinfowindows: true });
 
 //define custom copyright control
 //supporting url: https://developers.google.com/maps/documentation/javascript/controls#CustomControls
@@ -4480,6 +4508,9 @@ function initOptions() {
 
     //closes loading blanket
     document.getElementById("mapedit_blanket_loading").style.display = "none";
+    
+    //moved here to fix issue where assignment before init
+    KmlLayer.setOptions({ suppressinfowindows: true });
 
 }
 
@@ -4499,6 +4530,9 @@ function openToolboxTab(id) {
     }
     if (id == "poi") {
         id = 4;
+        //explicitly reopen the dm
+        drawingManager.setMap(map);
+        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE], markerOptions: globalVar.markerOptionsPOI, circleOptions: globalVar.circleOptionsPOI, rectangleOptions: globalVar.rectangleOptionsPOI, polygonOptions: globalVar.polygonOptionsPOI, polylineOptions: globalVar.polylineOptionsPOI } });
     }
 
     $("#mapedit_container_toolboxTabs").accordion({ active: id });
