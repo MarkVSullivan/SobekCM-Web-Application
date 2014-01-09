@@ -602,8 +602,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine("   globalVar.debuggerOn = true; //debugger flag ");
             else
                 mapeditBuilder.AppendLine("   globalVar.debuggerOn = false; //debugger flag ");
+            
+            mapeditBuilder.AppendLine(" } ");
+            mapeditBuilder.AppendLine(" ");
 
-            //add collection load type
+            //config settings writer section 
+            mapeditBuilder.AppendLine(" // Add Config Settings Objects ");
+            mapeditBuilder.AppendLine(" function initConfigSettings(){ ");
+
+            //add collection load type and attributes
             #region
 
             //init collection load type
@@ -615,11 +622,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //read collectionIds from config.xml file
             try
             {
-                //MOVE THIS TO AN EXML FILE
-                //String xmlString = "<customCollections><collection id=\"IR00003495\"/><collection id=\"IR00003496\"/><collection id=\"IR00003497\"/></customCollections>";
-                //FileStream fs = new FileStream(@"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\config\sobekcm_mapedit.config", FileMode.Open, FileAccess.Read);
-
-                //XmlReader reader = XmlReader.Create(CurrentMode.Base_URL + "./config/sobekcm_mapedit.xml");
 
                 //read through and get all the ids
                 using (XmlReader reader = XmlReader.Create(CurrentMode.Base_URL + "./config/sobekcm_mapedit.xml"))
@@ -644,7 +646,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 foreach (string collectionId in collectionIdsFromConfig)
                 {
                     //compare collectionID to all collectionIDs 
-                    if (CurrentItem.BibID == collectionId)
+                    if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId)||(CurrentItem.BibID == collectionId))
                     {
                         //if found, assign "readFromXML" as first param
                         collectionLoadParams.Add("readFromXML");
@@ -671,7 +673,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                                     //store param
                                                     collectionLoadParams.Add(reader.Value); //not currently used
                                                     //add param to page
-                                                    mapeditBuilder.AppendLine("   globalVar." + reader.Name + " = " + reader.Value + "; //add config param "); //could not determine how to get attribute's name
+                                                    mapeditBuilder.AppendLine("   globalVar." + reader.Name + " = " + reader.Value + "; //adding "+reader.Name); //could not determine how to get attribute's name
                                                 }
                                             }
                                             break;
@@ -691,7 +693,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 throw;
             }
             //determine if there is a custom collection to load
-            if (collectionLoadParams.Count>1)
+            if (collectionLoadParams.Count > 1)
                 collectionLoadType = collectionLoadParams[0];
             else
                 collectionLoadType = "default";
@@ -700,10 +702,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             #endregion
 
-            
-            
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
+
 
             //geo objects writer section 
             mapeditBuilder.AppendLine(" // Add Geo Objects ");
