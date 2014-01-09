@@ -107,11 +107,14 @@
 		<CustomAction Id="CA.ValidateWebCredentials" BinaryKey="FI.CustomActionsFile" DllEntry="ValidateWebCredentials" Execute="immediate"  Return="check" Impersonate="yes" />
 		<CustomAction Id="CA.ValidateBuilderCredentials" BinaryKey="FI.CustomActionsFile" DllEntry="ValidateBuilderCredentials" Execute="immediate"  Return="check" Impersonate="yes" />
 		<CustomAction Id="CA.VerifySqlConnection" BinaryKey="FI.CustomActionsFile" DllEntry="VerifySqlConnection" Execute="immediate"  Return="check" Impersonate="yes" />
-		<CustomAction Id="CA.UpdatePropsWithSelectedWebSite" BinaryKey="FI.CustomActionsFile" DllEntry="UpdatePropsWithSelectedWebSite" Execute="immediate" Return="check" />
+	  <CustomAction Id="CA.CheckRemainingRequirements" BinaryKey="FI.CustomActionsFile" DllEntry="CheckRemainingRequirements" Execute="immediate" Impersonate="yes" Return="check" />
+	  <CustomAction Id="CA.UpdatePropsWithSelectedWebSite" BinaryKey="FI.CustomActionsFile" DllEntry="UpdatePropsWithSelectedWebSite" Execute="immediate" Return="check" />
 		<CustomAction Id="CA.EnsureWebSiteSelected" BinaryKey="FI.CustomActionsFile" DllEntry="EnsureWebSiteSelected" Execute="immediate" Return="check" />
 		<CustomAction Id="CA.FinalizeDatabaseConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeDatabaseConfig" Execute="deferred" Return="check" Impersonate="yes" />
 		<CustomAction Id="CA.FinalizeWebConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeWebConfig" Execute="deferred" Return="check" Impersonate="no" />
 		<CustomAction Id="CA.LaunchApplication" BinaryKey="FI.CustomActionsFile" DllEntry="LaunchApplication" Execute="immediate" Impersonate="yes" Return="check" />
+		<CustomAction Id="CA.ShowHelp" BinaryKey="FI.CustomActionsFile" DllEntry="ShowHelp" Execute="immediate" Impersonate="yes" Return="check" />
+
 		
 		<!-- Custom action to set the properties for the deferred action -->
 		<CustomAction Id="CA.SetPropertyWebConfig" Execute="immediate" Property="CA.FinalizeWebConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];web_account_arg=[WEB_SERVICE_ACCOUNT];web_directory_arg=[WEBINSTALLFOLDER];virtual_dir_arg=[VIRTUAL_DIRECTORY];inst_name_arg=[INSTITUTION_NAME];inst_code_arg=[INSTITUTION_CODE]" />

@@ -16,66 +16,129 @@
 			<TextStyle Id="UI.Font.Missing" FaceName="Tahoma" Size="10" Bold="yes" Red="170" Green="23" Blue="23" />
 			
 			<Dialog Id="UI.RequirementsDialog"  Width="470" Height="370" Title="SobekCM Prerequisites" NoMinimize="yes">
+
+				<Control Id="MainLabel" Type="Text" X="35" Y="75" Width="400" Height="40" TabSkip="no" Text="The following prerequisites are required before the installation can continue:" />
+
 				
 				<!-- .net 4.5 required to even run this installer, so this is always met -->
-				<Control Id="NetFrameworkMetBitmap" Type="Bitmap" X="35" Y="70" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" />
-				<Control Id="NetFrameworkMetLabel" Type="Text" X="58" Y="71" Width="400" Height="20" TabSkip="no" Text="{\UI.Font.Met}.NET Framework 4.5 is installed" />
+				<Control Id="NetFrameworkMetBitmap" Type="Bitmap" X="65" Y="100" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" />
+				<Control Id="NetFrameworkMetLabel" Type="Text" X="88" Y="101" Width="360" Height="20" TabSkip="no" Text="{\UI.Font.Met}.NET Framework 4.5 is installed" />
 
 				<!-- DATABASE REQUIREMENTS MET -->
-				<Control Id="DbMetBitmap" Type="Bitmap" X="35" Y="100" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+				<Control Id="DbMetBitmap" Type="Bitmap" X="65" Y="125" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
 					<Condition Action="hide">NOT SQL_FULL_TEXT_INSTALLED</Condition>
 				</Control>
-				<Control Id="DbMetLabel" Type="Text" X="58" Y="101" Width="400" Height="20" TabSkip="no" Text="{\UI.Font.Met}SQL Database with full-text indexing enabled" >
+				<Control Id="DbMetLabel" Type="Text" X="88" Y="126" Width="360" Height="20" TabSkip="no" Text="{\UI.Font.Met}SQL Database with full-text indexing enabled" >
 					<Condition Action="hide">NOT SQL_FULL_TEXT_INSTALLED</Condition>
 				</Control>
 				
 				<!-- DATABASE REQUIREMENTS NOT MET ( FULL TEXT NOT INSTALLED )-->
-				<Control Id="DbMissingBitmap" Type="Bitmap" X="35" Y="100" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+				<Control Id="DbMissingBitmap" Type="Bitmap" X="65" Y="125" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
 					<Condition Action="hide">SQL_FULL_TEXT_INSTALLED</Condition>
 				</Control>
-				<Control Id="DbMissingLabel" Type="Text" X="58" Y="101" Width="400" Height="20" TabSkip="no" Text="{\UI.Font.Missing}SQL Database does not have full-text indexing enabled" >
+				<Control Id="DbMissingLabel" Type="Text" X="88" Y="126" Width="360" Height="20" TabSkip="no" Text="{\UI.Font.Missing}SQL Database does not have full-text indexing enabled" >
 					<Condition Action="hide">SQL_FULL_TEXT_INSTALLED</Condition>
 				</Control>
 				
 				<!-- IIS NOT REQUIRED FOR THIS INSTALL -->
-				<Control Id="IisDisabledBitmap" Type="Bitmap" X="35" Y="130" Width="15" Height="15" TabSkip="no" Text="UI.Image.Disabled" >
+				<Control Id="IisDisabledBitmap" Type="Bitmap" X="65" Y="150" Width="15" Height="15" TabSkip="no" Text="UI.Image.Disabled" >
 					<Condition Action="hide">InstallWeb</Condition>
 				</Control>
-				<Control Id="IisDisabledLabel" Type="Text" X="58" Y="131" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Disabled}IIS not required for your installation" >
+				<Control Id="IisDisabledLabel" Type="Text" X="88" Y="151" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Disabled}IIS not required for your installation" >
 					<Condition Action="hide">InstallWeb</Condition>
 				</Control>
 
 				<!-- IIS REQUIRED AND FOUND FOR THIS INSTALL -->
-				<Control Id="IisMetBitmap" Type="Bitmap" X="35" Y="130" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+				<Control Id="IisMetBitmap" Type="Bitmap" X="65" Y="150" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
 					<Condition Action="hide">NOT InstallWeb OR NOT IIS_MAJOR_VERSION</Condition>
 				</Control>
-				<Control Id="IisMetLabel" Type="Text" X="58" Y="131" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Met}IIS is installed" >
+				<Control Id="IisMetLabel" Type="Text" X="88" Y="151" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Met}IIS is installed" >
 					<Condition Action="hide">NOT InstallWeb OR NOT IIS_MAJOR_VERSION</Condition>
 				</Control>
 				
 				<!-- IIS REQUIRED AND NOT MET FOR THIS INSTALL -->
-				<Control Id="IisMissingBitmap" Type="Bitmap" X="35" Y="130" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+				<Control Id="IisMissingBitmap" Type="Bitmap" X="65" Y="150" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
 					<Condition Action="hide">NOT InstallWeb OR IIS_MAJOR_VERSION</Condition>
 				</Control>
-				<Control Id="IisMissingLabel" Type="Text" X="58" Y="131" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Missing}IIS is not installed on this machine" >
+				<Control Id="IisMissingLabel" Type="Text" X="88" Y="151" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Missing}IIS is not installed on this machine" >
 					<Condition Action="hide">NOT InstallWeb OR  IIS_MAJOR_VERSION</Condition>
 				</Control>
 				
-				<!-- APACHE TOMCAT -->
+				<!-- APACHE TOMCAT NOT REQUIRED FOR THIS INSTALL -->
+				<Control Id="TomcatDisabledBitmap" Type="Bitmap" X="65" Y="175" Width="15" Height="15" TabSkip="no" Text="UI.Image.Disabled" >
+					<Condition Action="hide">InstallSolr</Condition>
+				</Control>
+				<Control Id="TomcatDisabledLabel" Type="Text" X="88" Y="176" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Disabled}Apache Tomcat not required for your installation" >
+					<Condition Action="hide">InstallSolr</Condition>
+				</Control>
 
-				
+				<!-- APACHE TOMCAT REQUIRED AND FOUND FOR THIS INSTALL -->
+				<Control Id="TomcatMetBitmap" Type="Bitmap" X="65" Y="175" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+					<Condition Action="hide">NOT InstallSolr OR NOT TOMCAT_DIRECTORY</Condition>
+				</Control>
+				<Control Id="TomcatMetLabel" Type="Text" X="88" Y="176" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Met}Apache Tomcat is installed" >
+					<Condition Action="hide">NOT InstallSolr OR NOT TOMCAT_DIRECTORY</Condition>
+				</Control>
 
-				
-				
+				<!-- APACHE TOMCAT REQUIRED AND NOT MET FOR THIS INSTALL -->
+				<Control Id="TomcatMissingBitmap" Type="Bitmap" X="65" Y="175" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+					<Condition Action="hide">NOT InstallSolr OR TOMCAT_DIRECTORY</Condition>
+				</Control>
+				<Control Id="TomcatMissingLabel" Type="Text" X="88" Y="176" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Missing}Apache Tomcat is not installed on this machine" >
+					<Condition Action="hide">NOT InstallSolr OR  TOMCAT_DIRECTORY</Condition>
+				</Control>
 
-				<Control Id="IisNotNeededBitmap" Type="Bitmap" X="35" Y="160" Width="15" Height="15" TabSkip="no" Text="UI.Image.Disabled" />
-				<Control Id="MainLabel3" Type="Text" X="58" Y="161" Width="400" Height="40" TabSkip="no" Text="{\UI.Font.Disabled}Apache Tomcat is not required for your installation" />
 
+				<Control Id="MainLabel2" Type="Text" X="35" Y="205" Width="400" Height="40" TabSkip="no" Text="The following optional components help the SobekCM Builder / Bulk Loader process digital resource files:" >
+					<Condition Action="hide">NOT InstallBuilder</Condition>
+				</Control>
+
+				<!-- (OPTIONAL) GHOSTSCRIPT FOUND FOR THIS INSTALL -->
+				<Control Id="GhostscriptMetBitmap" Type="Bitmap" X="65" Y="240" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+					<Condition Action="hide">NOT InstallBuilder OR NOT GHOSTSCRIPT_DIRECTORY</Condition>
+				</Control>
+				<Control Id="GhostscriptMetLabel" Type="Text" X="88" Y="241" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Met}Ghostscript is installed" >
+					<Condition Action="hide">NOT InstallBuilder OR NOT GHOSTSCRIPT_DIRECTORY</Condition>
+				</Control>
+
+				<!-- (OPTIONAL) GHOSTSCRIPT NOT FOUND FOR THIS INSTALL -->
+				<Control Id="GhostscriptMissingBitmap" Type="Bitmap" X="65" Y="240" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+					<Condition Action="hide">NOT InstallBuilder OR GHOSTSCRIPT_DIRECTORY</Condition>
+				</Control>
+				<Control Id="GhostscriptMissingLabel" Type="Text" X="88" Y="241" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Missing}(Optional) Ghostscript is not installed on this machine" >
+					<Condition Action="hide">NOT InstallBuilder OR  GHOSTSCRIPT_DIRECTORY</Condition>
+				</Control>
+
+				<!-- (OPTIONAL) IMAGEMAGICK NOT FOUND FOR THIS INSTALL -->
+				<Control Id="ImageMagickMetBitmap" Type="Bitmap" X="65" Y="265" Width="15" Height="15" TabSkip="no" Text="UI.Image.Met" >
+					<Condition Action="hide">NOT InstallBuilder OR NOT IMAGEMAGICK_DIRECTORY</Condition>
+				</Control>
+				<Control Id="ImageMagickMetLabel" Type="Text" X="88" Y="266" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Met}ImageMagick is installed" >
+					<Condition Action="hide">NOT InstallBuilder OR NOT IMAGEMAGICK_DIRECTORY</Condition>
+				</Control>
+
+				<!-- (OPTIONAL) IMAGEMAGICK FOUND FOR THIS INSTALL -->
+				<Control Id="ImageMagickMissingBitmap" Type="Bitmap" X="65" Y="265" Width="15" Height="15" TabSkip="no" Text="UI.Image.Missing" >
+					<Condition Action="hide">NOT InstallBuilder OR IMAGEMAGICK_DIRECTORY</Condition>
+				</Control>
+				<Control Id="ImageMagickMissingLabel" Type="Text" X="88" Y="266" Width="360" Height="40" TabSkip="no" Text="{\UI.Font.Missing}(Optional) ImageMagick is not installed on this machine" >
+					<Condition Action="hide">NOT InstallBuilder OR  IMAGEMAGICK_DIRECTORY</Condition>
+				</Control>
+
+				<Control Id="MainLabel3" Type="Text" X="35" Y="295" Width="400" Height="40" TabSkip="no" Text="The missing optional software can be installed at any time and will not stop this installation." >
+					<Condition Action="hide">NOT InstallBuilder OR ( GHOSTSCRIPT_DIRECTORY AND IMAGEMAGICK_DIRECTORY) </Condition>
+				</Control>
 
 				<!-- Standard buttons -->
 				<Control Id="BottomLine" Type="Line" X="0" Y="334" Width="470" Height="0" />
+				<Control Id="Help" Type="PushButton" X="20" Y="343" Width="56" Height="17" Text="Help">
+					<Condition Action="hide">(NOT InstallSolr OR TOMCAT_DIRECTORY) AND ( NOT InstallWeb OR IIS_MAJOR_VERSION ) AND ( SQL_FULL_TEXT_INSTALLED )</Condition>
+					<Publish Event="DoAction" Value="CA.ShowHelp" Order="1" >1</Publish>
+				</Control>
 				<Control Id="Back" Type="PushButton" X="280" Y="343" Width="56" Height="17" Text="!(loc.WixUIBack)"></Control>
-				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)"></Control>
+				<Control Id="Next" Type="PushButton" X="336" Y="343" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+					<Condition Action="disable">(InstallSolr AND NOT TOMCAT_DIRECTORY) OR ( InstallWeb AND NOT IIS_MAJOR_VERSION ) OR (NOT SQL_FULL_TEXT_INSTALLED )</Condition>
+				</Control>
 				<Control Id="Cancel" Type="PushButton" X="404" Y="343" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
 					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
 				</Control>
