@@ -448,4 +448,15 @@ function setTimePicker(elementID) {
     var thisElement = document.getElementById(elementID);
  //     alert(thisElement);
     $("#" + elementID).timeEntry();
+    
+    //Also apply the formatter.js formatter to auto-format user entered time
+   // alert('Applying formatter to '+elementID);
+    //$("#" + elementID).formatter({
+    //    'pattern' :  '{{99}}:{{99}} {{a}}{{M}}',
+    //'persistent' : true});
+    
+    //$('#'+elementID).formatter({
+    //    'pattern': '{{999}}-{{999}}-{{999}}-{{9999}}',
+    //    'persistent': true
+    //});
 }
