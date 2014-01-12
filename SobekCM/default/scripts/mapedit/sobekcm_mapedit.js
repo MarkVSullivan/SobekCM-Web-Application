@@ -10,10 +10,12 @@ This file loads all of the custom javascript libraries needed to run the mapedit
 var globalVar; //holds global vars
 var localize; //holds localization stuff
 
+//init config vars (for some reasons these must be init before anything else)
+//var KmlLayer = new google.maps.KmlLayer("https://developers.google.com/kml/documentation/KML_Samples.kml‎");               //must be pingable by google (this is just a test layer that must be used to init layer)
+
 //other global vars
 //todo move into init object (it gets dicey)
 CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
-var KmlLayer;               //must be pingable by google
 var geocoder;               //must define before use
 var label = [];             //used as label of poi
 var infoWindow = [];        //poi infowindow
@@ -46,9 +48,13 @@ function debugClear() {
 //todo move into a document onload listener (TEMP)
 initDeclarations();
 
+//start the whole thing
+//globalVar.collectionLoadType
+initConfigSettings();
+setupInterface(globalVar.collectionLoadType); //defines interface
+
 //init declarations
 function initDeclarations() {
-
     //init global object    
     globalVar = function () {
         //private
@@ -59,6 +65,7 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            kmlLayer: null,                             //holds kml layer from server
             debuggerOn: false,                          //holds debugger flag
             toServerSuccessMessage: "Completed",        //holds server success message
             listItemHighlightColor: "#FFFFC2",          //holds the default highlight color 
@@ -79,6 +86,8 @@ function initDeclarations() {
             buttonActive_poiLine: false,                //not currently used
             userMayLoseData: false,                     //holds a marker to determine if signifigant changes have been made to require a save
             baseURL: null,                              //holds place for server written vars
+            collectionLoadType: null,                   //hold place for collection load type
+            collectionParams: [],                       //hold place for collection params
             defaultOpacity: 0.5,                        //holds default opacity settings
             isConvertedOverlay: false,                  //holds a marker for converted overlay
             RIBMode: false,                             //holds a marker for running in background mode (do not display messages)
@@ -2076,139 +2085,9 @@ function clear(id) {
 
 //#region main google functions
 
-///<summary>Setups everything with user defined options</summary>
-///<param name="collection" type="string">Specify the type of collection to load</param>
-function setupInterface(collection) {
-    ///<summary>Setups everything with user defined options</summary>
-    ///<param name="collection" type="string">Specify the type of collection to load</param>
-    //todo make this auto generated  
-
-    google.maps.visualRefresh = true; //Enable the visual refresh (new gmaps)
-
-    switch (collection) {
-        case "default":
-            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-            globalVar.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
-            globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
-            globalVar.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-            globalVar.preservedRotation = 0;                                                  //rotation, default
-            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
-            globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            globalVar.strictBounds = null;                                                    //set the bounds for this google map instance (set to null for no bounds)
-            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-            break;
-        case "stAugustine":
-            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-            globalVar.mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
-            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            //KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
-            KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
-            globalVar.defaultZoomLevel = 14;                                                  //zoom level, starting
-            globalVar.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
-            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-            globalVar.preservedRotation = 0;                                                  //rotation, default
-            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
-            globalVar.preservedOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
-            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-            globalVar.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                new google.maps.LatLng(29.78225755812941, -81.4306640625),
-                new google.maps.LatLng(29.99181288866604, -81.1917114257)
-            );
-            break;
-        case "custom":
-            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-            globalVar.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/parcels_2012_kmz_fldor.kmz");  //must be pingable by google
-            globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
-            globalVar.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
-            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-            globalVar.preservedRotation = 0;                                                  //rotation, default
-            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
-            globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-            globalVar.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                new google.maps.LatLng(29.21570636285318, -82.87811279296875),
-                new google.maps.LatLng(30.07978967039041, -81.76300048828125)
-            );
-            break;
-        case "florida":
-            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-            globalVar.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-            KmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
-            globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
-            globalVar.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) 
-            globalVar.preservedRotation = 0;                                                  //rotation, default
-            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
-            globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-            globalVar.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                //new google.maps.LatLng(30.69420636285318, -88.04311279296875), //fl nw
-                //new google.maps.LatLng(25.06678967039041, -77.33330048828125) //fl se
-                //new google.maps.LatLng(24.55531738915811, -81.78283295288095), //fl sw
-                //new google.maps.LatLng(30.79109834517092, -81.53709923706058) //fl ne
-                //new google.maps.LatLng(29.5862, -82.4146), //gville
-                //new google.maps.LatLng(29.7490, -82.2106)
-                new google.maps.LatLng(22.053908635225607, -86.18838838405613), //east coast
-                new google.maps.LatLng(36.06512404320089, -76.72320000000003)
-            );
-
-            //globalVar.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-            //    new google.maps.LatLng(30.69420636285318, -88.04311279296875),
-            //    new google.maps.LatLng(25.06678967039041, -77.33330048828125)
-            //);
-            break;
-    }
-}
-
 //on page load functions (mainly google map event listeners)
 function initialize() {
-
+    
     //get and set the page load time (this is used for the resizer)
     globalVar.pageLoadTime = new Date().getTime();
 
@@ -3097,6 +2976,7 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
         initOptions(); //setup the graphical user interface (enhances visual effect to do all of this after map loads)
         initOverlayList(); //list all the overlays in the list box"
+        resizeView(); //explicitly call resizer, fixes unknow issue where timeout of divs being added when there are a lot (IE many overlays)
     });
 }
 
@@ -4286,10 +4166,6 @@ CustomOverlay.prototype.onRemove = function () {
 //start this whole mess once the google map is loaded
 google.maps.event.addDomListener(window, 'load', initialize);
 
-//start the whole thing
-//todo make this dynamic and read from the collection
-setupInterface("stAugustine"); //defines interface
-
 //#endregion
 
 //#region Define google map objects
@@ -4361,8 +4237,6 @@ var drawingManager = new google.maps.drawing.DrawingManager({
     rectangleOptions: globalVar.rectangleOptionsDefault
     });
 
-KmlLayer.setOptions({ suppressinfowindows: true });
-
 //define custom copyright control
 //supporting url: https://developers.google.com/maps/documentation/javascript/controls#CustomControls
 var copyrightNode = document.createElement('div');
@@ -4409,6 +4283,150 @@ toolbarBufferZone2.style.height = '50px';
 //Utilities
 
 //#region Utility Functions
+
+///<summary>Setups everything with user defined options</summary>
+///<param name="collection" type="string">Specify the type of collection to load</param>
+function setupInterface(collection) {
+    ///<summary>Setups everything with user defined options</summary>
+    ///<param name="collection" type="string">Specify the type of collection to load</param>
+    //todo make this auto generated  
+
+    google.maps.visualRefresh = true; //Enable the visual refresh (new gmaps)
+
+    switch (collection) {
+        case "default":
+            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
+            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            globalVar.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
+            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
+            globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
+            globalVar.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            globalVar.preservedRotation = 0;                                                  //rotation, default
+            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
+            globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            globalVar.strictBounds = null;                                                    //set the bounds for this google map instance (set to null for no bounds)
+            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+            break;
+        case "stAugustine":
+            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
+            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            globalVar.mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
+            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
+            globalVar.defaultZoomLevel = 14;                                                  //zoom level, starting
+            globalVar.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            globalVar.preservedRotation = 0;                                                  //rotation, default
+            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
+            globalVar.preservedOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
+            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+            globalVar.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+                new google.maps.LatLng(29.78225755812941, -81.4306640625),
+                new google.maps.LatLng(29.99181288866604, -81.1917114257)
+            );
+            break;
+        case "florida":
+            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
+            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            globalVar.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
+            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            KmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
+            globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
+            globalVar.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) 
+            globalVar.preservedRotation = 0;                                                  //rotation, default
+            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
+            globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+            globalVar.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
+                //new google.maps.LatLng(30.69420636285318, -88.04311279296875), //fl nw
+                //new google.maps.LatLng(25.06678967039041, -77.33330048828125) //fl se
+                //new google.maps.LatLng(24.55531738915811, -81.78283295288095), //fl sw
+                //new google.maps.LatLng(30.79109834517092, -81.53709923706058) //fl ne
+                //new google.maps.LatLng(29.5862, -82.4146), //gville
+                //new google.maps.LatLng(29.7490, -82.2106)
+                new google.maps.LatLng(22.053908635225607, -86.18838838405613), //east coast
+                new google.maps.LatLng(36.06512404320089, -76.72320000000003)
+            );
+            break;
+        case "readFromXML":
+            globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
+            globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            globalVar.defaultZoomLevel = 14;                                                  //zoom level, starting
+            globalVar.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+            globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
+            globalVar.preservedRotation = 0;                                                  //rotation, default
+            globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
+            globalVar.preservedOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
+            globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+            
+            ////not supported in config file yet (for some reasons these must be first)
+            //globalVar.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
+            //globalVar.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
+            //globalVar.mapLayerActive = "Roadmap";                                             //what map layer is displayed
+            //globalVar.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
+            //globalVar.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
+            //globalVar.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
+            //globalVar.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
+            //globalVar.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
+            //globalVar.defaultZoomLevel = 13;                                                  //zoom level, starting
+            //globalVar.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+            //globalVar.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
+            //globalVar.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
+            //globalVar.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
+            //globalVar.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
+            //globalVar.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) 
+            //globalVar.preservedRotation = 0;                                                  //rotation, default
+            //globalVar.knobRotationValue = 0;                                                  //rotation to display by default 
+            //globalVar.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
+            //globalVar.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+            ////support in config file (loaded directly on page)
+            ////globalVar.mapCenter = params[3];
+            ////globalVar.strictBounds = params[2];
+            ////KmlLayer = new google.maps.KmlLayer(params[4]);
+            KmlLayer = globalVar.kmlLayer;
+            break;
+    }
+}
 
 //inits user defined options
 function initOptions() {
@@ -4480,6 +4498,9 @@ function initOptions() {
 
     //closes loading blanket
     document.getElementById("mapedit_blanket_loading").style.display = "none";
+    
+    //moved here to fix issue where assignment before init
+    KmlLayer.setOptions({ suppressinfowindows: true });
 
 }
 
@@ -4499,6 +4520,9 @@ function openToolboxTab(id) {
     }
     if (id == "poi") {
         id = 4;
+        //explicitly reopen the dm
+        drawingManager.setMap(map);
+        drawingManager.setOptions({ drawingControl: true, drawingControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP, drawingModes: [google.maps.drawing.OverlayType.MARKER, google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.RECTANGLE, google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.POLYLINE], markerOptions: globalVar.markerOptionsPOI, circleOptions: globalVar.circleOptionsPOI, rectangleOptions: globalVar.rectangleOptionsPOI, polygonOptions: globalVar.polygonOptionsPOI, polylineOptions: globalVar.polylineOptionsPOI } });
     }
 
     $("#mapedit_container_toolboxTabs").accordion({ active: id });
