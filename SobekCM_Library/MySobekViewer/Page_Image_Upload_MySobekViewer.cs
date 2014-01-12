@@ -653,6 +653,8 @@ namespace SobekCM.Library.MySobekViewer
 			uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types;
 			uploadControl.SubmitWhenQueueCompletes = true;
 	        uploadControl.RemoveCompleted = true;
+			uploadControl.Swf = currentMode.Base_URL + "default/scripts/uploadify/uploadify.swf";
+			uploadControl.RevertToFlashVersion = true;
 			placeHolder.Controls.Add(uploadControl);
 
 			filesBuilder.AppendLine("</blockquote><br />");

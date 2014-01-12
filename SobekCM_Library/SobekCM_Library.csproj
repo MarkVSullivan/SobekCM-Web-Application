@@ -256,6 +256,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
+    <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Track_Item_MySobekViewer.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
