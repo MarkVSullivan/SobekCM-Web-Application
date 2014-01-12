@@ -279,8 +279,16 @@ namespace SobekCM.Library.HTML
 			// If we are currently uploading files, add those specific upload styles 
 			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 			{
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadify/uploadifive.css\">");
+#if DEBUG
+				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+#else
+				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
+#endif
+
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
 			}
 
 			if (( mySobekViewer != null ) && ( mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
