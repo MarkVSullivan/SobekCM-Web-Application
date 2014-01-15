@@ -150,7 +150,8 @@ namespace SobekCM.Library.Builder
         /// <param name="currentDir"></param>
         private void Collect_Terminal_Dirs(List<string> dirCollection, string currentDir)
         {
-            if (Directory.GetDirectories(currentDir).Length == 0)
+            List<string> subfolders = Directory.GetDirectories(currentDir).ToList<string>();
+            if ((Directory.GetDirectories(currentDir).Length == 0) || ( Directory.GetFiles(currentDir, "*.mets").Length == 0 ) || ( Directory.GetFiles(currentDir, "*.mets.xml").Length > 0 ))
             {
                 if (Directory.GetFiles(currentDir).Length > 0)
                     dirCollection.Add(currentDir);
