@@ -869,18 +869,18 @@ function MakeSortable1()
 
                     // Get the two most important spans (one being moved and NEXT after the move)
                     var movedSpan = document.getElementById('newDivType' + pageIndex);
-                    var movedFromSpanName = spanArray[startPosition];
+                    var movedFromSpanName = spanArray[startPosition+1];
                     var movedFromSpanCheckBox = document.getElementById(movedFromSpanName.replace('span', 'newDivType'));
 
                     //If the span being moved is the start of a new Div 															
                     if (movedSpan.checked == true) {
-                        //alert('Moving a new division page');
+                   //     alert('Moving a new division page');
+                     
                         //If the original next div is not the start of a new division, make it the beginning
                         if ((movedFromSpanCheckBox != null) && (movedFromSpanCheckBox.checked == false)) {
                             // Set next original page as new division
                             movedFromSpanCheckBox.checked = true;
-
-
+                   
                             // Set the division type on the next original page and then set as enabled
                             var divTypeSelectElement = document.getElementById(movedFromSpanName.replace('span', 'selectDivType'));
                             divTypeSelectElement.disabled = false;
