@@ -21,8 +21,7 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 	public class CustomAction
 	{
-
-
+		
 		#region Methods to validate credentials ( web and builder )
 
 		/// <summary> Method validates the provided web credentials </summary>
@@ -315,7 +314,6 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 			return ActionResult.Success;
 		}
-
 	
 		#endregion
 
@@ -421,7 +419,6 @@ namespace SobekCM_WiX_Installer_CustomActions
 				return false;
 			}
 		}
-
 
 		#endregion
 		
@@ -942,6 +939,66 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 		#endregion
 
+		#region Launch the pre-requisites help page
+
+		[CustomAction]
+		public static ActionResult ShowHelp(Session session)
+		{
+			System.Diagnostics.Process.Start("http://ufdc.ufl.edu/software/requirements");
+			return ActionResult.Success;
+		}
+
+		#endregion
+
+		#region Custom action to check for the Apache Tomcat root install path
+
+		[CustomAction]
+		public static ActionResult CheckRemainingRequirements(Session session)
+		{
+			// System.Diagnostics.Debugger.Launch();
+
+			// Look for the TOMCAT DIRECTORY
+			session["TOMCAT_DIRECTORY"] = String.Empty;
+			try
+			{
+				string possibleKey = Get_Registry_Value(@"SOFTWARE\Apache Software Foundation\Tomcat\7.0\Tomcat7", "InstallPath");
+				if (!String.IsNullOrEmpty(possibleKey))
+				{
+					session["TOMCAT_DIRECTORY"] = possibleKey;
+				}
+				else
+				{
+					possibleKey = Get_Registry_Value(@"SOFTWARE\Apache Software Foundation\Tomcat\6.0", "InstallPath");
+					if (!String.IsNullOrEmpty(possibleKey))
+					{
+						session["TOMCAT_DIRECTORY"] = possibleKey;
+					}
+				}
+			}
+			catch (Exception)
+			{
+				// Suppress exceptions, the user can navigate here
+			}
+
+			// LOOK FOR THE GHOSTSCRIPT DIRECTORY
+			string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
+			if ( !String.IsNullOrEmpty(possible_ghost))
+				session["GHOSTSCRIPT_DIRECTORY"] = possible_ghost;
+			else
+				session["GHOSTSCRIPT_DIRECTORY"] = String.Empty;
+
+			// LOOK FOR THE IMAGEMAGICK DIRECTORY
+			string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
+			if (!String.IsNullOrEmpty(possible_imagemagick))
+				session["IMAGEMAGICK_DIRECTORY"] = possible_imagemagick;
+			else
+				session["IMAGEMAGICK_DIRECTORY"] = String.Empty;
+
+			return ActionResult.Success;
+		}
+
+		#endregion
+
 		private static string Clean_Code(string Code)
 		{
 			StringBuilder builder = new StringBuilder();
@@ -953,53 +1010,35 @@ namespace SobekCM_WiX_Installer_CustomActions
 			return builder.ToString();
 		}
 
-		[CustomAction]
-		public static ActionResult GetTomcatRoot(Session session)
+		private static string Look_For_Variable_Registry_Key(string Manufacturer, string KeyName)
 		{
-			System.Diagnostics.Debugger.Launch();
-
-			try
+			RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+			localKey = localKey.OpenSubKey(Manufacturer);
+			if (localKey != null)
 			{
-				RegistryKey tomcat7 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Apache Software Foundation\Tomcat\7.0\Tomcat7");
-				if (tomcat7 != null)
+				string[] subkeys = localKey.GetSubKeyNames();
+				foreach (string thisSubKey in subkeys)
 				{
-					if (tomcat7.GetValue("InstallPath") != null)
-					{
-						string thisValue = tomcat7.GetValue("InstallPath").ToString();
-						session["TOMCAT_DIRECTORY"] = tomcat7.GetValue("InstallPath").ToString();
-						return ActionResult.Success;
-					}
-				}
-
-				RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-				localKey = localKey.OpenSubKey(@"SOFTWARE\Apache Software Foundation\Tomcat\6.0");
-				if (localKey != null)
-				{
-					string tomcat6_value64 = localKey.GetValue("InstallPath") as string;
-					if (tomcat6_value64 != null)
-					{
-						session["TOMCAT_DIRECTORY"] = tomcat6_value64;
-						return ActionResult.Success;
-					}
-				}
-				RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-				localKey32 = localKey32.OpenSubKey(@"SOFTWARE\Apache Software Foundation\Tomcat\6.0");
-				if (localKey32 != null)
-				{
-					string tomcat6_value32 = localKey32.GetValue("InstallPath") as string;
-					if (tomcat6_value32 != null)
-					{
-						session["TOMCAT_DIRECTORY"] = tomcat6_value32;
-						return ActionResult.Success;
-					}
+					RegistryKey subKey = localKey.OpenSubKey(thisSubKey);
+					string value64 = subKey.GetValue(KeyName) as string;
+					if (!String.IsNullOrEmpty(value64))
+						return value64;
 				}
 			}
-			catch (Exception)
+			RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+			localKey32 = localKey32.OpenSubKey(Manufacturer);
+			if (localKey32 != null)
 			{
-				// Suppress exceptions, the user can navigate here
+				string[] subkeys = localKey32.GetSubKeyNames();
+				foreach (string thisSubKey in subkeys)
+				{
+					RegistryKey subKey = localKey32.OpenSubKey(thisSubKey);
+					string value32 = subKey.GetValue(KeyName) as string;
+					if (!String.IsNullOrEmpty(value32))
+						return value32;
+				}
 			}
-
-			return ActionResult.Success;
+			return null;
 		}
 
 		private static string Get_Registry_Value(string KeyPath, string KeyName)
