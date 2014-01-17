@@ -671,7 +671,8 @@ function initListeners() {
                 }
                 globalVar.RIBMode = false;
             } else {
-                displayMessage(L_NotSaved);
+                //displayMessage(L_NotSaved);
+                window.location.assign(document.URL.replace("/mapedit", ""));
             }
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
