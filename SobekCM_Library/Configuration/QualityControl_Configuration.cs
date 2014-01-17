@@ -6,19 +6,22 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using SobekCM.Resource_Object.Configuration;
+using SobekCM.Library.Navigation;
 
 namespace SobekCM.Library.Configuration
 {
     /// <summary> Class keeps all the system-wide quality control profiles which 
     /// can be used within the system  </summary>
-    public static class QualityControl_Configuration
+    public  static class QualityControl_Configuration
     {
         private static bool attemptedRead;
         private static Dictionary<string, QualityControl_Profile> profiles;
         private static QualityControl_Profile defaultProfile;
+        private static string sobekcm_qc_configfilePath;
 
+        
         /// <summary> Static constructor for the QualityControl_Configuration class </summary>
-        static QualityControl_Configuration()
+         static QualityControl_Configuration()
         {
             // Declare all the new collections in this configuration 
             profiles = new Dictionary<string, QualityControl_Profile>();
@@ -27,10 +30,15 @@ namespace SobekCM.Library.Configuration
             attemptedRead = false;
             defaultProfile = null;
 
-            // Set default reader/writer values to have a baseline in case there is
-            // no file to be read 
-            Set_Default_Values();
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            sobekcm_qc_configfilePath=(baseDirectory + "config\\sobekcm_qc.config");
+
+            if (!Read_Metadata_Configuration(sobekcm_qc_configfilePath))
+                // Set default reader/writer values to have a baseline in case there is
+                // no file to be read 
+                Set_Default_Values();
         }
+
 
 
         private static void Clear()
@@ -367,97 +375,122 @@ namespace SobekCM.Library.Configuration
             bool inDivision = false;
             bool inFile = false;
             bool inDmdSec = true;
-            METS_Writing_Profile profile = null;
+            QualityControl_Profile profile = null;
             int unnamed_profile_counter = 1;
 
             while (readerXml.Read())
             {
-                //if (readerXml.NodeType == XmlNodeType.Element)
-                //{
-                //    switch (readerXml.Name.ToLower())
-                //    {
-                //        case "profile":
-                //            profile = new METS_Writing_Profile();
-                //            if (readerXml.MoveToAttribute("name"))
-                //                profile.Profile_Name = readerXml.Value.Trim();
-                //            if (readerXml.MoveToAttribute("description"))
-                //                profile.Profile_Description = readerXml.Value;
-                //            if (readerXml.MoveToAttribute("isDefault"))
-                //            {
-                //                bool tempValue;
-                //                if (bool.TryParse(readerXml.Value, out tempValue))
-                //                {
-                //                    profile.Default_Profile = tempValue;
-                //                }
-                //            }
-                //            // Enforce a name for this profile (should have one according to XSD)
-                //            if (profile.Profile_Name.Length == 0)
-                //            {
-                //                profile.Profile_Name = "Unnamed" + unnamed_profile_counter;
-                //                unnamed_profile_counter++;
-                //            }
-                //            Add_METS_Writing_Profile(profile);
-                //            break;
+                if (readerXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (readerXml.Name.ToLower())
+                    {
+                        case "profile":
+                            profile = new QualityControl_Profile();
+                            XmlReader child_readerXml = readerXml.ReadSubtree();
+                            if (readerXml.MoveToAttribute("name"))
+                                profile.Profile_Name = readerXml.Value.Trim();
+                            if (readerXml.MoveToAttribute("description"))
+                                profile.Profile_Description = readerXml.Value;
+                            if (readerXml.MoveToAttribute("isDefault"))
+                            {
+                                bool tempValue;
+                                if (bool.TryParse(readerXml.Value, out tempValue))
+                                {
+                                    profile.Default_Profile = tempValue;
+                                }
+                            }
+                            // Enforce a name for this profile (should have one according to XSD)
+                            if (profile.Profile_Name.Length == 0)
+                            {
+                                profile.Profile_Name = "Unnamed" + unnamed_profile_counter;
+                                unnamed_profile_counter++;
+                            }
 
-                //        case "package_scope":
-                //            inPackage = true;
-                //            inDivision = false;
-                //            inFile = false;
-                //            break;
+                            
 
-                //        case "division_scope":
-                //            inPackage = false;
-                //            inDivision = true;
-                //            inFile = false;
-                //            break;
+                            while (child_readerXml.Read())
+                            {
+                                if (child_readerXml.NodeType == XmlNodeType.Element && child_readerXml.Name.ToLower() == "divisiontype")
 
-                //        case "file_scope":
-                //            inPackage = false;
-                //            inDivision = false;
-                //            inFile = true;
-                //            break;
+                                    //  while (readerXml.ReadToNextSibling("DivisionType"))
+                                {
+                                    if (child_readerXml.Name.ToLower() == "divisiontype")
+                                    {
+                                        QualityControl_Division_Config thisConfig = new QualityControl_Division_Config();
+                                        if (child_readerXml.MoveToAttribute("type"))
+                                        {
+                                            thisConfig.TypeName = child_readerXml.Value;
+                                        }
+                                        if (child_readerXml.MoveToAttribute("isNameable"))
+                                            thisConfig.isNameable = Convert.ToBoolean(child_readerXml.Value);
+                                        profile.Add_Division_Type(thisConfig);
 
-                //        case "dmdsec":
-                //            inDmdSec = true;
-                //            break;
+                                    }
+                                }
+                            }
+                            Add_Profile(profile);
+                   //         Add_METS_Writing_Profile(profile);
+                            break;
 
-                //        case "amdsec":
-                //            inDmdSec = false;
-                //            break;
+                        case "package_scope":
+                            inPackage = true;
+                            inDivision = false;
+                            inFile = false;
+                            break;
 
-                //        case "readerwriterref":
-                //            if (readerXml.MoveToAttribute("ID"))
-                //            {
-                //                string id = readerXml.Value.ToUpper();
-                //                if ((readerWriters.ContainsKey(id)) && (profile != null))
-                //                {
-                //                    METS_Section_ReaderWriter_Config readerWriter = readerWriters[id];
-                //                    if (inPackage)
-                //                    {
-                //                        if (inDmdSec)
-                //                            profile.Add_Package_Level_DmdSec_Writer_Config(readerWriter);
-                //                        else
-                //                            profile.Add_Package_Level_AmdSec_Writer_Config(readerWriter);
-                //                    }
-                //                    else if (inDivision)
-                //                    {
-                //                        if (inDmdSec)
-                //                            profile.Add_Division_Level_DmdSec_Writer_Config(readerWriter);
-                //                        else
-                //                            profile.Add_Division_Level_AmdSec_Writer_Config(readerWriter);
-                //                    }
-                //                    else if (inFile)
-                //                    {
-                //                        if (inDmdSec)
-                //                            profile.Add_File_Level_DmdSec_Writer_Config(readerWriter);
-                //                        else
-                //                            profile.Add_File_Level_AmdSec_Writer_Config(readerWriter);
-                //                    }
-                //                }
-                //            }
-                //            break;
-                //    }
-                //}
+                        case "division_scope":
+                            inPackage = false;
+                            inDivision = true;
+                            inFile = false;
+                            break;
+
+                        case "file_scope":
+                            inPackage = false;
+                            inDivision = false;
+                            inFile = true;
+                            break;
+
+                        case "dmdsec":
+                            inDmdSec = true;
+                            break;
+
+                        case "amdsec":
+                            inDmdSec = false;
+                            break;
+
+                        //case "readerwriterref":
+                        //    if (readerXml.MoveToAttribute("ID"))
+                        //    {
+                        //        string id = readerXml.Value.ToUpper();
+                        //        if ((readerWriters.ContainsKey(id)) && (profile != null))
+                        //        {
+                        //            METS_Section_ReaderWriter_Config readerWriter = readerWriters[id];
+                        //            if (inPackage)
+                        //            {
+                        //                if (inDmdSec)
+                        //                    profile.Add_Package_Level_DmdSec_Writer_Config(readerWriter);
+                        //                else
+                        //                    profile.Add_Package_Level_AmdSec_Writer_Config(readerWriter);
+                        //            }
+                        //            else if (inDivision)
+                        //            {
+                        //                if (inDmdSec)
+                        //                    profile.Add_Division_Level_DmdSec_Writer_Config(readerWriter);
+                        //                else
+                        //                    profile.Add_Division_Level_AmdSec_Writer_Config(readerWriter);
+                        //            }
+                        //            else if (inFile)
+                        //            {
+                        //                if (inDmdSec)
+                        //                    profile.Add_File_Level_DmdSec_Writer_Config(readerWriter);
+                        //                else
+                        //                    profile.Add_File_Level_AmdSec_Writer_Config(readerWriter);
+                        //            }
+                        //        }
+                        //    }
+                        //    break;
+                    }
+                }
             }
         }
 
