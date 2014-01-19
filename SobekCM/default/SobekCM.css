@@ -564,8 +564,8 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 }
 
 /** Classes used throughout the system for the popup forms **/
-.sbk_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px;  }
-.sbk_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 16px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
+.sbk_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; -moz-border-radius: 10px;border-radius: 10px;  }
+.sbk_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 16px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; font-variant: small-caps; }
 .sbk_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
 .sbk_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
 .sbk_PopupButtonsDiv { width: 100%;text-align: center; }
@@ -742,33 +742,12 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .intheader_label { color: White; font-weight:bolder; margin-right: 10px; }
 
 
-.roundbutton {
-    background-color: #7d90d5;
-    color: white;
-    text-transform:uppercase;
-    font-weight:bold;
-    border-radius:25px;
-    border: none;
-    padding: 3px 10px 3px 10px;
-    cursor: pointer;
-    cursor: hand;
-    font-size: 0.85em;
-    letter-spacing: 0.5px;
-}
+.roundbutton { background-color: #7d90d5; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none;padding: 3px 10px 3px 10px; cursor: pointer; cursor: hand; font-size: 0.85em; letter-spacing: 0.5px; }
+.roundbutton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+.roundbutton_img_right { vertical-align: bottom; padding-left: 3px;  } 
+.roundbutton_img_left { vertical-align: bottom; padding-right: 3px;  } 
 
-.roundbutton:hover {
-    background-color: #888888;
-    -webkit-box-shadow: inset 0 0 9px 6px #6a6f75;
-    box-shadow: inset 0 0 9px 6px #6a6f75;
-}
 
-.roundbutton_img_right {
-    vertical-align: bottom; padding-left: 3px; 
-} 
-
-.roundbutton_img_left {
-    vertical-align: bottom; padding-right: 3px;
-} 
 
 .internalheader_button {
     background-color: #7d90d5;
