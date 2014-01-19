@@ -35,16 +35,16 @@ namespace SobekCM.Library.ItemViewer.Fragments
                     actual_cols = 45;
 
                 responseBuilder.AppendLine("<!-- Add to bookshelf form -->");
-                responseBuilder.AppendLine("<div id=\"addform_content\">");
-                responseBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD THIS</span> I<span class=\"smaller\">TEM TO YOUR</span> B<span class=\"smaller\">OOKSHELF</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+				responseBuilder.AppendLine("<div id=\"addform_content\" class=\"sbk_PopupForm\">");
+				responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Add this item to your Bookshelf</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                 responseBuilder.AppendLine("  <br />");
                 responseBuilder.AppendLine("  <fieldset><legend>Enter notes for this item in your bookshelf &nbsp; </legend>");
                 responseBuilder.AppendLine("    <br />");
-                responseBuilder.AppendLine("    <table class=\"popup_table\">");
+				responseBuilder.AppendLine("    <table class=\"sbk_PopupTable\">");
 
 
                 // Add bookshelf choices
-                responseBuilder.Append("      <tr align=\"left\"><td width=\"80px\"><label for=\"add_bookshelf\">Bookshelf:</label></td>");
+                responseBuilder.Append("      <tr><td style=\"width:80px\"><label for=\"add_bookshelf\">Bookshelf:</label></td>");
                 responseBuilder.Append("<td><select class=\"email_bookshelf_input\" name=\"add_bookshelf\" id=\"add_bookshelf\">");
 
                 foreach (User_Folder folder in CurrentUser.All_Folders)
@@ -67,13 +67,16 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 responseBuilder.AppendLine("</select></td></tr>");
 
                 // Add comments area
-                responseBuilder.Append("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
+                responseBuilder.Append("      <tr style=\"vertical-align:top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
                 responseBuilder.AppendLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
-                responseBuilder.AppendLine("      <tr align=\"left\" valign=\"top\"><td>&nbsp;</td><td><input type=\"checkbox\" id=\"open_bookshelf\" name=\"open_bookshelf\" value=\"open\" /> <label for=\"open_bookshelf\">Open bookshelf in new window</label></td></tr>");
+				responseBuilder.AppendLine("      <tr style=\"vertical-align:top\"><td>&nbsp;</td><td><input type=\"checkbox\" id=\"open_bookshelf\" name=\"open_bookshelf\" value=\"open\" /> <label for=\"open_bookshelf\">Open bookshelf in new window</label></td></tr>");
                 responseBuilder.AppendLine("    </table>");
                 responseBuilder.AppendLine("    <br />");
                 responseBuilder.AppendLine("  </fieldset><br />");
-                responseBuilder.AppendLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\" ></center><br />");
+				responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return add_item_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
+				responseBuilder.AppendLine("  </div><br />");
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();
 

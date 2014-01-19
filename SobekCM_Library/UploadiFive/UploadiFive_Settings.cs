@@ -376,7 +376,7 @@ namespace SobekCM.Library.UploadiFive
 			}
 			else
 			{
-				if (NoHtml5OrFlashMessage.Length > 0)
+				if (!String.IsNullOrEmpty(NoHtml5OrFlashMessage))
 				{
 					// ENd the last line, with a paranthesis
 					Output.WriteLine(",");

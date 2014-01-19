@@ -556,9 +556,9 @@ namespace SobekCM.Library.Builder
 	            {
 					File.Delete(thisFile);
 	            }
-	            catch 
+	            catch (Exception ee)
 	            {
-
+		            bool error = true;
 	            }
             }
 
@@ -655,7 +655,7 @@ namespace SobekCM.Library.Builder
 
                 // Look for any .mets.xml file
                 string[] metsFiles = Directory.GetFiles(resourceFolder, "*.mets.xml");
-                if (metsFiles.Length == 0)
+                if (metsFiles.Length > 0)
                     return metsFiles[0];
 
                 // Finally, just use any old mets file
