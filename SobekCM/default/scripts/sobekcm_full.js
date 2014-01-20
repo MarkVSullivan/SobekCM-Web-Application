@@ -2043,7 +2043,8 @@ function email_form_open() {
 
 	// Put focus on the email address
 	var focusfield = document.getElementById('email_address');
-	focusfield.focus();
+	if ( focusfield != null )
+		focusfield.focus();
 
 	return false;
 }
@@ -2093,7 +2094,8 @@ function add_item_form_open() {
 
 	// Put focus on the notes field
 	var focusfield = document.getElementById('add_notes');
-	focusfield.focus();
+	if ( focusfield != null )
+		focusfield.focus();
 
 	return false;
 }

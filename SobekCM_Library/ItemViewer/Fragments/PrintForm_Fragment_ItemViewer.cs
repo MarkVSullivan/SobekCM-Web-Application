@@ -42,8 +42,8 @@ namespace SobekCM.Library.ItemViewer.Fragments
                     url_redirect = CurrentMode.Base_URL + "l/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/print";
 
                 responseBuilder.AppendLine("<!-- Print item form -->");
-                responseBuilder.AppendLine("<div id=\"printform_content\">");
-                responseBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">P<span class=\"smaller\">RINT</span> O<span class=\"smaller\">PTIONS</span></td><td align=\"right\"> <a href=\"#template\" title=\"CLOSE\" onclick=\"print_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+				responseBuilder.AppendLine("<div id=\"printform_content\" class=\"sbk_PopupForm\">");
+				responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Print Options</td><td style=\"text-align:right\"> <a href=\"#template\" title=\"CLOSE\" onclick=\"print_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                 responseBuilder.AppendLine("  <br />");
                 responseBuilder.AppendLine("  <fieldset><legend>Select the options below to print this item &nbsp; </legend>");
                 responseBuilder.AppendLine("    <blockquote>");
@@ -171,7 +171,10 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 }
                 responseBuilder.AppendLine("    </blockquote>");
                 responseBuilder.AppendLine("  </fieldset><br />");
-                responseBuilder.AppendLine("  <center><a href=\"\" onclick=\"return print_form_close();\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <a href=\"\" onclick=\"return print_item('" + CurrentMode.Page + "','" + url_redirect + "','" + print_options + "');\"><img border=\"0\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/print_button_g.gif\" alt=\"PRINT\" /></a></center><br />");
+				responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_item('" + CurrentMode.Page + "','" + url_redirect + "','" + print_options + "');\"> PRINT </button>");
+				responseBuilder.AppendLine("  </div><br />");
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();
 
