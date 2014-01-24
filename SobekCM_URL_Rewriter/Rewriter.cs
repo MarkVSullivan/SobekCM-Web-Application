@@ -4,6 +4,9 @@ using System;
 using System.Text.RegularExpressions;
 using System.Web;
 
+using SobekCM.Library.Database;
+using System.IO;
+
 #endregion
 
 namespace SobekCM.URL_Rewriter
@@ -46,6 +49,14 @@ namespace SobekCM.URL_Rewriter
 			if (appRelative.IndexOf("ohpi/") > 0)
 			{
 				return;
+			}
+			
+			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && HttpContext.Current.Request.RawUrl.Contains("."))
+			{
+				String purl_handle = HttpContext.Current.Request.RawUrl.Substring(2);
+				String packageid=SobekCM_Database.Get_BibID_VID_From_Identifier(purl_handle);
+				
+				HttpContext.Current.Response.Redirect(packageid.ToUpper(),true);
 			}
 
 			// Since the user may be using IIPimage server, skip .fgci extensions

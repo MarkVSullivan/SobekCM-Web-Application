@@ -532,8 +532,6 @@
     <Content Include="default\scripts\sobekcm_track_item.js" />
     <Content Include="default\scripts\superfish\hoverIntent.js" />
     <Content Include="default\scripts\superfish\superfish.js" />
-    <Content Include="default\scripts\uploadify\change-log.txt" />
-    <Content Include="default\scripts\uploadify\Instructions.txt" />
     <Content Include="default\scripts\uploadify\jquery.uploadifive.js" />
     <Content Include="default\scripts\uploadify\jquery.uploadifive.min.js" />
     <Content Include="default\scripts\uploadify\license-standard.txt" />
@@ -682,10 +680,6 @@
     <Content Include="default\scripts\datatables\images\Sorting icons.psd" />
     <Content Include="default\scripts\datatables\scroller\js\dataTables.scroller.min.js.gz" />
     <Content Include="default\scripts\superfish\superfish.js.orig" />
-    <Content Include="default\scripts\uploadify\check-exists.php" />
-    <Content Include="default\scripts\uploadify\index.php" />
-    <Content Include="default\scripts\uploadify\uploadifive-image-only.php" />
-    <Content Include="default\scripts\uploadify\uploadifive.php" />
     <Content Include="iipimage\iipsrv.fcgi" />
     <Content Include="iipimage\openseadragon\openseadragon.min.js.map" />
     <Content Include="iipimage\web.config" />
@@ -734,7 +728,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>15535</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:52468/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
