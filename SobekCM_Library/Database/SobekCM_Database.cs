@@ -8732,200 +8732,200 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-        #region Methods used by the Track_Item_MySobekViewer
-     
-        /// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>
-        /// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
-        public static DataTable Tracking_Get_Users_Scanning_Processing()
-        {
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-            
-            try
-            {
-                //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Users_Scanning_Processing", connect) {CommandType = CommandType.StoredProcedure};
+		#region Methods used by the Track_Item_MySobekViewer
+	 
+		/// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>
+		/// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
+		public static DataTable Tracking_Get_Users_Scanning_Processing()
+		{
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
+			
+			try
+			{
+				//Create the command
+				SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Users_Scanning_Processing", connect) {CommandType = CommandType.StoredProcedure};
 
-	            //Open the connection
-                connect.Open();
+				//Open the connection
+				connect.Open();
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
 
-                DataTable returnValue = new DataTable();
-                adapter.Fill(returnValue);
-                
-                //Close the connection
-                connect.Close();
+				DataTable returnValue = new DataTable();
+				adapter.Fill(returnValue);
+				
+				//Close the connection
+				connect.Close();
 
-                //Return the data table
-                return (returnValue);
+				//Return the data table
+				return (returnValue);
 
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error retrieving the list of users who are scanning/processing technicians from the Database"+ee.Message);
-            }
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error retrieving the list of users who are scanning/processing technicians from the Database"+ee.Message);
+			}
 
-        }
+		}
 
-        /// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>
-        /// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
-        public static DataTable Tracking_Get_Scanners_List()
-        {
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
+		/// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>
+		/// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
+		public static DataTable Tracking_Get_Scanners_List()
+		{
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-            try
-            {
-                //Create the command
-                SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Scanners_List", connect) {CommandType = CommandType.StoredProcedure};
+			try
+			{
+				//Create the command
+				SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Scanners_List", connect) {CommandType = CommandType.StoredProcedure};
 
-	            //Open the connection
-                connect.Open();
+				//Open the connection
+				connect.Open();
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
 
-                DataTable returnValue = new DataTable();
-                adapter.Fill(returnValue);
+				DataTable returnValue = new DataTable();
+				adapter.Fill(returnValue);
 
-                //Close the connection
-                connect.Close();
+				//Close the connection
+				connect.Close();
 
-                //Return the data table
-                return (returnValue);
+				//Return the data table
+				return (returnValue);
 
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error retrieving the list of users who are scanning/processing technicians from the Database" + ee.Message);
-            }
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error retrieving the list of users who are scanning/processing technicians from the Database" + ee.Message);
+			}
 
-        }
+		}
 
-        /// <summary> Gets the corresponding BibID, VID for a given itemID </summary>
-        /// <param name="ItemID"> Primary identifier for this item from the database </param>
-        /// <returns> Datarow with the BibID/VID </returns>
-        public static DataRow Tracking_Get_Item_Info_from_ItemID(int ItemID)
-        {
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
+		/// <summary> Gets the corresponding BibID, VID for a given itemID </summary>
+		/// <param name="ItemID"> Primary identifier for this item from the database </param>
+		/// <returns> Datarow with the BibID/VID </returns>
+		public static DataRow Tracking_Get_Item_Info_from_ItemID(int ItemID)
+		{
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-            try
-            {
-                //Create the command
-                SqlCommand cmd = new SqlCommand("Tracking_Get_Item_Info_from_ItemID", connect) {CommandType = CommandType.StoredProcedure};
-	            cmd.Parameters.AddWithValue("@itemID", ItemID);
+			try
+			{
+				//Create the command
+				SqlCommand cmd = new SqlCommand("Tracking_Get_Item_Info_from_ItemID", connect) {CommandType = CommandType.StoredProcedure};
+				cmd.Parameters.AddWithValue("@itemID", ItemID);
 
-                //Open the connection
-                connect.Open();
+				//Open the connection
+				connect.Open();
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
 
-                DataTable returnValue = new DataTable();
-                adapter.Fill(returnValue);
+				DataTable returnValue = new DataTable();
+				adapter.Fill(returnValue);
 
-                //Close the connection
-                connect.Close();
+				//Close the connection
+				connect.Close();
 
-                //Return the data table
-                return (returnValue.Rows[0]);
+				//Return the data table
+				return (returnValue.Rows[0]);
 
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error retrieving item details from itemID from the Database" + ee.Message);
-            }
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error retrieving item details from itemID from the Database" + ee.Message);
+			}
 
-        }
+		}
 
 		/// <summary> Gets the related workflows for an item by ItemID </summary>
 		/// <param name="ItemID"> Primary key for this item in the database </param>
 		/// <param name="EventNum"> Number of the event </param>
 		/// <returns> DataTable of previously saved workflows for this item</returns>
 		public static DataTable Tracking_Get_Open_Workflows(int ItemID, int EventNum)
-        {
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
+		{
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-            try
-            {
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Get_Last_Open_Workflow_By_ItemID", connect) {CommandType = CommandType.StoredProcedure};
-	            cmd.Parameters.AddWithValue("@itemID", ItemID);
-                cmd.Parameters.AddWithValue("@EventNumber", EventNum);
-             
-                //Open the connection
-                connect.Open();
+			try
+			{
+				//Create the command
+				SqlCommand cmd = new SqlCommand("SobekCM_Get_Last_Open_Workflow_By_ItemID", connect) {CommandType = CommandType.StoredProcedure};
+				cmd.Parameters.AddWithValue("@itemID", ItemID);
+				cmd.Parameters.AddWithValue("@EventNumber", EventNum);
+			 
+				//Open the connection
+				connect.Open();
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
 
-                DataTable returnValue = new DataTable();
-                adapter.Fill(returnValue);
+				DataTable returnValue = new DataTable();
+				adapter.Fill(returnValue);
 
-                //Close the connection
-                connect.Close();
+				//Close the connection
+				connect.Close();
 
-                //Return the data table
-                return (returnValue);
+				//Return the data table
+				return (returnValue);
 
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error retrieving last open workflow by itemID from the Database" + ee.Message);
-            }
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error retrieving last open workflow by itemID from the Database" + ee.Message);
+			}
 
-        }
+		}
 
-        /// <summary> Save a new workflow entry during tracking</summary>
-        /// <param name="itemID"></param>
-        /// <param name="workPerformedBy"></param>
-        /// <param name="relatedEquipment"></param>
-        /// <param name="dateStarted"></param>
-        /// <param name="dateCompleted"></param>
-        /// <param name="EventNum"></param>
-        /// <param name="StartEvent"></param>
-        /// <param name="EndEvent"></param>
-        /// <param name="Start_End_Event"></param>
-        /// <returns></returns>
-        public static int Tracking_Save_New_Workflow(int itemID, string workPerformedBy, string relatedEquipment, SqlDateTime dateStarted, SqlDateTime dateCompleted, int EventNum, int StartEvent, int EndEvent, int Start_End_Event)
-        {
-            int this_workflow_id=-1;  
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
+		/// <summary> Save a new workflow entry during tracking</summary>
+		/// <param name="itemID"></param>
+		/// <param name="workPerformedBy"></param>
+		/// <param name="relatedEquipment"></param>
+		/// <param name="dateStarted"></param>
+		/// <param name="dateCompleted"></param>
+		/// <param name="EventNum"></param>
+		/// <param name="StartEvent"></param>
+		/// <param name="EndEvent"></param>
+		/// <param name="Start_End_Event"></param>
+		/// <returns></returns>
+		public static int Tracking_Save_New_Workflow(int itemID, string workPerformedBy, string relatedEquipment, SqlDateTime dateStarted, SqlDateTime dateCompleted, int EventNum, int StartEvent, int EndEvent, int Start_End_Event)
+		{
+			int this_workflow_id=-1;  
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-            try
-            {
-                //Open the connection
-                connect.Open();
+			try
+			{
+				//Open the connection
+				connect.Open();
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("Tracking_Add_New_Workflow", connect) {CommandType = CommandType.StoredProcedure};
-                cmd.Parameters.AddWithValue("@itemid", itemID);
-                cmd.Parameters.AddWithValue("@user", workPerformedBy);
-                cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
-                cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
-                cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
-                cmd.Parameters.AddWithValue("@EventNumber", EventNum);
-                cmd.Parameters.AddWithValue("@StartEventNumber", StartEvent);
-                cmd.Parameters.AddWithValue("@EndEventNumber", EndEvent);
-                cmd.Parameters.AddWithValue("@Start_End_Event", Start_End_Event);
-               
-                //Add the output parameter to get back the workflow id for this entry
-                SqlParameter outputParam = cmd.Parameters.Add("@workflow_entry_id", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
+				//Create the command
+				SqlCommand cmd = new SqlCommand("Tracking_Add_New_Workflow", connect) {CommandType = CommandType.StoredProcedure};
+				cmd.Parameters.AddWithValue("@itemid", itemID);
+				cmd.Parameters.AddWithValue("@user", workPerformedBy);
+				cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
+				cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
+				cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
+				cmd.Parameters.AddWithValue("@EventNumber", EventNum);
+				cmd.Parameters.AddWithValue("@StartEventNumber", StartEvent);
+				cmd.Parameters.AddWithValue("@EndEventNumber", EndEvent);
+				cmd.Parameters.AddWithValue("@Start_End_Event", Start_End_Event);
+			   
+				//Add the output parameter to get back the workflow id for this entry
+				SqlParameter outputParam = cmd.Parameters.Add("@workflow_entry_id", SqlDbType.Int);
+				outputParam.Direction = ParameterDirection.Output;
 
-                cmd.ExecuteNonQuery();
-                this_workflow_id = Convert.ToInt32(outputParam.Value);
+				cmd.ExecuteNonQuery();
+				this_workflow_id = Convert.ToInt32(outputParam.Value);
 
-              
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error saving workflow entry to the database. "+ee.Message);
-            }
-                connect.Close();
-            return this_workflow_id;
-        }
+			  
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error saving workflow entry to the database. "+ee.Message);
+			}
+				connect.Close();
+			return this_workflow_id;
+		}
 
 
 /// <summary> Update an already saved tracking workflow entry </summary>
@@ -8938,67 +8938,98 @@ namespace SobekCM.Library.Database
 /// <param name="eventNumber"></param>
 /// <param name="startEventNumber"></param>
 /// <param name="endEventNum"></param>
-        public static void Tracking_Update_Workflow(int workflowID, int itemID, string workPerformedBy, SqlDateTime dateStarted, SqlDateTime dateCompleted, string relatedEquipment, int eventNumber, int startEventNumber, int endEventNum)
-        {
-             // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
+		public static void Tracking_Update_Workflow(int workflowID, int itemID, string workPerformedBy, SqlDateTime dateStarted, SqlDateTime dateCompleted, string relatedEquipment, int eventNumber, int startEventNumber, int endEventNum)
+		{
+			 // Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-            try
-            {
-                //Open the connection
-                connect.Open();
+			try
+			{
+				//Open the connection
+				connect.Open();
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("Tracking_Update_Workflow", connect) {CommandType = CommandType.StoredProcedure};
-                cmd.Parameters.AddWithValue("@workflow_entry_id", workflowID);
-                cmd.Parameters.AddWithValue("@itemid", itemID);
-                cmd.Parameters.AddWithValue("@user", workPerformedBy);
-                cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
-                cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
-                cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
-                cmd.Parameters.AddWithValue("@EventNumber", eventNumber);
-                cmd.Parameters.AddWithValue("@StartEventNumber", startEventNumber);
-                cmd.Parameters.AddWithValue("@EndEventNumber", endEventNum);
-
-
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error updating tracking workflow "+ee.Message);
-            }
-            connect.Close();
-            
-        }
+				//Create the command
+				SqlCommand cmd = new SqlCommand("Tracking_Update_Workflow", connect) {CommandType = CommandType.StoredProcedure};
+				cmd.Parameters.AddWithValue("@workflow_entry_id", workflowID);
+				cmd.Parameters.AddWithValue("@itemid", itemID);
+				cmd.Parameters.AddWithValue("@user", workPerformedBy);
+				cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
+				cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
+				cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
+				cmd.Parameters.AddWithValue("@EventNumber", eventNumber);
+				cmd.Parameters.AddWithValue("@StartEventNumber", startEventNumber);
+				cmd.Parameters.AddWithValue("@EndEventNumber", endEventNum);
 
 
-        public static void Tracking_Delete_Workflow(int workflow_id)
-        {
-              // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
-            try
-            {
-                //Open the connection
-                connect.Open();
-
-                //Create the command
-                SqlCommand cmd = new SqlCommand("Tracking_Delete_Workflow", connect) {CommandType = CommandType.StoredProcedure};
-                cmd.Parameters.AddWithValue("@workflow_entry_id", workflow_id);
-
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ee)
-            {
-                throw new ApplicationException("Error deleting workflow" +ee.Message);
-            }
-            connect.Close();
-        }
-
-        #endregion
+				cmd.ExecuteNonQuery();
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error updating tracking workflow "+ee.Message);
+			}
+			connect.Close();
+			
+		}
 
 
+		public static void Tracking_Delete_Workflow(int workflow_id)
+		{
+			  // Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
 
-    }
+			try
+			{
+				//Open the connection
+				connect.Open();
+
+				//Create the command
+				SqlCommand cmd = new SqlCommand("Tracking_Delete_Workflow", connect) {CommandType = CommandType.StoredProcedure};
+				cmd.Parameters.AddWithValue("@workflow_entry_id", workflow_id);
+
+				cmd.ExecuteNonQuery();
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error deleting workflow" +ee.Message);
+			}
+			connect.Close();
+		}
+
+		#endregion
+
+		#region Methods supporting Rewriter
+
+		/// <summary> Pulls the BibID, VID via the Identifier </summary>
+		/// <param name="identifier"> Identifier (PURL Handle) for the digital resource object </param>
+		/// <returns> BibID_VID </returns>
+		public static String Get_BibID_VID_From_Identifier(string identifier)
+		{
+			try
+			{
+				SqlParameter[] parameters = new SqlParameter[1];
+				parameters[0] = new SqlParameter("@identifier", identifier);
+		   
+				// Define a temporary dataset
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_Identifier", parameters);
+
+				// If there was no data for this collection and entry point, return null (an ERROR occurred)
+				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+				{
+					return null;
+				}
+
+				// Get the item id and the thumbnail from the first table
+				return tempSet.Tables[0].Rows[0][0] + "/" + tempSet.Tables[0].Rows[0][1];
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return null;
+			}
+		}
+
+		#endregion
+
+	}
 
 }
