@@ -10,9 +10,6 @@ This file loads all of the custom javascript libraries needed to run the mapedit
 var globalVar; //holds global vars
 var localize; //holds localization stuff
 
-//init config vars (for some reasons these must be init before anything else)
-//var KmlLayer = new google.maps.KmlLayer("https://developers.google.com/kml/documentation/KML_Samples.kml‎");               //must be pingable by google (this is just a test layer that must be used to init layer)
-
 //other global vars
 //todo move into init object (it gets dicey)
 CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
@@ -674,7 +671,8 @@ function initListeners() {
                 }
                 globalVar.RIBMode = false;
             } else {
-                displayMessage(L_NotSaved);
+                //displayMessage(L_NotSaved);
+                window.location.assign(document.URL.replace("/mapedit", ""));
             }
         }, false);
         document.getElementById("content_menubar_cancel").addEventListener("click", function () {
