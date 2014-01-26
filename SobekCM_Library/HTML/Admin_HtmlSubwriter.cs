@@ -395,9 +395,24 @@ namespace SobekCM.Library.HTML
 #if DEBUG
 				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
             }
+
+			// Add the uploader libraries if editing an item
+	        if (currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
+	        {
+#if DEBUG
+				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+#else
+		        Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
+		        Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
+#endif
+
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
+	        }
         }
 
         /// <summary> Writes final HTML after all the forms </summary>

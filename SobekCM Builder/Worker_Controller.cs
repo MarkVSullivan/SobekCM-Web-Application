@@ -458,7 +458,7 @@ namespace SobekCM.Builder
                 if (Prebuilder.Aborted)
                     aborted = true;
             }
-            catch
+            catch ( Exception ee)
             {
 
             }
