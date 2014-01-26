@@ -156,171 +156,199 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
-            // Create the html sub writer now
-            switch (Current_Mode.Mode)
+            try
             {
-                case Display_Mode_Enum.Internal:
-                    subwriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager);
-                    break;
 
-                case Display_Mode_Enum.Statistics:
-                    subwriter = new Statistics_HtmlSubwriter(searchHistory, codeManager, statsDateRange);
-                    break;
+                // Create the html sub writer now
+                switch (Current_Mode.Mode)
+                {
+                    case Display_Mode_Enum.Internal:
+                        subwriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager);
+                        break;
 
-                case Display_Mode_Enum.Preferences:
-                    subwriter = new Preferences_HtmlSubwriter(currentMode);
-                    break;
+                    case Display_Mode_Enum.Statistics:
+                        subwriter = new Statistics_HtmlSubwriter(searchHistory, codeManager, statsDateRange);
+                        break;
 
-                case Display_Mode_Enum.Error:
-                    subwriter = new Error_HtmlSubwriter(false);
-                    // Send the email now
-                    if (currentMode.Caught_Exception != null)
-                    {
-                        if (currentMode.Error_Message.Length == 0)
-                            currentMode.Error_Message = "Unknown exception caught";
-                        Email_Information(currentMode.Error_Message, currentMode.Caught_Exception, Tracer, false);
-                    }
-                    break;
+                    case Display_Mode_Enum.Preferences:
+                        subwriter = new Preferences_HtmlSubwriter(currentMode);
+                        break;
 
-                case Display_Mode_Enum.Legacy_URL:
-                    subwriter = new LegacyUrl_HtmlSubwriter();
-                    break;
-
-                case Display_Mode_Enum.Item_Print:
-                    subwriter = new Print_Item_HtmlSubwriter(currentItem, codeManager, translator, currentMode);
-                    break;
-
-                case Display_Mode_Enum.Contact:
-
-
-                    StringBuilder builder = new StringBuilder();
-                    builder.Append("\n\nSUBMISSION INFORMATION\n");
-                    builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
-                    string lastMode = String.Empty;
-                    try
-                    {
-                        if (HttpContext.Current.Session["Last_Mode"] != null)
-                            lastMode = HttpContext.Current.Session["Last_Mode"].ToString();
-                        builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
-                        builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
-                        builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
-                        builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
-                        builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
-                        builder.Append("\tBrowser Language:\t\t");
-                        bool first = true;
-                        string[] languages = HttpContext.Current.Request.UserLanguages;
-                        if (languages != null)
-                            foreach (string thisLanguage in languages)
-                            {
-                                if (first)
-                                {
-                                    builder.Append(thisLanguage);
-                                    first = false;
-                                }
-                                else
-                                {
-                                    builder.Append(", " + thisLanguage);
-                                }
-                            }
-
-                        builder.Append("\n\nHISTORY\n");
-                        if (HttpContext.Current.Session["LastSearch"] != null)
-                            builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
-                        if (HttpContext.Current.Session["LastResults"] != null)
-                            builder.Append("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"] + "\n");
-                        if (HttpContext.Current.Session["Last_Mode"] != null)
-                            builder.Append("\tLast Mode:\t\t\t" + HttpContext.Current.Session["Last_Mode"] + "\n");
-                        builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
-                    }
-                    catch
-                    {
-
-                    }
-                    subwriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), currentMode, hierarchyObject);
-                    break;
-
-
-                case Display_Mode_Enum.Contact_Sent:
-                    subwriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, currentMode, hierarchyObject);
-                    break;
-
-                case Display_Mode_Enum.Simple_HTML_CMS:
-                    subwriter = new Web_Content_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, htmlBasedContent, siteMap);
-                    break;
-
-                case Display_Mode_Enum.My_Sobek:
-                    subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, webSkins, Tracer);
-                    break;
-
-                case Display_Mode_Enum.Administrative:
-                    subwriter = new Admin_HtmlSubwriter(codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, thematicHeadings, Tracer);
-                    break;
-
-                case Display_Mode_Enum.Results:
-                    subwriter = new Search_Results_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser);
-                    break;
-
-                case Display_Mode_Enum.Public_Folder:
-                    subwriter = new Public_Folder_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser, publicFolder);
-                    break;
-
-                case Display_Mode_Enum.Search:
-				case Display_Mode_Enum.Aggregation:
-                    subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, htmlBasedContent, Tracer);
-                    break;
-
-                case Display_Mode_Enum.Item_Display:
-                    if ((!currentMode.Invalid_Item) && ( currentItem != null ))
-                    {
-                        bool show_toc = false;
-                        if (HttpContext.Current.Session["Show TOC"] != null)
+                    case Display_Mode_Enum.Error:
+                        subwriter = new Error_HtmlSubwriter(false);
+                        // Send the email now
+                        if (currentMode.Caught_Exception != null)
                         {
-                            Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out show_toc);
+                            if (currentMode.Error_Message.Length == 0)
+                                currentMode.Error_Message = "Unknown exception caught";
+                            Email_Information(currentMode.Error_Message, currentMode.Caught_Exception, Tracer, false);
                         }
+                        break;
 
-                        // Check that this item is not checked out by another user
-                        bool itemCheckedOutByOtherUser = false;
-                        if (currentItem.Behaviors.CheckOut_Required)
-                        {
-                            if ( !checkedItems.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
-                            {
-                                itemCheckedOutByOtherUser = true;
-                            }
-                        }
+                    case Display_Mode_Enum.Legacy_URL:
+                        subwriter = new LegacyUrl_HtmlSubwriter();
+                        break;
 
-                        // Check to see if this is IP restricted
-                        string restriction_message = String.Empty;
-                        if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+                    case Display_Mode_Enum.Item_Print:
+                        subwriter = new Print_Item_HtmlSubwriter(currentItem, codeManager, translator, currentMode);
+                        break;
+
+                    case Display_Mode_Enum.Contact:
+
+
+                        StringBuilder builder = new StringBuilder();
+                        builder.Append("\n\nSUBMISSION INFORMATION\n");
+                        builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
+                        string lastMode = String.Empty;
+                        try
                         {
-                            if (HttpContext.Current != null)
-                            {
-                                int user_mask = (int) HttpContext.Current.Session["IP_Range_Membership"];
-                                int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
-                                if (comparison == 0)
+                            if (HttpContext.Current.Session["Last_Mode"] != null)
+                                lastMode = HttpContext.Current.Session["Last_Mode"].ToString();
+                            builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
+                            builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
+                            builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
+                            builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
+                            builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
+                            builder.Append("\tBrowser Language:\t\t");
+                            bool first = true;
+                            string[] languages = HttpContext.Current.Request.UserLanguages;
+                            if (languages != null)
+                                foreach (string thisLanguage in languages)
                                 {
-                                    int restriction = currentItem.Behaviors.IP_Restriction_Membership;
-                                    int restriction_counter = 0;
-                                    while (restriction%2 != 1)
+                                    if (first)
                                     {
-                                        restriction = restriction >> 1;
-                                        restriction_counter++;
+                                        builder.Append(thisLanguage);
+                                        first = false;
                                     }
-                                    restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
+                                    else
+                                    {
+                                        builder.Append(", " + thisLanguage);
+                                    }
+                                }
+
+                            builder.Append("\n\nHISTORY\n");
+                            if (HttpContext.Current.Session["LastSearch"] != null)
+                                builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
+                            if (HttpContext.Current.Session["LastResults"] != null)
+                                builder.Append("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"] + "\n");
+                            if (HttpContext.Current.Session["Last_Mode"] != null)
+                                builder.Append("\tLast Mode:\t\t\t" + HttpContext.Current.Session["Last_Mode"] + "\n");
+                            builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
+                        }
+                        catch
+                        {
+
+                        }
+                        subwriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), currentMode, hierarchyObject);
+                        break;
+
+
+                    case Display_Mode_Enum.Contact_Sent:
+                        subwriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, currentMode, hierarchyObject);
+                        break;
+
+                    case Display_Mode_Enum.Simple_HTML_CMS:
+                        subwriter = new Web_Content_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, htmlBasedContent, siteMap);
+                        break;
+
+                    case Display_Mode_Enum.My_Sobek:
+                        subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, webSkins, Tracer);
+                        break;
+
+                    case Display_Mode_Enum.Administrative:
+                        subwriter = new Admin_HtmlSubwriter(codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, thematicHeadings, Tracer);
+                        break;
+
+                    case Display_Mode_Enum.Results:
+                        subwriter = new Search_Results_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser);
+                        break;
+
+                    case Display_Mode_Enum.Public_Folder:
+                        subwriter = new Public_Folder_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser, publicFolder);
+                        break;
+
+                    case Display_Mode_Enum.Search:
+                    case Display_Mode_Enum.Aggregation:
+                        subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, htmlBasedContent, Tracer);
+                        break;
+
+                    case Display_Mode_Enum.Item_Display:
+                        if ((!currentMode.Invalid_Item) && (currentItem != null))
+                        {
+                            bool show_toc = false;
+                            if (HttpContext.Current.Session["Show TOC"] != null)
+                            {
+                                Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out show_toc);
+                            }
+
+                            // Check that this item is not checked out by another user
+                            bool itemCheckedOutByOtherUser = false;
+                            if (currentItem.Behaviors.CheckOut_Required)
+                            {
+                                if (!checkedItems.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
+                                {
+                                    itemCheckedOutByOtherUser = true;
                                 }
                             }
+
+                            // Check to see if this is IP restricted
+                            string restriction_message = String.Empty;
+                            if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+                            {
+                                if (HttpContext.Current != null)
+                                {
+                                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                                    int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
+                                    if (comparison == 0)
+                                    {
+                                        int restriction = currentItem.Behaviors.IP_Restriction_Membership;
+                                        int restriction_counter = 0;
+                                        while (restriction % 2 != 1)
+                                        {
+                                            restriction = restriction >> 1;
+                                            restriction_counter++;
+                                        }
+                                        restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
+                                    }
+                                }
+                            }
+
+                            // Create the item viewer writer
+                            subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2ServerUrl.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer);
+                            ((Item_HtmlSubwriter)subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
                         }
+                        else
+                        {
+                            // Create the invalid item html subwrite and write the HTML
+                            subwriter = new Error_HtmlSubwriter(true);
+                        }
+                        break;
 
-                        // Create the item viewer writer
-                        subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2ServerUrl.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer); 
-                        ((Item_HtmlSubwriter) subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
-                    }
-                    else
-                    {
-                        // Create the invalid item html subwrite and write the HTML
-                        subwriter = new Error_HtmlSubwriter(true);
-                    }
-                    break;
+                }
+            }
+            catch (Exception ee)
+            {
+                // Send to the dashboard
+                if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || (HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
+                {
+                    Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 
+                    // Wrap this into the SobekCM Exception
+                    SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, Tracer);
+
+                    // Save this to the session state, and then forward to the dashboard
+                    HttpContext.Current.Session["Last_Exception"] = newException;
+                    HttpContext.Current.Response.Redirect("dashboard.aspx", false);
+                    Current_Mode.Request_Completed = true;
+
+                    return;
+                }
+                else
+                {
+                    subwriter = new Error_HtmlSubwriter(false);
+                }
             }
 
 

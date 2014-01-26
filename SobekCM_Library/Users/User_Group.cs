@@ -15,7 +15,7 @@ namespace SobekCM.Library.Users
 
         private readonly User_Editable_Collection aggregations;
         private readonly List<string> editableRegexes;
-        private readonly List<string> projects;
+        private readonly List<string> defaultMetadataSets;
         private readonly List<string> templates;
         private readonly List<User_Group_Member> users;
 
@@ -36,7 +36,7 @@ namespace SobekCM.Library.Users
             Is_Internal_User = false;
             Is_System_Admin = false;
             templates = new List<string>();
-            projects = new List<string>();
+            defaultMetadataSets = new List<string>();
             aggregations = new User_Editable_Collection();
             editableRegexes = new List<string>();
             users = new List<User_Group_Member>();
@@ -71,10 +71,10 @@ namespace SobekCM.Library.Users
             get { return new ReadOnlyCollection<string>(templates); }
         }
 
-        /// <summary> Ordered list of projects this user group has access to </summary>
-        public ReadOnlyCollection<string> Projects
+        /// <summary> Ordered list of default metadata sets this user group has access to </summary>
+        public ReadOnlyCollection<string> Default_Metadata_Sets
         {
-            get { return new ReadOnlyCollection<string>(projects); }
+            get { return new ReadOnlyCollection<string>(defaultMetadataSets); }
         }
 
         /// <summary> List of item aggregations associated with this user group </summary>
@@ -135,12 +135,12 @@ namespace SobekCM.Library.Users
             templates.Add(Template);
         }
 
-        /// <summary> Adds a project to the list of projects this user group can select </summary>
-        /// <param name="Project">Code for this project</param>
+        /// <summary> Adds a default metadata set to the list of sets this user group can select </summary>
+        /// <param name="MetadataSet">Code for this default metadata set</param>
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        internal void Add_Project(string Project)
+        internal void Add_Default_Metadata_Set(string MetadataSet)
         {
-            projects.Add(Project);
+            defaultMetadataSets.Add(MetadataSet);
         }
 
         /// <summary> Adds a regular expression to this user group to determine which titles this user can edit </summary>

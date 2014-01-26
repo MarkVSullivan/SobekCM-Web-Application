@@ -293,7 +293,7 @@ namespace SobekCM.Library.AdminViewer
 
 							// Determine if the projects and templates need to be updated
 							bool update_templates_projects = false;
-							if ((templates.Count != editUser.Templates.Count) || (projects.Count != editUser.Projects.Count))
+							if ((templates.Count != editUser.Templates.Count) || (projects.Count != editUser.Default_Metadata_Sets.Count))
 							{
 								update_templates_projects = true;
 							}
@@ -308,7 +308,7 @@ namespace SobekCM.Library.AdminViewer
 								// Check all the projects
 								if (!update_templates_projects)
 								{
-									if (projects.Any(project => !editUser.Projects.Contains(project)))
+									if (projects.Any(project => !editUser.Default_Metadata_Sets.Contains(project)))
 									{
 										update_templates_projects = true;
 									}
@@ -321,17 +321,17 @@ namespace SobekCM.Library.AdminViewer
 								// Get the last defaults
 								string default_project = String.Empty;
 								string default_template = String.Empty;
-								if (editUser.Projects.Count > 0)
-									default_project = editUser.Projects[0];
+                                if (editUser.Default_Metadata_Sets.Count > 0)
+                                    default_project = editUser.Default_Metadata_Sets[0];
 								if (editUser.Templates.Count > 0)
 									default_template = editUser.Templates[0];
 
 								// Now, set the user's template and projects
-								editUser.Clear_Projects();
+								editUser.Clear_Default_Metadata_Sets();
 								editUser.Clear_Templates();
 								foreach (string thisProject in projects)
 								{
-									editUser.Add_Project(thisProject);
+									editUser.Add_Default_Metadata_Set(thisProject);
 								}
 								foreach (string thisTemplate in templates)
 								{
@@ -340,7 +340,7 @@ namespace SobekCM.Library.AdminViewer
 
 								// Try to add back the defaults, which won't do anything if 
 								// the old defaults aren't in the new list
-								editUser.Set_Default_Project(default_project);
+								editUser.Set_Current_Default_Metadata(default_project);
 								editUser.Set_Default_Template(default_template);
 							}
 							break;
@@ -494,9 +494,9 @@ namespace SobekCM.Library.AdminViewer
 						SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);
 
 						// Update projects, if necessary
-						if (editUser.Projects.Count > 0)
+                        if (editUser.Default_Metadata_Sets.Count > 0)
 						{
-							if (!SobekCM_Database.Update_SobekCM_User_Projects(editUser.UserID, editUser.Projects, Tracer))
+                            if (!SobekCM_Database.Update_SobekCM_User_DefaultMetadata(editUser.UserID, editUser.Default_Metadata_Sets, Tracer))
 							{
 								successful_save = false;
 							}
@@ -709,7 +709,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Build the projects list
-            foreach (string thisProject in editUser.Projects)
+            foreach (string thisProject in editUser.Default_Metadata_Sets)
                 text_builder.Append(thisProject + "<br />");
             if (text_builder.Length == 0)
             {
@@ -995,7 +995,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("        <td> &nbsp; </td>");
                     Output.WriteLine("      </tr>");
 
-                    DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_Templates(Tracer);
+                    DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
 
                     Output.WriteLine("      <tr valign=\"top\" >");
                     Output.WriteLine("        <td>");
@@ -1036,11 +1036,11 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("   </tr>");
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
 
-                    ReadOnlyCollection<string> user_projects = editUser.Projects;
+                    ReadOnlyCollection<string> user_projects = editUser.Default_Metadata_Sets;
                     foreach (DataRow thisProject in projectTemplateSet.Tables[0].Rows)
                     {
-                        string project_name = thisProject["ProjectName"].ToString();
-                        string project_code = thisProject["ProjectCode"].ToString();
+                        string project_name = thisProject["MetadataName"].ToString();
+                        string project_code = thisProject["MetadataCode"].ToString();
 
                         Output.Write("  <tr align=\"left\"><td><input type=\"checkbox\" name=\"admin_user_project_" + project_code + "\" id=\"admin_user_project_" + project_code + "\"");
                         if (user_projects.Contains(project_code))
