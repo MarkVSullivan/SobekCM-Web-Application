@@ -17,9 +17,6 @@
 						<Component Id="SobekToolsHelperLibrary" Guid="AA246A17-907F-47EE-9E99-3E9DD3314ED5">
 							<File Id="SobekToolsDll" Name="SobekCM_Tools.dll" Source="$(var.BuilderTargetSource)\SobekCM_Tools.dll" KeyPath="yes" />
 						</Component>
-						<Component Id="GemBoxSpreadsheetHelperLibrary" Guid="31D028A4-E03D-4EED-A63C-D50C00C78D63">
-							<File Id="GemBoxSpreadsheetDll" Name="GemBox.Spreadsheet.dll" Source="$(var.BuilderTargetSource)\GemBox.Spreadsheet.dll" KeyPath="yes" />
-						</Component>
 						<Component Id="MicrosoftApplicationBlocksData" Guid="048868F5-11C8-4090-A58A-4355890AB419">
 							<File Id="MicrosoftApplicationBlocksDataDll" Name="Microsoft.ApplicationBlocks.Data.dll" Source="$(var.BuilderTargetSource)\Microsoft.ApplicationBlocks.Data.Dll" KeyPath="yes" />
 						</Component>
@@ -107,7 +104,6 @@
 			<ComponentRef Id="SobekLibraryHelperLibrary" />
 			<ComponentRef Id="SobekResourceHelperLibrary" />
 			<ComponentRef Id="SobekToolsHelperLibrary" />
-			<ComponentRef Id="GemBoxSpreadsheetHelperLibrary" />
 			<ComponentRef Id="MicrosoftApplicationBlocksData" />
 			<ComponentRef Id="Z3950HelperLibraries" />
 			<ComponentRef Id="SolrNetHelperLibraries" />

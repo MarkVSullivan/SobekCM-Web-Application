@@ -361,10 +361,12 @@ namespace SobekCM.Library.UploadiFive
 				try
 				{
 					Add_To_Stream(Output, Extra_Indent + "                       ", NoHtml5OrFlashMessage);
+                    Output.WriteLine("} //end");
 				}
-				catch (Exception)
+				catch (Exception ee)
 				{
 					// Just want to ensure the setting is returned
+                    bool error = true;
 				}
 				finally
 				{
@@ -372,11 +374,11 @@ namespace SobekCM.Library.UploadiFive
 					ButtonClass = buttonCss;
 				}
 
-				Output.WriteLine(Extra_Indent + "                    }");
+				
 			}
 			else
 			{
-				if (NoHtml5OrFlashMessage.Length > 0)
+				if (!String.IsNullOrEmpty(NoHtml5OrFlashMessage))
 				{
 					// ENd the last line, with a paranthesis
 					Output.WriteLine(",");

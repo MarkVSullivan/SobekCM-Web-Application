@@ -46,7 +46,7 @@
 		</Condition>
 		
 		<!-- The property below forces this check, before UAC elevation, so this could be used to warn if 
-		     users aren't YET admin when the MSI initially launches.  -->
+				 users aren't YET admin when the MSI initially launches.  -->
 		<!-- <Property Id="MSIUSEREALADMINDETECTION" Value="1" />  -->
 
 		<!-- Check to see if IIS is installed. It it’s not, error out. -->
@@ -55,7 +55,7 @@
 		</Property>
 
 		<!-- Go find the IIS root directory from the registry. On most machines that 
-		  defaults to C:\inetpub\wwwroot. This will be the directory we install into. -->
+			defaults to C:\inetpub\wwwroot. This will be the directory we install into. -->
 		<Property Id="IISROOT">
 			<RegistrySearch Id="IISROOT" Type="directory" Root="HKLM" Key="Software\Microsoft\InetStp" Name="PathWWWRoot" />
 		</Property>
@@ -107,11 +107,14 @@
 		<CustomAction Id="CA.ValidateWebCredentials" BinaryKey="FI.CustomActionsFile" DllEntry="ValidateWebCredentials" Execute="immediate"  Return="check" Impersonate="yes" />
 		<CustomAction Id="CA.ValidateBuilderCredentials" BinaryKey="FI.CustomActionsFile" DllEntry="ValidateBuilderCredentials" Execute="immediate"  Return="check" Impersonate="yes" />
 		<CustomAction Id="CA.VerifySqlConnection" BinaryKey="FI.CustomActionsFile" DllEntry="VerifySqlConnection" Execute="immediate"  Return="check" Impersonate="yes" />
-	  <CustomAction Id="CA.CheckRemainingRequirements" BinaryKey="FI.CustomActionsFile" DllEntry="CheckRemainingRequirements" Execute="immediate" Impersonate="yes" Return="check" />
-	  <CustomAction Id="CA.UpdatePropsWithSelectedWebSite" BinaryKey="FI.CustomActionsFile" DllEntry="UpdatePropsWithSelectedWebSite" Execute="immediate" Return="check" />
+		<CustomAction Id="CA.CheckRemainingRequirements" BinaryKey="FI.CustomActionsFile" DllEntry="CheckRemainingRequirements" Execute="immediate" Impersonate="yes" Return="check" />
+		<CustomAction Id="CA.UpdatePropsWithSelectedWebSite" BinaryKey="FI.CustomActionsFile" DllEntry="UpdatePropsWithSelectedWebSite" Execute="immediate" Return="check" />
 		<CustomAction Id="CA.EnsureWebSiteSelected" BinaryKey="FI.CustomActionsFile" DllEntry="EnsureWebSiteSelected" Execute="immediate" Return="check" />
-		<CustomAction Id="CA.FinalizeDatabaseConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeDatabaseConfig" Execute="deferred" Return="check" Impersonate="yes" />
+    <CustomAction Id="CA.EnsureAspNetRegisteredWithIis" BinaryKey="FI.CustomActionsFile" DllEntry="EnsureAspNetRegisteredWithIis" Execute="deferred" Return="check" Impersonate="no" />
+    <CustomAction Id="CA.FinalizeDatabaseConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeDatabaseConfig" Execute="deferred" Return="check" Impersonate="yes" />
 		<CustomAction Id="CA.FinalizeWebConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeWebConfig" Execute="deferred" Return="check" Impersonate="no" />
+		<CustomAction Id="CA.FinalizeBuilderConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeBuilderConfig" Execute="deferred" Return="check" Impersonate="no" />
+		<CustomAction Id="CA.FinalizeSolrConfig" BinaryKey="FI.CustomActionsFile" DllEntry="FinalizeSolrConfig" Execute="deferred" Return="check" Impersonate="no" />
 		<CustomAction Id="CA.LaunchApplication" BinaryKey="FI.CustomActionsFile" DllEntry="LaunchApplication" Execute="immediate" Impersonate="yes" Return="check" />
 		<CustomAction Id="CA.ShowHelp" BinaryKey="FI.CustomActionsFile" DllEntry="ShowHelp" Execute="immediate" Impersonate="yes" Return="check" />
 
@@ -119,6 +122,8 @@
 		<!-- Custom action to set the properties for the deferred action -->
 		<CustomAction Id="CA.SetPropertyWebConfig" Execute="immediate" Property="CA.FinalizeWebConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];web_account_arg=[WEB_SERVICE_ACCOUNT];web_directory_arg=[WEBINSTALLFOLDER];virtual_dir_arg=[VIRTUAL_DIRECTORY];inst_name_arg=[INSTITUTION_NAME];inst_code_arg=[INSTITUTION_CODE]" />
 		<CustomAction Id="CA.SetPropertyDatabaseConfig" Execute="immediate" Property="CA.FinalizeDatabaseConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];web_account_arg=[WEB_SERVICE_ACCOUNT];builder_account_arg=[BUILDER_SERVICE_ACCOUNT];virtual_dir_arg=[VIRTUAL_DIRECTORY];inst_name_arg=[INSTITUTION_NAME];inst_code_arg=[INSTITUTION_CODE]" />
+		<CustomAction Id="CA.SetPropertyBuilderConfig" Execute="immediate" Property="CA.FinalizeBuilderConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];builder_account_arg=[BUILDER_SERVICE_ACCOUNT];builder_password_arg=[BUILDER_SERVICE_PASSWORD];virtual_dir_arg=[VIRTUAL_DIRECTORY];inst_name_arg=[INSTITUTION_NAME];inst_code_arg=[INSTITUTION_CODE];builder_install_folder=[BUILDERINSTALLFOLDER]" />
+		<CustomAction Id="CA.SetPropertySolrConfig" Execute="immediate" Property="CA.FinalizeSolrConfig" Value="db_name_arg=[DB_DATABASE];db_server_arg=[DB_SERVER];solr_install_folder=[SOLRINSTALLFOLDER]" />
 
 		<!-- Get the list of websites - which only works if the installer is launched as admin -->
 		<InstallUISequence>
@@ -127,9 +132,22 @@
 		<InstallExecuteSequence>
 			<Custom Action="CA.SetPropertyWebConfig" After="InstallInitialize">NOT Installed</Custom>
 			<Custom Action="CA.SetPropertyDatabaseConfig" After="InstallInitialize">NOT Installed</Custom>
+      <Custom Action="CA.SetPropertyBuilderConfig" After="InstallInitialize">NOT Installed</Custom>
+      <Custom Action="CA.SetPropertySolrConfig" After="InstallInitialize">NOT Installed</Custom>
 			<Custom Action="CA.FinalizeDatabaseConfig" Before="InstallFinalize"><![CDATA[&DbFeature = 3]]></Custom>
-			<Custom Action="CA.FinalizeWebConfig" After="CA.FinalizeDatabaseConfig"><![CDATA[&WebFeature = 3]]></Custom>
+      <Custom Action="CA.EnsureAspNetRegisteredWithIis" After="CA.FinalizeDatabaseConfig"><![CDATA[&WebFeature = 3]]></Custom>
+			<Custom Action="CA.FinalizeWebConfig" After="CA.EnsureAspNetRegisteredWithIis"><![CDATA[&WebFeature = 3]]></Custom>
+      <Custom Action="CA.FinalizeSolrConfig" After="CA.FinalizeWebConfig"><![CDATA[&SolrFeature = 3]]></Custom>
+      <Custom Action="CA.FinalizeBuilderConfig" After="CA.FinalizeSolrConfig"><![CDATA[&BuilderFeature = 3]]></Custom>
 		</InstallExecuteSequence>
+    
+    <!-- Custom progress text for the custom actions -->
+    <UI>
+      <ProgressText Action="CA.FinalizeDatabaseConfig">Finalize the daabaset configuration</ProgressText>
+      <ProgressText Action="CA.EnsureAspNetRegisteredWithIis">Ensuring .NET 4.0 is registered with IIS</ProgressText>
+      <ProgressText Action="CA.FinalizeWebConfig">Finalize the web configuration</ProgressText>
+      <ProgressText Action="CA.FinalizeSolrConfig">Finalize the solr/lucene configuration</ProgressText>
+    </UI>
 		
 		<!-- By default, start with default website -->
 		<Property Id="WEBSITE" Value="1" />
