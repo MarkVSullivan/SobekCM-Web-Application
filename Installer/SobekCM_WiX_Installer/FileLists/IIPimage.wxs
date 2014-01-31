@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<?include "..\Definitions.wxi" ?>
-
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <?include ..\Definitions.wxi?>
     <Fragment>
         <DirectoryRef Id="IIPIMAGEINSTALLFOLDER">
                 <Component Id="iipsrv.exe" Guid="{4D773F03-F528-4B80-8CA7-65BB26CDACDC}">
