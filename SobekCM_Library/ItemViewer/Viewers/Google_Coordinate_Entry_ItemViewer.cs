@@ -550,7 +550,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-infobox.js\"></script> ");
 
-            //custom js
+            //custom
             #region
 
             mapeditBuilder.AppendLine(" ");
@@ -618,7 +618,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
 
                 //read through and get all the ids
-                using (XmlReader reader = XmlReader.Create(CurrentMode.Base_URL + "./config/sobekcm_mapedit.xml"))
+                using (XmlReader reader = XmlReader.Create(SobekCM.Library.Settings.SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config"))
                 {
                     while (reader.Read())
                     {
@@ -645,7 +645,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         //if found, assign "readFromXML" as first param
                         collectionLoadParams.Add("readFromXML");
                         //go through each  xml param and assign
-                        using (XmlReader reader = XmlReader.Create(CurrentMode.Base_URL + "./config/sobekcm_mapedit.xml"))
+                        using (XmlReader reader = XmlReader.Create(SobekCM.Library.Settings.SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config"))
                         {
                             while (reader.Read())
                             {
@@ -684,7 +684,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             catch (Exception)
             {
                 //err
-                throw;
+                //throw;
             }
             //determine if there is a custom collection to load
             if (collectionLoadParams.Count > 1)
