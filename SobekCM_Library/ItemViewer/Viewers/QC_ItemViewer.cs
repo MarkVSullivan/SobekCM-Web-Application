@@ -156,7 +156,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
 			}
 
-			// Get the default QC profile
+            // Get the default QC profile
 			qc_profile = QualityControl_Configuration.Default_Profile;
 
 			title = "Quality Control";
