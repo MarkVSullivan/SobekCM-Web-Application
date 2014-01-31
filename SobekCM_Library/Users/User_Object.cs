@@ -24,11 +24,11 @@ namespace SobekCM.Library.Users
         private readonly User_Editable_Collection aggregations;
         private readonly List<string> bibids;
         private readonly List<string> bookshelfObjectIds;
-        private string currentProject;
+        private string currentMetadataSet;
         private string currentTemplate;
         private readonly List<string> editableRegexes;
         private readonly SortedList<string, User_Folder> folders;
-        private readonly List<string> projects;
+        private readonly List<string> defaultMetadataSets;
         private readonly List<string> templates;
         private readonly List<string> userGroups;
         private readonly Dictionary<string, object> userOptions; 
@@ -54,7 +54,7 @@ namespace SobekCM.Library.Users
             UserName = String.Empty;
             Preferred_Language = String.Empty;
             templates = new List<string>();
-            projects = new List<string>();
+            defaultMetadataSets = new List<string>();
             bibids = new List<string>();
             bookshelfObjectIds = new List<string>();
             Items_Submitted_Count = 0;
@@ -187,30 +187,30 @@ namespace SobekCM.Library.Users
             }
         }
 
-        /// <summary> Ordered list of projects this user has access to </summary>
-        /// <remarks>The first item in this list is the default project for this user </remarks>
-        public ReadOnlyCollection<string> Projects
+        /// <summary> Ordered list of default metadata sets this user has access to </summary>
+        /// <remarks>The first item in this list is the default metadata set for this user </remarks>
+        public ReadOnlyCollection<string> Default_Metadata_Sets
         {
-            get { return new ReadOnlyCollection<string>(projects); }
+            get { return new ReadOnlyCollection<string>(defaultMetadataSets); }
         }
 
-        /// <summary> Returns the current project for this user </summary>
-        public string Current_Project
+        /// <summary> Returns the current default metadata set for this user </summary>
+        public string Current_Default_Metadata
         {
             get
             {
-                if (!String.IsNullOrEmpty(currentProject))
-                    return currentProject;
-                if ((projects != null) && (projects.Count > 0))
-                    return projects[0];
+                if (!String.IsNullOrEmpty(currentMetadataSet))
+                    return currentMetadataSet;
+                if ((defaultMetadataSets != null) && (defaultMetadataSets.Count > 0))
+                    return defaultMetadataSets[0];
                 return String.Empty;
             }
             set
             {
-                if ((projects == null) || (projects.Count <= 0)) return;
+                if ((defaultMetadataSets == null) || (defaultMetadataSets.Count <= 0)) return;
 
-                if ((String.IsNullOrEmpty(value)) || (projects.Contains(value)))
-                    currentProject = value;
+                if ((String.IsNullOrEmpty(value)) || (defaultMetadataSets.Contains(value)))
+                    currentMetadataSet = value;
             }
         }
 
@@ -558,29 +558,29 @@ namespace SobekCM.Library.Users
             templates.Insert(0, Template);
         }
 
-        /// <summary> Clears all projects associated with this user </summary>
-        internal void Clear_Projects()
+        /// <summary> Clears all default metadata sets associated with this user </summary>
+        internal void Clear_Default_Metadata_Sets()
         {
-            projects.Clear();
+            defaultMetadataSets.Clear();
         }
 
-        /// <summary> Adds a project to the list of projects this user can select </summary>
-        /// <param name="Project">Code for this project</param>
+        /// <summary> Adds a default metadata set to the list of sets this user can select </summary>
+        /// <param name="MetadataSet">Code for this default metadata set</param>
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        internal void Add_Project(string Project)
+        internal void Add_Default_Metadata_Set(string MetadataSet)
         {
-            projects.Add(Project);
+            defaultMetadataSets.Add(MetadataSet);
         }
 
-        /// <summary> Sets the default project for this user </summary>
-        /// <param name="Project">Code for this project</param>
-        /// <remarks>This only sets this as the default project if it currently exists in the list of possible projects for this uers </remarks>
-        internal void Set_Default_Project(string Project)
+        /// <summary> Sets the current default metadata set for this user </summary>
+        /// <param name="MetadataSet">Code for this default metadata set</param>
+        /// <remarks>This only sets this as the default metadata set if it currently exists in the list of possible projects for this uers </remarks>
+        internal void Set_Current_Default_Metadata(string MetadataSet)
         {
-            if ((!projects.Contains(Project)) || (projects.IndexOf(Project) == 0)) return;
+            if ((!defaultMetadataSets.Contains(MetadataSet)) || (defaultMetadataSets.IndexOf(MetadataSet) == 0)) return;
 
-            projects.Remove(Project);
-            projects.Insert(0, Project);
+            defaultMetadataSets.Remove(MetadataSet);
+            defaultMetadataSets.Insert(0, MetadataSet);
         }
 
         /// <summary> Adds a regular expression to this user to determine which titles this user can edit </summary>

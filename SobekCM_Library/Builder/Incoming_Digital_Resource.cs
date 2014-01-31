@@ -556,9 +556,9 @@ namespace SobekCM.Library.Builder
 	            {
 					File.Delete(thisFile);
 	            }
-	            catch 
+	            catch (Exception ee)
 	            {
-
+		            bool error = true;
 	            }
             }
 
@@ -655,7 +655,7 @@ namespace SobekCM.Library.Builder
 
                 // Look for any .mets.xml file
                 string[] metsFiles = Directory.GetFiles(resourceFolder, "*.mets.xml");
-                if (metsFiles.Length == 0)
+                if (metsFiles.Length > 0)
                     return metsFiles[0];
 
                 // Finally, just use any old mets file
@@ -792,8 +792,31 @@ namespace SobekCM.Library.Builder
                     string bibidCheck = Directory.GetParent(resourceFolder).Name;
                     if (bibidCheck.Length == 10)
                     {
-                        parentDirectory = Directory.GetParent(resourceFolder).FullName;
                         destFolder = DestinationDirectory + bibidCheck + "_" + dirInfo.Name.ToUpper().Replace("VID", "");
+                    }
+                    else if (bibidCheck.Length == 2)
+                    {
+                        // Put in special code for directories dropped in builder from resource folder
+                        // That is, look for the pair-tree format
+                        string bibid = bibidCheck;
+                        int count = 0;
+                        while ((Directory.GetParent(bibidCheck) != null) && (count < 4))
+                        {
+                            string parent = Directory.GetParent(bibidCheck).Name;
+                            if (parent.Length != 2)
+                            {
+                                bibid = String.Empty;
+                                break;
+                            }
+
+                            bibid = bibid + parent;
+                            count++;
+                        }
+
+                        if (bibid.Length == 10)
+                        {
+                            destFolder = DestinationDirectory + bibid + "_" + dirInfo.Name.ToUpper().Replace("VID", "");
+                         }
                     }
                 }
 
@@ -808,18 +831,17 @@ namespace SobekCM.Library.Builder
                 resourceFolder = destFolder;
 
                 // If the parent directory is empty, try to delete it
-                if (parentDirectory.Length > 0)
+                string parentDir = resourceFolder;
+                while ((Directory.GetParent(parentDir) != null) && (Directory.GetParent(parentDir).GetFiles().Length == 0))
                 {
-                    if ((Directory.GetDirectories(parentDirectory).Length == 0) && (Directory.GetFiles(parentDirectory).Length == 0))
+                    parentDir = Directory.GetParent(parentDir).FullName;
+                    try
                     {
-                        try
-                        {
-                            Directory.Delete(parentDirectory);
-                        }
-                        catch(Exception)
-                        {
-                            // If unable to delete the directory, not the worst thing
-                        }
+                        Directory.Delete(parentDir);
+                    }
+                    catch (Exception)
+                    {
+                        // If unable to delete the directory, not the worst thing
                     }
                 }
 

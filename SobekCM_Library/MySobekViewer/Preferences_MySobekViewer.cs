@@ -379,7 +379,7 @@ namespace SobekCM.Library.MySobekViewer
 					user.Unit = unit.Trim();
 					user.Set_Default_Template(template.Trim());
 					// See if the project is different, if this is not registration
-					if ((!registration) && (user.Projects[0] != project.Trim()))
+                    if ((!registration) && (user.Default_Metadata_Sets[0] != project.Trim()))
 					{
 						// Determine the in process directory for this
 						string user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName;
@@ -391,7 +391,7 @@ namespace SobekCM.Library.MySobekViewer
 								File.Delete(user_in_process_directory + "\\TEMP000001_00001.mets");
 						}
 					}
-					user.Set_Default_Project(project.Trim());
+					user.Set_Current_Default_Metadata(project.Trim());
 					user.Preferred_Language = language;
 					user.Default_Rights = default_rights;
 					user.Send_Email_On_Submission = send_email_on_submission;
@@ -415,14 +415,14 @@ namespace SobekCM.Library.MySobekViewer
 						if (user.UserID == 1)
 						{
 							// Add each template and project
-							DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_Templates(Tracer);
+                            DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
 							List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
-							List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["ProjectCode"].ToString()).ToList();
+							List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
 
 							// Save the updates to this admin user
 							SobekCM_Database.Save_User(user, password, Tracer);
 							SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, Tracer);
-							SobekCM_Database.Update_SobekCM_User_Projects(user.UserID, new ReadOnlyCollection<string>(projects), Tracer);
+                            SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new ReadOnlyCollection<string>(projects), Tracer);
 							SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), Tracer);
 
 							// Retrieve the user information again
@@ -632,15 +632,15 @@ namespace SobekCM.Library.MySobekViewer
 					Output.WriteLine("    </td>");
 					Output.WriteLine("  </tr>");
 				}
-				if (user.Projects.Count > 0)
+				if (user.Default_Metadata_Sets.Count > 0)
 				{
 					Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + projectLabel + ":</td>");
 					Output.WriteLine("    <td>");
 					Output.WriteLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" >");
-					Output.WriteLine("        <option selected=\"selected\" value=\"" + user.Projects[0] + "\">" + user.Projects[0] + "</option>");
-					for (int i = 1; i < user.Projects.Count; i++)
+                    Output.WriteLine("        <option selected=\"selected\" value=\"" + user.Default_Metadata_Sets[0] + "\">" + user.Default_Metadata_Sets[0] + "</option>");
+                    for (int i = 1; i < user.Default_Metadata_Sets.Count; i++)
 					{
-						Output.WriteLine("        <option value=\"" + user.Projects[i] + "\">" + user.Projects[i] + "</option>");
+                        Output.WriteLine("        <option value=\"" + user.Default_Metadata_Sets[i] + "\">" + user.Default_Metadata_Sets[i] + "</option>");
 					}
 					Output.WriteLine("      </select>");
 					Output.WriteLine("    </td>");

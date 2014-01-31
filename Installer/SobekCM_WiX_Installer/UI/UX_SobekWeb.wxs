@@ -112,7 +112,7 @@ Patch dialog sequence:
 			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="UI.WelcomeDialog" Order="2">Installed AND PATCH</Publish>
 
 
-			<Publish Dialog="UI.ExitDialog" Control="Finish" Event="DoAction" Value="CA.LaunchApplication" Order="1" >LAUNCHAPPONEXIT</Publish>
+			<Publish Dialog="UI.ExitDialog" Control="Finish" Event="DoAction" Value="CA.LaunchApplication" Order="1" >LAUNCHAPPONEXIT AND InstallWeb AND NOT Installed</Publish>
 			<Publish Dialog="UI.ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
 
 			<Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>

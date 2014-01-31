@@ -1813,6 +1813,10 @@ namespace SobekCM.Builder
                     return;
                 }
 
+				// Read the METS and load the basic information before continuing
+	            deleteResource.Load_METS();
+				SobekCM_Database.Add_Minimum_Builder_Information(deleteResource.Metadata);
+
                 deleteResource.BuilderLogId = Add_NonError_To_Log("........Processing '" + deleteResource.Folder_Name + "'", "Standard", deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, -1 );
 
 				SobekCM_Database.Builder_Clear_Item_Error_Log(deleteResource.BibID, deleteResource.VID, "SobekCM Builder");
@@ -1828,13 +1832,13 @@ namespace SobekCM.Builder
                         if (Directory.Exists(existing_folder))
                         {
                             // Make sure the delete folder exists
-                            if (!Directory.Exists(SobekCM_Library_Settings.Image_Server_Network + "\\DELETED"))
+							if (!Directory.Exists(SobekCM_Library_Settings.Image_Server_Network + "\\RECYCLE BIN"))
                             {
-                                Directory.CreateDirectory(SobekCM_Library_Settings.Image_Server_Network + "\\DELETED");
+								Directory.CreateDirectory(SobekCM_Library_Settings.Image_Server_Network + "\\RECYCLE BIN");
                             }
 
                             // Create the final directory
-                            string final_folder = SobekCM_Library_Settings.Image_Server_Network + "\\DELETED\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
+							string final_folder = SobekCM_Library_Settings.Image_Server_Network + "\\RECYCLE BIN\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
                             if (!Directory.Exists(final_folder))
                             {
                                 Directory.CreateDirectory(final_folder);
@@ -1844,7 +1848,7 @@ namespace SobekCM.Builder
                             string[] delete_files = Directory.GetFiles(existing_folder);
                             foreach (string thisDeleteFile in delete_files)
                             {
-                                string destination_file = final_folder + "\\" + ((new FileInfo(thisDeleteFile)).Name);
+                                string destination_file = final_folder + "\\" + Path.GetFileName(thisDeleteFile);
                                 if (File.Exists(destination_file))
                                     File.Delete(destination_file);
                                 File.Move(thisDeleteFile, destination_file);
@@ -1857,10 +1861,16 @@ namespace SobekCM.Builder
                      }
 
                     // Delete the static page
-                    if (File.Exists(SobekCM_Library_Settings.Static_Pages_Location + deleteResource.BibID + "_" + deleteResource.VID + ".html"))
+	                string static_page1 = SobekCM_Library_Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.VID + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
+					if (File.Exists(static_page1))
                     {
-                        File.Delete(SobekCM_Library_Settings.Static_Pages_Location + deleteResource.BibID + "_" + deleteResource.VID + ".html");
+						File.Delete(static_page1);
                     }
+					string static_page2 = SobekCM_Library_Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
+					if (File.Exists(static_page2))
+					{
+						File.Delete(static_page2);
+					}
 
                     // Delete the file from the database
                     SobekCM_Database.Delete_SobekCM_Item(deleteResource.BibID, deleteResource.VID, true, "Deleted upon request by builder");
