@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?include "..\Definitions.wxi" ?>
-
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?include ..\Definitions.wxi?>
 	<Fragment>
 		<DirectoryRef Id="BUILDERINSTALLFOLDER">
 						<Component Id="MainExecutable" Guid="4756AAFA-147D-4F98-BF83-D5D4E6E729B3">
