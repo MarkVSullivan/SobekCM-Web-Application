@@ -5,6 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
 using SobekCM.Library.Aggregations;
@@ -319,8 +322,48 @@ namespace SobekCM.Library.AdminViewer
 			                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
 		                                    if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.gif"))
 			                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
-		                                    if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg"))
-			                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+
+                                            // Try to create a new custom banner
+                                            bool custom_banner_created = false;
+                                            // Create the banner with the name of the collection
+                                            if (Directory.Exists(SobekCM_Library_Settings.Application_Server_Network + "\\default\\banner_images"))
+                                            {
+                                                try
+                                                {
+                                                    string[] banners = Directory.GetFiles(SobekCM_Library_Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
+                                                    if (banners.Length > 0)
+                                                    {
+                                                        Random randomizer = new Random();
+                                                        string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
+                                                        Bitmap bitmap = (Bitmap)System.Drawing.Bitmap.FromFile(banner_to_use);
+
+                                                        RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
+                                                        Graphics g = Graphics.FromImage(bitmap);
+                                                        g.SmoothingMode = SmoothingMode.AntiAlias;
+                                                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                                        g.DrawString(new_name, new Font("Tahoma", 25, FontStyle.Bold), Brushes.Black, rectf);
+                                                        g.Flush();
+
+                                                        string new_file = folder + "/images/banners/coll.jpg";
+                                                        if (!File.Exists(new_file))
+                                                        {
+                                                            bitmap.Save(new_file, ImageFormat.Jpeg);
+                                                            custom_banner_created = true;
+                                                        }
+                                                    }
+                                                }
+                                                catch (Exception ee)
+                                                {
+                                                    string msg = ee.Message;
+                                                }
+                                            }
+
+                                            if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
+                                            {
+                                                if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg"))
+                                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+                                            }
 
 		                                    // Now, try to create the item aggregation and write the configuration file
 		                                    Item_Aggregation itemAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, Tracer);

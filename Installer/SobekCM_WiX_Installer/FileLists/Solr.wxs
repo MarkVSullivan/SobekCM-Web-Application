@@ -1,303 +1,308 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<?include "..\Definitions.wxi" ?>
-
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <?include ..\Definitions.wxi?>
     <Fragment>
         <DirectoryRef Id="SOLRINSTALLFOLDER">
-                <Component Id="README.docx" Guid="{E2E50F5D-7E29-44D2-89BB-1A9E2A46B758}">
-                    <File Id="README.docx" KeyPath="yes" Source="$(var.SolrSource)\README.docx" />
+                <Component Id="SolrConfigNotes.docx" Guid="{9A1EB447-D0D6-4DC3-A94E-153E65629A08}">
+                    <File Id="SolrConfigNotes.docx" KeyPath="yes" Source="$(var.SolrSource)\SolrConfigNotes.docx" />
                 </Component>
-                <Component Id="README.pdf" Guid="{72C973AA-A1BA-4BF1-92D5-34D53DA3262F}">
-                    <File Id="README.pdf" KeyPath="yes" Source="$(var.SolrSource)\README.pdf" />
+                <Component Id="SolrConfigNotes.pdf" Guid="{12C6F1B8-5CE2-41C0-A2B9-14615321F941}">
+                    <File Id="SolrConfigNotes.pdf" KeyPath="yes" Source="$(var.SolrSource)\SolrConfigNotes.pdf" />
                 </Component>
-                <Component Id="SolrREADME.txt" Guid="{0A7E4DE8-DF65-4CCC-BF5A-0E050DDCA16B}">
-                    <File Id="SolrREADME.txt" KeyPath="yes" Source="$(var.SolrSource)\README.txt" />
+                <Component Id="SolrConfigNotes.txt" Guid="{92DF9BCD-D547-410A-8368-CC27F424DAAF}">
+                    <File Id="SolrConfigNotes.txt" KeyPath="yes" Source="$(var.SolrSource)\SolrConfigNotes.txt" />
                 </Component>
                 <Directory Id="catalina_configs" Name="catalina configs">
-                    <Component Id="documents.xml" Guid="{2BCE59D3-83F9-4A61-AB35-2D08F509532F}">
+                    <Component Id="documents.xml" Guid="{1464AC00-CC35-4BF8-87E2-A0B6C878EF2B}">
                         <File Id="documents.xml" KeyPath="yes" Source="$(var.SolrSource)\catalina configs\documents.xml" />
                     </Component>
-                    <Component Id="pages.xml" Guid="{B74C079E-E5C9-456D-9977-1B32BA70A494}">
+                    <Component Id="pages.xml" Guid="{2024C00D-49E5-459E-9EE3-81DF56A188C2}">
                         <File Id="pages.xml" KeyPath="yes" Source="$(var.SolrSource)\catalina configs\pages.xml" />
                     </Component>
                 </Directory>
                 <Directory Id="documents" Name="documents">
-                    <Component Id="solr.xml" Guid="{4EDBE3E8-E68F-4517-B081-74AF441BA45C}">
+                    <Component Id="solr.xml" Guid="{70731B7F-C93D-4936-9410-2F6E7C1A5AF5}">
                         <File Id="solr.xml" KeyPath="yes" Source="$(var.SolrSource)\documents\solr.xml" />
                     </Component>
-                    <Directory Id="Solrbin" Name="bin">
-                        <Component Id="__9D6C26E7_1980_42A6_B105_E7EF2C16B349_" Guid="{5013306B-34A6-4DB5-9413-83DF3ED68BA1}" KeyPath="yes">
-                            <CreateFolder />
-                        </Component>
-                    </Directory>
                     <Directory Id="conf" Name="conf">
-                        <Component Id="admin_extra.html" Guid="{63DEE6D7-8005-4298-B6CD-04D6A5A58E15}">
+                        <Component Id="admin_extra.html" Guid="{75709027-15B6-4EE4-8BBE-551294746C68}">
                             <File Id="admin_extra.html" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\admin-extra.html" />
                         </Component>
-                        <Component Id="elevate.xml" Guid="{07588C62-5346-4B32-AAB1-6482468FB6CA}">
+                        <Component Id="elevate.xml" Guid="{18B625E8-5717-4FA6-8D1B-13FEC28B7D64}">
                             <File Id="elevate.xml" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\elevate.xml" />
                         </Component>
-                        <Component Id="mapping_FoldToASCII.txt" Guid="{17950054-A9BA-4412-ABE5-A54210521B03}">
+                        <Component Id="mapping_FoldToASCII.txt" Guid="{FCB933A7-8653-45DB-9EEF-B184ECECA1AC}">
                             <File Id="mapping_FoldToASCII.txt" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\mapping-FoldToASCII.txt" />
                         </Component>
-                        <Component Id="mapping_ISOLatin1Accent.txt" Guid="{C4F88916-E01E-4A10-BF24-EEB8607986B4}">
+                        <Component Id="mapping_ISOLatin1Accent.txt" Guid="{CB41F256-03FB-4923-B17F-6F519C1424BE}">
                             <File Id="mapping_ISOLatin1Accent.txt" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\mapping-ISOLatin1Accent.txt" />
                         </Component>
-                        <Component Id="protwords.txt" Guid="{564FE18D-64F8-4895-ABF3-8B76FE702142}">
+                        <Component Id="protwords.txt" Guid="{BD100203-6C4F-4399-84AF-2DE1620605C3}">
                             <File Id="protwords.txt" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\protwords.txt" />
                         </Component>
-                        <Component Id="schema.xml" Guid="{D1576265-BEC8-4DE8-BE29-7D94341B7737}">
+                        <Component Id="schema.xml" Guid="{52EF53F6-F95F-4D9E-85F4-FC15DAB48677}">
                             <File Id="schema.xml" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\schema.xml" />
                         </Component>
-                        <Component Id="scripts.conf" Guid="{A10332D5-7E53-4213-91B3-87112885123D}">
+                        <Component Id="scripts.conf" Guid="{16D2DB23-82BD-4374-83C4-078100AE3807}">
                             <File Id="scripts.conf" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\scripts.conf" />
                         </Component>
-                        <Component Id="solrconfig.xml" Guid="{97C573B6-2CBE-4CE7-99F9-4E6FD0416518}">
+                        <Component Id="solrconfig.xml" Guid="{6AEA1426-F3FE-4155-83EE-5C9C8EF41F40}">
                             <File Id="solrconfig.xml" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\solrconfig.xml" />
                         </Component>
-                        <Component Id="spellings.txt" Guid="{18BB1676-4436-4FB1-893C-688DE0ECB63A}">
+                        <Component Id="spellings.txt" Guid="{ECDD8AAF-6A3B-4D2D-8FB3-ABB31B1B0F13}">
                             <File Id="spellings.txt" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\spellings.txt" />
                         </Component>
-                        <Component Id="stopwords.txt" Guid="{633250B8-28C5-48DB-BD0D-524975750766}">
+                        <Component Id="stopwords.txt" Guid="{6EC33F73-3DCF-4F93-BDB1-C338CD658D03}">
                             <File Id="stopwords.txt" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\stopwords.txt" />
                         </Component>
-                        <Component Id="synonyms.txt" Guid="{E94817A0-0AF2-448B-A77D-453AD6F29081}">
+                        <Component Id="synonyms.txt" Guid="{D7148AE9-59F3-4D83-850C-BB007E6C59F5}">
                             <File Id="synonyms.txt" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\synonyms.txt" />
                         </Component>
                         <Directory Id="velocity" Name="velocity">
-                            <Component Id="browse.vm" Guid="{0C97E0D1-4EE4-4CC6-8DD8-E16C6F19D55B}">
+                            <Component Id="browse.vm" Guid="{EE763F1D-30DC-4AA4-9AFC-257A20D774A0}">
                                 <File Id="browse.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\browse.vm" />
                             </Component>
-                            <Component Id="cluster.vm" Guid="{CBD4803A-04DD-4385-AF9C-2F56DDAE850F}">
+                            <Component Id="cluster.vm" Guid="{CDBF0606-FDF8-46EB-A336-CE8C42F0DA9A}">
                                 <File Id="cluster.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\cluster.vm" />
                             </Component>
-                            <Component Id="clusterResults.vm" Guid="{967C01E9-7C74-48F5-B2EC-1E710EAE7399}">
+                            <Component Id="clusterResults.vm" Guid="{B8FCCD47-45BE-4BC5-BAA9-3DD5CDD8A7B7}">
                                 <File Id="clusterResults.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\clusterResults.vm" />
                             </Component>
-                            <Component Id="doc.vm" Guid="{C21668CE-05BD-43BE-B5B3-E378E3F51AFC}">
+                            <Component Id="doc.vm" Guid="{75A795F1-EFA8-42E8-925E-74A6D21A9520}">
                                 <File Id="doc.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\doc.vm" />
                             </Component>
-                            <Component Id="facets.vm" Guid="{954C85FC-D6FE-46C0-90C5-E8B8D7EAE34F}">
+                            <Component Id="facets.vm" Guid="{D93E9ACC-316F-463A-AFF2-1654D27D5FF8}">
                                 <File Id="facets.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\facets.vm" />
                             </Component>
-                            <Component Id="facet_dates.vm" Guid="{7CB0CA47-1432-4AF9-8273-53ED31A49509}">
+                            <Component Id="facet_dates.vm" Guid="{268A9FA3-4233-4A53-9C07-8D71A516E326}">
                                 <File Id="facet_dates.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\facet_dates.vm" />
                             </Component>
-                            <Component Id="facet_fields.vm" Guid="{DE7DFCAE-7D4D-4B11-BA15-C01933082679}">
+                            <Component Id="facet_fields.vm" Guid="{63F33409-C14A-458E-8638-DFCE8F9B8292}">
                                 <File Id="facet_fields.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\facet_fields.vm" />
                             </Component>
-                            <Component Id="facet_queries.vm" Guid="{7373AF9A-172B-4FA2-B36A-592F1C1382C0}">
+                            <Component Id="facet_queries.vm" Guid="{67AB3489-CAC1-49CA-A4FA-64EA6E22BF9C}">
                                 <File Id="facet_queries.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\facet_queries.vm" />
                             </Component>
-                            <Component Id="facet_ranges.vm" Guid="{25F81444-87F2-4A25-9197-302D43A797BB}">
+                            <Component Id="facet_ranges.vm" Guid="{76C29CE0-E455-4B96-A5D2-7401BB279057}">
                                 <File Id="facet_ranges.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\facet_ranges.vm" />
                             </Component>
-                            <Component Id="footer.vm" Guid="{AA6EDD20-150B-42B3-B94A-7E1EDE16BF66}">
+                            <Component Id="footer.vm" Guid="{108EC1FB-4531-415C-91CD-B71FBA45DF40}">
                                 <File Id="footer.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\footer.vm" />
                             </Component>
-                            <Component Id="head.vm" Guid="{F834793C-8EEF-4C38-AE70-E1758E41CA7F}">
+                            <Component Id="head.vm" Guid="{3C4BCDAB-5F67-4147-893D-0B51B3D5573C}">
                                 <File Id="head.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\head.vm" />
                             </Component>
-                            <Component Id="header.vm" Guid="{301E0D7B-C462-4485-A273-8151C582D95F}">
+                            <Component Id="header.vm" Guid="{47E6B87D-61BE-480D-8D45-D892A14AC242}">
                                 <File Id="header.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\header.vm" />
                             </Component>
-                            <Component Id="hit.vm" Guid="{AC50B389-C890-467B-9F72-4828830D043E}">
+                            <Component Id="hit.vm" Guid="{CFB12D44-2C34-44C1-9A14-C31C1FE44F25}">
                                 <File Id="hit.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\hit.vm" />
                             </Component>
-                            <Component Id="jquery.autocomplete.css" Guid="{D9B93E21-A698-47C3-BDDE-2653928863FA}">
+                            <Component Id="jquery.autocomplete.css" Guid="{F9003040-FBF6-476D-B116-74FCB5E8B96E}">
                                 <File Id="jquery.autocomplete.css" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\jquery.autocomplete.css" />
                             </Component>
-                            <Component Id="jquery.autocomplete.js" Guid="{CAA0D92C-ADEE-402B-B465-D8B5A82D578D}">
+                            <Component Id="jquery.autocomplete.js" Guid="{F48A84ED-7683-4040-A40E-8DADA65C469F}">
                                 <File Id="jquery.autocomplete.js" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\jquery.autocomplete.js" />
                             </Component>
-                            <Component Id="layout.vm" Guid="{D7FDC88D-EF4D-4724-88BF-89B78FCBC4BC}">
+                            <Component Id="layout.vm" Guid="{C2957F16-FF47-4EF2-B95A-FEA860C04E45}">
                                 <File Id="layout.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\layout.vm" />
                             </Component>
-                            <Component Id="main.css" Guid="{E926543F-1D2E-4089-B176-38BBAACF634F}">
+                            <Component Id="main.css" Guid="{F55B6025-2D9B-4540-9673-4FA09C9E64B3}">
                                 <File Id="main.css" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\main.css" />
                             </Component>
-                            <Component Id="query.vm" Guid="{3C817AB9-FF73-449B-BCBA-5B6ACED6B08E}">
+                            <Component Id="query.vm" Guid="{051FE087-F188-46D1-94AC-3594F9D9E7B0}">
                                 <File Id="query.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\query.vm" />
                             </Component>
-                            <Component Id="querySpatial.vm" Guid="{7E15DF99-FB96-48FE-9B41-43ABCA4B33F2}">
+                            <Component Id="querySpatial.vm" Guid="{9413CBDB-14A9-4675-AD4C-3FB67EEC47CC}">
                                 <File Id="querySpatial.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\querySpatial.vm" />
                             </Component>
-                            <Component Id="suggest.vm" Guid="{9B690485-8A0E-4740-BC7B-3EEFE9907ACE}">
+                            <Component Id="suggest.vm" Guid="{E183525F-7BD1-4A33-9266-C53B08F434EE}">
                                 <File Id="suggest.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\suggest.vm" />
                             </Component>
-                            <Component Id="tabs.vm" Guid="{5CC0FC9A-FD38-42F9-A0D6-99F0B00DFD74}">
+                            <Component Id="tabs.vm" Guid="{95B15B99-E28B-4E41-B3A8-6DDA0BEFD352}">
                                 <File Id="tabs.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\tabs.vm" />
                             </Component>
-                            <Component Id="VM_global_library.vm" Guid="{730A6AA4-71F2-4DE9-AACE-8153477F5AFC}">
+                            <Component Id="VM_global_library.vm" Guid="{6F7D6CB1-7932-49E6-ACD1-77966C3CF14D}">
                                 <File Id="VM_global_library.vm" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\velocity\VM_global_library.vm" />
                             </Component>
                         </Directory>
                         <Directory Id="xslt" Name="xslt">
-                            <Component Id="example.xsl" Guid="{F9411C12-8A7C-441E-BAFF-EF96F563209A}">
+                            <Component Id="example.xsl" Guid="{7CC0036F-EB55-4D22-9767-AB6454D7E2EA}">
                                 <File Id="example.xsl" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\xslt\example.xsl" />
                             </Component>
-                            <Component Id="example_atom.xsl" Guid="{D33CC870-1BAC-4616-AA2A-078C3D73A144}">
+                            <Component Id="example_atom.xsl" Guid="{7FBE9601-D367-4696-8187-01D867B75ECC}">
                                 <File Id="example_atom.xsl" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\xslt\example_atom.xsl" />
                             </Component>
-                            <Component Id="example_rss.xsl" Guid="{68E761F2-6FE3-4F5C-9BCE-26CB8D08CC1E}">
+                            <Component Id="example_rss.xsl" Guid="{863BFBFD-DF5A-4DD9-8AD6-1D5EEABBDD10}">
                                 <File Id="example_rss.xsl" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\xslt\example_rss.xsl" />
                             </Component>
-                            <Component Id="luke.xsl" Guid="{66E4A8DD-05AC-40EC-B868-EE71B8039B43}">
+                            <Component Id="luke.xsl" Guid="{4D743083-11C6-49B8-83B5-56F310C2D697}">
                                 <File Id="luke.xsl" KeyPath="yes" Source="$(var.SolrSource)\documents\conf\xslt\luke.xsl" />
                             </Component>
                         </Directory>
                     </Directory>
                 </Directory>
                 <Directory Id="pages" Name="pages">
-                    <Component Id="solr.xml_1" Guid="{444987AA-746F-42D0-B0E9-0AC5B43D7D4E}">
+                    <Component Id="solr.xml_1" Guid="{8CFF402F-6F6A-4CF3-8006-259885ADB5DF}">
                         <File Id="solr.xml_1" KeyPath="yes" Source="$(var.SolrSource)\pages\solr.xml" />
                     </Component>
-                    <Directory Id="bin_1" Name="bin">
-                        <Component Id="__BAB1943B_F3D5_436B_8F66_3F4854DB1C03_" Guid="{E6C94BC8-709B-4D50-84DA-4DE581BAB844}" KeyPath="yes">
-                            <CreateFolder />
-                        </Component>
-                    </Directory>
                     <Directory Id="conf_1" Name="conf">
-                        <Component Id="admin_extra.html_1" Guid="{2F9ECC0C-B681-407D-85E2-C9DD576F31DC}">
+                        <Component Id="admin_extra.html_1" Guid="{7EFA7FEC-1ABE-4806-8F98-3B08F7E9A4F8}">
                             <File Id="admin_extra.html_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\admin-extra.html" />
                         </Component>
-                        <Component Id="elevate.xml_1" Guid="{20600E61-7C58-4B42-B14C-CF2AF8200572}">
+                        <Component Id="elevate.xml_1" Guid="{E9044C3D-34EC-4D23-96EC-71036863233B}">
                             <File Id="elevate.xml_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\elevate.xml" />
                         </Component>
-                        <Component Id="mapping_FoldToASCII.txt_1" Guid="{36B2DB3F-5454-4572-9B47-C070A7379660}">
+                        <Component Id="mapping_FoldToASCII.txt_1" Guid="{D7793BF9-03DC-4D91-A1D6-F592A2261C7A}">
                             <File Id="mapping_FoldToASCII.txt_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\mapping-FoldToASCII.txt" />
                         </Component>
-                        <Component Id="mapping_ISOLatin1Accent.txt_1" Guid="{5F3AD7F2-7932-484B-9659-683F3BF2F565}">
+                        <Component Id="mapping_ISOLatin1Accent.txt_1" Guid="{D438FB83-BB4B-4EA2-86AD-D45609FEBAE7}">
                             <File Id="mapping_ISOLatin1Accent.txt_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\mapping-ISOLatin1Accent.txt" />
                         </Component>
-                        <Component Id="protwords.txt_1" Guid="{43A28162-CDD3-4D04-BE33-AEEAADD3E25C}">
+                        <Component Id="protwords.txt_1" Guid="{A8305AFD-0115-4236-A588-41866672C5EF}">
                             <File Id="protwords.txt_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\protwords.txt" />
                         </Component>
-                        <Component Id="schema.xml_1" Guid="{D8864DB3-6CC9-451A-B05A-8E599F0247E4}">
+                        <Component Id="schema.xml_1" Guid="{E61E4CE9-E271-4C80-98AB-07A90C116E17}">
                             <File Id="schema.xml_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\schema.xml" />
                         </Component>
-                        <Component Id="scripts.conf_1" Guid="{ECD6DD31-255D-4F56-8AB9-4F244BEE896A}">
+                        <Component Id="scripts.conf_1" Guid="{1863F9D4-E836-4757-AFA0-26B2D07F12CD}">
                             <File Id="scripts.conf_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\scripts.conf" />
                         </Component>
-                        <Component Id="solrconfig.xml_1" Guid="{5BE0CE4C-671A-48FF-A388-1BCB7AE0B71F}">
+                        <Component Id="solrconfig.xml_1" Guid="{1974B47D-3ACC-4EC1-B4C2-433FEB802A5C}">
                             <File Id="solrconfig.xml_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\solrconfig.xml" />
                         </Component>
-                        <Component Id="spellings.txt_1" Guid="{404732B3-0377-4318-BDFF-28BDEAA71FE7}">
+                        <Component Id="spellings.txt_1" Guid="{BFDA7A41-679C-4853-A34B-41E0F5257F45}">
                             <File Id="spellings.txt_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\spellings.txt" />
                         </Component>
-                        <Component Id="stopwords.txt_1" Guid="{BD8504A8-347D-4B1F-8DC9-F82AD6AD6CB5}">
+                        <Component Id="stopwords.txt_1" Guid="{01B75351-4318-4B73-AB78-18324207048A}">
                             <File Id="stopwords.txt_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\stopwords.txt" />
                         </Component>
-                        <Component Id="synonyms.txt_1" Guid="{F32E79C5-6523-4A83-992C-F683EEF1B14D}">
+                        <Component Id="synonyms.txt_1" Guid="{78352112-871C-4FE7-A575-477AAC0530C8}">
                             <File Id="synonyms.txt_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\synonyms.txt" />
                         </Component>
                         <Directory Id="velocity_1" Name="velocity">
-                            <Component Id="browse.vm_1" Guid="{ED3497FB-9263-4ABA-8290-9803969554CD}">
+                            <Component Id="browse.vm_1" Guid="{3DCD007C-9475-4B83-AA54-6E229B359D2A}">
                                 <File Id="browse.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\browse.vm" />
                             </Component>
-                            <Component Id="cluster.vm_1" Guid="{2266EC4F-096E-489D-ACBD-9BAAE3F223CE}">
+                            <Component Id="cluster.vm_1" Guid="{8B2D5646-E488-485D-9AA3-E6FFEB55D5D8}">
                                 <File Id="cluster.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\cluster.vm" />
                             </Component>
-                            <Component Id="clusterResults.vm_1" Guid="{6132E2BA-C614-495E-8A54-F39B57EB8D78}">
+                            <Component Id="clusterResults.vm_1" Guid="{A7C4D689-50F6-447B-B1D5-BCF464D2318E}">
                                 <File Id="clusterResults.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\clusterResults.vm" />
                             </Component>
-                            <Component Id="doc.vm_1" Guid="{DF20327E-9293-4D1C-B47D-16FFD725A2DE}">
+                            <Component Id="doc.vm_1" Guid="{E0C99E19-C6EF-441F-B27B-E8EDB993E715}">
                                 <File Id="doc.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\doc.vm" />
                             </Component>
-                            <Component Id="facets.vm_1" Guid="{2C76F8F4-42A8-4AAE-8C35-0EFC76EEAB72}">
+                            <Component Id="facets.vm_1" Guid="{1E818634-C350-4BF8-9F2D-06F3B0407B3C}">
                                 <File Id="facets.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\facets.vm" />
                             </Component>
-                            <Component Id="facet_dates.vm_1" Guid="{648F3D1A-F85F-4161-9053-1BF676AF43B8}">
+                            <Component Id="facet_dates.vm_1" Guid="{7FA861D4-EE2C-4643-8413-5EBB991D697F}">
                                 <File Id="facet_dates.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\facet_dates.vm" />
                             </Component>
-                            <Component Id="facet_fields.vm_1" Guid="{359CDC52-16F9-4182-A3BF-58B25D8ECAFD}">
+                            <Component Id="facet_fields.vm_1" Guid="{BD5AC71A-1FE9-4A42-A939-A80B483D3B38}">
                                 <File Id="facet_fields.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\facet_fields.vm" />
                             </Component>
-                            <Component Id="facet_queries.vm_1" Guid="{B2E91693-DEFA-4C81-98E5-1B263D876329}">
+                            <Component Id="facet_queries.vm_1" Guid="{D4CB47C6-E80B-40D5-B83D-E8E34B680646}">
                                 <File Id="facet_queries.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\facet_queries.vm" />
                             </Component>
-                            <Component Id="facet_ranges.vm_1" Guid="{D92020F5-BA70-4425-87FB-B095962DF45E}">
+                            <Component Id="facet_ranges.vm_1" Guid="{51367BF1-3230-4041-9C62-BE5801A54E48}">
                                 <File Id="facet_ranges.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\facet_ranges.vm" />
                             </Component>
-                            <Component Id="footer.vm_1" Guid="{C42F5D47-2A11-4845-8E3D-AC90F3A7F176}">
+                            <Component Id="footer.vm_1" Guid="{C0128B1C-6839-4F65-9F0D-55FE1C6E39E7}">
                                 <File Id="footer.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\footer.vm" />
                             </Component>
-                            <Component Id="head.vm_1" Guid="{88ABC6A4-C7B1-48C0-9E28-1C9BE4B8FF3F}">
+                            <Component Id="head.vm_1" Guid="{9D531C53-B33B-4C60-AD49-FDA73D467DAA}">
                                 <File Id="head.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\head.vm" />
                             </Component>
-                            <Component Id="header.vm_1" Guid="{27BC7520-0A7F-438C-A338-9A585D902C90}">
+                            <Component Id="header.vm_1" Guid="{B58977C6-ECEE-431D-B188-723CAE29F358}">
                                 <File Id="header.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\header.vm" />
                             </Component>
-                            <Component Id="hit.vm_1" Guid="{EBB0A2FE-9C56-4879-A725-A93F91E99A1F}">
+                            <Component Id="hit.vm_1" Guid="{155415F9-F7A0-409C-B81F-57F38A22AA3A}">
                                 <File Id="hit.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\hit.vm" />
                             </Component>
-                            <Component Id="jquery.autocomplete.css_1" Guid="{EB8AE493-589D-4C44-8DB1-B4443E932870}">
+                            <Component Id="jquery.autocomplete.css_1" Guid="{71C97BA0-EB5D-4183-BD06-C328DED77D60}">
                                 <File Id="jquery.autocomplete.css_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\jquery.autocomplete.css" />
                             </Component>
-                            <Component Id="jquery.autocomplete.js_1" Guid="{93AD5771-E8A9-4C97-B9CF-A9D822E6FBD0}">
+                            <Component Id="jquery.autocomplete.js_1" Guid="{9316CA4C-A469-422D-A4A2-C85050AFDF09}">
                                 <File Id="jquery.autocomplete.js_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\jquery.autocomplete.js" />
                             </Component>
-                            <Component Id="layout.vm_1" Guid="{BA887628-BD65-4F16-B2A4-7DF4ED23514C}">
+                            <Component Id="layout.vm_1" Guid="{ED37159C-75AD-4BDF-9783-E279A04CCE6B}">
                                 <File Id="layout.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\layout.vm" />
                             </Component>
-                            <Component Id="main.css_1" Guid="{C0C9CEAE-09D8-41A1-9F5A-0AA3FFF171ED}">
+                            <Component Id="main.css_1" Guid="{78F4B6B8-0FED-4693-8620-367EC526AEC8}">
                                 <File Id="main.css_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\main.css" />
                             </Component>
-                            <Component Id="query.vm_1" Guid="{4925AA2C-CF7E-48D2-95C7-910357082764}">
+                            <Component Id="query.vm_1" Guid="{659340D2-6224-465C-B33C-A9E0589F8E3D}">
                                 <File Id="query.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\query.vm" />
                             </Component>
-                            <Component Id="querySpatial.vm_1" Guid="{9D76BC72-F811-40B8-A425-3466DA23B265}">
+                            <Component Id="querySpatial.vm_1" Guid="{0BA7C722-B8A3-4CF1-B51C-48A14AEC08BC}">
                                 <File Id="querySpatial.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\querySpatial.vm" />
                             </Component>
-                            <Component Id="suggest.vm_1" Guid="{6BF2A7F0-C1BD-4867-8248-74F732E0A0A9}">
+                            <Component Id="suggest.vm_1" Guid="{116A0E8A-CE12-419B-8BF2-7ECD929C1ADD}">
                                 <File Id="suggest.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\suggest.vm" />
                             </Component>
-                            <Component Id="tabs.vm_1" Guid="{F4C81221-6BB3-4A80-B0CB-69307ABD61FB}">
+                            <Component Id="tabs.vm_1" Guid="{4A5A624A-6734-45FC-8C6A-1C00130E5A00}">
                                 <File Id="tabs.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\tabs.vm" />
                             </Component>
-                            <Component Id="VM_global_library.vm_1" Guid="{6C5A8CEC-09FC-4B93-94B5-B270722EB7C3}">
+                            <Component Id="VM_global_library.vm_1" Guid="{E9433A43-7546-4F32-9968-C6AA25A1E15C}">
                                 <File Id="VM_global_library.vm_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\velocity\VM_global_library.vm" />
                             </Component>
                         </Directory>
                         <Directory Id="xslt_1" Name="xslt">
-                            <Component Id="example.xsl_1" Guid="{D6B68998-9344-4552-93D6-C3241C21518E}">
+                            <Component Id="example.xsl_1" Guid="{C1985499-0082-4D45-98CF-72367DFAFC92}">
                                 <File Id="example.xsl_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\xslt\example.xsl" />
                             </Component>
-                            <Component Id="example_atom.xsl_1" Guid="{3D307CC7-6FC9-4A2F-91DD-49E160DACF61}">
+                            <Component Id="example_atom.xsl_1" Guid="{D8777C78-0FDB-424C-9DE7-A23339722011}">
                                 <File Id="example_atom.xsl_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\xslt\example_atom.xsl" />
                             </Component>
-                            <Component Id="example_rss.xsl_1" Guid="{47B2E2AC-4BA1-4E1F-A405-F26F456A5BBA}">
+                            <Component Id="example_rss.xsl_1" Guid="{4D19321D-69C7-4EC4-85D8-8AFB20940F74}">
                                 <File Id="example_rss.xsl_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\xslt\example_rss.xsl" />
                             </Component>
-                            <Component Id="luke.xsl_1" Guid="{B621A1C2-AEBF-43D7-85EB-FFB5D5EF261C}">
+                            <Component Id="luke.xsl_1" Guid="{40393C66-BCB1-497B-865D-352C4416B3C2}">
                                 <File Id="luke.xsl_1" KeyPath="yes" Source="$(var.SolrSource)\pages\conf\xslt\luke.xsl" />
                             </Component>
                         </Directory>
                     </Directory>
                 </Directory>
                 <Directory Id="solr_executable" Name="solr executable">
-                    <Component Id="SolrLICENSE.txt" Guid="{C948C546-6676-4E2F-85D7-87E7389B215A}">
-                        <File Id="SolrLICENSE.txt" KeyPath="yes" Source="$(var.SolrSource)\solr executable\LICENSE.txt" />
+                    <Component Id="jcl_over_slf4j_1.6.6.jar" Guid="{F1B891CC-00D4-4774-8B21-1CBC0FD38421}">
+                        <File Id="jcl_over_slf4j_1.6.6.jar" KeyPath="yes" Source="$(var.SolrSource)\solr executable\jcl-over-slf4j-1.6.6.jar" />
                     </Component>
-                    <Component Id="SolrNOTICE.txt" Guid="{351688A9-543F-4BB2-A4A9-6A059CE0C4DA}">
-                        <File Id="SolrNOTICE.txt" KeyPath="yes" Source="$(var.SolrSource)\solr executable\NOTICE.txt" />
+                    <Component Id="jul_to_slf4j_1.6.6.jar" Guid="{490D7E49-10AE-4068-A20A-D676AD0FD8C8}">
+                        <File Id="jul_to_slf4j_1.6.6.jar" KeyPath="yes" Source="$(var.SolrSource)\solr executable\jul-to-slf4j-1.6.6.jar" />
                     </Component>
-                    <Component Id="solr_4.6.0.war" Guid="{099C90E0-2990-4158-AB30-75A774B339A0}">
+                    <Component Id="log4j_1.2.16.jar" Guid="{0A90106B-D170-4496-B4CA-E62E3A3D1234}">
+                        <File Id="log4j_1.2.16.jar" KeyPath="yes" Source="$(var.SolrSource)\solr executable\log4j-1.2.16.jar" />
+                    </Component>
+                    <Component Id="log4j.properties" Guid="{0D466F12-995D-462F-ADB6-D1B80F64EFAE}">
+                        <File Id="log4j.properties" KeyPath="yes" Source="$(var.SolrSource)\solr executable\log4j.properties" />
+                    </Component>
+                    <Component Id="slf4j_api_1.6.6.jar" Guid="{4CCC6D49-4E80-4582-AA90-92F8DCBBBF8F}">
+                        <File Id="slf4j_api_1.6.6.jar" KeyPath="yes" Source="$(var.SolrSource)\solr executable\slf4j-api-1.6.6.jar" />
+                    </Component>
+                    <Component Id="slf4j_log4j12_1.6.6.jar" Guid="{BA1F672E-1673-4E0D-A3BC-B931FB4C148B}">
+                        <File Id="slf4j_log4j12_1.6.6.jar" KeyPath="yes" Source="$(var.SolrSource)\solr executable\slf4j-log4j12-1.6.6.jar" />
+                    </Component>
+                    <Component Id="solr_4.6.0.war" Guid="{2AC049F6-5284-4754-A23E-138FE79B422E}">
                         <File Id="solr_4.6.0.war" KeyPath="yes" Source="$(var.SolrSource)\solr executable\solr-4.6.0.war" />
+                    </Component>
+                    <Component Id="Solr_License.txt" Guid="{5C432D5A-AEC3-4384-80CA-AECF6DAFA7A0}">
+                        <File Id="Solr_License.txt" KeyPath="yes" Source="$(var.SolrSource)\solr executable\Solr_License.txt" />
+                    </Component>
+                    <Component Id="Solr_Notice.txt" Guid="{C21D5F2D-CD4E-4297-B6A8-63EBEE100D54}">
+                        <File Id="Solr_Notice.txt" KeyPath="yes" Source="$(var.SolrSource)\solr executable\Solr_Notice.txt" />
                     </Component>
                 </Directory>
         </DirectoryRef>
     </Fragment>
     <Fragment>
         <ComponentGroup Id="SobekSolrComponent">
-            <ComponentRef Id="README.docx" />
-            <ComponentRef Id="README.pdf" />
-            <ComponentRef Id="SolrREADME.txt" />
+            <ComponentRef Id="SolrConfigNotes.docx" />
+            <ComponentRef Id="SolrConfigNotes.pdf" />
+            <ComponentRef Id="SolrConfigNotes.txt" />
             <ComponentRef Id="documents.xml" />
             <ComponentRef Id="pages.xml" />
             <ComponentRef Id="solr.xml" />
-            <ComponentRef Id="__9D6C26E7_1980_42A6_B105_E7EF2C16B349_" />
             <ComponentRef Id="admin_extra.html" />
             <ComponentRef Id="elevate.xml" />
             <ComponentRef Id="mapping_FoldToASCII.txt" />
@@ -336,7 +341,6 @@
             <ComponentRef Id="example_rss.xsl" />
             <ComponentRef Id="luke.xsl" />
             <ComponentRef Id="solr.xml_1" />
-            <ComponentRef Id="__BAB1943B_F3D5_436B_8F66_3F4854DB1C03_" />
             <ComponentRef Id="admin_extra.html_1" />
             <ComponentRef Id="elevate.xml_1" />
             <ComponentRef Id="mapping_FoldToASCII.txt_1" />
@@ -374,9 +378,15 @@
             <ComponentRef Id="example_atom.xsl_1" />
             <ComponentRef Id="example_rss.xsl_1" />
             <ComponentRef Id="luke.xsl_1" />
-            <ComponentRef Id="SolrLICENSE.txt" />
-            <ComponentRef Id="SolrNOTICE.txt" />
+            <ComponentRef Id="jcl_over_slf4j_1.6.6.jar" />
+            <ComponentRef Id="jul_to_slf4j_1.6.6.jar" />
+            <ComponentRef Id="log4j_1.2.16.jar" />
+            <ComponentRef Id="log4j.properties" />
+            <ComponentRef Id="slf4j_api_1.6.6.jar" />
+            <ComponentRef Id="slf4j_log4j12_1.6.6.jar" />
             <ComponentRef Id="solr_4.6.0.war" />
+            <ComponentRef Id="Solr_License.txt" />
+            <ComponentRef Id="Solr_Notice.txt" />
         </ComponentGroup>
     </Fragment>
 </Wix>

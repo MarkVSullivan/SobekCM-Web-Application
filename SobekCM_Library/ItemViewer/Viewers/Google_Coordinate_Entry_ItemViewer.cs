@@ -51,6 +51,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
+            //holds actions from page
             string action = HttpContext.Current.Request.Form["action"] ?? String.Empty;
             string payload = HttpContext.Current.Request.Form["payload"] ?? String.Empty;
 
@@ -68,6 +69,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> parse and save incoming message  </summary>
+        /// <param name="sendData"> message from page </param>
         public static void SaveContent(String sendData)
         {
             //get rid of excess string 
@@ -87,7 +89,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentItem.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, resourceGeoInfo);
             }
 
-
+            //get the pages
             List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
 
             //create a new list of all the polygons for a resource item
@@ -520,9 +522,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //page content
             mapeditBuilder.AppendLine("<td>");
-            
-            //used to force doctype html5 and css3
-            //mapeditBuilder.AppendLine("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
 
             mapeditBuilder.AppendLine(" <input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" /> ");
             mapeditBuilder.AppendLine(" <input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" /> ");
@@ -536,8 +535,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //standard css
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\"/> ");
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/> ");
-            //mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/lytebox/lytebox.css\"/>");
-            //mapeditBuilder.AppendLine("<link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/lytebox/lytebox.css\"/>");
 
             //custom css
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/> ");
@@ -550,18 +547,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-rotate.js\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-knob.js\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-json-2.4.min.js\"></script> ");
-            //mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/lytebox/lytebox.js\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-infobox.js\"></script> ");
-            //mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing\"></script> ");
 
-            //custom js
+            //custom
             #region
 
             mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\"> ");
             mapeditBuilder.AppendLine(" ");
-
             
             //create build time
             string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
@@ -624,7 +618,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
 
                 //read through and get all the ids
-                using (XmlReader reader = XmlReader.Create(CurrentMode.Base_URL + "./config/sobekcm_mapedit.xml"))
+                using (XmlReader reader = XmlReader.Create(SobekCM.Library.Settings.SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config"))
                 {
                     while (reader.Read())
                     {
@@ -651,7 +645,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         //if found, assign "readFromXML" as first param
                         collectionLoadParams.Add("readFromXML");
                         //go through each  xml param and assign
-                        using (XmlReader reader = XmlReader.Create(CurrentMode.Base_URL + "./config/sobekcm_mapedit.xml"))
+                        using (XmlReader reader = XmlReader.Create(SobekCM.Library.Settings.SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config"))
                         {
                             while (reader.Read())
                             {
@@ -690,7 +684,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             catch (Exception)
             {
                 //err
-                throw;
+                //throw;
             }
             //determine if there is a custom collection to load
             if (collectionLoadParams.Count > 1)

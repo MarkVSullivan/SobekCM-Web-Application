@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Drawing;
@@ -21,6 +22,8 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 	public class CustomAction
 	{
+        private static string UPDATE_SETTING_IF_ABSENT = "if (( select count(*) from SobekCM_Settings where Setting_Key='{0}' and len(coalesce(Setting_Value,'')) > 0 ) = 0) begin if(( select count(*) from SobekCM_Settings where Setting_Key='{0}' ) > 0 ) begin update SobekCM_Settings set Setting_Value = '{1}' where Setting_Key='{0}'; end else begin insert into SobekCM_Settings values ( '{0}', '{1}' ); end; end;";
+
 		
 		#region Methods to validate credentials ( web and builder )
 
@@ -546,9 +549,54 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 		#endregion
 
-		#region Finalize the database install/configuration
+        #region Ensure that ASP.net is registered with IIS
 
-		[CustomAction]
+        [CustomAction]
+        public static ActionResult EnsureAspNetRegisteredWithIis(Session session)
+        {
+            try
+            {
+                // Look for and register the 64-bit version
+                string net64 = "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319";
+                string net64_regiis = net64 + "\\aspnet_regiis.exe";
+                if ((Directory.Exists(net64)) && (File.Exists(net64_regiis)))
+                {
+                    Process process = new Process();
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.FileName = net64_regiis;
+                    process.StartInfo.Arguments = "-ir";
+                    process.Start();
+                    process.WaitForExit();
+                }
+                else
+                {
+                    // Look for and register the 32-bit version
+                    string net32 = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319";
+                    string net32_regiis = net32 + "\\aspnet_regiis.exe";
+                    if ((Directory.Exists(net32)) && (File.Exists(net32_regiis)))
+                    {
+                        Process process = new Process();
+                        process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.FileName = net32_regiis;
+                        process.StartInfo.Arguments = "-ir";
+                        process.Start();
+                        process.WaitForExit();
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                bool error = true;
+            }
+
+            return ActionResult.Success;
+        }
+
+        #endregion
+
+        #region Finalize the database install/configuration
+
+        [CustomAction]
 		public static ActionResult FinalizeDatabaseConfig(Session session)
 		{
 
@@ -907,9 +955,43 @@ namespace SobekCM_WiX_Installer_CustomActions
 							string msg = ee.Message;
 						}
 					}
-
 				}
 			}
+
+            // Ensure there is a (current) web config
+            session.Log("FinalizeWebConfig: Check for an existing web.config and replace if necessary");
+            string template_file = web_directory + "\\web_config.template";
+            if (File.Exists(template_file))
+            {
+                string web_config_file = web_directory + "\\web.config";
+                bool valid_web_config_found = false;
+                if (File.Exists(web_config_file))
+                {
+                    try
+                    {
+                        string web_config_file_contents = File.ReadAllText(web_config_file);
+                        if (web_config_file_contents.Contains("<!-- SobekCM Version 4."))
+                            valid_web_config_found = true;
+                    }
+                    catch { }
+                }
+
+                try
+                {
+                    if (!valid_web_config_found)
+                    {
+                        if (File.Exists(web_config_file))
+                            File.Delete(web_config_file);
+                        File.Move(template_file, web_config_file);
+                    }
+                    else
+                    {
+                        // Delete the template then
+                        File.Delete(template_file);
+                    }
+                }
+                catch {  }
+            }
 
 			session.Log("FinalizeWebConfig: End");
 
@@ -918,6 +1000,231 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 		#endregion
 
+        #region Finalize the builder/bulk loader install/configuration
+
+        [CustomAction]
+        public static ActionResult FinalizeBuilderConfig(Session session)
+        {
+            session.Log("FinalizeBuilderConfig: Retrieving values from custom action data");
+			string db_name = session.CustomActionData["db_name_arg"];
+			string db_server = session.CustomActionData["db_server_arg"];
+			string builder_account = session.CustomActionData["builder_account_arg"];
+            string builder_password = session.CustomActionData["builder_password_arg"];
+			string virtual_directory = session.CustomActionData["virtual_dir_arg"];
+            string builder_directory = session.CustomActionData["builder_install_folder"];
+			string institution_name = session.CustomActionData["inst_name_arg"];
+			string institution_code = session.CustomActionData["inst_code_arg"];
+
+            session.Log("FinalizeBuilderConfig: Write the builder config file");
+            string config_file_name = builder_directory + "\\config\\sobekcm.config";
+            StreamWriter writer = new StreamWriter(config_file_name, false);
+            writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+            writer.WriteLine("<SobekCM_Config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://sobekrepository.org/schemas/sobekcm_config\" xsi:schemaLocation=\"http://sobekrepository.org/schemas/sobekcm_config  http://sobekrepository.org/schemas/sobekcm_config.xsd\">");
+            writer.WriteLine("  <Connections>");
+            if ( institution_code.Length > 0 )
+                writer.WriteLine("    <Connection_String type=\"MSSQL\" name=\"" + institution_code + "\">data source=" + db_server + ";initial catalog=" + db_name + ";integrated security=Yes;</Connection_String>");
+            else
+                writer.WriteLine("    <Connection_String type=\"MSSQL\">data source=" + db_server + ";initial catalog=" + db_name + ";integrated security=Yes;</Connection_String>");
+
+            writer.WriteLine("  </Connections>");
+            writer.WriteLine("  <Builder>");
+            writer.WriteLine("    <Ghostscript_Executable></Ghostscript_Executable>");
+            writer.WriteLine("    <Imagemagick_Executable></Imagemagick_Executable>");
+            writer.WriteLine("  </Builder>");
+            writer.WriteLine("</SobekCM_Config>");
+            writer.Flush();
+            writer.Close();
+
+            // Add the scheduled task for the builder
+
+
+            // Add shortcut for running the builder in background mode as admin
+            
+
+
+            session.Log("FinalizeBuilderConfig: End");
+
+            return ActionResult.Success;
+        }
+
+        #endregion
+
+        #region Finalize the Solr install/configuration
+
+        [CustomAction]
+        public static ActionResult FinalizeSolrConfig(Session session)
+        {
+
+            session.Log("FinalizeSolrConfig: Retrieving values from custom action data");
+			string db_name = session.CustomActionData["db_name_arg"];
+			string db_server = session.CustomActionData["db_server_arg"];
+			string solr_install_folder = session.CustomActionData["solr_install_folder"];
+
+            session.Log("FinalizeSolrConfig: Find the Tomcat Apache folder");
+            string tomcat_root = String.Empty;
+            try
+            {
+                string possibleKey = Get_Registry_Value(@"SOFTWARE\Apache Software Foundation\Tomcat\7.0\Tomcat7", "InstallPath");
+                if (!String.IsNullOrEmpty(possibleKey))
+                {
+                    tomcat_root = possibleKey;
+                }
+                else
+                {
+                    possibleKey = Get_Registry_Value(@"SOFTWARE\Apache Software Foundation\Tomcat\6.0", "InstallPath");
+                    if (!String.IsNullOrEmpty(possibleKey))
+                    {
+                        tomcat_root = possibleKey;
+                    }
+                }
+            }
+            catch {  }
+
+            if (String.IsNullOrEmpty(tomcat_root))
+            {
+                session.Log("FinalizeSolrConfig: Unable to find the Apache Tomcat root");
+                return ActionResult.Success;
+            }
+
+            session.Log("FinalizeSolrConfig: Apache tomcat root found: " + tomcat_root);
+
+            session.Log("FinalizeSolrConfig: Copying war and jar files into lib folder");
+            string lib_tomcat_folder = tomcat_root + "\\lib";
+            if (!Directory.Exists(lib_tomcat_folder))
+                Directory.CreateDirectory(lib_tomcat_folder);
+            string[] executables = Directory.GetFiles(solr_install_folder + "\\solr executable");
+            foreach (string thisExecutable in executables)
+            {
+                string new_file = lib_tomcat_folder + "\\" + Path.GetFileName(thisExecutable);
+                if ( File.Exists(new_file))
+                {
+                    try
+                    {
+                        File.Delete(new_file);
+                        File.Move(thisExecutable, new_file);
+                    }
+                    catch { }
+                }
+                else
+                {
+                    File.Move(thisExecutable, new_file);
+                }
+                    
+            }
+            Directory.Delete(solr_install_folder + "\\solr executable");
+
+            session.Log("FinalizeSolrConfig: Writing the custom solr config PAGES.xml file for system setup");
+            StreamWriter writer = new StreamWriter(solr_install_folder + "\\catalina configs\\pages.xml", false);
+            writer.WriteLine("<Context docBase=\"" + lib_tomcat_folder + "\\solr-4.6.0.war\" debug=\"0\" crossContext=\"true\" >");
+            writer.WriteLine("   <Environment name=\"solr/home\" type=\"java.lang.String\" value=\"" + solr_install_folder + "pages\" override=\"true\" />");
+            writer.WriteLine("</Context>");
+            writer.Flush();
+            writer.Close();
+
+            session.Log("FinalizeSolrConfig: Writing the custom solr config DOCUMENTS.xml file for system setup");
+            writer = new StreamWriter(solr_install_folder + "\\catalina configs\\documents.xml", false);
+            writer.WriteLine("<Context docBase=\"" + lib_tomcat_folder + "\\solr-4.6.0.war\" debug=\"0\" crossContext=\"true\" >");
+            writer.WriteLine("   <Environment name=\"solr/home\" type=\"java.lang.String\" value=\"" + solr_install_folder + "documents\" override=\"true\" />");
+            writer.WriteLine("</Context>");
+            writer.Flush();
+            writer.Close();
+
+            // Now, move these into the catalina configuration folder
+            session.Log("FinalizeSolrConfig: Move configuration files into the catalina config folder");
+            string localhost_catalina_folder = tomcat_root + "\\conf\\Catalina\\localhost";
+            if ( !Directory.Exists(localhost_catalina_folder))
+            {
+                session.Log("FinalizeSolrConfig: ERROR Unable to find the Catalina localhost folder!!");
+                return ActionResult.Success;
+            }
+           
+            if ( !File.Exists( localhost_catalina_folder + "\\pages.xml" ))
+                File.Move(solr_install_folder + "\\catalina configs\\pages.xml", localhost_catalina_folder + "\\pages.xml");
+            else
+                session.Log("FinalizeSolrConfig: Pre-existing pages.xml found in the catalina configuration!");
+
+            if ( !File.Exists( localhost_catalina_folder + "\\documents.xml" ))
+                File.Move(solr_install_folder + "\\catalina configs\\documents.xml", localhost_catalina_folder + "\\documents.xml");
+            else
+                session.Log("FinalizeSolrConfig: Pre-existing documents.xml found in the catalina configuration!");
+
+            // Remove folder if it is empty
+            if ( Directory.GetFiles(solr_install_folder + "\\catalina configs").Length==0 )
+                Directory.Delete(solr_install_folder + "\\catalina configs");
+
+            // Remove the documentation, since all the configuration was completed for solr
+            try
+            {
+                session.Log("FinalizeSolrConfig: Remove the documentation, since all the configuration was completed for solr");
+                if (File.Exists(solr_install_folder + "\\SolrConfigNotes.txt"))
+                    File.Delete(solr_install_folder + "\\SolrConfigNotes.txt");
+                if (File.Exists(solr_install_folder + "\\SolrConfigNotes.pdf"))
+                    File.Delete(solr_install_folder + "\\SolrConfigNotes.pdf");
+                if (File.Exists(solr_install_folder + "\\SolrConfigNotes.doc"))
+                    File.Delete(solr_install_folder + "\\SolrConfigNotes.doc");
+            }
+            catch {  }
+
+            // Get the machine IP address
+            session.Log("FinalizeSolrConfig: Get host IP");
+            IPHostEntry host;
+            string localIP = String.Empty;
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                }
+            }
+
+            try
+            {
+                session.Log("FinalizeSolrConfig: Perform database configuration for Solr");
+
+                var builder = new SqlConnectionStringBuilder
+                {
+                    DataSource = db_server,
+                    InitialCatalog = db_name,
+                    ConnectTimeout = 15,
+                    IntegratedSecurity = true
+                };
+
+                bool connection_successful = false;
+                using (var connection = new SqlConnection(builder.ConnectionString))
+                {
+                    session.Log("FinalizeSolrConfig: Open db connection");
+                    connection.Open();
+
+                    string solr_page = "http://" + localIP + ":8080/pages/";
+                    session.Log("FinalizeSolrConfig: Setting page solr url to " + solr_page);
+                    SqlCommand command = new SqlCommand(String.Format(UPDATE_SETTING_IF_ABSENT, "Page Solr Index URL", solr_page), connection);
+                    command.ExecuteNonQuery();
+
+                    string solr_document = "http://" + localIP + ":8080/documents/";
+                    session.Log("FinalizeSolrConfig: Setting document solr url to " + solr_document);
+                    SqlCommand command2 = new SqlCommand(String.Format(UPDATE_SETTING_IF_ABSENT, "Document Solr Index URL", solr_document), connection);
+                    command2.ExecuteNonQuery();
+
+                    session.Log("FinalizeSolrConfig: Close db connection");
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                session.Log("FinalizeSolrConfig: exception setting solr URLs in the DB: " + ex.Message);
+            }
+
+            // RESTART APACHE?
+
+            
+            session.Log("FinalizeSolrConfig: End");
+
+            return ActionResult.Success;
+        }
+
+        #endregion
+        
 		#region Launch the digital repository page
 
 		[CustomAction]
@@ -999,6 +1306,67 @@ namespace SobekCM_WiX_Installer_CustomActions
 
 		#endregion
 
+        #region Code to read registry values
+
+        private static string Look_For_Variable_Registry_Key(string Manufacturer, string KeyName)
+        {
+            RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            localKey = localKey.OpenSubKey(Manufacturer);
+            if (localKey != null)
+            {
+                string[] subkeys = localKey.GetSubKeyNames();
+                foreach (string thisSubKey in subkeys)
+                {
+                    RegistryKey subKey = localKey.OpenSubKey(thisSubKey);
+                    string value64 = subKey.GetValue(KeyName) as string;
+                    if (!String.IsNullOrEmpty(value64))
+                        return value64;
+                }
+            }
+            RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            localKey32 = localKey32.OpenSubKey(Manufacturer);
+            if (localKey32 != null)
+            {
+                string[] subkeys = localKey32.GetSubKeyNames();
+                foreach (string thisSubKey in subkeys)
+                {
+                    RegistryKey subKey = localKey32.OpenSubKey(thisSubKey);
+                    string value32 = subKey.GetValue(KeyName) as string;
+                    if (!String.IsNullOrEmpty(value32))
+                        return value32;
+                }
+            }
+            return null;
+        }
+
+        private static string Get_Registry_Value(string KeyPath, string KeyName)
+        {
+            RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            localKey = localKey.OpenSubKey(KeyPath);
+            if (localKey != null)
+            {
+                string tomcat6_value64 = localKey.GetValue(KeyName) as string;
+                if (tomcat6_value64 != null)
+                {
+                    return tomcat6_value64;
+                }
+            }
+            RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            localKey32 = localKey32.OpenSubKey(KeyPath);
+            if (localKey32 != null)
+            {
+                string tomcat6_value32 = localKey32.GetValue(KeyName) as string;
+                if (tomcat6_value32 != null)
+                {
+                    return tomcat6_value32;
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
 		private static string Clean_Code(string Code)
 		{
 			StringBuilder builder = new StringBuilder();
@@ -1008,63 +1376,6 @@ namespace SobekCM_WiX_Installer_CustomActions
 					builder.Append(thisChar);
 			}
 			return builder.ToString();
-		}
-
-		private static string Look_For_Variable_Registry_Key(string Manufacturer, string KeyName)
-		{
-			RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-			localKey = localKey.OpenSubKey(Manufacturer);
-			if (localKey != null)
-			{
-				string[] subkeys = localKey.GetSubKeyNames();
-				foreach (string thisSubKey in subkeys)
-				{
-					RegistryKey subKey = localKey.OpenSubKey(thisSubKey);
-					string value64 = subKey.GetValue(KeyName) as string;
-					if (!String.IsNullOrEmpty(value64))
-						return value64;
-				}
-			}
-			RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-			localKey32 = localKey32.OpenSubKey(Manufacturer);
-			if (localKey32 != null)
-			{
-				string[] subkeys = localKey32.GetSubKeyNames();
-				foreach (string thisSubKey in subkeys)
-				{
-					RegistryKey subKey = localKey32.OpenSubKey(thisSubKey);
-					string value32 = subKey.GetValue(KeyName) as string;
-					if (!String.IsNullOrEmpty(value32))
-						return value32;
-				}
-			}
-			return null;
-		}
-
-		private static string Get_Registry_Value(string KeyPath, string KeyName)
-		{
-			RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-			localKey = localKey.OpenSubKey(KeyPath);
-			if (localKey != null)
-			{
-				string tomcat6_value64 = localKey.GetValue(KeyName) as string;
-				if (tomcat6_value64 != null)
-				{
-					return tomcat6_value64;
-				}
-			}
-			RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-			localKey32 = localKey32.OpenSubKey(KeyPath);
-			if (localKey32 != null)
-			{
-				string tomcat6_value32 = localKey32.GetValue(KeyName) as string;
-				if (tomcat6_value32 != null)
-				{
-					return tomcat6_value32;
-				}
-			}
-
-			return null;
 		}
 	}
 }

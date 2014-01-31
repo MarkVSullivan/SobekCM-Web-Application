@@ -77,6 +77,18 @@ namespace SobekCM.Builder
             // Create the new log file
             LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
+            // start with warnings on imagemagick and ghostscript not being installed
+            if (SobekCM_Library_Settings.ImageMagick_Executable.Length == 0)
+            {
+                Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+                preloader_logger.AddNonError("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+            }
+            if (SobekCM_Library_Settings.Ghostscript_Executable.Length == 0)
+            {
+                Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+            }
+
 			// Set the time for the next feed building event to 10 minutes from now
 			feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
 
@@ -164,6 +176,18 @@ namespace SobekCM.Builder
 					activeInstanceFound = true;
 					SobekCM_Database.Connection_String = dbConfig.Connection_String;
 					Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+
+
+                    // At this point warn on mossing the Ghostscript and ImageMagick
+                    if (SobekCM_Library_Settings.ImageMagick_Executable.Length == 0)
+                    {
+                        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.", String.Empty);
+                    }
+                    if (SobekCM_Library_Settings.Ghostscript_Executable.Length == 0)
+                    {
+                        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
+                    }
+
 					Console.WriteLine(dbConfig.Name + " - Preparing to begin polling");
 					preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
 					Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
@@ -434,7 +458,7 @@ namespace SobekCM.Builder
                 if (Prebuilder.Aborted)
                     aborted = true;
             }
-            catch
+            catch ( Exception ee)
             {
 
             }
@@ -497,6 +521,16 @@ namespace SobekCM.Builder
 	    /// <param name="MarcRebuild"> Flag indicates if all the MarcXML files for each resource should be rewritten from the METS/MODS metadata files </param>
 	    public void Execute_Immediately(bool BuildProductionMarcxmlFeed, bool BuildTestMarcxmlFeed, bool RunBulkloader, bool CompleteStaticRebuild, bool MarcRebuild )
         {
+            // start with warnings on imagemagick and ghostscript not being installed
+            if (SobekCM_Library_Settings.ImageMagick_Executable.Length == 0)
+            {
+                Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+            }
+            if (SobekCM_Library_Settings.Ghostscript_Executable.Length == 0)
+            {
+                Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+            }
+
             if (CompleteStaticRebuild)
             {
 				Console.WriteLine("Beginning static rebuild");

@@ -217,7 +217,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // Determine if the projects and templates need to be updated
                     bool update_templates_projects = false;
-                    if ((templates.Count != editGroup.Templates.Count) || (projects.Count != editGroup.Projects.Count))
+                    if ((templates.Count != editGroup.Templates.Count) || (projects.Count != editGroup.Default_Metadata_Sets.Count))
                     {
                         update_templates_projects = true;
                     }
@@ -232,7 +232,7 @@ namespace SobekCM.Library.AdminViewer
                         // Check all the projects
                         if (!update_templates_projects)
                         {
-                            if (projects.Any(project => !editGroup.Projects.Contains(project)))
+                            if (projects.Any(project => !editGroup.Default_Metadata_Sets.Contains(project)))
                             {
                                 update_templates_projects = true;
                             }
@@ -287,7 +287,7 @@ namespace SobekCM.Library.AdminViewer
                                 // Update projects, if necessary
                                 if (projects.Count > 0)
                                 {
-                                    if (!SobekCM_Database.Update_SobekCM_User_Group_Projects(editGroup.UserGroupID, projects, Tracer))
+                                    if (!SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata(editGroup.UserGroupID, projects, Tracer))
                                     {
                                         successful_save = false;
                                     }
@@ -478,7 +478,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Build the projects list
-            foreach (string thisProject in editGroup.Projects)
+            foreach (string thisProject in editGroup.Default_Metadata_Sets)
                 text_builder.Append(thisProject + "<br />");
             if (text_builder.Length == 0)
             {
@@ -658,7 +658,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    <table width=\"600px\">");
 
-            DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_Templates(Tracer);
+            DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
 
             Output.WriteLine("      <tr valign=\"top\" >");
             Output.WriteLine("        <td wdith=\"300px\">");
@@ -699,7 +699,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("   </tr>");
             Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
 
-            ReadOnlyCollection<string> user_projects = editGroup.Projects;
+            ReadOnlyCollection<string> user_projects = editGroup.Default_Metadata_Sets;
             foreach (DataRow thisProject in projectTemplateSet.Tables[0].Rows)
             {
                 string project_name = thisProject["ProjectName"].ToString();
