@@ -50,6 +50,10 @@ namespace SobekCM
 					// Get the filename for the uploaded file
 					string filename = Path.GetFileName(postedFile.FileName);
 
+					// Should this be overriden?
+					if (!String.IsNullOrEmpty(tokenObj.ServerSideFileName))
+						filename = tokenObj.ServerSideFileName;
+
 					// Are there file extension restrictions?
 					if ( !String.IsNullOrEmpty(tokenObj.AllowedFileExtensions))
 					{
@@ -63,8 +67,13 @@ namespace SobekCM
 						}
 					}
 
+					// Ensure file does not already exist
+					string newFileName = Path.Combine(path, filename);
+					if ( File.Exists(newFileName))
+						File.Delete(newFileName);
+
 					// Save this file locally
-					postedFile.SaveAs(path + @"\" + filename);
+					postedFile.SaveAs(newFileName);
 
 					// Post a successful status
 					Context.Response.Write(filename);
