@@ -1579,29 +1579,13 @@ function edit_notes_form_open(linkname, id, notes) {
 }
 
 // Open the email form
-function email_form_open2(linkname, id) {
+function email_form_open2() {
 	// Populate the hidden value this data
 	var hiddenfield = document.getElementById('item_action');
 	hiddenfield.value = 'email';
 
-	// Toggle the email form
-	blanket_size('form_email', linkname, 90);
-
-	// Position this form differently, since it is buried in the middle of the form
-	var popUpDiv = document.getElementById('form_email');
-	popUpDiv.style.left = '150px';
-
-	toggle('blanket_outer');
-	toggle('form_email');
-
-	// Create the draggable object to allow this window to be dragged around
-	$("#form_email").draggable();
-
-	// Put focus on the email address
-	var focusfield = document.getElementById('email_address');
-	focusfield.focus();
-
-	return false;
+	// Pop up the form
+	return popup_focus('form_email', 'email_address');
 }
 
 

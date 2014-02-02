@@ -159,6 +159,9 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.JPEG2000:
                     return new string[] {"x"};
 
+				case View_Enum.MANAGE:
+					return new string[] { "manage" };
+
 				case View_Enum.PAGE_TURNER:
 					return new string[] { "pageturner" };
 

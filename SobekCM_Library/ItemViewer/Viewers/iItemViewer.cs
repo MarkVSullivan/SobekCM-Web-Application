@@ -109,6 +109,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// full text derived from that page image </summary>
 		JPEG_Text_Two_Up,
 
+		/// <summary> Viewers shows the manage menu which tells the user all the different options
+		/// they have have to manage a single digital resource </summary>
+		Manage,
+
         /// <summary> Displays other issues related to the current digital resource by title / bib id </summary>
         MultiVolume,
 

@@ -98,7 +98,7 @@ namespace SobekCM.Library.HTML
 				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 
             NameValueCollection form = HttpContext.Current.Request.Form;
-            if (( currentMode.Aggregation_Type  == Aggregation_Type_Enum.Child_Page_Edit ) && ( form["item_action"] != null))
+            if ( form["item_action"] != null)
             {
                 string action = form["item_action"].ToLower().Trim();
 
@@ -159,7 +159,7 @@ namespace SobekCM.Library.HTML
                             cc_list = String.Empty;
 
                         // Send the email
-                        string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name, currentMode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), base.Current_Aggregation.Name, "home", currentUser.UserID);
+                        string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name, currentMode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), base.Current_Aggregation.Name, "Collection", currentUser.UserID);
                         HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
 
                         currentMode.isPostBack = true;
@@ -543,20 +543,6 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
-			// Force a refresh?
-			//if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home))
-			//{
-			//	Nullable<bool> refreshFlag = HttpContext.Current.Session["REFRESH"] as Nullable<bool>;
-			//	if ((refreshFlag.HasValue) && (refreshFlag.Value))
-			//	{
-			//		HttpContext.Current.Session["REFRESH"] = null;
-			//		Output.WriteLine("  <script type=\"text/javascript\">");
-			//		Output.WriteLine("    history.go(0);");
-			//		Output.WriteLine("  </script>");
-			//	}
-			//}
-
-
 	        if ((Current_User != null) && ( currentMode.Aggregation.Length > 0 ) && ( currentMode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(currentMode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( currentMode.Aggregation ))))
             {
 				Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
@@ -615,7 +601,7 @@ namespace SobekCM.Library.HTML
                 base.Write_Internal_Header_HTML(Output, Current_User);
             }
         }
-
+		
         #endregion
 
         #region Public method to write HTML to the output stream
@@ -690,34 +676,38 @@ namespace SobekCM.Library.HTML
                     if (currentUser != null)
                     {
                         Output.WriteLine("<!-- Email form -->");
-                        Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\">");
-                        Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">S<span class=\"smaller\">END THIS</span> C<span class=\"smaller\">OLLECTION TO A</span> F<span class=\"smaller\">RIEND</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+						Output.WriteLine("<div class=\"form_email sbk_PopupForm\" id=\"form_email\" style=\"display:none;\">");
+						Output.WriteLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Send this Collection to a Friend</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                         Output.WriteLine("  <br />");
                         Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
                         Output.WriteLine("    <br />");
-                        Output.WriteLine("    <table class=\"popup_table\">");
+						Output.WriteLine("    <table class=\"sbk_PopupTable\">");
 
 
                         // Add email address line
-                        Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"email_address\">To:</label></td>");
-                        Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + currentUser.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+                        Output.Write("      <tr><td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
+						Output.WriteLine("<td><input class=\"email_input sbk_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + currentUser.Email + "\" /></td></tr>");
 
                         // Add comments area
-                        Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
-                        Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea\" onfocus=\"javascript:textbox_enter('email_comments','email_textarea_focused')\" onblur=\"javascript:textbox_leave('email_comments','email_textarea')\"></textarea></td></tr>");
+                        Output.Write("      <tr style=\"vertical-align:top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
+						Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea sbk_Focusable\" ></textarea></td></tr>");
 
                         // Add format area
-                        Output.Write("      <tr align=\"left\" valign=\"top\"><td>Format:</td>");
+						Output.Write("      <tr style=\"vertical-align:top\"><td>Format:</td>");
                         Output.Write("<td><input type=\"radio\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
                         Output.WriteLine("<input type=\"radio\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label></td></tr>");
 
 
                         Output.WriteLine("    </table>");
                         Output.WriteLine("    <br />");
-                        Output.WriteLine("  </fieldset><br />");
-                        Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
-                        Output.WriteLine("</div>");
+						Output.WriteLine("  </fieldset><br />");
+						Output.WriteLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+						Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+						Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SEND </button>");
+						Output.WriteLine("  </div><br />");
+						Output.WriteLine("</div>");
                         Output.WriteLine();
+
                     }
 
                     #endregion
@@ -935,7 +925,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\" onclick=\"return email_form_open2('send_button','');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
+					Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\" onclick=\"return email_form_open2();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
 
                 }
                 if (Current_Aggregation.Aggregation_ID > 0)
