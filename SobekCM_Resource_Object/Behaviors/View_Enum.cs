@@ -60,6 +60,9 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Zoomable JPEG2000 page viewer </summary>
         JPEG2000,
 
+		/// <summary> Viewer that shows all the ways the user can manage this item </summary>
+		MANAGE,
+
         /// <summary> Page turner which allows the user to step through each jpeg in a format that resembles a traditional book </summary>
         PAGE_TURNER,
 

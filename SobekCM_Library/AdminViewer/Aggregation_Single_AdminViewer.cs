@@ -3325,16 +3325,16 @@ namespace SobekCM.Library.AdminViewer
 			switch (page)
 			{
 				case 1:
-					add_upload_controls(MainPlaceHolder, ".gif", aggregationDirectory + "\\images\\buttons", Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif", aggregationDirectory + "\\images\\buttons", "coll.gif", Tracer);
 					break;
 
 				case 5:
-					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\images\\banners", Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\images\\banners", String.Empty, Tracer);
 					break;
 			}
 		}
 
-		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, Custom_Tracer Tracer)
+		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
@@ -3355,6 +3355,7 @@ namespace SobekCM.Library.AdminViewer
 			uploadControl.SubmitWhenQueueCompletes = true;
 			uploadControl.RemoveCompleted = true;
 			uploadControl.Multi = false;
+			uploadControl.ServerSideFileName = "coll.gif";
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

@@ -63,10 +63,6 @@ GO
 ALTER TABLE [dbo].[mySobek_User_Group_DefaultMetadata_Link] CHECK CONSTRAINT [FK_sobek_user_Group_DefaultMetadata_Link_sobek_user]
 GO
 
-/** Insert a blank project **/
-insert into mySobek_DefaultMetadata ( MetadataName, MetadataCode ) values ('No default values', 'NONE' );
-GO
-
 /****** Object:  StoredProcedure [dbo].[mySobek_Get_User_By_UserID]    Script Date: 12/20/2013 05:43:35 ******/
 ALTER PROCEDURE [dbo].[mySobek_Get_User_By_UserID]
 	@userid int
@@ -584,5 +580,16 @@ GRANT EXECUTE ON [dbo].[mySobek_Get_All_Projects_DefaultMetadatas] TO sobek_user
 GO
 
 -- Copy existing from PROJECT to the DEFAULT METADATA table
+SET IDENTITY_INSERT [dbo].mySobek_DefaultMetadata ON;
+insert into mySobek_DefaultMetadata ( DefaultMetadataID, MetadataName, MetadataCode )
+select * from mySobek_Project;
+SET IDENTITY_INSERT [dbo].mySobek_DefaultMetadata OFF;
+GO
+
+-- Copy existing user/project links
+insert into mySobek_User_DefaultMetadata_Link ( UserID, DefaultMetadataID, CurrentlySelected )
+select UserID, ProjectID, DefaultProject from mySobek_User_Project_Link;
+GO
+
 
 

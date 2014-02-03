@@ -744,7 +744,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                currentMode.ViewerCode = "milestones";
+                currentMode.ViewerCode = "tracking";
                 Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                 currentMode.ViewerCode = currentViewerCode;
 
@@ -1443,41 +1443,71 @@ namespace SobekCM.Library.HTML
 			    // Add the MANAGE button?
 			    if (userCanEditItem)
 			    {
-				    // Get all the mySObek URLs
-				    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-				    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-				    string edit_metadata_url = currentMode.Redirect_URL();
-				    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-				    string edit_behaviors_url = currentMode.Redirect_URL();
-				    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-				    string page_images_url = currentMode.Redirect_URL();
-				    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-				    string manage_downloads = currentMode.Redirect_URL();
+					// Get the MANAGE URL (which is actually an item view)
+				    currentMode.ViewerCode = "manage";
+				    string manage_menu_url = currentMode.Redirect_URL();
 
-				    currentMode.Mode = Display_Mode_Enum.Item_Display;
+				    if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
+				    {
+
+					    // Get all the mySObek URLs
+					    currentMode.Mode = Display_Mode_Enum.My_Sobek;
+					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+					    string edit_metadata_url = currentMode.Redirect_URL();
+					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+					    string edit_behaviors_url = currentMode.Redirect_URL();
+					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+					    string page_images_url = currentMode.Redirect_URL();
+					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+					    string manage_downloads = currentMode.Redirect_URL();
+
+					    currentMode.Mode = Display_Mode_Enum.Item_Display;
 
 
-				    Output.WriteLine("\t\t<li><a href=\"" + edit_metadata_url + "\">Manage</a><ul>");
+					    Output.WriteLine("\t\t<li><a href=\"" + manage_menu_url + "\">Manage</a><ul>");
 
-				    Output.WriteLine("\t\t\t<li><a href=\"" + edit_metadata_url + "\">Edit Metadata</a></li>");
-				    Output.WriteLine("\t\t\t<li><a href=\"" + edit_behaviors_url + "\">Edit Behaviors</a></li>");
-				    Output.WriteLine("\t\t\t<li><a href=\"" + manage_downloads + "\">Manage Downloads</a></li>");
+					    Output.WriteLine("\t\t\t<li><a href=\"" + edit_metadata_url + "\">Edit Metadata</a></li>");
+					    Output.WriteLine("\t\t\t<li><a href=\"" + edit_behaviors_url + "\">Edit Item Behaviors</a></li>");
+					    Output.WriteLine("\t\t\t<li><a href=\"" + manage_downloads + "\">Manage Download Files</a></li>");
 
-				    if (currentItem.Web.Static_PageCount == 0)
-					    Output.WriteLine("\t\t\t<li><a href=\"" + page_images_url + "\">Manage Pages and Divisions</a></li>");
+					    if (currentItem.Web.Static_PageCount == 0)
+						    Output.WriteLine("\t\t\t<li><a href=\"" + page_images_url + "\">Manage Pages and Divisions</a></li>");
+					    else
+					    {
+						    currentMode.ViewerCode = "qc";
+						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
+					    }
+
+					    if ((currentUser.Is_Portal_Admin) || (currentUser.Is_System_Admin))
+					    {
+						    currentMode.ViewerCode = "mapedit";
+						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
+					    }
+
+					    Output.WriteLine("\t\t</ul></li>");
+				    }
 				    else
 				    {
-					    currentMode.ViewerCode = "qc";
-					    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
-				    }
+						// Get all the mySObek URLs
+						currentMode.Mode = Display_Mode_Enum.My_Sobek;
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+						string edit_behaviors_url = currentMode.Redirect_URL();
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+						string add_volume_url = currentMode.Redirect_URL();
+						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+						string mass_update_url = currentMode.Redirect_URL();
 
-				    if ((currentUser.Is_Portal_Admin) || (currentUser.Is_System_Admin))
-				    {
-					    currentMode.ViewerCode = "mapedit";
-					    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
-				    }
+						currentMode.Mode = Display_Mode_Enum.Item_Display;
 
-				    Output.WriteLine("\t\t</ul></li>");
+
+						Output.WriteLine("\t\t<li><a href=\"" + manage_menu_url + "\">Manage</a><ul>");
+
+						Output.WriteLine("\t\t\t<li><a href=\"" + edit_behaviors_url + "\">Edit Item Group Behaviors</a></li>");
+						Output.WriteLine("\t\t\t<li><a href=\"" + add_volume_url + "\">Add New Volume</a></li>");
+						Output.WriteLine("\t\t\t<li><a href=\"" + mass_update_url + "\">Mass Update Item Behaviors</a></li>");
+
+						Output.WriteLine("\t\t</ul></li>");
+				    }
 			    }
 
 

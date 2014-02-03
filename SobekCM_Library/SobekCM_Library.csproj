@@ -245,6 +245,9 @@
     <Compile Include="ItemViewer\Viewers\JPEG_Text_Two_Up_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="ItemViewer\Viewers\ManageMenu_ItemViewer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="ItemViewer\Viewers\ScriptMethod.cs" />
     <Compile Include="ItemViewer\Viewers\Test_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>

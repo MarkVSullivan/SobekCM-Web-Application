@@ -64,6 +64,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private List<string> filenamesFromMets;
 
 		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
+		/// <param name="Current_Object"> Digital resource to display </param>
+		/// <param name="Current_User"> Current user for this session </param>
+		/// <param name="Current_Mode"> Navigation object which encapsulates the user's current request </param>
 		public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
 		{
 			// Save the current user and current mode information (this is usually populated AFTER the constructor completes, 

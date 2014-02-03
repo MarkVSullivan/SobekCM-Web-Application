@@ -71,11 +71,14 @@ namespace SobekCM.Library.Items
 			if (Item_Group_Object == null)
 			{
 				Item_Group_Object = new SobekCM_Item();
-				Item_Group_Object.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
 				Item_Group_Object.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Serial;
 				Item_Group_Object.BibID = BibID;
 				pulledFromMETSFile = false;
 			}
+
+			// Set some default and add the management view
+			Item_Group_Object.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
+			Item_Group_Object.Behaviors.Add_View(View_Enum.MANAGE);
 
 			// Pull values from the database
 			Item_Group_Object.Behaviors.GroupTitle = String.Empty;
@@ -641,12 +644,13 @@ namespace SobekCM.Library.Items
 				Package_To_Finalize.Behaviors.Add_View(View_Enum.ALL_VOLUMES, String.Empty, Package_To_Finalize.Bib_Info.SobekCM_Type_String);
 			}
 
-			// Add the full citation view and the (hidden) tracking view 
+			// Add the full citation view and the (hidden) tracking view and some other ALWAYS views
 			Package_To_Finalize.Behaviors.Add_View(View_Enum.CITATION);
 			Package_To_Finalize.Behaviors.Add_View(View_Enum.TRACKING);
             Package_To_Finalize.Behaviors.Add_View(View_Enum.TRACKING_SHEET);
 			Package_To_Finalize.Behaviors.Add_View(View_Enum.GOOGLE_COORDINATE_ENTRY);
 			Package_To_Finalize.Behaviors.Add_View(View_Enum.TEST);
+			Package_To_Finalize.Behaviors.Add_View(View_Enum.MANAGE);
 
 			// Add the full text searchable
 			if ( Package_To_Finalize.Behaviors.Text_Searchable )
