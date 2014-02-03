@@ -203,12 +203,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? "-1";
 		    if (Int32.TryParse(temp, out makeSortable) && (makeSortable > 0) && (makeSortable <= 3))
 		    {
-		        CurrentUser.Add_Option("QC_ItemViewer:SortableMode",makeSortable);
+		        CurrentUser.Add_Setting("QC_ItemViewer:SortableMode",makeSortable);
 		    }
             temp = HttpContext.Current.Request.Form["QC_autonumber_option"] ?? "-1";
             if ((Int32.TryParse(temp, out autonumber_mode)) && ( autonumber_mode >= 0 ) && ( autonumber_mode <= 2 ))
             {
-                CurrentUser.Add_Option("QC_ItemViewer:AutonumberingMode", autonumber_mode);
+				CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
             }
             
 
@@ -400,16 +400,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             }
             //Get the Drag & Drop setting from the user options
-            makeSortable = CurrentUser.Get_Option("QC_ItemViewer:SortableMode", 3);
+            makeSortable = CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", 3);
 
             // Get the proper number of thumbnails per page
             // First, pull the thumbnails per page from the user options
-            thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", 1000);
+			thumbnailsPerPage = CurrentUser.Get_Setting("QC_ItemViewer:ThumbnailsPerPage", 1000);
 
             // Or was there a new value in the URL?
             if (CurrentMode.Thumbnails_Per_Page >= -1)
             {
-                CurrentUser.Add_Option("QC_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
+                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
                 thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page;
 
                 // Now, reset the value in the navigation object, since we won't need to set it again
@@ -422,12 +422,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the proper size of thumbnails per page
             // First, pull the thumbnails per page from the user options
-            thumbnailSize = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailSize", 1);
+            thumbnailSize = CurrentUser.Get_Setting("QC_ItemViewer:ThumbnailSize", 1);
 
             // Or was there a new value in the URL?
             if (CurrentMode.Size_Of_Thumbnails > -1)
             {
-                CurrentUser.Add_Option("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
+                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
                 thumbnailSize = CurrentMode.Size_Of_Thumbnails;
 
                 //Now reset the current mode value since we won't need to set it again
@@ -436,10 +436,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the autonumbering mode
             // First, pull the autonumbering mode from the user options
-            autonumber_mode = CurrentUser.Get_Option("QC_ItemViewer:AutonumberingMode", 0);
+            autonumber_mode = CurrentUser.Get_Setting("QC_ItemViewer:AutonumberingMode", 0);
 
             //Also pull the Sortable mode from the user options
-            makeSortable = CurrentUser.Get_Option("QC_ItemViewer:SortableMode", 3);
+            makeSortable = CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", 3);
 
             // Ensure there are no pages directly under the item
             List<abstract_TreeNode> add_to_new_main = new List<abstract_TreeNode>();

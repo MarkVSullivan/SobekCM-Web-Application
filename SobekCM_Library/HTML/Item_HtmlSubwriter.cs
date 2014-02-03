@@ -1478,11 +1478,11 @@ namespace SobekCM.Library.HTML
 						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
 					    }
 
-					    if ((currentUser.Is_Portal_Admin) || (currentUser.Is_System_Admin))
-					    {
-						    currentMode.ViewerCode = "mapedit";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
-					    }
+					    currentMode.ViewerCode = "mapedit";
+						Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
+
+						currentMode.ViewerCode = "ts";
+						Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">View Tracking Sheet</a></li>");
 
 					    Output.WriteLine("\t\t</ul></li>");
 				    }

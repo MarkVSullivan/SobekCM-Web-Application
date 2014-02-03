@@ -4820,7 +4820,7 @@ namespace SobekCM.Library.Database
 			// Add links to aggregations
 			foreach (DataRow thisRow in ResultSet.Tables[5 ].Rows)
 			{
-				user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditItems"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]));
+				user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]));
 			}
 
 			// Add the current folder names
@@ -4850,14 +4850,22 @@ namespace SobekCM.Library.Database
 			foreach (User_Folder rootFolder in parentNodes)
 				user.Add_Folder(rootFolder);
 
+			// Get the list of BibID/VID associated with this
 			foreach (DataRow itemRow in ResultSet.Tables[7 ].Rows)
 			{
 				user.Add_Bookshelf_Item(itemRow["BibID"].ToString(), itemRow["VID"].ToString());
 			}
 
+			// Add the user groups to which this user is a member
 			foreach (DataRow groupRow in ResultSet.Tables[8].Rows)
 			{
 				user.Add_User_Group(groupRow[0].ToString());
+			}
+
+			// Get all the user settings
+			foreach (DataRow settingRow in ResultSet.Tables[9].Rows)
+			{
+				user.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString(), false);
 			}
 
 			return user;
@@ -5681,7 +5689,7 @@ namespace SobekCM.Library.Database
 					// Add links to aggregations
 					foreach (DataRow thisRow in resultSet.Tables[4].Rows)
 					{
-						group.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditItems"]), Convert.ToBoolean(thisRow["IsCurator"]));
+						group.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["IsCurator"]));
 					}
 
 					// Add the basic information about users in this user group
@@ -5974,6 +5982,32 @@ namespace SobekCM.Library.Database
 			}
 
 			return returnValue;
+		}
+
+		/// <summary> Sets a value for an individual user's setting </summary>
+		/// <param name="UserID"> Primary key for this user in the database </param>
+		/// <param name="Setting_Key"> Key for the setting to update or insert </param>
+		/// <param name="Setting_Value"> Value for the setting to update or insert </param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'SobekCM_Set_User_Setting_Value' stored procedure </remarks> 
+		public static bool Set_User_Setting(int UserID, string Setting_Key, string Setting_Value)
+		{
+			try
+			{
+				// Execute this non-query stored procedure
+				SqlParameter[] paramList = new SqlParameter[3];
+				paramList[0] = new SqlParameter("@UserID", UserID);
+				paramList[1] = new SqlParameter("@Setting_Key", Setting_Key);
+				paramList[2] = new SqlParameter("@Setting_Value", Setting_Value);
+
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_User_Setting_Value", paramList);
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
 		}
 
 		/// <summary> Sets a value in the settings table </summary>
@@ -7232,66 +7266,97 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[19];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				SqlParameter[] paramList = new SqlParameter[34];
+				paramList[0] = new SqlParameter("@UserID", UserID);
 
 				if (Aggregations.Count > 0)
 				{
-					paramList[1] = new SqlParameter("@aggregationcode1", Aggregations[0].Code);
-					paramList[2] = new SqlParameter("@canselect1", Aggregations[0].CanSelect);
-					paramList[3] = new SqlParameter("@canedit1", Aggregations[0].CanEditItems);
-					paramList[4] = new SqlParameter("@iscurator1", Aggregations[0].IsCurator);
-					paramList[5] = new SqlParameter("@onhomepage1", Aggregations[0].OnHomePage);
-					paramList[6] = new SqlParameter("@isadmin1", Aggregations[0].IsAdmin);
+					paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[0].Code);
+					paramList[2] = new SqlParameter("@canSelect1", Aggregations[0].CanSelect);
+					paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[0].CanEditItems);
+					paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[0].CanEditItems);
+					paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[0].CanEditItems);
+					paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[0].CanEditItems);
+					paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[0].CanEditItems);
+					paramList[8] = new SqlParameter("@canDelete1", Aggregations[0].CanEditItems);
+					paramList[9] = new SqlParameter("@isCurator1", Aggregations[0].IsCurator);
+					paramList[10] = new SqlParameter("@onHomePage1", Aggregations[0].OnHomePage);
+					paramList[11] = new SqlParameter("@isAdmin1", Aggregations[0].IsAdmin);
 				}
 				else
 				{
-					paramList[1] = new SqlParameter("@aggregationcode1", String.Empty);
-					paramList[2] = new SqlParameter("@canselect1", false);
-					paramList[3] = new SqlParameter("@canedit1", false);
-					paramList[4] = new SqlParameter("@iscurator1", false);
-					paramList[5] = new SqlParameter("@onhomepage1", false);
-					paramList[6] = new SqlParameter("@isadmin1", false);
+					paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
+					paramList[2] = new SqlParameter("@canSelect1", false);
+					paramList[3] = new SqlParameter("@canEditMetadata1", false);
+					paramList[4] = new SqlParameter("@canEditBehaviors1", false);
+					paramList[5] = new SqlParameter("@canPerformQc1", false);
+					paramList[6] = new SqlParameter("@canUploadFiles1", false);
+					paramList[7] = new SqlParameter("@canChangeVisibility1", false);
+					paramList[8] = new SqlParameter("@canDelete1", false);
+					paramList[9] = new SqlParameter("@isCurator1", false);
+					paramList[10] = new SqlParameter("@onHomePage1", false);
+					paramList[11] = new SqlParameter("@isAdmin1", false);
 				}
 
 				if (Aggregations.Count > 1)
 				{
-					paramList[7] = new SqlParameter("@aggregationcode2", Aggregations[1].Code);
-					paramList[8] = new SqlParameter("@canselect2", Aggregations[1].CanSelect);
-					paramList[9] = new SqlParameter("@canedit2", Aggregations[1].CanEditItems);
-					paramList[10] = new SqlParameter("@iscurator2", Aggregations[1].IsCurator);
-					paramList[11] = new SqlParameter("@onhomepage2", Aggregations[1].OnHomePage);
-					paramList[12] = new SqlParameter("@isadmin2", Aggregations[1].IsAdmin);
+					paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[1].Code);
+					paramList[13] = new SqlParameter("@canSelect2", Aggregations[1].CanSelect);
+					paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[1].CanEditItems);
+					paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[1].CanEditItems);
+					paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[1].CanEditItems);
+					paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[1].CanEditItems);
+					paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[1].CanEditItems);
+					paramList[19] = new SqlParameter("@canDelete2", Aggregations[1].CanEditItems);
+					paramList[20] = new SqlParameter("@isCurator2", Aggregations[1].IsCurator);
+					paramList[21] = new SqlParameter("@onHomePage2", Aggregations[1].OnHomePage);
+					paramList[22] = new SqlParameter("@isAdmin2", Aggregations[1].IsAdmin);
 				}
 				else
 				{
-					paramList[7] = new SqlParameter("@aggregationcode2", String.Empty);
-					paramList[8] = new SqlParameter("@canselect2", false);
-					paramList[9] = new SqlParameter("@canedit2", false);
-					paramList[10] = new SqlParameter("@iscurator2", false);
-					paramList[11] = new SqlParameter("@onhomepage2", false);
-					paramList[12] = new SqlParameter("@isadmin2", false);
+					paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
+					paramList[13] = new SqlParameter("@canSelect2", false);
+					paramList[14] = new SqlParameter("@canEditMetadata2", false);
+					paramList[15] = new SqlParameter("@canEditBehaviors2", false);
+					paramList[16] = new SqlParameter("@canPerformQc2", false);
+					paramList[17] = new SqlParameter("@canUploadFiles2", false);
+					paramList[18] = new SqlParameter("@canChangeVisibility2", false);
+					paramList[19] = new SqlParameter("@canDelete2", false);
+					paramList[20] = new SqlParameter("@isCurator2", false);
+					paramList[21] = new SqlParameter("@onHomePage2", false);
+					paramList[22] = new SqlParameter("@isAdmin2", false);
 				}
+
 
 				if (Aggregations.Count > 2)
 				{
-					paramList[13] = new SqlParameter("@aggregationcode3", Aggregations[2].Code);
-					paramList[14] = new SqlParameter("@canselect3", Aggregations[2].CanSelect);
-					paramList[15] = new SqlParameter("@canedit3", Aggregations[2].CanEditItems);
-					paramList[16] = new SqlParameter("@iscurator3", Aggregations[2].IsCurator);
-					paramList[17] = new SqlParameter("@onhomepage3", Aggregations[2].OnHomePage);
-					paramList[18] = new SqlParameter("@isadmin3", Aggregations[2].IsAdmin);
+					paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[2].Code);
+					paramList[24] = new SqlParameter("@canSelect3", Aggregations[2].CanSelect);
+					paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[2].CanEditItems);
+					paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[2].CanEditItems);
+					paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[2].CanEditItems);
+					paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[2].CanEditItems);
+					paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[2].CanEditItems);
+					paramList[30] = new SqlParameter("@canDelete3", Aggregations[2].CanEditItems);
+					paramList[31] = new SqlParameter("@isCurator3", Aggregations[2].IsCurator);
+					paramList[32] = new SqlParameter("@onHomePage3", Aggregations[2].OnHomePage);
+					paramList[33] = new SqlParameter("@isAdmin3", Aggregations[2].IsAdmin);
 				}
 				else
 				{
-					paramList[13] = new SqlParameter("@aggregationcode3", String.Empty);
-					paramList[14] = new SqlParameter("@canselect3", false);
-					paramList[15] = new SqlParameter("@canedit3", false);
-					paramList[16] = new SqlParameter("@iscurator3", false);
-					paramList[17] = new SqlParameter("@onhomepage3", false);
-					paramList[18] = new SqlParameter("@isadmin3", false);
+					paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
+					paramList[24] = new SqlParameter("@canSelect3", false);
+					paramList[25] = new SqlParameter("@canEditMetadata3", false);
+					paramList[26] = new SqlParameter("@canEditBehaviors3", false);
+					paramList[27] = new SqlParameter("@canPerformQc3", false);
+					paramList[28] = new SqlParameter("@canUploadFiles3", false);
+					paramList[29] = new SqlParameter("@canChangeVisibility3", false);
+					paramList[30] = new SqlParameter("@canDelete3", false);
+					paramList[31] = new SqlParameter("@isCurator3", false);
+					paramList[32] = new SqlParameter("@onHomePage3", false);
+					paramList[33] = new SqlParameter("@isAdmin3", false);
 				}
-
+				
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
 
@@ -7299,63 +7364,94 @@ namespace SobekCM.Library.Database
 				while (Aggregations.Count > currentIndex)
 				{
 					// Build the parameter list for the first run
-					paramList[0] = new SqlParameter("@userid", UserID);
+					paramList[0] = new SqlParameter("@UserID", UserID);
 
 					if (Aggregations.Count > currentIndex)
 					{
-						paramList[1] = new SqlParameter("@aggregationcode1", Aggregations[currentIndex].Code);
-						paramList[2] = new SqlParameter("@canselect1", Aggregations[currentIndex].CanSelect);
-						paramList[3] = new SqlParameter("@canedit1", Aggregations[currentIndex].CanEditItems);
-						paramList[4] = new SqlParameter("@iscurator1", Aggregations[currentIndex].IsCurator);
-						paramList[5] = new SqlParameter("@onhomepage1", Aggregations[currentIndex].OnHomePage);
-						paramList[6] = new SqlParameter("@isadmin1", Aggregations[currentIndex].IsAdmin);
+						paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[currentIndex].Code);
+						paramList[2] = new SqlParameter("@canSelect1", Aggregations[currentIndex].CanSelect);
+						paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[currentIndex].CanEditItems);
+						paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[currentIndex].CanEditItems);
+						paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[currentIndex].CanEditItems);
+						paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[currentIndex].CanEditItems);
+						paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[currentIndex].CanEditItems);
+						paramList[8] = new SqlParameter("@canDelete1", Aggregations[currentIndex].CanEditItems);
+						paramList[9] = new SqlParameter("@isCurator1", Aggregations[currentIndex].IsCurator);
+						paramList[10] = new SqlParameter("@onHomePage1", Aggregations[currentIndex].OnHomePage);
+						paramList[11] = new SqlParameter("@isAdmin1", Aggregations[currentIndex].IsAdmin);
 					}
 					else
 					{
-						paramList[1] = new SqlParameter("@aggregationcode1", String.Empty);
-						paramList[2] = new SqlParameter("@canselect1", false);
-						paramList[3] = new SqlParameter("@canedit1", false);
-						paramList[4] = new SqlParameter("@iscurator1", false);
-						paramList[5] = new SqlParameter("@onhomepage1", false);
-						paramList[6] = new SqlParameter("@isadmin1", false);
+						paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
+						paramList[2] = new SqlParameter("@canSelect1", false);
+						paramList[3] = new SqlParameter("@canEditMetadata1", false);
+						paramList[4] = new SqlParameter("@canEditBehaviors1", false);
+						paramList[5] = new SqlParameter("@canPerformQc1", false);
+						paramList[6] = new SqlParameter("@canUploadFiles1", false);
+						paramList[7] = new SqlParameter("@canChangeVisibility1", false);
+						paramList[8] = new SqlParameter("@canDelete1", false);
+						paramList[9] = new SqlParameter("@isCurator1", false);
+						paramList[10] = new SqlParameter("@onHomePage1", false);
+						paramList[11] = new SqlParameter("@isAdmin1", false);
 					}
 
 					if (Aggregations.Count > currentIndex + 1)
 					{
-						paramList[7] = new SqlParameter("@aggregationcode2", Aggregations[currentIndex + 1].Code);
-						paramList[8] = new SqlParameter("@canselect2", Aggregations[currentIndex + 1].CanSelect);
-						paramList[9] = new SqlParameter("@canedit2", Aggregations[currentIndex + 1].CanEditItems);
-						paramList[10] = new SqlParameter("@iscurator2", Aggregations[currentIndex + 1].IsCurator);
-						paramList[11] = new SqlParameter("@onhomepage2", Aggregations[currentIndex + 1].OnHomePage);
-						paramList[12] = new SqlParameter("@isadmin2", Aggregations[currentIndex + 1].IsAdmin);
+						paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[currentIndex + 1].Code);
+						paramList[13] = new SqlParameter("@canSelect2", Aggregations[currentIndex + 1].CanSelect);
+						paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[19] = new SqlParameter("@canDelete2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[20] = new SqlParameter("@isCurator2", Aggregations[currentIndex + 1].IsCurator);
+						paramList[21] = new SqlParameter("@onHomePage2", Aggregations[currentIndex + 1].OnHomePage);
+						paramList[22] = new SqlParameter("@isAdmin2", Aggregations[currentIndex + 1].IsAdmin);
 					}
 					else
 					{
-						paramList[7] = new SqlParameter("@aggregationcode2", String.Empty);
-						paramList[8] = new SqlParameter("@canselect2", false);
-						paramList[9] = new SqlParameter("@canedit2", false);
-						paramList[10] = new SqlParameter("@iscurator2", false);
-						paramList[11] = new SqlParameter("@onhomepage2", false);
-						paramList[12] = new SqlParameter("@isadmin2", false);
+						paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
+						paramList[13] = new SqlParameter("@canSelect2", false);
+						paramList[14] = new SqlParameter("@canEditMetadata2", false);
+						paramList[15] = new SqlParameter("@canEditBehaviors2", false);
+						paramList[16] = new SqlParameter("@canPerformQc2", false);
+						paramList[17] = new SqlParameter("@canUploadFiles2", false);
+						paramList[18] = new SqlParameter("@canChangeVisibility2", false);
+						paramList[19] = new SqlParameter("@canDelete2", false);
+						paramList[20] = new SqlParameter("@isCurator2", false);
+						paramList[21] = new SqlParameter("@onHomePage2", false);
+						paramList[22] = new SqlParameter("@isAdmin2", false);
 					}
+
 
 					if (Aggregations.Count > currentIndex + 2)
 					{
-						paramList[13] = new SqlParameter("@aggregationcode3", Aggregations[currentIndex + 2].Code);
-						paramList[14] = new SqlParameter("@canselect3", Aggregations[currentIndex + 2].CanSelect);
-						paramList[15] = new SqlParameter("@canedit3", Aggregations[currentIndex + 2].CanEditItems);
-						paramList[16] = new SqlParameter("@iscurator3", Aggregations[currentIndex + 2].IsCurator);
-						paramList[17] = new SqlParameter("@onhomepage3", Aggregations[currentIndex + 2].OnHomePage);
-						paramList[18] = new SqlParameter("@isadmin3", Aggregations[currentIndex + 2].IsAdmin);
+						paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[currentIndex + 2].Code);
+						paramList[24] = new SqlParameter("@canSelect3", Aggregations[currentIndex + 2].CanSelect);
+						paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[30] = new SqlParameter("@canDelete3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[31] = new SqlParameter("@isCurator3", Aggregations[currentIndex + 2].IsCurator);
+						paramList[32] = new SqlParameter("@onHomePage3", Aggregations[currentIndex + 2].OnHomePage);
+						paramList[33] = new SqlParameter("@isAdmin3", Aggregations[currentIndex + 2].IsAdmin);
 					}
 					else
 					{
-						paramList[13] = new SqlParameter("@aggregationcode3", String.Empty);
-						paramList[14] = new SqlParameter("@canselect3", false);
-						paramList[15] = new SqlParameter("@canedit3", false);
-						paramList[16] = new SqlParameter("@iscurator3", false);
-						paramList[17] = new SqlParameter("@onhomepage3", false);
-						paramList[18] = new SqlParameter("@isadmin3", false);
+						paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
+						paramList[24] = new SqlParameter("@canSelect3", false);
+						paramList[25] = new SqlParameter("@canEditMetadata3", false);
+						paramList[26] = new SqlParameter("@canEditBehaviors3", false);
+						paramList[27] = new SqlParameter("@canPerformQc3", false);
+						paramList[28] = new SqlParameter("@canUploadFiles3", false);
+						paramList[29] = new SqlParameter("@canChangeVisibility3", false);
+						paramList[30] = new SqlParameter("@canDelete3", false);
+						paramList[31] = new SqlParameter("@isCurator3", false);
+						paramList[32] = new SqlParameter("@onHomePage3", false);
+						paramList[33] = new SqlParameter("@isAdmin3", false);
 					}
 					 
 					// Execute this query stored procedure
@@ -7396,7 +7492,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-        public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Metadata_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, Custom_Tracer Tracer)
+		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Metadata_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, bool Auto_Assign_Users, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -7406,7 +7502,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[14];
+				SqlParameter[] paramList = new SqlParameter[15];
 				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
 				paramList[1] = new SqlParameter("@groupname", GroupName);
 				paramList[2] = new SqlParameter("@groupdescription", GroupDescription);
@@ -7419,13 +7515,14 @@ namespace SobekCM.Library.Database
                 paramList[10] = new SqlParameter("@clear_metadata_templates", Clear_Metadata_Templates);
 				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
 				paramList[12] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
-				paramList[13] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
+				paramList[13] = new SqlParameter("@autoAssignUsers", Auto_Assign_Users);
+				paramList[14] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
 				// Succesful, so return new id, if there was one
-				return Convert.ToInt32(paramList[13].Value);
+				return Convert.ToInt32(paramList[14].Value);
 			}
 			catch (Exception ee)
 			{
