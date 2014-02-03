@@ -5914,6 +5914,10 @@ function resizeView() {
     //if view width < toolbar width
     //todo make 1190 dynamic (cannot simple getelementbyid because toolbar is closed at start)
     if (widthPX < 1100) {
+        
+        //override, just close toolbar (prevents overflow issues)
+        //mapedit_container_pane_1
+
         var temp2 = toolbarButtonIds.length * 45;
         temp2 = widthPX - temp2 - 60;
         temp2 = Math.round(temp2 / 45);
