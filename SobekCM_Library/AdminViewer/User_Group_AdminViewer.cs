@@ -273,7 +273,7 @@ namespace SobekCM.Library.AdminViewer
                     if (name.Length > 0)
                     {
                         // Update the basic user information
-                        int newid = SobekCM_Database.Save_User_Group(editGroup.UserGroupID, name, description, can_submit, is_internal, can_editall, is_admin, is_portal, false, update_templates_projects, update_aggregations, false, Tracer);
+                        int newid = SobekCM_Database.Save_User_Group(editGroup.UserGroupID, name, description, can_submit, is_internal, can_editall, is_admin, is_portal, false, update_templates_projects, update_aggregations, false, false, Tracer);
                         if (editGroup.UserGroupID < 0)
                         {
                             editGroup.UserGroupID = newid;

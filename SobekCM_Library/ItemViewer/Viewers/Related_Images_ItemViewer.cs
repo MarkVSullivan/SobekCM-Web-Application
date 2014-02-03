@@ -433,12 +433,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (CurrentUser != null)
 			{
 				// First, pull the thumbnails per page from the user options
-				thumbnailsPerPage = CurrentUser.Get_Option("Related_Images_ItemViewer:ThumbnailsPerPage", 50);
+				thumbnailsPerPage = CurrentUser.Get_Setting("Related_Images_ItemViewer:ThumbnailsPerPage", 50);
 
 				// Or was there a new value in the URL?
 				if (CurrentMode.Thumbnails_Per_Page >= -1)
 				{
-					CurrentUser.Add_Option("Related_Images_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
+					CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
 					thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page;
 				}
 			}
@@ -471,12 +471,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (CurrentUser != null)
 			{
 				// First, pull the thumbnails per page from the user options
-				thumbnailSize = CurrentUser.Get_Option("Related_Images_ItemViewer:ThumbnailSize", 1);
+				thumbnailSize = CurrentUser.Get_Setting("Related_Images_ItemViewer:ThumbnailSize", 1);
 
 				// Or was there a new value in the URL?
 				if (CurrentMode.Size_Of_Thumbnails > -1)
 				{
-					CurrentUser.Add_Option("Related_Images_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
+					CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
 					thumbnailSize = CurrentMode.Size_Of_Thumbnails;
 				}
 			}
