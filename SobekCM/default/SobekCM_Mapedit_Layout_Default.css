@@ -85,6 +85,7 @@ opacity: 0.75;*/
     -moz-box-shadow: 0px 0px 2px 2px #000000;
     box-shadow: 0px 0px 2px 2px #000000;
     background-image: url("images/mapedit/bg1.png");
+    overflow: hidden;
 }
 
 #mapedit_container_toolbar
