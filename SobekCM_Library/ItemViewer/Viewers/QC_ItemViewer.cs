@@ -552,14 +552,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        qc_item.Divisions.Physical_Tree.Clear();
 
 	        // Add the main node to the physical (TOC) division tree 
-	        Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
-	        qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+            Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
+            qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+     
 
 	        // Add back each page, in order by filename (sans extension)
 	        for (int i = 0; i < nodeToFilename.Count; i++)
 	        {
-	            mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
-	        }
+	           mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
+	         }
 
 	        // Save the updated item to the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
