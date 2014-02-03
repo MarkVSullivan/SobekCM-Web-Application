@@ -30,7 +30,7 @@ namespace SobekCM.Library.UploadiFive
 			if ((UploadPath.Length > 0) && (HttpContext.Current != null))
 			{
 				// Create a new security token, save in session, and set token GUID in the form data
-				UploadiFive_Security_Token newToken = new UploadiFive_Security_Token(UploadPath, AllowedFileExtensions, FileObjName);
+				UploadiFive_Security_Token newToken = new UploadiFive_Security_Token(UploadPath, AllowedFileExtensions, FileObjName, ServerSideFileName);
 				FormData["token"] = newToken.ThisGuid.ToString();
 				HttpContext.Current.Session["#UPLOADIFIVE::" + newToken.ThisGuid.ToString()] = newToken;
 			}
@@ -159,6 +159,15 @@ namespace SobekCM.Library.UploadiFive
 		{
 			get { return settings.NoHtml5OrFlashMessage; }
 			set { settings.NoHtml5OrFlashMessage = value; }
+		}
+
+		/// <summary> Name for the final server-side file, which allows overriding the default name,
+		/// which would otherwise match the uploaded name </summary>
+		/// <remarks> This can be used to avoid having to manually rename the file after upload </remarks>
+		public string ServerSideFileName
+		{
+			get { return settings.ServerSideFileName; }
+			set { settings.ServerSideFileName = value; }
 		}
 
 		#endregion

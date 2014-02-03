@@ -151,7 +151,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<!-- TRACKING ITEM VIEWER OUTPUT -->" );
 
             // Start the citation table
-            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\"><b>Tracking Information</b></span></td>");
+            Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
             Output.WriteLine("  <td class=\"sbkTrk_MainArea\">" );

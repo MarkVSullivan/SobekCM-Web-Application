@@ -190,6 +190,19 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkJp2_Container { width: 800px;height: 600px;background-color: black;border: 1px solid black;color: white; }
 #sbkJp2_Navigator { width:195px; height: 195px; }
 
+/* MANAGEMENU_ITEMVIEWER */
+.sbkMmiv_ViewerTitle { padding: 6px 0 6px 35px; FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; font-weight: bold; }
+.sbkMmiv_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left;  }
+#sbkMmiv_MainTable { margin: 30px 40px 20px 80px;border-collapse: collapse;border: 0px;}
+#sbkMmiv_MainTable tr { vertical-align: top; margin-bottom: 20px; }
+.sbkMmiv_HeaderRow { height: 40px;font-size: 1.20em; }
+#sbkMmiv_MainTable a:link { color: #00005C; font-weight: bold;text-decoration: none; font-size: 1.1em; }
+#sbkMmiv_MainTable a:visited { color: #00005C; font-weight: bold;text-decoration: none; }
+#sbkMmiv_MainTable a:hover { text-decoration: underline; }
+.sbkMmiv_Desc { padding: 5px 0 10px 15px ; color: #444444; }
+.sbkMmiv_SpacerRow { height: 12px; }
+
+
 /* PDF_ITEMVIEWER */
 #sbkPdf_MainArea { text-align: left; }
 #sbkPdf_MainArea a:link { text-decoration: none; color: cornflowerblue; }

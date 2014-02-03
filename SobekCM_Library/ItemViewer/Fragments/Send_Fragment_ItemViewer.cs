@@ -31,7 +31,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
 
                 responseBuilder.AppendLine("<!-- Email form -->");
 				responseBuilder.AppendLine("<div id=\"emailform_content\" class=\"sbk_PopupForm\">");
-				responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Send this Item to a Friend</td><td style=\"vertical-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+				responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Send this Item to a Friend</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                 responseBuilder.AppendLine("  <br />");
                 responseBuilder.AppendLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
                 responseBuilder.AppendLine("    <br />");
@@ -40,11 +40,11 @@ namespace SobekCM.Library.ItemViewer.Fragments
 
                 // Add email address line
                 responseBuilder.Append("      <tr><td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
-                responseBuilder.AppendLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + CurrentUser.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+				responseBuilder.AppendLine("<td><input class=\"email_input sbk_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + CurrentUser.Email + "\" /></td></tr>");
 
                 // Add comments area
                 responseBuilder.Append("      <tr style=\"vertical-align:top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
-                responseBuilder.AppendLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea\" onfocus=\"javascript:textbox_enter('email_comments','email_textarea_focused')\" onblur=\"javascript:textbox_leave('email_comments','email_textarea')\"></textarea></td></tr>");
+				responseBuilder.AppendLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea sbk_Focusable\" ></textarea></td></tr>");
 
                 // Add format area
 				responseBuilder.Append("      <tr style=\"vertical-align:top\"><td>Format:</td>");

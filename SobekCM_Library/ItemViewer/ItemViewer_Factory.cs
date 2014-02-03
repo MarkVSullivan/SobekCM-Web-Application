@@ -94,7 +94,10 @@ namespace SobekCM.Library.ItemViewer
                         return jpeg2000Viewer;
                     }
 		            return null;
-                    break;
+		            break;
+
+				case View_Enum.MANAGE:
+					return new ManageMenu_ItemViewer(Current_Object, Current_User, Current_Mode);
 
 				case View_Enum.PAGE_TURNER:
 						return new GnuBooks_PageTurner_ItemViewer();
