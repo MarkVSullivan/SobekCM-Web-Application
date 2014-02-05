@@ -67,7 +67,7 @@ namespace SobekCM.Library.AdminViewer
 			categorizedSettings = new Dictionary<string, List<Setting_Info>>();
             settingCounter = 1;
             actionMessage = String.Empty;
-			category_view = false;
+			category_view = Convert.ToBoolean(User.Get_Setting("Settings_AdminViewer:Category_View", "false"));
 
             // Get the current settings from the database
             settings = SobekCM_Database.Get_Settings(Tracer);
@@ -157,9 +157,18 @@ namespace SobekCM.Library.AdminViewer
                 NameValueCollection form = HttpContext.Current.Request.Form;
 
 	            if (form["admin_settings_order"] == "category")
+	            {
+		            User.Add_Setting("Settings_AdminViewer:Category_View", "true");
 		            category_view = true;
+	            }
 
-                string action_value = form["admin_settings_action"];
+				if (form["admin_settings_order"] == "alphabetical")
+				{
+					User.Add_Setting("Settings_AdminViewer:Category_View", "false");
+					category_view = false;
+				}
+
+	            string action_value = form["admin_settings_action"];
                 if ((action_value == "save") && ( User.Is_System_Admin ))
                 {
                     // Populate all the new settings

@@ -187,7 +187,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
 
-				// Add ability to edit behaviors for this item
+				// Add ability to upload new download files for this item
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
 				url = CurrentMode.Redirect_URL();
@@ -199,8 +199,37 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Upload new files for download or remove existing files that are attached to this item for download.  This generally includes everything except for the page images.</div>");
 				Output.WriteLine("\t\t\t\t\t</td>");
 				Output.WriteLine("\t\t\t\t</tr>");
+				Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
-				Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\"></td></tr>");
+				// Add ability to edit geo-spatial information for this item
+				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
+				CurrentMode.ViewerCode = "mapedit";
+				url = CurrentMode.Redirect_URL();
+				Output.WriteLine("\t\t\t\t<tr>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "add_geospatial_icon.png\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td>");
+				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Geo-Spatial Data (beta)</a>");
+				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.</div>");
+				Output.WriteLine("\t\t\t\t\t</td>");
+				Output.WriteLine("\t\t\t\t</tr>");
+				Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+
+
+				// Add ability to edit geo-spatial information for this item
+				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
+				CurrentMode.ViewerCode = "ts";
+				url = CurrentMode.Redirect_URL();
+				Output.WriteLine("\t\t\t\t<tr>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "tracking_sheet_icon.png\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td>");
+				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Tracking Sheet</a>");
+				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow.</div>");
+				Output.WriteLine("\t\t\t\t\t</td>");
+				Output.WriteLine("\t\t\t\t</tr>");
+				Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+
 
 				Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">In addition, the following changes can be made at the item group level:</td></tr>");
 

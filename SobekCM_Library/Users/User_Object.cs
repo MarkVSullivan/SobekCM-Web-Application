@@ -31,7 +31,7 @@ namespace SobekCM.Library.Users
         private readonly List<string> defaultMetadataSets;
         private readonly List<string> templates;
         private readonly List<string> userGroups;
-        private readonly Dictionary<string, object> userOptions; 
+        private readonly Dictionary<string, object> userSettings; 
 
         #endregion
 
@@ -76,7 +76,7 @@ namespace SobekCM.Library.Users
             Receive_Stats_Emails = true;
             Has_Item_Stats = false;
             Include_Tracking_In_Standard_Forms = true;
-            userOptions = new Dictionary<string, object>();
+			userSettings = new Dictionary<string, object>();
 	        Can_Delete_All = false;
 	        Shibboleth_Authenticated = false;
         }
@@ -93,10 +93,10 @@ namespace SobekCM.Library.Users
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <returns> Option, as an uncast object, or NULL </returns>
-        public object Get_Option( string Option_Key )
+        public object Get_Setting( string Option_Key )
         {
-            if (userOptions.ContainsKey(Option_Key))
-                return userOptions[Option_Key];
+			if (userSettings.ContainsKey(Option_Key))
+				return userSettings[Option_Key];
             return null;
         }
 
@@ -104,12 +104,12 @@ namespace SobekCM.Library.Users
         /// <param name="Option_Key"> Key for the user option </param>
         /// <param name="Default_Value"> Default value to return, if no value is present </param>
         /// <returns> Either the value from the user options, or else the default value </returns>
-        public int Get_Option(string Option_Key, int Default_Value )
+        public int Get_Setting(string Option_Key, int Default_Value )
         {
-            if (userOptions.ContainsKey(Option_Key))
+			if (userSettings.ContainsKey(Option_Key))
             {
                 int tempValue;
-                if (int.TryParse(userOptions[Option_Key].ToString(), out tempValue))
+				if (int.TryParse(userSettings[Option_Key].ToString(), out tempValue))
                     return tempValue;
             }
             return Default_Value;
@@ -119,23 +119,37 @@ namespace SobekCM.Library.Users
         /// <param name="Option_Key"> Key for the user option </param>
         /// <param name="Default_Value"> Default value to return, if no value is present </param>
         /// <returns> Either the value from the user options, or else the default value </returns>
-        public string Get_Option(string Option_Key, string Default_Value)
+        public string Get_Setting(string Option_Key, string Default_Value)
         {
-            if (userOptions.ContainsKey(Option_Key))
+			if (userSettings.ContainsKey(Option_Key))
             {
-                return userOptions[Option_Key].ToString();
+				return userSettings[Option_Key].ToString();
             }
             return Default_Value;
         }
 
-
         /// <summary> Add a new user option </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <param name="Option_Value"> Value for this user option </param>
-        public void Add_Option( string Option_Key, object Option_Value )
+        public void Add_Setting( string Option_Key, object Option_Value )
         {
-            userOptions[Option_Key] = Option_Value;
+	        Add_Setting(Option_Key, Option_Value, true);
         }
+
+		/// <summary> Add a new user option </summary>
+		/// <param name="Option_Key"> Key for the user option </param>
+		/// <param name="Option_Value"> Value for this user option </param>
+		/// <param name="Update_Database"> Flag indicates if the database should be updated </param>
+		public void Add_Setting(string Option_Key, object Option_Value, bool Update_Database )
+		{
+			// Does this option already exist, and does it have the same value?
+			if ((!userSettings.ContainsKey(Option_Key)) || (userSettings[Option_Key] != Option_Value))
+			{
+				userSettings[Option_Key] = Option_Value;
+				if ( Update_Database )
+					Database.SobekCM_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
+			}
+		}
 
         #region Public properties of this user object
 

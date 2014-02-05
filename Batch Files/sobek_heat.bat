@@ -77,10 +77,13 @@ echo.
 
 cd c:\
 
-echo COPY FIELS TO INCLUDE FOLDER OVER
+echo COPY FILES TO INCLUDE FOLDER OVER
 xcopy "%source%\Installer\FilesToInclude" "%source%\Installer\SobekCM_WiX_Installer\Staging32" /s /e /i /y /q
 xcopy "%source%\Installer\FilesToInclude" "%source%\Installer\SobekCM_WiX_Installer\Staging64" /s /e /i /y /q
+echo.
 
-echo CREATE SOURCE WiX FILE
-"C:\Program Files (x86)\WiX Toolset v3.8\bin\heat" dir "%source%\Installer\SobekCM_WiX_Installer\Staging64" -nologo -dr Staging64 -ke -sfrag -suid -gg -out "%source%\Installer\SobekCM_WiX_Installer\FileLists\Web.wxs" -cg SobekWebComponent -dr WEBINSTALLFOLDER -var var.WebStagingSource
+echo CREATE SOURCE WiX FILES
+"C:\Program Files (x86)\WiX Toolset v3.8\bin\heat" dir "%source%\Installer\SobekCM_WiX_Installer\Staging64" -nologo -dr Staging64 -ke -sfrag -srd -gg -out "%source%\Installer\SobekCM_WiX_Installer\FileLists\Web64.wxs" -cg SobekWebComponent_x64 -dr WEBINSTALLFOLDER -var var.WebStagingSource -t "%source%\Installer\SobekCM_WiX_Installer\post_heat_transform.xsl"
+"C:\Program Files (x86)\WiX Toolset v3.8\bin\heat" dir "%source%\Installer\SobekCM_WiX_Installer\Staging32" -nologo -dr Staging32 -ke -sfrag -srd -gg -out "%source%\Installer\SobekCM_WiX_Installer\FileLists\Web32.wxs" -cg SobekWebComponent_x32 -dr WEBINSTALLFOLDER -var var.WebStagingSource -t "%source%\Installer\SobekCM_WiX_Installer\post_heat_transform.xsl"
+
 
