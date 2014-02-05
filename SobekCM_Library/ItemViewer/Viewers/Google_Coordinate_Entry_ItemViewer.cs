@@ -945,7 +945,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
@@ -1036,7 +1036,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + totalAddedPolygonCount + ";");
                             //add image url
@@ -1086,7 +1086,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             //add the polygon path
                             mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = [ ");
                             int edgePointCurrentCount = 0;
@@ -1125,7 +1125,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(page.Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex+1) + "\";"); //2do localize this text???
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
                             //add image url
