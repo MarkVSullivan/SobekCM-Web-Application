@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using SobekCM.Library.Citation.Elements.implemented_elements;
 
 #endregion
 
@@ -242,6 +243,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 case Element_Type.Primary_Identifier:
                     return new Primary_Alt_Identifier_Element();
+
+                case Element_Type.Project:
+                    return new Projects_Element();
 
                 case Element_Type.Publication_Status:
                     return new Publication_Status_Element();
