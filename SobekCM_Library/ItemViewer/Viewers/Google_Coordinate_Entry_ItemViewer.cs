@@ -35,6 +35,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> init viewer instance </summary>
         public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
         {
+            try
+            {
+                
             CurrentUser = Current_User;
             CurrentItem = Current_Item;
             this.CurrentMode = Current_Mode;
@@ -66,12 +69,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //string backup_directory = SobekCM_Library_Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
             //string backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
             //File.Copy(current_mets, backup_mets_name);
+
+            }
+            catch (Exception)
+            {
+                //Custom_Tracer.Add_Trace("MapEdit Start Failure");
+                throw new ApplicationException("MapEdit Start Failure");
+                throw;
+            }
         }
 
         /// <summary> parse and save incoming message  </summary>
         /// <param name="sendData"> message from page </param>
         public static void SaveContent(String sendData)
         {
+            try
+            {
+
             //get rid of excess string 
             sendData = sendData.Replace("{\"sendData\": \"", "").Replace("{\"sendData\":\"", "");
 
@@ -449,6 +463,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //create a backup mets file
             File.Copy(current_mets, backup_mets, true);
             #endregion
+
+            }
+            catch (Exception)
+            {
+                //Custom_Tracer.Add_Trace("MapEdit Save Error");
+                throw new ApplicationException("MapEdit Save Error");
+                //throw;
+            }
+
         }
 
         /// <summary> Gets the number of pages for this viewer </summary>
@@ -517,6 +540,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
+            try
+            {
+
             // Start to build the response
             StringBuilder mapeditBuilder = new StringBuilder();
 
@@ -568,6 +594,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                 s.Read(b, 0, 2048);
             }
+            catch (Exception)
+            {
+                Tracer.Add_Trace("Could Not Create Build Time");
+                throw;
+            }
             finally
             {
                 if (s != null)
@@ -616,9 +647,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //read collectionIds from config.xml file
             try
             {
-
+                string configFilePath = SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config";
+#if DEBUG
+                configFilePath = @"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\config\sobekcm_mapedit.config"; //2do make this dynamic
+#endif
                 //read through and get all the ids
-                using (XmlReader reader = XmlReader.Create(SobekCM.Library.Settings.SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config"))
+                using (XmlReader reader = XmlReader.Create(configFilePath))
                 {
                     while (reader.Read())
                     {
@@ -640,12 +674,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 foreach (string collectionId in collectionIdsFromConfig)
                 {
                     //compare collectionID to all collectionIDs 
-                    if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId)||(CurrentItem.BibID == collectionId))
+                    if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId) || (CurrentItem.BibID == collectionId) || (CurrentItem.BibID.Contains(collectionId)))
                     {
                         //if found, assign "readFromXML" as first param
                         collectionLoadParams.Add("readFromXML");
                         //go through each  xml param and assign
-                        using (XmlReader reader = XmlReader.Create(SobekCM.Library.Settings.SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config"))
+                        using (XmlReader reader = XmlReader.Create(configFilePath))
                         {
                             while (reader.Read())
                             {
@@ -683,8 +717,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch (Exception)
             {
-                //err
-                //throw;
+                Tracer.Add_Trace("Could Not Load MapEdit Configs");
+                throw;
             }
             //determine if there is a custom collection to load
             if (collectionLoadParams.Count > 1)
@@ -908,7 +942,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             
                             //add the label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                            if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                            else
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
                             
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
@@ -995,8 +1032,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add polygontype
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
-                            //add label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
+                            //add the label
+                            if (Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) != "")
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
+                            else
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + totalAddedPolygonCount + ";");
                             //add image url
@@ -1043,7 +1083,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add the polygonType
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             //add the label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                            if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                            else
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
                             //add the polygon path
                             mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = [ ");
                             int edgePointCurrentCount = 0;
@@ -1078,8 +1121,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add polygontype
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
-                            //add label
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
+                            //add the label
+                            if (Convert_String_To_XML_Safe(page.Label) != "")
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
+                            else
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
                             //add image url
@@ -1512,6 +1558,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Literal placeHolderText = new Literal();
             placeHolderText.Text = mapeditBuilder.ToString();
             MainPlaceHolder.Controls.Add(placeHolderText);
+
+            }
+            catch (Exception)
+            {
+                Tracer.Add_Trace("Could Not Create MapEdit Page");
+                throw;
+            }
 
         }
     }
