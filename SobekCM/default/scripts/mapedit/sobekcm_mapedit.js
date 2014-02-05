@@ -62,6 +62,8 @@ function initDeclarations() {
 
             //init global vars
             //global defines (do not change here)
+            helpPageURL: "http://cms.uflib.ufl.edu/webservices/StAugustineProject/MapEditorHelper.aspx", //defines help page (TEMP)
+            reportProblemURL: "http://ufdc.ufl.edu/contact", //TEMPO move to config
             kmlLayer: null,                             //holds kml layer from server
             debuggerOn: false,                          //holds debugger flag
             toServerSuccessMessage: "Completed",        //holds server success message
@@ -868,10 +870,12 @@ function initListeners() {
             clear("poi");
         }, false);
         document.getElementById("content_menubar_documentation").addEventListener("click", function () {
-            displayMessage("No Documentation Yet.");
+            //displayMessage("No Documentation Yet.");
+            window.open(globalVar.helpPageURL);
         }, false);
         document.getElementById("content_menubar_reportAProblem").addEventListener("click", function () {
-            displayMessage("No Method To Report Errors Yet.");
+            //displayMessage("No Method To Report Errors Yet.");
+            window.open(globalVar.reportProblemURL);
         }, false);
 
         //toolbar
