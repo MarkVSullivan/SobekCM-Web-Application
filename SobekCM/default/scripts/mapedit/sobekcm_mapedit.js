@@ -668,7 +668,7 @@ function initListeners() {
                 }
                 if (savesCompleted == 3) {
                     de("all saves completed");
-                    window.location.assign(document.URL.replace("/mapedit", ""));
+                    //window.location.assign(document.URL.replace("/mapedit", ""));
                     globalVar.userMayLoseData = false;
                 }
                 globalVar.RIBMode = false;
@@ -5204,6 +5204,9 @@ function poiGetDesc(id) {
             displayMessage(L8);
         } else {
 
+            //get and hold heldPosistion
+            var heldPosition = infoWindow[id].position;
+
             de("poiDesc[id]: " + globalVar.poiDesc[id]);
             de("temp: " + temp);
 
@@ -5240,7 +5243,9 @@ function poiGetDesc(id) {
             //infoWindow[id].setOptions({ content: writeHTML("poiDesc", id, "", "") });
 
             infoWindow[id] = new google.maps.InfoWindow({
-                content: writeHTML("poiDescIncoming", id, temp, "")
+                content: writeHTML("poiDescIncoming", id, temp, ""),
+                position: heldPosition,
+                pixelOffset: new google.maps.Size(0, -40)
             });
 
             //close the poi desc box
