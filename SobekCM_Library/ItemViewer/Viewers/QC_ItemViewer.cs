@@ -548,7 +548,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        {
 	            thisNode.Label = String.Empty;
 	            string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
-	            nodeToFilename[file_sans] = thisNode;
+	            if(!nodeToFilename.ContainsKey(file_sans))
+                  nodeToFilename[file_sans] = thisNode;
+	            else
+	            {
+	                int i = 2;
+	                i++;
+	            }
 	        }
 
 	        // Clear the physical (TOC) tree
@@ -1264,6 +1270,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
+				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page;
+				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
+				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
 					goToUrls.Add(CurrentMode.Redirect_URL(i + "qc"));
 				}
 				return goToUrls.ToArray();
