@@ -159,7 +159,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
 			}
 
-			// Get the default QC profile
+            // Get the default QC profile
 			qc_profile = QualityControl_Configuration.Default_Profile;
 
 			title = "Quality Control";
@@ -542,27 +542,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private void Clear_Pagination_And_Reorder_Pages()
 	    {
 	        SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
-
+	        int newPageCount = 0;
 	        // Add each page node to a sorted list/dictionary and clear the label
 	        foreach (Page_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Pages_PreOrder)
 	        {
 	            thisNode.Label = String.Empty;
 	            string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
-	            nodeToFilename[file_sans] = thisNode;
-	        }
+	            if (!nodeToFilename.ContainsKey(file_sans))
+	            {
+	                nodeToFilename[file_sans] = thisNode;
+	                newPageCount++;
+	            }
 
+	        }
+            
 	        // Clear the physical (TOC) tree
 	        qc_item.Divisions.Physical_Tree.Clear();
 
 	        // Add the main node to the physical (TOC) division tree 
-	        Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
-	        qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+            Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
+            qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+     
+            //Update the web Page count for this item
+            qc_item.Web.Clear_Pages_By_Sequence();
+            
 
 	        // Add back each page, in order by filename (sans extension)
 	        for (int i = 0; i < nodeToFilename.Count; i++)
 	        {
-	            mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
-	        }
+	           mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
+               qc_item.Web.Add_Pages_By_Sequence(nodeToFilename.ElementAt(i).Value);
+	         }
+
+            //Update the QC web page count as well
+	        qc_item.Web.Static_PageCount = newPageCount;
 
 	        // Save the updated item to the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
@@ -1263,6 +1276,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
+				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page;
+				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
+				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
 					goToUrls.Add(CurrentMode.Redirect_URL(i + "qc"));
 				}
 				return goToUrls.ToArray();

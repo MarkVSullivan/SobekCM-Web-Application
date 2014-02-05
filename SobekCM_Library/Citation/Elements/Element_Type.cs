@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using SobekCM.Library.Citation.Elements.implemented_elements;
 
 #endregion
 
@@ -233,6 +234,9 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Primary alternate identifier associated with this item group, maps to <see cref="Primary_Alt_Identifier_Element"/> </summary>
         Primary_Identifier,
+        
+        /// <summary>Project element type maps to <see cref="Projects_Element"/> </summary>
+        Project,
 
         /// <summary> Publication place element type maps to <see cref="Publication_Place_Element"/> </summary>
         Publication_Place,
@@ -610,6 +614,9 @@ namespace SobekCM.Library.Citation.Elements
                 case "PRIMARYIDENTIFIER":
                 case "PRIMARY_IDENTIIER":
                     return Element_Type.Primary_Identifier;
+
+                case "PROJECT":
+                    return Element_Type.Project;
 
                 case "PUBLICATIONPLACE":
                     return Element_Type.Publication_Place;
