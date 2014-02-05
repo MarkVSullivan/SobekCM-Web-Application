@@ -542,21 +542,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private void Clear_Pagination_And_Reorder_Pages()
 	    {
 	        SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
-
+	        int newPageCount = 0;
 	        // Add each page node to a sorted list/dictionary and clear the label
 	        foreach (Page_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Pages_PreOrder)
 	        {
 	            thisNode.Label = String.Empty;
 	            string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
-	            if(!nodeToFilename.ContainsKey(file_sans))
-                  nodeToFilename[file_sans] = thisNode;
-	            else
+	            if (!nodeToFilename.ContainsKey(file_sans))
 	            {
-	                int i = 2;
-	                i++;
+	                nodeToFilename[file_sans] = thisNode;
+	                newPageCount++;
 	            }
-	        }
 
+	        }
+            
 	        // Clear the physical (TOC) tree
 	        qc_item.Divisions.Physical_Tree.Clear();
 
@@ -564,12 +563,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
             qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
      
+            //Update the web Page count for this item
+            qc_item.Web.Clear_Pages_By_Sequence();
+            
 
 	        // Add back each page, in order by filename (sans extension)
 	        for (int i = 0; i < nodeToFilename.Count; i++)
 	        {
 	           mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
+               qc_item.Web.Add_Pages_By_Sequence(nodeToFilename.ElementAt(i).Value);
 	         }
+
+            //Update the QC web page count as well
+	        qc_item.Web.Static_PageCount = newPageCount;
 
 	        // Save the updated item to the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
