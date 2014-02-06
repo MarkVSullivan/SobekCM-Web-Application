@@ -64,6 +64,7 @@ function initDeclarations() {
             //global defines (do not change here)
             helpPageURL: "http://cms.uflib.ufl.edu/webservices/StAugustineProject/MapEditorHelper.aspx", //defines help page (TEMP)
             reportProblemURL: "http://ufdc.ufl.edu/contact", //TEMPO move to config
+            stickyMessageCount: 0,                      //holds stickyMessageCount
             kmlLayer: null,                             //holds kml layer from server
             debuggerOn: false,                          //holds debugger flag
             toServerSuccessMessage: "Completed",        //holds server success message
@@ -4827,6 +4828,60 @@ function displayMessage(message) {
     }
 }
 
+//display an inline sticky message (does not go away until duplicate is sent in)
+function stickyMessage(stickyMessage) {
+
+    //debug log this message
+    de("sticky message #" + globalVar.stickyMessageCount + ": " + stickyMessage); //send to debugger for logging
+    de("sticky message Count: " + globalVar.stickyMessageCount);
+
+    var duplicateStickyMessage = false;
+
+    try {
+        if (document.getElementById("stickyMessage" + globalVar.stickyMessageCount).innerHTML == stickyMessage) {
+            duplicateStickyMessage = true;
+        } else {
+            duplicateStickyMessage = false;
+        }
+    } catch(e) {
+        //could not find the ID
+        de("Could not find sticky message ID");
+        duplicateStickyMessage = false;
+    } 
+
+    if (duplicateStickyMessage) {
+        de("same stick message as before, deleting...");
+        
+        //remove that sticky message from the dom
+        $("#" + "stickyMessage" + globalVar.stickyMessageCount).remove();
+        
+        //remove that sticky message from the record
+        globalVar.stickyMessageCount--;
+        
+        de("new sticky message Count: " + globalVar.stickyMessageCount);
+    } else {
+        de("create sticky message");
+        
+        //keep a count of messages
+        globalVar.stickymessageCount++;
+        
+        //compile divID
+        var currentDivId = "stickyMessage" + globalVar.stickyMessageCount;
+
+        //create unique message div
+        var stickyMessageDiv = document.createElement("div");
+        stickyMessageDiv.setAttribute("id", currentDivId);
+        stickyMessageDiv.className = "stickyMessage";
+        document.getElementById("content_message").appendChild(stickyMessageDiv);
+
+        //assign the message
+        document.getElementById(currentDivId).innerHTML = stickyMessage;
+        
+        //show message
+        document.getElementById(currentDivId).style.display = "block"; //display element
+    }
+}
+
 //create a package to send to server to save item location
 function createSavedItem(handle, coordinates) {
     var messageType = handle + "|" + "item"; //define what message type it is
@@ -6151,9 +6206,31 @@ function latLngToPixel(latLng) {
 //keypress shortcuts/actions
 //window.onkeypress = keypress;
 //function keypress(e) {
-window.onkeyup = keyup;
+//window.onkeyup = keyup;
+window.onkeydown = key;
 var isCntrlDown = false; //used for debug currently
+var isShiftDown = false; //used for many key commands
+
 function keyup(e) {
+    var keycode = null;
+    if (window.event) {
+        keycode = window.event.keyCode;
+    } else if (e) {
+        keycode = e.which;
+    }
+    isShiftDown = false;
+    isCntrlDown = false;
+    switch (keycode) {
+        case 16:
+            isShiftDown = true;
+            break;
+        case 17:
+            isCntrlDown = true;
+            break;
+    }
+}
+
+function key(e) {
     var keycode = null;
     if (window.event) {
         keycode = window.event.keyCode;
@@ -6181,9 +6258,17 @@ function keyup(e) {
             }
             de("CntrlDown: " + isCntrlDown);
             break;
-
-        case 70: //F
+        case 16: //shift
+            if (isShiftDown == false) {
+                isShiftDown = true;
+            } else {
+                isShiftDown = false;
+            }
+            de("ShiftDown: " + isShiftDown);
+            break;
+        case 67: //C
             if (isCntrlDown == true) {
+                //attempt to copy coords
                 if (navigator.appName == "Microsoft Internet Explorer") {
                     var copyString = cLat.innerHTML;
                     copyString += ", " + cLong.innerHTML;
@@ -6193,13 +6278,18 @@ function keyup(e) {
                     if (globalVar.cCoordsFrozen == "no") {
                         //freeze
                         globalVar.cCoordsFrozen = "yes";
-                        displayMessage(L20);
+                        //stickyMessage("Coordinate viewer is frozen (to unfreeze hold the shift key + the \"F\" key)");
+                        //displayMessage(L20);
+                        stickyMessage(L20);
                     } else {
                         //unfreeze
                         globalVar.cCoordsFrozen = "no";
+                        //stickyMessage("Coordinate viewer is frozen (to unfreeze hold the shift key + the \"F\" key)");
+                        stickyMessage(L20);
                         displayMessage(L21);
                     }
                 }
+                //isShiftDown = false;
             }
             break;
         case 79: //O
@@ -6219,6 +6309,7 @@ function keyup(e) {
                         globalVar.overlaysCurrentlyDisplayed = true; //mark that overlays are on the map
                     }
                 }
+                //isShiftDown = false;
             }
             break;
         case 68: //D (for debuggin)
@@ -6237,6 +6328,7 @@ function keyup(e) {
                         isCntrlDown = false;
                     }
                 }
+                //isShiftDown = false;
             }
             break;
     }

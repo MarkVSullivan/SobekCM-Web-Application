@@ -20,6 +20,21 @@
     box-shadow: 0 2px 3px rgba(0,0,0,0.5);
     display: none;
 }
+.stickyMessage
+{
+    text-align: center;
+    color: whitesmoke;
+    font-size: 13px;
+    font-weight: bold;
+    z-index: 99999;
+    padding: 2px 2px 2px 2px;
+    margin: 2px 0 2px 0;
+    background-color: darkorange;
+    /*background-color: peachpuff;*/
+    -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    display: none;
+}
 
 /*menubar*/
 
