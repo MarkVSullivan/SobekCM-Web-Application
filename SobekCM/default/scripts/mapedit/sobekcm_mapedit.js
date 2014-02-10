@@ -6129,92 +6129,66 @@ function panOverlay(direction) {
     switch (direction) {
         case "up":
             //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0001;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0001;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.00005;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.00000;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.00005;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.00000;
             var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
             var pixelPoint = latLngToPixel(new google.maps.LatLng(neLat, neLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
             de("x: " + pixelPoint.x);
             de("y: " + pixelPoint.y);
-            //div.style.left = pixelPoint.x + "px";
-            de("holding pixel top: " + div.style.top);
-            var holding = pixelPoint.y;
-            var temp = div.style.top - holding;
-            de("temp:" + temp);
-            de("hold:" + holding);
-            div.style.top = holding + "px";
+            //assign overlay position
+            document.getElementById("overlay" + globalVar.workingOverlayIndex).style.position = "static";
+            //assign ghost position
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
             //testBounds();
             break;
         case "down":
             //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() - 0.0001;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0000;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() - 0.0001;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0000;
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() - 0.00005;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.00000;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() - 0.00005;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.00000;
             var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
             var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
             de("x: " + pixelPoint.x);
             de("y: " + pixelPoint.y);
-            //div.style.left = pixelPoint.x + "px";
-            div.style.position = "relative";
-            div.style.top = pixelPoint.y + "px";
+            //assign overlay position
+            document.getElementById("overlay" + globalVar.workingOverlayIndex).style.position = "static";
+            //assign ghost position
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
             //testBounds();
             break;
         case "left":
             //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() - 0.0001;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() - 0.0001;
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.00000;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() - 0.00005;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.00000;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() - 0.00005;
             var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
             var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
             de("x: " + pixelPoint.x);
             de("y: " + pixelPoint.y);
-            div.style.position = "relative";
-            div.style.left = pixelPoint.x + "px";
-            //div.style.top = pixelPoint.y + "px";
+            //assign overlay position
+            document.getElementById("overlay" + globalVar.workingOverlayIndex).style.position = "static";
+            //assign ghost position
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
             //testBounds();
             break;
         case "right":
             //calc original
-            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.0000;
-            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.0001;
-            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.0000;
-            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.0001;
+            var neLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lat() + 0.00000;
+            var neLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getNorthEast().lng() + 0.00005;
+            var swLat = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lat() + 0.00000;
+            var swLng = globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].getBounds().getSouthWest().lng() + 0.00005;
             var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(swLat, swLng), new google.maps.LatLng(neLat, neLng));
             var pixelPoint = latLngToPixel(new google.maps.LatLng(swLat, swLng));
-            //assign ghost position
-            globalVar.pageMode = "";
-            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
-            globalVar.pageMode = "edit";
-            //assign div position
-            var div = document.getElementById("overlay" + globalVar.workingOverlayIndex);
             de("x: " + pixelPoint.x);
             de("y: " + pixelPoint.y);
-            div.style.position = "relative";
-            div.style.backgroundPosition = pixelPoint.x + "px";
-            
-
-            //div.style.top = pixelPoint.y + "px";
+            //assign overlay position
+            document.getElementById("overlay" + globalVar.workingOverlayIndex).style.position = "static";
+            //assign ghost position
+            globalVar.ghostOverlayRectangle[globalVar.workingOverlayIndex].setBounds(bounds);
             //testBounds();
             break;
         case "reset":
