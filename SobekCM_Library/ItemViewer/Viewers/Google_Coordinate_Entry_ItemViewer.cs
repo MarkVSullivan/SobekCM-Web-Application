@@ -563,9 +563,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/> ");
 
             //custom css
+            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit.css\"/> ");
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/> ");
-            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Layout_Default.css\"/> ");
-            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Other.css\"/> ");
             
             //standard js files
 			mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script> ");
@@ -945,7 +944,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
@@ -1036,7 +1035,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + totalAddedPolygonCount + ";");
                             //add image url
@@ -1086,7 +1085,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             //add the polygon path
                             mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = [ ");
                             int edgePointCurrentCount = 0;
@@ -1125,7 +1124,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (Convert_String_To_XML_Safe(page.Label) != "")
                                 mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex+1) + "\";"); //2do localize this text???
                             //add page sequence
                             mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
                             //add image url
@@ -1542,13 +1541,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //custom js files (load order does matter)
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit.js\"></script> ");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listener_actions.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_gmap.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_utilities.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_other.js\"></script>");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-markerwithlabel-1.9.1.js\"></script> "); //must load after custom
 
             //end of custom content
