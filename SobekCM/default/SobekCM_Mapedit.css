@@ -1721,3 +1721,7 @@ a img
 {
     background-image: url("images/mapedit/button-drawLine.png");
 }
+
+#debugVersionNumber{
+    display:inline-block;
+}
