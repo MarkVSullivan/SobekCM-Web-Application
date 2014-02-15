@@ -159,7 +159,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
 			}
 
-			// Get the default QC profile
+            // Get the default QC profile
 			qc_profile = QualityControl_Configuration.Default_Profile;
 
 			title = "Quality Control";
@@ -542,27 +542,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private void Clear_Pagination_And_Reorder_Pages()
 	    {
 	        SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
-
+	        int newPageCount = 0;
 	        // Add each page node to a sorted list/dictionary and clear the label
 	        foreach (Page_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Pages_PreOrder)
 	        {
 	            thisNode.Label = String.Empty;
 	            string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
-	            nodeToFilename[file_sans] = thisNode;
-	        }
+	            if (!nodeToFilename.ContainsKey(file_sans))
+	            {
+	                nodeToFilename[file_sans] = thisNode;
+	                newPageCount++;
+	            }
 
+	        }
+            
 	        // Clear the physical (TOC) tree
 	        qc_item.Divisions.Physical_Tree.Clear();
 
 	        // Add the main node to the physical (TOC) division tree 
-	        Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
-	        qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+            Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
+            qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+     
+            //Update the web Page count for this item
+            qc_item.Web.Clear_Pages_By_Sequence();
+            
 
 	        // Add back each page, in order by filename (sans extension)
 	        for (int i = 0; i < nodeToFilename.Count; i++)
 	        {
-	            mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
-	        }
+	           mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
+               qc_item.Web.Add_Pages_By_Sequence(nodeToFilename.ElementAt(i).Value);
+	         }
+
+            //Update the QC web page count as well
+	        qc_item.Web.Static_PageCount = newPageCount;
 
 	        // Save the updated item to the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
@@ -1263,6 +1276,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
+				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page;
+				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
+				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
 					goToUrls.Add(CurrentMode.Redirect_URL(i + "qc"));
 				}
 				return goToUrls.ToArray();
@@ -1790,6 +1806,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string info_text = "View technical image information";
             string delete_text = "Delete this page and related files";
             string view_text = "Open this page in a new window";
+            string error_text = "Mark an error on this page image";
 
 			//// Build the javascript to add references to the non-displayed pages
 			//StringBuilder javascriptBuilder = new StringBuilder(4000);
@@ -1977,6 +1994,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("      <td colspan=\"2\">");
                     Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span class=\"sbkQc_Filename\" title=\"" + filenameTooltipText + "\">" + filenameToDisplay + "</span>");
 
+                    //Add the error icon to mark errors for this page
+                Output.WriteLine("");
+
                     //Add the checkbox for moving this thumbnail
 				   // Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
@@ -1990,6 +2010,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                     //else
                     //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+
+                    Output.WriteLine("<span id=\"error"+page_index+"\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\""+error_icon_height+"\" width=\""+error_icon_width+"\" src=\"" + CurrentMode.Base_URL + "default/images/qc/Cancel.ico" + "\" onclick=\"\"/></a></span>");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -2242,6 +2264,64 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("  <br />");
 			Output.WriteLine("</div>");
 			Output.WriteLine();
+
+
+            //Add the popup form for the error screen
+
+            Output.WriteLine("<!-- Pop-up form for marking page errors -->");
+            Output.WriteLine("<div class=\"qcError_popup_div\" id=\"form_qcError\" style=\"display:none;\">");
+            Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">FILE ERROR</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcError' ); \">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine(" <div class=\"qcErrorForm_LeftDiv\">");
+            Output.WriteLine("<fieldset class=\"qcFormDivFieldset\"><legend class=\"qcErrorFormSubHeader\">Recapture required</legend>");
+           Output.WriteLine("  <table class=\"error_popup_table_left\">");
+            Output.WriteLine("     <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError1\" value=\"1\" onclick=\"\"/>Overcropped </td></tr>");
+            Output.WriteLine("      <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError2\" value=\"2\" onclick=\"\"/>Image Quality Error </td></tr>");
+            Output.WriteLine("      <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError3\" value=\"3\" onclick=\"\"/>Technical Spec Error </td></tr>");
+            Output.WriteLine("      <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError4\" value=\"4\" onclick=\"\"/><input type=\"textarea\" rows=\"40\" value=\"Other(specify)\"/> </td></tr>");
+            Output.WriteLine("<tr><td><br/></td></tr>");
+            Output.WriteLine("<tr><td><br/></td></tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("</fieldset>");
+            Output.WriteLine("</div>");
+
+            //Add the second table on the right with the 'Processing Required' errors
+            Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
+            Output.WriteLine("<fieldset class=\"qcFormDivFieldset\"><legend class=\"qcErrorFormSubHeader\">Processing required</legend>");
+            Output.WriteLine("<table class=\"error_popup_table_left\">");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError5\" value=\"5\" onclick=\"\"/>Undercropped</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError6\" value=\"6\" onclick=\"\"/>Orientation Error</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError7\" value=\"7\" onclick=\"\"/>Skew Error</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError8\" value=\"8\" onclick=\"\"/>Blur Needed</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError9\" value=\"9\" onclick=\"\"/>Unblur needed</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError10\" value=\"10\" onclick=\"\"/><input type=\"textarea\" rows=\"40\" value=\"Other(specify)\"/></td>");
+            Output.WriteLine("</tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("</fieldset>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<br/><br/>");
+           //Start the last div for the "No file error" option and the buttons
+            Output.WriteLine("<div class=\"qcErrorForm_LeftDiv\">");
+            Output.WriteLine("<input type=\"radio\" name=\"rbFile_errors\" id=\"rbError11\" value=\"11\" onclick=\"\" checked/>No file error");
+            Output.WriteLine("</div>");
+
+            //Add the Cancel & Move buttons
+            Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
+            Output.WriteLine("    <table><tr><td colspan=\"3\" style=\"text-align:center\">");
+            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkQc_MoveButtons\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkQc_MoveButtons\" onclick=\"return cancel_move_pages();\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("    </td></tr>");
+            Output.WriteLine("</div>");
+
+            // Finish the popup form
+            Output.WriteLine("  </table>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+
+
+
+            //End the popup for the error screen
 
 
 			// Finish the citation table
