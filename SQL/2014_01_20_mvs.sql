@@ -549,7 +549,7 @@ GO
 
 /****** Object:  StoredProcedure [dbo].[[mySobek_Get_All_Projects_DefaultMetadatas]]    Script Date: 12/20/2013 05:43:35 ******/
 -- Get the list of all templates and default metadata sets 
-CREATE PROCEDURE [dbo].[mySobek_Get_All_Projects_DefaultMetadatas]
+CREATE PROCEDURE [dbo].[mySobek_Get_All_Template_DefaultMetadatas]
 AS
 BEGIN
 	
@@ -576,7 +576,7 @@ GO
 GRANT EXECUTE ON [dbo].[mySobek_Add_User_Group_Metadata_Link] TO sobek_user;
 GRANT EXECUTE ON [dbo].[mySobek_Add_User_DefaultMetadata_Link] TO sobek_user;
 GRANT EXECUTE ON [dbo].[mySobek_Save_DefaultMetadata] TO sobek_user;
-GRANT EXECUTE ON [dbo].[mySobek_Get_All_Projects_DefaultMetadatas] TO sobek_user;
+GRANT EXECUTE ON [dbo].[mySobek_Get_All_Templates_DefaultMetadatas] TO sobek_user;
 GO
 
 -- Copy existing from PROJECT to the DEFAULT METADATA table

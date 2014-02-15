@@ -1100,8 +1100,29 @@ namespace SobekCM.Library.HTML
 			    // Add the sharing buttons if this is not restricted by IP address or checked out
 			    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
 			    {
+					string add_text = "Add";
+					string remove_text = "Remove";
+					string send_text = "Send";
+					string print_text = "Print";
+					if (canManage)
+					{
+						add_text = String.Empty;
+						remove_text = String.Empty;
+						send_text = String.Empty;
+						print_text = String.Empty;
+					}
+
+
 				    Output.WriteLine("\t<div id=\"menu-right-actions\">");
-				    Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
+
+					if (currentItem.Web.ItemID > 0)
+					{
+						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+					}
+					else
+					{
+						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+					}
 
 
 				    //if (currentItem.Behaviors.Can_Be_Described)
@@ -1116,21 +1137,13 @@ namespace SobekCM.Library.HTML
 				    //    }
 				    //}
 
-				    string add_text = "Add";
-				    string remove_text = "Remove";
-				    string send_text = "Send";
-				    string print_text = "Print";
-				    if (canManage)
-				    {
-					    add_text = String.Empty;
-					    remove_text = String.Empty;
-					    send_text = String.Empty;
-					    print_text = String.Empty;
-				    }
 
 
 				    if ((currentUser != null))
 				    {
+						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+
+
 					    if (currentItem.Web.ItemID > 0)
 					    {
 						    if (currentUser.Is_In_Bookshelf(currentItem.BibID, currentItem.VID))
@@ -1142,28 +1155,19 @@ namespace SobekCM.Library.HTML
 							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 						    }
 					    }
-
-
-					    Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 				    }
 				    else
 				    {
+
+						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+
+
 					    if (currentItem.Web.ItemID > 0)
 						    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 
-
-					    Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 				    }
 
-
-				    if (currentItem.Web.ItemID > 0)
-				    {
-					    Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
-				    }
-				    else
-				    {
-					    Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
-				    }
+					Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
 
 
 				    Output.WriteLine("\t</div>");

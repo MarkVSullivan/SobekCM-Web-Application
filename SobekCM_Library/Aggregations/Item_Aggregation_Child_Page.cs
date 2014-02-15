@@ -92,6 +92,10 @@ namespace SobekCM.Library.Aggregations
 			{
 				Data_Type = Result_Data_Type.Text;
 			}
+
+			// Add the label
+			if ( Label.Length > 0 )
+				Label_Dictionary[Web_Language_Enum.English] = Label;
 		}
 
 		/// <summary> Constructor for a new instance of the Item_Aggregation_Child_Page class </summary>
