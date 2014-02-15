@@ -168,7 +168,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //add the label to page obj
                             pages[arrayId].Label = ar[3];
                             //get the geocoordinate object for that pageId
-                            GeoSpatial_Information pageGeo = pages[arrayId].Get_Metadata_Module( GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                            GeoSpatial_Information pageGeo = pages[arrayId].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                             //if there isnt any already there
                             if (pageGeo == null)
                             {
@@ -514,7 +514,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
             Body_Attributes.Clear();
-            Body_Attributes.Add(new Tuple<string, string>("onresize", "resizeView();"));
+            Body_Attributes.Add(new Tuple<string, string>("onresize", "MAPEDITOR.UTILITIES.resizeView();"));
         }
 
         /// <summary> Gets the collection of special behaviors which this item viewer
@@ -563,9 +563,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/> ");
 
             //custom css
+            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit.css\"/> ");
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/> ");
-            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Layout_Default.css\"/> ");
-            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Other.css\"/> ");
             
             //standard js files
 			mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script> ");
@@ -619,21 +618,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //setup server to client vars writer
             mapeditBuilder.AppendLine(" // Add Server Vars ");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
-            mapeditBuilder.AppendLine("   globalVar.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
-            mapeditBuilder.AppendLine("   globalVar.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
-            mapeditBuilder.AppendLine("   globalVar.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+            mapeditBuilder.AppendLine("  try{ ");
+            mapeditBuilder.AppendLine("   //MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars started...\"); ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
             //detemrine if debugging
             if (CurrentMode.Base_URL.Contains("localhost"))
-                mapeditBuilder.AppendLine("   globalVar.debuggerOn = true; //debugger flag ");
+                mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debuggerOn = true; //debugger flag ");
             else
-                mapeditBuilder.AppendLine("   globalVar.debuggerOn = false; //debugger flag ");
-            
+                mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debuggerOn = false; //debugger flag ");
+
+            mapeditBuilder.AppendLine("   //MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars completed...\"); ");
+            mapeditBuilder.AppendLine("  }catch (err){ ");
+            mapeditBuilder.AppendLine("  //MAPEDITOR.TRACER.addTracer(\"[ERROR]: initServerToClientVars failed...\"); ");
+            mapeditBuilder.AppendLine("  } ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
 
             //config settings writer section 
             mapeditBuilder.AppendLine(" // Add Config Settings Objects ");
             mapeditBuilder.AppendLine(" function initConfigSettings(){ ");
+            mapeditBuilder.AppendLine("  try{ ");
+            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings started...\"); ");
 
             //add collection load type and attributes
             #region
@@ -701,7 +708,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                                     //store param
                                                     collectionLoadParams.Add(reader.Value); //not currently used
                                                     //add param to page
-                                                    mapeditBuilder.AppendLine("   globalVar." + reader.Name + " = " + reader.Value + "; //adding "+reader.Name); //could not determine how to get attribute's name
+                                                    mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + reader.Name + " = " + reader.Value + "; //adding "+reader.Name); //could not determine how to get attribute's name
                                                 }
                                             }
                                             break;
@@ -713,7 +720,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 //add collection params to js var
-                //mapeditBuilder.AppendLine("   globalVar.collectionLoadParams = \"" + collectionLoadParams + "\"; //add collectionLoadParams ");
+                //mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.collectionLoadParams = \"" + collectionLoadParams + "\"; //add collectionLoadParams ");
             }
             catch (Exception)
             {
@@ -726,10 +733,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
                 collectionLoadType = "default";
             //add collection load type to page
-            mapeditBuilder.AppendLine("   globalVar.collectionLoadType = \"" + collectionLoadType + "\"; //add collectionLoadType ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.collectionLoadType = \"" + collectionLoadType + "\"; //add collectionLoadType ");
 
             #endregion
 
+            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings completed...\"); ");
+            mapeditBuilder.AppendLine("  }catch (err){ ");
+            mapeditBuilder.AppendLine("  //MAPEDITOR.TRACER.addTracer(\"[ERROR]: initConfigSettings failed...\"); ");
+            mapeditBuilder.AppendLine("  } ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
 
@@ -737,6 +748,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //geo objects writer section 
             mapeditBuilder.AppendLine(" // Add Geo Objects ");
             mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
+            mapeditBuilder.AppendLine("  try{ ");
+            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initGeoObjects started...\"); ");
             mapeditBuilder.AppendLine(" ");
 
             // Add the geo info
@@ -826,14 +839,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     for (int point = 0; point < allPoints.Count; point++)
                     {
                         //add the featureType
-                        mapeditBuilder.AppendLine("      globalVar.incomingPointFeatureType[" + point + "] = \"" + allPoints[point].FeatureType + "\";");
+                        mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointFeatureType[" + point + "] = \"" + allPoints[point].FeatureType + "\";");
                         //add the label
                         if (!String.IsNullOrEmpty(allPoints[point].Label))
-                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + Convert_String_To_XML_Safe(allPoints[point].Label) + "\"; ");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointLabel[" + point + "] = \"" + Convert_String_To_XML_Safe(allPoints[point].Label) + "\"; ");
                         else
-                            mapeditBuilder.AppendLine("      globalVar.incomingPointLabel[" + point + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointLabel[" + point + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
                         //add the center point
-                        mapeditBuilder.AppendLine("      globalVar.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
+                        mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointCenter[" + point + "] = new google.maps.LatLng(" + allPoints[point].Latitude + "," + allPoints[point].Longitude + "); ");
                         //add the image url (if not a poi)
                         if (allPoints[point].FeatureType != "poi")
                         {
@@ -841,15 +854,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 //get image url myway
                                 string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
-                                mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"" + current_image_file + "\"; ");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointSourceURL[" + point + "] = \"" + current_image_file + "\"; ");
                             }
                             catch (Exception)
                             {
-                                mapeditBuilder.AppendLine("      globalVar.incomingPointSourceURL[" + point + "] = \"\"; ");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointSourceURL[" + point + "] = \"\"; ");
                             }
                         }
                     }
-                    mapeditBuilder.AppendLine("      displayIncomingPoints();");
+                    mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.displayIncomingPoints();");
                     mapeditBuilder.AppendLine(" ");
                 }
                 #endregion
@@ -862,19 +875,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     for (int circle = 0; circle < allCircles.Count; circle++)
                     {
                         //add the featuretype
-                        mapeditBuilder.AppendLine("      globalVar.incomingCircleFeatureType[" + circle + "] = \"" + allCircles[circle].FeatureType + "\";");
+                        mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingCircleFeatureType[" + circle + "] = \"" + allCircles[circle].FeatureType + "\";");
                         //add the label
                         if (!String.IsNullOrEmpty(allCircles[circle].Label))
-                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + Convert_String_To_XML_Safe(allCircles[circle].Label) + "\"; ");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingCircleLabel[" + circle + "] = \"" + Convert_String_To_XML_Safe(allCircles[circle].Label) + "\"; ");
                         else
-                            mapeditBuilder.AppendLine("      globalVar.incomingCircleLabel[" + circle + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingCircleLabel[" + circle + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
                         //add the center point
-                        mapeditBuilder.AppendLine("      globalVar.incomingCircleCenter[" + circle + "] = new google.maps.LatLng(" + allCircles[circle].Latitude + "," + allCircles[circle].Longitude + "); ");
+                        mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingCircleCenter[" + circle + "] = new google.maps.LatLng(" + allCircles[circle].Latitude + "," + allCircles[circle].Longitude + "); ");
                         //add the radius
-                        mapeditBuilder.AppendLine("      globalVar.incomingCircleRadius[" + circle + "] = " + allCircles[circle].Radius + "; ");
+                        mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingCircleRadius[" + circle + "] = " + allCircles[circle].Radius + "; ");
                     }
                     mapeditBuilder.AppendLine(" ");
-                    mapeditBuilder.AppendLine("      displayIncomingCircles();");
+                    mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.displayIncomingCircles();");
                     mapeditBuilder.AppendLine(" ");
                 }
                 #endregion
@@ -887,14 +900,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     for (int line = 0; line < allLines.Count; line++)
                     {
                         //add the featuretype
-                        mapeditBuilder.AppendLine("      globalVar.incomingLineFeatureType[" + line + "] = \"" + allLines[line].FeatureType + "\";");
+                        mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingLineFeatureType[" + line + "] = \"" + allLines[line].FeatureType + "\";");
                         //add the label
                         if (!String.IsNullOrEmpty(allLines[line].Label))
-                            mapeditBuilder.AppendLine("      globalVar.incomingLineLabel[" + line + "] = \"" + Convert_String_To_XML_Safe(allLines[line].Label) + "\"; ");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingLineLabel[" + line + "] = \"" + Convert_String_To_XML_Safe(allLines[line].Label) + "\"; ");
                         else
-                            mapeditBuilder.AppendLine("      globalVar.incomingLineLabel[" + line + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingLineLabel[" + line + "] = \"" + Convert_String_To_XML_Safe(CurrentItem.Bib_Title) + "\"; ");
                         //add the Line path
-                        mapeditBuilder.Append("      globalVar.incomingLinePath[" + line + "] = [ ");
+                        mapeditBuilder.Append("      MAPEDITOR.GLOBAL.DEFINES.incomingLinePath[" + line + "] = [ ");
                         int linePointCurrentCount = 0;
                         foreach (Coordinate_Point thisPoint in allLines[line].Points)
                         {
@@ -909,7 +922,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     }
                     mapeditBuilder.AppendLine(" ");
-                    mapeditBuilder.AppendLine("      displayIncomingLines();");
+                    mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.displayIncomingLines();");
                     mapeditBuilder.AppendLine(" ");
                 }
                 #endregion
@@ -931,21 +944,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             //add the featureType
                             if (itemPolygon.FeatureType == "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"main\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"main\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
 
                             //add the polygonType
                             if (itemPolygon.PolygonType == "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"rectangle\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"rectangle\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             
                             //add the label
                             if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             
                             //create the bounds string
                             string bounds = "new google.maps.LatLngBounds( ";
@@ -979,7 +992,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             bounds += bounds2 + ", " + bounds1;
                             bounds += ")";
                             //add the bounds
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = " + bounds + ";"); //changed from bounds
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPath[" + totalAddedPolygonIndex + "] = " + bounds + ";"); //changed from bounds
                             
                             //add image url
                             try
@@ -998,19 +1011,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                                 ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
                                 //polygonURL.Add(first_page_complete_url);
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
                             }
                             catch (Exception)
                             {
                                 //there is no image
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = null;");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = null;");
                             }
                             
                             //add rotation
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonRotation[" + totalAddedPolygonIndex + "] = " + itemPolygon.Rotation + ";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonRotation[" + totalAddedPolygonIndex + "] = " + itemPolygon.Rotation + ";");
                             
                             //add page sequence
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + itemPolygon.Page_Sequence + ";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + itemPolygon.Page_Sequence + ";");
                             
                             //increment the totalAddedPolygonCount (the actual number of polys added)
                             totalAddedPolygonCount++;
@@ -1029,16 +1042,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             //increment the totalAddedPolygonCount (the actual number of polys added)
                             totalAddedPolygonCount++;
                             //add featuretype
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add polygontype
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add the label
                             if (Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) != "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(pages[totalAddedPolygonIndex].Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             //add page sequence
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + totalAddedPolygonCount + ";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + totalAddedPolygonCount + ";");
                             //add image url
                             try
                             {
@@ -1058,13 +1071,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                                 ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
                                 //polygonURL.Add(first_page_complete_url);
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
                             }
                             catch (Exception)
                             {
                                 //my way
                                 string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
                                 //throw;
                             }
                             //increment index
@@ -1079,16 +1092,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (itemPolygon.FeatureType == "poi")
                         {
                             //add the featureType
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.FeatureType + "\";");
                             //add the polygonType
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"" + itemPolygon.PolygonType + "\";");
                             //add the label
                             if (Convert_String_To_XML_Safe(itemPolygon.Label) != "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(itemPolygon.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex + 1) + "\";"); //2do localize this text???
                             //add the polygon path
-                            mapeditBuilder.Append("      globalVar.incomingPolygonPath[" + totalAddedPolygonIndex + "] = [ ");
+                            mapeditBuilder.Append("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPath[" + totalAddedPolygonIndex + "] = [ ");
                             int edgePointCurrentCount = 0;
                             foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
                             {
@@ -1107,7 +1120,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     #endregion
                     
                     mapeditBuilder.AppendLine(" ");
-                    mapeditBuilder.AppendLine("      displayIncomingPolygons(); ");
+                    mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.displayIncomingPolygons(); ");
                     mapeditBuilder.AppendLine(" ");
                 }
                 else
@@ -1118,16 +1131,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (totalAddedPolygonIndex < pages.Count)
                         {
                             //add featuretype
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonFeatureType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add polygontype
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPolygonType[" + totalAddedPolygonIndex + "] = \"hidden\";");
                             //add the label
                             if (Convert_String_To_XML_Safe(page.Label) != "")
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"" + Convert_String_To_XML_Safe(page.Label) + "\";");
                             else
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"No Label " + totalAddedPolygonIndex + "\";"); //2do localize this text???
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonLabel[" + totalAddedPolygonIndex + "] = \"Page " + (totalAddedPolygonIndex+1) + "\";"); //2do localize this text???
                             //add page sequence
-                            mapeditBuilder.AppendLine("      globalVar.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
+                            mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[" + totalAddedPolygonIndex + "] = " + (totalAddedPolygonIndex + 1) + ";");
                             //add image url
                             try
                             {
@@ -1147,13 +1160,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 string first_page_complete_url = "\"" + CurrentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
                                 ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
                                 //polygonURL.Add(first_page_complete_url);
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
                             }
                             catch (Exception)
                             {
                                 //my way
                                 string current_image_file = CurrentItem.Web.Source_URL + "/" + CurrentItem.VID + ".jpg";
-                                mapeditBuilder.AppendLine("      globalVar.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
+                                mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
                                 //throw;
                             }
                             totalAddedPolygonIndex++;
@@ -1161,12 +1174,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     #endregion
                     mapeditBuilder.AppendLine(" ");
-                    mapeditBuilder.AppendLine("      displayIncomingPolygons(); ");
+                    mapeditBuilder.AppendLine("      MAPEDITOR.GLOBAL.displayIncomingPolygons(); ");
                     mapeditBuilder.AppendLine(" ");
                 }
                 #endregion
             }
-            mapeditBuilder.AppendLine(" ");
+            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initGeoObjects completed...\"); ");
+            mapeditBuilder.AppendLine("  }catch (err){ ");
+            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[ERROR]: initGeoObjects failed...\"); ");
+            mapeditBuilder.AppendLine("  } ");
             mapeditBuilder.AppendLine(" }");
             mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" </script> ");
@@ -1542,13 +1558,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //custom js files (load order does matter)
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit.js\"></script> ");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_declarations.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_localization.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listeners.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_listener_actions.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_gmap.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_utilities.js\"></script>");
-            //mapeditBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit_other.js\"></script>");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-markerwithlabel-1.9.1.js\"></script> "); //must load after custom
 
             //end of custom content

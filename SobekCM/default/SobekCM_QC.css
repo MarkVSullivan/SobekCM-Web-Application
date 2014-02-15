@@ -133,7 +133,13 @@
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
 .popup_table { margin-left: 50px;margin-right: 50px; }
 
-.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:550px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
+.qcmove_popup_div { position:fixed; background-color:#eeeeee; height:600px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
+.qcError_popup_div { position:fixed; background-color:#eeeeee; height:300px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
+
+.qcFormDivFieldset{ border: 1px #d2d2d2 solid;}
+.qcErrorForm_LeftDiv{ float: left;margin-left: 25px;margin-right: 10px;}
+.qcErrorForm_RightDiv{ float: right;margin-left: 10px;margin-right: 25px;}
+.qcErrorFormSubHeader{ color: #888888;font-weight: bold;}
 
 .btnMovePages {background-color:Yellow;display:inline-block; border-radius: 25px; text-transform: uppercase; color:#333333; font-family:Arial; font-size:15px; font-weight:bold; padding:4px 16px; text-decoration:none;} 
 .btnMovePages:hover { background-color:#ffec64;}
