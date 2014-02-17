@@ -1981,10 +1981,10 @@ function initMapEditor() {
                             };
 
                             //clear textboxes
-                            document.getElementById("content_toolbar_searchField").value = null;
-                            document.getElementById("content_toolbox_searchField").value = null;
-                            document.getElementById('content_toolbox_posItem').value = null;
-                            document.getElementById('content_toolbox_rgItem').value = null;
+                            document.getElementById("content_toolbar_searchField").value = "";
+                            document.getElementById("content_toolbox_searchField").value = "";
+                            document.getElementById('content_toolbox_posItem').value = "";
+                            document.getElementById('content_toolbox_rgItem').value = "";
 
                             //closes loading blanket
                             document.getElementById("mapedit_blanket_loading").style.display = "none";
@@ -4539,8 +4539,8 @@ function initMapEditor() {
                                 //MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);
                                 MAPEDITOR.GLOBAL.DEFINES.userMayLoseData = false;
                                 //clear item boxes
-                                document.getElementById("content_toolbox_posItem").value = null;
-                                document.getElementById("content_toolbox_rgItem").value = null;
+                                document.getElementById("content_toolbox_posItem").value = "";
+                                document.getElementById("content_toolbox_rgItem").value = "";
                             } else {
                                 //did not delete
                                 MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L_NotDeleted);
