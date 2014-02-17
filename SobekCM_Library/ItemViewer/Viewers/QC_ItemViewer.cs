@@ -1174,6 +1174,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars-black.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\" />");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\""+CurrentMode.Base_URL+ "default/SobekCM_MySobek.css\"/>");
 
             Output.WriteLine("  <style type=\"text/css\">");
             Output.WriteLine("    .qcPickMainThumbnailCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/thumbnail_cursor.cur),default;}");
@@ -2267,22 +2268,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             //Add the popup form for the error screen
-
             Output.WriteLine("<!-- Pop-up form for marking page errors -->");
-            Output.WriteLine("<div class=\"qcError_popup_div\" id=\"form_qcError\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">FILE ERROR</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcError' ); \">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("<div class=\"sbkMySobek_PopupForm \" id=\"form_qcError\" style=\"display:none;\">");
+           
+            //Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">FILE ERROR</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcError' ); \">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table width=\"100%\"><tr><td align=\"left\">FILE ERROR</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcError' ); \">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
             Output.WriteLine(" <div class=\"qcErrorForm_LeftDiv\">");
-            Output.WriteLine("<fieldset class=\"qcFormDivFieldset\"><legend class=\"qcErrorFormSubHeader\">Recapture required</legend>");
-           Output.WriteLine("  <table class=\"error_popup_table_left\">");
-            Output.WriteLine("     <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError1\" value=\"1\" onclick=\"\"/>Overcropped </td></tr>");
-            Output.WriteLine("      <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError2\" value=\"2\" onclick=\"\"/>Image Quality Error </td></tr>");
-            Output.WriteLine("      <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError3\" value=\"3\" onclick=\"\"/>Technical Spec Error </td></tr>");
-            Output.WriteLine("      <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError4\" value=\"4\" onclick=\"\"/><input type=\"textarea\" rows=\"40\" value=\"Other(specify)\"/> </td></tr>");
-            Output.WriteLine("<tr><td><br/></td></tr>");
-            Output.WriteLine("<tr><td><br/></td></tr>");
-            Output.WriteLine("</table>");
-            Output.WriteLine("</fieldset>");
+            Output.WriteLine("     <fieldset class=\"qcFormDivFieldset\"><legend class=\"qcErrorFormSubHeader\">Recapture required</legend>");
+            Output.WriteLine("     <table class=\"error_popup_table_left\">");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError1\" value=\"1\" onclick=\"\"/>Overcropped </td></tr>");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError2\" value=\"2\" onclick=\"\"/>Image Quality Error </td></tr>");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError3\" value=\"3\" onclick=\"\"/>Technical Spec Error </td></tr>");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError4\" value=\"4\" onclick=\"\"/><input type=\"textarea\" rows=\"40\" value=\"Other(specify)\"/> </td></tr>");
+            Output.WriteLine("         <tr><td><br/></td></tr>");
+            Output.WriteLine("         <tr><td><br/></td></tr>");
+            Output.WriteLine("     </table>");
+            Output.WriteLine("     </fieldset>");
             Output.WriteLine("</div>");
 
             //Add the second table on the right with the 'Processing Required' errors
@@ -2308,8 +2310,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Add the Cancel & Move buttons
             Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
             Output.WriteLine("    <table><tr><td colspan=\"3\" style=\"text-align:center\">");
-            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkQc_MoveButtons\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
-            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkQc_MoveButtons\" onclick=\"return cancel_move_pages();\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkMySobek_BigButton\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkMySobek_BigButton\" onclick=\"return cancel_mark_file_error();\">CANCEL</button>&nbsp;<br />");
             Output.WriteLine("    </td></tr>");
             Output.WriteLine("</div>");
 
